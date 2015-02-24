@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="name" label="Name" type="string" mandatory="true" binding="name" max-length="50"/>
+    <field formid="number" label="CC Number" type="string" mandatory="true" binding="number" max-length="50"/>
+    <field formid="cvc" label="cvc" type="string" mandatory="true" binding="cvc" max-length="50"/>
+    <field formid="Month" label="Month" type="number" mandatory="true" binding="Month" max-length="50"/>
+    <field formid="Year" label="Year" type="string" mandatory="true" binding="Year" max-length="50"/>
+    <field formid="shopperReference" label="Shopper Ref" type="string" mandatory="true" binding="shopperReference" max-length="50"/>
+    <field formid="shopperEmail" label="Shopper Email" type="string" mandatory="true" regexp="^[\w-\.]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]{2,3}$" parse-error="forms.contactus.email.parse-error" binding="shopperEmail" max-length="50"/>  
+	
+	<action formid="Pay" valid-form="true"/>
+</form>

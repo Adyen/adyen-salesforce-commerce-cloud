@@ -1,0 +1,193 @@
+/**
+* Passes on credit card details to Adyen using the Adyen PAL adapter
+* Receives a response and sets the order status accordingly
+* created on 23dec2014
+*
+* @input Order : dw.order.Order
+* @input Amount : dw.value.Money The amount to authorize
+* @input PaymentInstrument : dw.order.PaymentInstrument 
+* @input CurrentSession : dw.system.Session
+* @input CurrentRequest : dw.system.Request
+*
+* @output Decision : String 
+* @output PaymentStatus : String
+* @output AuthorizationCode :  String
+* @output AuthorizationAmount : String
+* @output PaRequest : String 
+* @output PspReference : String 
+* @output MD : String
+* @output ResultCode : String
+* @output IssuerUrl : String
+* @output AVSResultCode : String
+* 
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+importPackage( dw.net); 
+importPackage( dw.crypto );
+importScript('libs/libAdyen.ds');
+
+function execute( args : PipelineDictionary ) : Number {
+	
+	var VERSION : String = "4";
+	var MERCHANTACCOUNT : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+
+	if (MERCHANTACCOUNT == null) {
+		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");  
+		return PIPELET_ERROR;
+	}  
+	
+	var msg : String;
+	var order = args.Order;
+	
+	if (order == null) {
+		Logger.getLogger("Adyen").fatal("No order {0} present.");
+		return PIPELET_ERROR;  
+	}
+	
+	var myAmount = args.Amount * 100;	
+	var orderNo = order.currentOrderNo;	
+	var a = Math.floor(Math.random()*10000);
+	var c : Object = args.PaymentInstrument;
+	
+	var f : Object = args.CurrentForms;
+	var card : Object = f.billing.paymentMethods.creditCard;
+	var cardnr : String = card.number.value;
+	var cardcvc : String = card.cvn.value;
+	
+	// get PAL service credentials
+	var endpoint : String = Site.getCurrent().getCustomPreferenceValue("pal_service_endpoint");
+	var user : String = Site.getCurrent().getCustomPreferenceValue("pal_service_user");
+	var pw : String = Site.getCurrent().getCustomPreferenceValue("pal_service_password");
+	
+	// AVS support
+	var billingDetails : String = '';
+	var billingAddr : OrderAddress = args.Order.getBillingAddress();
+	if (dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_enableAVS")) {
+		billingDetails += "&paymentRequest.card.billingAddress.city=" + encodeURIComponent(billingAddr.city) +
+		"&paymentRequest.card.billingAddress.street=" + encodeURIComponent(billingAddr.custom.streetName) +
+		"&paymentRequest.card.billingAddress.houseNumberOrName=" + encodeURIComponent(billingAddr.suite) +
+		"&paymentRequest.card.billingAddress.postalCode=" + encodeURIComponent(billingAddr.postalCode) +
+		"&paymentRequest.card.billingAddress.stateOrProvince=" + encodeURIComponent(billingAddr.stateCode) +
+		"&paymentRequest.card.billingAddress.country=" + encodeURIComponent(billingAddr.countryCode.value);
+	}
+	
+	var currentRequest : Request = (args.CurrentRequest)? args.CurrentRequest : request;
+	var acceptHeader : String = currentRequest.httpHeaders.get("accept") + currentRequest.httpHeaders.get("accept-encoding");
+	var userAgent : String = currentRequest.httpUserAgent;
+	
+	// set-up the authorisation post call	 
+	var httpSvc : HTTPClient = new	HTTPClient();
+	var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
+	
+	httpSvc.setTimeout(timeout);
+	httpSvc.open("POST", endpoint, user, pw);
+	httpSvc.setRequestHeader("Content-type","application/x-www-form-URLencoded; charset=UTF-8");
+	httpSvc.send("action=" + "Payment.authorise" +
+	"&paymentRequest.reference=" + encodeURIComponent(orderNo) + 
+	"&paymentRequest.shopperReference=" + encodeURIComponent(order.customerNo) +
+	"&paymentRequest.merchantAccount=" + encodeURIComponent(MERCHANTACCOUNT) +
+	"&paymentRequest.shopperEmail=" + encodeURIComponent(order.customerEmail) +
+	"&paymentRequest.amount.value=" + encodeURIComponent(myAmount) +
+	"&paymentRequest.amount.currency=" + encodeURIComponent(args.Amount.currencyCode) +
+	"&paymentRequest.card.expiryMonth=" + encodeURIComponent(c.creditCardExpirationMonth) +
+	"&paymentRequest.card.expiryYear=" + encodeURIComponent(c.creditCardExpirationYear) +
+	"&paymentRequest.card.holderName=" + encodeURIComponent(c.creditCardHolder) +
+	"&paymentRequest.card.number=" + encodeURIComponent(cardnr) +
+	"&paymentRequest.card.cvc=" + encodeURIComponent(cardcvc) + //for testing use cardcvc=737
+	"&paymentRequest.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) + // added for 3DS
+    "&paymentRequest.browserInfo.userAgent=" + encodeURIComponent( userAgent ) + // added for 3DS
+    billingDetails); // added for AVS
+
+	var resultObj : Object = { // build the result object
+			statusCode: httpSvc.getStatusCode(),
+			statusMessage: httpSvc.getStatusMessage(),
+			text: httpSvc.getText(),
+			errorText: httpSvc.getErrorText(),
+			timeout: httpSvc.getTimeout()
+		}
+			
+	var resultText : String = resultObj.text;
+	if (resultText == null) { return PIPELET_ERROR; }
+	
+	// build the response object
+	var adyenHelper = getAdyenHelper();
+	var responseObj = adyenHelper.getResponseObj(resultText);
+	
+	// assign default values for the script output variables
+	args.PaRequest = '';  
+	args.MD = '';		 
+	args.IssuerUrl = ''; 
+	args.ResultCode = '';
+	args.AuthorizationCode = '';
+	args.PspReference = '';
+	args.PaymentStatus = "?";
+	args.AuthorizationAmount = '';
+	args.Decision = '';
+	
+	// return the AVS result code
+	args.AVSResultCode = (!empty(responseObj.avsResultRaw) ? responseObj.avsResultRaw : '');
+	
+	// if the card is enrolled in the 3-D Secure programme the response should contain these 4 fields
+	if ('paRequest' in responseObj) { args.PaRequest = responseObj.paRequest; } // paRequest  
+	if ('md' in responseObj) { args.MD = responseObj.md; } // md
+	if ('issuerUrl' in responseObj) { args.IssuerUrl = responseObj.issuerUrl; } // issuerUrl 
+	args.ResultCode = responseObj.resultCode; // resultCode
+	
+	args.AuthorizationCode = responseObj.authCode;
+	args.PspReference = responseObj.pspReference;
+	args.PaymentStatus = resultObj.errorText;
+	args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
+	args.Decision = "ERROR";
+	
+	var resultCode = args.ResultCode;
+	
+	if (resultCode.indexOf("Authorised") != -1 || resultCode.indexOf("RedirectShopper") != -1) {
+		args.Decision = "ACCEPT";
+		args.PaymentStatus = resultCode;
+		
+		// if 3D Secure is used, the statuses will be updated later
+		if (!('issuerUrl' in responseObj)) {
+			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+			order.setExportStatus(Order.EXPORT_STATUS_READY);
+		}
+		
+		Logger.getLogger("Adyen").info ("Payment result: Authorised");
+		Logger.getLogger("Adyen").info ("Decision: " + args.Decision);
+		
+		if (args.AuthorizationCode == '' && args.MD == '') { // if is not 3DSecure
+			Logger.getLogger("Adyen").debug("Adyen: " + resultObj.statusCode + " Error => " + resultObj.statusMessage + " | " + resultObj.errorText);	
+		}
+	}
+	else  {
+		args.PaymentStatus = "Refused";
+		args.Decision = "REFUSED";
+		
+		order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+		order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+			
+		Logger.getLogger("Adyen").info ("Payment result: Refused");
+	}
+			
+	args.AuthorizationCode = args.PaymentStatus;
+	
+	// MAKE SURE TO PROTECT THIS INFO (or don't log it)
+    msg = "DW2Adyen v " + VERSION + " - Payment info\n================================================================";
+    msg += "\nSessionID : " + args.CurrentSession.sessionID;
+    msg += "\nShopper email : " + order.customerEmail + " , ID : " + order.customerNo;
+	msg += "\nAmount : " + args.Amount + " , " + args.Amount.currencyCode;
+	msg += "\nUSED cardNumber (FO) : " + cardnr + " , cvc : " + cardcvc;
+	msg += "\ncardHolder : " + c.creditCardHolder;
+	msg += "\ncardMonth : " + c.creditCardExpirationMonth;
+	msg += "\ncardYear : " + c.creditCardExpirationYear;
+	msg += "\n\nResult : " + resultText;
+	
+	// Log those information just when custom logs debug mode is enabled
+	Logger.getLogger("Adyen").debug(orderNo + " " + msg);
+
+   	return PIPELET_NEXT;
+}
+

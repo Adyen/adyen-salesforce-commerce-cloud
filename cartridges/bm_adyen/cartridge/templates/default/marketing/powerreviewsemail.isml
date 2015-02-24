@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<iscontent type="text/html" session="false" charset="UTF-8">
+
+<html>
+<head>
+
+<style type="text/css">
+
+h2 {
+        font-family: Arial, Verdana, Helvetica, sans-serif;
+        color: #69c;
+        border: none;
+        font-weight: normal;
+        margin: 10px;
+        border-bottom: 2px dotted #69c;
+        padding: 0px;
+    }
+
+.thankyoumessage {
+        border: 1px solid #C0D4E8;
+        width: 400px;
+        margin: 10px 80px 20px 80px;
+        padding: 20px;
+
+    }
+
+.thankyoumessage p {
+        margin: 10px 0px;
+        }
+
+.orderconfirmationnumber {
+            margin: 25px;
+            font-size: 14px;
+            color: #c99a38;
+}
+</style>
+
+</head>
+
+<body bgcolor="#ffffff">
+
+<h2>Your Order - Write a review</h2>
+
+<div class="orderoverview">
+<span class="orderconfirmationnumber">OrderNumber: <isprint value="${pdict.FollowUpOrder.orderNo}"></span>
+    <div class="thankyoumessage">
+        <p>
+            Thanks for shopping at SiteGenesis.
+        </p>
+        <p>
+  We hope that you are happy with the items that you received. <br/>
+   Please take a moment to write a review about the product to let other customers know what you thought.
+        </p>
+        <p>
+        (Email hint: For images set the host at Backoffice and the Site at template 'marketing/powerreviewsemail.isml').
+        </p>
+        <isscript>
+
+
+        // For test at storefront template:
+        //var FollowUpOrder = dw.order.OrderMgr.queryOrder("orderNo = '00000001'");
+        var FollowUpOrder = pdict.FollowUpOrder;
+
+        /*
+        var LineItems = FollowUpOrder.getAllProductLineItems();
+
+        for each (item in LineItems) {
+          var product = item.getProduct();
+          if (product != null) {
+            //out.print(product.online);
+          }
+        }
+        */
+
+
+         var test = URLUtils.httpStatic("");
+         var urlParts =  (test.toString()).split("/");
+
+         var baseUrl = urlParts[0] + "//" + urlParts[2];
+         var shop = urlParts[5];
+
+
+
+
+    </isscript>
+
+
+
+     <table border="0">
+        <isloop iterator="${FollowUpOrder.getAllProductLineItems()}" alias="ProductLineItem" status="loopstate">
+             <isif condition="${ProductLineItem.getProduct() != null}">
+                 <isif condition="${ProductLineItem.getProduct().online}">
+                     <tr>
+                          <td>
+
+                         <isscript>
+                            // Workaround only, until email  fixed.
+                            var picUrl = URLUtils.url(ProductLineItem.getProduct().thumbnail.url);
+                            var reviewUrl = URLUtils.url( 'PowerReviews-WriteReview', 'pid' , ProductLineItem.getProduct().ID , 'source' , 'email');
+
+                            picUrl = picUrl.toString();
+                            reviewUrl = reviewUrl.toString();
+
+                            picUrl = picUrl.replace(shop,"Sites-SiteGenesis-Site");
+                            //out.print(picUrl);
+                            reviewUrl = reviewUrl.replace(shop,"Sites-SiteGenesis-Site");
+
+                            picUrl = baseUrl + ProductLineItem.getProduct().thumbnail.url;
+                            reviewUrl = baseUrl + reviewUrl;
+
+
+                            //out.print(reviewUrl);
+
+                            reviewUrl = URLUtils.http( false , 'PowerReviews-WriteReview', 'pid' , ProductLineItem.getProduct().ID , 'source' , 'email');
+                            reviewUrl = reviewUrl.toString();
+                            reviewUrl = reviewUrl.replace(shop,"Sites-SiteGenesis-Site");
+
+
+
+
+
+                          </isscript>
+                           <a href="${reviewUrl}">
+
+                          <img src="${picUrl}" alt="${ProductLineItem.getProduct().name}"/></a>
+
+                         </td>
+
+                         <td>
+                           <a href="${reviewUrl}">Write a Review.</a>
+                         </td>
+                     </tr>
+                 </isif>
+             </isif>
+        </isloop>
+        </table>
+
+
+    </div>
+
+<div><img src="${URLUtils.httpStatic("images/space.gif")}" width="1" height="20" alt="" border="0"/></div>
+
+</body>
+</html>

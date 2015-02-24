@@ -1,0 +1,76 @@
+/**
+* Demandware Script File
+* To check valid Adyen ip address
+*
+*
+* For example:
+*
+*   @input IpAdress : String
+*   @output TrustedIp : Boolean
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.value);
+importPackage( dw.net); 
+
+function execute( args : PipelineDictionary ) : Number
+{
+	//args.TrustedIp = false;
+	args.TrustedIp = true;
+	var IpSplit : Array = args.IpAdress.split('.');
+
+		
+	if (IpSplit.length == 4) 
+	{
+	    if (args.IpAdress == "82.199.90.163")
+	    {
+	    		//IpAdress	Adyen Test
+	    		args.TrustedIp = true;
+	    }
+	    else if (IpSplit[0]==82 && IpSplit[1] == 199 && IpSplit[2] == 87)
+	    {
+	    	//range 82.199.87.128/26 (ip addresses 82.199.87.129 to 82.199.87.191)
+	    	if (IpSplit[3] >= 129 && IpSplit[3] <= 191)
+	    	{
+	    		args.TrustedIp = true;
+	    	}
+	    }
+	    else if (IpSplit[0]==82 && IpSplit[1] == 199 && IpSplit[2] == 90)
+	    {
+	    	//range 82.199.90.136/29 (ip addresses 82.199.90.137 to 82.199.90.142)
+	    	if (IpSplit[3] >= 137 && IpSplit[3] <= 142)
+	    	{
+	    		args.TrustedIp = true;
+	    	}
+	    }
+	    else if (IpSplit[0]==82 && IpSplit[1] == 199 && IpSplit[2] == 90)
+	    {
+	    	//range 82.199.90.160/27 (ip addresses 82.199.90.161 to 82.199.90.190)
+	    	if (IpSplit[3] >= 161 && IpSplit[3] <= 190)
+	    	{
+	    		args.TrustedIp = true;
+	    	}
+	    }	    
+	    else if (IpSplit[0]==91 && IpSplit[1] == 212 && IpSplit[2] == 42)
+	    {
+	    	//range 91.212.42.0/24 (ip addresses 91.212.42.1 to 91.212.42.254)
+	    	if (IpSplit[3] >= 1 && IpSplit[3] <= 255)
+	    	{
+	    		args.TrustedIp = true;
+	    	}
+	    }	
+	    else if (IpSplit[0]==83 && IpSplit[1] == 163 && IpSplit[2] == 181)
+	    {
+	    	//Mirabeau hoorn
+	    	if (IpSplit[3] >= 63 && IpSplit[3] <= 63)
+	    	{
+	    		args.TrustedIp = true;
+	    	}
+	    }
+	}
+    
+    
+	return PIPELET_NEXT;
+    //return PIPELET_ERROR;
+}

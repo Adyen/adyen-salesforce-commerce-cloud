@@ -1,0 +1,58 @@
+/**
+ * Creates a Adyen payment instrument for the given basket. If any error occurs the pipelet returns PIPELET_ERROR with
+ * no payment instrument being created. If the creation succeeded the script returns 
+ * the newly created payment instrument.
+ *
+ *
+ *  @input Basket : dw.order.Basket The basket.
+ *  @output PaymentInstrument : dw.order.PaymentInstrument The created payment instrument.
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.web );
+
+importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_adyen', 'app_storefront_core') + ':checkout/Utils.ds' );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var basket : Basket = pdict.Basket;
+
+	// verify that we have a basket and a valid credit card form
+	if( basket == null  )//|| !creditCardForm.valid
+	{
+		return PIPELET_ERROR;
+	}
+
+
+	// calculate the amount to be charged for the credit card
+	var amount = calculateNonGiftCertificateAmount( basket );
+
+	removeExistingInstruments(basket);
+	// create a payment instrument for this credit card
+	var paymentInstr : PaymentInstrument = basket.createPaymentInstrument( "Adyen_Credit", amount );
+
+	pdict.PaymentInstrument = paymentInstr;
+    return PIPELET_NEXT;
+}
+
+/** 
+ * Determines if the basket already contains a payment intruments 
+ * instrument and removes it from the basket.
+ */
+function removeExistingInstruments( basket : Basket )
+{
+	// get all credit card payment instruments
+	var ccPaymentInstrs : Collection = basket.getPaymentInstruments( "Adyen_Credit" );
+	var iter : Iterator = ccPaymentInstrs.iterator();
+	var existingPI : OrderPaymentInstrument = null;
+
+	// remove them
+	while( iter.hasNext() )
+	{
+		existingPI = iter.next();
+		basket.removePaymentInstrument( existingPI );
+	}
+}
+

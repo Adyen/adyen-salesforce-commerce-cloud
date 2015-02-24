@@ -1,0 +1,148 @@
+/**
+* Passes on credit card details to Adyen 3DS using the Adyen PAL adapter
+* version to use in pipeline
+* created on 23dec2014
+*
+* @input Order : dw.order.Order The order.
+* @input Amount : dw.value.Money The amount to authorize
+* @input PaymentInstrument : dw.order.PaymentInstrument 
+* @input CurrentSession : dw.system.Session
+* @input CurrentRequest : dw.system.Request
+* @input MD : String
+* @input PaResponse : String
+*
+* @output Decision : String 
+* @output PaymentStatus : String
+* @output AuthorizationCode : String
+* @output AuthorizationAmount : String
+* @output RequestID : String
+* @output RequestToken : String
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.net ); 
+importPackage( dw.web ); 
+importPackage( dw.crypto ); 
+importScript('libs/libAdyen.ds');
+
+function execute( args : PipelineDictionary ) : Number {
+	
+	var VERSION : String = "4";
+	var MERCHANTACCOUNT : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+	var msg : String = "";
+	var order = args.Order;
+	
+	if (order == null) {
+		Logger.getLogger("Adyen").fatal("Notification for not existing order {0} received.");  
+		return PIPELET_ERROR;
+	}
+	
+	try	{
+		var myAmount : Number = args.Amount * 100;	
+		var orderNo : String = args.Order.getOrderNo();	
+		var a : Number = Math.floor(Math.random()*10000);
+		var c : Object = args.PaymentInstrument;
+		
+		var f : Object = args.CurrentForms;
+		var card : Object = f.billing.paymentMethods.creditCard;
+		var cardnr : String = card.number.value;
+		var cardcvc : String = card.cvn.value;
+						
+		// get PAL service credentials
+		var endpoint : String = Site.getCurrent().getCustomPreferenceValue("pal_service_endpoint");
+		var user : String = Site.getCurrent().getCustomPreferenceValue("pal_service_user");
+		var pw : String = Site.getCurrent().getCustomPreferenceValue("pal_service_password");
+		
+		var currentRequest : Request = (args.CurrentRequest)? args.CurrentRequest : request;
+		var acceptHeader : String = currentRequest.httpHeaders.get("accept") + currentRequest.httpHeaders.get("accept-encoding");
+		var userAgent : String = currentRequest.httpUserAgent;
+		 
+		// get shopper ip
+		var shopperIp = currentRequest.getHttpRemoteAddress();
+		if (shopperIp == null) { shopperIp = ''; }
+		 
+		// set-up the 3D Secure post call
+		var httpSvc : HTTPClient = new	HTTPClient();
+		var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
+		
+		httpSvc.setTimeout(timeout);
+		httpSvc.open("POST", endpoint,user,pw);	
+		httpSvc.setRequestHeader("Content-type","application/x-www-form-URLencoded; charset=UTF-8");	
+		httpSvc.send("action=" + "Payment.authorise3d" +
+		"&paymentRequest3d.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) +
+	   	"&paymentRequest3d.browserInfo.userAgent=" + encodeURIComponent( userAgent ) +
+	   	"&paymentRequest3d.md=" + encodeURIComponent( args.MD ) +
+	   	"&paymentRequest3d.merchantAccount=" + encodeURIComponent( MERCHANTACCOUNT ) +
+	   	"&paymentRequest3d.paResponse=" + encodeURIComponent( args.PaResponse ) +
+	   	"&paymentRequest3d.shopperIP=" + encodeURIComponent( shopperIp ));
+  		
+		var resultObj : Object = { // build the result object
+			statusCode: httpSvc.getStatusCode(),
+			statusMessage: httpSvc.getStatusMessage(),
+			text: httpSvc.getText(),
+			errorText: httpSvc.getErrorText(),
+			timeout: httpSvc.getTimeout()
+		}
+		
+		var resultText : String = resultObj.text;
+		if (resultText == null) { return PIPELET_ERROR; }
+		
+		// build the response object
+		var adyenHelper = getAdyenHelper();
+		var responseObj = adyenHelper.getResponseObj(resultText);
+		
+		// assign default values for the script output variables
+		var resultCode = '';
+		args.Decision = "ERROR";
+		args.PaymentStatus = resultObj.errorText; 
+		args.AuthorizationCode = '';
+		args.RequestToken = '';
+		
+		var resultCode = responseObj.resultCode;
+		args.RequestToken = responseObj.pspReference;
+		args.AuthorizationCode = responseObj.authCode;
+		
+		if (resultCode.indexOf("Authorised") != -1) {
+			args.Decision = "ACCEPT";
+			args.PaymentStatus = resultCode;
+			Logger.getLogger("Adyen").info ("Payment result: Authorised");
+			Logger.getLogger("Adyen").info ("Decision: " + args.Decision);
+		}
+		else { // if is rejected
+			Logger.error("Adyen: Credit card rejected " +  resultObj.statusCode + " Error => ResponseStatus: " +  resultObj.statusMessage + " | ResponseErrorText: " + resultObj.errorText + " | ResponseText: " + resultText);
+		}	
+		
+		args.RequestID = orderNo;
+		args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
+		
+		// MAKE SURE TO PROTECT THIS INFO (or don't log it)
+	    msg = "DW2Adyen v " + VERSION + " - Payment info\n================================";
+	    msg += "\nCart type: 3D Secured";
+	    msg += "\nSessionID : " + args.CurrentSession.sessionID;
+	    msg += "\nShopper email : " + order.customerEmail + " , ID : " + order.customerNo;
+		msg += "\nAmount : " + args.Amount + " , " + args.Amount.currencyCode;
+		msg += "\ncardNumber : " + c.creditCardNumber + " , cvc : " + cardcvc;
+		msg += "\ncardHolder : " + c.creditCardHolder;
+		msg += "\ncardMonth : " + c.creditCardExpirationMonth;
+		msg += "\ncardYear : " + c.creditCardExpirationYear;
+		msg += "\n\nResult : " + resultText;
+		
+		// Log those information just when custom logs debug mode is enabled
+		Logger.getLogger("Adyen").debug("\nTransaction details: [ " + orderNo + " => " + msg + " ]");
+	} 
+	catch (e) {
+		var error = e;
+		if (e instanceof Fault) {
+           	Logger.getLogger("Adyen").debug("Adyen: Fault Actor " + e.faultActor + " caused fault [code: '" + e.faultCode + "'] == Error ==> (" + e.faultString + " == Details ==> " + e.faultDetail + ")");
+       	}
+       	else {
+           	Logger.getLogger("Adyen").debug("Adyen: " + e.toString());
+       	}	
+		return PIPELET_ERROR;
+	}
+
+   	return PIPELET_NEXT;
+}

@@ -1,0 +1,23 @@
+/**
+*	Script used to authentication notification calls from Adyen
+*
+*   @input CurrentRequest : dw.system.Request
+*   @output Authenticated : Boolean
+*
+*/
+importPackage( dw.system );
+importScript("libs/libAuthenticationUtils.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var baUser : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_user");
+	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_password");
+	var baHeader : String = args.CurrentRequest.httpHeaders["authorization"];
+	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
+		return PIPELET_ERROR;
+	}
+	
+	args.Authenticated = AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
+
+	return PIPELET_NEXT;
+}

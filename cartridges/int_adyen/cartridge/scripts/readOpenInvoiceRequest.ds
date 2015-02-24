@@ -1,0 +1,105 @@
+/**
+* Parse the SOAP message received from Adyen, and pass on some parameters for the next step
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*   @input httpParameterMap : dw.web.HttpParameterMap
+*   @output openInvoiceReference : String
+*	@output openInvoiceCurrency : String
+*	@output openInvoiceAmount : String
+*
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	
+	var httpParameterMap = args.httpParameterMap;
+	var querystring : String = httpParameterMap.requestBodyAsString;
+	Logger.getLogger("Adyen").debug("OpenInvoice Request  : " +querystring);
+	
+  if (httpParameterMap.parameterCount == 0)
+  {
+   		   		
+  		if (querystring.indexOf("<soap:Envelope") >= 0)
+  		{
+ 			//soap request
+ 			//post request don't accept my answer. try the soap request. 
+			var currency : String = getParameterFromXML(querystring,"currency");
+			var amount : String = getParameterFromXML(querystring,"value");
+			var reference : String = getParameterFromXML(querystring,"reference");
+			
+			args.openInvoiceCurrency = currency;
+			args.openInvoiceReference = reference;
+	  		args.openInvoiceAmount = amount;
+	  		
+	  		if (args.openInvoiceReference == "testMerchantRef1")
+	  		{
+	  			//for testing
+	  			args.openInvoiceReference = "00000201";
+	  			args.openInvoiceAmount = "7890";
+	  			
+	  		}
+  		}
+  		else 
+  		{
+  			//incorect post request. workaround..
+  			//example: openInvoiceDetailRequest.reference=testMerchantRef1&openInvoiceDetailRequest.amount.currency=EUR&action=OpenInvoiceDetailService.retrieveDetail&openInvoiceDetailRequest.merchantAccount=SuitSupplyCOM&openInvoiceDetailRequest.amount.value=1403
+	  		args.openInvoiceReference = getParameterByName("?"+querystring,"openInvoiceDetailRequest.reference");
+	  		args.openInvoiceCurrency = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.currency");
+	  		args.openInvoiceAmount = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.value");
+	  		
+	  		if (args.openInvoiceReference == "testMerchantRef1")
+	  		{
+	  			//for testing
+	  			args.openInvoiceReference = "00000197";
+	  			args.openInvoiceAmount = "38088";
+	  			
+	  			args.openInvoiceReference = "00000201";
+	  			args.openInvoiceAmount = "7890";
+	  			
+	  		}
+  		}
+  }
+  else
+  {
+  	//Post request
+  	args.openInvoiceReference = httpParameterMap.get("openInvoiceDetailRequest.reference").getStringValue();
+  	args.openInvoiceCurrency = httpParameterMap.get("openInvoiceDetailRequest.amount.currency").getStringValue();
+  	args.openInvoiceAmount = httpParameterMap.get("openInvoiceDetailRequest.amount.value").getStringValue();
+  }
+  return PIPELET_NEXT;
+}
+
+function getParameterByName(querystring, name)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(querystring);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+
+function getParameterFromXML(xmlstring, tag)
+{
+  var regexS = tag + "([^\>]*)\>([^\<]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(xmlstring);
+  if(results == null)
+    return "";
+  else
+    return results[2];
+}

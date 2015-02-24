@@ -1,0 +1,23 @@
+.payment-method #type {
+  margin-left: 22%;
+}
+
+.payment-method #issuer {
+  margin: 1% 5%;
+  display: none;
+}
+
+.payment-method-options .form-row {
+  width: 25%;
+}
+
+.payment-method #type .logo {
+  position: absolute;
+}
+
+.payment-method #type label {
+  display: inline;
+  float: none;
+  padding: 0.75em 6em 0;
+  width: auto;
+}

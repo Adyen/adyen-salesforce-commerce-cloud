@@ -1,0 +1,132 @@
+/**
+* Generate the parameters needed for the redirect to the Adyen Hosted Payment Page.
+* A signature is calculated based on the configured HMAC code
+* 
+* @input Order : dw.order.Order 
+* @input OrderNo : String The order no
+* @input CurrentSession : dw.system.Session
+* @input CurrentUser : dw.customer.Customer
+* @input PaymentInstrument : dw.order.PaymentInstrument 
+*
+* @output merchantSig : String;
+* @output Amount100 : String;
+* @output shopperEmail : String;  
+* @output shopperReference : String;
+* @output allowedMethods : String;
+*/
+importPackage( dw.crypto );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value);
+
+function execute( args : PipelineDictionary ) : Number
+{
+	//configuration
+	var VERSION : String= "8";
+
+	var Mode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+	var skinCode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode"); 
+	var merchantAccount : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
+	var allowedMethods : String = Site.getCurrent().getCustomPreferenceValue("Adyen_allowedMethods");
+	var recurringType : EnumValue = Site.getCurrent().getCustomPreferenceValue("Adyen_recurringType"); 
+	
+	if(merchantAccount == null){
+		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");  
+		return PIPELET_ERROR;
+	}
+	if(skinCode == null){
+		Logger.getLogger("Adyen").fatal("skinCode not set.");  
+		return PIPELET_ERROR;
+	}
+	if(HMACkey == null){
+		Logger.getLogger("Adyen").fatal("HMACkey not set.");  
+		return PIPELET_ERROR;
+	}
+	
+	
+	
+	var paymentInstrument = args.PaymentInstrument; 
+	
+	if(paymentInstrument == null){
+		Logger.getLogger("Adyen").fatal("paymentInstrument is null.");  
+	}
+	
+	Logger.getLogger("Adyen").debug("PM  : " +paymentInstrument.paymentMethod);
+	Logger.getLogger("Adyen").debug("merchantAccount : " + merchantAccount);
+	Logger.getLogger("Adyen").debug("skinCode : " + skinCode);
+	Logger.getLogger("Adyen").debug("HMACkey : " + HMACkey);
+	Logger.getLogger("Adyen").debug("allowedMethods : " + allowedMethods);
+	
+	var orderNo = args.OrderNo;
+	
+	if(orderNo == null){
+		Logger.getLogger("Adyen").fatal("No orderNo received.");  
+	}
+	
+	var order = args.Order;
+		
+	if(order == null){
+		Logger.getLogger("Adyen").fatal("No existing order {0} received.",orderNo);  
+	}
+	
+	var currentUser = args.CurrentUser;
+		
+	if(currentUser == null){
+		Logger.getLogger("Adyen").fatal("currentUser is null.",orderNo);  
+	}
+		
+	if (paymentInstrument.paymentMethod != "Adyen"){
+		return PIPELET_ERROR;
+	}
+
+	var myAmount:number = paymentInstrument.paymentTransaction.amount.multiply(100).value;	
+	Logger.getLogger("Adyen").debug("Payment amount : " + myAmount + " - PIAmount : " + paymentInstrument.paymentTransaction.amount + "\n");
+	
+	args.Amount100 = myAmount.toFixed(0);
+	
+	var currencyCode:String	 		= order.currencyCode; 
+	//var currencyCode:String	 		= "EUR"; 
+	var merchantReference:String 	= orderNo;
+	args.shopperEmail				= order.customerEmail; //p.email;
+	args.shopperReference			= currentUser.ID;
+	var sessionValidity:String 		= "2019-04-06T18:10:29+02:00"; //
+	
+	
+	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null) {
+		recurringType = "";
+	}			 	
+	else recurringType = recurringType.value; //recurringType.value has type string 
+	
+	if (allowedMethods == "null" || allowedMethods == null) {
+		args.allowedMethods = "";
+	}			 	
+	else args.allowedMethods = allowedMethods;
+	
+	var paydata:String = myAmount + currencyCode +  sessionValidity + merchantReference + skinCode  + merchantAccount + sessionValidity  + order.customerEmail + currentUser.ID + recurringType + args.allowedMethods; //+
+	Logger.getLogger("Adyen").debug("paydata : " + paydata + "\n");
+	
+	//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
+	var c:Mac = Mac(Mac.HMAC_SHA_1);  
+	var mySig:String = Encoding.toBase64(c.digest(paydata,HMACkey));  
+	Logger.getLogger("Adyen").debug("merchantSig : " + mySig + "\n");
+	args.merchantSig = mySig;
+
+ 	//MAKE SURE TO PROTECT THIS INFO (or don't log it)
+ 	var msg:String; 
+    msg = "DW2AdyenRedir v " + VERSION + " - Payment info\n================================================================";
+    msg += "\nMode : " + Mode;
+    msg += "\nRecurring : " + recurringType;
+    msg += "\nSessionID : " + args.CurrentSession.sessionID;
+    msg += "\nmRef : " + orderNo ;
+    msg += "\nShopper email : " + order.customerEmail + " , ID : " + currentUser.ID;
+	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
+	msg += "\nPaydata : " + paydata ;
+	msg += "\nSignature : " + mySig ;
+	
+	//Log those information just when custom logs debug mode is enabled
+	Logger.getLogger("Adyen").debug(orderNo+ " - " +msg);
+
+   return PIPELET_NEXT;
+}

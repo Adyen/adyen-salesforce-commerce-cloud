@@ -1,0 +1,449 @@
+html {
+	height: 100%;
+	max-height: 100%;
+	font-size: 0.75em;
+	font-family: Georgia, sans-serif;
+}
+
+body {
+	background: url(../img/main-bg.gif) 50% 0 repeat-y;
+	color: #2f2f2f;
+}
+
+/* Main Elements */
+#header-bar {
+	height: 20px;
+	display:block;
+	background:#000;
+}
+#logoheader {
+	height: 98px;
+	background: url("../img/logo.gif") #FFF no-repeat center center;
+}
+
+#content {
+	background-color: white;
+	width: 960px;
+	margin: 0 auto;
+}
+
+#pmcontent {
+	padding: 6px 12px;
+}
+
+#foot {
+    width: 960px;
+    margin: 0 auto;
+}
+
+#footc {
+	border: 1px solid #eee;
+	margin-bottom: 0px;
+	padding: 0px 0px;
+	height: 68px;
+}
+
+.paddiv1, .paddiv2 {
+	height: 0px;
+}
+
+#nextstep {
+	font-weight: bold;
+	height: 22px;
+	color: #fff;
+	font-size: 1.1em;
+}
+
+#nextstepc {
+	text-align: center;
+	padding-top: 4px;
+	padding-bottom: 2px;
+	background-color: #999;
+}
+
+.popupMsg {
+	display: none;
+	border: 1px solid #666;
+	background-color: #eee;
+	margin-bottom: 5px;
+	margin-right: 10px;
+	margin-left: 10px;
+	padding: 6px;
+}
+
+.popupMsgOPP {
+	position: relative; 
+	top: -155px; 
+	margin-left: 0px;
+	z-index: 10;
+}
+
+/* Common HTML Elements in #content */
+
+#content p,#content ul,#content pre {
+	padding: 5px;
+}
+
+#content h2 {
+    color: #0a263c;
+    font-family: "Times New Roman", Times, serif;
+	font-size: 27px;
+	margin-top: 0.5em;
+	margin-bottom: 0.8em;
+	padding-bottom: 5px;
+	background: url(../img/h2line.gif) 0 100% no-repeat;
+}
+
+#content h3 {
+	margin-left: 5px;
+	font-size: 1.3em;
+	font-weight: bold;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+#content pre {
+	font-family: courier, monospace;
+	font-size: 1em;
+}
+
+.pmmdetails {
+	padding-left: 80px;
+}
+
+.fieldSubHeader {
+	font-weight:bold;
+	margin-bottom:0.5em;
+	margin-top:0.5em;
+}
+
+/* Table */
+table.basetable {
+	margin-left: 5px;
+}
+
+table.basetable td {
+	padding-bottom: 0.6em;
+	padding-right: 0.6em;
+	line-height: 15px;
+}
+
+/* Order Data Layout */
+table.od {
+	margin: 10px 0px 10px 0px;
+}
+
+table.od td, table.od th  {
+	padding: 5px;
+	border: 1px solid #999;
+}
+
+table.od th {
+	font-weight: bold;
+}
+
+#orderDataHeader {
+    color: #000;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Image Buttons (Payment Methods) */
+
+.imgB, .footerB {
+	height: 22px;
+	padding: 0;
+	border: 0;
+	background: #999;
+	overflow: hidden;
+	color: #fff;
+	cursor: pointer; /* hand-shaped cursor */
+	cursor: hand; /* for IE 5.x */
+	font: normal 15px/22px Arial, Helvetica, sans-serif;
+	padding: 0 8px;
+	text-transform: capitalize;
+}
+
+.pmB {
+	width: 238px;
+	height: 42px;
+	padding-left: 85px;
+	text-align: left;
+	margin-bottom: 6px;
+	font-size: 1.1em;
+	background-color: transparent !important;
+	background-repeat: no-repeat;
+	color: #2f2f2f;
+}
+
+/* Image Buttons Footer (next/previous/pay) */
+
+#footerb1div {
+	float: left;
+	text-align: left;
+	margin: 8px 0px 0px 30px;
+}
+
+#footerb2div {
+	float: right;
+	text-align: right;
+	margin: 8px 30px 0px 0px;
+}
+
+.cancelB {
+}
+
+.nextB {
+	background: #83f451;
+}
+
+.backB {
+}
+
+.finishB {
+	background: #83f451;
+}
+
+/* Links */
+
+a {
+	text-decoration: underline;
+	color: #1e7ec8;
+}
+
+a:visited {
+	text-decoration: none;
+	color: #1e7ec8;
+}
+
+/* Form elements */
+
+input,select {
+	font-size: 0.95em;
+	padding: 1px;
+	border: 1px solid #C3C3C3;
+	border-top-color: #7C7C7C;
+	border-bottom-color: #DDD;
+}
+
+input.paySubmit {
+    background-color: #83f451;
+    color: #fff;
+    font: normal 15px/22px Arial, Helvetica, sans-serif;
+    border: none;
+    text-transform: capitalize;
+    padding: 0 8px;
+}
+
+button:focus {
+	outline: none;
+}
+
+/* Validation */
+
+table.basetable .inputField {
+	padding: 1px 2px 2px 2px;
+	background-color: #fff;
+	border: 1px solid #666;
+}
+
+table.basetable .errorField {
+	border: 1px solid #666;
+	background-color: #fff3f3;
+	padding: 1px 1px 1px 1px;
+}
+
+.fieldDiv {
+	padding-right: 20px;
+	background: transparent;
+}
+
+.errorDiv {
+	background: transparent url("/hpp/img/icons/error.png") no-repeat right 3px;
+	padding-right: 20px;
+}
+
+.errorFrame {
+	background-color: #fff3f3;
+}
+
+.pmOc {
+	margin-bottom: 10px;
+}
+
+.pmOc div.pmOcDetail {
+	background-color: #E0E6FF;
+	border: 1px solid #CCCCFF;
+	padding: 6px;
+	display: block;
+	margin-right: 8px;
+	margin-bottom: 8px;
+	float: left;
+	width: 162px;
+}
+
+.pmOc div.pmOcPad {
+	height: 1px;
+	display: block;
+	clear: both;
+}
+
+.pmOcRemove {
+	float: left;
+	margin-left: 10px;
+}
+
+.pmOcInput {
+	background-color: #fff;
+}
+
+.pmOcRadio {
+	float: left;
+}
+
+.pmOcDetailSummary {
+
+	height: 97px; /*101px;*/
+	width: 160px;
+	color: white;
+	clear:both;
+	font-family:monospace;
+	font-size: 11px;
+	font-weight:bold;
+	line-height:1.3;
+	padding-top: 10px;
+}
+
+
+.pmOcDetailSummaryCard {
+	background-image: url(/hpp/img/card_generic.png);
+	background-repeat: no-repeat;
+}
+.pmOcDetailSummaryElv {
+	background-image: url(/hpp/img/elv_generic.png);
+	background-repeat: no-repeat;
+}
+
+.pmOcLogo {
+	height:22px;
+	width:40px;
+	background-color: white;
+	margin: 0px 0px 11px 110px;
+}
+.pmOcElv {
+	color: #888;
+	margin-bottom: 19px;
+	height:15px;
+	margin-left: 10px;
+	letter-spacing: 3px;
+}
+.pmOcPan {
+	height:15px;
+	padding-top: 9px;
+	margin-left: 14px;
+}
+.pmOcExp {
+	height:15px;
+	font-size: 10px;
+	margin-left: 105px;
+}
+.pmOcName {
+	height:15px;
+	margin-left: 14px;
+	text-transform: uppercase;
+}
+
+.pmOcArrow {
+	margin-left: 65px;
+	height: 20px;
+	background-repeat: no-repeat;
+	background-image: url(/hpp/img/arrow_down.png);
+}
+
+div.pmOcDetail .fieldDiv, div.pmOcDetail .errorDiv {
+	display: inline;
+}
+
+div.pmOcDetail input {
+	background-color: white;
+}
+
+div.pmOcPay {
+	text-align: right;
+}
+
+
+/* ivr specific css */
+
+.ivricon {
+        display: block;
+        margin-right: 10px;
+        float: left;
+}
+.ivrmessage {
+        display: block;
+        font-weight: bold;
+}
+.ivrdetail {
+        display: block;
+        margin-top: 5px;
+        font-weight: bold;
+        font-family: arial, sans-serif;
+}
+
+
+#phoneNumber .ivrdetail {
+        color: #57A022;
+        font-size: 2.4em;
+}
+
+#payCode .ivrdetail {
+        color: #1F5F98;
+        font-size: 2.4em;
+}
+#timeToCall .ivrmessage {
+        font-weight: normal;
+        line-height: 1.1em;
+}
+
+#timeToCall .ivrmessage .phoneDetails, #timeLeft {
+        font-weight: bold;
+        color:  #57A022;
+        font-family: arial, sans-serif;
+}
+
+
+.progressW {
+        width: 400px; 
+        margin-left: 50px; 
+        padding: 1px;
+        border: 1px solid #666;
+        background-color: transparent
+}
+.progress {
+        width: 0px;
+        font-size: 1px;
+        height: 14px;
+        margin: 0px;
+        padding:0px;
+        background-color: #66C931;
+        background-image: url(/hpp/img/progress3.png);
+        background-repeat: repeat-x;
+}
+
+.ebanking_FIFrame {
+	width: 300px;
+	float: right;
+}
+
+.ebanking_FIHeader {
+    font-weight:    bold;
+    margin-bottom:  5px;
+    margin-top:     5px;
+    color:          #1678A5;
+}
+
+.ebanking_FIText {
+    padding:        5px;
+}

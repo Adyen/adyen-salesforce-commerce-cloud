@@ -1,0 +1,36 @@
+/** 
+* Script removing all previous added payment instruments from the provided basket
+*
+* @input Basket : dw.order.Basket The basket
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.web );
+
+function execute( args : PipelineDictionary ) : Number
+{	
+	// verify that we have a basket and a valid credit card form
+	if( args.Basket == null )	
+	{
+		return PIPELET_ERROR;
+	}
+	
+	var basket : Basket = args.Basket;
+	
+	// get all credit card payment instruments
+	var ccPaymentInstrs : Collection = basket.getPaymentInstruments();
+	var iter : Iterator = ccPaymentInstrs.iterator();
+	var existingPI : OrderPaymentInstrument = null;
+
+	// remove them
+	while( iter.hasNext() )
+	{
+		existingPI = iter.next();
+		basket.removePaymentInstrument( existingPI );
+	}
+	
+	return PIPELET_NEXT;
+}

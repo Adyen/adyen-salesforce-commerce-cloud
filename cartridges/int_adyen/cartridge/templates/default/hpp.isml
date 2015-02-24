@@ -1,0 +1,36 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
+<isset name="brandCode" value="" scope="session"/>
+<isset name="issuerId" value="" scope="session"/>
+
+<isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
+	<isset name="methods" value="${pdict.AdyenHppPaymentMethods.paymentMethods}" scope="page"/>
+	
+	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
+	<isif condition="${!empty(methods) && methods.length > 0}">
+		<ul id="type">
+			<isloop items="${methods}" var="method" status="loopstate">
+				<li class="form-row">
+					<input type="radio" class="input-radio" name="brandCode" value="${method.brandCode}"/>
+					<img class="logo" src="${URLUtils.staticURL('/images/' + method.brandCode + '.png')}" alt=""/>
+					<label for="${method.brandCode}">${method.name}</label>
+					
+					<isif condition="${typeof method.issuers !== 'undefined' && method.issuers.length > 0}">
+						<ul id="issuer">
+							<isloop items="${method.issuers}" var="issuer" status="loopstate">
+								<li class="form-row">
+									<input type="radio" class="input-radio" name="issuerId" value="${issuer.issuerId}"/>
+									<img class="logo" src="${URLUtils.staticURL('/images/' + issuer.name.replace(/\s+/g, '').toUpperCase() + '.png')}" alt=""/>
+								</li>
+							</isloop>
+						</ul>
+					</isif>
+				</li>
+			</isloop>
+		</ul>
+	</isif>
+<iselse>
+	<span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
+</isif>
