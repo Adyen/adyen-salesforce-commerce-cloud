@@ -1,0 +1,46 @@
+/**
+* Script  used to authorize any confirmation call coming from Adyen
+*
+*
+*   @input MerchantSig : String 
+*   @input AuthResult : String
+*   @input PspReference : String
+*   @input MerchantReference : String
+*   @input SkinCode : String
+*	@output	Authenticated : Boolean
+**	Optional parameter that sent by Adyen in case the original page sends it to Adyen (so it's returned)
+*   @input MerchantReturnData : String
+**
+*	
+*
+*/
+importPackage( dw.crypto );
+importPackage( dw.system );
+
+
+function execute( args : PipelineDictionary ) : Number
+{
+	if(empty(args.MerchantSig) || empty(args.AuthResult) || empty(args.PspReference) || empty(args.MerchantReference)
+		 || empty(args.SkinCode)){
+		 	return PIPELET_ERROR;
+	}
+	
+	var merchantSig : String = args.MerchantSig;
+	var authResult : String = args.AuthResult;
+	var pspReference : String = args.PspReference;
+	var merchantReference : String = args.MerchantReference;
+	var skinCode : String = args.SkinCode;
+	var merchantReturnData : String = args.MerchantReturnData;
+	
+	//Compute the signature from the parameters values and the set hmackey
+	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
+	var signature : String = authResult + pspReference + merchantReference + skinCode 
+		+ (!empty(merchantReturnData) ? merchantReturnData : "");	
+	var macArgh:Mac = Mac(Mac.HMAC_SHA_1);
+	var signature = Encoding.toBase64(macArgh.digest(signature,HMACkey));
+	
+	// If the signatures match then the call is authorized
+	args.Authenticated = (merchantSig == signature);
+			
+	return PIPELET_NEXT;
+}
