@@ -186,7 +186,7 @@ function execute( args : PipelineDictionary ) : Number {
 	msg += "\n\nResult : " + resultText;
 	
 	// Log those information just when custom logs debug mode is enabled
-	Logger.getLogger("Adyen").debug(orderNo + " " + msg);
+	// Logger.getLogger("Adyen").debug(orderNo + " " + msg);
 
    	return PIPELET_NEXT;
 }
