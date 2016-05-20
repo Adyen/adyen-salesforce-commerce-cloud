@@ -174,20 +174,6 @@ function execute( args : PipelineDictionary ) : Number {
 			
 	args.AuthorizationCode = args.PaymentStatus;
 	
-	// MAKE SURE TO PROTECT THIS INFO (or don't log it)
-    msg = "DW2Adyen v " + VERSION + " - Payment info\n================================================================";
-    msg += "\nSessionID : " + args.CurrentSession.sessionID;
-    msg += "\nShopper email : " + order.customerEmail + " , ID : " + order.customerNo;
-	msg += "\nAmount : " + args.Amount + " , " + args.Amount.currencyCode;
-	msg += "\nUSED cardNumber (FO) : " + cardnr + " , cvc : " + cardcvc;
-	msg += "\ncardHolder : " + c.creditCardHolder;
-	msg += "\ncardMonth : " + c.creditCardExpirationMonth;
-	msg += "\ncardYear : " + c.creditCardExpirationYear;
-	msg += "\n\nResult : " + resultText;
-	
-	// Log those information just when custom logs debug mode is enabled
-	// Logger.getLogger("Adyen").debug(orderNo + " " + msg);
-
    	return PIPELET_NEXT;
 }
 
