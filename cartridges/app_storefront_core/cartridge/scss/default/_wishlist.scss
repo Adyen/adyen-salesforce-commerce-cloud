@@ -1,0 +1,74 @@
+.pt_wish-list {
+	.list-table-header {
+		background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top $white-smoke;
+		overflow: hidden;
+		padding: 2em;
+		p {
+			color: $nobel;
+			float: right;
+			margin: 0;
+			overflow: hidden;
+			width: 40%;
+		}
+	}
+	.primary-content .list-table-header h2 {
+		float: left;
+	}
+}
+
+.list-share {
+	@extend %clearfix;
+	border-top: 1px solid darken($white-smoke, 10%);
+	padding: 2em;
+	.share-option {
+		box-sizing: border-box;
+		display: block;
+		margin-bottom: .5rem;
+		float: left;
+	}
+	.share-options {
+		text-align: center;
+		margin-bottom: .5rem;
+		font-size: 1.7em;
+		float: left;
+		margin-left: 1rem;
+		margin-top: 0.3rem;
+		.share-title {
+			display: inline;
+		}
+	}
+	.list-title {
+		float: left;
+	}
+	.share-link {
+		cursor: pointer;
+	}
+	.share-link-content {
+		display: none;
+		&.active {
+			display: block;
+			float: left;
+		}
+	}
+}
+
+.event-info {
+	margin: 1em;
+}
+
+.wishlist-search,
+.registry-search {
+	.form-row {
+		clear: none;
+		margin: .5rem 0 .5rem 1%;
+		float: left;
+		width: 32.666666667%;
+		&:nth-of-type(3n + 1) {
+			margin-left: 0;
+		}
+	}
+	.form-row-button {
+		margin-left: 0;
+	}
+
+}

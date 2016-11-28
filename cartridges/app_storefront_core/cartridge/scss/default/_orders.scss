@@ -1,0 +1,177 @@
+// Order History - Order Details Styling
+
+.order-history-header {
+    background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top $white-smoke;
+    overflow: hidden;
+    padding: 10px;
+    .label {
+        font-weight: 700;
+    }
+    button {
+        float: right;
+    }
+    .order-date, .order-status, .order-number {
+        float: left;
+        margin: 2px 0;
+        width: 60%;
+    }
+}
+.order-history-items {
+    margin: 20px 0;
+    .order-history-table {
+        th, td {
+            padding: 5px 10px;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style-position: inside;
+            list-style-type: square;
+        }
+        .order-shipped-to,
+        .order-items,
+        .order-total-price {
+            width: 33%;
+        }
+        .toggle {
+            cursor: pointer;
+            display: block;
+        }
+    }
+}
+.js .order-history-table .hidden {
+    display: none;
+}
+
+// Details Styling
+
+.orderdetails {
+    font-family: $sans-serif-alt;
+    margin: 0 1%;
+    h2 {
+        clear: both;
+    }
+    .label {
+        font-weight: bold;
+        margin-bottom: .3rem;
+        margin-top: .3rem;
+        text-transform: uppercase;
+    }
+    .order-shipment-table {
+        background-color: $white-smoke;
+        border: 1px solid $gainsboro;
+        border-radius: 5px;
+        padding: 1em;
+    }
+    .order-shipment-details {
+        .order-shipment-address {
+            float: right;
+        }
+    }
+    .line-items {
+        clear: both;
+        padding-top: 1rem;
+        .line-item {
+            padding-bottom: 1rem;
+            .line-item-details,
+            .line-item-quantity,
+            .line-item-price {
+                display: inline-block;
+                vertical-align: top;
+            }
+            .line-item-quantity,
+            .line-item-price {
+                width: 14%;
+            }
+            .line-item-details {
+                width: 70%;
+                a {
+                    font-size: 1.1rem;
+                }
+            }
+            .line-item-quantity {
+                text-align: center;
+            }
+            .line-item-price {
+                text-align: right;
+            }
+        }
+    }
+    .order-payment-summary {
+        @media screen and (min-width: 480px) {
+            float: right;
+        }
+    }
+    .order-information {
+        padding-bottom: .5em;
+        padding-top: .5em;
+        .label {
+            color: $nobel;
+            font-weight: 300;
+            text-transform: none;
+        }
+        .value {
+            font-weight: 700;
+        }
+        .order-number {
+            font-size: 1.75rem;
+        }
+    }
+    .payment-amount {
+        .label {
+            font-weight: normal;
+            text-transform: none;
+        }
+    }
+    .order-totals-table td {
+        &:first-child {
+            padding-right: 5rem;
+            text-align: left;
+        }
+    }
+}
+.pt_order,
+.confirmation {
+    .actions {
+        padding: .5em 1%;
+        a {
+            margin-right: 2rem;
+        }
+    }
+}
+.confirmation-message {
+    border-bottom: 3px solid $citrus;
+    padding: 1rem 1%;
+}
+.confirmation {
+    &.create-account {
+        .login-create-account,
+        .order-confirmation-details {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .login-create-account {
+            float: right;
+            padding: 0 1%;
+            width: 25%;
+        }
+        .order-confirmation-details {
+            width: 73%;
+        }
+        .login-box-content {
+            background-color: $white-smoke;
+            border: 1px solid $gainsboro;
+            border-radius: 5px;
+            padding: 1em;
+            p {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            .form-row {
+                margin: 0;
+            }
+        }
+    }
+}

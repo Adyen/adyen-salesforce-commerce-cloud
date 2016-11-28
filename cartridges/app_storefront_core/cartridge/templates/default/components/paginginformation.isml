@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Displays the state of the paging model. It expects the name of the
+	key of the pageable in a parameter "pageable" and a the current
+	page url in a parameter "pageurl".
+	
+	Taken out in simple UI
+</iscomment>
+<isscript>
+	
+	// in case there are multiple elements on a page
+	var uniqueId : String = '';
+	if (! empty(pdict.uniqueid))
+	{
+		uniqueId = pdict.uniqueid;
+	}
+	
+</isscript>
+<isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll') && !empty(pdict.pageurl) && !pdict.pagingmodel.empty}">
+	<isif condition="${pdict.pagingmodel.count > 12}">
+		
+		<div class="items-per-page">
+			
+			<form action="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid)}" method="post" name="Product-Paging-Options" >
+				<fieldset>
+					
+					<label for="${uniqueId}">${Resource.msg('paginginformation.itemsperpage','search',null)}</label>
+					
+					<select id="${uniqueId}">
+						<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,12)}" <isif condition="${pdict.pagingmodel.pageSize == 12}">selected="selected"</isif>>12</option>
+						<isif condition="${pdict.pagingmodel.count >= 24}">
+							<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,24)}" <isif condition="${pdict.pagingmodel.pageSize == 24}">selected="selected"</isif>>24</option>
+						</isif>
+						<isif condition="${pdict.pagingmodel.count >= 36}">
+							<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,36)}" <isif condition="${pdict.pagingmodel.pageSize == 36}">selected="selected"</isif>>36</option>
+						</isif>
+						<isif condition="${pdict.pagingmodel.count >= 48}">
+							<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,48)}" <isif condition="${pdict.pagingmodel.pageSize == 48}">selected="selected"</isif>>48</option>
+						</isif>
+						<isif condition="${pdict.pagingmodel.count >= 60}">
+							<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,60)}" <isif condition="${pdict.pagingmodel.pageSize == 60}">selected="selected"</isif>>60</option>
+						</isif>
+						<isif condition="${(pdict.pagingmodel.count % 12) != 0 && (pdict.pagingmodel.count < 60)}">
+							<option value="${dw.web.PagingModel.appendPageSize(pdict.pageurl,pdict.pagingmodel.count)}" <isif condition="${pdict.pagingmodel.count == pdict.pagingmodel.pageSize}">selected="selected"</isif>>${Resource.msgf('global.paginginformation.viewallx','locale',null,pdict.pagingmodel.count)}</option>
+						</isif>
+					</select>
+					
+					<button class="sort-Go-Button simple-submit" type="submit" value="Go" >Go</button>
+				</fieldset>
+			</form>
+		</div><!-- END: itemsperpage -->
+	</isif>
+</isif>

@@ -26,7 +26,12 @@ importPackage( dw.value );
 importPackage( dw.net ); 
 importPackage( dw.web ); 
 importPackage( dw.crypto ); 
+importPackage( dw.svc );
 importScript('libs/libAdyen.ds');
+
+//script include
+var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
+
 
 function execute( args : PipelineDictionary ) : Number {
 	
@@ -41,20 +46,10 @@ function execute( args : PipelineDictionary ) : Number {
 	}
 	
 	try	{
-		var myAmount : Number = args.Amount * 100;	
+		var myAmount : Number = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;	
 		var orderNo : String = args.Order.getOrderNo();	
 		var a : Number = Math.floor(Math.random()*10000);
 		var c : Object = args.PaymentInstrument;
-		
-		var f : Object = args.CurrentForms;
-		var card : Object = f.billing.paymentMethods.creditCard;
-		var cardnr : String = card.number.value;
-		var cardcvc : String = card.cvn.value;
-						
-		// get PAL service credentials
-		var endpoint : String = Site.getCurrent().getCustomPreferenceValue("pal_service_endpoint");
-		var user : String = Site.getCurrent().getCustomPreferenceValue("pal_service_user");
-		var pw : String = Site.getCurrent().getCustomPreferenceValue("pal_service_password");
 		
 		var currentRequest : Request = (args.CurrentRequest)? args.CurrentRequest : request;
 		var acceptHeader : String = currentRequest.httpHeaders.get("accept") + currentRequest.httpHeaders.get("accept-encoding");
@@ -65,34 +60,48 @@ function execute( args : PipelineDictionary ) : Number {
 		if (shopperIp == null) { shopperIp = ''; }
 		 
 		// set-up the 3D Secure post call
-		var httpSvc : HTTPClient = new	HTTPClient();
-		var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
+	   	var jsonRequest : JSON = {
+		  "browserInfo": {
+		    "acceptHeader": acceptHeader,
+		    "userAgent": userAgent
+		  },
+		  "md": args.MD,
+		  "merchantAccount": MERCHANTACCOUNT,
+		  "paResponse": args.PaResponse,
+		  "shopperIP": shopperIp
+		};
+  		
+		var callResult = null;
+		var service = AdyenHelper.getService(AdyenHelper.SERVICE.SECURE);
+		if (service == null) {
+			return PIPELET_ERROR;
+		}
 		
-		httpSvc.setTimeout(timeout);
-		httpSvc.open("POST", endpoint,user,pw);	
-		httpSvc.setRequestHeader("Content-type","application/x-www-form-URLencoded; charset=UTF-8");	
-		httpSvc.send("action=" + "Payment.authorise3d" +
-		"&paymentRequest3d.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) +
-	   	"&paymentRequest3d.browserInfo.userAgent=" + encodeURIComponent( userAgent ) +
-	   	"&paymentRequest3d.md=" + encodeURIComponent( args.MD ) +
-	   	"&paymentRequest3d.merchantAccount=" + encodeURIComponent( MERCHANTACCOUNT ) +
-	   	"&paymentRequest3d.paResponse=" + encodeURIComponent( args.PaResponse ) +
-	   	"&paymentRequest3d.shopperIP=" + encodeURIComponent( shopperIp ));
+		var resultObject = null;
+		service.addHeader("Content-type","application/json"); 
+		service.addHeader("charset", "UTF-8");
+		callResult = service.call(JSON.stringify(jsonRequest));
+
+		if (callResult.isOk() == false){
+			Logger.error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+			return PIPELET_ERROR;
+		}		
+		
+		resultObject = callResult.object;
   		
 		var resultObj : Object = { // build the result object
-			statusCode: httpSvc.getStatusCode(),
-			statusMessage: httpSvc.getStatusMessage(),
-			text: httpSvc.getText(),
-			errorText: httpSvc.getErrorText(),
-			timeout: httpSvc.getTimeout()
+			statusCode: resultObject.getStatusCode(),
+			statusMessage: resultObject.getStatusMessage(),
+			text: resultObject.getText(),
+			errorText: resultObject.getErrorText(),
+			timeout: resultObject.getTimeout()
 		}
 		
 		var resultText : String = resultObj.text;
 		if (resultText == null) { return PIPELET_ERROR; }
 		
 		// build the response object
-		var adyenHelper = getAdyenHelper();
-		var responseObj = adyenHelper.getResponseObj(resultText);
+		var responseObj = JSON.parse(resultText);
 		
 		// assign default values for the script output variables
 		var resultCode = '';
@@ -105,7 +114,7 @@ function execute( args : PipelineDictionary ) : Number {
 		args.RequestToken = responseObj.pspReference;
 		args.AuthorizationCode = responseObj.authCode;
 		
-		if (resultCode.indexOf("Authorised") != -1) {
+		if (resultCode.indexOf("Authorised") != -1 && !empty(responseObj.authCode)) {
 			args.Decision = "ACCEPT";
 			args.PaymentStatus = resultCode;
 			Logger.getLogger("Adyen").info ("Payment result: Authorised");
@@ -117,6 +126,7 @@ function execute( args : PipelineDictionary ) : Number {
 		
 		args.RequestID = orderNo;
 		args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
+		
 	} 
 	catch (e) {
 		var error = e;
@@ -124,7 +134,7 @@ function execute( args : PipelineDictionary ) : Number {
            	Logger.getLogger("Adyen").debug("Adyen: Fault Actor " + e.faultActor + " caused fault [code: '" + e.faultCode + "'] == Error ==> (" + e.faultString + " == Details ==> " + e.faultDetail + ")");
        	}
        	else {
-           	Logger.getLogger("Adyen").debug("Adyen: " + e.toString());
+           	Logger.error("Adyen: " + e.toString());
        	}	
 		return PIPELET_ERROR;
 	}

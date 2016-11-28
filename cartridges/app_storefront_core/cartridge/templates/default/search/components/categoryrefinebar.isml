@@ -1,0 +1,40 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+	This template renders the category refinement for the top level categories
+	only. The refinements are not calculated based on a search result, but
+	rendered from the online sub categories of the root category.
+
+	The template can be used by pages that need to display some sort of condensed
+	refinement navigation, e.g. empty search results.
+</iscomment>
+
+<iscomment>determine top level categories </iscomment>
+<isscript>
+	var siteCatalog : dw.catalog.Catalog = dw.catalog.CatalogMgr.getSiteCatalog();
+	var root : dw.catalog.Category = null;
+	if(siteCatalog != null)
+	{
+		root = siteCatalog.getRoot();
+	}
+</isscript>
+
+	<h2 class="refinement-header">${Resource.msg('searchrefinebar.searchresults','search',null)}</h2>
+
+	<div class="refinement Category">
+	
+		<ul id="category-level-1">
+		
+		<isloop items="${root.onlineSubCategories}" var="topCat" status="refloopstate">
+			<li <isif condition="${topCat.onlineSubCategories.size() > 0}">class="expandable <isif condition="${refloopstate.first}"> first <iselseif condition="${refloopstate.last}"> last</isif>"</isif>>
+				<a class="refinement-link" title="${Resource.msgf('global.categoryrefinement.label','locale',null, topCat.displayName)}" href="${dw.catalog.ProductSearchModel.urlForCategory('Search-Show',topCat.ID)}">
+					<isprint value="${topCat.displayName}"/>
+				</a>
+			</li>
+		</isloop>
+		
+		</ul>
+		
+	</div>
+

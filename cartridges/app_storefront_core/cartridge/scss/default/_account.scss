@@ -1,0 +1,62 @@
+#PasswordResetForm {
+    fieldset {
+        position: relative;
+    }
+    button {
+        float: right;
+        top: 0px;
+        left: 63%;
+    }
+}
+
+h1 .account-logout {
+    font-size: 0.6em;
+    float: none;
+}
+
+.registration-selection {
+    input, label {
+        display: inline;
+        float: none;
+    }
+}
+
+.address-list,
+.payment-list {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    li {
+        list-style-type: none;
+        padding: 1em;
+        width: 90%;
+        @media screen and (min-width: 768px) {
+            width: 25%;
+        }
+        &.default {
+            background-color: $white-smoke;
+            border: 1px solid $very-light-gray;
+            border-radius: 5px;
+            margin-top: 1em;
+            width: 85%;
+        }
+        address {
+            color: $dim-gray;
+            font-style: normal;
+        }
+        a,
+        .button-text {
+            line-height: 2rem;
+            padding-right: .2rem;
+        }
+    }
+    .mini-address-title {
+        font-style: italic;
+        line-height: 2rem;
+    }
+    .cc-owner {
+        font-weight: 700;
+    }
+}

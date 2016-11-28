@@ -1,0 +1,53 @@
+.tooltip {
+	cursor: help;
+	position: relative;
+	&.product-tile {
+		cursor: pointer;
+	}
+}
+
+.tooltip-content {
+	display: none;
+}
+
+.ui-tooltip.ui-widget-content {
+	background: $night-rider;
+	border-radius: 3px;
+	box-shadow: 2px 3px 3px 0 $nobel;
+	color: $white;
+}
+
+.ui-tooltip-content {
+	padding: 0.3em;
+	.recommendation-tooltip-header {
+		font-size: 1.2em;
+		font-weight: bold;
+		padding: 0.5em;
+		.product-price {
+			font-weight: 400;
+			.price-standard {
+				color: $nobel;
+				text-decoration: line-through;
+			}
+		}
+	}
+	.recommendation-tooltip-description,
+	.recommendation-tooltip-attributes {
+		padding: 0.8em;
+	}
+	.shipping-method-cost,
+	.surcharge-product,
+	.promo {
+		text-align: right;
+		padding-bottom: .3rem;
+	}
+	.shippingtotal {
+		clear: right;
+		text-align: right;
+		margin-top: .3rem;
+		.value {
+			border-top: 1px solid $charcoal;
+			padding-top: .3rem;
+		}
+	}
+}

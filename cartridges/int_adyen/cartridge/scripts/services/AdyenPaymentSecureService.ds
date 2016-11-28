@@ -1,0 +1,45 @@
+/*
+* AdyenPaymentSecureService configuration script
+*
+*/
+
+// import packages
+var dwsvc		= require ("dw/svc");
+var dwnet		= require ("dw/net");
+var dwsystem	= require ("dw/system");
+var dwutil  	= require ("dw/util");
+
+//script include
+var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
+
+var serviceConfig : Object = {
+  createRequest: function(service : dwsvc.HTTPService, args){
+		service.setRequestMethod("POST");
+		if(args) {
+			return args;
+		} else {
+			return null;
+		}
+	},
+  parseResponse: function(service : dwsvc.HTTPService, client : dwnet.HTTPClient) {
+		return client;
+	}
+};
+
+//grab all sites
+var allSites : dwutil.List = dwsystem.Site.getAllSites();
+ 
+for each (let site : dwsystem.Site in allSites) {
+	try {
+ 		let servicePrefix : String = AdyenHelper.getAydenPaymentSecureServicePrefix(site);
+ 		if (empty(servicePrefix)) {
+	    	dwsystem.Logger.getLogger("Adyen", "adyen").debug("Empty service prefix for site {0}, service type '3d secure authorize'", site.getID());
+ 		} else {
+		    let serviceName : String = servicePrefix + '.' + site.getID();
+		    dwsystem.Logger.getLogger("Adyen", "adyen").debug("Succsessffuly configure service with name {0} for site {1}", serviceName, site.getID());
+		    dwsvc.ServiceRegistry.configure(serviceName, serviceConfig);
+ 		}
+	} catch (e) {
+	    dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't configure service type '3d secure authorize', error: {0}", e.message);
+	}
+};

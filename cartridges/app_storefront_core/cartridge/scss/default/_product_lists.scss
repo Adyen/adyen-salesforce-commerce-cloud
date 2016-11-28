@@ -1,0 +1,93 @@
+.item-list {
+	margin-bottom: 1em;
+	tr {
+		border-bottom: 1px solid $gainsboro;
+		&.last {
+			border: 0 none;
+		}
+		&.headings {
+			display: none;
+		}
+	}
+	td {
+		padding: 1em;
+		vertical-align: top;
+	}
+}
+
+.item-details .product-list-item {
+	.name {
+		font-size: 1.2em;
+		font-style: italic;
+	}
+	.value {
+		font-weight: 700;
+	}
+	.promo {
+		color: $sangria;
+	}
+	.price-standard {
+		color: $nobel;
+		text-decoration: line-through;
+	}
+}
+.item-availability ul,
+.item-quantity-details ul {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+.item-dashboard {
+	color: $dark-gray;
+	width: 16rem;
+	label {
+		font-weight: normal;
+		width: auto;
+	}
+	.field-wrapper {
+		width: auto;
+	}
+	.option-quantity-desired {
+		input {
+			width: 3rem;
+		}
+	}
+	.value {
+		margin-top: .5rem;
+	}
+	.form-row {
+		margin: 0;
+	}
+	input,
+	.value,
+	select
+	.option-toggle-public label {
+		color: $night-rider;
+	}
+	.input-checkbox {
+		margin: 0 5px;
+	}
+	.option-add-to-cart {
+		margin-top: .5rem;
+		width: 18rem; //for IE
+		width: max-content;
+		label {
+			color: $night-rider;
+			float: left;
+			font-weight: 700;
+			margin: .5rem .5rem 0 0;
+			text-transform: uppercase;
+			width: auto;
+		}
+		input {
+			width: 3rem;
+			margin-right: 1em;
+		}
+		button {
+			padding: 0.5em 1.5em;
+		}
+	}
+	.option-quantity-purchased span.exceeded {
+		color: $sangria;
+	}
+}

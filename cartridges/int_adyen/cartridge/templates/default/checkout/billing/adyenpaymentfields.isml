@@ -1,0 +1,36 @@
+<!--- TEMPLATENAME: adyenpaymentfields.isml --->
+<isinclude template="util/modules"/>
+<div class="form-data-error error"></div>
+<div class="form-row">
+	<label>
+		<span>${Resource.msg('creditcard.number', 'forms', null)}</span>
+	</label>
+	<input type="text" id="adyen_creditCard_number" autocomplete="off" data-encrypted-name="number" size="20"/>
+</div>
+<div class="form-row">
+	<label>
+		<span>${Resource.msg('creditcard.ownerlabel', 'forms', null)}</span>
+	</label>
+	<input type="text" id="adyen_creditCard_owner" autocomplete="off" data-encrypted-name="holderName" size="20"/>
+</div>
+<div class="form-row">
+	<label>
+		<span>${Resource.msg('resource.month', 'forms', null)}</span>
+	</label>
+	<input type="text" id="adyen_creditCard_month" autocomplete="off" data-encrypted-name="expiryMonth" size="2" maxlength="2"/>
+</div>
+<div class="form-row">
+	<label>
+		<span>${Resource.msg('resource.year', 'forms', null)}</span>
+	</label>
+	<input type="text" id="adyen_creditCard_year" autocomplete="off" data-encrypted-name="expiryYear" size="4" maxlength="4"/>
+</div>
+<div class="form-row">
+	<label>
+		<span>${Resource.msg('creditcard.cvnlabel', 'forms', null)}</span>
+	</label>
+	<input type="text" id="adyen_creditCard_cvn_value" autocomplete="off" data-encrypted-name="cvc" size="4" maxlength="4"/>
+</div>
+<input type="hidden" value="generate-this-server-side" data-encrypted-name="generationtime"/>
+<input type="hidden" id="encrypteddata"/>
+<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>

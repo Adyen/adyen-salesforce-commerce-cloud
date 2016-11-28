@@ -1,0 +1,56 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/cart/pt_cart">
+<isinclude template="util/modules"/>
+
+<iscomment>Report this checkout step</iscomment>
+
+<isreportcheckout checkoutstep="${1}" checkoutname="${'CheckoutMethod'}"/>
+<div class="checkoutlogin">
+	<div class="col-1">
+	
+		<div class="login-box">
+
+			<h2>${Resource.msg('checkoutlogin.guestheader','checkout',null)}</h2>
+			
+			<div class="login-box-content clearfix">
+				<isif condition="${!pdict.CurrentCustomer.registered}">
+				<p>${Resource.msg('checkoutlogin.guestmessage','checkout',null)}</p>
+				<form action="${URLUtils.httpsContinue()}" method="post">
+				<fieldset>
+					<div class="form-row formbuttonrow">
+						<button type="submit" value="${Resource.msg('checkoutlogin.checkoutguestbutton','checkout',null)}" name="${pdict.CurrentForms.login.unregistered.htmlName}"><span>${Resource.msg('checkoutlogin.checkoutguestbutton','checkout',null)}</span></button>
+					</div>
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+				</fieldset>
+				</form>
+				</isif>
+				<iscomment>new customer</iscomment>
+				<p>${Resource.msg('globalaccount.createmessage','locale',null)}</p>
+				<form action="${URLUtils.httpsContinue()}" method="post">
+					<fieldset>
+						<div class="form-row form-row-button">
+							<button type="submit" value="${Resource.msg('global.createbutton','locale',null)}" name="${pdict.CurrentForms.login.register.htmlName}"><span>${Resource.msg('global.createnowbutton','locale',null)}</span></button>
+						</div>
+						<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					</fieldset>
+				</form>
+				
+				<a class="tooltip">
+   					${Resource.msg('checkoutlogin.registerbenefits','checkout',null)}
+    				<div class="tooltip-content" data-layout="large tooltip-whyaccount">
+    					<iscontentasset aid="create-account-benefits"/>
+	    			</div>
+	    		</a>
+				    	
+			</div>	
+				
+		</div>
+		
+	</div>
+	
+	<div class="col-2">
+		<iscomment>returning customer</iscomment>		
+		<isinclude template="account/login/logininclude"/>
+	</div>
+</div>
+</isdecorate>

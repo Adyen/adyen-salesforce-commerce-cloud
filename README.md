@@ -1,1 +1,2 @@
-# Salesforce Commerce Cloud (formerly Demandware)
+# demandware
+demandware

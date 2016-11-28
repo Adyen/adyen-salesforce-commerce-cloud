@@ -1,0 +1,43 @@
+#homepage-slider {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	.jcarousel-control {
+		bottom: 0.5rem;
+		right: 0.5rem;
+		position: absolute;
+		a {
+			background: none repeat scroll 0 0 $gainsboro;
+			border: 1px solid $very-light-gray;
+			display: block;
+			float: left;
+			height: 24px;
+			margin: 0 3px;
+			opacity: .5;
+			text-indent: -999em;
+			width: 24px;
+			&.active {
+				background-color: $dim-gray;
+			}
+			&:hover {
+				background-color: $dim-gray;
+				opacity: .7;
+			}
+		}
+	}
+}
+
+.home-bottom-slots {
+	margin: auto;
+	max-width: 960px;
+	.home-bottom-left,
+	.home-bottom-center,
+	.home-bottom-right {
+		clear: none;
+		width: 100%;
+		@media screen and (min-width: 960px) {
+			float: left;
+			width: 33.33333333333333333%;
+		}
+	}
+}

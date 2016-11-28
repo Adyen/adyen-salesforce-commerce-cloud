@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<isif condition="${slotcontent != null}">
+	<div class="category-slot">
+		<isloop items="${slotcontent.content}" var="category" status="loopstate">
+			<div class="cat-banner">
+				<a href="${URLUtils.http('Search-Show', 'cgid', category.ID)}" title="${Resource.msgf('global.categoryrefinement.label', 'locale', null, category.displayName)}">
+					<isif condition="${category.image != null}">
+						<img src="${category.image.httpURL}" alt="${category.displayName}" />
+						<h1><isprint value="${category.displayName}" encoding="off"/></h1>
+					</isif>
+				</a>
+			</div>
+		</isloop>
+	</div>
+</isif>

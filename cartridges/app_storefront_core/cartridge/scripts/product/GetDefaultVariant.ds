@@ -1,0 +1,25 @@
+/**
+*   @input Prod : dw.catalog.Product
+*	@input CurrentVariationModel : dw.catalog.ProductVariationModel
+*   @output newProduct : dw.catalog.Product
+*
+*/
+
+importPackage( dw.util );
+importPackage( dw.system );
+importPackage( dw.catalog );
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var prod : Product = args.Prod;
+	if (prod.isVariant()) {
+		args.newProduct = args.Prod;
+	}
+	else {
+		var pvm = empty(args.CurrentVariationModel) ? prod.variationModel : args.CurrentVariationModel;
+		args.newProduct = ProductUtils.getDefaultVariant(pvm);
+	}
+	return PIPELET_NEXT;
+}
+

@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isif condition="${!empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+
+	<iscomment>calculated correct index position to separate the result columns</iscomment>
+	<isscript>
+		var count = pdict.ContentSearchResult.count;
+		if(count > 6)
+		{
+			count = 6;
+		}
+		var cutIndex = Math.ceil( count / 2 ) - 1;
+		var endIndex = cutIndex + (cutIndex + 1);
+	</isscript>
+	<isset name="contentCount" value="${0}" scope="page"/>
+	<ul class="folder-content-list">
+		<iscomment>render the results as two column layout</iscomment>
+		<isloop items="${pdict.ContentSearchResult.content}" var="asset" status="loopstate" end="${endIndex}">
+			<isset name="contentCount" value="${contentCount+1}" scope="page"/>	
+			<li>
+			
+				<a href="${URLUtils.url('Page-Show','cid', asset.ID)}" title="${asset.name}" class="content-title">
+					<isprint value="${asset.name}"/>
+				</a>
+				
+				<isprint value="${asset.description}"/>
+				
+				<a href="${URLUtils.url('Page-Show','cid', asset.ID)}" class="readmore">
+					<isprint value="${Resource.msg('topcontenthits.readmore','search',null)}" encoding="off" />
+				</a>
+				
+			</li>
+			
+		</isloop>
+	</ul>
+	<isif condition="${pdict.ContentSearchResult.count>6}">
+		<form action="${pdict.ContentSearchResult.url('Search-ShowContent')}" method="get">
+			<div class="form-row" style="text-align:center;">
+				<button type="submit" value="${Resource.msgf('topcontenthits.viewall','search',null,pdict.ContentSearchResult.count.toFixed(0))}"><span>${Resource.msg('topcontenthits.viewall','search',null)} (${pdict.ContentSearchResult.count.toFixed(0)})</span></button>
+			</div>
+			<input type="hidden" name="q" value="${pdict.ContentSearchResult.searchPhrase}" />
+		</form>
+	</isif>
+	
+</isif>

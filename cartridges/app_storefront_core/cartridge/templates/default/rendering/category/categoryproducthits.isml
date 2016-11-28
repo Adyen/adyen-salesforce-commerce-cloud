@@ -1,0 +1,120 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="search/pt_productsearchresult_content">
+	<isscript>
+		var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+		var compareEnabled = false;
+		if (!empty(pdict.CurrentHttpParameterMap.cgid.value)) {
+			compareEnabled = ProductUtils.isCompareEnabled(pdict.CurrentHttpParameterMap.cgid.value);
+		}
+	</isscript>
+
+	<iscomment>
+		Use the decorator template based on the requested output. If
+		a partial page was requested an empty decorator is used.
+		The default decorator for the product hits page is
+		search/pt_productsearchresult.
+	</iscomment>
+
+	<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+	<isinclude template="util/modules"/>
+
+	<iscomment>
+		Configured as default template for the product search results.
+		Displays a global slot with static html and the product search
+		result grid.
+	</iscomment>
+
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+
+	<iscomment>
+		Render promotional content at the top of search results as global slot.
+		This content is only displayed if the search result is refined by a category.
+		If the search result is not refined by a category a global default is displayed.
+	</iscomment>
+
+	<div class="content-slot slot-grid-header">
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<isslot id="cat-banner" context="category" description="Category Banner" context-object="${pdict.ProductSearchResult.category}"/>
+		<iselse/>
+			<isif condition="${pdict.SearchPromo != null}">
+				<isif condition="${'body' in pdict.SearchPromo.custom && pdict.SearchPromo.custom.body != null}">
+					<div class="contentasset"><!-- dwMarker="content" dwContentID="${pdict.SearchPromo.UUID}" -->
+						<isprint value="${pdict.SearchPromo.custom.body}" encoding="off"/>
+					</div> <!-- End contentasset -->
+				</isif>
+			<iselse/>
+				<isslot id="search-result-banner" description="Promotional Search Result Banner" context="global"/>
+			</isif>
+		</isif>
+	</div>
+
+	<isif condition="${!pdict.ProductSearchResult.refinedSearch && !empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+
+		<div class="search-result-bookmarks">
+			${Resource.msg('topcontenthits.yoursearch','search',null)}
+			<a href="${'#results-products'}" class="first">${Resource.msg('search.producthits.productsfound', 'search', null)}</a>
+			<a href="${'#results-content'}">${Resource.msg('topcontenthits.goto', 'search', null)}</a>
+		</div>
+
+		<h1 class="content-header" id="results-products">${Resource.msgf('search.producthits.productsfoundcount','search',null,pdict.ProductSearchResult.count)}</h1>
+
+	</isif>
+
+	<isif condition="${!(pdict.ProductPagingModel == null) && !pdict.ProductPagingModel.empty}">
+
+		<div class="search-result-options">
+
+			<iscomment>sort by</iscomment>
+			<isproductsortingoptions productsearchmodel="${pdict.ProductSearchResult}" pagingmodel="${pdict.ProductPagingModel}" uniqueid="grid-sort-header"/>
+
+			<iscomment>pagination</iscomment>
+			<ispaginginformation pagingmodel="${pdict.ProductPagingModel}" pageurl="${pdict.ProductSearchResult.url('Search-Show')}"  uniqueid="grid-paging-header"/>
+			<ispagingbar pageurl="${pdict.ProductSearchResult.url('Search-Show')}" pagingmodel="${pdict.ProductPagingModel}"/>
+
+			<iscomment>render compare controls if we present in a category context</iscomment>
+			<isif condition="${!empty(pdict.ProductSearchResult) && !empty(pdict.ProductSearchResult.category) && compareEnabled}">
+				<iscomparecontrols category="${pdict.ProductSearchResult.category}"/>
+			</isif>
+
+		</div>
+
+		<div class="search-result-content">
+			<isproductgrid pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}"/>
+		</div>
+
+		<div class="search-result-options">
+
+			<iscomment>sort by</iscomment>
+			<isproductsortingoptions productsearchmodel="${pdict.ProductSearchResult}" pagingmodel="${pdict.ProductPagingModel}" uniqueid="grid-sort-footer"/>
+
+			<iscomment>pagination</iscomment>
+			<ispaginginformation pagingmodel="${pdict.ProductPagingModel}" pageurl="${pdict.ProductSearchResult.url('Search-Show')}" uniqueid="grid-paging-footer"/>
+			<ispagingbar pageurl="${pdict.ProductSearchResult.url('Search-Show')}" pagingmodel="${pdict.ProductPagingModel}"/>
+
+		</div>
+
+		<iscomment>show top content hits</iscomment>
+		<isif condition="${!pdict.ProductSearchResult.refinedSearch && !empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+
+			<h1 class="content-header" id="results-content">${Resource.msgf('topcontenthits.articlesfound','search',null,pdict.ContentSearchResult.count)}</h1>
+
+			<div class="search-results-content">
+				<isinclude template="search/topcontenthits"/>
+			</div>
+
+		</isif>
+
+	<iselse/>
+
+		<iscomment>display no results</iscomment>
+		<div class="no-results">
+			${Resource.msg('productresultarea.noresults','search',null)}
+		</div>
+
+	</isif>
+
+	<iscomment>Render promotional content at the bottom of search results as global slot</iscomment>
+	<div class="search-promo"><isslot id="search-promo" description="Promotional Content at the bottom of Search Results" context="global"/></div>
+</isdecorate>

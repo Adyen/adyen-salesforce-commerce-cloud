@@ -1,0 +1,130 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+	<isinclude template="util/modules"/>
+
+	<isif condition="${pdict.ProductList != null}">
+		<div class="page-content-tab-navigaton">
+			<isinclude template="account/giftregistry/navigation"/>
+		</div>
+	</isif>
+
+	<h2>${Resource.msg('giftregistryconfirmation.eventinfo','account',null)}</h2>
+
+	<p>${Resource.msg('giftregistryconfirmation.verifyinformationmessage','account',null)}</p>
+
+	<h3>${Resource.msg('giftregistryconfirmation.eventoverview','account',null)}</h3>
+
+	<dl>
+
+		<dt>${Resource.msg('giftregistryconfirmation.participants','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.participant.firstName.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.participant.lastName.htmlValue}"/>
+				<isif condition="${pdict.CurrentForms.giftregistry.event.coParticipant.firstName.htmlValue != '' || pdict.CurrentForms.giftregistry.event.coParticipant.lastName.htmlValue != ''}">,</isif>
+			</div>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.coParticipant.firstName.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.coParticipant.lastName.htmlValue}"/>
+			</div>
+		</dd>
+
+		<dt>${Resource.msg('giftregistryconfirmation.eventtype','account',null)}</dt>
+		<dd>
+			<div><isprint value="${Resource.msg('giftregistry.' + pdict.CurrentForms.giftregistry.event.type.htmlValue, 'forms', null)}"/></div>
+		</dd>
+
+		<dt>${Resource.msg('giftregistryconfirmation.eventname','account',null)}</dt>
+		<dd>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.event.name.htmlValue}"/></div>
+		</dd>
+
+		<dt>${Resource.msg('giftregistryconfirmation.eventdate','account',null)}</dt>
+		<dd>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.event.date.htmlValue}"/></div>
+		</dd>
+
+		<dt>${Resource.msg('giftregistryconfirmation.eventlocation','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.town.htmlValue}"/>,
+				<isprint value="${pdict.CurrentForms.giftregistry.event.eventaddress.states.state.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.eventaddress.country.htmlValue}"/>
+			</div>
+		</dd>
+
+	</dl>
+
+	<h3>${Resource.msg('giftregistryconfirmation.registrants','account',null)}</h3>
+
+	<dl>
+
+		<dt>${Resource.msg('giftregistryconfirmation.registrant','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.participant.firstName.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.participant.lastName.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.event.participant.email.htmlValue}"/></div>
+		</dd>
+
+		<dt>${Resource.msg('giftregistryconfirmation.registrant2','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.coParticipant.firstName.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.event.coParticipant.lastName.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.event.coParticipant.email.htmlValue}"/></div>
+		</dd>
+
+	</dl>
+
+	<h3>${Resource.msg('giftregistryconfirmation.registryaddesses','account',null)}</h3>
+
+	<dl>
+
+		<dt>${Resource.msg('giftregistryconfirmation.preshipping','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.firstname.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.lastname.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.address1.htmlValue}"/></div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.address2.htmlValue}"/></div>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.city.htmlValue}"/>,
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.states.state.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.postal.htmlValue}"/></div>
+		</dd>
+
+
+		<dt>${Resource.msg('giftregistryconfirmation.postshipping','account',null)}</dt>
+		<dd>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.firstname.htmlValue}"/>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.lastname.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.address1.htmlValue}"/></div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.address2.htmlValue}"/></div>
+			<div>
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.city.htmlValue}"/>,
+				<isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.states.state.htmlValue}"/>
+			</div>
+			<div><isprint value="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.postal.htmlValue}"/></div>
+		</dd>
+
+	</dl>
+
+	<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.giftregistry.event.htmlName}">
+		<div class="form-row form-row-button">
+			<isif condition="${pdict.ProductList == null}">
+				<button class="button-text" type="submit" value="${Resource.msg('global.previous','locale',null)}" name="${pdict.CurrentForms.giftregistry.eventaddress.back.htmlName}">&laquo; <span>${Resource.msg('global.previous','locale',null)}</span></button>
+				<button type="submit" name="${pdict.CurrentForms.giftregistry.event.confirm.htmlName}" value="${Resource.msg('global.submit','locale',null)}"><span>${Resource.msg('global.submit','locale',null)}</span></button>
+			<iselse/>
+				<button type="submit" name="${pdict.CurrentForms.giftregistry.event.confirm.htmlName}" value="${Resource.msg('global.apply','locale',null)}"><span>${Resource.msg('global.apply','locale',null)}</span></button>
+			</isif>
+		</div>
+	</form>
+
+</isdecorate>

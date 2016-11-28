@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>
+	product reviews
+	=============================================================
+</iscomment>
+
+<div class="product-review" data-pid="${Product.ID}">
+	<div class="rating"></div>
+</div>

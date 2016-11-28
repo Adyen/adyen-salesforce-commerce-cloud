@@ -1,0 +1,13 @@
+@each $type in $swatch-types {
+	.swatch-#{nth($type, 1)} a{
+		background-color: nth($type, 2) !important;
+	}
+}
+
+.swatch-miscellaneous a {
+	background: url("../images/interface/icon-color-swatch-misc.png") no-repeat scroll left top transparent;
+}
+
+.unselectable.swatch-miscellaneous a {
+	background: url("../images/interface/icon-color-swatch-misc-unselectable.png") no-repeat scroll left top transparent !important;
+}

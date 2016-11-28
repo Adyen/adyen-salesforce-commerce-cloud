@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<iscomment>This page must never be cached!! This page tries to avoid having too much logic or includes to avoid any followup errors!!</iscomment>
+	<iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
+	<isscript>
+		var pageContext = {
+			title: 'General Error',
+			type: 'error',
+			ns: 'error'
+		};
+	</isscript>
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="error/pt_error_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+<div id="wrapper" class="pt_error">
+
+	<isinclude template="components/header/header"/>
+
+	<div id="main" role="main" class="page-content clearfix">
+
+		<div id="primary" class="primary-content">
+			<isreplace/>
+		</div>
+
+		<div id="secondary" class="nav">
+			<nav>
+				<h1 class="visually-hidden">${Resource.msg('global.secondarynavheading','locale',null)}</h1>
+				<div class="secondary-navigation">
+					<isinclude url="${URLUtils.url('CustomerService-LeftNav')}"/>
+				</div>
+			</nav>
+		</div>
+
+	</div><!-- /main -->
+
+	<isinclude template="components/footer/footer"/>
+	<isinclude template="error/pt_error_VARS"/>
+
+</div>
+
+</body>
+</html>

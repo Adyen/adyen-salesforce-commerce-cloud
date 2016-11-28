@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/wishlist/pt_wishlist">
+<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('account.header','account',null)} Login</h1>
+
+	<div class="col-1">
+
+		<isinclude template="account/login/logininclude"/>
+
+		<div class="login-box login-general clearfix">
+
+			<h2>${Resource.msg('wishlist.searchheader','account',null)}</h2>
+
+			<div class="login-box-content">
+
+				<p>${Resource.msg('account.wishlist.landing.findmessage','account',null)}</p>
+
+				<isinclude template="account/wishlist/wishlistsearch"/>
+
+			</div>
+
+		</div>
+
+	</div><!-- END: page column -->
+
+	<div class="col-2">
+
+		<div class="login-box login-create-account clearfix">
+
+			<h2>${Resource.msg('account.wishlist.landing.createheader','account',null)}</h2>
+
+			<div class="login-box-content">
+
+				<div class="createbenefits">
+					<iscontentasset aid="create-wishlist-benefits"/>
+				</div>
+
+				<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.login.htmlName}_register">
+					<fieldset>
+						<div class="form-row form-row-button">
+							<button type="submit" value="${Resource.msg('global.createbutton','locale',null)}" name="${pdict.CurrentForms.login.register.htmlName}">
+								${Resource.msg('global.createbutton','locale',null)}
+							</button>
+						</div>
+						<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					</fieldset>
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+</isdecorate>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+	<group formid="creditcards">
+		<list formid="storedcards">
+			<include formid="card" name="creditcard"/>
+			<action formid="remove" label="paymentinstruments.removecc" valid-form="false"/>
+			
+		</list>	
+		<include formid="newcreditcard" name="creditcard"/>
+		<action formid="create" valid-form="true"/>
+		<action formid="cancel" valid-form="false"/>		
+	</group>	
+</form>

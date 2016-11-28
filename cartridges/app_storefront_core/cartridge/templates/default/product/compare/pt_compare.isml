@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Compare',
+			type: 'compare',
+			ns:'compare'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="product/compare/pt_compare_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+
+	<div id="wrapper" class="pt_product-compare">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="full-width clearfix">
+			<isinclude template="components/browsertoolscheck"/>
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+		</div>
+
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="product/compare/pt_compare_VARS"/>
+
+	</div>
+
+</body>
+</html>

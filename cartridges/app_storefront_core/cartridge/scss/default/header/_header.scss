@@ -1,0 +1,81 @@
+@import "nav";
+@import "menu_utility";
+@import "country_selector";
+
+.top-banner {
+	position: relative;
+	* {
+		box-sizing: border-box;
+	}
+}
+
+.primary-logo {
+	height: 38px; // height of image
+	padding: .1em 0 0 0;
+	margin: 0 auto;
+	width: 200px; // width of image
+	z-index: 1;
+	@media screen and (min-width: 768px) {
+		margin: 0;
+		padding: 0.3em 0 0 .5em;
+	}
+}
+
+.header-banner {
+	display:block;
+	.header-promotion {
+		background-color: $rain-forest;
+		color: #fff;
+		padding: 3px 0 2px;
+		text-align: center;
+	}
+}
+
+.header-search {
+	color: $white;
+	width: 100%;
+	background-color: $dim-gray;
+	@media screen and (min-width: 768px) {
+		background-color: $white;
+		border: 1px solid $nobel;
+		border-radius: 10px;
+		color: $nobel;
+		height: 2.5em;
+		margin: 1.6em auto 0;
+		position: relative;
+		width: 300px;
+		z-index: 1;
+	}
+	form {
+		margin-bottom: 1px;
+	}
+	input[type="text"] {
+		background-color: transparent;
+		border: none;
+		float: left;
+		margin: 0;
+		padding-left: 1rem;
+		height: 2.3rem;
+		width: 85%; // default for older browser
+		width: calc(100% - 2.5rem);
+		@media screen and (min-width: 768px) {
+			height: 1.75rem;
+			padding: 0 1rem;
+		}
+	}
+	button {
+		background-color: transparent;
+		border: none;
+		color: $nobel;
+		padding: .7em .5em;
+		@media screen and (min-width: 768px) {
+			padding: .4em .5em;
+		}
+		&:hover {
+			color: $citrus;
+		}
+		i {
+			font-size: 1.4em;
+		}
+	}
+}

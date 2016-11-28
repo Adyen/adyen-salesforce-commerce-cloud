@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Displays the product sorting options.
+	It expects the name of the key of the pageable in a parameter
+    pageable.
+</iscomment>
+
+<isscript>
+
+	// determine the ID of the sorting rule used to sort the current search results
+	var sortingRule : SortingRule = null;
+	if(pdict.productsearchmodel.getSortingRule() != null) {
+		sortingRule = pdict.productsearchmodel.getSortingRule();
+	}
+	else {
+		var category : Category = pdict.productsearchmodel.getCategory();
+		if (category == null) {
+			category = dw.catalog.CatalogMgr.getSiteCatalog().getRoot();
+		}
+		if (category.getDefaultSortingRule() != null) {
+			sortingRule = category.getDefaultSortingRule();
+		}
+	}
+	
+	var sortingRuleID : String = null;
+	if(sortingRule != null) {
+		var sortingOptions : List = dw.catalog.CatalogMgr.getSortingOptions();
+		for(var it : Iterator = sortingOptions.iterator(); it.hasNext(); ) {
+			var option : SortingOption = it.next();
+			if(option.getSortingRule().getID() == sortingRule.getID()) {
+				sortingRuleID = sortingRule.getID();
+			}
+		}
+	}
+	
+	// in case there are multiple elements on a page
+	var uniqueId : String = '';
+	if (! empty(pdict.uniqueid))
+	{
+		uniqueId = pdict.uniqueid;
+	}
+	
+</isscript>  
+	<div class="sort-by">
+		<form action="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid)}" method="post" name="Product-Sorting-Options">
+				<fieldset>
+			
+					<label for="${uniqueId}">${Resource.msg('global.paginginformation.sortby','locale',null)}</label>
+					
+					<select id="${uniqueId}" <isif condition="${empty(sortingRuleID)}"> style="font-style:italic;"</isif> >
+						<isif condition="${empty(sortingRuleID)}">
+							<option style="font-style:italic" selected>${Resource.msg('global.paginginformation.undefined','locale',null)}</option>
+						</isif>
+						<isloop items="${dw.catalog.CatalogMgr.getSortingOptions()}" var="SortingOption" status="Status">
+							<option value="${pdict.pagingmodel.appendPaging(pdict.productsearchmodel.urlSortingRule('Search-Show', SortingOption.getSortingRule()),0)}"<isif condition="${sortingRuleID == SortingOption.getSortingRule().getID()}">selected</isif>>${SortingOption.getDisplayName()}</option>
+						</isloop>
+					</select>
+						
+					<button class="sort-Go-Button simple-submit" type="submit" value="${Resource.msg('productsortingoptions.go','search',null)}">${Resource.msg('productsortingoptions.go','search',null)}</button>
+		
+			</fieldset>
+		</form>
+	</div><!-- END: sortby -->

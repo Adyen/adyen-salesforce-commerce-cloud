@@ -1,0 +1,236 @@
+.js .simple-submit {
+	display: none;
+}
+
+legend {
+	background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top $white-smoke;
+	border-bottom: 1em solid $white;
+	font-size: 1.1em;
+	font-weight: 700;
+	margin: 0;
+	padding: 1.16em 2% .83em;
+	position: relative;
+	text-transform: uppercase;
+	width: 96%;
+	.ie7 & {
+		width: 94%;
+	}
+	span {
+		font-size: 12px;
+		font-weight: 400;
+		position: relative;
+		text-transform: none;
+		padding: 0 .5em;
+		em {
+			color: $night-rider;
+		}
+	}
+}
+
+label {
+	display: block;
+	font-size: 1.1em;
+	font-weight: 700;
+	margin-bottom: .3rem;
+	.form-horizontal & {
+		float: left;
+		margin-top: .5rem;
+		margin-bottom: 0;
+		width: 100%;
+		@media screen and (min-width: 768px) {
+			text-align: right;
+			width: 25%;
+		}
+	}
+	.label-inline & {
+		display: inline;
+		float: none;
+		font-size: 1em;
+		font-weight: 400;
+		margin-top: 0;
+		text-align: left;
+		width: auto;
+	}
+	.label-above & {
+		margin-bottom: .3rem;
+		width: auto;
+	}
+}
+
+.form-label-text {
+	float: left;
+	font-size: 1.1em;
+	font-weight: 700;
+	padding: 0.75em 0 0;
+	text-align: right;
+	width: 25%;
+}
+
+.form-row {
+	@extend %clearfix;
+	margin: .5rem 0 1rem;
+}
+
+.form-row-button {
+	clear: left;
+	.form-horizontal & {
+		@media screen and (min-width: 768px) {
+			margin-left: 27%;
+			width: 62%;
+		}
+	}
+}
+
+.field-wrapper {
+	box-sizing: border-box;
+	margin-bottom: .5rem;
+	width: 100%;
+	.form-horizontal & {
+		float: left;
+		width: 76%;
+		@media screen and (min-width: 768px) {
+			padding-left: 2%;
+			width: 50%;
+		}
+	}
+	.label-inline & {
+		float: left;
+		padding-left: 0;
+		width: auto;
+	}
+	.label-above & {
+		float: none;
+		padding-left: 0;
+		width: auto;
+	}
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="date"]
+textarea {
+	border: 1px solid $dark-gray;
+	box-sizing: border-box;
+	height: 2rem;
+	padding: 0.7em 0.5em;
+	text-indent: 0;
+	width: 100%;
+}
+
+select {
+	background-color: #fff; // set background color to make height work
+	width: 100%;
+	height: 2rem;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	margin: 1em 1% 1em 2%;
+	.label-inline & {
+		margin: 0 .3rem 0 0;
+	}
+}
+
+.form-caption {
+	clear: left;
+	width: auto;
+	.form-horizontal & {
+		@media screen and (min-width: 768px) {
+			margin-left: 27%;
+		}
+	}
+	.label-above & {
+		margin-left: 0;
+	}
+	.form-indent & {
+		margin-left: 0;
+	}
+}
+
+.form-indent {
+	@media screen and (min-width: 768px) {
+		margin-left: 27%;
+	}
+}
+
+.error-message {
+	border: 2px solid $sangria;
+	background-color: $tutu;
+	padding: 0.7em 0.5em;
+	text-indent: 0;
+	width: 49.5966%;
+}
+
+.error {
+	background-color: $tutu;
+	border-color: $sangria;
+	color: $sangria;
+}
+
+span.error,
+div.error {
+	background: none;
+}
+
+.error-form {
+	background-color: $stark-white;
+	border: 1px solid $sangria;
+	border-radius: .5em;
+	color: $sangria;
+	margin: 0.5em 0;
+	padding: 0.8em;
+}
+
+.form-inline {
+	form {
+		padding: 0 0 2em;
+		width: 98%;
+	}
+	label {
+		padding: 0 0 0.75em;
+		text-transform: uppercase;
+		width: auto;
+	}
+	input[type="text"], select {
+		margin-left: 0;
+		width: 95%;
+	}
+	button {
+		padding-left: 0;
+		padding-right: 0;
+		width: 100%;
+	}
+}
+
+.row-inline {
+	display: inline;
+	label {
+		width: auto;
+	}
+}
+
+// Required Indicator and Text
+.dialog-required {
+	display: inline;
+	position: relative;
+	padding: 0 .5em;
+	em {
+		color: $sangria;
+		font-size: .65rem;
+		font-style: normal;
+		text-transform: uppercase;
+	}
+}
+.required-indicator {
+	color: $sangria;
+	font-size: 1rem;
+	padding: 0;
+}
+
+.form-field-tooltip {
+	float: left;
+	margin-left: 3%;
+	padding-top: .75em;
+	width: 20%;
+}

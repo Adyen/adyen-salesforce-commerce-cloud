@@ -1,0 +1,148 @@
+/**
+*
+*/
+var dwsvc		= require ("dw/svc");
+var dwnet		= require ("dw/net");
+var dwsystem	= require ("dw/system");
+var dwutil		= require ("dw/util");
+
+var adyenCurrentSite = dwsystem.Site.getCurrent();
+
+var __AdyenHelper : Object = {	
+
+	//service constants
+	SERVICE : {
+		SEND : "SEND",
+		METHODS : "METHODS",
+		SECURE : "3DSECURE"
+	},
+	MODE : {
+		TEST : "TEST",
+		LIVE : "LIVE"
+	},
+	
+	
+	/**
+	 * 	@name getAydenPaymentSendServicePrefix
+ 	 * 	@desc returns the value of site pref AydenPaymentSendServicePrefix
+	 */
+	getAydenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
+		var returnValue : String = "";
+		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix'))) {
+			returnValue = site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix');
+		}
+		dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentSendServicePrefix = {0}, for site {1}", returnValue, site.getID());
+		return returnValue;
+	},
+
+	/**
+	 * 	@name getAydenPaymentMethodsServicePrefix
+ 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 */
+	getAydenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
+		var returnValue : String = "";
+		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix'))) {
+			returnValue = site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix');
+		}
+		dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentMethodsServicePrefix = {0}, for site {1}", returnValue, site.getID());
+		return returnValue;
+	},
+	
+	/**
+	 * 	@name getAydenPaymentSecureServicePrefix
+ 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 */
+	getAydenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
+		var returnValue : String = "";
+		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix'))) {
+			returnValue = site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix');
+		}
+		dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentSecureServicePrefix = {0}, for site {1}", returnValue, site.getID());
+		return returnValue;
+	},
+
+	getService : function (service : String) : Object {
+		// Create the service config (used for all services)
+		var adyenService = null;
+		var servicePrefix = "";
+		switch (service) {
+			case __AdyenHelper.SERVICE.SEND :
+				servicePrefix = __AdyenHelper.getAydenPaymentSendServicePrefix(adyenCurrentSite);
+				break;
+			case __AdyenHelper.SERVICE.METHODS :
+				servicePrefix = __AdyenHelper.getAydenPaymentMethodsServicePrefix(adyenCurrentSite);
+				break;
+			case __AdyenHelper.SERVICE.SECURE :
+				servicePrefix = __AdyenHelper.getAydenPaymentSecureServicePrefix(adyenCurrentSite);
+				break;
+		}
+		var serviceName = servicePrefix + '.' + adyenCurrentSite.ID;
+		try {
+			adyenService = dwsvc.ServiceRegistry.get(serviceName);
+			dwsystem.Logger.getLogger("Adyen", "adyen").debug("Succsessffuly retrive service with name {0}", serviceName);
+		} catch (e) {
+			var ex = e;
+			dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", serviceName);
+			//e.message
+		}
+		
+		return adyenService;		
+	},
+	
+	getAdyenMode : function () : String {
+		var returnValue : String = "";
+		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode'))) {
+			returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode').value;
+		}
+		return returnValue;
+	},
+	
+	getCSEJsUrl : function () : String {
+		var returnValue : String = "";
+		switch (__AdyenHelper.getAdyenMode()) {
+			case __AdyenHelper.MODE.TEST :
+				returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseTestJsURL');
+				break;	
+			case __AdyenHelper.MODE.LIVE :
+				returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseProdJsURL');
+				break;	
+		}
+		
+		return returnValue;
+	},
+	
+	getAdyenCseEnabled : function () : Boolean {
+		var returnValue : Boolean = false;
+		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled'))) {
+			returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled');
+		}
+		return returnValue;
+	},
+	
+	getAdyenCseJsPublicKey : function () : String {
+		var returnValue : String = "";
+		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey'))) {
+			returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey');
+		}
+		return returnValue;
+	},
+	
+	getAdyenAVSEnabled : function () : Boolean {
+		var returnValue : Boolean = false;
+		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS'))) {
+			returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS');
+		}
+		return returnValue;
+	},
+	
+	getCurrencyValueForApi : function ( amount ) : String {
+		var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
+		if ( digitsNumber <= 0 ) return amount.value;
+		if ( digitsNumber == 2 ) return amount.value * 100;
+		if ( digitsNumber > 2 ) return amount.value * 1000;
+	}
+	
+	
+}
+
+module.exports= __AdyenHelper;

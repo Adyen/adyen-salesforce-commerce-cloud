@@ -1,0 +1,11 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isscript>
+var userZip = [];
+
+	userZip.push({
+		zip : pdict.CurrentSession.custom.zipcode
+	});
+
+var sessionZip = JSON.stringify(userZip);
+</isscript>
+<isprint value="${sessionZip}" encoding="off"/>

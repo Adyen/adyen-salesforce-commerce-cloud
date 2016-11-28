@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+	<group formid="customer">
+		<field formid="firstname" label="profile.firstname" type="string" mandatory="true" binding="firstName" max-length="50"/>
+		<field formid="lastname" label="profile.lastname" type="string" mandatory="true" binding="lastName" max-length="50"/>
+		<field formid="email" label="profile.email" type="string" mandatory="true" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" parse-error="validate.email" binding="email" max-length="50" value-error="profile.usernametaken"/>
+		<field formid="emailconfirm" label="profile.confirmemail" type="string" mandatory="true" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" parse-error="validate.email" max-length="50" value-error="validate.equalTo"/>
+		<field formid="orderNo" label="" type="string" description="" mandatory="false" binding="orderNo" max-length="50"/>
+		<field formid="birthday" label="profile.dob"  description="profile.dobexample" type="date" mandatory="false" format="MM/dd/yyyy" max="now" binding="birthday" max-length="10"/>
+		<field formid="phone" label="profile.phone" type="string" description="profile.phoneexample" mandatory="false" binding="phoneHome" max-length="50"/>
+		<field formid="addtoemaillist" label="profile.addemailtolist"  type="boolean"/>
+		<action formid="editprofile" valid-form="true"/>
+	</group>
+
+	<group formid="login">
+
+		<field formid="username"
+			label="label.username"
+			description="resource.5_100characters"
+			type="string"
+			mandatory="true"
+			binding="login"
+			regexp="^[-\w\.@_ ]{5,100}$"
+			parse-error="profile.usernameerror"
+			value-error="profile.usernametaken" />
+
+		<field formid="currentpassword" label="label.currentpassword" type="string" mandatory="true" min-length="8" max-length="255" 
+			   range-error="resource.8_255characters" value-error="profile.currentpasswordnomatch"/>
+
+		<field formid="newpassword" label="label.newpassword" description="resource.8_255characters" type="string" mandatory="true" min-length="8" max-length="255"
+			   range-error="resource.8_255characters" />
+
+		<field formid="newpasswordconfirm" label="profile.newpasswordconfirm" type="string" mandatory="true" min-length="8" max-length="255"
+			   range-error="resource.8_255characters"
+			   value-error="profile.passwordnomatch"/>
+
+		<field formid="password" label="label.password" description="resource.8_255characters" type="string" mandatory="true" min-length="8" max-length="255"
+			   range-error="resource.8_255characters"  value-error="profile.currentpasswordnomatch" />
+
+		<field formid="passwordconfirm" label="profile.passwordconfirm" type="string" mandatory="true" min-length="8" max-length="255"
+			   range-error="resource.8_255characters"
+			   value-error="profile.passwordnomatch"/>
+
+		<field formid="question" label="profile.accountquestion" type="string" mandatory="true" binding="passwordQuestion">
+			<options>
+				<option optionid="MothersMaidenName" value="Mother's Maiden Name" label="profile.question1"/>
+				<option optionid="MakeOfFirstCar" value="Make of First Car" label="profile.question2"/>
+				<option optionid="FavouritePetsName" value="Favourite Pet's Name" label="profile.question3"/>
+				<option optionid="FathersFirstName" value="Father's First Name" label="profile.question4"/>
+				<option optionid="PlaceOfBirth" value="Place of Birth" label="profile.question5"/>
+			</options>
+		</field>
+
+		<field formid="answer" label="profile.accountanswer" type="string" mandatory="true" binding="passwordAnswer" max-length="50"/>
+
+		<field formid="rememberme" label="profile.remember" type="boolean" mandatory="false" />
+
+		<action formid="editlogin" valid-form="true"/>
+	</group>
+
+	<include formid="address" name="customeraddress"/>
+
+	<group formid="addressbook">
+		<list formid="addresses">
+			<action formid="edit" valid-form="false"/>
+			<action formid="remove" valid-form="false"/>
+		</list>
+		<action formid="add" valid-form="false"/>
+	</group>
+
+	<action formid="changepassword" valid-form="true"/>
+	<action formid="confirm" valid-form="true"/>
+	<action formid="register" valid-form="true"/>
+	<action formid="cancel" valid-form="false"/>
+</form>

@@ -1,0 +1,110 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+    <isinclude template="util/modules"/>
+
+
+        <isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+        <h1>${Resource.msg('account.giftregistry.title','account',null)}</h1>
+
+        <isif condition="${pdict.ProductList != null}">
+            <form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.giftregistry.event.htmlName}_navigation">
+
+                <isset name="currentpage" value="event" scope="pdict" />
+                <div class="page-content-tab-navigaton">
+                    <isinclude template="account/giftregistry/navigation"/>
+                </div>
+            </form>
+        </isif>
+
+    <div class="page-content-tab-wrapper">
+
+        <form action="${URLUtils.httpsContinue()}"
+              method="post"
+              class="form-horizontal"
+              id="${pdict.CurrentForms.giftregistry.event.htmlName}"
+              name="${pdict.CurrentForms.giftregistry.event.htmlName}">
+
+            <fieldset>
+
+                <legend>
+                    ${Resource.msg('account.giftregistry.eventparticipant.eventinfo','account',null)}
+                    <div class="dialog-required">
+                        <span class="required-indicator">
+                            &#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em>
+                        </span>
+                    </div>
+                </legend>
+                <isscript>
+                    var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+                </isscript>
+
+                <isdynamicform formobject="${pdict.CurrentForms.giftregistry.event}"
+                               formdata="${currentCountry.dynamicForms.giftRegistryEvent}"/>
+
+            </fieldset>
+
+            <fieldset>
+
+                <legend>
+                    ${Resource.msg('account.giftregistry.eventparticipant.participants','account',null)}
+                    <div class="dialog-required">
+                        <span class="required-indicator">
+                            &#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em>
+                        </span>
+                    </div>
+                </legend>
+
+                <h2>${Resource.msg('account.giftregistry.eventparticipant.first','account',null)}</h2>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.participant.role}" type="select"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.participant.firstName}" type="input"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.participant.lastName}" type="input"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.participant.email}" type="input"/>
+
+                <h2>${Resource.msg('account.giftregistry.eventparticipant.second','account',null)}</h2>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.coParticipant.role}" type="select"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.coParticipant.firstName}" type="input"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.coParticipant.lastName}" type="input"/>
+
+                <isinputfield formfield="${pdict.CurrentForms.giftregistry.event.coParticipant.email}" type="input"/>
+
+                <div class="form-row form-row-button">
+                    <isif condition="${pdict.ProductList == null}">
+                        <button type="submit"
+                                name="${pdict.CurrentForms.giftregistry.event.setParticipants.htmlName}"
+                                value="${Resource.msg('global.continue','locale',null)}">
+                            <span>
+                                ${Resource.msg('global.continue','locale',null)}
+                            </span>
+                        </button>
+                    <iselse/>
+                        <button type="submit"
+                                name="${pdict.CurrentForms.giftregistry.event.setParticipants.htmlName}"
+                                value="${Resource.msg('global.apply','locale',null)}">
+                            <span>
+                                ${Resource.msg('global.apply','locale',null)}
+                            </span>
+                        </button>
+                    </isif>
+                </div>
+
+            </fieldset>
+
+        </form>
+
+    </div>
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.giftregistry.event.eventaddress;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>

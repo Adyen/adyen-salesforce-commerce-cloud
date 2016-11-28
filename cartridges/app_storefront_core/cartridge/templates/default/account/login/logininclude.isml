@@ -1,0 +1,61 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<div class="login-box login-account">
+
+	<h2>${Resource.msg('account.login.logininclude.customersheader','account',null)}
+	<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+	</h2>
+
+	<div class="login-box-content returning-customers clearfix">
+
+		<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+		<p>${Resource.msg('account.login.logininclude.registered','account',null)}</p>
+
+		<form action="${URLUtils.httpsContinue()}" method="post" class="clearfix" id="${pdict.CurrentForms.login.htmlName}">
+
+			<iscomment>Login Unsuccessful Error Message</iscomment>
+			<isif condition="${pdict.TempCustomer != null && pdict.TempCustomer.profile != null && pdict.TempCustomer.profile.credentials.locked}">
+				<div class="error-form">${Resource.msg('account.login.logininclude.locked','account',null)}</div>
+			<iselseif condition="${pdict.TempCustomer != null && pdict.TempCustomer.profile != null && (pdict.TempCustomer.profile.credentials.remainingLoginAttempts == 1)}">
+				<div class="error-form">${Resource.msg('account.login.logininclude.willbelocked','account',null)}</div>
+			<iselseif condition="${pdict.RegistrationStatus != false && pdict.RegistrationStatus.code == 'CustomerAlreadyExistError'}">
+				<div class="error-form">${Resource.msg('account.login.logininclude.loginfberror','account',null)}</div>
+			<iselseif condition="${!pdict.CurrentForms.login.loginsucceeded.valid}">
+				<div class="error-form">${Resource.msg('account.login.logininclude.loginerror','account',null)}</div>
+			</isif>
+
+			<fieldset>
+
+				<isinputfield formfield="${pdict.CurrentForms.login.username}" rowclass="username" type="input" dynamicname="true" requiredtext="${Resource.msg('login.username.missing-error','forms',null)}"/>
+				<isscript>
+					var attributes = {
+						autocomplete: "off"
+					};
+				</isscript>
+				<isinputfield formfield="${pdict.CurrentForms.login.password}" rowclass="password" type="password" dynamicname="true" requiredtext="${Resource.msg('login.password.missing-error','forms',null)}" attributes="${attributes}"/>
+
+				<div class="form-row form-row-button">
+					<button type="submit" value="${Resource.msg('global.login','locale',null)}" name="${pdict.CurrentForms.login.login.htmlName}">
+						${Resource.msg('global.login','locale',null)}
+					</button>
+					<isinputfield formfield="${pdict.CurrentForms.login.rememberme}" type="checkbox" rowclass="label-inline login-rememberme"/>
+				</div>
+
+				<a id="password-reset" href="${URLUtils.url('Account-PasswordResetDialog')}" title="${Resource.msg('account.login.logininclude.forgotpassword.label','account',null)}">
+					${Resource.msg('account.login.logininclude.forgotpassword','account',null)}
+				</a>
+
+				<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+			</fieldset>
+
+		</form>
+		</isif>
+
+		<div class="login-oauth">
+			<isinclude template="account/login/oauthlogininclude"/>
+		</div>
+
+	</div>
+
+</div>

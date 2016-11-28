@@ -1,0 +1,154 @@
+importPackage(dw.web);
+
+/**
+ * Get product options
+ *
+ * @param ProductOptionModel
+ *
+ **/
+function GetProductOptions(ProductOptionModel) {
+	var productOptions = {};
+	if (ProductOptionModel) {
+		var options = ProductOptionModel.getOptions();
+		for (var i = 0; i < options.length; i++) {
+			var opt = options[i];
+			productOptions[opt.htmlName] = ProductOptionModel.getSelectedOptionValue(opt).ID;
+		}
+	}
+	return productOptions;
+}
+
+/**
+ * Get variation attributes available on the product.
+ * If there are variants, the selected variant is used if it is set. Otherwise, the default
+ * variant is used if set, or the first variant.
+ * If a specific color is passed in from the query param, that color is used instead
+ * of the variant color.
+ *
+ * @param pdict PipelineDictionary the pdict is used to get the query string, Product
+ * and Product Variation Model
+ *
+ **/
+function GetVariationAttributes(pdict) {
+	var variationAttributes = {},
+		queryString = pdict.CurrentRequest.getHttpHeaders().get('x-is-query_string'),
+		queryStringArray = [],
+		colorValue;
+
+	// get color from URL if it is passed through
+	if (queryString) {
+		queryStringArray = queryString.split('&');
+		for (var x = 0; x < queryStringArray.length; x++) {
+			var parameter = queryStringArray[x];
+			if (parameter.indexOf('color') != -1) {
+				colorValue = parameter.split('=')[1];
+			}
+		}
+	}
+
+	var variantSelected = false,
+		PVM,
+		variant;
+	if (pdict.CurrentVariationModel && pdict.CurrentVariationModel.selectedVariant) {
+		PVM = pdict.CurrentVariationModel;
+		variant = PVM.selectedVariant;
+		variantSelected = true;
+	} else {
+		PVM = pdict.Product.variationModel;
+	}
+
+	// use default or first variant if it is not selected
+	if (!variantSelected) {
+		if (PVM.defaultVariant) {
+			variant = PVM.defaultVariant;
+		} else {
+			if (!PVM.variants.isEmpty()) {
+				variant = PVM.variants[0];
+			}
+		}
+	}
+
+	// Loop through all variation attributes and set them if the variant is selected
+	if (variant != null) {
+		for (var i = 0; i < PVM.productVariationAttributes.length; i++) {
+			var VA = PVM.productVariationAttributes[i];
+			var	valength = PVM.getAllValues(VA).length;
+			var	attributeDefinitionId = VA.getAttributeID();
+			var	vaId = VA.getID();
+				// @TODO why use `PVM.getProductVariationAttribute(vaId)` below instead of just `VA`?
+			var	vaValue = PVM.getVariationValue(variant, PVM.getProductVariationAttribute(vaId)).value;
+			var	selectedValue;
+			// for variation group products, select the values which are configured
+			if (pdict.Product.variationGroup) {
+				// be a little more careful because selected value for variation group could be null
+				var vgValue = PVM.getSelectedValue(PVM.getProductVariationAttribute(vaId));
+				if (vgValue) {
+					vaValue = vgValue.value;
+				}
+			}
+
+			switch (attributeDefinitionId) {
+				case 'size':
+					if (valength == 1 || variantSelected) {
+						selectedValue = vaValue;
+					}
+					break;
+				case 'color':
+					// use variant value if no color is passed through from URL
+					if (!colorValue) {
+						if (variantSelected) {
+							selectedValue = vaValue;
+						}
+					} else {
+						selectedValue = colorValue;
+					}
+					break;
+				default:
+					if (variantSelected) {
+						selectedValue = vaValue;
+					}
+					break;
+			}
+			if (selectedValue) {
+				variationAttributes['dwvar_' + pdict.Product.ID + '_' + vaId] = selectedValue;
+			}
+		}
+	}
+	return variationAttributes;
+}
+
+/**
+ * Create Product-Detail url for use in product/product.isml template
+ *
+ * @param pdict PipelineDictionary
+ *
+ **/
+function GetProductDetailUrl(pdict) {
+	var urlArgs = ['Product-Detail'];
+	var urlParams = {
+		pid: pdict.Product.ID,
+		source: pdict.CurrentHttpParameterMap.source.stringValue,
+		uuid: pdict.CurrentHttpParameterMap.uuid.stringValue,
+		Quantity: pdict.CurrentHttpParameterMap.Quantity.stringValue,
+		productlistid: pdict.CurrentHttpParameterMap.productlistid.stringValue
+	};
+
+	var variationAttributes = GetVariationAttributes(pdict);
+	var productOptions = GetProductOptions(pdict.CurrentOptionModel);
+
+	// construct the urlArgs array with params names and values
+	for (var param in urlParams) {
+		urlArgs.push(param);
+		urlArgs.push(urlParams[param]);
+	}
+	for (var attr in variationAttributes) {
+		urlArgs.push(attr);
+		urlArgs.push(variationAttributes[attr]);
+	}
+	for (var opt in productOptions) {
+		urlArgs.push(opt);
+		urlArgs.push(productOptions[opt]);
+	}
+	return URLUtils.url.apply(null, urlArgs);
+}
+

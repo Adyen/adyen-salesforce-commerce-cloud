@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>SLOT CONFIGURATION:  SLOT/ID: header-banner</iscomment>
+<div class="header-banner">
+	<isslot id="header-banner" description="Slot above the site header" context="global" />
+</div>
+<div class="top-banner" role="banner">
+	<button class="menu-toggle"><i class="menu-icon fa fa-bars"></i><span class="visually-hidden">Menu</span></button>
+	<h1 class="primary-logo">
+		<a href="${URLUtils.url('Home-Show')}" title="${Resource.msgf('global.homepage.tooltip', 'locale', null, Resource.msg('global.storename', 'locale', null), Resource.msg('global.home', 'locale', null) )}">
+			<img src="${URLUtils.staticURL('/images/logo.png')}" alt="${Resource.msg('global.storename', 'locale', null)}">
+			<span class="visually-hidden">${Resource.msg('global.storename', 'locale', null)}</span>
+		</a>
+	</h1>
+
+	<nav id="navigation" role="navigation">
+
+		<div class="header-search">
+			<isinclude template="search/simplesearch"/>
+		</div>
+
+		<iscomment>INCLUDE: category menu</iscomment>
+		<isinclude url="${URLUtils.url('Home-IncludeHeaderMenu')}"/>
+
+		<!--  utility user menu -->
+		<ul class="menu-utility-user">
+
+			<iscomment>Store Locator</iscomment>
+			<li class="stores">
+				<a href="${URLUtils.http('Stores-Find')}" title="${Resource.msg('global.header.storelocator.label', 'locale', null)}">
+					<i class="fa fa-map-marker"></i>
+					<span>${Resource.msg('global.header.storelocator', 'locale', null)}</span>
+				</a>
+			</li>
+
+			<iscomment>INCLUDE: Customer login information, login, etc. (contains personal information, do not cache)</iscomment>
+			<isinclude url="${URLUtils.url('Home-IncludeHeaderCustomerInfo')}"/>
+
+		</ul>
+
+		<iscomment>Country Selector</iscomment>
+		<isinclude template="components/header/countryselector"/>
+
+	</nav>
+
+	<iscomment>INCLUDE: Mini-cart, do not cache</iscomment>
+	<div id="mini-cart">
+		<isinclude url="${URLUtils.url('Cart-MiniCart')}"/>
+	</div>
+
+</div><!-- /header -->

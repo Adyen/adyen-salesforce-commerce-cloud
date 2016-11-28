@@ -1,0 +1,61 @@
+<!--- TEMPLATENAME: redirect_sha256.isml --->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<iscomment>
+	Redirects to Adyen by auto-submitting the form
+	
+	This creates a reporting entry for source codes in case a source code is available.
+	It relies on the fact, that the source code entry page is a special pipeline and
+	a redirect is executed at the end using this template.
+
+	If no source code is available in the session, no data is reported. So it is safe
+	to keep the include here and use the redirect for other purposes.
+</iscomment>
+<isinclude template="util/reporting/ReportSourceCodes.isml"/>
+
+<head>
+	<title>${Resource.msg('redirect.payment','common',null)}</title>
+	<meta http-equiv="Robots" content="noindex, follow" />
+</head>
+<body>
+	
+	<isscript>
+		importPackage( dw.system );
+		var directoryLookup : Boolean = Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup");
+		var Mode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+		var Debug : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Debug");
+		var inputType : String = Debug ? 'text' : 'hidden';
+		
+		if (directoryLookup) {
+			var url : String = "https://test.adyen.com/hpp/skipDetails.shtml";
+			if (Mode == "LIVE") {
+				url = "https://live.adyen.com/hpp/skipDetails.shtml";
+			}
+		} else {
+			var url : String = "https://test.adyen.com/hpp/pay.shtml";
+			if (Mode == "LIVE") {
+				url = "https://live.adyen.com/hpp/pay.shtml";
+			}
+		}
+		
+	</isscript>
+	
+	<!--- TEMPLATENAME: redirect.isml --->
+	<form name="adyenForm" id="adyenForm" action="${url}" method="post">
+	
+		<isloop items="${pdict.ParamsMap.entrySet()}" var="keyvalue">
+			<input type="${inputType}" name="${keyvalue.key}" value="${keyvalue.value}" /> </br>
+		</isloop>
+		
+		<isif condition="${Debug}">
+			<input type="submit" value='pay' style='margin-left:200px'/>
+		</isif>
+	</form>
+	
+	<isif condition="${!Debug}">
+		<script>document.forms[0].submit();</script>
+	</isif>    
+
+
+</body>
+</html>

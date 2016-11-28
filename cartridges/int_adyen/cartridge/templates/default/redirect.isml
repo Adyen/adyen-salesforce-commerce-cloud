@@ -18,18 +18,25 @@
 </head>
 <body>
 	
+	<iscomment>
+		${Resource.msg('redirect.payment','common',null)}
+		<input type="hidden" name="countryCode"        	 value="DE" /> 
+		<input type="hidden" name="shopperLocale"        value="de" />
+		<input type="submit" value='pay'/>
+		<input type="hidden" name="currencyCode"         value="${pdict.Order.currencyCode}" /> 
+		<input type="hidden" name="currencyCode"         value="EUR" /> 
+	</iscomment>
+	
 	<isscript>
 		importPackage( dw.system );
 		var directoryLookup : Boolean = Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup");
 		var Mode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
 		var Debug : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Debug");
-		var inputType : String = Debug ? 'text' : 'hidden';
 		
 		if (directoryLookup) {
-			var url : String = "https://test.adyen.com/hpp/skipDetails.shtml";
-			
+			var url : String = "https://test.adyen.com/hpp/details.shtml";
 			if (Mode == "LIVE") {
-				url = "https://live.adyen.com/hpp/skipDetails.shtml";
+				url = "https://live.adyen.com/hpp/details.shtml";
 			}
 		} else {
 			var url : String = "https://test.adyen.com/hpp/pay.shtml";
@@ -41,11 +48,27 @@
 	</isscript>
 	
 	<!--- TEMPLATENAME: redirect.isml --->
-	<form name="adyenForm" id="adyenForm" action="${url}" method="post">
-	
-		<isloop items="${pdict.ParamsMap.entrySet()}" var="keyvalue">
-			<input type="${inputType}" name="${keyvalue.key}" value="${keyvalue.value}" /> </br>
-		</isloop>
+	<form name="shopForm" id="shopForm" action="${url}" method="post">      
+		<input type="hidden" name="skinCode"             value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_skinCode')}" /> 
+		<input type="hidden" name="merchantAccount"      value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_merchantCode')}" /> 
+		<input type="hidden" name="shopperEmail"         value="${pdict.shopperEmail}" /> 
+		<input type="hidden" name="shopperReference"     value="${pdict.shopperReference}" />  
+		<input type="hidden" name="recurringContract"    value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_recurringType')}" /> 
+		<input type="hidden" name="allowedMethods"       value="${pdict.allowedMethods}" /> 
+		<input type="hidden" name="merchantReference"    value="${pdict.OrderNo}" /> 
+		<input type="hidden" name="shipBeforeDate"       value="2019-04-06T18:10:29+02:00" />
+		<input type="hidden" name="sessionValidity"      value="2019-04-06T18:10:29+02:00" />
+		<input type="hidden" name="merchantSig"          value="${pdict.merchantSig}" /> 
+		<input type="hidden" name="paymentAmount"        value="${pdict.Amount100}" />
+		<input type="hidden" name="currencyCode"         value="${pdict.Order.currencyCode}" /> 
+		<input type="hidden" name="resURL"               value="${URLUtils.https('Adyen-ShowConfirmation', 'pc', pdict.Order.getBillingAddress().getPostalCode(), 'pn', pdict.Order.getBillingAddress().getPhone(), 'cn', pdict.Order.getCustomerNo(), 'ce', pdict.Order.getCustomerEmail())}" /> 
+        
+		<isif condition="${directoryLookup}">
+			<input type="hidden" name="brandCode" value="${pdict.CurrentHttpParameterMap.brandCode.value}" />
+			<isif condition="${!empty(pdict.CurrentHttpParameterMap.issuerId.value)}">
+				<input type="hidden" name="issuerId" value="${pdict.CurrentHttpParameterMap.issuerId.value}" />
+			</isif>
+		</isif>
 		
 		<isif condition="${Debug}">
 			<input type="submit" value='pay' style='margin-left:200px'/>

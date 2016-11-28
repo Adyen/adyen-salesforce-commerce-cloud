@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('account.giftregistry.title','account',null)} Login</h1>
+
+	<div class="col-1">
+
+		<isinclude template="account/login/logininclude"/>
+
+		<div class="login-box login-search-gift clearfix">
+
+			<h2>${Resource.msg('account.giftregistry.searchheader','account',null)}
+			<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+			</h2>
+
+			<div class="login-box-content">
+
+				<p>${Resource.msg('account.giftregistry.searchmessage','account',null)}</p>
+
+				<isinclude template="account/giftregistry/giftregistrysearch"/>
+
+			</div>
+
+		</div>
+
+	</div><!-- END: page column -->
+
+	<div class="col-2">
+
+		<div class="login-box login-create-account clearfix">
+
+			<h2>${Resource.msg('globalaccount.createheader','locale',null)}</h2>
+
+			<div class="login-box-content">
+				<p>${Resource.msg('globalaccount.createmessage','locale',null)}</p>
+
+				<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.login.htmlName}_register">
+					<fieldset>
+						<div class="form-row form-row-button">
+							<button type="submit" value="${Resource.msg('global.createbutton','locale',null)}" name="${pdict.CurrentForms.login.register.htmlName}">
+								${Resource.msg('global.createnowbutton','locale',null)}
+							</button>
+						</div>
+						<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					</fieldset>
+				</form>
+
+				<iscontentasset aid="create-giftregistry-benefits"/>
+
+			</div>
+
+		</div>
+
+	</div><!-- END: page column -->
+
+</isdecorate>

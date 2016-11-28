@@ -1,0 +1,40 @@
+/**
+ * CheckForNewBonusDiscountLineItem.ds
+ *
+ * This script take the CurrentHttpParameterMap and converts it to a JSON object.
+ *
+ * @input PreviousBonusDiscountLineItems : dw.util.Collection
+ * @input NewBonusDiscountLineItems : dw.util.Collection
+ * @output BonusDiscountLineItem : dw.order.BonusDiscountLineItem
+ *
+ */
+
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try
+	{
+		var prevItems : Collection = pdict.PreviousBonusDiscountLineItems;
+		var newItems : Collection = pdict.NewBonusDiscountLineItems;
+		
+		var iter : Iterator = newItems.iterator();
+		while (iter.hasNext())
+		{
+			var newItem : BonusDiscountLineItem = iter.next();
+			if (! prevItems.contains(newItem))
+			{
+				pdict.BonusDiscountLineItem = newItem;
+				break;
+			}
+		}
+	}
+	catch (e)
+	{
+		Logger.error(e);			
+	}
+   	
+   	return PIPELET_NEXT;
+}

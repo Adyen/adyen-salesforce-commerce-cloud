@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+<isinclude template="util/modules"/>
+
+<div class="product-slot product-listing">
+	<h2><isprint value="${slotcontent.calloutMsg}"/></h2>
+	<ul class="search-result-items tiles-container">
+		<isloop items="${slotcontent.content}" var="product">
+			<isobject object="${product}" view="recommendation">
+				<li class="grid-tile"><isproducttile product="${product}" showswatches="${true}" showpricing="${true}" showpromotion="${true}" showrating="${true}"/></li>
+			</isobject>
+		</isloop>
+	</ul>
+</div>

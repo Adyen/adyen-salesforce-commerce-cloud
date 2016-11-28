@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates a mini credit card display.
+	Only shown if Owner, Type and Number are not empty.
+
+	Parameters:
+		card: the PaymentInstrument object to display
+		show_expiration: whether the expiration date should be displayed
+</iscomment>
+<isscript>
+	var ccType, ccNumber, ccMonth, ccYear, ccOwner;
+
+	if (pdict.card) {
+		ccType = pdict.card.creditCardType;
+		ccNumber = pdict.card.maskedCreditCardNumber;
+		ccMonth = pdict.card.creditCardExpirationMonth;
+		ccYear = pdict.card.creditCardExpirationYear;
+		ccOwner = pdict.card.creditCardHolder;
+	}
+</isscript>
+<isif condition="${ccOwner && ccType && ccNumber}">
+	<div class="cc-owner"><isprint value="${ccOwner}"/></div>
+	<div class="cc-type"><isprint value="${ccType}"/></div>
+	<div class="cc-number"><isprint value="${ccNumber}"/></div>
+	<isif condition="${pdict.show_expiration}"><div class="cc-exp">${Resource.msg('account.payment.minicardcard.expires','account',null)} ${Resource.msgf('global.creditcard.expirydate.separator','locale',null, StringUtils.formatNumber(ccMonth, "00"), StringUtils.formatNumber(ccYear, "0000"))}</div>
+	</isif>
+</isif>

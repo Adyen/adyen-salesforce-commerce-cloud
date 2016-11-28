@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- TemplateComment :  EMail form for inviting someone to shop  -->
+<iscontent type="text/html" charset="UTF-8"/>
+<isinclude template="util/modules"/>
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/></isif></subject>
+<html>
+<head>
+
+</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+					<tr>
+						<td colspan="2" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+							<a href="${URLUtils.httpHome()}" title="${Resource.msg('global.storename','locale',null)}">
+								<img src="${URLUtils.httpStatic('/images/logo.gif')}" alt="${Resource.msg('global.storename','locale',null)}" style="border:none;"/>
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+							<isset name="image" value="${pdict.Product.getImage('medium',0)}" scope="page"/>	
+							<isset name="imageURL" value="${image.httpURL}" scope="page"/>	
+							<isif condition="${!empty(image)}">
+								<isset name="thumbnailUrl" value="${imageURL}" scope="page"/>
+								<isset name="imageAlt" value="${image.alt}" scope="page"/>
+								<isset name="imageTitle" value="${image.title}" scope="page"/>
+							<iselse/>
+								<isset name="thumbnailUrl" value="${URLUtils.httpStatic('/images/noimagesmall.png')}" scope="page"/>
+								<isset name="imageTitle" value="${p_productli.product.name}" scope="page"/>
+								<isset name="imageAlt" value="${p_productli.product.name}" scope="page"/>
+							</isif>
+							<img src="${thumbnailUrl}" alt="${imageAlt}" title="${imageTitle}"/>
+						</td>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+							<h1 style="font-size:20px;font-family:georgia;font-weight:normal;"><isprint value="${pdict.Product.name}" encoding="off"/></h1>
+							<p>${Resource.msg('product.item','product',null)}: <isprint value="${pdict.Product.ID}" encoding="off"/></p>
+							<isdisplayvariationvalues product="${pdict.Product}"/>
+							<isloop iterator="${pdict.ProductOptionModel.options}" alias="productOption">
+								<isset name="selectedOptionValue" value="${pdict.ProductOptionModel.getSelectedOptionValue(productOption)}" scope="page"/>					
+								<isprint value="${productOption.displayName}"/>: 
+								<isprint value="${selectedOptionValue.displayValue}"/>			
+							</isloop>
+							<isif condition="${pdict.Product.shortDescription}">
+								<p>
+									${Resource.msg('global.description','locale',null)}<br />
+									<isprint value="${pdict.Product.shortDescription}" encoding="off"/>
+								</p>
+							</isif>
+						</td>
+					</tr>
+				</table>						
+			</center>
+		</td>
+	</tr>
+</table>
+	
+</body>
+</html>

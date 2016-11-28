@@ -1,0 +1,176 @@
+#mini-cart {
+	position: absolute;
+	right: 1.6em;
+	top: .2em;
+	z-index: 20;
+	@media screen and (min-width: 768px) {
+		right: 5.7em;
+		top: .5em;
+	}
+	.mini-cart-name {
+		a {
+			color: $citrus;
+		}
+	}
+}
+
+.mini-cart-total {
+	position: relative;
+	.mini-cart-link {
+		color: $citrus;
+		text-transform: uppercase;
+		i {
+			font-size: 3em;
+		}
+		.minicart-quantity {
+			background-color: $sangria;
+			border-radius: 10px;
+			color: $white;
+			padding: 1px 4px;
+			position: absolute;
+			right: 0;
+			text-align: center;
+			top: 0;
+		}
+	}
+}
+
+.mini-cart-total {
+	.mini-cart-empty {
+		color: $nobel;
+		transition: color 500ms ease;
+		&:hover {
+			color:$citrus;
+			text-decoration: none;
+		}
+		.minicart-quantity {
+			background-color: $white;
+			border: 1px solid $nobel;
+			color: $nobel;
+		}
+	}
+}
+
+.mini-cart-content {
+	background-color: $white;
+	border: 1px solid $very-light-gray;
+	box-shadow: -2px 3px 3px rgba(0, 0, 0, 0.3);
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 2.5em;
+	width: 18rem;
+	#mini-cart:hover & {
+		display: block;
+	}
+}
+
+.mini-cart-header {
+	font-size: 1.1em;
+	font-weight: 700;
+	padding: 1em 1em 0.5em;
+	text-transform: uppercase;
+}
+
+.mini-cart-products {
+	max-height: 360px;
+	padding: 0.5em;
+	overflow: auto;
+}
+
+.mini-cart-product {
+	border-bottom: 1px solid $dark-gray;
+	overflow: hidden;
+	padding: 0.5em;
+	position: relative;
+	&:last-of-type {
+		border: none;
+	}
+	&.collapsed {
+		.mini-cart-name,
+		.mini-cart-attributes,
+		.mini-cart-pricing,
+		.product-availability-list {
+			width: 90%;
+		}
+		.mini-cart-image {
+			display: none;
+		}
+	}
+	.mini-cart-toggle {
+		cursor: pointer;
+		font-size: 1.5em;
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+}
+
+.mini-cart-image {
+	float: left;
+	width: 50%;
+	img {
+		max-width: 90%;
+	}
+}
+
+.mini-cart-name {
+	float: right;
+	font-style: italic;
+	width: 50%;
+}
+
+.mini-cart-attributes, .mini-cart-product .product-availability-list {
+	float: right;
+	font-size: 0.9em;
+	font-weight: bold;
+	width: 50%;
+}
+
+.mini-cart-pricing {
+	clear: right;
+	float: right;
+	font-size: 0.9em;
+	width: 50%;
+}
+
+.mini-cart-totals {
+	text-align: center;
+	button,
+	.button {
+		// the following 3 properties height, line-height and overflow
+		// are needed to align the 2 buttons
+		height: 30px;
+		line-height: 1;
+		overflow: inherit;
+	}
+}
+
+.mini-cart-subtotals {
+	font-weight: 700;
+	margin: 0 auto;
+	padding-top: .5em;
+	width: 16rem; //for IE
+	width: max-content;
+	.label {
+		margin: 0 .5rem;
+	}
+	.value {
+		margin-right: .5rem;
+	}
+}
+
+.mini-cart-slot {
+	background: none repeat scroll 0 0 $gainsboro;
+	border: 1px solid $gainsboro;
+	font-size: 0.9em;
+	font-style: italic;
+	margin: 1em 1em;
+}
+
+.mini-cart-link-checkout {
+	clear: both;
+	display: block;
+	margin: 1em 0;
+	text-align: center;
+}

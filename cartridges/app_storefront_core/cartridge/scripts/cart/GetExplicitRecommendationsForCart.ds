@@ -1,0 +1,145 @@
+/**
+ * This script gets a list of explict recommendations based on products in the cart.
+ *
+ * @input  MaxNoRecommendations : Number Maximum number of product recommendations returned by this script
+ * @input  MaxRecommendationsPerProduct : Number Maximum number of recommendations returned by this script for an item in the basket
+ * @input  RecommendationType : Number the type of recommendation to filter by.  Script will return all recommendations if null.
+ * @input  LineItemCtnr : dw.order.LineItemCtnr
+ * @output ExplicitRecommendations : dw.util.Collection A set of recommended products or null if the feature is disabled or an error occurred
+ */
+
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.util );
+importPackage( dw.catalog );
+importPackage( dw.net );
+ 
+ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// Get input parameters
+
+	var ctnr : LineItemCtnr = pdict.LineItemCtnr;
+	if (ctnr == null)
+	{
+		// This is an error.  Just return empty list.
+		pdict.ExplicitRecommendations = new ArrayList();
+		return PIPELET_NEXT;		
+	}
+
+	var maxNoRecommendations : Number = pdict.MaxNoRecommendations; 
+	if (maxNoRecommendations == null)
+	{
+		maxNoRecommendations = 5;
+	}
+	
+	var maxRecommendationsPerProduct : Number = pdict.MaxRecommendationsPerProduct;
+	if (maxRecommendationsPerProduct == null)
+	{
+		maxRecommendationsPerProduct = 0;
+	}
+	
+	var recommendationType : Number = pdict.RecommendationType;
+
+	// Recommendation types as defined in the Business Manager
+    // 1 (cross-sell)
+    // 2 (up-sell)
+    // 3 (other)
+	if (recommendationType == null || (recommendationType != 1 
+										&& recommendationType != 2 
+										&& recommendationType != 3))
+	{
+		// This is an error.  Just return empty list.
+		pdict.ExplicitRecommendations = new ArrayList();
+		return PIPELET_NEXT;
+	}
+	
+	// Get recommendations for products in basket with the following rules:
+	// 1)  Do not show duplicate recommendations.
+	// 2)  Do not show recommendations for items already in basket.
+	// 3)  Do not show more than M recommendations altogether.
+	// 4)  Do not show more than N recommendations per product. 
+	// 5)  Recommendations will be ordered first by the order of the source object in 
+	//     the basket and then secondly by the position of the recommendation.  
+	
+	
+	var recommendedProducts : HashSet = new HashSet();
+	var productsWithRecommendations : HashMap = new HashMap(); // Number of recommendations per each product in cart map
+	var returnedRecommendations : List = new ArrayList();  // The list of recommendations we return
+	
+	// Iterate through products in basket.
+	var productLineItems : Iterator = ctnr.getAllProductLineItems().iterator();
+	while(productLineItems.hasNext())
+	{
+		var productLineItem : ProductLineItem = productLineItems.next();
+		var product : Product = productLineItem.getProduct();
+		if (product == null)
+		{
+			continue;
+		}
+		
+		var productID : String = product.getID();
+		
+		// Iterate throught the list recommendations for this product.  These will be ordered by position.
+		var recommendations : Iterator = product.getRecommendations(recommendationType).iterator();
+		while (recommendations.hasNext())
+		{
+			var recommendation : Recommendation = recommendations.next();
+			var recommendedProduct : Product = recommendation.getRecommendedItem();
+			
+			if (recommendedProduct == null)
+			{
+				// Null target product.  Should never happen.
+				continue;
+			}
+			
+			var recommendedProductID : String = recommendedProduct.getID();
+			if (recommendedProducts.contains(recommendedProductID))
+			{
+				// Do not show duplicate recommendations.
+				continue;
+			}
+			else if (ctnr.getProductLineItems(recommendedProductID).size() > 0)
+			{
+				// Do not show recommendations for items already in ctnr.
+				continue;
+			}
+			
+			var numRecommendationsForProduct : Number = productsWithRecommendations.get(productID);
+			if (numRecommendationsForProduct == null)
+			{
+				numRecommendationsForProduct = 0;
+			}
+
+					
+			if (maxRecommendationsPerProduct > 0 && numRecommendationsForProduct >= maxRecommendationsPerProduct)
+			{
+				// Do not display any more recommendations for this product.
+				continue;
+			}
+			else
+			{
+				productsWithRecommendations.put(productID, numRecommendationsForProduct + 1);	
+			}
+			
+			// Add this recommendation to the list
+			returnedRecommendations.add(recommendation);
+
+			recommendedProducts.add(recommendedProductID);
+			
+			if (returnedRecommendations.length >= maxNoRecommendations)
+			{
+				// Do not display any more recommendations.
+				break;
+			}
+		
+		}
+	}
+
+	pdict.ExplicitRecommendations = returnedRecommendations;
+    
+	return PIPELET_NEXT;
+}
+
+

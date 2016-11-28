@@ -1,0 +1,7 @@
+<isscript>
+var dynamicForm = require('~/cartridge/scripts/common/dynamicForm');
+var fields = dynamicForm.getFields(pdict.formobject, pdict.formdata);
+</isscript>
+<isloop items="${fields}" var="field">
+	<isinputfield formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+</isloop>

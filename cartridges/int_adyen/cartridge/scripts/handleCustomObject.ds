@@ -1,0 +1,275 @@
+/**
+* Demandware Script File
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+* @input CustomObj : dw.object.CustomObject 
+* @output Order			: dw.order.Order	The updated order 
+* @output EventCode		: String 			The event code
+* @output SkipNotification	: Boolean 			Skip email notification
+* @output RefusedHpp		: Boolean			Indicates that payment was made with using Adyen method and was refused
+* @output Pending  		: Boolean			Indicates that payment is in pending status
+* @output SkipOrder  		: Boolean			Indicates that we should skip order, order creation date > current date
+*
+*/
+importPackage( dw.system );
+importPackage( dw.object );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var paymentSuccess : Boolean = false;
+	var refusedHpp : Boolean = false;
+	var pending : Boolean = false;
+	
+	var customObj : CustomObject = args.CustomObj;
+	
+	args.EventCode = customObj.custom.eventCode;
+	args.SkipNotification = false;
+	args.SkipOrder = false;
+
+	var orderId = customObj.custom.orderId.split("-", 1);
+	var order : Order = OrderMgr.getOrder(orderId[0]);
+	args.Order = order;
+
+	if (order == null) {
+		Logger.getLogger("Adyen", "adyen").fatal("Notification for not existing order {0} received.", customObj.custom.orderId);
+		return PIPELET_ERROR;
+	}
+	
+	var orderCreateDate : Date = order.creationDate;
+	var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
+	var currentDate = new Date();
+		
+	Logger.getLogger("Adyen", "adyen").debug("Order date {0} , orderCreateDateDelay {1} , currentDate {2}", orderCreateDate , orderCreateDateDelay, currentDate);
+	if(orderCreateDateDelay < currentDate) {
+		switch(customObj.custom.eventCode){
+			case "AUTHORISATION" :
+				if(customObj.custom.success == "true"){
+					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
+						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
+						paymentSuccess = true;
+						args.SkipNotification = true;
+					}
+					else if(order.paymentStatus == "PARTIALLY PAID"){
+						paymentSuccess = true;
+						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
+						args.SkipNotification = true;
+					}
+					else {
+						order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+						order.setExportStatus(Order.EXPORT_STATUS_READY);
+						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
+						args.SkipNotification = true;
+						paymentSuccess = true;
+					}  
+				}else{
+					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
+					args.SkipNotification = true;
+					// Determine if payment was refused and was used Adyen payment method 
+					if (customObj.custom.reason == "Refused") {
+						var paymentInstruments : Collection = order.getPaymentInstruments();
+						var paymentInstrument : PaymentInstrument;
+						for each (paymentInstrument in paymentInstruments) {
+							if (paymentInstrument.paymentMethod.equals("Adyen")) {
+								refusedHpp = true;
+								paymentSuccess = false;
+								setProcessedCOInfo(customObj);
+								return PIPELET_ERROR;
+								break;
+							}
+						}
+					} 
+				}
+				break;
+			case "CANCELLATION" :
+				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled.",order.orderNo);
+				setProcessedCOInfo(customObj);
+				return PIPELET_ERROR;
+				break;
+			case "CANCEL_OR_REFUND" :
+				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
+				setProcessedCOInfo(customObj);
+				return PIPELET_ERROR;
+				break;
+			case "REFUND" :
+				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
+				setProcessedCOInfo(customObj);
+				return PIPELET_ERROR;
+				break;
+			case "ORDER_OPENED" :
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  
+				paymentSuccess = true;
+				order.setPaymentStatus("PARTIALLY PAID");
+				break;	
+			case "ORDER_CLOSED" :
+				paymentSuccess = true;
+				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+				order.setExportStatus(Order.EXPORT_STATUS_READY);
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
+				break;	
+			case "PENDING" :
+				pending = true;
+				paymentSuccess = false;
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} was in pending status.",order.orderNo);
+				break;				
+			default:
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} received unhandled status {1}",order.orderNo,customObj.custom.eventCode);
+		}
+		//args.RefusedHpp = refusedHpp;
+		//args.Pending = pending;
+		
+		// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
+		if (!refusedHpp) {
+			// Add received information to order
+			
+			/*
+				PSP Reference must be persistent.
+				Some modification requests (Capture, Cancel) send identificators of the operations, we mustn't overwrite the original value by the new ones
+			*/
+			if (empty(order.custom.Adyen_pspReference) && !empty(customObj.custom.pspReference)) {
+				order.custom.Adyen_pspReference = customObj.custom.pspReference;
+			}
+			
+			order.custom.Adyen_value = customObj.custom.value;
+			order.custom.Adyen_eventCode = customObj.custom.eventCode;
+			
+			// Payment Method must be persistent. When payment is cancelled, Adyen sends an empty string here
+			if (empty(order.custom.Adyen_paymentMethod) && !empty(customObj.custom.paymentMethod)) {
+				order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
+			}
+			
+			// Add a note with all details
+			order.addNote("Adyen Payment Notification", createLogMessage(customObj));
+		}
+		
+		if (paymentSuccess === true) {
+			var now : Date = new Date();
+			customObj.custom.processedDate = now;
+			customObj.custom.updateStatus = "SUCCESS";
+			customObj.custom.processedStatus = "SUCCESS";
+		}
+    } else {
+    	Logger.getLogger("Adyen", "adyen").debug("Order date > current Date.");
+    	args.SkipOrder = true;
+		return PIPELET_NEXT;
+	}
+		
+	args.RefusedHpp = refusedHpp;
+	args.Pending = pending;
+
+   return PIPELET_NEXT;
+}
+
+function setProcessedCOInfo(customObj)
+{
+	var now : Date = new Date();
+	customObj.custom.processedDate = now;
+	customObj.custom.updateStatus = "SUCCESS";
+	customObj.custom.processedStatus = "SUCCESS";
+}
+
+function createLogMessage(customObj){
+	var VERSION : String= customObj.custom.version;
+	var msg = "";
+	msg = "AdyenNotification v " + VERSION + " - Payment info (Called from : " + customObj.custom.httpRemoteAddress + ")";
+	msg = msg + "\n================================================================\n";
+    //msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
+    msg = msg + "reason : " +customObj.custom.reason;
+	msg = msg + "\neventDate : " + customObj.custom.eventDate;
+	msg = msg + "\nmerchantReference : " + customObj.custom.merchantReference; 
+	msg = msg + "\ncurrency : " + customObj.custom.currency;
+	msg = msg + "\npspReference : " + customObj.custom.pspReference;
+	msg = msg + "\nmerchantAccountCode : " + customObj.custom.merchantAccountCode;
+	msg = msg + "\neventCode : " + customObj.custom.eventCode;
+	msg = msg + "\nvalue : " + customObj.custom.value;
+	msg = msg + "\noperations : " + customObj.custom.operations;
+	msg = msg + "\nsuccess : " + customObj.custom.success;
+	msg = msg + "\npaymentMethod : " + customObj.custom.paymentMethod;
+	msg = msg + "\nlive : " + customObj.custom.live;
+	return msg;
+}
+
+function createDelayOrderDate(orderCreateDate : Date)
+{
+	var year = orderCreateDate.getUTCFullYear(); 
+	var month = orderCreateDate.getUTCMonth() + 1; 
+	var day = orderCreateDate.getUTCDate(); 
+	var hours = orderCreateDate.getUTCHours(); 
+	var mins = orderCreateDate.getUTCMinutes(); 
+	
+	var adyenDelayMin : Number = 1;
+	if (!empty(dw.system.Site.getCurrent().getCustomPreferenceValue("AdyenNotificationDelayMinutes"))) {
+		adyenDelayMin = dw.system.Site.getCurrent().getCustomPreferenceValue("AdyenNotificationDelayMinutes");
+	}
+	var delayMins : dw.util.BigInteger = dw.util.BigInteger(adyenDelayMin);
+	var hoursDelay : dw.util.BigInteger = delayMins.divide(60);
+	var hoursDelayNumber = hoursDelay.get();
+	
+	var resultDelayMins : Number = 0;
+	var resultMonthDelay : Number = 0;
+	var resultHoursDelay : Number = 0;
+	var resultDayDelays : Number = 0;
+	var resultYearDelay : Number = 0;
+
+	if (hoursDelayNumber == 0) {
+		resultDelayMins = mins + delayMins.get();
+	} else {
+		resultDelayMins = mins + (delayMins - (hoursDelayNumber * 60));
+	}
+	
+	if (resultDelayMins > 60) {
+		hoursDelayNumber++;
+		resultDelayMins = resultDelayMins - 60;
+	}
+	
+	if ((hours + hoursDelayNumber) > 24) {
+		resultDayDelays = 1;
+		resultHoursDelay = (hours + hoursDelayNumber) - 24;
+	} else {
+		resultHoursDelay = hours + hoursDelayNumber;
+	}
+	
+	if ((day + resultDayDelays) > 31) {
+		resultMonthDelay = 1;
+		resultDayDelays = (day + resultDayDelays) - 31;
+	} else {
+		resultDayDelays = day + resultDayDelays; 
+	}
+	
+	if ((month + resultMonthDelay) > 12) {
+		resultYearDelay = year + 1;
+		resultMonthDelay = (month + resultMonthDelay) - 12;
+	} else {
+		resultMonthDelay = month + resultMonthDelay;
+		resultYearDelay = year;
+	}
+	
+	var newDateString : String = resultYearDelay + "-" + pad(resultMonthDelay) + "-" + pad(resultDayDelays) + " " + pad(resultHoursDelay) + ":" 
+		+ pad(resultDelayMins) + ":" + pad( orderCreateDate.getUTCSeconds() );
+	var cal  = new dw.util.Calendar();
+	Logger.getLogger("Adyen", "adyen").debug("order delay timestring {0}",newDateString);
+	cal.parseByFormat(newDateString, "yyyy-MM-dd HH:mm:ss");
+	var newDate = cal.time;
+	return newDate;
+}
+
+function pad ( num : Number ) {
+    if ( num < 10 ) {
+        return '0' + num;
+    }
+    return num;
+}

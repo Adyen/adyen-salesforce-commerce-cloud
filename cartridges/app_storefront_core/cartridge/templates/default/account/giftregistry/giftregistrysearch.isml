@@ -1,0 +1,28 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<form action="${URLUtils.continueURL()}" method="post" class="registry-search" id="${pdict.CurrentForms.giftregistry.search.htmlName}">
+	<fieldset>
+		<isscript>
+			var attributes = {
+				maxlength: 255
+			};
+			var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+		</isscript>
+
+		<isdynamicform formobject="${pdict.CurrentForms.giftregistry.search.simple}" formdata="${currentCountry.dynamicForms.giftRegistrySearch.simple}"/>
+
+		<div class="gift-registry-advanced">
+			<a href="#" class="toggle">${Resource.msg('account.giftregistry.advanced','account',null)}</a>
+			<div class="toggle-content">
+				<isdynamicform formobject="${pdict.CurrentForms.giftregistry.search.advanced}" formdata="${currentCountry.dynamicForms.giftRegistrySearch.advanced}"/>
+			</div>
+		</div>
+		<div class="form-row form-row-button">
+			<button type="submit" value="${Resource.msg('global.find','locale',null)}" name="${pdict.CurrentForms.giftregistry.search.search.htmlName}">
+				${Resource.msg('global.find','locale',null)}
+			</button>
+		</div>
+		
+		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		
+	</fieldset>
+</form>

@@ -1,0 +1,89 @@
+.country-selector {
+	border-bottom: 5px solid darken($dim-gray, 10%);
+	color: $white;
+	width: 100%;
+	@media screen and (min-width: 768px) {
+		border-bottom: none;
+		padding: 0;
+		position: absolute;
+		top: -1rem;
+		right: .2rem;
+		z-index: 30;
+		width: auto;
+	}
+	.selector {
+		display: none;
+		margin-top: .5rem;
+		padding-left: 2rem;
+		&.active {
+			display: block;
+		}
+		@media screen and (min-width: 768px) {
+			background-color: $white;
+			border-radius: 3px;
+			box-shadow: -1px 2px 4px rgba(0, 0, 0, .3);
+			margin-top: 1rem;
+			padding: 1rem;
+		}
+	}
+	.current-country {
+		cursor: pointer;
+		padding: .8em 1rem;
+		&.selector-active {
+			border-bottom: 1px solid darken($night-rider, 10%);
+			.selector-icon {
+				transform: rotate(270deg);
+			}
+		}
+		@media screen and (min-width: 768px) {
+			padding: 0;
+			&.selector-active {
+				border-bottom: none;
+				padding-bottom: 0;
+				// prevent the text from shifting left to accommmodate the selector width
+				position: absolute;
+				right: 0;
+			}
+		}
+		.selector-icon {
+			margin-right: .3rem;
+			@media screen and (min-width: 768px) {
+				float: right;
+				margin-right: 0;
+				margin-left: .3rem;
+				// display as angle-down icon for desktop
+				transform: rotate(90deg);
+			}
+		}
+		.flag-icon {
+			border: none;
+		}
+	}
+	.continent-name {
+		margin-top: 0;
+		margin-bottom: .5rem;
+		@media screen and (min-width: 768px) {
+			color: $sangria;
+		}
+	}
+	.country {
+		margin-bottom: .5rem;
+	}
+	.locale {
+		border-right: 1px solid $gainsboro;
+		display: inline-block;
+		padding: 0 .3rem;
+		vertical-align: middle;
+		&:first-of-type {
+			padding-left: 0;
+		}
+		&:last-of-type {
+			border-right: none;
+			padding-right: 0;
+		}
+	}
+	.flag-icon {
+		border: 1px solid $gainsboro;
+		margin-right: .3rem;
+	}
+}

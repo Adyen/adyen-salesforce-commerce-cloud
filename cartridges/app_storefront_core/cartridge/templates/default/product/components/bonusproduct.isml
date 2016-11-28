@@ -1,0 +1,92 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${pdict.Product.master && pdict.CurrentVariationModel && pdict.CurrentVariationModel.variants.size() > 0}">
+    <isset name="imageProduct" value="${pdict.CurrentVariationModel.variants[0]}" scope="page"/>
+<iselse/>
+    <isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+</isif>
+<isif condition="${pdict.BonusDiscountLineItem.bonusProducts.size() > 1}">
+    <isif condition="${!empty(imageProduct.getImage('medium',0))}">
+        <isset name="imageUrl" value="${imageProduct.getImage('medium',0).getURL()}" scope="page"/>
+        <isset name="imageAlt" value="${imageProduct.getImage('medium',0).alt}" scope="page"/>
+        <isset name="imageTitle" value="${imageProduct.getImage('medium',0).title}" scope="page"/>
+    <iselse/>
+        <isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+        <isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+        <isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+    </isif>
+<iselse/>
+    <isif condition="${!empty(imageProduct.getImage('large',0))}">
+        <isset name="imageUrl" value="${imageProduct.getImage('large',0).getURL()}" scope="page"/>
+        <isset name="imageAlt" value="${imageProduct.getImage('large',0).alt}" scope="page"/>
+        <isset name="imageTitle" value="${imageProduct.getImage('large',0).title}" scope="page"/>
+    <iselse/>
+        <isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+        <isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+        <isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+    </isif>
+</isif>
+
+<div class="product-col-1">
+    <div class="product-primary-image">
+        <img class="primary-image" src="${imageUrl}" alt="${imageAlt}"/>
+    </div>
+</div>
+
+<div class="product-col-2  product-detail">
+    <h1 class="product-name" itemprop="name"><isprint value="${pdict.Product.name}"/></h1>
+
+    <div class="product-number">
+        ${Resource.msg('product.item','product',null)} <span itemprop="productID"><isprint value="${pdict.Product.ID}"/></span>
+    </div>
+
+    <span class="label">${Resource.msg('global.price','locale',null)}:</span>
+    <isprint value="${pdict.BonusDiscountLineItem.getBonusProductPrice(pdict.Product)}" />
+
+    <isif condition="${pdict.Product.bundle && pdict.Product.getBundledProducts().size() > 0}">
+        <iscomment>Display bundle Individual Products</iscomment>
+        <iscomment>Preserve the current product instance</iscomment>
+        <isset name="ProductBundle" value="${pdict.Product}" scope="pdict"/>
+        <isloop items="${pdict.Product.getBundledProducts()}" var="BundledProduct" status="bundleLoop">
+            <isset name="Product" value="${BundledProduct}" scope="pdict"/>
+            <isset name="ProductCount" value="${bundleLoop.count}" scope="pdict"/>
+            <isobject object="${pdict.Product}" view="setproduct">
+                <isinclude template="product/components/subbonusproduct"/>
+            </isobject>
+        </isloop>
+        <iscomment>restore the current product instance</iscomment>
+        <isset name="Product" value="${pdict.ProductBundle}" scope="pdict"/>
+    </isif>
+
+    <isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
+    <isset name="group" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
+    <isinclude template="product/components/group"/>
+
+    <isinclude template="product/components/variations"/>
+
+    <div class="product-add-to-cart">
+        <form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" name="${pdict.CurrentForms.product.addtocart.htmlName}" class="bonus-product-form">
+            <fieldset>
+                <isinclude template="product/components/options"/>
+                <input type="hidden" name="pid" value="${pdict.Product.ID}"/>
+                <input type="hidden" name="productUUID" value="${pdict.Product.UUID}"/>
+                <input type="hidden" name="bonusDiscountLineItemUUID" value="${pdict.BonusDiscountLineItem.UUID}"/>
+                <div class="inventory">
+                    <div class="quantity">
+                        <label for="qty-${pdict.Product.UUID}">${Resource.msg('global.qty','locale',null)}:</label>
+                        <input type="text" class="input-text" name="Quantity" id="qty-${pdict.Product.UUID}" size="2" maxlength="3" value="${Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()}"/>
+                    </div>
+                    <label class="quantity-error"/></label>
+                </div>
+                <isscript>
+                    var avm = pdict.Product.availabilityModel;
+                    var disableAttr = '';
+                    if (!(avm.availabilityStatus === dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK && avm.inventoryRecord != null && (avm.inventoryRecord.stockLevel.available || avm.inventoryRecord.perpetual)) {
+                        disableAttr = 'disabled="disabled"';
+                    }
+                </isscript>
+                <button type="submit" class="select-bonus-item" ${disableAttr}><span>${Resource.msg('global.select', 'locale', null)}</span></button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+

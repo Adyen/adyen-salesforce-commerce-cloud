@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+	<field formid="firstName" label="profile.firstname" type="string" mandatory="true" binding="firstName" max-length="50" missing-error="address.firstname.missing" range-error="address.field.invalid" />
+	<field formid="lastName" label="profile.lastname" type="string" mandatory="true" binding="lastName" max-length="50" missing-error="address.lastname.missing" range-error="address.field.invalid" />
+	<field formid="address1" label="resource.address1" type="string" mandatory="true" binding="address1" max-length="50" missing-error="resource.addresserror" range-error="address.field.invalid" />
+	<field formid="address2" label="resource.address2" type="string" mandatory="false" binding="address2" max-length="50" range-error="address.field.invalid" />
+	<field formid="city" label="resource.city" type="string" mandatory="true" binding="city" min-length="2" max-length="50" missing-error="address.city.missing" range-error="address.field.invalid" />
+
+	<!--  postal code -->
+	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="5" max-length="10" regexp="(^\d{5}(-\d{4})?$)|(^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Za-z]{1} *\d{1}[A-Za-z]{1}\d{1}$)" binding="postalCode"
+		missing-error="resource.errorzip"/>
+
+	<!-- use set of supported shipping countries -->
+	<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode" missing-error="address.country.missing" value-error="address.field.invalid">
+		<options>
+			<option optionid="us" label="country.unitedstates" value="us"/>
+		</options>
+	</field>
+
+	<!-- use global state list -->
+	<include formid="states" name="states"/>
+
+	<!-- phone is mandatory for shipping addresses -->
+	<field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="true" binding="phone" max-length="20" missing-error="address.phone.missing" range-error="address.field.invalid" />
+
+	<!-- actions provided by the edit shipping address dialog -->
+	<action formid="apply" valid-form="true"/>
+	<action formid="remove" valid-form="false"/>
+</form>

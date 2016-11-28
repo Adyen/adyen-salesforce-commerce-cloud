@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: corezipcode.isml </iscomment>
+	 	<form action="${URLUtils.url('StoreInventory-ShowAvailableStores')}" method="post">
+			<fieldset>
+				<div class="form-row label-above">
+					<label for="zipCode">${Resource.msg('storelist.lightbox.enterzip','storepickup',null)}</label>
+					<input type="text" class="input-text" name="zipCode" value="" />
+					<input type="hidden" name="pid" value="${pdict.CurrentHttpParameterMap.pid.value}" />
+					<button type="submit" value="${Resource.msg('global.go','locale',null)}" name="simplesearch">
+						${Resource.msg('global.go','locale',null)}
+					</button>
+				</div>
+			</fieldset>
+		</form>
+		<isif condition="${!empty(pdict.CurrentHttpParameterMap.pid)}">
+			<a href="${URLUtils.url('Product-Show','pid', pdict.CurrentHttpParameterMap.pid)}">${Resource.msg('global.cancel','locale',null)}</a>
+		</isif>
