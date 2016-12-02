@@ -31,9 +31,6 @@ importPackage( dw.crypto );
 importPackage( dw.svc );
 importScript('libs/libAdyen.ds');
 
-//script include
-var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
-
 function execute( args : PipelineDictionary ) : Number {
 	
 	var VERSION : String = "4";
@@ -53,7 +50,7 @@ function execute( args : PipelineDictionary ) : Number {
 			return PIPELET_ERROR;  
 		}
 		
-		var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;	
+		var myAmount = args.Amount * 100;	
 		var orderNo = order.currentOrderNo;	
 		var a = Math.floor(Math.random()*10000);
 		var c : Object = args.PaymentInstrument;
@@ -62,13 +59,17 @@ function execute( args : PipelineDictionary ) : Number {
 		var card : Object = f.billing.paymentMethods.creditCard;
 		var cardnr : String = card.number.value;
 		var cardcvc : String = card.cvn.value;
-
-		if (AdyenHelper.getAdyenCseEnabled()) {
-			var encryptedData : String = card.encrypteddata.value;
-			
-			if (empty(encryptedData)) {
-				return PIPELET_ERROR;
-			}
+		
+		// AVS support
+		var billingDetails : String = '';
+		var billingAddr : OrderAddress = args.Order.getBillingAddress();
+		if (dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_enableAVS")) {
+			billingDetails += "&paymentRequest.card.billingAddress.city=" + encodeURIComponent(billingAddr.city) +
+			"&paymentRequest.card.billingAddress.street=" + encodeURIComponent(billingAddr.custom.streetName) +
+			"&paymentRequest.card.billingAddress.houseNumberOrName=" + encodeURIComponent(billingAddr.suite) +
+			"&paymentRequest.card.billingAddress.postalCode=" + encodeURIComponent(billingAddr.postalCode) +
+			"&paymentRequest.card.billingAddress.stateOrProvince=" + encodeURIComponent(billingAddr.stateCode) +
+			"&paymentRequest.card.billingAddress.country=" + encodeURIComponent(billingAddr.countryCode.value);
 		}
 		
 		var currentRequest : Request = (args.CurrentRequest)? args.CurrentRequest : request;
@@ -76,58 +77,30 @@ function execute( args : PipelineDictionary ) : Number {
 		var userAgent : String = currentRequest.httpUserAgent;
 		
 		
-		var encryptedDataObj : Object;
-		var billingAddress : Object;
-		var card : Object;
-		var jsonObjNew :JSON = {};
-		if (AdyenHelper.getAdyenCseEnabled()) {
-			jsonObjNew.additionalData = {
-				"card.encrypted.json": encryptedData	
-			};	
-		} else {
-			jsonObjNew.card = {
-			    "number": cardnr,
-			    "expiryMonth": c.creditCardExpirationMonth,
-			    "expiryYear": c.creditCardExpirationYear,
-			    "cvc": cardcvc,
-			    "holderName": c.creditCardHolder
-			};
-		}
-		
-		if (AdyenHelper.getAdyenAVSEnabled()) {
-			var billingAddr : OrderAddress = args.Order.getBillingAddress();
-			jsonObjNew.billingAddress = {
-				"city": billingAddr.city,
-				"country": billingAddr.countryCode.value,
-				"houseNumberOrName": billingAddr.suite,
-				"postalCode": billingAddr.postalCode,
-				"stateOrProvince": billingAddr.stateCode,
-				"street": billingAddr.custom.streetName
-			};
-		};
-		
-		jsonObjNew.amount = {
-						"currency": args.Amount.currencyCode,
-					    "value": myAmount
-					};
-		jsonObjNew.merchantAccount = MERCHANTACCOUNT;
-		jsonObjNew.reference = orderNo;
-		jsonObjNew.browserInfo = {
-			"acceptHeader": acceptHeader,
-		    "userAgent": userAgent
-		};
+		var params="action=" + "Payment.authorise" +
+			"&paymentRequest.reference=" + encodeURIComponent(orderNo) + 
+			"&paymentRequest.shopperReference=" + encodeURIComponent(order.customerNo) +
+			"&paymentRequest.merchantAccount=" + encodeURIComponent(MERCHANTACCOUNT) +
+			"&paymentRequest.shopperEmail=" + encodeURIComponent(order.customerEmail) +
+			"&paymentRequest.amount.value=" + encodeURIComponent(myAmount) +
+			"&paymentRequest.amount.currency=" + encodeURIComponent(args.Amount.currencyCode) +
+			"&paymentRequest.card.expiryMonth=" + encodeURIComponent(c.creditCardExpirationMonth) +
+			"&paymentRequest.card.expiryYear=" + encodeURIComponent(c.creditCardExpirationYear) +
+			"&paymentRequest.card.holderName=" + encodeURIComponent(c.creditCardHolder) +
+			"&paymentRequest.card.number=" + encodeURIComponent(cardnr) +
+			"&paymentRequest.card.cvc=" + encodeURIComponent(cardcvc) + //for testing use cardcvc=737
+			"&paymentRequest.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) + // added for 3DS
+		    "&paymentRequest.browserInfo.userAgent=" + encodeURIComponent( userAgent ) + // added for 3DS
+		    billingDetails; // added for AVS
 		
 		var callResult = null;
-		var service = AdyenHelper.getService(AdyenHelper.SERVICE.SEND);
-		if (service == null) {
-			return PIPELET_ERROR;
-		}
+		var service : Service = ServiceRegistry.get("adyen.http.payment.send");
 		var a = service.getConfiguration();
 		var resultObject = null;
 		
-		service.addHeader("Content-type","application/json"); 
+		service.addHeader("Content-type","application/x-www-form-URLencoded"); 
 		service.addHeader("charset", "UTF-8");
-		callResult = service.call(JSON.stringify(jsonObjNew));
+		callResult = service.call(params);
 		
 		if (callResult.isOk() == false){
 			Logger.error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
@@ -148,7 +121,8 @@ function execute( args : PipelineDictionary ) : Number {
 		if (resultText == null) { return PIPELET_ERROR; }
 		
 		// build the response object
-		var responseObj = JSON.parse(resultText);
+		var adyenHelper = getAdyenHelper();
+		var responseObj = adyenHelper.getResponseObj(resultText);
 		
 		// assign default values for the script output variables
 		args.PaRequest = '';  

@@ -1,5 +1,3 @@
 {
-    "init": ["./cartridge/scripts/services/AdyenPaymentMethodsService.ds",
-    		 "./cartridge/scripts/services/AdyenPaymentSendService.ds",
-    		 "./cartridge/scripts/services/AdyenPaymentSecureService.ds"]
+    "init": ["./cartridge/scripts/init/adyenServiceInit.ds"]
 }

@@ -12,9 +12,6 @@ importPackage( dw.util );
 importPackage( dw.net);
 importPackage( dw.svc );
 
-//script include
-var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
-
 function execute( args : PipelineDictionary ) : Number
 {
 	// Get the input parameters
@@ -61,11 +58,7 @@ function execute( args : PipelineDictionary ) : Number
 			"&modificationRequest.originalReference=" + encodeURIComponent(pspReference);
 		
 		var callResult = null;
-		//var service : Service = ServiceRegistry.get("adyen.http.payment.send");
-		var service = AdyenHelper.getService(AdyenHelper.SERVICE.SEND);
-		if (service == null) {
-			return PIPELET_ERROR;
-		}
+		var service : Service = ServiceRegistry.get("adyen.http.payment.send");
 		var resultObject = null;
 		
 		service.addHeader("Content-type","application/x-www-form-URLencoded"); 

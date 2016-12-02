@@ -12,10 +12,6 @@ importPackage( dw.order );
 importPackage( dw.net );
 importPackage( dw.svc );
 
-//script include
-var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
-
-
 function execute( args : PipelineDictionary ) : Number
 {
 	var skinCode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode"); 
@@ -45,6 +41,11 @@ function execute( args : PipelineDictionary ) : Number
 	var sessionValidity : String 		= "2019-04-06T18:10:29+02:00";
 	var paymentAmount : Number			= 100;
 	var countryCode : String			= request.geolocation.countryCode;	
+	var url : String					= "https://test.adyen.com/hpp/directory.shtml";
+		
+	if (Mode == "LIVE") {
+		url = "https://live.adyen.com/hpp/directory.shtml";
+	}
 	
 	var paydata : String = paymentAmount + currencyCode + merchantReference + skinCode  + merchantAccount +  sessionValidity + allowedMethods;
 	
@@ -54,15 +55,11 @@ function execute( args : PipelineDictionary ) : Number
 	var reqBody : String = "countryCode=" + countryCode + "&currencyCode=" + currencyCode + "&skinCode=" + skinCode + "&merchantAccount=" + merchantAccount + "&merchantReference=Request+payment+methods" + "&sessionValidity=" + encodeURIComponent(sessionValidity) + "&merchantSig=" + encodeURIComponent(merchantSig) + "&paymentAmount=" + paymentAmount + "&allowedMethods=" + allowedMethods;
 	
     var callResult = null;
-   	//var service : Service = ServiceRegistry.get("adyen.http.payment.methods");
-   	var service = AdyenHelper.getService(AdyenHelper.SERVICE.METHODS);
-	if (service == null) {
-		return PIPELET_ERROR;
-	}
-   	
+   	var service : Service = ServiceRegistry.get("adyen.http.payment.methods");
    	var resultObject = null;
    	
    	service.addHeader("Content-type","application/x-www-form-urlencoded"); 
+   	service.setURL(url);
    	callResult = service.call(reqBody);
    	
 	if (callResult.isOk() == false){

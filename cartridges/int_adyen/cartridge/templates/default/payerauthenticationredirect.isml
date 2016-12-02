@@ -6,12 +6,12 @@
 	<script language="javascript">
 		var loaded = false;
 		function load(){
-			document.getElementById('redirForm').submit();
+			document.RedirectForm.submit();
 			loaded = true;
 		}
 	</script>
 </head>
 <body onload="load();">
-	<form action="${URLUtils.continueURL()}" method="POST" name="RedirectForm" id="redirForm" target="_parent">
+	<form action="${URLUtils.continueURL()}" method="POST" name="RedirectForm" target="_parent">
 	</form>
 </body>
