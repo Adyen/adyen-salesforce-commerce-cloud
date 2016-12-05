@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var redirectUrl = '';
+	var urlArgs = [pdict.TargetPipeline];
+	if (pdict.TargetPipelineParams && pdict.TargetPipelineParams !== '/') {
+		// split all params into param pairs, for eg. 'a=b&c=d'
+		pdict.TargetPipelineParams.split('&').forEach(function (paramPair) {
+			// split a param name-value pair into individual args, for eg. 'a=b'
+			urlArgs = urlArgs.concat(paramPair.split('='));
+		});
+	}
+	redirectUrl = URLUtils.https.apply(null, urlArgs);
+</isscript>
+<isredirect location="${redirectUrl}"/>

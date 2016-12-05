@@ -1,0 +1,1486 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline>
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>Multi Shipping Scenario
+---------------------------
+This pipeline implements the logic for the multiple shipping scenario. It is responsible for dealing with more than one shipments, respectively multiple shipping addresses as well as multiple selected shipping methods.</description>
+        </text-node>
+        <node-display width="3" x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_2">
+    <segment>
+      <node>
+        <text-node>
+          <description>Starting point for multi shipping scenario. Renders a page providing address selection for each product line item.</description>
+        </text-node>
+        <node-display x="2" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>The second step of multi shipping: renders a page with each shipment, providing a shipping method selection per shipment.</description>
+        </text-node>
+        <node-display x="6" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>Initializes the forms for the multi address selection.</description>
+        </text-node>
+        <node-display x="10" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_5">
+    <segment>
+      <node>
+        <text-node>
+          <description>Initializes the shipping address list for each quantity line item.</description>
+        </text-node>
+        <node-display x="13" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Start">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="Start" secure="true"/>
+        <node-display x="2" y="4"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <jump-node start-name-ref="Cart-Show"/>
+              <node-display orientation="horizontal" x="2" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-InitSessionAddressBook"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-SeperateQuantities"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-InitAddressForms"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="COShipping-PrepareShipments"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="true" start-name="MultiShippingAddresses" transaction-required="false">
+          <template buffered="true" dynamic="false" name="checkout/shipping/multishipping/multishippingaddresses"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="save">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="COShippingMultiple-HandleAddressSelections"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in2" target-path="../+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="2"/>
+                    <bend-point relative-to="source" x="2" y="2"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="true" key="From_0"/>
+                <key-binding alias="CurrentForms.multishipping.addressSelection.fulfilled.value" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="COShippingMultiple-StartShipments"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./-1"/>
+    </segment>
+  </branch>
+  <branch basename="StartShipments">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="StartShipments" secure="true"/>
+        <node-display x="6" y="4"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <jump-node start-name-ref="Cart-Show"/>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="COShipping-PrepareShipments"/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-InitShipmentForms"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="true" start-name="MultiShippingMethods" transaction-required="false">
+          <template buffered="true" dynamic="false" name="checkout/shipping/multishipping/multishippingshipments"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="save">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <call-node start-name-ref="COShippingMultiple-HandleShippingSettings"/>
+              <node-display x="0" y="2"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in2" target-path="../+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="2"/>
+                    <bend-point relative-to="source" x="2" y="2"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="true" key="From_0"/>
+                <key-binding alias="CurrentForms.multishipping.shippingOptions.fulfilled.value" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="COBilling-Start"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./-1">
+        <transition-display>
+          <bend-point relative-to="target" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="InitAddressForms">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="InitAddressForms" secure="false"/>
+        <node-display x="10" y="4"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="CurrentForms.multishipping.entered.value" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!CurrentForms.multishipping.addressSelection.fulfilled.value" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+                <key-binding alias="CurrentForms.multishipping.addressSelection" key="FormElement"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+                <config-property key="Clear" value="false"/>
+                <key-binding alias="CurrentForms.multishipping.addressSelection.quantityLineItems" key="Form"/>
+                <key-binding alias="QuantityLineItems" key="Object"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Get the shipping addresses from the session" pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/GetSessionAddresses.ds"/>
+          <key-binding alias="Basket" key="CBasket"/>
+          <key-binding alias="ShippingAddresses" key="SessionAddresses"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <jump-node start-name-ref="COShippingMultiple-Start"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(ShippingAddresses)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <call-node start-name-ref="COShippingMultiple-InitShippingAddresses"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_9">
+    <segment>
+      <node>
+        <text-node>
+          <description>Set flag, that customer has entered the multi shipping scenerio.</description>
+        </text-node>
+        <node-display x="9" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="InitShippingAddresses">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="InitShippingAddresses" secure="false"/>
+        <node-display x="13" y="4"/>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="quantityLineItem" iterator-key="CurrentForms.multishipping.addressSelection.quantityLineItems"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Prepopulate address list per quantity line item" pipelet-name="SetFormOptions" pipelet-set-identifier="bc_api">
+                <key-binding alias="quantityLineItem.addressList" key="FormField"/>
+                <key-binding alias="null" key="Begin"/>
+                <key-binding alias="null" key="End"/>
+                <key-binding alias="ShippingAddresses" key="Options"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="source" x="-1" y="1"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_11">
+    <segment>
+      <node>
+        <text-node>
+          <description>Stores session and customer addresses in sessionAddressBook attribute.</description>
+        </text-node>
+        <node-display x="13" y="9"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="InitSessionAddressBook">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="InitSessionAddressBook" secure="false"/>
+        <node-display x="13" y="10"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Stores addresses in the sessionAddressBook attribute." pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/InitSessionAddressBook.ds"/>
+          <key-binding alias="Basket" key="CBasket"/>
+          <key-binding alias="CurrentCustomer" key="CCustomer"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_13">
+    <segment>
+      <node>
+        <text-node>
+          <description>Mark step as fulfilled.</description>
+        </text-node>
+        <node-display x="1" y="14"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>Mark step as fulfilled.</description>
+        </text-node>
+        <node-display x="5" y="15"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_15">
+    <segment>
+      <node>
+        <text-node>
+          <description>Initializes the forms for the multi shipment setting.</description>
+        </text-node>
+        <node-display x="10" y="15"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Initializes the shipping method list for each shipment.</description>
+        </text-node>
+        <node-display x="13" y="15"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_17">
+    <segment>
+      <node>
+        <text-node>
+          <description>Renders a form dialog to edit an address. The dialog is supposed to be opened by an Ajax request and ends in templates, which just trigger a certain JS event. The calling page of this dialog is responsible for handling these events.</description>
+        </text-node>
+        <node-display width="2" x="2" y="19"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="InitShipmentForms">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="InitShipmentForms" secure="false"/>
+        <node-display x="10" y="16"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.multishipping.shippingOptions" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+          <config-property key="Clear" value="true"/>
+          <key-binding alias="CurrentForms.multishipping.shippingOptions.shipments" key="Form"/>
+          <key-binding alias="Basket.shipments" key="Object"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-InitShippingMethods"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="InitShippingMethods">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="InitShippingMethods" secure="false"/>
+        <node-display x="13" y="16"/>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="ShipmentForm" iterator-key="CurrentForms.multishipping.shippingOptions.shipments"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="dw.order.ShippingMgr.getShipmentShippingModel(ShipmentForm.object).applicableShippingMethods" key="From_0"/>
+                <key-binding alias="ShippingMethods" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="SetFormOptions" pipelet-set-identifier="bc_api">
+                <key-binding alias="ShipmentForm.shippingMethodID" key="FormField"/>
+                <key-binding alias="null" key="Begin"/>
+                <key-binding alias="null" key="End"/>
+                <key-binding alias="ShippingMethods" key="Options"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="source" x="-1" y="1"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="EditAddresses">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="EditAddresses" secure="true"/>
+        <node-display x="2" y="20"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <jump-node start-name-ref="Cart-Show"/>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.multishipping.editAddress" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/GetSessionAddresses.ds"/>
+          <key-binding alias="Basket" key="CBasket"/>
+          <key-binding alias="Addresses" key="SessionAddresses"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <jump-node start-name-ref="COShippingMultiple-Start"/>
+              <node-display orientation="horizontal" x="2" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="SetFormOptions" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.multishipping.editAddress.addressList" key="FormField"/>
+          <key-binding alias="Addresses" key="Options"/>
+          <key-binding alias="null" key="Begin"/>
+          <key-binding alias="null" key="End"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="true" start-name="EditForm" transaction-required="false">
+          <template buffered="true" dynamic="false" name="checkout/shipping/multishipping/editaddresses"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="cancel">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="COShippingMultiple-Start"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b3" source-connector="save">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="COShippingMultiple-AddEditAddress"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="../+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="2"/>
+                    <bend-point relative-to="source" x="2" y="2"/>
+                    <bend-point relative-to="target" x="2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="../b2.1"/>
+          </segment>
+        </branch>
+        <branch basename="b4" source-connector="selectAddress">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="-3" y="-1"/>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="CurrentForms.multishipping.editAddress.addressList.selectedOption == null" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="-1" y="-4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in1" target-path="../-1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                    <bend-point relative-to="target" x="-1" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+                <config-property key="Clear" value="false"/>
+                <key-binding alias="CurrentForms.multishipping.editAddress.addressFields" key="Form"/>
+                <key-binding alias="CurrentForms.multishipping.editAddress.addressList.selectedOptionObject" key="Object"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+                <config-property key="Clear" value="false"/>
+                <key-binding alias="CurrentForms.multishipping.editAddress.addressFields.states" key="Form"/>
+                <key-binding alias="CurrentForms.multishipping.editAddress.addressList.selectedOptionObject" key="Object"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./-1"/>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_21">
+    <segment>
+      <node>
+        <text-node>
+          <description>Handles the address selection per quantity line item and derives possibly multiple shipments from it.</description>
+        </text-node>
+        <node-display x="6" y="21"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="HandleAddressSelections">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="HandleAddressSelections" secure="false"/>
+        <node-display x="6" y="22"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Merges quantity line items with same product ID and shipping address to new product line items." pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/MergeQuantities.js"/>
+          <key-binding alias="CurrentForms.multishipping.addressSelection.quantityLineItems" key="QuantityLineItems"/>
+          <key-binding alias="Basket" key="CBasket"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_23">
+    <segment>
+      <node>
+        <text-node>
+          <description>Handles the settings per shipment, like shipping method selection and gift options.</description>
+        </text-node>
+        <node-display x="10" y="21"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="HandleShippingSettings">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="HandleShippingSettings" secure="false"/>
+        <node-display x="10" y="22"/>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="ShipmentForm" iterator-key="CurrentForms.multishipping.shippingOptions.shipments"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="ShipmentForm.shippingMethodID.selectedOptionObject != null" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="SetShippingMethod" pipelet-set-identifier="bc_api">
+                      <key-binding alias="ShipmentForm.object" key="Shipment"/>
+                      <key-binding alias="ShipmentForm.shippingMethodID.selectedOptionObject" key="ShippingMethod"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in2" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="target" x="1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="UpdateObjectWithForm" pipelet-set-identifier="bc_api">
+                <key-binding alias="ShipmentForm" key="Form"/>
+                <key-binding alias="ShipmentForm.object" key="Object"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+                <bend-point relative-to="source" x="-1" y="2"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_25">
+    <segment>
+      <node>
+        <text-node>
+          <description>Creates for each quantity of ProductLineItems new QuantityLineItems helper objects.</description>
+        </text-node>
+        <node-display x="14" y="21"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="SeperateQuantities">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="SeperateQuantities" secure="false"/>
+        <node-display x="14" y="22"/>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="PLI" iterator-key="Basket.productLineItems"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Separates product quantities to QuantityLineItems." pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/SeperateQuantities.ds"/>
+                <key-binding alias="Basket" key="CBasket"/>
+                <key-binding alias="PLI" key="ProductLineItem"/>
+                <key-binding alias="QuantityLineItems" key="QuantityLineItemsOut"/>
+                <key-binding alias="QuantityLineItems" key="QuantityLineItemsIn"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="./+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                    <bend-point relative-to="target" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="-1" y="0"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AddEditAddress">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AddEditAddress" secure="false"/>
+        <node-display x="6" y="27"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Object()" key="From_0"/>
+          <key-binding alias="AddEditAddress" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/CreateSessionAddress.ds"/>
+          <key-binding alias="null" key="ScriptLog"/>
+          <key-binding alias="NewAddress" key="Address"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./b5.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateObjectWithForm" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.multishipping.editAddress.addressFields" key="Form"/>
+          <key-binding alias="NewAddress" key="Object"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in2" target-path="./b5.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateObjectWithForm" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.multishipping.editAddress.addressFields.states" key="Form"/>
+          <key-binding alias="NewAddress" key="Object"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="error">
+          <transition target-connector="in1" target-path="./b5.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="2"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/multishipping/AddAddressToSessionAddressBook.ds"/>
+          <key-binding alias="CurrentForms.multishipping.editAddress.addToAddressBook.checked" key="AddToAddressBook"/>
+          <key-binding alias="Basket" key="CBasket"/>
+          <key-binding alias="NewAddress" key="FormAddress"/>
+          <key-binding alias="CurrentForms.multishipping.editAddress.addressList.selectedOptionObject" key="ReferenceAddress"/>
+          <key-binding alias="ShippingAddresses" key="SessionAddresses"/>
+        </pipelet-node>
+        <node-display x="0" y="2"/>
+        <branch basename="b5" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node custom-name="Return error status for pipeline action" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="false" key="From_0"/>
+                <key-binding alias="AddEditAddress.success" key="To_0"/>
+                <key-binding alias="new Object()" key="From_1"/>
+                <key-binding alias="JSONResponse" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="JSONResponse.address" key="To_0"/>
+                <key-binding alias="AddEditAddress.success" key="From_1"/>
+                <key-binding alias="JSONResponse.success" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="util/responsejson.isml"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Return success status for pipeline action" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="AddEditAddress.success" key="To_0"/>
+          <key-binding alias="NewAddress" key="From_1"/>
+          <key-binding alias="AddEditAddress.address" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-InitShippingAddresses"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AddEditAddressJSON">
+    <segment>
+      <node>
+        <start-node name="AddEditAddressJSON" secure="false"/>
+        <node-display x="8" y="27"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="COShippingMultiple-AddEditAddress"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Object()" key="From_0"/>
+          <key-binding alias="JSONResponse" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="NewAddress" key="From_0"/>
+          <key-binding alias="JSONResponse.address" key="To_0"/>
+          <key-binding alias="AddEditAddress.success" key="From_1"/>
+          <key-binding alias="JSONResponse.success" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="util/responsejson.isml"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

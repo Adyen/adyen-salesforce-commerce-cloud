@@ -1,0 +1,65 @@
+// mixins
+%clearfix {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+}
+
+.clearfix {
+	@extend %clearfix;
+}
+
+// colors
+// names taken from http://www.color-blindness.com/color-name-hue/
+$black: #000;
+$cerulean: #00629b;
+$charcoal: #424242;
+$citrus: #84bd00;
+$dark-gray: #aaa;
+$dim-gray: #666;
+$gainsboro: #e0e0e0;
+$islamic-green: #019328;
+$night-rider: #333;
+$nobel: #999;
+$rain-forest: #64772d;
+$sangria: #990000;
+$stark-white: #cebdb3;
+$teal: #008578;
+$tutu: #faeded;
+$very-light-gray: #ccc;
+$white-smoke: #efefef;
+$white: #fff;
+
+$swatch-types: black #000000, beige #f5f5dc, blue blue, purple purple, red red, brown #783201, green green, grey #8f979d, pink #fe249a, orange orange, white #ffffff, yellow #ffff00, navy navy;
+
+// fonts
+$sans-serif: Arial, sans-serif;
+$sans-serif-alt: Lato, sans-serif;
+$serif: Crete Round, serif;
+
+// flag-icon-css
+$flag-icon-css-path: '../lib/flag-icon-css/flags';
+
+// global classes
+.visually-hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
+
+.menu {
+	float: left;
+	margin: 0;
+	padding: 0;
+	li {
+		float: left;
+		list-style: none outside none !important;
+	}
+}

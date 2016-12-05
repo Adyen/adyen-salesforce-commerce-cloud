@@ -1,0 +1,35 @@
+/**
+ * Finds the gift certificate line item with the given UUID in the given basket and returns PIPELET_NEXT,
+ * or returns PIPELET_ERROR if there is a problem, or no such line item exists.
+ *
+ * @input GiftCertificateLineItemID : String 
+ * @input Basket : dw.order.Basket the basket to search 
+ * @output GiftCertificateLineItem : dw.order.GiftCertificateLineItem the line item with the given UUID
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// Ensure mandatory parameter 'GiftCertificateLineItemID' in pipeline dictionary
+	if (pdict.GiftCertificateLineItemID == null) {
+		return PIPELET_ERROR;
+	}
+
+	// Ensure mandatory parameter 'Basket' in pipeline dictionary
+	if (pdict.Basket == null) {
+		return PIPELET_ERROR;
+	}
+	
+	for (var it : Iterator = pdict.Basket.getGiftCertificateLineItems().iterator(); it.hasNext(); ) {
+		var item : GiftCertificateLineItem = it.next();
+		if (item.getUUID() === pdict.GiftCertificateLineItemID) {
+			pdict.GiftCertificateLineItem = item;
+			return PIPELET_NEXT;
+		}
+	}
+
+	pdict.GiftCertificateLineItem = null;
+    return PIPELET_ERROR;
+}

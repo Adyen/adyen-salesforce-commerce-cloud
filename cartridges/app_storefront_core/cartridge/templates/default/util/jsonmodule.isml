@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<ismodule description="Renders object as json" 
+		  template="util/json" 
+		  name="json" 
+		  attribute="obj" 
+		  attribute="args"/>

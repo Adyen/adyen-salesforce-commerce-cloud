@@ -26,6 +26,7 @@ importPackage( dw.value );
 importPackage( dw.net ); 
 importPackage( dw.web ); 
 importPackage( dw.crypto ); 
+importPackage( dw.svc );
 importScript('libs/libAdyen.ds');
 
 function execute( args : PipelineDictionary ) : Number {
@@ -50,11 +51,6 @@ function execute( args : PipelineDictionary ) : Number {
 		var card : Object = f.billing.paymentMethods.creditCard;
 		var cardnr : String = card.number.value;
 		var cardcvc : String = card.cvn.value;
-						
-		// get PAL service credentials
-		var endpoint : String = Site.getCurrent().getCustomPreferenceValue("pal_service_endpoint");
-		var user : String = Site.getCurrent().getCustomPreferenceValue("pal_service_user");
-		var pw : String = Site.getCurrent().getCustomPreferenceValue("pal_service_password");
 		
 		var currentRequest : Request = (args.CurrentRequest)? args.CurrentRequest : request;
 		var acceptHeader : String = currentRequest.httpHeaders.get("accept") + currentRequest.httpHeaders.get("accept-encoding");
@@ -65,26 +61,36 @@ function execute( args : PipelineDictionary ) : Number {
 		if (shopperIp == null) { shopperIp = ''; }
 		 
 		// set-up the 3D Secure post call
-		var httpSvc : HTTPClient = new	HTTPClient();
-		var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
-		
-		httpSvc.setTimeout(timeout);
-		httpSvc.open("POST", endpoint,user,pw);	
-		httpSvc.setRequestHeader("Content-type","application/x-www-form-URLencoded; charset=UTF-8");	
-		httpSvc.send("action=" + "Payment.authorise3d" +
+
+		var params="action=" + "Payment.authorise3d" +
 		"&paymentRequest3d.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) +
 	   	"&paymentRequest3d.browserInfo.userAgent=" + encodeURIComponent( userAgent ) +
 	   	"&paymentRequest3d.md=" + encodeURIComponent( args.MD ) +
 	   	"&paymentRequest3d.merchantAccount=" + encodeURIComponent( MERCHANTACCOUNT ) +
 	   	"&paymentRequest3d.paResponse=" + encodeURIComponent( args.PaResponse ) +
-	   	"&paymentRequest3d.shopperIP=" + encodeURIComponent( shopperIp ));
+	   	"&paymentRequest3d.shopperIP=" + encodeURIComponent( shopperIp );
+  		
+		var callResult = null;
+		var service : Service = ServiceRegistry.get("adyen.http.payment.send");
+		var resultObject = null;
+		
+		service.addHeader("Content-type","application/x-www-form-URLencoded"); 
+		service.addHeader("charset", "UTF-8");
+		callResult = service.call(params);
+
+		if (callResult.isOk() == false){
+			Logger.error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+			return PIPELET_ERROR;
+		}		
+		
+		resultObject = callResult.object;
   		
 		var resultObj : Object = { // build the result object
-			statusCode: httpSvc.getStatusCode(),
-			statusMessage: httpSvc.getStatusMessage(),
-			text: httpSvc.getText(),
-			errorText: httpSvc.getErrorText(),
-			timeout: httpSvc.getTimeout()
+			statusCode: resultObject.getStatusCode(),
+			statusMessage: resultObject.getStatusMessage(),
+			text: resultObject.getText(),
+			errorText: resultObject.getErrorText(),
+			timeout: resultObject.getTimeout()
 		}
 		
 		var resultText : String = resultObj.text;
@@ -117,6 +123,7 @@ function execute( args : PipelineDictionary ) : Number {
 		
 		args.RequestID = orderNo;
 		args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
+		
 	} 
 	catch (e) {
 		var error = e;
@@ -124,7 +131,7 @@ function execute( args : PipelineDictionary ) : Number {
            	Logger.getLogger("Adyen").debug("Adyen: Fault Actor " + e.faultActor + " caused fault [code: '" + e.faultCode + "'] == Error ==> (" + e.faultString + " == Details ==> " + e.faultDetail + ")");
        	}
        	else {
-           	Logger.getLogger("Adyen").debug("Adyen: " + e.toString());
+           	Logger.error("Adyen: " + e.toString());
        	}	
 		return PIPELET_ERROR;
 	}

@@ -1,0 +1,11 @@
+<iscontent type="text/javascript" charset="UTF-8" compact="true"/>
+<isscript>
+    importScript("util/Resource.ds");
+</isscript>
+
+(function(){
+    window.Constants = <isprint value="${JSON.stringify(ResourceHelper.getConstants())}" encoding="off"/>;
+    window.Resources = <isprint value="${JSON.stringify(ResourceHelper.getResources())}" encoding="off"/>;
+    window.Urls = <isprint value="${JSON.stringify(ResourceHelper.getUrls())}" encoding="off"/>;
+    window.SitePreferences = <isprint value="${JSON.stringify(ResourceHelper.getPreferences())}" encoding="off"/>;
+}());

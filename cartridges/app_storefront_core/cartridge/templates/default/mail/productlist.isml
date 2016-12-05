@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- TemplateComment :  EMail Sending a Product List -->
+<iscontent type="text/html" charset="UTF-8"/>
+<isinclude template="util/modules"/>
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/></isif></subject>
+<html>
+<head>
+<style type="text/css">
+body {color:black;font-family: Arial, Verdana, Helvetica, sans-serif;font-size:1.0em;}
+.label {font-weight:bold;}
+.product .name a {font-size:1.2em;font-weight:bold; color:#333333;}
+.product .price .standardprice {float:left;margin-right:5px;text-decoration:line-through;}
+.product .price .salesprice {color:red;float:left;}
+.product, .pricing, .price, .pricing span {display:inline;float:left;}
+ul {clear:both;list-style: none;margin:0;padding:0;}
+ul li.onorder {color:red;}
+.product_options {clear:both;font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="previewpanel" id="previewPanel">
+<table style="width:100%">
+	<tr>
+		<td style="vertical-align:top;">
+			<a href="${URLUtils.httpHome()}" title="${Resource.msg('global.storename','locale',null)}"><img src="${URLUtils.httpStatic('/images/logo.gif')}" alt="${Resource.msg('global.storename','locale',null)}" style="border:none;"/></a>
+		</td>
+		<td style="text-align:right;">
+			<b>${Resource.msg('global.storename','locale',null)}</b><br />
+			${Resource.msg('global.storeaddress','locale',null)}<br />
+			${Resource.msg('global.storecitystate','locale',null)}<br />
+			${Resource.msg('global.storephone','locale',null)}<br />
+		</td>
+	</tr>
+</table>
+<div style="border:1px solid #CCCCCC;margin:0;padding:0;">
+	<h3 style="background-color:#CCCCCC;color:black;font-size:1.3em;font-weight:bold;margin:0;padding:5px 0;text-align:center;">
+		<isif condition="${pdict.ProductList.type == dw.customer.ProductList.TYPE_GIFT_REGISTRY}"> 			<isprint value="${pdict.ProductList.name}"/>
+		<iselseif condition="${pdict.ProductList.type == dw.customer.ProductList.TYPE_WISH_LIST}">
+			${Resource.msg('productlist.wishlistemailheader','account',null)}
+		</isif>
+	</h3>
+	<div style="border-bottom:1px solid #CCCCCC;padding:5px 10px;">
+		<isif condition="${pdict.ProductList.type == dw.customer.ProductList.TYPE_GIFT_REGISTRY}">
+			<table style="margin:auto;width:65%;">
+		         <tr>
+		             <td style="font-weight:bold"><b><isprint value="${pdict.ProductList.registrant.role}"/>:</b></td>
+		             <td><isprint value="${pdict.ProductList.registrant.firstName}"/> <isprint value="${pdict.ProductList.registrant.lastName}"/></td>
+		             <td style="font-weight:bold"><b>${Resource.msg('productlist.eventtype','account',null)}:</b> </td>
+		             <td><isprint value="${pdict.ProductList.eventType}"/></td>
+		         </tr>
+		         <tr>
+		         <isif condition="${pdict.ProductList.coRegistrant != null && (pdict.ProductList.coRegistrant.firstName != '' || pdict.ProductList.coRegistrant.lastName != '')}">
+		         	<td style="font-weight:bold"><b><isprint value="${pdict.ProductList.coRegistrant.role}"/>:</b></td>
+		            <td><isprint value="${pdict.ProductList.coRegistrant.firstName}"/> <isprint value="${pdict.ProductList.coRegistrant.lastName}"/></td>
+		         <iselse/>
+		           	<td></td>
+		           	<td></td>
+		         </isif>
+		             <td><b>${Resource.msg('productlist.eventdate','account',null)}:</b></td>
+		             <td><isprint value="${pdict.ProductList.eventDate}"/></td>
+		         </tr>
+		         <tr>
+		         	<td></td>
+		           	<td></td>
+		           	<td><b>${Resource.msg('productlist.eventlocation','account',null)}:</b></td>
+		            <td><isprint value="${pdict.ProductList.eventCity}"/>, <isprint value="${pdict.ProductList.eventState}"/></td>
+		         </tr>
+		    </table>
+		    
+		<iselseif condition="${pdict.ProductList.type == dw.customer.ProductList.TYPE_WISH_LIST}">
+			<table>
+		         <tr>
+		             <td style="font-weight:bold"><b>${Resource.msg('global.from','locale',null)}:</b></td>
+		             <td><isprint value="${pdict.CurrentCustomer.profile.firstName}"/> <isprint value="${pdict.CurrentCustomer.profile.lastName}"/></td>
+		         </tr>
+		         <tr>
+		             <td></td>
+		             <td><isprint value="${pdict.CurrentCustomer.profile.email}"/></td>
+		         </tr>
+		    </table>
+		</isif>
+ 	</div>
+<table style="width:100%">
+	<isloop items="${pdict.ProductList.items}" var="item" status="loopstate">
+		<isif condition="${item.public}">
+			<tr <isif condition="${loopstate.first}">class="first"<iselseif condition="${loopstate.last}">class="last"</isif>>
+				<td style="margin:auto;text-align:center;width:113px;">
+					<isdisplayproductimage p_productli="${item}" p_email="${true}"/>
+				</td>
+				<td>
+					<isdisplayproductlistitem p_productli="${item}"/>
+					<isdisplayproductavailability p_productli="${item}"/>
+				</td>
+				<td style="margin:0 5px 0 0;padding:5px 10px 0 0;text-align:right;">
+					<div>${Resource.msg('wishlist.dateadded','account',null)} <isprint value="${item.creationDate}"/></div>
+					<isif condition="${item.type == item.TYPE_PRODUCT}">
+						<div><b>${Resource.msg('productlist.qtydesired','account',null)}</b> <isprint value="${item.quantity.value}" formatter="#"/></div>
+					<iselseif condition="${item.type == item.TYPE_GIFT_CERTIFICATE}">
+						<!-- Gift Cetificate Qty Message -->
+					</isif>
+					<isif condition="${item.priority==0}">
+						<!--  No Priority Set -->
+					<iselse/>
+						<div>
+							<b>${Resource.msg('wishlist.priority','account',null)}:</b>
+							<isif condition="${item.priority==1}">${Resource.msg('productlist.1','account',null)}</isif>
+							<isif condition="${item.priority==2}">${Resource.msg('productlist.2','account',null)}</isif>
+							<isif condition="${item.priority==3}">${Resource.msg('productlist.3','account',null)}</isif>
+							<isif condition="${item.priority==4}">${Resource.msg('productlist.4','account',null)}</isif>
+							<isif condition="${item.priority==5}">${Resource.msg('productlist.5','account',null)}</isif>
+						</div>
+					</isif>
+					<isif condition="${item.product == null || !item.product.availabilityModel.orderable}">
+						${Resource.msg('product.displayproductlistitems.notavailable','product',null)}
+					<iselse/>
+						<a href="${URLUtils.http('Product-Show', 'pid', item.product.ID)}" title="${Resource.msg('productlist.purchaseitem','account',null)}" title="${Resource.msg('productlist.purchaseitem','account',null)}" style="font-weight:bold;line-height:24pt">${Resource.msg('productlist.purchaseitem','account',null)}</a>
+					</isif>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" style="border-bottom:1px dashed #CECDCB;margin-top:25px;padding-bottom:10px;">
+					<!--  Dotted Line -->
+				</td>
+			</tr>
+		</isif>
+	</isloop>
+</table>
+</div>
+</div>
+</body>
+</html>

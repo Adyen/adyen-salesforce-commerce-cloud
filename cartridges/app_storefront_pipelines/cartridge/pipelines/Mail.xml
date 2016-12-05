@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is for sending of mail through the storefront.  To use this pipeline, the following variables can't be null: MailFrom, MailSubject, MailTemplate &amp; MailTo.</description>
+        </text-node>
+        <node-display width="3" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Send">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Send" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(MailFrom) &amp;&amp; !empty(MailSubject) &amp;&amp; !empty(MailTemplate) &amp;&amp; !empty(MailTo)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Send email" pipelet-name="SendMail" pipelet-set-identifier="bc_api">
+                <description>Description</description>
+                <key-binding alias="MailFrom" key="MailFrom"/>
+                <key-binding alias="MailTemplate" key="MailTemplate"/>
+                <key-binding alias="MailTo" key="MailTo"/>
+                <key-binding alias="MailSubject" key="MailSubject"/>
+                <key-binding alias="LocaleID" key="LocaleID"/>
+                <key-binding alias="MailCC" key="MailCC"/>
+                <key-binding alias="MailBCC" key="MailBCC"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in3" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="SecureSend">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="SecureSend" secure="true"/>
+        <node-display x="3" y="1"/>
+      </node>
+      <transition target-connector="in3" target-path="/Send.2"/>
+    </segment>
+  </branch>
+</pipeline>

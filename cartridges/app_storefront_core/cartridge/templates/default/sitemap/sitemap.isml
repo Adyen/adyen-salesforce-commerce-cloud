@@ -1,0 +1,33 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/pt_customerservice">
+<isinclude template="util/modules"/>
+<isscript>
+	importScript( "util/ViewHelpers.ds" );
+</isscript>
+<isset name="topLevelCategory" value="${getTopLevelCategory()}" scope="page"/>
+
+	<h1>${Resource.msg('global.storename','locale',null)}</h1>
+
+	<isif condition="${topLevelCategory != null}">
+		<isloop items="${getSubcategoriesInMenuForCategory(topLevelCategory)}" var="topCat">
+			<isset name="subCatLayout" value="${getSubCategoriesLayout(topCat)}" scope="page"/>
+			
+			<h2>
+				<a href="<isprint value="${getCategoryUrl(topCat)}" encoding="off"/>" title="${topCat.displayName}">
+					<isprint value="${topCat.displayName}"/>
+				</a>
+			</h2>
+			
+			<ul>
+				<isloop items="${subCatLayout.subCategories}" var="subCat" status="stat">
+					<li>
+						<a href="<isprint value="${getCategoryUrl(subCat)}" encoding="off"/>">
+							<isprint value="${subCat.getDisplayName()}"/>
+						</a>
+					</li>
+				</isloop>
+			</ul>
+			
+		</isloop>
+	</isif>
+</isdecorate>

@@ -1,0 +1,4 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isinclude template="util/jsonmodule"/>
+<isscript>var args = {"objectName":"address", "excludeFields":["creationDate", "lastModified"]};</isscript>
+<isjson obj="${pdict.Address}" args="${args}"/>

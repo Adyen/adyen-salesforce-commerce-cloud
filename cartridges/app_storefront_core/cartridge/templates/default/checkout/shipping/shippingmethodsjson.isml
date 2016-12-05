@@ -1,0 +1,13 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template renders a simple array of shipping method IDs as a JSON response.
+</iscomment>
+<isscript>
+	var list = [];
+	var asm = pdict.ApplicableShippingMethods;
+	for (var i=0,len=asm.length;i<len;i++) {
+		list.push(asm[i].ID);
+	}
+	var ojson = JSON.stringify(list);
+</isscript>
+<isprint value="${ojson}" encoding="off"/>

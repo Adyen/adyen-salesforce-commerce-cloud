@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Product Search Results No Hits',
+			type:'search',
+			ns:'search'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<iscomment>
+		Please mind that the productsearchrefinebar contains price information that is subject to personalization.
+		Make sure the decorated template specifies ISCACHE varyby="price_promotion".
+	</iscomment>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="search/pt_productsearchresult_UI"/>
+
+	<isif condition="${(pdict.CurrentHttpParameterMap.cgid.submitted && pdict.CurrentHttpParameterMap.cgid.value != '')}">
+		<link rel="canonical" href="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid)}" />
+	</isif>
+
+	<iscomment>Add  template-specific header information here.</iscomment>
+
+</head>
+<body>
+
+	<div id="wrapper" class="pt_product-search-noresult">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="page-content clearfix">
+			<isinclude template="components/browsertoolscheck"/>
+
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+			<div id="secondary">
+				<isinclude template="search/components/productsearchrefinebar"/>
+			</div>
+
+		</div>
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="search/pt_productsearchresult_VARS"/>
+
+	</div>
+
+</body>
+</html>

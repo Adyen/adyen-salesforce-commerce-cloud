@@ -1,0 +1,90 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>In the product pipeline, if a product was not found for the selected attributes, we need to refresh the ProductVariationModel using the default selected variant</iscomment>
+
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+
+<isif condition="${isQuickView && pdict.CurrentHttpParameterMap.source.stringValue != 'cart'}">
+	<div class="quickview-nav">
+		<button class="quickview-prev">< ${Resource.msg('global.previous', 'locale', null)}</button>
+		<button class="quickview-next">${Resource.msg('global.next', 'locale', null)} ></button>
+	</div>
+</isif>
+
+<div class="product-col-1 product-image-container">
+	<isinclude template="product/components/productimages"/>
+</div>
+
+<div class="product-col-2 product-detail">
+	<h1 class="product-name" itemprop="name"><isprint value="${pdict.Product.name}"/></h1>
+	<div id="product-content">
+		<isinclude template="product/productcontent"/>
+	</div>
+</div>
+
+<isif condition="${!isQuickView}">
+	<div class="product-info">
+		<h2 class="visually-hidden">Additional Information</h2>
+		<isset name="vags" value="${pam.getVisibleAttributeGroups()}" scope="page"/>
+		<isset name="showAttributes" value="${false}" scope="page"/>
+			<isloop items="${vags}" var="AttributeGroup" status="loopstatus">
+			<isif condition="${AttributeGroup.ID != 'mainAttributes'}">
+				<isset name="showAttributes" value="${true}" scope="page"/>
+			</isif>
+		</isloop>
+		<div class="tabs">
+			<isscript>
+				// get all orderable cross sell recommendations (1 = cross sell)
+				var recommendations = pdict.Product.getOrderableRecommendations(1).iterator();
+				var recProducts = new dw.util.ArrayList();
+				var counter = 0;
+				// display 20 recommendations at maximum
+				while (recommendations.hasNext() && counter < 20) {
+					var recommendedProduct = recommendations.next().getRecommendedItem();
+					recProducts.add(recommendedProduct);
+					counter++;
+				}
+			</isscript>
+			<isif condition="${recProducts.size() > 0}">
+				<div class="tab">
+					<input type="radio" name="css-tabs" id="tab-1" checked class="tab-switch">
+					<label for="tab-1" class="tab-label">${Resource.msg('product.recommendations.products','product',null)}</label>
+					<div class="tab-content"><isinclude template="product/components/recommendations"/></div>
+				</div>
+			</isif>
+			<isif condition="${! empty(pdict.Product.shortDescription) && pdict.Product.shortDescription.markup.length > 0}">
+				<div class="tab">
+					<input type="radio" name="css-tabs" id="tab-2" <isif condition="${recProducts.size() < 1}">checked</isif> class="tab-switch">
+					<label for="tab-2" class="tab-label">${Resource.msg('product.tab.description', 'product', null)}</label>
+					<div class="tab-content"><isprint value="${pdict.Product.shortDescription}" encoding="off"/></div>
+				</div>
+			</isif>
+			<isif condition="${! empty(pdict.Product.longDescription) && pdict.Product.longDescription.markup.length > 0}">
+				<div class="tab">
+					<input type="radio" name="css-tabs" id="tab-3" class="tab-switch">
+					<label for="tab-3" class="tab-label">${Resource.msg('product.tab.details', 'product', null)}</label>
+					<div class="tab-content"><isprint value="${pdict.Product.longDescription}" encoding="off"/></div>
+				</div>
+			</isif>
+			<isif condition="${showAttributes}">
+				<div class="tab">
+					<input type="radio" name="css-tabs" id="tab-4" class="tab-switch">
+					<label for="tab-4" class="tab-label">${Resource.msg('product.tab.attributes', 'product', null)}</label>
+					<div class="tab-content">
+						<isloop items="${vags}" var="AttributeGroup" status="loopstatus">
+							<isif condition="${AttributeGroup.ID != 'mainAttributes'}">
+								<isset name="group" value="${AttributeGroup}" scope="page"/>
+								<h3><isprint value="${group.getDisplayName()}"/></h3>
+								<isinclude template="product/components/group"/>
+							</isif>
+						</isloop>
+					</div>
+				</div>
+			</isif>
+    		<div class="tab">
+    			<input type="radio" name="css-tabs" id="tab-5" class="tab-switch">
+    			<label for="tab-5" class="tab-label">${Resource.msg('product.tab.reviews', 'product', null)}</label>
+    			<div class="tab-content"><isinclude template="product/components/reviews"/></div>
+    		</div>
+    	</div>
+    </div>
+</isif>

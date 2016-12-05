@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24" varyby="price_promotion"/>
+<isobject object="${pdict.Product}" view="detail">
+	<div id="pdpMain" class="pdp-main"  itemscope itemtype="http://schema.org/Product">
+		<iscomment>Image and variation options are part of the include template</iscomment>
+
+		<isif condition="${pdict.Product.productSet || pdict.Product.bundle}">
+			<isinclude template="product/producttopcontentPS" />
+		<iselse/>
+			<isinclude template="product/producttopcontent" />
+		</isif>
+
+	</div><!--/pdpMain -->
+</isobject>
+<isslot id="recomm-prod-anchor" description="Product page slot" context="global" context-object="${pdict.Product}"/>

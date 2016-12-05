@@ -1,0 +1,50 @@
+/**
+ * Pipeline Implementation of save function
+ *
+ * @input PaymentInstrument : dw.customer.CustomerPaymentInstrument
+ * @input CreditCardFormFields : dw.web.FormGroup
+ */
+function execute (pdict) {
+	return save(pdict);
+}
+
+/**
+ * This script attempts to add the credit card contained in the given
+ * credit card form group to the customer payment instrument.
+ *
+ * @param {Object} params - New credit card data
+ * @param {dw.customer.CustomerPaymentInstrument} params.PaymentInstrument - credit card object
+ * @param {dw.web.FormGroup} params.CreditCardFormFields - new credit card form
+ */
+var PaymentInstrument = require('dw/order/PaymentInstrument');
+var Logger = require('dw/system/Logger');
+
+function save(params) {
+    var paymentInstr = params.PaymentInstrument;
+    var creditCardFields = params.CreditCardFormFields;
+
+    if( !paymentInstr ) {
+        // no payment instrument given
+        Logger.debug("No customer payment instrument given to store credit card data");
+        return PIPELET_ERROR;
+    }
+
+    if( !PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstr.paymentMethod) ) {
+        // given payment instrument not a credit card
+        Logger.debug("Customer payment instrument is of type {0}, type {1} required.", paymentInstr.paymentMethod, PaymentInstrument.METHOD_CREDIT_CARD);
+        return PIPELET_ERROR;
+    }
+
+    // copy the credit card details to the payment instrument
+    paymentInstr.setCreditCardHolder( creditCardFields.owner.value );
+    paymentInstr.setCreditCardNumber( creditCardFields.number.value );
+    paymentInstr.setCreditCardExpirationMonth( creditCardFields.expiration.month.value );
+    paymentInstr.setCreditCardExpirationYear( creditCardFields.expiration.year.value );
+    paymentInstr.setCreditCardType( creditCardFields.type.value );
+
+    return PIPELET_NEXT;
+}
+
+module.exports = {
+    save: save,
+};

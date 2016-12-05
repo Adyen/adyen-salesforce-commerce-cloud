@@ -1,0 +1,224 @@
+nav[role="navigation"] {
+	@extend .clearfix;
+	color: $white;
+	left: -50%;
+	margin-top: 0;
+	position: absolute;
+	width: 50%;
+	top: 0;
+	@media screen and (min-width: 768px) {
+		color: $night-rider;
+		left: auto;
+		margin-top: -4em;
+		position: static;
+		width: 100%;
+	}
+}
+
+.menu-toggle {
+	background-color: transparent;
+	border: none;
+	color: $night-rider;
+	display: block;
+	float: left;
+	margin-left: 0.2em;
+	padding: 0.5em;
+	@media screen and (min-width: 768px) {
+		display: none;
+	}
+	&:hover {
+		background-color: transparent;
+	}
+	.menu-icon {
+		font-size: 2em;
+	}
+}
+
+.menu-category {
+	@extend %clearfix;
+	border-bottom: 5px solid darken($dim-gray, 10%);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	text-transform: uppercase;
+	@media screen and (min-width: 768px) {
+		border-bottom: 1px solid $very-light-gray;
+		margin: 1.35em auto 0;
+		width: 100%;
+	}
+	li {
+		border-top: 1px solid darken($night-rider, 10%);
+		list-style: none;
+		@media screen and (min-width: 768px) {
+			border: none;
+			float: left;
+			&:hover > a {
+				background-color: transparent;
+			}
+		}
+	}
+	a {
+		color: $citrus;
+		display: inline-block;
+		font-size: .9rem;
+		padding: .9rem 1rem;
+		overflow: visible;
+		width: 100%;
+		@media screen and (min-width: 768px) {
+			font-size: .75rem;
+			width: auto;
+		}
+		@media screen and (min-width: 960px) {
+			padding: 1em 2rem;
+		}
+	}
+}
+
+.level-1 > li {
+	@extend %clearfix;
+	// override background-color for small viewport
+	background-color: transparent;
+	&:first-child {
+		border: none;
+	}
+	.menu-item-toggle {
+		color: $citrus;
+		cursor: pointer;
+		float: left;
+		line-height: 1.1;
+		padding: 1rem 0.8rem;
+		transition: background-color 0.3s;
+		width: 2.1rem;
+		&:hover {
+			background-color: darken($night-rider, 10%);
+		}
+		@media screen and (min-width: 768px) {
+			display: none;
+		}
+	}
+	a {
+		transition: background-color 0.3s, color 0.3s;
+		&:hover {
+			background-color: darken($night-rider, 10%);
+		}
+		@media screen and (min-width: 768px) {
+			&:hover {
+				background-color: transparent;
+			}
+		}
+	}
+	> a {
+		float: left;
+		padding-left: 0.8rem;
+		&.has-sub-menu {
+			width: calc(100% - 2.1rem);
+		}
+		@media screen and (min-width: 768px) {
+			float: none;
+			padding-left: 1rem;
+			width: 100%;
+			&.has-sub-menu {
+				width: 100%;
+			}
+			&:hover {
+				background-color: darken($citrus, 10%);
+				color: $white;
+			}
+		}
+		@media screen and (min-width: 960px) {
+			padding-left: 2rem;
+		}
+	}
+}
+
+.level-2 {
+	clear: left;
+	display: none;
+	> ul {
+		@extend .clearfix;
+		padding-bottom: .5em;
+		padding-left: 2.1rem;
+	}
+	.level-1 > .active & {
+		display: block;
+	}
+	@media screen and (min-width: 768px) {
+		background-color: $white;
+		box-shadow: 0 3px 3px 2px rgba($charcoal, 0.3);
+		color: $night-rider;
+		padding: 0;
+		position: absolute;
+		z-index: 1;
+		.level-1 li:hover & {
+			display: block;
+		}
+		a {
+			color: $citrus;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+		> ul {
+			float: left;
+			padding-left: 0;
+			> li {
+				float: none;
+				min-width: 12em;
+				> a {
+					padding: 0.5em 1rem;
+					text-transform: none;
+				}
+			}
+		}
+		.menu-vertical {
+			> li > a:first-child {
+				padding-top: 1em;
+			}
+		}
+		.menu-horizontal {
+			float: none;
+			> li {
+				border-right: 1px solid $gainsboro;
+				float: left;
+				padding-right: 2rem;
+				&:last-child {
+					border-right: none;
+				}
+			}
+
+		}
+		.banner {
+			float: left;
+		}
+	}
+	.banner {
+		display: none;
+		@media screen and (min-width: 768px) {
+			display: block;
+		}
+		img {
+			vertical-align: top;
+		}
+	}
+}
+
+.level-3 {
+	display: none;
+	padding-left: 2em;
+	.level-2 .active & {
+		display: block;
+	}
+	@media screen and (min-width: 768px) {
+		display: block;
+		a {
+			color: darken($citrus, 20%);
+			font-weight: normal;
+			font-size: 1em;
+			padding: 0;
+		}
+		li {
+			float: none;
+			padding: 0.4em;
+		}
+	}
+}

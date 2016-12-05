@@ -1,0 +1,96 @@
+/**
+* Salesforce Commerce Cloud Script File
+* Set store for the line item
+*
+*  @input Basket : dw.order.Basket
+*  @input StoreId : String
+*  @input LineItemUUID : String
+*  @input StorePickup : String
+*  @output ErrorCode : String
+*
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{		
+	
+	var basket : Basket = args.Basket;
+	var liUUID : String = args.LineItemUUID;
+	var storepickup : String = args.StorePickup;
+
+	var lineItemItr : Iterator = basket.allProductLineItems.iterator();
+	var productLineItem : ProductLineItem;
+	
+	while (lineItemItr.hasNext()) {
+		
+		productLineItem = lineItemItr.next();
+		
+		if (productLineItem.UUID == liUUID) {
+						
+			if (storepickup.equalsIgnoreCase("true")) {
+				
+				if(productLineItem.product.custom.availableForInStorePickup) {
+					
+					if(!empty(args.StoreId)) {			
+						
+						var store : Store = StoreMgr.getStore(args.StoreId);
+						
+						if(!empty(store) && !empty(store.custom.inventoryListId)) {
+							
+							var storeinventory : ProductInventoryList = ProductInventoryMgr.getInventoryList(store.custom.inventoryListId);
+								
+							if(!empty(storeinventory)) {
+					 		
+					 			if(!empty(storeinventory.getRecord(productLineItem.productID)) && storeinventory.getRecord(productLineItem.productID).ATS.value >= productLineItem.quantityValue) {
+			
+									productLineItem.custom.fromStoreId = store.ID;
+									productLineItem.setProductInventoryList(storeinventory);
+								
+								} else {
+									args.ErrorCode = "Not available in that quantity";
+									return PIPELET_ERROR;						
+								}
+															
+							} else {
+								args.ErrorCode = "Store inventory list does not exist";
+								return PIPELET_ERROR;						
+							}						
+						
+						} else {
+							args.ErrorCode = "Store object not available";
+							return PIPELET_ERROR;						
+						}
+					
+					} else {
+						args.ErrorCode = "No store ID available";
+						return PIPELET_ERROR;
+					}
+					
+				} else {
+					args.ErrorCode = "Product not in store available";
+					return PIPELET_ERROR;						
+				}	
+				
+			} else {
+				
+				productLineItem.custom.fromStoreId="";
+				productLineItem.setProductInventoryList(null);
+				//loop over the shipments to find the one with out instore to assign it to
+				//productLineItem.shipment = null;
+			  	//var shipmentToDelete
+			  	//check if the default shipment is instore or not
+			  	productLineItem.setShipment(basket.getDefaultShipment());
+			}
+			
+			break;
+		
+		}
+	
+	}
+    
+    return PIPELET_NEXT;
+
+}

@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+
+<isif condition="${!empty(pdict.CurrentCustomer.profile.addressBook.addresses)}">
+	
+	<iscomment>addresses are sorted, preferred first, than alphabetic </iscomment>
+	
+	<isif condition="${pdict.Status != null && pdict.Status.isError()}">				 
+	 	<iscomment> Use the error code value to build an appropriate error message </iscomment>
+		<span class="form-error">
+			<isprint value="${Resource.msg('addressdetails.' + pdict.Status.code, 'account',null)}"/>
+		</span>
+	</isif>
+	<ul class="address-list">
+	
+	<isloop items="${pdict.CurrentCustomer.profile.addressBook.addresses}" var="address" status="loopstate">
+		<isscript>
+			var isDefault = !empty(pdict.CurrentCustomer.profile.addressBook.preferredAddress) && (pdict.CurrentCustomer.profile.addressBook.preferredAddress.ID == address.ID);
+			var cssClass = "address-tile ";			
+			if (isDefault) { cssClass+=" default"; }
+		</isscript>
+		
+		<li class="${cssClass}">
+			<isif condition="${isDefault}">
+				<h3>${Resource.msg('account.addressbook.editaddress.defaultaddress','account',null)} </h3>
+			</isif>
+			
+			<isminiaddress p_address="${address}"/>
+			
+			<isif condition="${!isDefault}">
+				<a href="${URLUtils.url('Address-SetDefault','AddressID', address.ID)}" class="address-make-default"> 
+					${Resource.msg('account.addressbook.editaddress.makedefaultaddress','account',null)} 
+				</a> |
+			</isif>
+			
+			<a href="${URLUtils.url('Address-Edit','AddressID', address.ID)}" title="${Resource.msg('account.addressbook.addressinclude.edit.label','account',null)}" class="address-edit">
+				${Resource.msg('global.edit','locale',null)}
+			</a> |
+			
+			<a href="${URLUtils.url('Address-Delete','AddressID', address.ID)}" title="${Resource.msg('account.addressbook.addressinclude.delete.label','account',null)}" class="address-delete delete">
+				${Resource.msg('account.addressbook.addressinclude.delete','account',null)}
+			</a>
+			
+		</li>
+		
+	</isloop>
+	</ul>
+	
+</isif>

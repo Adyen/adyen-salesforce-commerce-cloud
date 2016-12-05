@@ -1,0 +1,125 @@
+.menu-utility-user {
+	margin: 0;
+	padding: 0;
+	@media screen and (min-width: 768px) {
+		position: absolute;
+		right: 9.7em;
+		top: .2em;
+	}
+	li {
+		border-top: 1px solid darken($night-rider, 10%);
+		list-style: none;
+		padding: 0.8em 1rem;
+		&:first-child {
+			border: none;
+		}
+		i {
+			font-size: 1.5em;
+			padding: 0 8px 0 0;
+		}
+		@media screen and (min-width: 768px) {
+			background-color: transparent;
+			border-color: transparent;
+			float: left;
+			margin: 0;
+			padding: 0.1em 1.5em 0;
+			text-align: center;
+			&:first-child {
+				border: none;
+			}
+		}
+		a {
+			color: $white;
+			text-decoration: none;
+			&:active {
+				color: $citrus;
+			}
+			@media screen and (min-width: 768px) {
+				color: $nobel;
+				transition: color .5s ease;
+				&:hover {
+					color: $citrus;
+					text-decoration: none;
+				}
+				i {
+					display: block;
+					font-size: 3em;
+					padding: 0;
+				}
+				span {
+					display: none;
+				}
+			}
+		}
+	}
+	.user-info {
+		@media screen and (min-width: 768px) {
+			position: relative;
+			transition: color .5s ease;
+			&.active {
+				.user-login {
+					color: $citrus;
+				}
+				.user-panel {
+					opacity: 1;
+					visibility: visible;
+				}
+			}
+		}
+		.user-panel {
+			box-sizing: content-box; //See https://code.google.com/p/chromium/issues/detail?can=2&q=max-content&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Cr%20Status%20Owner%20Summary%20OS%20Modified&id=522191&thanks=522191&ts=1439925077
+			margin-top: .5rem;
+			text-align: left;
+			transition: all .3s ease;
+			width: 10rem; //For IE
+			width: max-content;
+			h3 {
+				display: none;
+				margin: 0;
+				padding-bottom: .7em;
+				text-transform: uppercase;
+				@media screen and (min-width: 768px) {
+					display: block;
+				}
+			}
+			@media screen and (min-width: 768px) {
+				background-color: $white;
+				border: 1px solid $gainsboro;
+				border-radius: 5px;
+				box-shadow: 0 2px 5px 0 $very-light-gray;
+				margin-top: 0;
+				opacity: 0;
+				padding: 1em;
+				position: absolute;
+				right: -1.5rem;
+				visibility: hidden;
+				z-index: 20;
+			}
+			.user-links {
+				padding-left: 1.5rem;
+				text-align: center;
+				@media screen and (min-width: 768px) {
+					padding-left: 0;
+				}
+			}
+			a {
+				color: $citrus;
+				display: block;
+				padding: .5rem 0;
+				@media screen and (min-width: 768px) {
+					padding: 0;
+					margin-bottom: .5rem;
+				}
+			}
+			.user-logout {
+				color: $white;
+				margin-top: .5rem;
+				padding: 0.5em 2em;
+				text-transform: uppercase;
+				&:hover {
+					color: $citrus;
+				}
+			}
+		}
+	}
+}

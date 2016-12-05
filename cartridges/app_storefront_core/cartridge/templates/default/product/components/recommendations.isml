@@ -1,0 +1,115 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${!empty(pdict.Product)}">
+	<isscript>
+		// get all orderable cross sell recommendations (1 = cross sell)
+		var recommendations : dw.util.Iterator = pdict.Product.getOrderableRecommendations(1).iterator();
+		var recProducts : dw.util.Collection = new dw.util.ArrayList();
+
+		// display 20 recommendations at maximum
+		var maxRecs = 20, counter = 0;
+
+		while( recommendations.hasNext() )
+		{
+			var recommendation : dw.catalog.Recommendation = recommendations.next();
+			var recommendedProduct : dw.catalog.Product = recommendation.getRecommendedItem();
+
+			recProducts.add( recommendedProduct );
+
+			if(++counter >= maxRecs)
+			{
+				break;
+			}
+		}
+	</isscript>
+	<div class="recommendations cross-sell">
+		<isif condition="${recProducts.size() > 0}">
+			<div id="carousel-recommendations">
+				<ul class="tiles-container">
+					<iscomment>Preserve the Product instance</iscomment>
+					<isset name="mainProduct" value="${pdict.Product}" scope="pdict"/>
+					<isloop items="${recProducts}" var="rec" end="19">
+						<isset name="Product" value="${rec}" scope="pdict"/>
+						<isset name="pName" value="${pdict.Product.name}" scope="page"/>
+						<li class="grid-tile recommendation-item">
+							<div class="product-tile tooltip">
+								<div class="analytics capture-product-id"><isprint value="${pdict.Product.ID}"/></div>
+								<div class="product-image recommendation_image">
+									<a href="${URLUtils.http('Product-Show','pid', pdict.Product.ID)}">
+										<isif condition="${!empty(pdict.Product.getImage('small',0))}">
+											<img src="${pdict.Product.getImage('small',0).getURL()}" alt="${pdict.Product.getImage('small',0).alt}"/>
+										<iselse/>
+											<img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${pName}"/>
+										</isif>
+									</a>
+								</div>
+								<div class="product-name">
+									<a href="${URLUtils.http('Product-Show','pid', pdict.Product.ID)}" title="${Resource.msgf('global.goto.label', 'locale', null, pName)}"><isprint value="${pName}"/></a>
+								</div>
+								<isinclude template="product/components/pricing.isml"/>
+								<div class="tooltip-content" data-layout="medium">
+									<div class="recommendation-tooltip-header">
+										<div class="product-name"><isprint value="${pName}"/></div>
+										<div class="product-pricing"><isinclude template="product/components/pricing.isml"/></div>
+									</div>
+									<div class="recommendation-tooltip-description">
+										<span class="label">${Resource.msg('global.description','locale',null)}</span>
+										<p class="value"><isif condition="${! empty(pdict.Product.shortDescription)}"><isprint value="${pdict.Product.shortDescription}" encoding="off" /><iselse/></isif></p>
+									</div>
+
+									<isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
+									<isset name="mainGroup" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
+									<isif condition="${!empty(mainGroup)}">
+										<div class="recommendation-tooltip-attributes">
+											<span class="label">${Resource.msg('global.details','locale',null)}</span>
+											<div class="value">
+												<ul>
+													<isloop items="${pam.getVisibleAttributeDefinitions(mainGroup)}" var="Definition" status="loopstate1">
+														<li class="attribute">
+															<span class="label"><isprint value="${Definition.getDisplayName()}"/>:</span>
+															<span class="value">
+																<iscomment>special formatting for some types</iscomment>
+																<isif condition="${Definition.valueTypeCode == Definition.VALUE_TYPE_BOOLEAN}">
+																	<isif condition="${pam.getValue(Definition)}">
+																		${Resource.msg('global.yes','locale',null)}
+																	<iselse/>
+																		${Resource.msg('global.no','locale',null)}
+																	</isif>
+																<iselseif condition="${Definition.valueTypeCode == Definition.VALUE_TYPE_DATETIME}">
+																	<isprint value="${pam.getDisplayValue(Definition)}" style="DATE_SHORT"/>&nbsp;
+																	<isprint value="${pam.getDisplayValue(Definition)}" style="DATE_TIME"/>
+																<iselseif condition="${Definition.multiValueType}">
+																	<isloop items="${pam.getDisplayValue(Definition)}" var="DisplayValue" status="loopstate">
+																		<isprint value="${DisplayValue}"/>
+																	</isloop>
+																<iselse/>
+																	<isif condition="${Definition.requiresEncoding()}">
+																		<isprint value="${pam.getDisplayValue(Definition)}"/>
+																	<iselse/>
+																		<isprint value="${pam.getDisplayValue(Definition)}"/>
+																	</isif>
+																</isif>
+																<isif condition="${Definition.getUnit() != null}">
+																	<isprint value="${Definition.getUnit()}"/>
+																<iselse/>
+
+																</isif>
+															</span>
+														</li>
+													</isloop>
+												</ul>
+											</div>
+										</div>
+									</isif>
+								</div>
+							</div>
+						</li>
+					</isloop>
+					<iscomment>Restore the Product instance</iscomment>
+					<isset name="Product" value="${pdict.mainProduct}" scope="pdict"/>
+				</ul> 
+				<a class="jcarousel-nav jcarousel-prev"><i class="fa fa-arrow-circle-left fa-2x"></i><span class="visually-hidden">${Resource.msg('global.previous.abbr', 'locale', null)}</span></a>
+				<a class="jcarousel-nav jcarousel-next"><i class="fa fa-arrow-circle-right fa-2x"></i><span class="visually-hidden">${Resource.msg('global.next', 'locale', null)}</span></a>
+			</div>
+		</isif>
+	</div>
+</isif>

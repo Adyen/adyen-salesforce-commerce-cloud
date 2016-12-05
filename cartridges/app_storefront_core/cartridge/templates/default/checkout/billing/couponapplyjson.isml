@@ -1,0 +1,84 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template renders the details of a coupon redemption as JSON response.
+</iscomment>
+{
+	<iscomment>Determine if the coupon triggered a bonus-product promotion to apply.</iscomment>
+	<isscript>
+		var bonusPromotionApplied = pdict.BonusDiscountLineItemCountBefore != null && 
+		                            pdict.BonusDiscountLineItemCountAfter != null && 
+		                            pdict.BonusDiscountLineItemCountAfter > pdict.BonusDiscountLineItemCountBefore;
+		
+		var bonusPromotionCallout = "";
+		var bonusPromotionDetails = "";
+		if (bonusPromotionApplied)
+		{
+			var bdli : BonusDiscountLineItem = pdict.Basket.getBonusDiscountLineItems().iterator().next(); // just take the first in case there are several.
+			bonusPromotionCallout = bdli.getPromotion().getCalloutMsg();
+			bonusPromotionDetails = bdli.getPromotion().getDetails();
+		}
+	</isscript>
+	
+	<isif condition="${!empty(pdict.NewCouponLineItem)}">
+		"redemption": {
+
+		    "couponCode": "<isprint value="${pdict.NewCouponLineItem.couponCode}"/>",
+		    "applied": <isif condition="${pdict.NewCouponLineItem.applied}">true<iselse/>false</isif>,
+		    "bonusPromotionApplied":  <isif condition="${bonusPromotionApplied}">true<iselse/>false</isif>,
+		    "bonusPromotionCallout":  "<isprint value="${bonusPromotionCallout}" />",
+		    "bonusPromotionDetails":  "<isprint value="${bonusPromotionDetails}" />",
+		    "gcRedemptions": [
+				<isif condition="${pdict.Basket && pdict.Basket.giftCertificatePaymentInstruments.size() > 0}">				    			
+	    			<isloop items="${pdict.Basket.giftCertificatePaymentInstruments}" var="giftCertPI" status="loopstatus">
+		    			{
+				    	"giftCertificateID":	"<isprint value="${giftCertPI.getGiftCertificateCode()}"/>",
+						"amount":				"<isprint value="${giftCertPI.paymentTransaction.amount}"/>"
+						}<isif condition="${!loopstatus.last}">,</isif>
+	    			</isloop>
+	    		</isif>				
+			]
+		}
+	</isif>
+
+	<iscomment>determine the appropriate error message based on the status code</iscomment>
+	<isscript>
+		var status : dw.system.Status = pdict.CouponStatusCode;
+		var errorMsg : String = null;
+		if(!empty(pdict.CouponStatusCode))
+		{
+			// invalid
+			if( dw.campaign.CouponStatusCodes.COUPON_CODE_UNKNOWN.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.COUPON_DISABLED.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.NO_ACTIVE_PROMOTION.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.NO_APPLICABLE_PROMOTION.equals(status.code))
+			{
+				errorMsg = Resource.msg("billingcoupon.couponinvalid", "forms", null);
+			}
+
+			// coupon code already in basket
+			if( dw.campaign.CouponStatusCodes.COUPON_CODE_ALREADY_IN_BASKET.equals(status.code))
+			{
+				errorMsg = Resource.msg("billingcoupon.couponused", "forms", null);
+			}
+
+			// coupon already in basket
+			if( dw.campaign.CouponStatusCodes.COUPON_ALREADY_IN_BASKET.equals(status.code))
+			{
+				errorMsg = Resource.msg("billingcoupon.couponalreadyapplied", "forms", null);
+			}
+
+			// expired
+			if( dw.campaign.CouponStatusCodes.COUPON_CODE_ALREADY_REDEEMED.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.REDEMPTION_LIMIT_EXCEEDED.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.CUSTOMER_REDEMPTION_LIMIT_EXCEEDED.equals(status.code)
+			||  dw.campaign.CouponStatusCodes.TIMEFRAME_REDEMPTION_LIMIT_EXCEEDED.equals(status.code))
+			{
+				errorMsg = Resource.msg("billingcoupon.couponexpired", "forms", null);
+			}
+		}
+	</isscript>
+
+	<isif condition="${!empty(errorMsg)}">
+		"redemptionErrorMsg": "<isprint value="${errorMsg}"/>"
+	</isif>
+}

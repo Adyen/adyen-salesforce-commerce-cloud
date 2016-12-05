@@ -1,0 +1,18 @@
+/**
+ * GetStore.ds
+ *
+ * This script gets a Store based on the ID.
+ *
+ *   @input StoreID : String StoreID of the store.
+ *   @output Store : dw.catalog.Store
+ */
+importPackage( dw.util );
+importPackage( dw.catalog);
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var store : Store = StoreMgr.getStore(pdict.StoreID);
+	pdict.Store = store;
+
+    return PIPELET_NEXT;
+}

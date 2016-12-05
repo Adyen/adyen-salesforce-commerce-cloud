@@ -1,0 +1,33 @@
+/**
+ * Initialize HTTPForm services for Adyen
+ */
+importPackage( dw.svc );
+importPackage( dw.net );
+   
+ServiceRegistry.configure("adyen.http.payment.send", {
+	createRequest: function(svc:HTTPService, args){
+		svc.setRequestMethod("POST");
+		if(args) {
+			return args;
+		} else {
+			return null;
+		}
+	},
+	parseResponse: function(svc:HTTPService, client:HTTPClient) {
+		return client;
+	}
+});
+
+ServiceRegistry.configure("adyen.http.payment.methods", {
+	createRequest: function(svc:HTTPService, args){
+		svc.setRequestMethod("POST");
+		if(args) {
+			return args;
+		} else {
+			return null;
+		}
+	},
+	parseResponse: function(svc:HTTPService, client:HTTPClient) {
+		return client;
+	}
+});

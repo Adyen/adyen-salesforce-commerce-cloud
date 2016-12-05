@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>THIS FILE ONLY CONTAINS DIFFERENCES BETWEEN SIMPLE AND RICH UI LIB INCLUDES</iscomment>
+<iscomment>
+The <!—BEGIN/END… comments are control statements for the build cartridge which can be found in xChange https://xchange.demandware.com/docs/DOC-5728 or checked out from SVN at https://svn2.hosted-projects.com/cs_europe/DWTechRepository/cartridges/build_cs
+If you are not using the build cartridge the comments can be safely removed.
+</iscomment>
+
+<iscomment>THIRD PARTY STYLESHEETS STYLING</iscomment>
+<link href="${URLUtils.staticURL('/lib/jquery/ui/jquery-ui.min.css')}" type="text/css" rel="stylesheet" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+<script src="${URLUtils.staticURL('/js/lib/html5.js')}"></script>
+<![endif]-->
+
+<iscomment>Salesforce Commerce Cloud active data scripts</iscomment>
+<isactivedatahead/>

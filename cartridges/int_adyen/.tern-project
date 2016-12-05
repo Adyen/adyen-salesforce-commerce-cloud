@@ -1,0 +1,17 @@
+{
+  "ecmaVersion": 5,
+  "plugins": {
+    "guess-types": {
+      
+    },
+    "outline": {
+      
+    },
+    "demandware": {
+      
+    },
+    "eslint": {
+      
+    }
+  }
+}

@@ -1,0 +1,94 @@
+/**
+ * This script creates possibly multiple shipments based on the
+ * address selection per product line item provided by the customer.
+ * Per distinct address a shipment is created and each product line
+ * item selected to be shipped to this address is put to this shipment.
+ *
+ * @input Basket : dw.order.Basket The basket to create shipments for
+ * @input AddressSelection : dw.web.FormGroup The form group containing the address selection per product line item
+ */
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.web );
+
+importScript("checkout/Utils.ds");
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// get the values from the dictionary
+	var basket : Basket = pdict.Basket;
+	var addressSelection : FormGroup = pdict.AddressSelection;
+
+	// check, if each product line item has an address selected
+	var productFormLIs : FormList = addressSelection.productLineItems;
+	
+	for(var i=0; i<productFormLIs.childCount; i++)
+	{
+		if( productFormLIs[i].addressList.selectedOption == null )
+		{
+			Logger.debug("Cannot create shipments. Missing address selection for product '{0}'.", productFormLIs[i].object.productID);
+			return PIPELET_ERROR;
+		}
+	}
+
+	// a map of shipping address UUIDs to shipments
+	// the map is used to find already created shipments for a shipping address
+	// selection of subsequent product line items
+	var shipmentMap : Map = new HashMap();
+
+	var productLI : ProductLineItem = null;
+	var selectedAddress : Object = null;
+	var shipment : Shipment = null;
+	var orderAddress : OrderAddress = null;
+
+	// process each product line item
+	for(var i=0; i<productFormLIs.childCount; i++)
+	{
+		productLI = productFormLIs[i].object;
+		selectedAddress = productFormLIs[i].addressList.selectedOptionObject;
+		
+		// always use the default shipment for the first item
+		// create a new order address, copy the address attributes and create a mapping
+		if( i == 0 )
+		{
+			orderAddress = basket.defaultShipment.createShippingAddress();
+			selectedAddress.copyTo( orderAddress );
+			shipmentMap.put( selectedAddress.UUID, basket.defaultShipment );
+		}
+		// for all subsequent items we look for a possibly existing shipment for
+		// the address selection (using the mapping) and either just move the line
+		// item to the existing shipment or create a new shipment, copying the
+		// address attributes, move the line item to it and create a mapping
+		else
+		{
+			// look for a shipment using the selected address
+			shipment = shipmentMap.get( selectedAddress.UUID );
+			
+			// if there is a shipment we just copy the line item to it
+			if( shipment != null )
+			{
+				productLI.setShipment( shipment );
+			}
+			// otherwise we create a new shipment
+			else
+			{
+				// generate a unique ID and create the shipment
+				var newShipmentID : String = determineUniqueShipmentID( basket, "Shipment #" );
+				shipment = basket.createShipment( newShipmentID );
+				
+				// copy the line item to the new shipment
+				productLI.setShipment( shipment );
+				
+				// create an order address and copy the address attributes
+				orderAddress = shipment.createShippingAddress();
+				selectedAddress.copyTo( orderAddress );
+				
+				// create a mapping
+				shipmentMap.put( selectedAddress.UUID, shipment );
+			}
+		}
+	}
+
+    return PIPELET_NEXT;
+}

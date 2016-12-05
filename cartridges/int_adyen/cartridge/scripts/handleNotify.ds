@@ -23,140 +23,32 @@ importPackage( dw.order);
 
 function execute( args : PipelineDictionary ) : Number
 {
-	// Get the input parameters
-	var hpm : Object = args.CurrentHttpParameterMap;
+	function Thread() {};
 	
-	// Check the input parameters
-	if (hpm == null) {
-		Logger.getLogger("Adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
-		return PIPELET_ERROR;
+	/**
+	*   Time delay function
+	*/
+	Thread.ThreadSleep = function (millis : Number){
+	    var date = new Date();
+	    var curDate = null;
+	    do { curDate = new Date(); }
+	    while(curDate-date < millis);  
 	}
 	
-	// Configuration
 	var paymentSuccess : Boolean = false;
-	var refusedHpp : Boolean = false;
-	var pending : Boolean = false;
 	
-	try {
-		args.EventCode = hpm.eventCode.stringValue;
-		args.SkipNotification = false;
-	
-		// Log detailed response to ScriptLog and log file
-		var msg : String = createLogMessage(hpm);
-		Logger.getLogger("Adyen").debug(msg);
-		
-		var order : Order = OrderMgr.getOrder(hpm.merchantReference.stringValue);
-		args.Order = order;
-		
-		if (order == null) {
-			Logger.getLogger("Adyen").fatal("Notification for not existing order {0} received.", hpm.merchantReference.stringValue);
-			return PIPELET_ERROR;
-		}
-		
-		// Update the order status
-		switch(hpm.eventCode.stringValue){
-			case "AUTHORISATION" :
-				if(hpm.success.stringValue == "true"){
-					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
-						Logger.getLogger("Adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
-						args.SkipNotification = true;
-					}
-					else if(order.paymentStatus == "PARTIALLY PAID"){
-						paymentSuccess = true;
-						Logger.getLogger("Adyen").info ("Partial payment received for order {0}.",order.orderNo);
-						args.SkipNotification = true;
-					}
-					else {
-						paymentSuccess = true;
-						order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-						order.setExportStatus(Order.EXPORT_STATUS_READY);
-						Logger.getLogger("Adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-					}  
-				}else{
-					Logger.getLogger("Adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
-					
-					// Determine if payment was refused and was used Adyen payment method 
-					if (hpm.reason.stringValue == "Refused") {
-						var paymentInstruments : Collection = order.getPaymentInstruments();
-						var paymentInstrument : PaymentInstrument;
-						for each (paymentInstrument in paymentInstruments) {
-							if (paymentInstrument.paymentMethod.equals("Adyen")) {
-								refusedHpp = true;
-								paymentSuccess = false;
-								break;
-							}
-						}
-					}
-				}
-				break;
-			case "CANCELLATION" :
-				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-				Logger.getLogger("Adyen").info ("Order {0} was cancelled.",order.orderNo);
-				break;
-			case "CANCEL_OR_REFUND" :
-				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-				Logger.getLogger("Adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
-				break;
-			case "REFUND" :
-				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-				Logger.getLogger("Adyen").info ("Order {0} was refunded.",order.orderNo);
-				break;
-			case "ORDER_OPENED" :
-				Logger.getLogger("Adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  
-				paymentSuccess = true;
-				order.setPaymentStatus("PARTIALLY PAID");
-				break;	
-			case "ORDER_CLOSED" :
-				paymentSuccess = true;
-				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-				order.setExportStatus(Order.EXPORT_STATUS_READY);
-				Logger.getLogger("Adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
-				break;	
-			case "PENDING" :
-				pending = true;
-				paymentSuccess = true;
-				Logger.getLogger("Adyen").info ("Order {0} was in pending status.",order.orderNo);
-				break;				
-				
-			default:
-				Logger.getLogger("Adyen").info ("Order {0} received unhandled status {1}",order.orderNo,hpm.eventCode.stringValue);
-		}
-		
-		args.RefusedHpp = refusedHpp;
-		args.Pending = pending;
-		
-		// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
-		if (!refusedHpp) {
-			// Add received information to order
-			
-			/*
-				PSP Reference must be persistent.
-				Some modification requests (Capture, Cancel) send identificators of the operations, we mustn't overwrite the original value by the new ones
-			*/
-			if (empty(order.custom.Adyen_pspReference) && !empty(hpm.pspReference.stringValue)) {
-				order.custom.Adyen_pspReference = hpm.pspReference.stringValue;
-			}
-			
-			order.custom.Adyen_value = hpm.value.stringValue;
-			order.custom.Adyen_eventCode = hpm.eventCode.stringValue;
-			
-			// Payment Method must be persistent. When payment is cancelled, Adyen sends an empty string here
-			if (empty(order.custom.Adyen_paymentMethod) && !empty(hpm.paymentMethod.stringValue)) {
-				order.custom.Adyen_paymentMethod = hpm.paymentMethod.stringValue;
-			}
-			
-			// Add a note with all details
-			order.addNote("Adyen Payment Notification", msg);
-		}
-	} catch (e) {
-		// Log the error and exit
-		Logger.getLogger("Adyen").fatal("An error occurred during the handling of Adyen notification.");
-		return PIPELET_ERROR;
-	}
-	
+	var counter : Number  = 0;
+	var success : Boolean = false;	
+	while(counter < 2 && !success) {
+		try {
+		    paymentSuccess = optimisticExecution(args);
+		    success = true;
+		} catch(e) {
+			// Optimistic Execution error handling
+			Thread.ThreadSleep(1000);
+			counter++;
+		}// end try catch
+    }
 	if(!paymentSuccess){
 		return PIPELET_ERROR;
 	}
@@ -183,4 +75,141 @@ function createLogMessage(hpm){
 	msg = msg + "\npaymentMethod : " + hpm.paymentMethod.stringValue;
 	msg = msg + "\nlive : " + hpm.live.stringValue;
 	return msg;
+}
+
+/**
+*   optimisticExecution function is for handling the Optimistic Execution error
+*/
+function optimisticExecution(args : PipelineDictionary) {
+	// Get the input parameters
+	var hpm : Object = args.CurrentHttpParameterMap;
+	
+	// Check the input parameters
+	if (hpm == null) {
+		Logger.getLogger("Adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
+		return false;
+	}
+	
+	// Configuration
+	var paymentSuccess : Boolean = false;
+	var refusedHpp : Boolean = false;
+	var pending : Boolean = false;
+	
+	args.EventCode = hpm.eventCode.stringValue;
+	args.SkipNotification = false;
+
+	// Log detailed response to ScriptLog and log file
+	var msg : String = createLogMessage(hpm);
+	Logger.getLogger("Adyen").debug(msg);
+	
+	var order : Order = OrderMgr.getOrder(hpm.merchantReference.stringValue);
+	args.Order = order;
+	
+	if (order == null) {
+		Logger.getLogger("Adyen").fatal("Notification for not existing order {0} received.", hpm.merchantReference.stringValue);
+		return false;
+	}
+	
+	// Update the order status
+	switch(hpm.eventCode.stringValue){
+		case "AUTHORISATION" :
+			if(hpm.success.stringValue == "true"){
+				if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
+					Logger.getLogger("Adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
+					paymentSuccess = true;
+					args.SkipNotification = true;
+				}
+				else if(order.paymentStatus == "PARTIALLY PAID"){
+					paymentSuccess = true;
+					Logger.getLogger("Adyen").info ("Partial payment received for order {0}.",order.orderNo);
+					args.SkipNotification = true;
+				}
+				else {
+					order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+					//order.setExportStatus(Order.EXPORT_STATUS_READY);
+					Logger.getLogger("Adyen").info ("Order {0} updated to status PAID.",order.orderNo);
+					args.SkipNotification = true;
+					paymentSuccess = true;
+				}  
+			}else{
+				Logger.getLogger("Adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
+				args.SkipNotification = true;
+				// Determine if payment was refused and was used Adyen payment method 
+				if (hpm.reason.stringValue == "Refused") {
+					var paymentInstruments : Collection = order.getPaymentInstruments();
+					var paymentInstrument : PaymentInstrument;
+					for each (paymentInstrument in paymentInstruments) {
+						if (paymentInstrument.paymentMethod.equals("Adyen")) {
+							refusedHpp = true;
+							paymentSuccess = false;
+							break;
+						}
+					}
+				}
+			}
+			break;
+		case "CANCELLATION" :
+			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+			Logger.getLogger("Adyen").info ("Order {0} was cancelled.",order.orderNo);
+			break;
+		case "CANCEL_OR_REFUND" :
+			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+			Logger.getLogger("Adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
+			break;
+		case "REFUND" :
+			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+			Logger.getLogger("Adyen").info ("Order {0} was refunded.",order.orderNo);
+			break;
+		case "ORDER_OPENED" :
+			Logger.getLogger("Adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  
+			paymentSuccess = true;
+			order.setPaymentStatus("PARTIALLY PAID");
+			break;	
+		case "ORDER_CLOSED" :
+			paymentSuccess = true;
+			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+			order.setExportStatus(Order.EXPORT_STATUS_READY);
+			Logger.getLogger("Adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
+			break;	
+		case "PENDING" :
+			pending = true;
+			paymentSuccess = true;
+			Logger.getLogger("Adyen").info ("Order {0} was in pending status.",order.orderNo);
+			break;				
+			
+		default:
+			Logger.getLogger("Adyen").info ("Order {0} received unhandled status {1}",order.orderNo,hpm.eventCode.stringValue);
+	}
+	
+	args.RefusedHpp = refusedHpp;
+	args.Pending = pending;
+	
+	// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
+	if (!refusedHpp) {
+		// Add received information to order
+		
+		/*
+			PSP Reference must be persistent.
+			Some modification requests (Capture, Cancel) send identificators of the operations, we mustn't overwrite the original value by the new ones
+		*/
+		if (empty(order.custom.Adyen_pspReference) && !empty(hpm.pspReference.stringValue)) {
+			order.custom.Adyen_pspReference = hpm.pspReference.stringValue;
+		}
+		
+		order.custom.Adyen_value = hpm.value.stringValue;
+		order.custom.Adyen_eventCode = hpm.eventCode.stringValue;
+		
+		// Payment Method must be persistent. When payment is cancelled, Adyen sends an empty string here
+		if (empty(order.custom.Adyen_paymentMethod) && !empty(hpm.paymentMethod.stringValue)) {
+			order.custom.Adyen_paymentMethod = hpm.paymentMethod.stringValue;
+		}
+		
+		// Add a note with all details
+		order.addNote("Adyen Payment Notification", msg);
+	}
+
+    return paymentSuccess;
 }

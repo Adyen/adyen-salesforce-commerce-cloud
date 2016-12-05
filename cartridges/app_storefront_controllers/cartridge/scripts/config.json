@@ -1,0 +1,50 @@
+{
+    "address" : {
+        "fields" : [
+            "firstName",
+            "lastName",
+            "address1",
+            "address2",
+            "city",
+            "postalCode",
+            "stateCode",
+            "countryCode",
+            "phone"]
+    },
+    "checkout" : {
+        "steps": [{
+            "id": "cart"
+        },{
+            "id": "login",
+            "modules": ["login"]
+        },{
+            "id": "shipping",
+            "sections": [{"id": "shippingaddress","modules": ["shippingaddress"]},
+                         {"id": "shippingmethod","modules": ["shippingmethod"]}]
+        },{
+            "id": "billing",
+            "sections": [{"id": "billingaddress","modules": ["billingaddress"]},
+                         {"id": "payment","modules": ["couponcode","payment"]}]
+        },{
+            "id": "confirmation",
+            "modules": ["confirmation"],
+            "showInProgressIndicator" : false
+        }]
+    },
+    "countries" : {
+        "US" : {
+            "form" : {
+                "layout" : [
+                    [{"id" : "firstName", "width": "50%" },
+                     {"id" : "lastName", "width": "50%" }],
+                    ["address1"],
+                    ["address2"],
+                    [{"id" : "postalCode", "width": "30%" },
+                     {"id" : "city", "width": "70%" }
+                    ]
+                ]
+            },
+            "currencyCode" : "USD"
+        }
+    }
+}

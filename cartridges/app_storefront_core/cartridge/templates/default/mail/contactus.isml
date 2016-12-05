@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8"/>
+<isinclude template="util/modules"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/><isprint value="${pdict.CurrentForms.contactus.myquestion.value}"/></isif></subject>
+
+<head>
+
+</head>
+
+<body>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+						
+							<p style="font-family:georgia;font-size:20px;">Salesforce Commerce Cloud</p>
+							
+							<p>${Resource.msg('contactus.name','email',null)} <isprint value="${pdict.CurrentForms.contactus.firstname.value}"/> <isprint value="${pdict.CurrentForms.contactus.lastname.value}"/></p>
+							
+							<p>${Resource.msg('contactus.email','email',null)} <isprint value="${pdict.CurrentForms.contactus.email.value}"/></p>	
+							
+							<p>${Resource.msg('contactus.phone','email',null)} <isprint value="${pdict.CurrentForms.contactus.phone.value}"/></p>	
+							
+							<p>${Resource.msg('contactus.ordernumber','email',null)}<isprint value="${pdict.CurrentForms.contactus.ordernumber.value}"/></p>
+							
+							<p>${Resource.msg('contactus.myquestion','email',null)}<isprint value="${pdict.CurrentForms.contactus.myquestion.value}"/></p>
+							
+							<p>${Resource.msg('contactus.comment','email',null)}<isprint value="${pdict.CurrentForms.contactus.comment.value}"/></p>
+
+						</td>
+					</tr>
+				</table>						
+			</center>
+		</td>
+	</tr>
+</table>
+
+</body>
+</html>

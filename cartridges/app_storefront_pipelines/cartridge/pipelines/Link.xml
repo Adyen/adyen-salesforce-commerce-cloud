@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="Application">
+  <description>Central interface for permanent links.</description>
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline forwards calls to other pipelines. It is here to support legacy code where content assets could link to that pipeline only. For all new code link to the respective pipeline directly (Search-Show, Product-Show, etc.)</description>
+        </text-node>
+        <node-display width="3" x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Category">
+    <segment>
+      <node>
+        <start-node name="Category" secure="false"/>
+        <node-display x="1" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="Search-Show"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CategoryProduct">
+    <segment>
+      <node>
+        <start-node name="CategoryProduct" secure="false"/>
+        <node-display x="3" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="Product-ShowInCategory"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Product">
+    <segment>
+      <node>
+        <start-node name="Product" secure="false"/>
+        <node-display x="1" y="5"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="Product-Show"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Page">
+    <segment>
+      <node>
+        <start-node name="Page" secure="false"/>
+        <node-display x="3" y="5"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="Page-Show"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

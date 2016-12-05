@@ -1,0 +1,87 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+	<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('giftcertpurchase.giftcertificates', 'checkout', null)}</h1>
+
+	<div class="gift-certificate-purchase clearfix">
+
+		<iscontentasset aid="gift-details"/>
+
+		<isif condition="${pdict.GiftCertificateLineItem == null}">
+
+			<form method="post" id="GiftCertificateForm" action="${URLUtils.url('GiftCert-AddToBasket')}">
+		<iselse/>
+			<form method="post" id="GiftCertificateForm" action="${URLUtils.url('GiftCert-Update')}">
+		</isif>
+
+
+
+				<fieldset>
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.lineItemId}" type="hidden"/>
+
+					<isif condition="${!pdict.CurrentHttpParameterMap.plid.empty}">
+						<input type="hidden" name="plid" value="${pdict.CurrentHttpParameterMap.plid}"/>
+					</isif>
+
+					<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.from}" type="input" rowClass="label-above"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.recipient}" type="input" rowClass="label-above"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.recipientEmail}" type="input" rowClass="label-above"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.confirmRecipientEmail}" type="input" rowClass="label-above"/>
+
+					<isscript>
+						var attributes = {
+							rows: 5,
+							cols: 50,
+							'data-character-limit': 250
+						}
+					</isscript>
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.message}" type="textarea" attributes="${attributes}" rowClass="label-above" />
+
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.amount}" type="input" rowClass="label-above cert-amount"/>
+
+					<div class="form-row form-row-button">
+						<button type="submit" class="button-fancy-medium" id="AddToBasketButton">
+							<isif condition="${pdict.GiftCertificateLineItem == null}">${Resource.msg('global.addtocart', 'locale', null)}<iselse/>${Resource.msg('global.updatecart', 'locale', null)}</isif>
+						</button>
+					</div>
+
+				</fieldset>
+
+		</form>
+	</div>
+
+	<iscontentasset aid="gift-check-balance" />
+
+	<form method="post" class="suppress check-balance" action="${URLUtils.url('GiftCert-CheckBalance')}">
+		<fieldset>
+			<isinputfield formfield="${pdict.CurrentForms.giftcert.balance.giftCertID}" type="input" rowClass="label-above gift-cert-balance"/>
+			<div class="form-row gift-cert-balance-submit">
+				<button type="submit" id="CheckBalanceButton" value="${Resource.msg('global.checkbalance', 'locale', null)}">
+					${Resource.msg('global.checkbalance', 'locale', null)}
+				</button>
+			</div>
+
+			<isif condition="${pdict.ErrorMsg}">
+				<div class="form-row error">
+					<isprint value="${pdict.ErrorMsg}"/>
+				</div>
+			<iselseif condition="${pdict.GiftCertificate != null}">
+				<div class="form-row error">
+					${Resource.msg('giftcertpurchase.balancealert', 'checkout', null)} <isprint value="${pdict.GiftCertificate.balance}"/>
+				</div>
+			</isif>
+
+		</fieldset>
+	</form>
+
+
+
+	<iscontentasset aid="gift-additional-details" />
+
+</isdecorate>

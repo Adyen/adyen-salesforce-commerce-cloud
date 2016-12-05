@@ -1,0 +1,76 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>This includes global utilities into the pages</iscomment>
+<isinclude template="util/modules"/>
+<iscomment>
+	This creates reporting data for the cart. The application assumes that
+	the minicartcontent template will be embeeded into every page, so that the information about
+	an open cart can be report as soon as it is available or changed.
+	Additionally this page must not be cached to allow the correct reporting any time.
+
+	This include also takes care of reporting source codes.
+</iscomment>
+<isinclude template="util/reporting/ReportBasket.isml"/>
+
+<iscomment> the mini cart total which is always visible</iscomment>
+<div class="mini-cart-total">
+	<isif condition="${(pdict.Basket != null) && (pdict.Basket.productLineItems.size() + pdict.Basket.giftCertificateLineItems.size() > 0 )}">
+		<isscript>
+			// calculate the total number of items in the cart by adding quantities together
+			// do not count bonus line items
+			var cartQty : Number = 0;
+			var pliIt : dw.util.Iterator = pdict.Basket.productLineItems.iterator();
+
+			while (pliIt.hasNext()) {
+				var pli : dw.order.ProductLineItem = pliIt.next();
+				cartQty += pli.quantity;
+			}
+
+			// add the gift certificates to cart quantity
+			cartQty += pdict.Basket.giftCertificateLineItems.size();
+		</isscript>
+		<a class="mini-cart-link" href="${URLUtils.https('Cart-Show')}" title="${Resource.msg('minicart.viewcart','checkout',null)}">
+			<i class="minicart-icon fa fa-shopping-cart"></i>
+			<span class="minicart-quantity">
+				<isprint value="${cartQty}" formatter="##" />
+			</span>
+		</a>
+	<iselse/>
+		<a class="mini-cart-link mini-cart-empty" href="${URLUtils.https('Cart-Show')}" title="${Resource.msg('minicart.viewcart','checkout',null)}">
+			<i class="fa fa-shopping-cart"></i>
+			<span class="minicart-quantity">0</span>
+		</a>
+	</isif>
+</div>
+
+<iscomment> the dynamically shown view of the last added item </iscomment>
+<isif condition="${!empty(pdict.Basket) && (pdict.Basket.productLineItems.size() > 0 || pdict.Basket.giftCertificateLineItems.size() > 0)}">
+
+	<div class="mini-cart-content">
+		<div class="mini-cart-header">
+			${Resource.msg('minicart.title','checkout',null)}
+		</div>
+		<div class="mini-cart-products">
+			<isminilineitems p_lineitemctnr="${pdict.Basket}" p_showreverse="${true}" p_productlineitem="${pdict.ProductLineItem}" p_giftcertlineitem="${pdict.GiftCertificateLineItem}"/>
+		</div>
+
+		<div class="mini-cart-totals">
+			<div class="mini-cart-subtotals">
+				<span class="label">${Resource.msg('order.ordersummary.ordersubtotal','order',null)}</span>
+				<span class="value"><isprint value="${pdict.Basket.getAdjustedMerchandizeTotalPrice(false).add(pdict.Basket.giftCertificateTotalPrice)}"/></span>
+			</div>
+
+			<div class="mini-cart-slot">
+				<isslot id="minicart-banner" description="This is the banner within the minicart, directly above the View Cart/Checkout link." context="global" />
+			</div>
+
+			<a class="button mini-cart-link-cart" href="${URLUtils.https('Cart-Show')}" title="${Resource.msg('minicart.viewcart.label','checkout',null)}">${Resource.msg('minicart.viewcart','checkout',null)}</a>
+
+			<isapplepay></isapplepay>
+
+			<a class="mini-cart-link-checkout" href="${URLUtils.https('COCustomer-Start')}" title="${Resource.msg('minicart.directcheckout','checkout',null)}">${Resource.msg('minicart.directcheckout','checkout',null)} &raquo;</a>
+		</div>
+	</div>
+
+</isif>
+<isbonusdiscountlineitem p_alert_text="${Resource.msg('product.bonusproductalert','product',null)}" p_discount_line_item="${pdict.BonusDiscountLineItem}"/>
+

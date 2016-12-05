@@ -1,0 +1,114 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<div id="subProduct${pdict.ProductCount}Div" class="subProduct">
+	<div class="productsetdetail">
+		<div class="productdetailcolumn productinfo">
+
+			<h1 class="productname">
+				<a href="${URLUtils.url('Product-Show','pid', pdict.Product.ID)}" title="${pdict.Product.name}">
+					<isprint value="${pdict.Product.name}"/>
+				</a>
+			</h1>
+			<div class="itemNo productID">
+				${Resource.msg('product.item','product',null)}
+				<isprint value="${ pdict.Product.ID }"/>
+			</div>
+			<isif condition="${empty(pdict.ProductBundle)}">
+			<isinclude template="product/components/pricing"/>
+			<isinclude template="product/components/promotions"/>
+			</isif>
+			<isif condition="${!empty(pdict.ProductBundle)}">
+			<div class="attribute">
+				<span class="label">${Resource.msg('global.quantity','locale',null)}: </span>
+				<span class="value"><isprint value="${pdict.ProductBundle.getBundledProductQuantity(pdict.Product)}" /></span>
+			</div>
+			</isif>
+			<isinclude template="product/components/variations"/>
+
+			<div class="mainattributes clearfix">
+				<isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
+				<isset name="group" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
+				<isinclude template="product/components/group"/>
+			</div>
+
+			<isif condition="${empty(pdict.ProductBundle)}">
+				<isinclude template="product/components/options"/>
+			</isif>
+
+			<div class="availability">
+				<span class="label">${Resource.msg('global.availability','locale',null)}: </span>
+				<span class="value"><!-- Product Availability Message --></span>
+			</div>
+
+			<isif condition="${empty(pdict.ProductBundle)}">
+				<isscript>
+					// ensure a unique form name and make the name reuseable, because the call to
+					// dynamicHtmlName always creates a different name
+					var uniqueFormID : String = pdict.CurrentForms.product.addtocart.dynamicHtmlName;
+				</isscript>
+				<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${uniqueFormID}" class="productsetsubform">
+					<div id="pdpATCDivsubProduct${pdict.ProductCount}Div" class="addtocartbar">
+						<div class="addtocart">
+							<input type="hidden" name="pid" value="${pdict.Product.ID}" />
+							<div class="quantity">
+								<label for="qty-input-${uniqueFormID}">${Resource.msg('global.qty','locale',null)}:</label>
+								<input class="quantityinput" id="qty-input-${uniqueFormID}" value="${Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()}"/>
+							</div>
+							<button type="submit" value="${Resource.msg('global.addtocart','locale',null)}" class="addtocartbutton"><span>${Resource.msg('global.addtocart','locale',null)}</span></button>
+						</div>
+						<isinclude template="product/components/pricing"/>
+					</div>
+				</form>
+			</isif>
+		</div>
+
+		<isset name="largeImagesSize" value="${pdict.Product.getImages('large').size()}" scope="page"/>
+		<isset name="smallImagesSize" value="${pdict.Product.getImages('small').size()}" scope="page"/>
+		<isset name="noOfImages" value="${largeImagesSize > smallImagesSize ? smallImagesSize : largeImagesSize}" scope="page"/>
+		<div class="productdetailcolumn productimages">
+			<div class="productthumbnails ">
+				<iscomment>show thumbnails if more than one</iscomment>
+
+				<isif condition="${noOfImages > 0}">
+					<isif condition="${smallImagesSize > 1}">
+
+						<isloop items="${pdict.Product.getImages('small')}" var="img" status="imgSmStatus">
+							<iscomment>we only show the smallest of large or small images, there is 1-1 correspondence</iscomment>
+							<isif condition="${imgSmStatus.count >= noOfImages}">
+								<isbreak/>
+							</isif>
+
+							<isset name="lgImage" value="${pdict.Product.getImages('large')[imgSmStatus.index.toFixed(0)]}" scope="page"/>
+
+							<!-- ${imgSmStatus.index.toFixed(0)}  -->
+							<img class="productthumbnail"
+								 src="${img.getURL()}"
+								 alt="${img.alt}"
+								 data-lgimg='{"url":"${lgImage.getURL()}", "title":"${lgImage.title}", "alt":"${lgImage.alt}", "hires":"${'#'}"}'/>
+						</isloop>
+					</isif>
+				<iselse/>
+					<isif condition="${pdict.Product.variant}">
+
+						<isloop items="${pdict.Product.variationModel.master.getImages('small')}" var="img" status="imgSmStatus">
+							<iscomment>we only show the smallest of large or small images, there is 1-1 correspondence</iscomment>
+							<isif condition="${imgSmStatus.count > noOfImages}">
+								<isbreak/>
+							</isif>
+
+							<isset name="lgImage" value="${pdict.Product.getImages('large')[imgSmStatus.index.toFixed(0)]}" scope="page"/>
+
+							<!-- ${imgSmStatus.index.toFixed(0)} -->
+							<img class="productthumbnail"
+								 src="${img.getURL()}"
+								 alt="${img.alt}"
+								 data-lgimg='{"url":"${lgImage.getURL()}", "title":"${lgImage.title}", "alt":"${lgImage.alt}", "hires":"${'#'}"}'/>
+
+						</isloop>
+					</isif>
+				</isif>
+			</div>
+
+		</div>
+
+	</div>
+</div>

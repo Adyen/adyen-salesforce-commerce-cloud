@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="GetToken">
+    <segment>
+      <node>
+        <start-node name="GetToken" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="2"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="csrf/csrftokenjson"/>
+        </interaction-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Validate">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Validate" secure="false"/>
+        <node-display x="3" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:util/ValidateCSRFToken.js"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+        </pipelet-node>
+        <node-display x="0" y="2"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="CurrentHttpParameterMap.format.stringValue == 'ajax'" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="2" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="target" x="0" y="-2"/>
+                    <bend-point relative-to="target" x="0" y="-1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="LogoutCustomer" pipelet-set-identifier="bc_api"/>
+                    <node-display x="2" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="&quot;CSRF Token Mismatch&quot;" key="From_0"/>
+                      <key-binding alias="ErrorCode" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="util/errorjson"/>
+                    </interaction-node>
+                    <node-display x="0" y="2"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="LogoutCustomer" pipelet-set-identifier="bc_api"/>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="CSRF-Failed"/>
+              <node-display x="0" y="2"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Failed">
+    <segment>
+      <node>
+        <start-node name="Failed" secure="false"/>
+        <node-display x="1" y="5"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="csrf/csrffailed"/>
+        </interaction-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

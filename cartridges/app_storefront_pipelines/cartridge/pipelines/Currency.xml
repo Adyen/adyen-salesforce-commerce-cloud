@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used in an ajax call to set the session variable 'currency'.</description>
+        </text-node>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="SetSessionCurrency">
+    <segment>
+      <node>
+        <start-node name="SetSessionCurrency" secure="false"/>
+        <node-display x="1" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="SetSessionCurrency" pipelet-set-identifier="bc_api">
+          <description>Sets the session currency.</description>
+          <key-binding alias="CurrentHttpParameterMap.currencyMnemonic.value" key="CurrencyCode"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="3" y="0"/>
+              <bend-point relative-to="target" x="3" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="util/successjson"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="search/pt_categorylanding">
+
+	<iscache type="relative" minute="30" varyby="price_promotion"/>
+	
+	<isinclude template="util/modules"/>
+	
+	<iscomment>
+		Configured as rendering template for the general category landing page.
+		Displays two category specific slots containing static html with promotional
+		banner in the first slot and either up to four featured products or promotional
+		content in the second slot.
+	</iscomment>
+	
+	<div id="primary" class="primary-content">	
+		<isslot id="cat-landing-slotbanner" context="category" description="Banner at the top of Category Landing Pages" context-object="${pdict.ProductSearchResult.category}"/>		
+	</div>
+	
+	<div id="secondary" class="refinements">
+		<isinclude template="search/components/productsearchrefinebar"/>
+	</div>
+
+	<div class="secondary-content">
+		<isslot id="cat-landing-slotbottom" context="category" description="First slot below the Category Banner" context-object="${pdict.ProductSearchResult.category}"/>
+
+		<isslot id="cat-landing-slotbottom2" context="category" description="Second slot below the Category Banner" context-object="${pdict.ProductSearchResult.category}"/>
+	</div>
+		
+</isdecorate>

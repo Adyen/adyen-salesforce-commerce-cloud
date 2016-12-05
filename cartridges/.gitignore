@@ -1,0 +1,14 @@
+.DS_Store
+node_modules
+*.log
+*.swp
+*.map
+.idea/
+dw.json
+demo_data_no_hires_images.zip
+Thumbs.db
+app_storefront_core/cartridge/static/*/css/style.css
+app_storefront_core/cartridge/static/*/js/app.js
+test/application/pageObjects/testData/parsedData.txt
+test/reports/*.xml
+coverage

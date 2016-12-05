@@ -1,0 +1,8 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+
+<isscript>
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var pvm = empty(pdict.CurrentVariationModel) ? (product==null?null:product.variationModel) : pdict.CurrentVariationModel;
+var variants = ProductUtils.getVariants(pdict.Product, pvm, pdict.CurrentHttpParameterMap.Quantity.stringValue);
+</isscript>
+<isprint value="${JSON.stringify(variants)}" encoding="off"/>

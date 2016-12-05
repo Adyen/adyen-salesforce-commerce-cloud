@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="Application">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>The OnRequest pipeline is called with every request in site. This happens both for cached and non-cached pages. For performance reasons the pipeline should be kept short.</description>
+        </text-node>
+        <node-display width="2" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Do">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Do"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

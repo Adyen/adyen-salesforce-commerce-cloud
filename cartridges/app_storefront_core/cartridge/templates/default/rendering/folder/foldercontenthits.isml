@@ -1,0 +1,79 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="search/pt_contentsearchresult">
+	<isinclude template="util/modules"/>
+	
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+		<isif condition="${!(pdict.CurrentHttpParameterMap.q == '')}">
+			<h2>${Resource.msgf('rendering.foldercontenthits.yoursearch','rendering',null,pdict.ContentSearchResult.count)}</h2>
+		</isif>
+	
+		<isif condition="${pdict.ContentSearchResult.folder != null}">
+       		<isslot id="folder-main-slot" description="Library Folder Slot" context="folder" context-object="${pdict.ContentSearchResult.folder}"/>
+   		</isif>
+   
+   		<iscomment>link back to product search result</iscomment>
+			<isif condition="${!empty(pdict.ProductSearchResult) && !empty(pdict.ProductSearchResult.searchPhrase)}" />
+				<isif condition="${pdict.ProductSearchResult.count > 0}">
+					<a href="${pdict.ProductSearchResult.url('Search-Show')}">${Resource.msg('rendering.foldercontenthits.backtoproducts','rendering',null)}</a>
+				<iselse/>
+					<p>${Resource.msgf('rendering.foldercontenthits.noproducts','rendering',null,pdict.ProductSearchResult.searchPhrase)}</p>
+				</isif>
+			</isif>
+	
+		<isif condition="${!pdict.ContentPagingModel.empty}">
+
+			<iscomment>sorting and hits info</iscomment>
+			<ispaginginformation pagingmodel="${pdict.ContentPagingModel}"/>
+			
+			<iscomment>pagination</iscomment>
+			<ispagingbar pageurl="${pdict.ContentSearchResult.url('Search-ShowContent')}"  pagingmodel="${pdict.ContentPagingModel}"/>
+
+				
+			<iscomment>calculated correct index position to separate the result columns</iscomment>
+			<isscript>
+				var count = pdict.ContentPagingModel.end + 1;
+				var cutIndex = Math.ceil( count / 2 ) - 1;
+				var endIndex = cutIndex + (cutIndex + 1);
+			</isscript>
+			
+			<iscomment>render the results as two column layout</iscomment>
+			<ul class="folder-content-list">
+			<isloop items="${pdict.ContentPagingModel.pageElements}" var="asset" status="loopstate" end="${endIndex}">
+				
+				<li>
+					<iscomment>append the search parameters to the article URL</iscomment>
+					<isset name="articleURL" value="${pdict.ContentSearchResult.url( URLUtils.url('Page-Show','cid', asset.ID) )}" scope="page"/>
+					
+					<a class="content-title" href="${articleURL}">
+						<isprint value="${asset.name}"/>
+					</a>
+					
+					<p>
+						<isprint value="${asset.description}"/>
+						<a href="${articleURL}" class="readmore">
+							${Resource.msg('rendering.foldercontenthits.readmore','rendering',null)}
+						</a>
+					</p>
+				</li>
+				
+			</isloop>
+			</ul>
+			
+			<isif condition="${!empty(pdict.ProductSearchResult) && !empty(pdict.ProductSearchResult.searchPhrase)}" />
+				<isif condition="${pdict.ProductSearchResult.count > 0}">
+					<a href="${pdict.ProductSearchResult.url('Search-Show')}">${Resource.msg('rendering.foldercontenthits.backtoproducts','rendering',null)}</a>
+				<iselse/>
+					<p>${Resource.msgf('rendering.foldercontenthits.noproducts','rendering',null,pdict.ProductSearchResult.searchPhrase)}</p>
+				</isif>
+			</isif>
+			
+			<iscomment>sorting and hits info</iscomment>
+			<ispaginginformation pagingmodel="${pdict.ContentPagingModel}"/>
+			
+			<iscomment>pagination</iscomment>
+			<ispagingbar pageurl="${pdict.ContentSearchResult.url('Search-ShowContent')}"  pagingmodel="${pdict.ContentPagingModel}"/>
+
+		</isif>
+
+</isdecorate>

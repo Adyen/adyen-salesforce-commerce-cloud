@@ -10,6 +10,7 @@ importPackage( dw.crypto );
 importPackage( dw.system );
 importPackage( dw.order );
 importPackage( dw.net );
+importPackage( dw.svc );
 
 function execute( args : PipelineDictionary ) : Number
 {
@@ -53,15 +54,22 @@ function execute( args : PipelineDictionary ) : Number
 	
 	var reqBody : String = "countryCode=" + countryCode + "&currencyCode=" + currencyCode + "&skinCode=" + skinCode + "&merchantAccount=" + merchantAccount + "&merchantReference=Request+payment+methods" + "&sessionValidity=" + encodeURIComponent(sessionValidity) + "&merchantSig=" + encodeURIComponent(merchantSig) + "&paymentAmount=" + paymentAmount + "&allowedMethods=" + allowedMethods;
 	
-	var httpSvc : HTTPClient = new HTTPClient();
-	var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
+    var callResult = null;
+   	var service : Service = ServiceRegistry.get("adyen.http.payment.methods");
+   	var resultObject = null;
+   	
+   	service.addHeader("Content-type","application/x-www-form-urlencoded"); 
+   	service.setURL(url);
+   	callResult = service.call(reqBody);
+   	
+	if (callResult.isOk() == false){
+		Logger.error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+		return PIPELET_ERROR;
+	}
+   	
+   	resultObject = callResult.object;
 	
-	httpSvc.setTimeout(timeout);
-	httpSvc.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	httpSvc.open('POST', url);
-	httpSvc.send(reqBody);
-	
-	args.PaymentMethods = JSON.parse(httpSvc.text);
+	args.PaymentMethods = JSON.parse(resultObject.text);
 	
    return PIPELET_NEXT;
 }

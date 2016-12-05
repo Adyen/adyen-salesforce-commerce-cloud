@@ -1,0 +1,103 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+
+<iscomment>NOTE: Removes Refinements if NO Content is found</iscomment>
+<isif condition="${pdict.ContentSearchResult != null}">
+
+<iscomment>Fetches refinement options for easier handling in the template</iscomment>
+<isset name="Refinements" value="${pdict.ContentSearchResult.refinements}" scope="page"/>
+
+<iscomment>Process refinement options based on configured refinement definitions</iscomment>
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+
+	<iscomment>If we have a folder context, we build a path from the root to the category</iscomment>
+	<isscript>
+		var folder = pdict.ContentSearchResult.folder;
+		var path = new dw.util.ArrayList();
+		while( folder != null && folder.parent != null )
+		{
+			if( !folder.online ) continue;
+			path.addAt( 0, folder );
+			folder = folder.parent;
+		}
+	</isscript>
+
+	<iscomment>Navigation header based on browsing vs. keyword search</iscomment>
+		
+		<isif condition="${pdict.ContentSearchResult.folderSearch}">
+			<h2 class="refinement-header"><isprint value="${path.get(0).displayName}"/></h2>
+		<iselse/>
+			<h2 class="refinement-header">${Resource.msg('searchrefinebar.searchresults','search',null)}</h2>
+		</isif>
+
+		<isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+
+			<div class="refinement ${RefinementDefinition.displayName}<isif condition="${RefinementDefinition.isFolderRefinement()}"> folder-refinement</isif>">
+
+				<iscomment>FOLDER REFINEMENTS</iscomment>
+				<isif condition="${RefinementDefinition.isFolderRefinement()}">
+	
+					<iscomment>render the folder refinement label, display the top level folder and a relax link in case we refined to a folder already</iscomment>
+					<isif condition="${path.size() > 0}">
+						
+						<iscomment>display the top level label only for keyword searches</iscomment>
+						<isif condition="${!pdict.ContentSearchResult.folderSearch}">
+							<a href="${pdict.ContentSearchResult.urlRefineFolder('Search-ShowContent', path.get(0).ID)}">
+								<isprint value="${path.get(0).displayName}"/>
+							</a>
+							(<a class="clearfix" href="${pdict.ContentSearchResult.urlRelaxFolder('Search-ShowContent')}">
+								${Resource.msg('searchrefinebar.viewall','search',null)}
+							</a>)
+						</isif>
+						
+						<isfolderrefinementvalues searchmodel="${pdict.ContentSearchResult}" folder="${path.get(0)}" folderpath="${path}" folderlevel="1"/>
+						
+					<iselse/>
+					
+						<h3>
+							<isprint value="${RefinementDefinition.displayName}"/>
+						</h3>
+						
+						<isfolderrefinementvalues searchmodel="${pdict.ContentSearchResult}" folderlevel="1"/>
+					
+					</isif>
+	
+				</isif>
+
+		 		<iscomment>ATTRIBUTE REFINEMENTS</iscomment>
+				<isif condition="${RefinementDefinition.isAttributeRefinement()}">
+				
+					<h3>
+						<isprint value="${RefinementDefinition.getDisplayName()}"/>
+					</h3>
+
+					<isif condition="${pdict.ContentSearchResult.isRefinedByAttribute(RefinementDefinition.attributeID)}">
+						<div class="clear-refinement">
+							<a title="${Resource.msg('searchrefinebar.clearselection','search',null)}" href="${pdict.ContentSearchResult.urlRelaxAttribute('Search-ShowContent',RefinementDefinition.attributeID)}">${Resource.msg('searchrefinebar.clearselection','search',null)}</a>
+						</div>
+					</isif>
+
+					<iscomment>Handling ofattribute refinements (depending on whether there are more than the configured cutoff)</iscomment>
+					<ul <isif condition="${Refinements.getAllRefinementValues(RefinementDefinition).size() > RefinementDefinition.cutoffThreshold}">class="scrollable"</isif>>
+						<iscomment>render the refinement values as simple list</iscomment>
+						<isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue">
+							<isif condition="${pdict.ContentSearchResult.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+								<li class="selected">
+									<a title="${RefinementValue.getDisplayValue()}" href="${pdict.ContentSearchResult.urlRelaxAttributeValue('Search-ShowContent',RefinementValue.getID(),RefinementValue.getValue())}" ><isprint value="${RefinementValue.getDisplayValue()}"/></a>
+								</li>
+							<iselse/>
+								<li>
+									<a title="${RefinementValue.getDisplayValue()}" href="${pdict.ContentSearchResult.urlRefineAttributeValue('Search-ShowContent',RefinementValue.getID(),RefinementValue.getValue())}" ><isprint value="${RefinementValue.getDisplayValue()}"/></a>
+								</li>
+							</isif>
+						</isloop>
+					</ul>
+
+
+				</isif>
+			</div>
+		</isloop>
+
+	</isif>
+</isif>

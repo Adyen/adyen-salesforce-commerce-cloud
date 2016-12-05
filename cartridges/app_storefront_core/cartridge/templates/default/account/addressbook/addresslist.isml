@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="account/pt_account" scope="page"/>
+<iscomment>pwr = power review write</iscomment>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.pwr.stringValue == 'true' || pdict.CurrentHttpParameterMap.source.stringValue == 'search' || pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart'}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+
+	<isset name="bctext2" value="${Resource.msg('account.addressbook.addresslist.header','account',null)}" scope="pdict"/>
+
+	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
+	
+	<div id="addresses">
+		<h1>${Resource.msg('account.addressbook.addresslist.header','account',null)}</h1>
+		<a class="section-header-note address-create button" title="${Resource.msg('account.addressbook.addresslist.create.label','account',null)}" href="${URLUtils.url('Address-Add')}" >
+			${Resource.msg('account.addressbook.addresslist.create','account',null)}
+		</a>
+	
+		<isinclude template="account/addressbook/addressinclude"/>
+	</div>
+
+</isdecorate>

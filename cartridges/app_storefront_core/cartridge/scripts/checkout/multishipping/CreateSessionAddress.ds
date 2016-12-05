@@ -1,0 +1,20 @@
+/**
+*	This script creates a new and empty shipping address
+*	object which is used to store form data.
+*
+*   @output Address : Object Empty Shipping Address
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+
+importScript("checkout/Utils.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var emptyAddress : Object = new ShippingAddress();
+	emptyAddress.UUID = UUIDUtils.createUUID();
+	args.Address = emptyAddress;
+
+   return PIPELET_NEXT;
+}

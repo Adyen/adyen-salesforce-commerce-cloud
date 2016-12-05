@@ -1,0 +1,109 @@
+/**
+* Salesforce Commerce Cloud Script File
+* This script scans the basket and consildates items that are going to the same store
+* it also creates shipmets with shipment type and method for the rest of checkout
+*
+*
+*
+* For example:
+* 	@input Basket : dw.order.Basket The basket 
+*   @output homedeliveries : Boolean used to show the shipping form fields if there is a home delivery found in the basket
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.web );
+importPackage( dw.catalog );
+
+importScript("storelocator/storepickup/Utils.ds");
+importScript("checkout/Utils.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+	var basket : Basket = args.Basket;
+	var sliArrayList : ArrayList = new ArrayList();
+	var homedeliveries : Boolean = false;
+	
+	for each (var pli : ProductLineItem in basket.allProductLineItems){
+		
+		if(pli.custom.fromStoreId == null){
+			//skip none instore pli's
+			homedeliveries = true;
+			continue;
+		}	
+		if(pli.shipment.shippingMethod && pli.shipment.shippingMethod.custom.storePickupEnabled){
+			//check to see if the storeid has changed
+			if(pli.custom.fromStoreId == pli.shipment.custom.fromStoreId){
+				if(pli.shipment.shippingAddress != null){
+					continue;
+				}else{
+					//create the shipment address to reflect the new store address
+					var shippingAddress : Object = new ShippingAddress();
+					var storeObject = getStoreObject(pli.custom.fromStoreId);
+					var orderAddress = pli.shipment.createShippingAddress();			
+					shippingAddress.storeAddressTo(orderAddress,storeObject);
+					continue;
+				}
+			}else{
+				var storeObject = getStoreObject(pli.custom.fromStoreId);
+				//change the shipment address to reflect the new store address
+				pli.shipment.shippingAddress.setFirstName( '');				
+				pli.shipment.shippingAddress.setLastName( storeObject.name );
+				pli.shipment.shippingAddress.setAddress1( storeObject.address1 );
+				pli.shipment.shippingAddress.setAddress2( storeObject.address2 );
+				pli.shipment.shippingAddress.setCity( storeObject.city );
+				pli.shipment.shippingAddress.setPostalCode( storeObject.postalCode );
+				pli.shipment.shippingAddress.setStateCode( storeObject.stateCode );
+				pli.shipment.shippingAddress.setCountryCode( storeObject.custom.countryCodeValue );																								
+				pli.shipment.shippingAddress.setPhone( storeObject.phone );	
+				pli.shipment.custom.fromStoreId =  pli.custom.fromStoreId;	
+				continue;
+			}
+		}
+		
+		//check to see if we are creating a new shipment or adding to an existing one
+		if(sliArrayList.contains(pli.custom.fromStoreId)){
+			//add the pli to the existing shipment
+			//loop through to find the shipment with the storeid and set it as the shipment for the pli  
+			for each (var instoreshipment : shipment in basket.shipments){
+				if(instoreshipment.custom.fromStoreId != null && (pli.custom.fromStoreId == instoreshipment.custom.fromStoreId)){
+					//have found an existing shipment that has the correct address
+					pli.setShipment(instoreshipment);
+				}
+				
+			}
+			
+		}else{
+			//create a new shipment to put this pli in 
+			var shipment : Shipment = null;
+			shipment = basket.createShipment(UUIDUtils.createUUID());			
+			shipment.custom.fromStoreId =  pli.custom.fromStoreId;
+			shipment.custom.shipmentType =  'instore';
+			
+			var inStoreShippingMethod : ShippingMethod = null;
+			//loop over the shipping methods and pick the instore one
+			
+			var shippingMethods : ArrayList =  new ArrayList(ShippingMgr.getShipmentShippingModel(shipment).getApplicableShippingMethods());
+			for each(var shippingMethod in shippingMethods){
+				if(shippingMethod.custom.storePickupEnabled){
+					shipment.shippingMethod = shippingMethod;
+				}
+				
+			}
+			
+			var shippingAddress : Object = new ShippingAddress();
+			var storeObject = getStoreObject(pli.custom.fromStoreId);
+			var orderAddress = shipment.createShippingAddress();			
+			shippingAddress.storeAddressTo(orderAddress,storeObject);
+			pli.setShipment(shipment);
+			
+		}
+		
+		sliArrayList.add(pli.custom.fromStoreId);
+	}
+
+	args.homedeliveries = homedeliveries;
+   return PIPELET_NEXT;
+}

@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+
+    <type-extension type-id="PaymentTransaction">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="transactionID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="type">
+                <value-definitions immutable="true">
+                    <value-definition>
+                        <display xml:lang="x-default">Authorization</display>
+                        <value>TYPE_AUTH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Authorization Reversal</display>
+                        <value>TYPE_AUTH_REVERSAL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Capture</display>
+                        <value>TYPE_CAPTURE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit</display>
+                        <value>TYPE_CREDIT</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="AmountPaid">
+                <display-name xml:lang="x-default">Amount Paid</display-name>
+                <type>double</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="approvalStatus">
+                <display-name xml:lang="x-default">Approval Status</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="authAmount">
+                <display-name xml:lang="x-default">Auth Amount</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="authCode">
+                <display-name xml:lang="x-default">Authorization Code</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cardType">
+                <display-name xml:lang="x-default">Card Type</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="requestId">
+                <display-name xml:lang="x-default">Request ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="requestToken">
+                <display-name xml:lang="x-default">Request Token</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+       
+    </type-extension>
+
+ 
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="AdyenCseEnabled">
+                <display-name xml:lang="x-default">CSE Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenCseJsPublicKey">
+                <display-name xml:lang="x-default">CSE Javascript Public Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenCseProdJsURL">
+                <display-name xml:lang="x-default">CSE Prod Javascript URL</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenCseTestJsURL">
+                <display-name xml:lang="x-default">CSE Test Javascript URL</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenNotificationDelayMinutes">
+                <display-name xml:lang="x-default">Ayden Notification Delay Minutes</display-name>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenPaymentMethodsServicePrefix">
+                <display-name xml:lang="x-default">Ayden Payment Methods Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.methods</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenPaymentSecureServicePrefix">
+                <display-name xml:lang="x-default">Adyen Payment 3D Secure Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenPaymentSendServicePrefix">
+                <display-name xml:lang="x-default">Ayden Payment Send Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.send</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Debug">
+                <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
+                <description xml:lang="x-default">yes / no</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_HMAC256">
+                <display-name xml:lang="x-default">HMAC payment setup (SHA-256)</display-name>
+                <description xml:lang="x-default">Enable if you use an autogenerated HMAC SHA-256 key, it is also recommended.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_HMACkey">
+                <display-name xml:lang="x-default">HMACkey</display-name>
+                <description xml:lang="x-default">Key used to calculate a signature</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Mode">
+                <display-name xml:lang="x-default">Test/Production Mode</display-name>
+                <description xml:lang="x-default">Set to live for Production or test for test mode</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>TEST</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>LIVE</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_PaymentSelection">
+                <display-name xml:lang="x-default">Payment Selection</display-name>
+                <description xml:lang="x-default">Multi-page (multi) or One page (one) payment selection</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <default-value>one</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_address1Delimiter">
+                <display-name xml:lang="x-default">Delimiter for parts of Address1 field</display-name>
+                <description xml:lang="x-default">When AVS is enabled, Suite No and Street Name fields are used on the storefront instead of Address1 field. Address1 field is used behind the scenes as well, and it is populated automatically by concatenation of Suite No and Street Name values. The delimiter for parts of Address1 field can be defined here.&#13;
+If empty value is specified, space will be used as a delimiter.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_allowedMethods">
+                <display-name xml:lang="x-default">allowedMethods</display-name>
+                <description xml:lang="x-default">Payment Methods that will be shown on the Adyen HPP</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_directoryLookup">
+                <display-name xml:lang="x-default">Switch to directory lookup</display-name>
+                <description xml:lang="x-default">yes / no</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_enableAVS">
+                <display-name xml:lang="x-default">Enable AVS</display-name>
+                <description xml:lang="x-default">Enable AVS support. Requires Street Name and House Number fields to be sent to Adyen. The result code is returned by the service and should be handled separately</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_merchantCode">
+                <display-name xml:lang="x-default">merchantCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_recurringType">
+                <display-name xml:lang="x-default">Recurring Type</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">ONECLICK</display>
+                        <value>ONECLICK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">RECURRING</display>
+                        <value>RECURRING</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">ONECLICK,RECURRING</display>
+                        <value>ONECLICK,RECURRING</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_skinCode">
+                <display-name xml:lang="x-default">skinCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AydenNotificationDelayMinutes">
+                <display-name xml:lang="x-default">Ayden Notification Delay Minutes</display-name>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="AydenPaymentMethodsServicePrefix">
+                <display-name xml:lang="x-default">Ayden Payment Methods Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.methods</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AydenPaymentSendServicePrefix">
+                <display-name xml:lang="x-default">Ayden Payment Send Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.send</default-value>
+            </attribute-definition>
+
+           
+            <attribute-definition attribute-id="adyen_notification_password">
+                <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
+                <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="adyen_notification_user">
+                <display-name xml:lang="x-default">Adyen Notifications User</display-name>
+                <description xml:lang="x-default">Adyen Notifications User for Basic Authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+         
+        </custom-attribute-definitions>
+        <group-definitions>
+         
+            <attribute-group group-id="Adyen">
+                <display-name xml:lang="x-default">AdyenNew</display-name>
+                <attribute attribute-id="Adyen_merchantCode"/>
+                <attribute attribute-id="AdyenNotificationDelayMinutes"/>
+                <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_Debug"/>
+                <attribute attribute-id="AdyenCseEnabled"/>
+                <attribute attribute-id="AdyenCseProdJsURL"/>
+                <attribute attribute-id="AdyenCseTestJsURL"/>
+                <attribute attribute-id="AdyenCseJsPublicKey"/>
+                <attribute attribute-id="Adyen_allowedMethods"/>
+                <attribute attribute-id="Adyen_recurringType"/>
+                <attribute attribute-id="Adyen_enableAVS"/>
+                <attribute attribute-id="adyen_notification_user"/>
+                <attribute attribute-id="Adyen_skinCode"/>
+                <attribute attribute-id="Adyen_HMAC256"/>
+                <attribute attribute-id="Adyen_HMACkey"/>
+                <attribute attribute-id="adyen_notification_password"/>
+                <attribute attribute-id="Adyen_address1Delimiter"/>
+                <attribute attribute-id="Adyen_directoryLookup"/>
+                <attribute attribute-id="AdyenPaymentSendServicePrefix"/>
+                <attribute attribute-id="AdyenPaymentMethodsServicePrefix"/>
+                <attribute attribute-id="AdyenPaymentSecureServicePrefix"/>
+            </attribute-group>
+         
+        </group-definitions>
+    </type-extension>
+
+    <custom-type type-id="adyenNotification">
+        <display-name xml:lang="x-default">Adyen Notification</display-name>
+        <description xml:lang="x-default">Adyen Notification Update Queue</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <retention-days>3</retention-days>
+        <key-definition attribute-id="orderId">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="currency">
+                <display-name xml:lang="x-default">Currency</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventCode">
+                <display-name xml:lang="x-default">Event Code</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventDate">
+                <display-name xml:lang="x-default">Event Date</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="httpRemoteAddress">
+                <display-name xml:lang="x-default">Remote Address</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="live">
+                <display-name xml:lang="x-default">Live</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantAccountCode">
+                <display-name xml:lang="x-default">Merchant Account Code</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantReference">
+                <display-name xml:lang="x-default">Merchant Reference</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="operations">
+                <display-name xml:lang="x-default">Operations</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paymentMethod">
+                <display-name xml:lang="x-default">Payment Method</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="processedDate">
+                <display-name xml:lang="x-default">Processed Date</display-name>
+                <type>datetime</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="processedStatus">
+                <display-name xml:lang="x-default">Processed Status</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="pspReference">
+                <display-name xml:lang="x-default">PSP Reference</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="reason">
+                <display-name xml:lang="x-default">Reason</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="success">
+                <display-name xml:lang="x-default">Success</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="updateStatus">
+                <display-name xml:lang="x-default">Update Status</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">PENDING</display>
+                        <value>PENDING</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PROCESSED</display>
+                        <value>PROCESSED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PROCESS</display>
+                        <value>PROCESS</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="value">
+                <display-name xml:lang="x-default">Reason</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="version">
+                <display-name xml:lang="x-default">Version</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="general">
+                <display-name xml:lang="x-default">General</display-name>
+                <attribute attribute-id="reason"/>
+                <attribute attribute-id="orderId"/>
+                <attribute attribute-id="creationDate" system="true"/>
+                <attribute attribute-id="version"/>
+                <attribute attribute-id="eventCode"/>
+                <attribute attribute-id="merchantAccountCode"/>
+                <attribute attribute-id="processedDate"/>
+                <attribute attribute-id="operations"/>
+                <attribute attribute-id="processedStatus"/>
+                <attribute attribute-id="success"/>
+                <attribute attribute-id="updateStatus"/>
+                <attribute attribute-id="httpRemoteAddress"/>
+                <attribute attribute-id="paymentMethod"/>
+                <attribute attribute-id="currency"/>
+                <attribute attribute-id="lastModified" system="true"/>
+                <attribute attribute-id="merchantReference"/>
+                <attribute attribute-id="pspReference"/>
+                <attribute attribute-id="value"/>
+                <attribute attribute-id="live"/>
+                <attribute attribute-id="eventDate"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+   
+</metadata>

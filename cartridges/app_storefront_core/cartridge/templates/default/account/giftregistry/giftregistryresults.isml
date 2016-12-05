@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+	<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('account.giftregistry.searchheader','account',null)}</h1>
+
+		<isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+		<div class="form-inline">
+			<isinclude template="account/giftregistry/giftregistrysearch"/>
+		</div>
+
+		<h2>${Resource.msg('giftregistryresults.searchresults','account',null)}</h2>
+
+		<isif condition="${!empty(pdict.ProductLists)}">
+
+			<table class="registry-results-table item-list">
+				<tr>
+					<th class="section-header hdr-header">${Resource.msg('giftregistryresults.lastheader','account',null)}</th>
+					<th class="section-header hdr-header">${Resource.msg('giftregistryresults.firstheader','account',null)}</th>
+					<th class="section-header hdr-header">${Resource.msg('giftregistryresults.eventtypeheader','account',null)}</th>
+					<th class="section-header hdr-header">${Resource.msg('giftregistryresults.dateheader','account',null)}</th>
+					<th class="section-header hdr-location">${Resource.msg('giftregistryresults.locationheader','account',null)}</th>
+					<th class="section-header hdr-header"></th>
+				</tr>
+				<isloop items="${pdict.ProductLists}" var="giftRegistry" status="loopstate">
+					<tr class="${loopstate.odd ? 'odd' : 'even'}<isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+						<td><isprint value="${giftRegistry.registrant.lastName}"/></td>
+						<td><isprint value="${giftRegistry.registrant.firstName}"/></td>
+						<td class="event-type"><isprint value="${Resource.msg('giftregistry.' + giftRegistry.eventType, 'forms', null)}"/></td>
+						<td class="event-date"><isprint value="${giftRegistry.eventDate}"/></td>
+						<td class="event-location">${Resource.msgf('global.event.location','locale', null, giftRegistry.eventCity, giftRegistry.eventState)}</td>
+						<td class="event-view"><a href="${URLUtils.url('GiftRegistryCustomer-Show','ID',giftRegistry.ID)}">${Resource.msg('wishlistresult.view','account',null)}</a></td>
+					</tr>
+				</isloop>
+			</table>
+
+		<iselse/>
+
+			<p>
+				${Resource.msg('giftregistryresults.emptymessage','account',null)}
+				${Resource.msgf('global.user.name', 'locale', null, pdict.CurrentForms.giftregistry.search.simple.registrantFirstName.value, pdict.CurrentForms.giftregistry.search.simple.registrantLastName.value)}${Resource.msg('giftregistryresults.emptymessage2','account',null)}
+			</p>
+
+		</isif>
+
+</isdecorate>

@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/content/pt_content" scope="page"/>
+
+<iscomment>Use another decorator if the context is the content search</iscomment>
+<isif condition="${!empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+	<isset name="DecoratorTemplate" value="search/pt_contentsearchresult" scope="page"/>
+</isif>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax'}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+<iscomment>
+	Use the decorator template based on the page context. If
+	the content page was requested from a search result the
+	decorator search/pt_contentsearchresult is used. The default 
+	decorator for the content page is content/content/pt_content.
+</iscomment>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+	If content was found through a search build the list
+	of folders with the custom customCSSFile attribute to be
+	used in loading dynamic CSS.
+</iscomment>
+
+<isscript>
+	var folder : dw.content.Folder = null;
+	var folderCustomCSS : dw.util.Collection = new dw.util.ArrayList();
+	
+	// get folder from search context
+	if( !empty(pdict.ContentSearchResult) )
+	{
+		folder = pdict.ContentSearchResult.folder;
+		
+		if (folder != null)
+		{
+			while( folder.parent != null )
+			{
+				if( folder.online && ('customCSSFile' in folder.custom) && !empty(folder.custom.customCSSFile)) 
+				{
+					folderCustomCSS.addAt( 0, folder );
+				}
+				folder = folder.parent;
+			}
+		}
+	}
+</isscript>
+
+<iscomment>Render a "back" link and the article title based on the page context.</iscomment>
+<isif condition="${!empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+	<div class="back">
+		<a href="${pdict.ContentSearchResult.url('Search-ShowContent')}">
+			${Resource.msg('rendering.foldercontenthits.backtoresults','rendering',null)}
+		</a>
+	</div>
+</isif>
+
+<iscomment>This content piece must deliver a valid wrapping div!</iscomment>
+<isinclude template="content/content/htmlcontentasset"/>
+</isdecorate>

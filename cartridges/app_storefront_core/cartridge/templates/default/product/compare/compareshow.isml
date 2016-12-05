@@ -1,0 +1,137 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="product/compare/pt_compare">
+<isinclude template="util/modules"/>
+
+	<a href="${URLUtils.http('Cart-ContinueShopping')}" class="back" title="${Resource.msg('product.compareshow.back', 'product', null)}">
+		${Resource.msg('product.compareshow.back', 'product', null)}
+	</a>
+
+	<h1>${Resource.msg('product.compareshow.header', 'product', null)}</h1>
+	<isif condition="${pdict.CurrentForms.compare.categories.options.optionsCount > 1}">
+		<form class="category-switch" action="${URLUtils.url('Compare-Show')}" method="post">
+			<label for="compare-category-list">${Resource.msg('product.compareshow.othercompareitems', 'product', null)}</label>
+			<select id="compare-category-list" name="category" size="1" class="input-select">
+				<isloop items="${pdict.CurrentForms.compare.categories.options}" var="cat">
+					<option value="${cat.optionId}" <isif condition="${cat.optionId == pdict.CurrentForms.compare.object.category}">selected="selected"</isif>>${Resource.msg(cat.label, 'forms', null)}</option>
+				</isloop>
+			</select>
+		</form>
+	</isif>
+
+	<table id="compare-table" class="tiles-container">
+		<thead>
+			<tr>
+				<th></th>
+				<isloop items="${pdict.CompareList.products}" var="productID" status="status">
+					<isset name="compareProduct" value="${dw.catalog.ProductMgr.getProduct(productID)}" scope="page"/>
+
+					<th class="product">
+
+						<isset name="removeUrl" value="${URLUtils.url('Compare-RemoveProduct', 'pid', productID, 'category', pdict.CurrentHttpParameterMap.category.stringValue)}" scope="page"/>
+						<a class="remove-link" href="${removeUrl}" title="${Resource.msg('compareshow.removeitem', 'product', null)}"><i class="fa fa-remove fa-lg"></i></a>
+
+						<iscomment>render a full featured product tile</iscomment>
+						<isproducttile product="${compareProduct}" showswatches="${true}" showpricing="${true}" showpromotion="${true}" showrating="${true}" cache="${false}"/>
+
+						<iscomment>add to cart (opens the quick view if product is a master)</iscomment>
+
+						<isset name="buttonClass" value="${compareProduct.master ? 'open-quick-view' : 'add-to-cart'}" scope="page"/>
+						<isset name="actionUrl" value="${compareProduct.master ? URLUtils.url('Product-Show') : URLUtils.url('Cart-AddProduct')}" scope="page"/>
+						<div>
+							<form action="${actionUrl}" method="post">
+								<input type="hidden" name="pid" value="${compareProduct.ID}"/>
+								<button type="submit" title="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" value="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" class="${buttonClass} button-fancy-small">
+									${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}
+								</button>
+							</form>
+						</div>
+
+						<isif condition="${!compareProduct.master}">
+							<isset name="pid" value="${compareProduct.ID}" scope="page"/>
+						<iselse/>
+							<isscript>
+								var pid : String;
+								var variants : dw.util.Collection = compareProduct.variants;
+								if (variants != null) {
+									var iter : dw.util.Iterator = variants.iterator();
+									while (iter.hasNext()) {
+										var aVariant : dw.catalog.Product = iter.next();
+										if (aVariant.available && aVariant.online) {
+											pid = aVariant.ID;
+											break;
+										}
+									}
+								}
+							</isscript>
+						</isif>
+						<a class="action" href="${URLUtils.https('Wishlist-Add', 'pid', pid)}">${Resource.msg('global.addtowishlist', 'locale', null)}</a>
+						<a class="action" href="${URLUtils.https('GiftRegistry-AddProduct', 'pid', pid)}">${Resource.msg('global.addtogiftregistry', 'locale', null)}</a>
+					</th>
+				</isloop>
+			</tr>
+		</thead>
+
+		<iscomment>all attribute groups and attributes of the first product in the compare list</iscomment>
+		<isif condition="${pdict.CurrentForms.compare.attributegroups != null}">
+			<isloop items="${pdict.CurrentForms.compare.attributegroups}" var="attributeGroup">
+				<isloop items="${attributeGroup.attributes}" var="attribute">
+					<tr class="attribute-row">
+						<th class="product-attribute"><isprint value="${attribute.object.displayName}"/>:</th>
+
+						<isloop items="${pdict.CompareList.products}" var="productID" status="ProductStatus">
+							<isset name="compareProduct" value="${dw.catalog.ProductMgr.getProduct(productID)}" scope="page"/>
+							<isif condition="${attribute.object.descriptor.ID in compareProduct}">
+								<isset name="value" value="${compareProduct[attribute.object.descriptor.ID]}" scope="page"/>
+							<iselseif condition="${attribute.object.descriptor.ID in compareProduct.custom}">
+								<isset name="value" value="${compareProduct.custom[attribute.object.descriptor.ID]}" scope="page"/>
+							<iselse>
+								<isset name="value" value="-" scope="page"/>
+							</isif>
+
+							<td class="value">
+								<iscomment>special formatting for some types</iscomment>
+								<isif condition="${attribute.object.descriptor.valueTypeCode == attribute.object.descriptor.VALUE_TYPE_BOOLEAN}">
+									<isif condition="${compareProduct.getAttributeModel().getValue(attribute.object.descriptor)}">
+										${Resource.msg('global.yes', 'locale', null)}
+									<iselse/>
+										${Resource.msg('global.no', 'locale', null)}
+									</isif>
+								<iselseif condition="${attribute.object.descriptor.valueTypeCode == attribute.object.descriptor.VALUE_TYPE_DATETIME}">
+									<isprint value="${value}" style="DATE_SHORT"/>&nbsp;
+									<isprint value="${value}" style="DATE_TIME"/>
+								<iselseif condition="${attribute.object.descriptor.multiValueType}">
+									<isif condition="${value == '-'}">
+										<isprint value="${value}"/>
+									<iselse/>
+										<isloop items="${compareProduct.getAttributeModel().getDisplayValue(attribute.object.descriptor)}" var="DisplayValue">
+											<span class="value-item"><isprint value="${DisplayValue}"/></span>
+										</isloop>
+									</isif>
+								<iselse/>
+									<isif condition="${value == '-'}">
+										<isprint value="${value}"/>
+									<iselse/>
+										<isif condition="${attribute.object.descriptor.requiresEncoding()}">
+											<isprint value="${compareProduct.getAttributeModel().getDisplayValue(attribute.object.descriptor)}" encoding="on"/>
+										<iselse/>
+											<isprint value="${compareProduct.getAttributeModel().getDisplayValue(attribute.object.descriptor)}" encoding="off"/>
+										</isif>
+									</isif>
+								</isif>
+
+								<isif condition="${attribute.object.descriptor.getUnit() != null}">
+									<isprint value="${attribute.object.descriptor.getUnit()}"/>
+								</isif>
+							</td>
+						</isloop>
+					</tr>
+				</isloop>
+			</isloop>
+		</isif>
+	</table>
+
+	<a href="${URLUtils.http('Cart-ContinueShopping')}" class="back" title="${Resource.msg('product.compareshow.back', 'product', null)}">
+		${Resource.msg('product.compareshow.back', 'product', null)}
+	</a>
+
+</isdecorate>

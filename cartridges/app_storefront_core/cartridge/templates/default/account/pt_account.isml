@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'My Account',
+			type: 'MyAccount',
+			ns: 'account'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="account/pt_account_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+
+	<div id="wrapper" class="pt_account">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="page-content clearfix">
+			<isinclude template="components/browsertoolscheck"/>
+			<isif condition="${!empty(pdict.bctext2)}">
+				<isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}" bctext2="${pdict.bctext2}"/>
+			<iselse/>
+				<isif condition="${pdict.bctext1 == 'gc'}">
+					<isbreadcrumbs bctext1="${Resource.msg('global.giftcertificates','locale',null)}"/>
+				<iselse/>
+					<isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}"/>
+				</isif>
+			</isif>
+
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+			<div id="secondary" class="nav">
+				<nav>
+					<h1 class="visually-hidden">${Resource.msg('global.secondarynavheading','locale',null)}</h1>
+					<div class="secondary-navigation">
+						<isinclude url="${URLUtils.url('Account-IncludeNavigation')}"/>
+					</div>
+				</nav>
+				<div class="account-nav-asset">
+					<iscontentasset aid="account-nav-text"/>
+				</div>
+			</div>
+
+		</div><!-- /main -->
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="account/pt_account_VARS"/>
+	</div>
+
+</body>
+</html>

@@ -10,6 +10,7 @@ importPackage( dw.system );
 importPackage( dw.order );
 importPackage( dw.util );
 importPackage( dw.net);
+importPackage( dw.svc );
 
 function execute( args : PipelineDictionary ) : Number
 {
@@ -30,9 +31,6 @@ function execute( args : PipelineDictionary ) : Number
 	
 	// Adyen configuration
 	var merchantAccount : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
-	var endpoint : String = Site.getCurrent().getCustomPreferenceValue("pal_service_endpoint");
-	var user : String = Site.getCurrent().getCustomPreferenceValue("pal_service_user");
-	var pw : String = Site.getCurrent().getCustomPreferenceValue("pal_service_password");
 	
 	// Check the configuration
 	if (merchantAccount == null) {
@@ -44,10 +42,6 @@ function execute( args : PipelineDictionary ) : Number
 		Logger.getLogger("Adyen").fatal(fatalErrMsgPrefix + "Pal service URL is not set.");
 		return PIPELET_ERROR;
 	}
-	
-	// Fix the credentials if needed
-	user = (user != null) ? user : '';
-	pw = (pw != null) ? pw : '';
 	
 	// Get order values needed for the API call
 	var currencyCode : String = order.getCurrencyCode();
@@ -66,21 +60,29 @@ function execute( args : PipelineDictionary ) : Number
 	
 	try {
 		// Send a request
-		var httpSvc : HTTPClient = new HTTPClient();
-		var timeout : Number = dw.system.Site.getCurrent().getCustomPreferenceValue("HttpTimeout");
-		
-		httpSvc.setTimeout(timeout);
-		httpSvc.open("POST", endpoint, user, pw);
-		httpSvc.setRequestHeader("Content-type", "application/x-www-form-URLencoded; charset=UTF-8");
-		httpSvc.send("action=" + "Payment.capture" +
+		var params="action=" + "Payment.capture" +
 			"&modificationRequest.reference=" + encodeURIComponent(orderNo) +
 			"&modificationRequest.merchantAccount=" + encodeURIComponent(merchantAccount) +
 			"&modificationRequest.modificationAmount.value=" + encodeURIComponent(adyenValue) +
 			"&modificationRequest.modificationAmount.currency=" + encodeURIComponent(currencyCode) +
-			"&modificationRequest.originalReference=" + encodeURIComponent(pspReference)
-		);
+			"&modificationRequest.originalReference=" + encodeURIComponent(pspReference);
 		
-		var result : String = httpSvc.getText();
+		var callResult = null;
+		var service : Service = ServiceRegistry.get("adyen.http.payment.send");
+		var resultObject = null;
+		
+		service.addHeader("Content-type","application/x-www-form-URLencoded"); 
+		service.addHeader("charset", "UTF-8");
+		callResult = service.call(params);
+		
+		if (callResult.isOk() == false){
+			Logger.error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+			return PIPELET_ERROR;
+		}
+				
+		resultObject = callResult.object;		
+		
+		var result : String = resultObject.getText();
 		
 		// Parse the response
 		if (!empty(result)) {
