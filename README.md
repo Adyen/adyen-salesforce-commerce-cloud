@@ -10,7 +10,7 @@ The integration is based on the Site Genesis demo store provided by Commerce Clo
   
 ## Installation, Usage and Configuration
 
-Installation, Usage and Configuration is explained in our[manual](https://docs.adyen.com/developers/salesforce-commerce-cloud#setup).
+Installation, Usage and Configuration is explained in our [manual](https://docs.adyen.com/developers/salesforce-commerce-cloud#setup).
                                       
 ## Support
   
