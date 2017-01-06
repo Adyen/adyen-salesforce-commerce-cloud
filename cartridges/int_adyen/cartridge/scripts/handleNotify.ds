@@ -14,6 +14,7 @@
  * @output SkipNotification	: Boolean 			Skip email notification
  * @output RefusedHpp		: Boolean			Indicates that payment was made with using Adyen method and was refused
  * @output Pending  		: Boolean			Indicates that payment is in pending status
+ * @output IsCreditCard		: Boolean			Indicates that payment method is credit card
  *
  */
 importPackage( dw.system );
@@ -100,7 +101,7 @@ function optimisticExecution(args : PipelineDictionary) {
 
 	// Log detailed response to ScriptLog and log file
 	var msg : String = createLogMessage(hpm);
-	Logger.getLogger("Adyen").debug(msg);
+	Logger.getLogger("Adyen").info(msg);
 	
 	var order : Order = OrderMgr.getOrder(hpm.merchantReference.stringValue);
 	args.Order = order;
@@ -108,6 +109,20 @@ function optimisticExecution(args : PipelineDictionary) {
 	if (order == null) {
 		Logger.getLogger("Adyen").fatal("Notification for not existing order {0} received.", hpm.merchantReference.stringValue);
 		return false;
+	}
+	
+	var paymentInstruments : Collection = order.getPaymentInstruments();
+	var paymentInstrument : PaymentInstrument,
+		isHpp = false,
+		isCreditCard = false;
+	for each (paymentInstrument in paymentInstruments) {
+		if (paymentInstrument.paymentMethod.equals("Adyen")) {
+			isHpp = true;
+			break;
+		} else if (paymentInstrument.paymentMethod.equals(paymentInstrument.METHOD_CREDIT_CARD)) {
+			isCreditCard = true;
+			break;
+		}
 	}
 	
 	// Update the order status
@@ -124,41 +139,50 @@ function optimisticExecution(args : PipelineDictionary) {
 					Logger.getLogger("Adyen").info ("Partial payment received for order {0}.",order.orderNo);
 					args.SkipNotification = true;
 				}
+				else if(!empty(hpm["additionalData.fraudManualReview"]) && hpm["additionalData.fraudManualReview"].booleanValue) {
+					paymentSuccess = true;
+					args.SkipNotification = true;
+					
+					if(hpm.paymentMethod.stringValue == "paypal" && order.status == Order.ORDER_STATUS_CREATED)
+						args.SkipNotification = false;
+					
+					order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+					order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+					Logger.getLogger("Adyen").info ("Order {0} is waiting manual review.",order.orderNo);
+					break;					
+				}				
 				else {
 					order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 					//order.setExportStatus(Order.EXPORT_STATUS_READY);
 					Logger.getLogger("Adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-					args.SkipNotification = true;
+					if (hpm.paymentMethod.stringValue != "paypal")
+						args.SkipNotification = true;
 					paymentSuccess = true;
 				}  
 			}else{
 				Logger.getLogger("Adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
 				args.SkipNotification = true;
 				// Determine if payment was refused and was used Adyen payment method 
-				if (hpm.reason.stringValue == "Refused") {
-					var paymentInstruments : Collection = order.getPaymentInstruments();
-					var paymentInstrument : PaymentInstrument;
-					for each (paymentInstrument in paymentInstruments) {
-						if (paymentInstrument.paymentMethod.equals("Adyen")) {
-							refusedHpp = true;
-							paymentSuccess = false;
-							break;
-						}
-					}
+				if (hpm.reason.stringValue == "Refused" && isHpp) {
+					refusedHpp = true;
+					paymentSuccess = false;
 				}
 			}
 			break;
 		case "CANCELLATION" :
+			args.SkipNotification = true;
 			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 			Logger.getLogger("Adyen").info ("Order {0} was cancelled.",order.orderNo);
 			break;
 		case "CANCEL_OR_REFUND" :
+			args.SkipNotification = true;
 			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 			Logger.getLogger("Adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
 			break;
 		case "REFUND" :
+			args.SkipNotification = true;
 			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 			Logger.getLogger("Adyen").info ("Order {0} was refunded.",order.orderNo);
@@ -167,9 +191,11 @@ function optimisticExecution(args : PipelineDictionary) {
 			Logger.getLogger("Adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  
 			paymentSuccess = true;
 			order.setPaymentStatus("PARTIALLY PAID");
+			args.SkipNotification = true;
 			break;	
 		case "ORDER_CLOSED" :
 			paymentSuccess = true;
+			args.SkipNotification = true;
 			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 			order.setExportStatus(Order.EXPORT_STATUS_READY);
 			Logger.getLogger("Adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
@@ -177,8 +203,22 @@ function optimisticExecution(args : PipelineDictionary) {
 		case "PENDING" :
 			pending = true;
 			paymentSuccess = true;
+			args.SkipNotification = true;
 			Logger.getLogger("Adyen").info ("Order {0} was in pending status.",order.orderNo);
-			break;				
+			break;
+		case "MANUAL_REVIEW_REJECT" :
+			args.SkipNotification = true;
+			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+			order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+			Logger.getLogger("Adyen").info ("Order {0} was rejected.",order.orderNo);
+			break;
+		case "MANUAL_REVIEW_ACCEPT" :
+			args.SkipNotification = true;
+			paymentSuccess = true;
+			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+			order.setExportStatus(Order.EXPORT_STATUS_READY);
+			Logger.getLogger("Adyen").info ("Order {0} accepted and updated to status PAID.",order.orderNo);  
+			break;							
 			
 		default:
 			Logger.getLogger("Adyen").info ("Order {0} received unhandled status {1}",order.orderNo,hpm.eventCode.stringValue);
@@ -186,6 +226,7 @@ function optimisticExecution(args : PipelineDictionary) {
 	
 	args.RefusedHpp = refusedHpp;
 	args.Pending = pending;
+	args.IsCreditCard = isCreditCard;
 	
 	// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
 	if (!refusedHpp) {

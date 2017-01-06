@@ -8,6 +8,7 @@
 * @input PaymentInstrument : dw.order.PaymentInstrument 
 * @input CurrentSession : dw.system.Session
 * @input CurrentRequest : dw.system.Request
+* @input CreditCard : Object
 *
 * @output Decision : String 
 * @output PaymentStatus : String
@@ -32,7 +33,6 @@ importPackage( dw.svc );
 importScript('libs/libAdyen.ds');
 
 function execute( args : PipelineDictionary ) : Number {
-	
 	var VERSION : String = "4";
 	var MERCHANTACCOUNT : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
 
@@ -50,15 +50,14 @@ function execute( args : PipelineDictionary ) : Number {
 			return PIPELET_ERROR;  
 		}
 		
-		var myAmount = args.Amount * 100;	
+		var myAmount = args.Amount.multiply(new Number("100")).value.toFixed();	
 		var orderNo = order.currentOrderNo;	
 		var a = Math.floor(Math.random()*10000);
 		var c : Object = args.PaymentInstrument;
-		
-		var f : Object = args.CurrentForms;
-		var card : Object = f.billing.paymentMethods.creditCard;
-		var cardnr : String = card.number.value;
-		var cardcvc : String = card.cvn.value;
+
+		var card : Object = getCreditCard(args.CreditCard, args.CurrentForms.billing.paymentMethods.creditCard);
+		var cardnr : String = card.number;
+		var cardcvc : String = card.cvn;
 		
 		// AVS support
 		var billingDetails : String = '';
@@ -76,6 +75,9 @@ function execute( args : PipelineDictionary ) : Number {
 		var acceptHeader : String = currentRequest.httpHeaders.get("accept") + currentRequest.httpHeaders.get("accept-encoding");
 		var userAgent : String = currentRequest.httpUserAgent;
 		
+		// get shopper ip
+		var shopperIp = currentRequest.getHttpRemoteAddress();
+		if (shopperIp == null) { shopperIp = ''; }
 		
 		var params="action=" + "Payment.authorise" +
 			"&paymentRequest.reference=" + encodeURIComponent(orderNo) + 
@@ -89,6 +91,7 @@ function execute( args : PipelineDictionary ) : Number {
 			"&paymentRequest.card.holderName=" + encodeURIComponent(c.creditCardHolder) +
 			"&paymentRequest.card.number=" + encodeURIComponent(cardnr) +
 			"&paymentRequest.card.cvc=" + encodeURIComponent(cardcvc) + //for testing use cardcvc=737
+			"&paymentRequest.shopperIP=" + encodeURIComponent( shopperIp ) + //Shopper IP
 			"&paymentRequest.browserInfo.acceptHeader=" + encodeURIComponent( acceptHeader ) + // added for 3DS
 		    "&paymentRequest.browserInfo.userAgent=" + encodeURIComponent( userAgent ) + // added for 3DS
 		    billingDetails; // added for AVS
@@ -157,7 +160,7 @@ function execute( args : PipelineDictionary ) : Number {
 			args.PaymentStatus = resultCode;
 			
 			// if 3D Secure is used, the statuses will be updated later
-			if (!('issuerUrl' in responseObj)) {
+			if (!('issuerUrl' in responseObj) && !responseObj.fraudManualReview) {
 				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 				order.setExportStatus(Order.EXPORT_STATUS_READY);
 			}
@@ -194,4 +197,27 @@ function execute( args : PipelineDictionary ) : Number {
 
    	return PIPELET_NEXT;
 }
+
+/*
+ * Local methods
+ */
+var getCreditCard = function (card, creditCardForm) {
+	var creditCard;
+
+	// validate card
+	if (!empty(card) && !empty(card.owner) && !empty(card.number) && !empty(card.type) && !empty(card.cvn)
+			&& !empty(card.expiration) && !empty(card.expiration.month) && !empty(card.expiration.year)) {
+		creditCard = card;
+	} else {
+		// if card invalid, get from form
+		creditCard = {
+			owner: creditCardForm.owner.value,
+			number: creditCardForm.number.value,
+			type: creditCardForm.type.value,
+			cvn: creditCardForm.cvn.value
+		}
+	}
+
+	return creditCard;
+};
 
