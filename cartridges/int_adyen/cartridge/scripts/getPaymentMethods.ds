@@ -14,6 +14,11 @@ importPackage( dw.svc );
 
 function execute( args : PipelineDictionary ) : Number
 {
+	if(args.Basket == null) {
+		Logger.getLogger("Adyen").fatal("Basket is not present.");
+		return PIPELET_ERROR;
+	}
+
 	var skinCode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode"); 
 	var merchantAccount : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
 	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
@@ -39,7 +44,7 @@ function execute( args : PipelineDictionary ) : Number
 	var currencyCode : String	 		= args.Basket.currencyCode; 
 	var merchantReference : String 	    = "Request payment methods";
 	var sessionValidity : String 		= "2019-04-06T18:10:29+02:00";
-	var paymentAmount : Number			= 100;
+	var paymentAmount : Number			= args.Basket.getTotalGrossPrice() ? args.Basket.getTotalGrossPrice().getValue() * 100 : 1000;
 	var countryCode : String			= request.geolocation.countryCode;	
 	var url : String					= "https://test.adyen.com/hpp/directory.shtml";
 		
