@@ -41,8 +41,12 @@ function execute( args : PipelineDictionary ) : Number
 	
 	var currencyCode : String	 		= args.Basket.currencyCode; 
 	var merchantReference : String 	    = "Request payment methods";
-	var sessionValidity : String 		= "2019-04-06T18:10:29+02:00";
-	var paymentAmount : Number			= 100;
+
+    var sessionValidity: String = new Date();
+    sessionValidity.setHours(sessionValidity.getHours() + 1);
+    sessionValidity = sessionValidity.toISOString();
+
+	var paymentAmount : Number			= args.Basket.getTotalGrossPrice() ? args.Basket.getTotalGrossPrice().getValue() * 100 : 1000;
 	var countryCode : String			= request.geolocation.countryCode;	
 	
 	var paydata : String = paymentAmount + currencyCode + merchantReference + skinCode  + merchantAccount +  sessionValidity + allowedMethods;
