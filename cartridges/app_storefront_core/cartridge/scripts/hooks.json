@@ -7,11 +7,6 @@
 		{
 			"name": "dw.extensions.applepay.paymentAuthorized.authorizeOrderPayment",
 			"script": "./checkout/applepay.js"
-		},
-		{
-			"name": "dw.extensions.applepay.getRequest",
-			"script": "./checkout/applepay.js"
 		}
-
 	]
 }

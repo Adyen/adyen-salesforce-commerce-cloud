@@ -1,5 +1,4 @@
 var Status = require('dw/system/Status');
-var ApplePayHookResult = require('dw/extensions/applepay/ApplePayHookResult');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Logger = require('dw/system/Logger');
 
@@ -18,13 +17,4 @@ Payment Provider for authorization.');
     var paymentTransaction = paymentInstrument.getPaymentTransaction();
     paymentTransaction.setTransactionID('DUMMY-APPLEPAY-PSP-TRANSACTION-ID');
     return new Status(Status.OK);
-};
-
-exports.getRequest = function (basket, request) {
-    if (request.shippingContact) {
-        // convert country code from lower case to upper case
-        request.shippingContact.countryCode =
-            request.shippingContact.countryCode.toUpperCase();
-    }
-    return new ApplePayHookResult(new Status(Status.OK), null);
 };

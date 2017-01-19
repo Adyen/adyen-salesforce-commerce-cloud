@@ -51,7 +51,7 @@
 						</isif>
 						<span class="refinement-value">
 							<isprint value="${value.displayValue}"/>
-							<a class="relax" href="${pdict.ContentSearchResult.urlRelaxAttributeValue('Search-Show', definition.attributeID, value.value)}">(X)</a>
+							<a class="relax" href="${pdict.ContentSearchResult.urlRelaxAttributeValue('Search-ShowContent', definition.attributeID, value.value)}">(X)</a>
 						</span>
 					</isif>
 				</isloop>

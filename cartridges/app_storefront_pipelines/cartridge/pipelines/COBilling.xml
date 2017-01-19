@@ -178,25 +178,14 @@
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="source" x="1" y="0"/>
-          <bend-point relative-to="source" x="1" y="-1"/>
-          <bend-point relative-to="target" x="0" y="-1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Adyen-GetPaymentMethods"/>
-        <node-display x="1" y="0"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="target" x="0" y="-1"/>
+          <bend-point relative-to="source" x="0" y="1"/>
         </transition-display>
       </simple-transition>
       <node>
         <interaction-continue-node secure="true" start-name="Billing" transaction-required="false">
           <template buffered="true" dynamic="false" name="checkout/billing/billing"/>
         </interaction-continue-node>
-        <node-display x="-1" y="1"/>
+        <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="applyCoupon">
           <transition target-connector="in">
             <transition-display>
