@@ -10,8 +10,8 @@ importScript("libs/libAuthenticationUtils.ds");
 
 function execute( args : PipelineDictionary ) : Number
 {
-	var baUser : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_user");
-	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_password");
+	var baUser : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_user");
+	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_password");
 	var baHeader : String = args.CurrentRequest.httpHeaders["authorization"];
 	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
 		return PIPELET_ERROR;
