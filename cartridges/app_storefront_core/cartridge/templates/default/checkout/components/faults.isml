@@ -1,8 +1,0 @@
-<iscontent type="application/json" />
-{
-  "_v":"12.6",
-  "fault":{
-    "type":"InvalidPaymentMethodException",
-    "message":"General Payment Method Failure."
-  }
-}

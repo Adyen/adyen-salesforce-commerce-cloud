@@ -1,8 +1,0 @@
-<iscontent type="text/html" charset="UTF-8" compact="true"/>
-<iscomment>
-	This template includes a content asset as remote include. It is used
-	as module template for <iscontentasset> to have a more convenient way
-	to include assets into a page.
-</iscomment>
-
-<isinclude url="${URLUtils.url('Page-Include', 'cid', pdict.aid)}"/>
