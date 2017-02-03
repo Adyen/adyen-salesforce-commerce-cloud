@@ -13,7 +13,6 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
  */
 function handle(args) 
 {
-	logger.debug('Calling Adyen.js processor handle action, execute pipeline call');
 	var pdict = Pipeline.execute('Adyen-Handle', {Basket : args.Basket});
 	switch (pdict.EndNodeName) {
 	case 'success':
@@ -21,7 +20,6 @@ function handle(args)
 	case 'error':
 		return {error : true};
 	}
-	logger.debug('After execute pipeline call in Adyen.js processor handle action');
 }
 
 /**
@@ -30,7 +28,6 @@ function handle(args)
  * Customizations may use other processors and custom logic to authorize credit card payment.
  */
 function authorize(args) { 
-	logger.debug('Calling Adyen.js processor authorize action, execute pipeline call');
     var orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
 	var pdict = Pipeline.execute('Adyen-Authorize', {
@@ -42,7 +39,6 @@ function authorize(args) {
 	case 'error':
 		return {error : true};
 	}
-	logger.debug('After execute pipeline call in Adyen.js processor authorize action');
 }
 
 exports.Handle = handle;

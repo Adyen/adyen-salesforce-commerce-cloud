@@ -1,9 +1,0 @@
-<iscontent type="application/json" charset="UTF-8" compact="true"/>
-<isscript>
-	var o = { success:false }
-	if (pdict.ErrorCode) {
-		o.error = pdict.ErrorCode;
-	}
-	var ojson = JSON.stringify(o);	
-</isscript>
-<isprint value="${ojson}" encoding="off"/>
