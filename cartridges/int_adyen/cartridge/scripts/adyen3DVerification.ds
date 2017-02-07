@@ -32,8 +32,16 @@ importScript('libs/libAdyen.ds');
 //script include
 var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 
+function execute( args : PipelineDictionary ) : Number
+{
+	var result = verify(args);
+	if (result == PIPELET_ERROR){
+		return PIPELET_ERROR;
+	}
+	return PIPELET_NEXT;
+}
 
-function execute( args : PipelineDictionary ) : Number {
+function verify( args : PipelineDictionary ) : Number {
 	
 	var VERSION : String = "4";
 	var MERCHANTACCOUNT : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
@@ -140,5 +148,10 @@ function execute( args : PipelineDictionary ) : Number {
 		return PIPELET_ERROR;
 	}
 
-   	return PIPELET_NEXT;
+   	return args;
+}
+
+module.exports = {
+	'execute': execute,
+	'verify': verify
 }

@@ -22,11 +22,14 @@ importPackage( dw.util );
 
 function execute( args : PipelineDictionary ) : Number
 {
-	if(empty(args.MerchantSig) || empty(args.AuthResult) || empty(args.PspReference) || empty(args.MerchantReference)
-		 || empty(args.SkinCode)){
-		 	return PIPELET_ERROR;
+	args.Authenticated = authorize(args);
+	return PIPELET_NEXT;
+}
+
+ function authorize( args : PipelineDictionary ) : Boolean {
+	if(empty(args.MerchantSig) || empty(args.AuthResult) || empty(args.PspReference) || empty(args.MerchantReference) || empty(args.SkinCode)){
+		 	return false;
 	}
-	
 	var authResult : String = args.AuthResult;
 	var merchantReference : String = args.MerchantReference;
 	var paymentMethod : String = args.PaymentMethod;
@@ -69,7 +72,10 @@ function execute( args : PipelineDictionary ) : Number
 	var signature : String = Encoding.toBase64(c.digest(requestString, keyBytes));
 	
 	// If the signatures match then the call is authorized
-	args.Authenticated = (merchantSig == signature);
-			
-	return PIPELET_NEXT;
+	return merchantSig == signature;
+}
+
+module.exports = {
+	'execute': execute,
+	'authorize': authorize
 }

@@ -18,10 +18,10 @@ importPackage( dw.object );
 
 function execute( args : PipelineDictionary ) : Number
 {
-	
-	// Get the input parameters
-	var hpm : Object = args.CurrentHttpParameterMap;
-	
+	return notify(args.CurrentHttpParameterMap);
+}
+
+function notify (hpm) {	
 	// Check the input parameters
 	if (hpm == null) {
 		Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
@@ -79,8 +79,9 @@ function execute( args : PipelineDictionary ) : Number
 	} catch(e) {
 		var ex = e;
 		Logger.getLogger("Adyen", "adyen").error(e.message);
-	}	
-	return PIPELET_NEXT;	
+	}
+	
+	return PIPELET_NEXT;
 }
 
 function createLogMessage(hpm){
@@ -102,4 +103,9 @@ function createLogMessage(hpm){
 	msg = msg + "\npaymentMethod : " + hpm.paymentMethod.stringValue;
 	msg = msg + "\nlive : " + hpm.live.stringValue;
 	return msg;
+}
+
+module.exports = {
+	'execute': execute,
+	'notify': notify
 }

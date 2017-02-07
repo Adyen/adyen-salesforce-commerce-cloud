@@ -32,6 +32,13 @@ var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 
 function execute( args : PipelineDictionary ) : Number
 {
+	if (verify(args) === PIPELET_ERROR) {
+		return PIPELET_ERROR;	
+	}
+	return PIPELET_NEXT;
+}
+
+function verify (args) {
 	//configuration
 	var VERSION : String= "8";
 
@@ -178,5 +185,10 @@ function execute( args : PipelineDictionary ) : Number
 	//Log those information just when custom logs debug mode is enabled
 	Logger.getLogger("Adyen").debug(orderNo+ " - " +msg);
 
-   return PIPELET_NEXT;
+   return args;
+}
+
+module.exports = {
+	'execute': execute,
+	'verify': verify
 }
