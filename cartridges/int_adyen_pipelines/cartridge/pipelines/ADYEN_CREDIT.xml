@@ -140,7 +140,7 @@
                 <key-binding alias="issuerUrl" key="IssuerUrl"/>
                 <key-binding alias="md" key="MD"/>
                 <key-binding alias="paRequest" key="PaRequest"/>
-                <key-binding alias="pspReference" key="PspReference"/>
+                <key-binding alias="RequestToken" key="PspReference"/>
                 <key-binding alias="resultCode" key="ResultCode"/>
                 <key-binding alias="CurrentRequest" key="CurrentRequest"/>
                 <key-binding alias="AVSResultCode" key="AVSResultCode"/>
@@ -366,7 +366,7 @@
                   <node>
                     <pipelet-node custom-name="Set transaction id" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
-                      <key-binding alias="RequestID" key="From_0"/>
+                      <key-binding alias="RequestToken" key="From_0"/>
                       <key-binding alias="CCPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                       <key-binding alias="null" key="From_2"/>
                       <key-binding alias="null" key="To_2"/>
@@ -518,7 +518,8 @@
       <transition target-connector="in1" target-path="./+1">
         <transition-display>
           <bend-point relative-to="source" x="0" y="1"/>
-          <bend-point relative-to="source" x="-2" y="1"/>
+          <bend-point relative-to="source" x="-1" y="1"/>
+          <bend-point relative-to="target" x="1" y="0"/>
         </transition-display>
       </transition>
     </segment>
@@ -838,6 +839,7 @@
                 <key-binding alias="resultCode" key="ResultCode"/>
                 <key-binding alias="CurrentRequest" key="CurrentRequest"/>
                 <key-binding alias="AVSResultCode" key="AVSResultCode"/>
+                <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardForm"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
               <branch basename="b3" source-connector="error">
@@ -928,7 +930,7 @@
                   <node>
                     <pipelet-node custom-name="Set transaction id" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
-                      <key-binding alias="RequestID" key="From_0"/>
+                      <key-binding alias="pspReference" key="From_0"/>
                       <key-binding alias="CCPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                       <key-binding alias="null" key="From_2"/>
                       <key-binding alias="null" key="To_2"/>
