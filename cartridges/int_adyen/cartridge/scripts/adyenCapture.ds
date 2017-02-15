@@ -17,9 +17,19 @@ var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 
 function execute( args : PipelineDictionary ) : Number
 {
-	// Get the input parameters
-	var order : Order = args.Order;
+	var decision = capture(args.Order);
 	
+	if (decision == PIPELET_ERROR){
+		args.Decision = "ERROR";
+		return PIPELET_ERROR;
+	}
+	
+	args.Decision = decision;
+	return PIPELET_NEXT;
+}
+
+function capture( order : Order ) : Number
+{
 	// Check the input parameters
 	if (order == null) {
 		Logger.getLogger("Adyen").fatal("Capturing of order payment has failed. No order was provided.");
@@ -28,6 +38,7 @@ function execute( args : PipelineDictionary ) : Number
 	
 	// Get orderNo which is needed for the API call and some other functions (error handling)
 	var orderNo : String = order.getOrderNo();
+	var decision = "ERROR";
 	
 	// Error handling configuration
 	var fatalErrMsgPrefix : String = "Payment capturing of order #" + orderNo + " has failed. ";
@@ -95,7 +106,7 @@ function execute( args : PipelineDictionary ) : Number
 		if (!empty(result)) {
 			if (result.indexOf("capture-received") != -1) {
 				// Define the result of script execution
-				args.Decision = "SUCCESS";
+				decision = "SUCCESS";
 				
 				// Update the order
 				order.custom.Adyen_eventCode = "CAPTURING";
@@ -110,7 +121,7 @@ function execute( args : PipelineDictionary ) : Number
 				Logger.getLogger("Adyen").info("Payment modification result for order #" + orderNo + ": Capturing");
 			} else {
 				// Define the result of script execution
-				args.Decision = "REFUSED";
+				decision = "REFUSED";
 				
 				// Update the order
 				order.custom.Adyen_eventCode = "CAPTURING REFUSED";
@@ -119,22 +130,21 @@ function execute( args : PipelineDictionary ) : Number
 				Logger.getLogger("Adyen").info("Payment modification result for order #" + orderNo + ": Capturing Refused");
 			}
 		} else {
-			// Define the result of script execution
-			args.Decision = "ERROR";
-			
 			// Log the error and exit
 			Logger.getLogger("Adyen").fatal(fatalErrMsgPrefix + "The call to Adyen API did not return any result.");
 			return PIPELET_ERROR;
 		}
 	}
 	catch (e) {
-		// Define the result of script execution
-		args.Decision = "ERROR";
-		
 		// Log the error and exit
 		Logger.getLogger("Adyen").fatal(fatalErrMsgPrefix + "An error occurred during the call to Adyen API.");
 		return PIPELET_ERROR;
 	}
 	
-   	return PIPELET_NEXT;
+   	return decision;
+}
+
+module.exports = {
+	'execute': execute,
+	'capture': capture
 }

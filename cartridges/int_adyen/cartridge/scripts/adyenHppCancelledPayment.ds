@@ -11,10 +11,10 @@ importPackage( dw.util );
 
 function execute( args : PipelineDictionary ) : Number
 {
-    // Get the input parameters
-	var hpm : Object = args.CurrentHttpParameterMap;
-	var order : Order = args.Order;
-	
+	return handle(args.CurrentHttpParameterMap, args.Order);
+}
+
+function handle (hpm : Object, order : Order) : Number {
 	// Log detailed response to ScriptLog and log file
 	var msg : String = createLogMessage(hpm);
 	Logger.getLogger("Adyen").debug(msg);
@@ -66,7 +66,6 @@ function execute( args : PipelineDictionary ) : Number
 	
 	return PIPELET_NEXT;
 }
-
 function createLogMessage(hpm) {
 	var VERSION : String= "4d";
 	var msg = "";
@@ -84,4 +83,9 @@ function createLogMessage(hpm) {
 		msg = msg + "\npaymentMethod : " + hpm.paymentMethod.stringValue;
 	}
 	return msg;
+}
+
+module.exports = {
+	'execute': execute,
+	'handle': handle
 }
