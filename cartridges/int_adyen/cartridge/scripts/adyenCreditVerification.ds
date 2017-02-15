@@ -8,6 +8,7 @@
 * @input PaymentInstrument : dw.order.PaymentInstrument 
 * @input CurrentSession : dw.system.Session
 * @input CurrentRequest : dw.system.Request
+* @input CreditCardForm : dw.web.Form
 *
 * @output Decision : String 
 * @output PaymentStatus : String
@@ -34,7 +35,16 @@ importScript('libs/libAdyen.ds');
 //script include
 var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 
-function execute( args : PipelineDictionary ) : Number {
+function execute( args : PipelineDictionary ) : Number
+{
+	var result = verify(args);
+	if (result == PIPELET_ERROR){
+		return PIPELET_ERROR;
+	}
+	return PIPELET_NEXT;
+}
+
+function verify( args : PipelineDictionary ) : Number {
 	
 	var VERSION : String = "4";
 	var MERCHANTACCOUNT : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
@@ -57,9 +67,7 @@ function execute( args : PipelineDictionary ) : Number {
 		var orderNo = order.currentOrderNo;	
 		var a = Math.floor(Math.random()*10000);
 		var c : Object = args.PaymentInstrument;
-		
-		var f : Object = args.CurrentForms;
-		var card : Object = f.billing.paymentMethods.creditCard;
+		var card : Object = args.CreditCardForm.object;
 		var cardnr : String = card.number.value;
 		var cardcvc : String = card.cvn.value;
 
@@ -223,6 +231,10 @@ function execute( args : PipelineDictionary ) : Number {
 			return PIPELET_ERROR;
 	}
 
-   	return PIPELET_NEXT;
+   	return args;
 }
 
+module.exports = {
+	'execute': execute,
+	'verify': verify
+}

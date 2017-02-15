@@ -3,9 +3,9 @@
 /* API Includes */
 var Resource = require('dw/web/Resource');
 var URLUtils = require('dw/web/URLUtils');
-var Pipeline = require('dw/system/Pipeline');
 var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
 var OrderMgr = require('dw/order/OrderMgr');
+var Site = require('dw/system/Site');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 
@@ -26,87 +26,230 @@ var OrderModel = app.getModel('Order');
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 function notify() {
-    Pipeline.execute('Adyen-Notify');
+    var	checkAuth = require('int_adyen/cartridge/scripts/checkNotificationAuth');
+	
+    var status = checkAuth.check(request);
+    if (!status) {
+    	app.getView().render('error');
+    	return {};
+	}
+
+	var	handleNotify = require('int_adyen/cartridge/scripts/handleNotify');
+	Transaction.wrap(function () {
+   		handleNotify.notify(request.httpParameterMap);
+	});
+	app.getView().render('notify');
 }
 
 /**
  * Redirect to Adyen after saving order etc.
  */
 function redirect(order) {
-    var pdict = Pipeline.execute('Adyen-Redirect',{
-    	Order : order,
-    	PaymentInstrument : order.paymentInstrument
-    });
+	var	adyenVerificationSHA256 = require('int_adyen/cartridge/scripts/adyenRedirectVerificationSHA256'),
+	result;
+	Transaction.wrap(function () {
+		result = adyenVerificationSHA256.verify({
+			'Order': order,
+			'OrderNo': order.orderNo,
+			'CurrentSession' : session,
+			'CurrentUser' : customer,
+			'PaymentInstrument' : order.paymentInstrument,
+			'brandCode': request.httpParameterMap.brandCode.value,
+			'issuerId' : request.httpParameterMap.issuerId.value
+		});
+	});
+	if (result === PIPELET_ERROR) {
+		app.getView().render('error');
+    	return {};
+	}
+
+	var pdict = {
+		'merchantSig' :	result.merchantSig,
+		'Amount100' : result.Amount100,
+		'shopperEmail' : result.shopperEmail,
+		'shopperReference' : result.shopperReference,
+		'allowedMethods' : result.allowedMethods,
+		'ParamsMap' : result.paramsMap,
+		'SessionValidity' : result.sessionValidity,
+		'Order': order,
+		'OrderNo': order.orderNo
+	};
+
+	app.getView(pdict).render('redirect_sha256');
 }
 
 /**
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
-    var pdict = Pipeline.execute('Adyen-ShowConfirmation');
-	switch (pdict.EndNodeName) {
-	case 'showConfirmation':
-		app.getController('COSummary').ShowConfirmation(pdict.Order);
-	    break;
-	case 'error':
-		app.getController('Error').Start();
-		break;
-	case 'summaryStart':
-        // A successful billing page will jump to the next checkout step.
-        app.getController('COSummary').Start({
-            PlaceOrderError: pdict.PlaceOrderError
-        });
-        break;
+	if (request.httpParameterMap.authResult.value != 'CANCELLED') {
+		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
+    	var authorized = authorizeConfirmation.authorize({
+			'AuthResult': request.httpParameterMap.authResult.stringValue,
+			'MerchantReference': request.httpParameterMap.merchantReference.getStringValue(),
+			'PaymentMethod': request.httpParameterMap.paymentMethod.getStringValue(),
+			'PspReference': request.httpParameterMap.pspReference.getStringValue(),
+			'ShopperLocale': request.httpParameterMap.shopperLocale.getStringValue(),
+			'SkinCode': request.httpParameterMap.skinCode.getStringValue(),
+			'MerchantSig': request.httpParameterMap.merchantSig.getStringValue(),
+			'MerchantReturnData': (!empty(request.httpParameterMap.merchantReturnData) ? request.httpParameterMap.merchantReturnData.getStringValue() : "")
+    	});
+    	if (!authorized) {
+    		app.getController('Error').Start();
+    		return {};
+    	}
 	}
+	
+	var order = OrderMgr.getOrder(request.httpParameterMap.merchantReference.toString());
+	if (!order) {
+		app.getController('Error').Start();
+		return {};
+	}
+	
+	if (request.httpParameterMap.authResult.value == 'AUTHORISED' || request.httpParameterMap.authResult.value == 'PENDING') {
+		pendingPayment(order);
+		app.getController('COSummary').ShowConfirmation(order);
+		return {};
+	}
+	
+	if (order.status != dw.order.Order.ORDER_STATUS_CREATED) {
+		// If the same order is tried to be cancelled more than one time, show Error page to user
+		if (CurrentHttpParameterMap.authResult.value == 'CANCELLED') {
+			app.getController('Error').Start();
+		} else {
+			// TODO: check is there should be errro value { PlaceOrderError: pdict.PlaceOrderError }
+			app.getController('COSummary').Start();
+		}
+		return {};
+	}
+	
+	// Handle Cancelled or Refused payments
+	cancelledPayment(order);
+	refusedPayment(order);
+	// fail order
+	Transaction.wrap(function () {
+		OrderMgr.failOrder(order);
+	});
+	
+	// should be assingned by previous calls or not
+	var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+	
+	app.getController('COSummary').Start({
+            PlaceOrderError: errorStatus
+        });
+    return {};
 }
-
 
 /**
  * Make a request to Adyen to get payment methods based on countryCode. Called from COBilling-Start
  */
 function getPaymentMethods(cart) {
-    var pdict = Pipeline.execute('Adyen-GetPaymentMethods', {Basket: cart.object});
-    return pdict.AdyenHppPaymentMethods;
+    // TODO: check is that used CSE Enabled (AdyenCseEnabled) Site.getCurrent().getCustomPreferenceValue("AdyenCseEnabled");
+    // Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")
+    if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
+    	var	getPaymentMethods = require('int_adyen/cartridge/scripts/getPaymentMethodsSHA256');
+    	return getPaymentMethods.getMethods(cart.object);
+    }
+    
+    return {};
 }
-
 
 /**
  * Get orderdata for the Afterpay Payment method
  */
 function afterpay() {
-	Pipeline.execute('Adyen-Afterpay');
+	var	readOpenInvoiceRequest = require('int_adyen/cartridge/scripts/readOpenInvoiceRequest');
+   	var invoice = readOpenInvoiceRequest.getInvoiceParams(request.httpParameterMap);
+   	var order = OrderMgr.getOrder(invoice.penInvoiceReference);
+   	// show error if data mismach
+   	if ((order.getBillingAddress().getPostalCode() !=  request.httpParameterMap.pc.toString())
+   	 || (order.getBillingAddress().getPhone() !=  request.httpParameterMap.pn.toString())
+   	 || (order.getCustomerNo() != request.httpParameterMap.cn.toString())
+   	 || (order.getCustomerEmail() != request.httpParameterMap.ce.toString())
+   	 || (invoice.openInvoiceAmount != Math.round(order.totalGrossPrice * 100)))
+   	{
+   		app.getView().render('afterpayerror');
+   		return {};
+   	}
+   	
+   	var	buildOpenInvoiceResponse = require('int_adyen/cartridge/scripts/buildOpenInvoiceResponse');
+   	var invoiceResponse = buildOpenInvoiceResponse.getInvoiceResponse(order);
+   	app.getView({OpenInvoiceResponse:invoiceResponse}).render('afterpay');
 }
 
 
 /**
  * Handle Refused payments
  */
-function refusedPayment() {
-    Pipeline.execute('Adyen-RefusedPayment');
+function refusedPayment(order) {
+    if (request.httpParameterMap.authResult.value == 'REFUSED') {
+		var	adyenHppRefusedPayment = require('int_adyen/cartridge/scripts/adyenHppRefusedPayment.ds');
+		Transaction.wrap(function () {
+			adyenHppRefusedPayment.handle(request.httpParameterMap, order);
+		});
+    	
+	}
+	return '';
 }
 
 
 /**
  * Handle payments Cancelled on Adyen HPP
  */
-function cancelledPayment() {
-    Pipeline.execute('Adyen-CancelledPayment');
+function cancelledPayment(order) {
+    if (request.httpParameterMap.authResult.value == 'CANCELLED') {
+		var	adyenHppCancelledPayment = require('int_adyen/cartridge/scripts/adyenHppCancelledPayment');
+		Transaction.wrap(function () {
+			adyenHppCancelledPayment.handle(request.httpParameterMap, order);
+		});
+	}
+	return '';
 }
 
 
 /**
  * Handle payments Pending on Adyen HPP
  */
-function pendingPayment() {
-    Pipeline.execute('Adyen-PendingPayment');
+function pendingPayment(order) {
+	if (request.httpParameterMap.authResult.value == 'PENDING') {
+		var	adyenHppPendingPayment = require('int_adyen/cartridge/scripts/adyenHppPendingPayment');
+		Transaction.wrap(function () {
+			adyenHppPendingPayment.handle(request.httpParameterMap, order);
+		});
+	}
+	return '';
 }
 
 
 /**
  * Call the Adyen API to capture order payment
  */
-function capture() {
-    Pipeline.execute('Adyen-Capture');
+function capture(args) {
+	var order = args.Order;
+	var orderNo = args.OrderNo;
+	
+	if (!order) {
+		// Checking order data against values from parameters
+		order = OrderMgr.getOrder(orderNo);
+		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
+			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
+			|| order.getCustomerNo() != session.custom.cn.toString() 
+			|| order.getCustomerEmail() != session.custom.ce.toString()) {
+			return {error: true};
+		}
+	}
+
+	
+	var	adyenCapture = require('int_adyen/cartridge/scripts/adyenCapture'), result;
+    Transaction.wrap(function () {
+		result = adyenCapture.capture(order);
+	});
+	
+	if (result === PIPELET_ERROR) {
+		return {error: true};
+	}
+	
+    return {sucess: true};
 }
 
 
@@ -114,7 +257,31 @@ function capture() {
  * Call the Adyen API to cancel order payment
  */
 function cancel() {
-    Pipeline.execute('Adyen-Cancel');
+    var order = args.Order;
+	var orderNo = args.OrderNo;
+	
+	if (!order) {
+		// Checking order data against values from parameters
+		order = OrderMgr.getOrder(orderNo);
+		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
+			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
+			|| order.getCustomerNo() != session.custom.cn.toString() 
+			|| order.getCustomerEmail() != session.custom.ce.toString()) {
+			return {error: true};
+		}
+	}
+
+	
+	var	adyenCancel = require('int_adyen/cartridge/scripts/adyenCancel'), result;
+    Transaction.wrap(function () {
+		result = adyenCancel.cancel(order);
+	});
+	
+	if (result === PIPELET_ERROR) {
+		return {error: true};
+	}
+	
+    return {sucess: true};
 }
 
 
@@ -122,7 +289,31 @@ function cancel() {
  * Call the Adyen API to cancel or refund order payment
  */
 function cancelOrRefund() {
-    Pipeline.execute('Adyen-CancelOrRefund');
+    var order = args.Order;
+	var orderNo = args.OrderNo;
+	
+	if (!order) {
+		// Checking order data against values from parameters
+		order = OrderMgr.getOrder(orderNo);
+		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
+			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
+			|| order.getCustomerNo() != session.custom.cn.toString() 
+			|| order.getCustomerEmail() != session.custom.ce.toString()) {
+			return {error: true};
+		}
+	}
+
+	
+	var	adyenCapture = require('int_adyen/cartridge/scripts/adyenCapture'), result;
+    Transaction.wrap(function () {
+		result = adyenCapture.capture(order);
+	});
+	
+	if (result === PIPELET_ERROR) {
+		return {error: true};
+	}
+	
+    return {sucess: true};
 }
 
 /**
@@ -132,30 +323,43 @@ function cancelOrRefund() {
  */
 function authorizeWithForm()
 {
-	var order =  session.custom.order;
-	var paymentInstrument = session.custom.paymentInstrument;
-	var adyenResponse : Object = session.custom.adyenResponse;
+	var	adyen3DVerification = require('int_adyen/cartridge/scripts/adyen3DVerification'), result,
+	order = session.custom.order,
+	paymentInstrument = session.custom.paymentInstrument,
+	adyenResponse  = session.custom.adyenResponse;
 	clearCustomSessionFields();
-	var pdict = Pipeline.execute('ADYEN_CREDIT-AuthorizeAfterSecure',{
-		Order : order,
-		PaymentInstrument : paymentInstrument,
-		MD : adyenResponse.MD,
-		PaRes : adyenResponse.PaRes
+	
+	Transaction.begin();
+	result = adyen3DVerification.verify({
+		Order: order,
+		Amount: paymentInstrument.paymentTransaction.amount,
+		PaymentInstrument: paymentInstrument,
+		CurrentSession: session,
+		CurrentRequest: request,
+		MD: adyenResponse.MD,
+		PaResponse: adyenResponse.PaRes
+	});
+	
+    if (result === PIPELET_ERROR || result.Decision != 'ACCEPT') {
+    	Transaction.rollback();
+    	Transaction.wrap(function () {
+			OrderMgr.failOrder(order);
 		});
-	switch (pdict.EndNodeName) {
-		case 'authorized':
-			OrderModel.submit(order);
-			clearForms();
-			app.getController('COSummary').ShowConfirmation(order);
-			break;
-		case 'error':
-			Transaction.wrap(function () {
-				OrderMgr.failOrder(order);
-			});
-			app.getController('COSummary').Start({
-	            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.technical')
-	        });
-	}
+		app.getController('COSummary').Start({
+            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.technical')
+        });
+		return;
+    }
+    
+    
+	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+	paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
+    Transaction.commit();
+	
+	OrderModel.submit(order);
+	clearForms();
+	app.getController('COSummary').ShowConfirmation(order);
 }
 
 /**
@@ -204,11 +408,11 @@ exports.Notify = guard.ensure(['post'], notify);
 
 exports.Redirect = redirect;
 
+exports.Afterpay = guard.ensure(['get'], afterpay);
+
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 
 exports.GetPaymentMethods = getPaymentMethods;
-
-exports.Afterpay = guard.ensure(['get'], afterpay);
 
 exports.RefusedPayment = refusedPayment;
 

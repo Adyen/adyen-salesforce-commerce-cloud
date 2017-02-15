@@ -1,9 +1,8 @@
 'use strict';
 
 /* API Includes */
-var Pipeline = require('dw/system/Pipeline');
-var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
-
+var PaymentMgr = require('dw/order/PaymentMgr');
+var Transaction = require('dw/system/Transaction');
 
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
@@ -11,15 +10,25 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
 /**
  * Creates a Adyen payment instrument for the given basket
  */
-function handle(args) 
-{
-	var pdict = Pipeline.execute('Adyen-Handle', {Basket : args.Basket});
-	switch (pdict.EndNodeName) {
-	case 'success':
-		return {success : true};
-	case 'error':
+function handle(args) {
+	var	adyenRemovePreviousPI = require('int_adyen/cartridge/scripts/adyenRemovePreviousPI'),
+	adyenPaymentInstrument = require('int_adyen/cartridge/scripts/createAdyenPaymentInstrument'),
+	result;
+	
+    Transaction.wrap(function () {
+    	result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
+        if (result === PIPELET_ERROR) {
+    		return {error : true};
+    	}
+        // payment instrument returned on success
+        result = adyenPaymentInstrument.create(args.Basket);
+    });
+    
+    if (result === PIPELET_ERROR) {
 		return {error : true};
 	}
+
+	return {success : true};
 }
 
 /**
@@ -30,15 +39,14 @@ function handle(args)
 function authorize(args) { 
     var orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
-	var pdict = Pipeline.execute('Adyen-Authorize', {
-		OrderNo : orderNo, 
-		PaymentInstrument : paymentInstrument});
-	switch (pdict.EndNodeName) {
-	case 'authorized':
-		return {authorized : true};
-	case 'error':
-		return {error : true};
-	}
+    var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
+
+    Transaction.wrap(function () {
+        paymentInstrument.paymentTransaction.transactionID = orderNo;
+        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
+
+    return {authorized: true};
 }
 
 exports.Handle = handle;

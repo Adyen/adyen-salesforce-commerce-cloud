@@ -1,21 +1,28 @@
 /**
 * Build the openinvoice response needed for the Afterpay payment method (see Adyen Manual for details)
 *
+* 	@input Order : dw.order.Order
+*	@output openInvoiceResponse : String
 */
 importPackage( dw.system );
 importPackage( dw.order );
 
 function execute( args : PipelineDictionary ) : Number
 {
-	args.openInvoiceResponse = "";
+	args.openInvoiceResponse = getInvoiceResponse(args.Order);
+	return PIPELET_NEXT;
+}
+
+function getInvoiceResponse (order : Order) : String {
+	var openInvoiceResponse = "";
 	var count=0;
 
-	var valutaCode = args.order.getCurrencyCode();
+	var valutaCode = order.getCurrencyCode();
 	var TotalAmount:number = 0;
 	
-	for each(var line in args.order.allProductLineItems) {
+	for each(var line in order.allProductLineItems) {
 		if (count != 0) {
-			args.openInvoiceResponse += "&";
+			openInvoiceResponse += "&";
 		}
 		var quantity:number=line.quantity.value;
 		var SalesPrice = line.adjustedNetPrice;
@@ -26,22 +33,22 @@ function execute( args : PipelineDictionary ) : Number
 		var TaxPriceAmount:number = Math.round(TaxPrice * 100);
 		var OneTaxPrice:number = Math.round(TaxPriceAmount/quantity);
 
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(OneSalesPrice).toString()+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+(OneTaxPrice).toString()+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems="+quantity.toString()+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description="+encodeURIComponent(line.lineItemText)+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(OneSalesPrice).toString()+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+(OneTaxPrice).toString()+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems="+quantity.toString()+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description="+encodeURIComponent(line.lineItemText)+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
 		
 		TotalAmount += OneSalesPrice*quantity;
 		TotalAmount += OneTaxPrice*quantity;
 		count++;
 	}
 
-	for each(var line in args.order.priceAdjustments) {
+	for each(var line in order.priceAdjustments) {
 		if (count != 0) {
-			args.openInvoiceResponse += "&";
+			openInvoiceResponse += "&";
 		}
 		var SalesPrice = line.netPrice;
 		var SalesPriceAmount:number = Math.round(SalesPrice * 100);
@@ -49,38 +56,38 @@ function execute( args : PipelineDictionary ) : Number
 		var TaxPrice = line.tax;
 		var TaxPriceAmount:number = Math.round(TaxPrice * 100);
 
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(SalesPriceAmount).toString()+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+(TaxPriceAmount).toString()+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description="+encodeURIComponent(line.lineItemText)+"&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
-		args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(SalesPriceAmount).toString()+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+(TaxPriceAmount).toString()+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description="+encodeURIComponent(line.lineItemText)+"&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
+		openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
 		
 		TotalAmount += SalesPriceAmount;
 		TotalAmount += TaxPriceAmount;
 		count++;
 	}
 	
-		var SalesPrice = args.order.shippingTotalNetPrice;
+		var SalesPrice = order.shippingTotalNetPrice;
 		if (SalesPrice > 0)
 		{
-			for each(var line in args.order.shipments) {
+			for each(var line in order.shipments) {
 				if (count != 0) {
-					args.openInvoiceResponse += "&";
+					openInvoiceResponse += "&";
 				}
 				var SalesPrice = line.adjustedShippingTotalNetPrice;
 				var SalesPriceAmount:number = Math.round(SalesPrice  * 100);
 				var TaxPrice = line.adjustedShippingTotalTax;
 				var TaxPriceAmount:number = Math.round(TaxPrice * 100);
 	
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(SalesPriceAmount).toString()+"&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+TaxPriceAmount.toString()+"&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description=Shipping&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
-				args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+(SalesPriceAmount).toString()+"&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT="+TaxPriceAmount.toString()+"&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description=Shipping&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=High&";
+				openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
 				
 				TotalAmount += SalesPriceAmount;
 				TotalAmount += TaxPriceAmount;
@@ -88,22 +95,27 @@ function execute( args : PipelineDictionary ) : Number
 			}
 		}
 		
-		var TotalOrderAmount:number = Math.round(args.order.totalGrossPrice * 100);
+		var TotalOrderAmount:number = Math.round(order.totalGrossPrice * 100);
 		if (TotalAmount != TotalOrderAmount) 
 		{	
 			if (count != 0) {
-				args.openInvoiceResponse += "&";
+				openInvoiceResponse += "&";
 			}
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+Math.round(TotalOrderAmount-TotalAmount).toString()+"&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT=0&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description=AfrondCorrectie&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=None&";
-			args.openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemPrice="+Math.round(TotalOrderAmount-TotalAmount).toString()+"&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".itemVAT=0&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".currency="+valutaCode+"&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".numberOfItems=1&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".description=AfrondCorrectie&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".vatCategory=None&";
+			openInvoiceResponse += "openInvoiceDetailResult.lines."+count+".lineReference="+(count+1);
 		}
 		
-		Logger.getLogger("Adyen").debug("OpenInvoice Response  : " +args.openInvoiceResponse);
+		Logger.getLogger("Adyen").debug("OpenInvoice Response  : " +openInvoiceResponse);
 	
     return PIPELET_NEXT;
+}
+
+module.exports = {
+	'execute': execute,
+	'getInvoiceResponse': getInvoiceResponse
 }
