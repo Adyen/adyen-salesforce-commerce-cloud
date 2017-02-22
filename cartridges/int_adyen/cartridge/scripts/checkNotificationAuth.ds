@@ -10,14 +10,22 @@ importScript("libs/libAuthenticationUtils.ds");
 
 function execute( args : PipelineDictionary ) : Number
 {
+	args.Authenticated = check(args.CurrentRequest);
+	return PIPELET_NEXT;
+}
+
+function check (request) {
 	var baUser : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_user");
 	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_password");
-	var baHeader : String = args.CurrentRequest.httpHeaders["authorization"];
+	var baHeader : String = request.httpHeaders["authorization"];
 	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
-		return PIPELET_ERROR;
+		return false;
 	}
 	
-	args.Authenticated = AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
+	return AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
+}
 
-	return PIPELET_NEXT;
+module.exports = {
+	'execute': execute,
+	'check': check
 }

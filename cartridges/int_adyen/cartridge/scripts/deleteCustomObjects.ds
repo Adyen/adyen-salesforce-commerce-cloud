@@ -7,10 +7,11 @@ importPackage( dw.system );
 importPackage( dw.object );
 importPackage( dw.util );
 
-function execute( args : PipelineDictionary ) : Number
-{
-	var orderID : String = args.orderID;
-	
+function execute( args : PipelineDictionary ) : Number {
+	return handle(args.orderID);
+}
+
+function handle( orderID : String ) : Object {
 	var queryString  : String = "custom.orderId LIKE '" + orderID + "*'";
 	var searchQuery : SeekableIterator = CustomObjectMgr.queryCustomObjects("adyenNotification", queryString, null);
 	if (searchQuery.count > 0) {
@@ -28,4 +29,9 @@ function execute( args : PipelineDictionary ) : Number
 	}
 	searchQuery.close();
    return PIPELET_NEXT;
+}
+
+module.exports = {
+	'execute': execute,
+	'handle': handle
 }

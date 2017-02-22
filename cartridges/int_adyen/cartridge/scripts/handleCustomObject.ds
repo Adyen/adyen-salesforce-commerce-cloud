@@ -24,23 +24,36 @@ importPackage( dw.util );
 
 function execute( args : PipelineDictionary ) : Number
 {
+	var result = handle(args.CustomObj);
+	
+	args.EventCode = result.EventCode;
+	args.SkipNotification = result.SkipNotification;
+	args.RefusedHpp = result.RefusedHpp;
+	args.Pending = result.Pending;
+	args.SkipOrder = result.SkipOrder;
+	args.Order = result.Order;
+	
+	return result.status;
+}
+function handle( customObj : CustomObject  ) : Object
+{
 	var paymentSuccess : Boolean = false;
 	var refusedHpp : Boolean = false;
 	var pending : Boolean = false;
+	var result = {};
+	result.status = PIPELET_ERROR;
 	
-	var customObj : CustomObject = args.CustomObj;
-	
-	args.EventCode = customObj.custom.eventCode;
-	args.SkipNotification = false;
-	args.SkipOrder = false;
+	result.EventCode = customObj.custom.eventCode;
+	result.SkipNotification = false;
+	result.SkipOrder = false;
 
 	var orderId = customObj.custom.orderId.split("-", 1);
 	var order : Order = OrderMgr.getOrder(orderId[0]);
-	args.Order = order;
+	result.Order = order;
 
 	if (order == null) {
 		Logger.getLogger("Adyen", "adyen").fatal("Notification for not existing order {0} received.", customObj.custom.orderId);
-		return PIPELET_ERROR;
+		return result;
 	}
 	
 	var orderCreateDate : Date = order.creationDate;
@@ -55,24 +68,24 @@ function execute( args : PipelineDictionary ) : Number
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
 						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
 						paymentSuccess = true;
-						args.SkipNotification = true;
+						result.SkipNotification = true;
 					}
 					else if(order.paymentStatus == "PARTIALLY PAID"){
 						paymentSuccess = true;
 						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
-						args.SkipNotification = true;
+						result.SkipNotification = true;
 					}
 					else {
 						order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 						order.setExportStatus(Order.EXPORT_STATUS_READY);
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-						args.SkipNotification = true;
+						result.SkipNotification = true;
 						paymentSuccess = true;
 					}  
 				}else{
 					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
-					args.SkipNotification = true;
+					result.SkipNotification = true;
 					// Determine if payment was refused and was used Adyen payment method 
 					if (customObj.custom.reason == "Refused") {
 						var paymentInstruments : Collection = order.getPaymentInstruments();
@@ -82,7 +95,7 @@ function execute( args : PipelineDictionary ) : Number
 								refusedHpp = true;
 								paymentSuccess = false;
 								setProcessedCOInfo(customObj);
-								return PIPELET_ERROR;
+								return result;
 								break;
 							}
 						}
@@ -94,21 +107,21 @@ function execute( args : PipelineDictionary ) : Number
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled.",order.orderNo);
 				setProcessedCOInfo(customObj);
-				return PIPELET_ERROR;
+				return result;
 				break;
 			case "CANCEL_OR_REFUND" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
 				setProcessedCOInfo(customObj);
-				return PIPELET_ERROR;
+				return result;
 				break;
 			case "REFUND" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
 				setProcessedCOInfo(customObj);
-				return PIPELET_ERROR;
+				return result;
 				break;
 			case "ORDER_OPENED" :
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  
@@ -129,8 +142,8 @@ function execute( args : PipelineDictionary ) : Number
 			default:
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} received unhandled status {1}",order.orderNo,customObj.custom.eventCode);
 		}
-		//args.RefusedHpp = refusedHpp;
-		//args.Pending = pending;
+		//result.RefusedHpp = refusedHpp;
+		//result.Pending = pending;
 		
 		// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
 		if (!refusedHpp) {
@@ -164,14 +177,16 @@ function execute( args : PipelineDictionary ) : Number
 		}
     } else {
     	Logger.getLogger("Adyen", "adyen").debug("Order date > current Date.");
-    	args.SkipOrder = true;
-		return PIPELET_NEXT;
+    	result.SkipOrder = true;
+    	result.status = PIPELET_NEXT;
+		return result;
 	}
-		
-	args.RefusedHpp = refusedHpp;
-	args.Pending = pending;
+	
+	result.status = PIPELET_NEXT;
+	result.RefusedHpp = refusedHpp;
+	result.Pending = pending;
 
-   return PIPELET_NEXT;
+   return result;
 }
 
 function setProcessedCOInfo(customObj)
@@ -272,4 +287,9 @@ function pad ( num : Number ) {
         return '0' + num;
     }
     return num;
+}
+
+module.exports = {
+	'execute': execute,
+	'handle': handle
 }

@@ -16,7 +16,17 @@ importPackage( dw.svc );
 //script include
 var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
 
-function execute(args: PipelineDictionary): Number {
+function execute( args : PipelineDictionary ) : Number
+{
+	var result = getMethods(args.Basket);
+	if (result == PIPELET_ERROR) {
+		return result;
+	}
+	args.PaymentMethods = result;
+	return PIPELET_NEXT;
+}
+
+function getMethods (basket : dw.order.Basket) {
     var skinCode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode");
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
@@ -39,9 +49,9 @@ function execute(args: PipelineDictionary): Number {
         args.allowedMethods = "";
     }
 
-    var currencyCode: String = args.Basket.currencyCode;
+    var currencyCode: String = basket.currencyCode;
     var merchantReference: String = "Request payment methods";
-    var paymentAmount: Number = args.Basket.getTotalGrossPrice() ? args.Basket.getTotalGrossPrice().getValue() * 100 : 1000;
+    var paymentAmount: Number = basket.getTotalGrossPrice() ? basket.getTotalGrossPrice().getValue() * 100 : 1000;
     var countryCode: String = request.geolocation.countryCode;
     var sessionValidity: String = new Date();
     sessionValidity.setHours(sessionValidity.getHours() + 1);
@@ -99,8 +109,11 @@ function execute(args: PipelineDictionary): Number {
 	}
    	resultObject = callResult.object;
 	
-	args.PaymentMethods = JSON.parse(resultObject.text);
+    return JSON.parse(resultObject.text);
+}
 
 
-    return PIPELET_NEXT;
+module.exports = {
+	'execute': execute,
+	'getMethods': getMethods
 }

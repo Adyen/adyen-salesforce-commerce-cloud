@@ -22,8 +22,17 @@ importPackage( dw.io );
 
 function execute( args : PipelineDictionary ) : Number
 {
+	var params = getInvoiceParams(args.httpParameterMap);
+	args.openInvoiceReference = params.openInvoiceReference;
+	args.openInvoiceCurrency = params.openInvoiceCurrency;
+	args.openInvoiceAmount = params.openInvoiceAmount;
 	
-	var httpParameterMap = args.httpParameterMap;
+	return PIPELET_NEXT;
+}
+
+function getInvoiceParams( httpParameterMap : dw.web.HttpParameterMap ): Object {
+	
+	var result = {};
 	var querystring : String = httpParameterMap.requestBodyAsString;
 	Logger.getLogger("Adyen").debug("OpenInvoice Request  : " +querystring);
 	
@@ -38,15 +47,15 @@ function execute( args : PipelineDictionary ) : Number
 			var amount : String = getParameterFromXML(querystring,"value");
 			var reference : String = getParameterFromXML(querystring,"reference");
 			
-			args.openInvoiceCurrency = currency;
-			args.openInvoiceReference = reference;
-	  		args.openInvoiceAmount = amount;
+			result.openInvoiceCurrency = currency;
+			result.openInvoiceReference = reference;
+	  		result.openInvoiceAmount = amount;
 	  		
-	  		if (args.openInvoiceReference == "testMerchantRef1")
+	  		if (result.openInvoiceReference == "testMerchantRef1")
 	  		{
 	  			//for testing
-	  			args.openInvoiceReference = "00000201";
-	  			args.openInvoiceAmount = "7890";
+	  			result.openInvoiceReference = "00000201";
+	  			result.openInvoiceAmount = "7890";
 	  			
 	  		}
   		}
@@ -54,18 +63,18 @@ function execute( args : PipelineDictionary ) : Number
   		{
   			//incorect post request. workaround..
   			//example: openInvoiceDetailRequest.reference=testMerchantRef1&openInvoiceDetailRequest.amount.currency=EUR&action=OpenInvoiceDetailService.retrieveDetail&openInvoiceDetailRequest.merchantAccount=SuitSupplyCOM&openInvoiceDetailRequest.amount.value=1403
-	  		args.openInvoiceReference = getParameterByName("?"+querystring,"openInvoiceDetailRequest.reference");
-	  		args.openInvoiceCurrency = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.currency");
-	  		args.openInvoiceAmount = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.value");
+	  		result.openInvoiceReference = getParameterByName("?"+querystring,"openInvoiceDetailRequest.reference");
+	  		result.openInvoiceCurrency = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.currency");
+	  		result.openInvoiceAmount = getParameterByName("?"+querystring,"openInvoiceDetailRequest.amount.value");
 	  		
-	  		if (args.openInvoiceReference == "testMerchantRef1")
+	  		if (result.openInvoiceReference == "testMerchantRef1")
 	  		{
 	  			//for testing
-	  			args.openInvoiceReference = "00000197";
-	  			args.openInvoiceAmount = "38088";
+	  			result.openInvoiceReference = "00000197";
+	  			result.openInvoiceAmount = "38088";
 	  			
-	  			args.openInvoiceReference = "00000201";
-	  			args.openInvoiceAmount = "7890";
+	  			result.openInvoiceReference = "00000201";
+	  			result.openInvoiceAmount = "7890";
 	  			
 	  		}
   		}
@@ -73,11 +82,11 @@ function execute( args : PipelineDictionary ) : Number
   else
   {
   	//Post request
-  	args.openInvoiceReference = httpParameterMap.get("openInvoiceDetailRequest.reference").getStringValue();
-  	args.openInvoiceCurrency = httpParameterMap.get("openInvoiceDetailRequest.amount.currency").getStringValue();
-  	args.openInvoiceAmount = httpParameterMap.get("openInvoiceDetailRequest.amount.value").getStringValue();
+  	result.openInvoiceReference = httpParameterMap.get("openInvoiceDetailRequest.reference").getStringValue();
+  	result.openInvoiceCurrency = httpParameterMap.get("openInvoiceDetailRequest.amount.currency").getStringValue();
+  	result.openInvoiceAmount = httpParameterMap.get("openInvoiceDetailRequest.amount.value").getStringValue();
   }
-  return PIPELET_NEXT;
+  return result;
 }
 
 function getParameterByName(querystring, name)
@@ -102,4 +111,9 @@ function getParameterFromXML(xmlstring, tag)
     return "";
   else
     return results[2];
+}
+
+module.exports = {
+	'execute': execute,
+	'getInvoiceParams': getInvoiceParams
 }
