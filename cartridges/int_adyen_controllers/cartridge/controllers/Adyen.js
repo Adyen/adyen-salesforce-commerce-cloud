@@ -114,7 +114,7 @@ function showConfirmation() {
 	
 	if (order.status != dw.order.Order.ORDER_STATUS_CREATED) {
 		// If the same order is tried to be cancelled more than one time, show Error page to user
-		if (CurrentHttpParameterMap.authResult.value == 'CANCELLED') {
+		if (request.httpParameterMap.authResult.value == 'CANCELLED') {
 			app.getController('Error').Start();
 		} else {
 			// TODO: check is there should be errro value { PlaceOrderError: pdict.PlaceOrderError }

@@ -15,8 +15,8 @@ function execute( args : PipelineDictionary ) : Number
 }
 
 function check (request) {
-	var baUser : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_user");
-	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_password");
+	var baUser : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_user");
+	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("adyen_notification_password");
 	var baHeader : String = request.httpHeaders["authorization"];
 	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
 		return false;
