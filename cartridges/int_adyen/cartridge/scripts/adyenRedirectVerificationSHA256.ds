@@ -110,6 +110,10 @@ function verify (args) {
 	sessionValidity.setHours(sessionValidity.getHours() + 1);
 	args.sessionValidity = sessionValidity.toISOString();
 
+    var shipBeforeDate : String = new Date();
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    args.shipBeforeDate = shipBeforeDate.toISOString();
+
 	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null) {
 		recurringType = "";
 	}	
@@ -124,7 +128,7 @@ function verify (args) {
 	adyenRequest.put("paymentAmount", args.Amount100 );
 	adyenRequest.put("currencyCode", currencyCode );
 	adyenRequest.put("sessionValidity", args.sessionValidity );
-	// adyenRequest.put("shipBeforeDate", "2019-04-06T18:10:29+02:00" );
+	adyenRequest.put("shipBeforeDate", args.shipBeforeDate );
 	adyenRequest.put("merchantReference", merchantReference );
 	adyenRequest.put("skinCode", skinCode );
 	adyenRequest.put("merchantAccount", merchantAccount );
