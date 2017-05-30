@@ -52,10 +52,16 @@ function getMethods (basket : dw.order.Basket) {
     var currencyCode: String = basket.currencyCode;
     var merchantReference: String = "Request payment methods";
     var paymentAmount: Number = basket.getTotalGrossPrice() ? basket.getTotalGrossPrice().getValue() * 100 : 1000;
-    var countryCode: String = request.geolocation.countryCode;
+
+ 	var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
+	var countryCode : String = shippingAddr.countryCode.value.toUpperCase();
     var sessionValidity: String = new Date();
     sessionValidity.setHours(sessionValidity.getHours() + 1);
     sessionValidity = sessionValidity.toISOString();
+
+    var shipBeforeDate : String = new Date();
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    shipBeforeDate = shipBeforeDate.toISOString();
 
     var adyenRequest: SortedMap = new SortedMap();
     adyenRequest.put("paymentAmount", paymentAmount);
@@ -66,6 +72,7 @@ function getMethods (basket : dw.order.Basket) {
     adyenRequest.put("sessionValidity", sessionValidity);
     adyenRequest.put("countryCode", countryCode);
     adyenRequest.put("allowedMethods", allowedMethods);
+    adyenRequest.put("shipBeforeDate", shipBeforeDate );
 
     var keys: String = "";
     var values: String = "";
