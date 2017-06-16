@@ -135,14 +135,54 @@ var __AdyenHelper : Object = {
 		return returnValue;
 	},
 	
-	getCurrencyValueForApi : function ( amount ) : String {
-		var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
-		if ( digitsNumber <= 0 ) return amount.value;
-		if ( digitsNumber == 2 ) return amount.multiply(100).value;
-		if ( digitsNumber > 2 ) return amount.multiply(1000).value;
+	getCurrencyValueForApi : function ( amount ) : String {		
+		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
+		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
+		if ( digitsNumber == 0 ) return amount.value;	
+		else if ( digitsNumber == 1 ) return amount.multiply(10).value;
+		else if ( digitsNumber == 2 ) return amount.multiply(100).value;
+		else return amount.multiply(1000).value;	
+	},
+	
+	getFractionDigits : function (currencyCode) : Number {
+		var format;
+		switch(currencyCode) {
+			case "JPY":
+            case "IDR":
+            case "KRW":
+            case "BYR":
+            case "VND":
+            case "CVE":
+            case "DJF":
+            case "GNF":
+            case "PYG":
+            case "RWF":
+            case "UGX":
+            case "VUV":
+            case "XAF":
+            case "XOF":
+            case "XPF":
+            case "GHC":
+            case "KMF":
+                format = 0;
+                break;
+            case "MRO":
+                format = 1;
+                break;
+            case "BHD":
+            case "JOD":
+            case "KWD":
+            case "OMR":
+            case "LYD":
+            case "TND":
+                format = 3;
+                break;
+            default:
+                format = 2;
+                break;
+		}
+		return format;
 	}
-	
-	
 }
 
 module.exports= __AdyenHelper;
