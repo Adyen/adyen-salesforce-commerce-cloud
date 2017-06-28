@@ -79,8 +79,6 @@ var __AdyenHelper : Object = {
 		var serviceName = servicePrefix + '.' + adyenCurrentSite.ID;
 		try {
 			adyenService = dwsvc.ServiceRegistry.get(serviceName);
-			var test = adyenService.getURL();
-			var str = JSON.stringify(adyenService);
 			dwsystem.Logger.getLogger("Adyen", "adyen").debug("Succsessffuly retrive service with name {0}", serviceName);
 		} catch (e) {
 			var ex = e;
