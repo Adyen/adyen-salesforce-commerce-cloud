@@ -89,6 +89,8 @@ function verify( args : PipelineDictionary ) : Number {
 		
 		var encryptedDataObj : Object;
 		var billingAddress : Object;
+		var deliveryAddress : Object;
+		var shopperName : Object;
 		var card : Object;
 		var jsonObjNew :JSON = {};
 		if (AdyenHelper.getAdyenCseEnabled()) {

@@ -31,7 +31,7 @@ var allSites : dwutil.List = dwsystem.Site.getAllSites();
  
 for each (let site : dwsystem.Site in allSites) {
 	try {
- 		let servicePrefix : String = AdyenHelper.getAydenPaymentSecureServicePrefix(site);
+ 		let servicePrefix : String = AdyenHelper.getAdyenPaymentSecureServicePrefix(site);
  		if (empty(servicePrefix)) {
 	    	dwsystem.Logger.getLogger("Adyen", "adyen").debug("Empty service prefix for site {0}, service type '3d secure authorize'", site.getID());
  		} else {

@@ -23,10 +23,10 @@ var __AdyenHelper : Object = {
 	
 	
 	/**
-	 * 	@name getAydenPaymentSendServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentSendServicePrefix
+	 * 	@name getAdyenPaymentSendServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentSendServicePrefix
 	 */
-	getAydenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix');
@@ -36,10 +36,10 @@ var __AdyenHelper : Object = {
 	},
 
 	/**
-	 * 	@name getAydenPaymentMethodsServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 * 	@name getAdyenPaymentMethodsServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
 	 */
-	getAydenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix');
@@ -49,10 +49,10 @@ var __AdyenHelper : Object = {
 	},
 	
 	/**
-	 * 	@name getAydenPaymentSecureServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 * 	@name getAdyenPaymentSecureServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
 	 */
-	getAydenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix');
@@ -67,13 +67,13 @@ var __AdyenHelper : Object = {
 		var servicePrefix = "";
 		switch (service) {
 			case __AdyenHelper.SERVICE.SEND :
-				servicePrefix = __AdyenHelper.getAydenPaymentSendServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentSendServicePrefix(adyenCurrentSite);
 				break;
 			case __AdyenHelper.SERVICE.METHODS :
-				servicePrefix = __AdyenHelper.getAydenPaymentMethodsServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentMethodsServicePrefix(adyenCurrentSite);
 				break;
 			case __AdyenHelper.SERVICE.SECURE :
-				servicePrefix = __AdyenHelper.getAydenPaymentSecureServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentSecureServicePrefix(adyenCurrentSite);
 				break;
 		}
 		var serviceName = servicePrefix + '.' + adyenCurrentSite.ID;
