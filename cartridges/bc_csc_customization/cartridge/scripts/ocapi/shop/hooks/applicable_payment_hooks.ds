@@ -1,0 +1,34 @@
+importPackage( dw.system );
+importPackage( dw.value );
+importPackage(dw.util);
+
+/* if PaymentMethod has a custom property 'csc_payment' the filter works automatically */
+function modifyGETResponse(paymentMethodResultResponse : PaymentMethodResult) {
+	
+	if(request.clientId === "dw.csc")
+      {
+           var applicablePaymentMethods = [];
+           /* CustomAdyen 
+            for (var index in paymentMethodResultResponse.applicablePaymentMethods) {
+            	
+            	var paymentMethod = paymentMethodResultResponse.applicablePaymentMethods[index];
+            	
+            	if(paymentMethod.c_csc_payment){
+            		Logger.info("{0} is CSC payment", paymentMethod.id);            		
+            		applicablePaymentMethods.push(paymentMethod);
+            	}
+            	
+            }
+            paymentMethodResultResponse.applicablePaymentMethods = applicablePaymentMethods;
+            */
+            applicablePaymentMethods.push(paymentMethodResultResponse.applicablePaymentMethods[1]);
+         paymentMethodResultResponse.applicablePaymentMethods = applicablePaymentMethods;   
+      }
+ 
+    return new Status(Status.OK);
+}
+
+module.exports = {
+        modifyGETResponse : modifyGETResponse
+    };
+    

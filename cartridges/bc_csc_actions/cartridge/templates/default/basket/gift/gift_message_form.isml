@@ -1,0 +1,26 @@
+<!--- TEMPLATENAME: gift_message_form.isml --->
+	<img alt="Giftbox" src="${URLUtils.staticURL('Giftbox_icon.png')}">
+	<form method="post" action="CSCGiftMessaging-Execute"
+		id="gift-messages" name="${dw.order.BasketMgr.getBasket(basketId)}">
+
+		<isset name="basket" value="${pdict.basket}" scope="page"/>
+		
+		<!---  <form action="CSCGiftMessaging-Execute"> --->
+		<input type="hidden" value="${basket.UUID}" name="basket_id" id="basket_id" />
+		
+		<isloop items = "${basket.shipments}" var="shipment">
+			<isif condition="${shipment.ID == 'me'}">
+				<b>Default Shipment</b>			
+			<iselse/>
+				<b><isprint value="${shipment.ID}"></b>
+			</isif>
+			<p>
+				<label for="${shipment.ID}_isgift">Is a gift?</label> 
+				<input type="checkbox" <isif condition="${shipment.isGift()}"> checked</isif> name="${shipment.ID}_isgift" id="${shipment.ID}_isgift" onchange="document.getElementById('${shipment.ID}_message').disabled = !this.checked;"/><br/>
+				<label for="${shipment.ID}_giftMessage">Gift Message</label> 
+				<input id="${shipment.ID}_message" name="${shipment.ID}_message" id="${shipment.ID}_message" value="<isprint value="${shipment.giftMessage}">" <isif condition="${!shipment.isGift()}"> disabled=true</isif>/>
+			</p>
+			<hr />
+		</isloop>
+		<button type="submit">Store gift information</button>
+	</form>

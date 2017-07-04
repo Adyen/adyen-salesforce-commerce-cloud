@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- =============================================================== -->
+<!-- ==  CSC EXTENSIONS     		                              == -->
+<!-- =============================================================== -->
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+    <menuitem id="basket" site="true" type="CSC">
+        <name xml:lang="x-default" >CSC Basket</name>
+        <short_description xml:lang="x-default">Customer Service Center Basket</short_description>
+        <description xml:lang="x-default">Customer Service Center Basket</description>
+    </menuitem>
+    <menuaction id="basket_gift_messaging" menupath="basket" type="CSC" site="true" position="3">
+        <name xml:lang="x-default">Make it a Gift</name>
+		<name xml:lang="fr-FR">Make it a gift (fr-FR)</name>
+		<!--		-->
+        <short_description xml:lang="x-default">Gift Messaging</short_description>
+        <description xml:lang="x-default">Gift Messaging</description>
+        <exec pipeline="CSCGiftMessaging" node="Start"/>
+        <sub-pipelines>
+            <pipeline name="CSCGiftMessaging" />
+        </sub-pipelines>
+        <parameters>
+            <parameter name="basket_id" value="/basket_id"/>
+        </parameters>
+        <icon>csc_basket.png</icon>
+    </menuaction>
+    <menuaction id="basket_reserve_inventory" menupath="basket" type="CSC" site="true" position="2">
+        <name xml:lang="x-default">Reserve basket inventory</name>
+		<name xml:lang="fr-FR">Reserve basket inventory (fr-FR)</name>
+		<name xml:lang="fr">Reserve basket inventory (fr)</name>		
+		<!--		-->
+        <short_description xml:lang="x-default">Reserve inventory for the basket</short_description>
+        <description xml:lang="x-default">Reserve inventory for the basket</description>
+        <exec pipeline="CSCReserveInventory" node="Start"/>
+        <sub-pipelines>
+            <pipeline name="CSCReserveInventory" />
+        </sub-pipelines>
+        <parameters>
+            <parameter name="basket_id" value="/basket_id"/>
+            <parameter name="product_count" value="count(//product_id)"/>
+        </parameters>
+        <icon>csc_basket.png</icon>
+    </menuaction>
+    <menuaction id="basket_address_verification" menupath="basket" type="CSC" site="true" position="1">
+        <name xml:lang="x-default">Verify addresses</name>
+        <short_description xml:lang="x-default">Verifies all cart addresses</short_description>
+        <description xml:lang="x-default">Verifies all cart addresses</description>
+        <exec pipeline="CSCVerifyCartAddresses" node="Start"/>        
+        <sub-pipelines>
+            <pipeline name="CSCVerifyCartAddresses" />
+        </sub-pipelines>
+        <parameters>
+            <parameter name="basket_id" value="/basket_id"/>
+        </parameters>
+        <icon>check_address.png</icon>    
+    </menuaction>
+    <menuitem id="order" site="true" type="CSC">
+        <name xml:lang="x-default" >CSC Order</name>
+        <short_description xml:lang="x-default">Customer Service Center Order</short_description>
+        <description xml:lang="x-default">Customer Service Center Order</description>
+    </menuitem>
+    <menuaction id="order_payment_details" menupath="order" type="CSC" site="true" position="1">
+        <name xml:lang="x-default">Review Payment details</name>
+        <short_description xml:lang="x-default">Review Payment details</short_description>
+        <description xml:lang="x-default">Review Payment details</description>
+        <exec pipeline="CSCReviewPaymentDetails" node="Start"/>        
+        <sub-pipelines>
+            <pipeline name="CSCReviewPaymentDetails" />
+        </sub-pipelines>
+        <parameters>
+            <parameter name="order_no" value="/order_no"/>
+        </parameters>
+        <icon>check_address.png</icon>      
+    </menuaction>
+    <menuitem id="customer" site="true" type="CSC">
+        <name xml:lang="x-default" >CSC Customer</name>
+        <short_description xml:lang="x-default">Customer Service Center Customer</short_description>
+        <description xml:lang="x-default">Customer Service Center Customer</description>
+    </menuitem>
+    <menuaction id="customer_show_customer_groups" menupath="customer" type="CSC" site="true" position="1">
+        <name xml:lang="x-default">Display Customer Groups</name>
+        <short_description xml:lang="x-default">Display Customer Groups.</short_description>
+        <description xml:lang="x-default">Display Customer Groups.</description>
+        <exec pipeline="CSCCustomerGroups" node="Start"/>
+        <sub-pipelines>
+            <pipeline name="CSCCustomerGroups"/>
+        </sub-pipelines>
+        <parameters>
+        </parameters>
+        <icon>check_address.png</icon>
+    </menuaction>
+</extensions>

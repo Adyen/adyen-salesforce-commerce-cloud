@@ -1,0 +1,13 @@
+<!--- TEMPLATENAME: reserve_inventory_conformation.isml --->
+<isdecorate template="pt_csc.isml">
+	<isset name="basket" value="${pdict.basket}" scope="page"/>
+	
+	<isif condition="${pdict.status.status == dw.system.Status.OK}"> 
+		<div class="slds-theme--success">Inventory successfully reserved until <br/><b><isprint value="${basket.getInventoryReservationExpiry()}" formatter="MM/dd/YYYY hh:mm aaa z"/></b></div>
+	<iselseif condition="${pdict.status.status == dw.system.Status.ERROR}">
+		<div class="slds-theme--error">Inventory reservation failed: <isprint value="${pdict.status.message}"></div>
+	<iselse>
+		<div class="slds-theme--warning">Unknown status <isprint value="${pdict.status}"></div>
+	</isif>
+	
+</isdecorate>

@@ -1,0 +1,26 @@
+<!--- TEMPLATENAME: customer_groups.isml --->
+<isdecorate template="pt_csc.isml">
+	<isif condition="${pdict.success}">
+		<isif condition="${pdict.action == 'assign'}">
+			<div class="slds-theme--success">Group <isprint value="${pdict.groupToAssign.ID}"> successfully assigned</div>
+		<iselseif condition="${pdict.action == 'unassign'}">
+			<div class="slds-theme--success">Group <isprint value="${pdict.groupToUnassign.ID}"> successfully removed</div>
+		<iselse>
+			<div class="slds-theme--warning">An unknown action <isprint value="${pdict.action}"> was successful</div>
+		</isif>
+	<iselse>
+		<isif condition="${pdict.action == 'assign'}">
+			<div class="slds-theme--error">Group <isprint value="${pdict.groupToAssign.ID}"> not successfully assigned</div>
+		<iselseif condition="${pdict.action == 'unassign'}">
+			<div class="slds-theme--error">Group <isprint value="${pdict.groupToUnassign.ID}"> not successfully removed</div>
+		<iselse>
+			<div class="slds-theme--warning">An unknown action <isprint value="${pdict.action}"> was unsuccessful</div>
+		</isif>
+	</isif>
+
+	<isinclude template="customer/customer_groups_list.isml"/>
+	
+	<isinclude template="customer/customer_groups_assign.isml"/>
+	<hr/>
+	
+</isdecorate>

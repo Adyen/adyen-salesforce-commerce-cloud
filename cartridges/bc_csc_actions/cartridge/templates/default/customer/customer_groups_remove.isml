@@ -1,0 +1,9 @@
+<!--- TEMPLATENAME: customer_groups.isml --->
+
+	<isif condition="${!group.ruleBased}">
+		<form method="post" action="CSCCustomerGroups-Remove" id="customerGroups-remove" name="customerGroups-remove">
+			<input type="hidden" value="${customer.ID}" name="customer_id" id="customer_id" />
+			<input type="hidden" value="${group.ID}" name="customer_group" id="customer_group" />
+			<button type="submit">Remove Group</button>
+		</form>
+	</isif>	

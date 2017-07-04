@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: customer_groups.isml --->
+<isdecorate template="pt_csc.isml">
+
+	<isinclude template="customer/customer_groups_list.isml"/>
+	
+	<isinclude template="customer/customer_groups_assign.isml"/>
+	
+	<hr/>
+
+</isdecorate>

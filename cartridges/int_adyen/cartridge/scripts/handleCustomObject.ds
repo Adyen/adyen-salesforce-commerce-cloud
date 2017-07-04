@@ -164,11 +164,13 @@ function handle( customObj : CustomObject  ) : Object
 			if (empty(order.custom.Adyen_paymentMethod) && !empty(customObj.custom.paymentMethod)) {
 				order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
 			}
-			
 			// Add a note with all details
-			order.addNote("Adyen Payment Notification", createLogMessage(customObj));
+		order.addNote("Adyen Payment Notification", createLogMessage(customObj));
 		}
 		
+		// CustomAdyen
+		// order.addNote("Adyen Payment Notification", createLogMessage(customObj));
+			
 		if (paymentSuccess === true) {
 			var now : Date = new Date();
 			customObj.custom.processedDate = now;

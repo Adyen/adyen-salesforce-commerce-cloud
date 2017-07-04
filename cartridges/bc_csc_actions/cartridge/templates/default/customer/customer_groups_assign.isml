@@ -1,0 +1,25 @@
+<!--- TEMPLATENAME: customer_groups.isml --->
+
+	<hr/>
+	<div class="slds-text-heading--medium">Assign a new group for <isprint value="${customer.profile.customerNo}"/></div>
+	<isscript>
+		var customerMgr = require('dw/customer/CustomerMgr');
+		var availableCustomerGroups = customerMgr.getCustomerGroups();
+	</isscript>
+	
+	<form method="post" action="CSCCustomerGroups-Assign"
+		id="customerGroups-assign" name="customerGroups-assign">
+
+		<input type="hidden" value="${customer.ID}" name="customer_id" id="customer_id" />
+		<isset name="submit_active" value="false" scope="page"/>
+		<select name="customer_group" id="customer_group">
+			<option>Please select a group...</option>
+			<isloop items="${availableCustomerGroups}" var="customerGroup">
+				<isif condition="${!customerGroup.ruleBased && !customer.isMemberOfCustomerGroup(customerGroup)}">
+					<isset name="submit_active" value="true" scope="page"/>
+					<option value="${customerGroup.ID}"><isprint value="${customerGroup.ID}"></option>
+				</isif>
+			</isloop>
+		</select> 
+		<button type="submit" <isif condition="${submit_active != 'true'}">disabled=disbled</isif>>Assign Group</button>
+	</form>

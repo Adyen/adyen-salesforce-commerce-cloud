@@ -1,0 +1,28 @@
+<!--- TEMPLATENAME: order/payment/order_payment_details.isml --->
+<isdecorate template="pt_csc.isml">
+	<div class="slds-text-heading--medium">Order Payments</div>
+	<isset name="order" value="${pdict.order}" scope="page"/>
+	<isloop items = "${order.getPaymentInstruments()}" var="paymentInstrument">
+		<div class="slds-theme--alt-inverse"><isprint value="${paymentInstrument.paymentMethod}"> - <isprint value="${paymentInstrument.getPaymentTransaction().getAmount()}"></div>
+		<div>Test</div>
+		<isif condition="${paymentInstrument.paymentMethod == 'CREDIT_CARD'}">
+			<b>Credit Card Type:</b> <isprint value="${paymentInstrument.getCreditCardType()}"><br/>
+			<b>Credit Card Number:</b> <isprint value="${paymentInstrument.getMaskedCreditCardNumber()}"><br/>
+			<b>Card Holder:</b> <isprint value="${paymentInstrument.creditCardHolder}"><br/>
+			<b>Valid Thru:</b> <isprint value="${paymentInstrument.creditCardExpirationMonth}">/<isprint value="${paymentInstrument.creditCardExpirationYear}" formatter="####"><br/>			
+			<b>Transaction ID:</b> <isprint value="${paymentInstrument..getPaymentTransaction().transactionID}"><br/>
+		<iselseif condition="${paymentInstrument.paymentMethod == 'BML'}">
+			<!-- customize here -->
+			<br/>
+		<iselseif condition="${paymentInstrument.paymentMethod == 'PayPal'}">
+			<!-- customize here -->
+			<br/> 
+		<iselseif condition="${paymentInstrument.paymentMethod == 'GIFT_CERTIFICATE'}">
+			<b>Gift Certificate ID:</b> <isprint value="${paymentInstrument.giftCertificateID}"><br/>
+		<iselse/>
+			<b>OTHER</b>
+		</isif>
+	</isloop>
+	<hr/>
+	
+</isdecorate>
