@@ -1,0 +1,28 @@
+<!--- TEMPLATENAME: address_check.isml --->
+<isdecorate template="pt_csc.isml">
+	<isset name="basket" value="${pdict.basket}" scope="page"/>
+	<isset name="customer" value="${basket.getCustomer()}" scope="page"/>
+	
+	<div class="slds-text-heading--medium">Billing Address</div>
+	<isset name="address" value="${basket.getBillingAddress()}" scope="page"/>
+	<isinclude template="basket/addressCheck/address_check_result.isml"/>
+	
+	<isif condition="${basket.shipments.length == 1}">
+		<div class="slds-text-heading--medium">Shipping Address</div>
+	<iselse/>
+	<div class="slds-text-heading--medium">Shipping Addresses</div>
+		<b><isprint value="${shipment.ID}"></b>
+	</isif>
+	
+<!--- loop through shipments --->
+	<isloop items = "${basket.shipments}" var="shipment">
+		<isif condition="${shipment.ID == 'me'}">
+			<b>Default Shipment</b>			
+		<iselse/>
+			<b><isprint value="${shipment.ID}"></b>
+		</isif>
+		<isset name="address" value="${shipment.getShippingAddress()}" scope="page"/>
+		<isinclude template="basket/addressCheck/address_check_result.isml"/>
+	</isloop>
+	
+</isdecorate>

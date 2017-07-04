@@ -1,0 +1,12 @@
+<!--- TEMPLATENAME: customer/customer_groups_list.isml --->
+	<div class="slds-text-heading--medium">Customer Groups for <isprint value="${customer.profile.customerNo}"/></div>
+	
+	<isloop items = "${customer.customerGroups}" var="group">
+		<div class="slds-theme--alt-inverse">
+			<isprint value="${group.ID}"><isif condition="${group.ruleBased}">*</isif>
+		</div>
+		<isprint value="${group.description}">
+		<br/>
+		<isinclude template="customer/customer_groups_remove.isml"/>
+		
+	</isloop>

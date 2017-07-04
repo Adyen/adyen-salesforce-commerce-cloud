@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: pt_csc.isml --->
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('slds.css')}">
+</head>
+
+<body>
+	<isreplace/>
+</body>
+</html>

@@ -1,0 +1,4 @@
+<!--- TEMPLATENAME: gift/gift_message_start.isml --->
+<isdecorate template="pt_csc.isml">
+	<isinclude template="basket/gift/gift_message_form.isml"/>
+</isdecorate>

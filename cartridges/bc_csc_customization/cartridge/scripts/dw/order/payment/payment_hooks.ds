@@ -1,0 +1,110 @@
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.value );
+importPackage(dw.util);
+
+
+function authorize(order : Order, opi : OrderPaymentInstrument)
+{
+	var pt : PaymentTransaction = opi.getPaymentTransaction();
+	if(pt){
+	
+		if(pt.getPaymentProcessor().getID() === 'BASIC_GIFT_CERTIFICATE'){
+			//link your gift certificate payment cartridge here...
+			return authorizeGiftCertificate(order, opi);
+		}
+		else{
+			Logger.info("No special paymenthandling for payment processor {0}. Payment considered as authorized.", pt.getPaymentProcessor().getID());
+			return new Status( Status.OK );  
+		}
+	}
+	else{
+		return new Status( Status.ERROR, "Payment Transaction missing");
+	} 
+	
+	
+}
+
+function authorizeCreditCard(order : Order, opi : OrderPaymentInstrument, cvn : String)
+{
+	var pt : PaymentTransaction = opi.getPaymentTransaction();
+	var paymentInstr : PaymentInstrument = order.createPaymentInstrument("Adyen_Credit", pt.amount);
+	
+	// Change PaymentInstrument to Adyen_Credit
+	//link your payment cartridge here...
+	var ccno : String = opi.getCreditCardNumber();
+	Logger.info("CC payment auth for order {0} - {1}", order.orderNo, "************" + ccno.substr(12));
+	
+	if(ccno == '4111111111112222'){
+		
+		Logger.info("=====================================ERROR===========================================");
+		return new Status( Status.ERROR, "ERR_2222", "Creditcard ending with {0} could not be authorized. Error code: {1}.", ccno.substr(12), "ERR_2222" );  
+	}
+	
+	return new Status( Status.OK );  
+}
+
+module.exports = {
+		authorize : authorize,
+        authorizeCreditCard : authorizeCreditCard
+    };
+    
+    
+function authorizeGiftCertificate(order : Order, opi : OrderPaymentInstrument){
+	
+	Logger.info("GC auth for order {0}", order.orderNo);
+
+	var pt : PaymentTransaction = opi.getPaymentTransaction();
+	var gcCode : String = opi.getGiftCertificateCode();
+	Logger.info("GC Code {0}", gcCode);
+	
+	if(gcCode == 'bad'){
+		return new Status( Status.ERROR, "ERR_BAD", "The Gift Certificate ''{0}'' could not authorized successfully.", gcCode);  
+	}
+	
+	/** verify gift certificate balance*/
+	Logger.info("verify gift certificate balance", order.getOrderNo());
+	
+	Logger.info("Payment Instrument total is {0}", pt.amount);
+	
+	if(order.getGiftCertificatePaymentInstruments(gcCode).getLength()  > 1){
+    	Logger.info("GC with code ''{0}'' was already added to this order. Please select another code or payment", gcCode);
+		return new Status( Status.ERROR, "ERR_GC_ALREADY_EXISTS", "GC with code ''{0}'' was already added to this order. Please select another code or payment", gcCode);
+	}
+		
+	//create GC
+	if(gcCode){
+		
+		//determine GC balance
+		var gc : Giftcertificate = GiftCertificateMgr.getGiftCertificateByCode(gcCode);
+		if(gc){
+			var balance : Money = gc.getBalance();
+			Logger.info("GC balance for ''{0}'' is {1}", gcCode, balance);
+			
+			//verify currencies
+			if(!balance.isOfSameCurrency(pt.amount)){
+				return new Status( Status.ERROR, "ERR_WRONG_CURRENCY", "Gift Certificate has currency {0} but order currency is {1}", balance.currencyCode, pt.amount.currencyCode);
+			}
+			
+			if(balance.compareTo(pt.amount ) >= 0){
+				Logger.info("GC balance {0} covers payment instrument total of {1} entirely", balance, pt.amount);
+			}
+			else{
+				Logger.info("GC balance {0} covers payment instrument total of {1} partially. Payment amount will be reduced", balance, pt.amount);
+				opi.getPaymentTransaction().setAmount(balance);
+			}
+		}
+		else{
+			opi.getPaymentTransaction().amount = new Money(0, pt.amount.currencyCode);
+			Logger.info("GC code ''{0}'' does not exist. Set payment intrument amount to {1}", gcCode, opi.getPaymentTransaction().amount);
+			return new Status( Status.ERROR, "ERR_BAD", "GC code ''{0}'' does not exist. Set payment intrument amount to {1}", gcCode, opi.getPaymentTransaction().amount); 
+		}
+	}
+	else{
+		opi.getPaymentTransaction().amount = new Money(0, pt.amount.currencyCode);
+		return new Status( Status.ERROR, "ERR_BAD", "No Gift Certificate Code given for payment processor {0}.", pt.getPaymentProcessor().getID()); 
+	}
+	
+	
+	return new Status( Status.OK );  
+}

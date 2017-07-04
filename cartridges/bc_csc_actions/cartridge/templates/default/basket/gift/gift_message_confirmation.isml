@@ -1,0 +1,5 @@
+<!--- TEMPLATENAME: reserve_inventory.isml --->
+<isdecorate template="pt_csc.isml">
+	<div class="slds-text-heading--medium">Confirmation</div>
+	<isinclude template="basket/gift/gift_message_form.isml"/>
+</isdecorate>

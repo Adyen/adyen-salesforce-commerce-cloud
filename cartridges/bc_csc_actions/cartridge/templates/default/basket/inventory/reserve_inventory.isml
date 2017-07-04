@@ -1,0 +1,21 @@
+<!--- TEMPLATENAME: reserve_inventory.isml --->
+<isdecorate template="pt_csc.isml">
+	<isset name="basket" value="${pdict.basket}" scope="page"/>
+	
+	<isif condition="${basket.productLineItems.isEmpty()}">
+		<div class="slds-theme--error">Empty basket. Nothing to reserve.</div>
+	<iselse/>
+		<div class="slds-theme--alt-inverse">Reserve Inventory</div>
+		<br/>
+		<!--- 
+		Inventory currently reserved until <br/><b><isprint value="${basket.getInventoryReservationExpiry()}" formatter="MM/dd/YYYY hh:mm aaa z"/></b></div>
+		--->
+		<form action="CSCReserveInventory-Reserve">
+		<input type="hidden" value="${basket.UUID}" name="basket_id" id="basket_id" />
+		<label for="minutes">Minutes</label>
+		<input type="number" min="1" max="60" step="1" value="10" name="minutes" id="minutes" />
+		<button type="submit">Reserve</button>
+		</form>
+	</isif> 
+	
+</isdecorate>

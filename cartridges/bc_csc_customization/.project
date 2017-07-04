@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bm_adyen</name>
+	<name>bc_csc_customization</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -14,11 +14,4 @@
 	<natures>
 		<nature>com.demandware.studio.core.beehiveNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>site-template</name>
-			<type>2</type>
-			<location>/Users/basm/Development/AdyenDev_Github/Github_Repositories/adyen-salesforce-commerce-cloud/cartridges/bm_adyen/site-template</location>
-		</link>
-	</linkedResources>
 </projectDescription>

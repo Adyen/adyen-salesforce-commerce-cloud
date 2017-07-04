@@ -1,0 +1,16 @@
+<!--- TEMPLATENAME: addressCheck/address_check_result.isml --->
+
+
+		<isif condition="${address == null}">
+			<div class="slds-theme--alt-inverse">NOT YET DEFINED</div>
+		<iselse/>
+			<isif condition="${address.getCity() == 'Erfurt'}">
+				<div class="slds-theme--error">REJECTED</div>
+			<iselse/>
+				<div class="slds-theme--success">APPROVED</div>
+			</isif> 
+			<b><isprint value="${address.getFullName()}"/></b><br/>
+			<isprint value="${address.getAddress1()}"/><br/>
+			<isprint value="${address.getPostalCode()}"/> <b><isprint value="${address.getCity()}"/></b></b>
+		</isif> 
+		<hr/>

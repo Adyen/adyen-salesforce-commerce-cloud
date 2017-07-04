@@ -1,0 +1,10 @@
+{
+   "hooks": [
+      {"name": "dw.ocapi.shop.basket.beforePutBillingAddress", "script": "./ocapi/shop/hooks/basket_hooks.ds"},
+      {"name": "dw.ocapi.shop.basket.payment_methods.modifyGETResponse", "script": "./ocapi/shop/hooks/applicable_payment_hooks.ds"},
+      {"name": "dw.ocapi.shop.order.payment_methods.modifyGETResponse", "script": "./ocapi/shop/hooks/applicable_payment_hooks.ds"},
+      {"name": "dw.ocapi.shop.basket.afterPutCustomer", "script": "./ocapi/shop/hooks/basket_hooks.ds"},
+      {"name": "dw.order.payment.authorize", "script": "./dw/order/payment/payment_hooks.ds"},  
+      {"name": "dw.order.payment.authorizeCreditCard", "script": "./dw/order/payment/payment_hooks.ds"}
+   ]   
+}
