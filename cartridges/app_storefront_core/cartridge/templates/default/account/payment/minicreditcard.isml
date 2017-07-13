@@ -8,7 +8,7 @@
 		show_expiration: whether the expiration date should be displayed
 </iscomment>
 <isscript>
-	var ccType, ccNumber, ccMonth, ccYear, ccOwner;
+	var ccType, ccNumber, ccMonth, ccYear, ccOwner, ccTypeName;
 
 	if (pdict.card) {
 		ccType = pdict.card.creditCardType;
@@ -17,10 +17,18 @@
 		ccYear = pdict.card.creditCardExpirationYear;
 		ccOwner = pdict.card.creditCardHolder;
 	}
+	
+	if (!empty(ccType)) {
+		var paymentCard = dw.order.PaymentMgr.getPaymentCard(ccType);
+		if (!empty(paymentCard)) {
+			ccTypeName = paymentCard.getName();
+		}
+	}
 </isscript>
-<isif condition="${ccOwner && ccType && ccNumber}">
+
+<isif condition="${ccOwner && ccTypeName && ccNumber}">
 	<div class="cc-owner"><isprint value="${ccOwner}"/></div>
-	<div class="cc-type"><isprint value="${ccType}"/></div>
+	<div class="cc-type"><isprint value="${ccTypeName}"/></div>
 	<div class="cc-number"><isprint value="${ccNumber}"/></div>
 	<isif condition="${pdict.show_expiration}"><div class="cc-exp">${Resource.msg('account.payment.minicardcard.expires','account',null)} ${Resource.msgf('global.creditcard.expirydate.separator','locale',null, StringUtils.formatNumber(ccMonth, "00"), StringUtils.formatNumber(ccYear, "0000"))}</div>
 	</isif>

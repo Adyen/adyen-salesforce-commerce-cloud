@@ -45,6 +45,7 @@
 				<script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
 				<isinclude template="checkout/billing/adyenpaymentfields"/>
 				<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encrypteddata}" type="hidden"/>
+				<input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" id="cse_generationtime"/>
 			<iselseif condition="${pdict.AdyenCseEnabled === true}">
 				<isscript>
 				 var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
@@ -73,19 +74,9 @@
 					<button id="credit-card-select-go" name="${pdict.CurrentForms.billing.creditCardSelect.htmlName}" type="submit" value="Go" class="simple-submit">Select</button>
 				</div>
 
-				<iscomment>
-					<isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
-						<a href="${URLUtils.https('COBilling-UpdateCreditCardSelection', 'creditCardUUID', creditCardInstr.UUID)}">
-							(<isprint value="${creditCardInstr.creditCardType}"/>)
-							<isprint value="${creditCardInstr.maskedCreditCardNumber}"/>
-							- ${Resource.msg('billing.creditcardlistexp','checkout',null)}
-							<isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />
-							.<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" />
-						</a>
-					</isloop>
-				</iscomment>
-
 			</isif>
+			
+			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
 
 			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner}" type="input"/>
 
@@ -99,7 +90,7 @@
 					<span>${Resource.msg('billing.creditcardlistexpdate', 'checkout', null)}</span>
 				</label>
 				<isscript>
-					var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+					var currentCountry = require(Resource.msg('scripts.util.countries.ds', 'require', null)).getCurrent(pdict);
 				</isscript>
 
 				<isdynamicform formobject="${pdict.CurrentForms.billing.paymentMethods.creditCard.expiration}" formdata="${currentCountry.dynamicForms.expirationInfo}"/>

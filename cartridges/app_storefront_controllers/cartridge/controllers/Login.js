@@ -117,6 +117,11 @@ function handleLoginForm () {
 
             RateLimiter.hideCaptcha();
 
+	         // update saved credit cards
+	         require('app_storefront_core/cartridge/scripts/account/payment/UpdateSavedCards').updateSavedCards({
+	        	 CurrentCustomer: customer
+	         });
+            
             // In case of successful login
             // Redirects to the original controller that triggered the login process.
             response.redirect(getTargetUrl());
@@ -492,7 +497,7 @@ function Logout() {
     app.getForm('login').clear();
     app.getForm('profile').clear();
 
-
+    // TODO: Investigate whether this line should be removed
     //Cart.get().calculate();
 
     response.redirect(URLUtils.https('Account-Show'));

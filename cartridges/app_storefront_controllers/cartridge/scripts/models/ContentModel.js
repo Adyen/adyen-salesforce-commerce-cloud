@@ -99,8 +99,7 @@ var ContentModel = AbstractModel.extend(
     });
 
 /**
- * Gets a new instance for a given content asset,
- * if that content asset is online.
+ * Gets a new instance for a given content asset.
  *
  * @alias module:models/ContentModel~ContentModel/get
  * @param parameter {(dw.content.Content|String)} The content object to enhance/wrap or the content ID of the content object.
@@ -110,9 +109,6 @@ ContentModel.get = function (parameter) {
     var obj = null;
     if (typeof parameter === 'string') {
         obj = dw.content.ContentMgr.getContent(parameter);
-        if (obj && !obj.online){
-            obj = null;
-        }
     } else if (typeof parameter === 'object') {
         obj = parameter;
     }

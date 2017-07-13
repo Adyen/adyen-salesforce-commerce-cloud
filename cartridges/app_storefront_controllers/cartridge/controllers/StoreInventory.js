@@ -71,7 +71,7 @@ function showSelectedStoreCore() {
  */
 function showSetStore(stores, storeAvailabilityMap) {
     if (session.custom.zipcode !== null) {
-
+        // TODO Stores and storeAvailabilityMap expected?
         app.getView({
             Stores: stores,
             storeAvailabilityMap: storeAvailabilityMap
@@ -189,7 +189,7 @@ function inventory() {
     for (var i = 0, len = storesList.length; i < len; i++) {
         var store = storesList[i];
 
-
+        // TODO This may need to be changed to ("inventoryListId" in store.custom) ?
         // store.custom.inventoryListId : "";
         var inventoryListId = store.custom.inventoryListId || '';
         var inventoryList = dw.catalog.ProductInventoryMgr.getInventoryList(inventoryListId);

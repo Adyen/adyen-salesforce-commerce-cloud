@@ -15,7 +15,7 @@
 			<form class="cart-action-continue-shopping" action="${URLUtils.httpContinue()}" method="post" name="${pdict.CurrentForms.cart.dynamicHtmlName}" id="continue-shopping">
 				<fieldset>
 					<button class="button-text" type="submit" value="${Resource.msg('global.continueshopping','locale',null)}" name="${pdict.CurrentForms.cart.continueShopping.htmlName}">
-						${Resource.msg('global.continueshopping','locale',null)}
+						&#171; ${Resource.msg('global.continueshopping','locale',null)}
 					</button>
 				</fieldset>
 			</form>
@@ -131,7 +131,7 @@
 							</a>
 						</td>
 
-						<td colspan="4" class="bonus-item-actions">ß
+						<td colspan="4" class="bonus-item-actions">
 							<a class="select-bonus" href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false)}" title="${bonusButtonText}">
 								${bonusButtonText}
 							</a>

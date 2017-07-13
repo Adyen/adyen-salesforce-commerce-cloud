@@ -48,7 +48,7 @@ function validatePaymentInstruments(paymentContainer, countryCode, amount) {
                 var card = PaymentMgr.getPaymentCard(paymentInstrument.creditCardType);
 
                 // Checks whether payment card is still applicable.
-                if (card && cards.contains(card)) {
+                if (card !== null && cards.contains(card) && !paymentInstrument.isCreditCardExpired()) {
                     continue;
                 }
             } else {

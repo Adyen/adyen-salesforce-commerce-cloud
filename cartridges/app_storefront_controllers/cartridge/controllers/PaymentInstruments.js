@@ -8,6 +8,7 @@
  */
 
 /* API includes */
+var PaymentInstrument = require('dw/order/PaymentInstrument');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
 var Status = require('dw/system/Status');
@@ -31,6 +32,7 @@ function list() {
     var wallet = customer.getProfile().getWallet();
     var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
     var pageMeta = require('~/cartridge/scripts/meta');
+    var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
     var paymentForm = app.getForm('paymentinstruments');
 
     paymentForm.clear();
@@ -53,15 +55,20 @@ function list() {
  */
 function add(clearForm) {
     var paymentForm = app.getForm('paymentinstruments');
+    var errorMessage = '';
 
-    if (clearForm !== false) {
+    if (clearForm === false) {
+    	errorMessage = Resource.msg('account.paymentinstrumentdetails.addcard.error', 'account', null);
+    } else {
         paymentForm.clear();
     }
-    paymentForm.get('creditcards.newcreditcard.type').setOptions(dw.order.PaymentMgr
-        .getPaymentMethod(dw.order.PaymentInstrument.METHOD_CREDIT_CARD).activePaymentCards.iterator());
+    paymentForm.get('creditcards.newcreditcard.type').setOptions(dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_CREDIT_CARD).activePaymentCards.iterator());
+
+    pageMeta.update(dw.content.ContentMgr.getContent('myaccount-paymentsettings'));
 
     app.getView({
-        ContinueURL: URLUtils.https('PaymentInstruments-PaymentForm')
+    	ContinueURL: URLUtils.https('PaymentInstruments-PaymentForm'),
+    	ErrorMessage: errorMessage
     }).render('account/payment/paymentinstrumentdetails');
 }
 
@@ -83,23 +90,13 @@ function handlePaymentForm() {
                 response.redirect(URLUtils.https('PaymentInstruments-List'));
             }
         },
+        cancel: function () {
+        	response.redirect(URLUtils.https('PaymentInstruments-List'));
+        },
         error: function () {
             add(false);
         }
     });
-}
-/**
- * Saves a  customer credit card payment instrument.
- * @param {Object} params
- * @param {dw.customer.CustomerPaymentInstrument} params.PaymentInstrument - credit card object.
- * @param {dw.web.FormGroup} params.CreditCardFormFields - new credit card form.
- */
-function save(params) {
-    var saveCustomerCreditCard = require('app_storefront_core/cartridge/scripts/checkout/SaveCustomerCreditCard');
-    var result = saveCustomerCreditCard.save(params);
-    if (result === PIPELET_ERROR) {
-        throw new Error('Problem saving credit card');
-    }
 }
 
 /**
@@ -117,50 +114,77 @@ function create() {
     if (!verifyCreditCard()) {
         return false;
     }
+    var i, tokenID, pspReference;
 
-    var paymentForm = app.getForm('paymentinstruments');
-    var newCreditCardForm = paymentForm.get('creditcards.newcreditcard');
-    var ccNumber = newCreditCardForm.get('number').value();
+    if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+    	var createRecurringPaymentAccountResult = AdyenHelper.createRecurringPaymentAccount({
+    	Customer: customer
+    });
 
-    var wallet = customer.getProfile().getWallet();
-    var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+	if (createRecurringPaymentAccountResult.error) {
+		 return false;
+	}
 
-    var isDuplicateCard = false;
-    var oldCard;
+	pspReference = 'PspReference' in createRecurringPaymentAccountResult && !empty(createRecurringPaymentAccountResult.PspReference) ? createRecurringPaymentAccountResult.PspReference : '';
+	tokenID = 'TokenID' in createRecurringPaymentAccountResult && !empty(createRecurringPaymentAccountResult.TokenID) ? createRecurringPaymentAccountResult.TokenID : '';
 
-    for (var i = 0; i < paymentInstruments.length; i++) {
-        var card = paymentInstruments[i];
-        if (card.creditCardNumber === ccNumber) {
-            isDuplicateCard = true;
-            oldCard = card;
-            break;
-        }
-    }
-
-    Transaction.begin();
-    var paymentInstrument = wallet.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
-
+	var paymentForm = app.getForm('paymentinstruments');
+	var creditCardForm = paymentForm.get('creditcards.newcreditcard');
+	var creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+	 
     try {
-        save({
-            PaymentInstrument: paymentInstrument,
-            CreditCardFormFields: newCreditCardForm.object
+    	Transaction.wrap(function () {
+    		var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+    		
+    		// copy the credit card details to the payment instrument
+    		newCreditCard.setCreditCardHolder(creditCardForm.object.owner.value);
+    		newCreditCard.setCreditCardNumber(creditCardForm.object.number.value);
+    		newCreditCard.setCreditCardExpirationMonth(creditCardForm.object.expiration.month.value);
+    		newCreditCard.setCreditCardExpirationYear(creditCardForm.object.expiration.year.value);
+    		newCreditCard.setCreditCardType(creditCardForm.object.type.value);
+    		
+    		if (!empty(tokenID)) {
+    			newCreditCard.setCreditCardToken(tokenID);
+    		}
+    		
+    		if (!empty(pspReference)) {
+    			newCreditCard.custom.AdyenPspReference = pspReference;
+    		}
+    		
+    		for (i = 0; i < creditCards.length; i++) {
+    			var creditcard = creditCards[i];
+    			if (creditcard.maskedCreditCardNumber === newCreditCard.maskedCreditCardNumber && creditcard.creditCardType === newCreditCard.creditCardType) {
+    				removeCreditCard(newCreditCard, creditcard);
+    			} else if (creditcard.creditCardToken === newCreditCard.creditCardToken) {
+    				removeCreditCard(newCreditCard, creditcard);
+    			}
+    		}
         });
-    } catch (err) {
-        Transaction.rollback();
+    } catch (ex) {
         return false;
     }
-
-    if (isDuplicateCard) {
-        wallet.removePaymentInstrument(oldCard);
-    }
-
-    Transaction.commit();
 
     paymentForm.clear();
 
     return true;
 }
 
+function removeCreditCard(newCreditCard, creditcard) {
+	// make sure the token is carried over to the new card if token doesn't exist on new card
+    if (empty(newCreditCard.creditCardToken) && !empty(creditcard.creditCardToken)) {
+    	newCreditCard.setCreditCardToken(creditcard.creditCardToken);
+    }
+
+    // make sure firstPspReference is carried over to the new card if PspReference doesn't exist on new card
+    var newCardPsp = 'AdyenPspReference' in newCreditCard.custom && !empty(newCreditCard.custom.AdyenPspReference) ? newCreditCard.custom.AdyenPspReference : '';
+    var creditCardPsp = 'AdyenPspReference' in creditcard.custom && !empty(creditcard.custom.AdyenPspReference) ? creditcard.custom.AdyenPspReference : '';
+	if (empty(newCardPsp) && !empty(creditCardPsp)) {
+		newCreditCard.custom.AdyenPspReference = creditCardPsp;
+	}
+
+	// now remove the old payment instrument
+	customer.getProfile().getWallet().removePaymentInstrument(creditcard);
+}
 
 /**
  * Form handler for the paymentinstruments form. Handles the following actions:
@@ -179,7 +203,22 @@ function Delete() {
         remove: function (formGroup, action) {
             Transaction.wrap(function () {
                 var wallet = customer.getProfile().getWallet();
-                wallet.removePaymentInstrument(action.object);
+                var paymentInstrument = action.object;
+                
+               	if (!empty(paymentInstrument)) {
+               		if (AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(paymentInstrument.getCreditCardToken())) {
+               			var result = require('int_adyen/cartridge/scripts/adyenDeleteRecurringPayment.js').deleteRecurringPayment({
+               				Customer: customer,
+               				RecurringDetailReference: paymentInstrument.getCreditCardToken()
+               			});
+               			
+               			if (result == PIPELET_NEXT) {
+               					wallet.removePaymentInstrument(paymentInstrument);
+               			}
+               		} else {
+               			wallet.removePaymentInstrument(paymentInstrument);
+               		}
+               	}
             });
 
         },
@@ -202,8 +241,11 @@ function Delete() {
  * @returns {boolean} true in case of success, otherwise false.
  */
 function verifyCreditCard() {
-    var newCreditCardForm = app.getForm('paymentinstruments.creditcards.newcreditcard');
-
+	 if (AdyenHelper.getAdyenCseEnabled()) {
+		 return true;
+	}
+	 
+	var newCreditCardForm = app.getForm('paymentinstruments.creditcards.newcreditcard');
     var expirationMonth = newCreditCardForm.get('expiration.month').value();
     var expirationYear = newCreditCardForm.get('expiration.year').value();
     var cardNumber = newCreditCardForm.get('number').value();

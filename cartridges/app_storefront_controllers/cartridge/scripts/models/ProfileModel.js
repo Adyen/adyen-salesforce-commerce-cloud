@@ -4,9 +4,12 @@
  * @module models/ProfileModel */
 
 /* API Includes */
-var AbstractModel = require('./AbstractModel');
+var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
-var paymentHelpers = require('~/cartridge/scripts/payment/common');
+
+/* Script Modules */
+var AbstractModel = require(Resource.msg('script.models.abstractmodel', 'require', null));
+var paymentHelpers = require(Resource.msg('script.payment.common', 'require', null));
 
 /**
  * Profile helper providing enhanced profile functionality
@@ -170,7 +173,7 @@ var ProfileModel = AbstractModel.extend(
          * @returns {String | null} Returns a unique address ID. If the city parameter is null, returns null.
          */
         determineUniqueAddressID: function (city) {
-            var accountUtils = require('app_storefront_core/cartridge/scripts/account/Utils');
+        	var accountUtils = require(Resource.msg('scripts.account.utils.js', 'require', null));
             return accountUtils.determineUniqueAddressID(city, this.getAddressBook());
         },
 
