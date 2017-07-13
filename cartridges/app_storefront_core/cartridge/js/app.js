@@ -17,8 +17,7 @@ var countries = require('./countries'),
     tooltip = require('./tooltip'),
     util = require('./util'),
     validator = require('./validator'),
-    tls = require('./tls'),
-    adyenCse = require('./adyen-cse');
+    tls = require('./tls');
 
 // if jQuery has not been loaded, load from google cdn
 if (!window.jQuery) {

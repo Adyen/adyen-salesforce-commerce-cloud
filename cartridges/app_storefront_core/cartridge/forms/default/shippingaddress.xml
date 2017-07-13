@@ -15,7 +15,7 @@
 	<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode" missing-error="address.country.missing" value-error="address.field.invalid">
 		<options>
 			<option optionid="us" label="country.unitedstates" value="us"/>
-			<option optionid="fr" label="country.france" value="fr"/>
+			<option optionid="nl" label="country.netherlands" value="nl"/>
 		</options>
 	</field>
 

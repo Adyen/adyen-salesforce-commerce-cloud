@@ -76,7 +76,7 @@ function selectShippingMethod(shippingMethodID) {
             // if some promotions were applied
             $('.shippingpromotions').empty();
 
-
+            // TODO the for loop below isn't doing anything?
             // if (data.shippingPriceAdjustments && data.shippingPriceAdjustments.length > 0) {
             //     var len = data.shippingPriceAdjustments.length;
             //     for (var i=0; i < len; i++) {

@@ -41,7 +41,7 @@ var CustomerServiceView = View.extend({
 
                 // Gets the content assets for the folder.
                 var onlineContent = folder.getOnlineContent();
-
+                //TODO : look at logic of this line - original line -> onlineContent && customerServiceLinks.put(folder.getDisplayName(), onlineContent);
                 customerServiceLinks.put(folder.getDisplayName(), onlineContent);
             }
 

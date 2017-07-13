@@ -4,7 +4,7 @@ var ajax = require('../../ajax'),
     formPrepare = require('./formPrepare'),
     giftcard = require('../../giftcard'),
     util = require('../../util'),
-    adyenCse = require('../../adyen-cse');
+    adyenCse = require('./adyen-cse');
 
 
 /**

@@ -1,0 +1,17 @@
+        *{vertical-align:top;}
+        body{padding:20px;font-family:sans-serif;overflow-y:scroll;}
+        h2{margin:0 0 20px 0;}
+        span.small{font-size:60%;vertical-align:middle;}
+        #url{margin:0 0 20px 0px;display:block;}
+        #url input[type=text]{border:solid 1px #666;width:75%;margin:0 auto;font-size:1.2em;padding:.5em 1em;text-align:left;}
+        #url input[type=submit]{display:none;}
+        #url #options{float:right;line-height:25px;width:13%;}
+        #url #options input{margin-top:5px;}
+        #frames{overflow-x:scroll;width:100%;margin-bottom:10px;padding-bottom:20px;}
+        .frame{margin-right:20px;float:left;}
+        .frame:last-child{margin-right:0;}
+        .frame img{display:none;vertical-align:middle;}
+        iframe{border:solid 1px #000;}
+        .widthOnly {height:580px;}
+        .widthOnly h2 span{display:none;}
+        .widthOnly iframe{height:500px;}

@@ -177,32 +177,24 @@ var CartModel = AbstractModel.extend({
             var i;
             if (product) {
                 var productInCart;
-                var productLineItem;
-                var productLineItems = cart.object.productLineItems;
+                var productListItems = cart.object.productLineItems;
                 var quantityInCart;
                 var quantityToSet;
                 var shipment = cart.object.defaultShipment;
 
-                for (var q = 0; q < productLineItems.length; q++) {
-                    if (productLineItems[q].productID === product.ID) {
-                        productInCart = productLineItems[q];
+                for (var q = 0; q < cart.object.productLineItems.length; q++) {
+                    if (productListItems[q].productID === product.ID) {
+                        productInCart = productListItems[q];
                         break;
                     }
                 }
 
                 if (productInCart) {
-                    if (productInCart.optionModel) {
-                        productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
-                        if (quantity) {
-                            productLineItem.setQuantityValue(quantity);
-                        }
-                    } else {
-                        quantityInCart = productInCart.getQuantity();
-                        quantityToSet = quantity ? quantity + quantityInCart : quantityInCart + 1;
-                        productInCart.setQuantityValue(quantityToSet);
-                    }
+                    quantityInCart = productInCart.getQuantity();
+                    quantityToSet = quantity ? quantity + quantityInCart : quantityInCart + 1;
+                    productInCart.setQuantityValue(quantityToSet);
                 } else {
-                    productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
+                    var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
 
                     if (quantity) {
                         productLineItem.setQuantityValue(quantity);
@@ -289,17 +281,17 @@ var CartModel = AbstractModel.extend({
             var cart = this;
             var campaignBased = true;
             var addCouponToBasketResult;
-
+            
             try {
                 addCouponToBasketResult = Transaction.wrap(function () {
-                    return cart.object.createCouponLineItem(couponCode, campaignBased);
+                    return cart.object.createCouponLineItem(couponCode, campaignBased); 
                 });
             } catch (e) {
                 return {CouponStatus: e.errorCode};
             }
-
+            
             Transaction.wrap(function (){
-                cart.calculate();
+                cart.calculate();            	
             });
             return {CouponStatus: addCouponToBasketResult.statusCode};
         }
@@ -326,7 +318,7 @@ var CartModel = AbstractModel.extend({
      * @returns {dw.order.ProductLineItem} The newly created product line item.
      */
     addBonusProduct: function (bonusDiscountLineItem, product, selectedOptions, quantity) {
-
+        // TODO: Should this actually be using the dw.catalog.ProductOptionModel.UpdateProductOptionSelections method instead?
         var UpdateProductOptionSelections = require('app_storefront_core/cartridge/scripts/cart/UpdateProductOptionSelections');
         var ScriptResult = UpdateProductOptionSelections.update({
             SelectedOptions: selectedOptions,
@@ -351,7 +343,7 @@ var CartModel = AbstractModel.extend({
      * product line items for.
      */
     removeBonusDiscountLineItemProducts: function (bonusDiscountLineItem) {
-
+        // TODO - add check whether the given line item actually belongs to this cart object.
         var plis = bonusDiscountLineItem.getBonusProductLineItems();
 
         for (var i = 0; i < plis.length; i++) {
@@ -392,7 +384,7 @@ var CartModel = AbstractModel.extend({
      * @returns {dw.order.ProductLineItem} The product line item or null if not found.
      */
     getBundledProductLineItemByPID: function (bundleLineItem, pid) {
-
+        // TODO - add check whether the given line item actually belongs to this cart object
         var plis = bundleLineItem.getBundledProductLineItems();
         var lineItem = null;
 

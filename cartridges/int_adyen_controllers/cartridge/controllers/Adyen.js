@@ -13,6 +13,7 @@ var Transaction = require('dw/system/Transaction');
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
+var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
 
 var OrderModel = app.getModel('Order');
 
@@ -82,6 +83,18 @@ function redirect(order) {
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
+	var order = null;
+	if (request.httpParameterMap.isParameterSubmitted('merchantReference')) {
+		order = OrderMgr.getOrder(request.httpParameterMap.merchantReference.toString());
+		var adyenOrderPaymentInstrument = AdyenHelper.getAdyenOrderPaymentInstrument(order);
+		if (adyenOrderPaymentInstrument) {
+			var transaction = adyenOrderPaymentInstrument.getPaymentTransaction();
+			Transaction.wrap(function () {
+				AdyenHelper.saveAuthResponseAttributes(transaction, request.httpParameterMap);
+			});
+		}
+	}
+	
 	if (request.httpParameterMap.authResult.value != 'CANCELLED') {
 		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
     	var authorized = authorizeConfirmation.authorize({
@@ -100,7 +113,6 @@ function showConfirmation() {
     	}
 	}
 	
-	var order = OrderMgr.getOrder(request.httpParameterMap.merchantReference.toString());
 	if (!order) {
 		app.getController('Error').Start();
 		return {};
