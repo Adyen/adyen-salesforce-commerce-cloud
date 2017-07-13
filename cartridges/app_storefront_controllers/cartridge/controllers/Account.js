@@ -392,7 +392,7 @@ function registrationForm() {
             }
 
             if (!profileValidation) {
-
+                // TODO redirect
                 app.getView({
                     ContinueURL: URLUtils.https('Account-RegistrationForm')
                 }).render('account/user/registration');

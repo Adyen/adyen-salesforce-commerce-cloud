@@ -172,7 +172,7 @@ function ProductUtils (pdict) {
                     // get swatch image
                     var swatch = attrValue.getImage('swatch');
                     if (swatch) {
-
+                        // TODO: See if this can be done via json serializer
                         pvaVal.images.swatch = {
                             url:swatch.getURL(),
                             alt:swatch.alt,

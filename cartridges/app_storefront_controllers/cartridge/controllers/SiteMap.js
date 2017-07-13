@@ -19,7 +19,7 @@ var guard = require('~/cartridge/scripts/guard');
  * RewriteRule ^/(sitemap([^/]*))$ /on/demandware.store/%{HTTP_HOST}/-/SiteMap-Google?name=$1 [PT,L]
  */
 function google() {
-
+    // TODO - rework
     var SendGoogleSiteMapResult = new dw.system.Pipelet('SendGoogleSiteMap').execute({
         FileName: request.httpParameterMap.name.stringValue
     });

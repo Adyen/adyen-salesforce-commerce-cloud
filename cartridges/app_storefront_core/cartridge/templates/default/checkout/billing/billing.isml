@@ -207,14 +207,15 @@
 
 
         <div class="form-row form-row-button">
-            <isif condition="${(pdict.AdyenHelper && pdict.AdyenHelper.getAdyenCseEnabled()) || pdict.AdyenCseEnabled === true}">
-<button class="button-fancy-large" type="hidden" id="billing-submit-hidden" style="display:none" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
-<button class="button-fancy-large" type="submit" id="billing-submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
-<iselse/>
-<button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
-</isif>
+        	<isif condition="${(pdict.AdyenHelper && pdict.AdyenHelper.getAdyenCseEnabled()) || pdict.AdyenCseEnabled === true}">
+	            <button class="button-fancy-large" type="hidden" id="billing-submit-hidden" style="display:none" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
+	            <button class="button-fancy-large" type="submit" id="billing-submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
+	        <iselse/>    
+	            <button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continueplaceorder','locale',null)}"><span>${Resource.msg('global.continueplaceorder','locale',null)}</span></button>
+        	</isif>
         </div>
         <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
 </form>
 <isscript>
     importScript("util/ViewHelpers.ds");

@@ -634,12 +634,30 @@
                 </segment>
               </branch>
             </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="PaymentInstrument.paymentMethod.equals('Adyen')" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="0" y="3"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="order_created"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
             <transition target-connector="in1" target-path="./+1"/>
           </segment>
           <segment>
             <node>
               <join-node/>
-              <node-display x="0" y="3"/>
+              <node-display x="0" y="2"/>
             </node>
             <simple-transition/>
             <node>
@@ -1417,22 +1435,12 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
     <segment>
       <node>
         <start-node call-mode="private" name="SubmitImpl" secure="true"/>
-        <node-display orientation="horizontal" x="1" y="25"/>
+        <node-display orientation="horizontal" x="1" y="27"/>
       </node>
       <transition target-connector="in1" target-path="/Start.2/b2.4"/>
     </segment>
   </branch>
   <branch basename="_ANONYMOUS_BRANCH_30">
-    <segment>
-      <node>
-        <text-node>
-          <description>Sets the Order status to 'New'.</description>
-        </text-node>
-        <node-display x="1" y="26"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_31">
     <segment>
       <node>
         <text-node>
@@ -1451,7 +1459,7 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
       <transition target-connector="in1" target-path="/Start.2/b2.4/b2.2"/>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_33">
+  <branch basename="_ANONYMOUS_BRANCH_32">
     <segment>
       <node>
         <text-node>
@@ -1618,13 +1626,23 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_36">
+    <segment>
+      <node>
+        <text-node>
+          <description>Sets the Order status to 'New'.</description>
+        </text-node>
+        <node-display x="1" y="28"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="_ANONYMOUS_BRANCH_37">
     <segment>
       <node>
         <text-node>
           <description>Creates purchased gift certificates with this order.</description>
         </text-node>
-        <node-display x="1" y="28"/>
+        <node-display x="1" y="30"/>
       </node>
     </segment>
   </branch>
@@ -1634,7 +1652,7 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
         <text-node>
           <description>Send order confirmation and clear used forms within the checkout process.</description>
         </text-node>
-        <node-display x="1" y="31"/>
+        <node-display x="1" y="33"/>
       </node>
     </segment>
   </branch>
@@ -1642,9 +1660,9 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
     <segment>
       <node>
         <text-node>
-          <description>All errors must explicitly call FailOrder, to revive the Basket &#8230; or the customer order will remain unaccessible</description>
+          <description>Order successfully created, communicate status back to calling pipeline.</description>
         </text-node>
-        <node-display x="5" y="30"/>
+        <node-display x="1" y="35"/>
       </node>
     </segment>
   </branch>
@@ -1652,9 +1670,9 @@ Additionally the authorization pipeline may put a dw.system.Status object into t
     <segment>
       <node>
         <text-node>
-          <description>Order successfully created, communicate status back to calling pipeline.</description>
+          <description>All errors must explicitly call FailOrder, to revive the Basket &#8230; or the customer order will remain unaccessible</description>
         </text-node>
-        <node-display x="1" y="33"/>
+        <node-display x="5" y="32"/>
       </node>
     </segment>
   </branch>

@@ -247,7 +247,7 @@ function replaceProductListItem() {
 
     var ProductList = app.getModel('ProductList');
 
-
+    // TODO : post hint cleenup - look into the use of ProductList in this function
     ProductList = ProductList.get();
 
     var productListItem = ProductList.getItem(plid);
@@ -259,7 +259,7 @@ function replaceProductListItem() {
         });
     }
 
-
+    // TODO rendering an empty template this seems pretty useless
     app.getView().render('account/wishlist/refreshwishlist');
 }
 

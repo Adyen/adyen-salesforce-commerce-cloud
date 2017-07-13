@@ -244,7 +244,7 @@ function createOne() {
  */
 function eventParticipant() {
     var currentForms = session.forms;
-
+    // TODO this should be some redirect
     var TriggeredAction = request.triggeredFormAction;
     if (TriggeredAction !== null) {
         if (TriggeredAction.formId === 'back') {
@@ -304,20 +304,20 @@ function setProductListPublic (productList, isPublic) {
  * Provides actions to edit a gift registry event.
  */
 function selectProductListInteraction() {
-
+    // TODO this should end in a redirect
     var TriggeredAction = request.triggeredFormAction;
     if (TriggeredAction !== null) {
         if (TriggeredAction.formId === 'select') {
 
-
+            //TODO : jshint -> 'ProductList' is defined but never used.
             //var ProductList = TriggeredAction.object;
-
+            // TODO interaction continue not supported anymore
             // where to continue now?
             return;
         }
     }
 
-
+    // TODO what to render otherwise?
 }
 
 /**
@@ -543,11 +543,11 @@ function create() {
     createOne();
 }
 
-
+//TODO :jshint ->  'updateAll' is defined but never used.
 // function updateAll() {
 //     var currentForms = session.forms;
 
-//
+//     // TODO do in a single transaction
 //     for (var i = 0; i < currentForms.giftregistry.items.length; i++) {
 //         var item = currentForms.giftregistry.items[i];
 //         if (!Form.get(item).copyTo(item.object)) {

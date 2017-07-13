@@ -12,12 +12,13 @@
 	<!--  postal code -->
 	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="5" max-length="10" regexp="(^\d{5}(-\d{4})?$)|(^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Za-z]{1} *\d{1}[A-Za-z]{1}\d{1}$)" binding="postalCode"
 		missing-error="resource.errorzip"/>
-		
+
 	<!-- use set of supported billing countries -->
 	<field formid="country" label="resource.country" type="string" default="us" mandatory="true" binding="countryCode" missing-error="address.country.missing" value-error="address.field.invalid">
 		<options>
 			<option optionid="us" 	label="country.unitedstates"	value="us"/>
-		</options>	
+            <option optionid="nl" label="country.netherlands" value="nl"/>
+		</options>
 	</field>
 
 	<!-- use global state list -->

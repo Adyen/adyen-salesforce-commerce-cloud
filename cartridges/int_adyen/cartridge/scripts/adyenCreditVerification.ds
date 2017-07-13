@@ -89,8 +89,6 @@ function verify( args : PipelineDictionary ) : Number {
 		
 		var encryptedDataObj : Object;
 		var billingAddress : Object;
-		var deliveryAddress : Object;
-		var shopperName : Object;
 		var card : Object;
 		var jsonObjNew :JSON = {};
 		if (AdyenHelper.getAdyenCseEnabled()) {
@@ -106,47 +104,23 @@ function verify( args : PipelineDictionary ) : Number {
 			    "holderName": c.creditCardHolder
 			};
 		}
-
-        var shippingAddr : OrderAddress = args.Order.defaultShipment.shippingAddress;
-        var houseNumberShip;  
-        if(shippingAddr.address2) {
-        	houseNumberShip = shippingAddr.address2; 
-        }
-        else{
-        	houseNumberShip = "N/A";
-        }
-        jsonObjNew.deliveryAddress = {
-            "city": shippingAddr.city,
-                "country": shippingAddr.countryCode.value,
-                "houseNumberOrName": houseNumberShip,
-                "postalCode": shippingAddr.postalCode,
-                "stateOrProvince": shippingAddr.stateCode,
-                "street": shippingAddr.address1
-        };
-
-        var billingAddr : OrderAddress = args.Order.getBillingAddress();
-
-        jsonObjNew.billingAddress = {
-            "city": billingAddr.city,
-            "country": billingAddr.countryCode.value,
-            "houseNumberOrName": billingAddr.suite,
-            "postalCode": billingAddr.postalCode,
-            "stateOrProvince": billingAddr.stateCode,
-            "street": billingAddr.custom.streetName
-        };
-
-        jsonObjNew.shopperName = {
-            "firstName" : billingAddr.firstName,
-            "gender" : "UNKNOWN",
-            "infix" : "",
-            "lastName" : billingAddr.lastName
-        };
-
-        jsonObjNew.amount = {
-                        "currency": args.Amount.currencyCode,
-                        "value": myAmount
-                    };
-
+		
+		if (AdyenHelper.getAdyenAVSEnabled()) {
+			var billingAddr : OrderAddress = args.Order.getBillingAddress();
+			jsonObjNew.billingAddress = {
+				"city": billingAddr.city,
+				"country": billingAddr.countryCode.value,
+				"houseNumberOrName": billingAddr.suite,
+				"postalCode": billingAddr.postalCode,
+				"stateOrProvince": billingAddr.stateCode,
+				"street": billingAddr.custom.streetName
+			};
+		};
+		
+		jsonObjNew.amount = {
+						"currency": args.Amount.currencyCode,
+					    "value": myAmount
+					};
 		jsonObjNew.merchantAccount = MERCHANTACCOUNT;
 		jsonObjNew.reference = orderNo;
 		jsonObjNew.shopperEmail = order.customerEmail;
