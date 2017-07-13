@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	// Specify relative path as ~/cartridge will break this import if called from app_storefront_controllers
+	var Countries = require('../../../../scripts/util/Countries');
+	var currentCountry = Countries.getCurrent(pdict);
+	var currentLocale = pdict.CurrentRequest.locale;
+	var countriesGrouped = Countries.getCountriesGroupedBy('continent');
+	var continents = Object.keys(countriesGrouped);
+	var Site = dw.system.Site;
+	var allowedLocales = Site.getCurrent().getAllowedLocales();
+	var Url = require('../../../../scripts/util/Url');
+
+	// set currency of the current locale if there's a mismatch
+	if (session.currency.currencyCode !== currentCountry.currencyCode) {
+		session.setCurrency(dw.util.Currency.getCurrency(currentCountry.currencyCode));
+	}
+</isscript>
+<isif condition="${Number(Countries.getCountries().length) > 1 && pdict.showCountrySelector}">
+	<div class="country-selector">
+		<div class="current-country">
+			<i class="fa fa-angle-right fa-fw selector-icon"></i>
+			<i class="flag-icon flag-icon-${currentCountry.countryCode.toLowerCase()}"></i>
+			<span>${currentCountry.name[currentLocale]}</span>
+		</div>
+		<div class="selector">
+			<isloop items="${continents}" var="continent">
+				<div class="continent">
+					<h4 class="continent-name">${Resource.msg('global.continent.' + continent, 'locale', null)}</h4>
+					<isloop items="${countriesGrouped[continent]}" var="country">
+						<isset name="defaultLocale" value="${country.locales[0]}" scope="page">
+						<div class="country">
+							<i class="flag-icon flag-icon-${country.countryCode.toLowerCase()}"></i>
+							<isloop items="${country.locales}" var="locale">
+								<iscomment>only print out allowed locales</iscomment>
+								<isif condition="${allowedLocales.indexOf(locale) !== -1}">
+									<a href="${Url.getCurrent(pdict, locale)}" data-currency="${country.currencyCode}" data-locale="${locale}" class="locale${currentCountry === country ? ' selected' : ''}">${country.name[locale]}</a>
+								</isif>
+							</isloop>
+						</div>
+					</isloop>
+				</div>
+			</isloop>
+		</div>
+	</div>
+</isif>

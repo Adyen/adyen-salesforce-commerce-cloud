@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+	<field formid="username" label="label.username" type="string" mandatory="true"/>
+	<field formid="password" label="label.password" type="string" mandatory="true"/>
+	
+	<!--  checkbox if the user wants to be remembered on this machine  -->
+	<field formid="rememberme" label="login.rememberme" type="boolean" mandatory="false" />
+	
+	<!-- this is a dummy field used to provide the loginpanel template with the
+	     information that login failed -->
+	<field formid="loginsucceeded" type="boolean" mandatory="false"/>
+
+	<action formid="login" valid-form="true"/>
+	<action formid="register" valid-form="false"/>
+	<action formid="forgotpassword" valid-form="false"/>
+
+	<!-- this form action is necessary for the guest checkout -->
+	<action formid="unregistered" valid-form="false"/>
+</form>

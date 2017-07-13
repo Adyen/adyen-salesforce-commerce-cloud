@@ -1,0 +1,22 @@
+/**
+* FindLineItem.ds
+* This script returns the line item which matched either the given product id or line item uuid.
+*
+*   @input ProductLineItems : dw.util.Collection Collection of lineitems to be searched.
+*   @input pid : String Optional. ID of the product to be found.
+*	@input uuid : String Optional. UUID of the line item
+*   @output FoundLineItem : dw.order.ProductLineItem
+*/
+importPackage( dw.system );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	for (var i=0,il=pdict.ProductLineItems.length;i<il;i++) {
+		var item = pdict.ProductLineItems[i];
+		if ((pdict.uuid!=null && item.UUID == pdict.uuid) || (pdict.pid!=null && item.productID == pdict.pid)) {
+   			pdict.FoundLineItem = item;
+   			break;
+		}
+	}
+    return PIPELET_NEXT;
+}

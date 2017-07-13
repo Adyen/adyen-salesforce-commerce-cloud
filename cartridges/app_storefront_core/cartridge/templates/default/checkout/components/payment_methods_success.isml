@@ -1,0 +1,5 @@
+<iscontent type="application/json" />
+{
+  "_v":"12.6",
+  "order_no":"${pdict.Order.orderNo}"
+}

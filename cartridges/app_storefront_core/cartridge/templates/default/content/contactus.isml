@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/pt_customerservice">
+
+	<isinclude template="util/modules"/>
+
+		<isif condition="${!empty(pdict.ConfirmationMessage)}">
+			<div class="confirmation-message">
+				<p>${Resource.msg('contactus.messagesent','forms',null)}</p>
+				<p>${Resource.msg('contactus.messagerequires','forms',null)}</p>
+			</div>
+		<iselse/>
+
+			<h1>${Resource.msg('global.contactus','locale',null)}
+			<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+			</h1>
+
+			<form action="${URLUtils.httpsContinue()}" method="post" class="form-horizontal" id="RegistrationForm">
+
+				<fieldset>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.firstname}" type="input"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.lastname}" type="input"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.email}" type="input"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.phone}" type="input"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.ordernumber}" type="input"/>
+
+					<isinputfield formfield="${pdict.CurrentForms.contactus.myquestion}" type="select"/>
+
+					<isscript>
+						var attributes = {
+							rows: 8,
+							cols: 40
+						};
+					</isscript>
+					<isinputfield formfield="${pdict.CurrentForms.contactus.comment}" type="textarea" attributes="${attributes}" />
+
+					<div class="form-row form-row-button">
+						<button id="sendBtn" type="submit" value="${Resource.msg('global.send','locale',null)}" name="${pdict.CurrentForms.contactus.send.htmlName}">
+							${Resource.msg('global.submit','locale',null)}
+						</button>
+					</div>
+
+				</fieldset>
+
+			</form>
+
+		</isif>
+
+</isdecorate>

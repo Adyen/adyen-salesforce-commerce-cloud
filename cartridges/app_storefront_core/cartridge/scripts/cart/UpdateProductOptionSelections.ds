@@ -1,0 +1,98 @@
+/**
+ * UpdateProductOptionSelections.ds
+ *
+ * This script will process all product option selections and return a ProductOptionModel.  This script expects an
+ * product option array of optionName/optionValue pairs.
+ *
+ *   @input SelectedOptions : dw.util.ArrayList
+ *   @input Product : dw.catalog.Product l
+ *	 @output ProductOptionModel : dw.catalog.ProductOptionModel
+ *
+ */
+
+function execute(pdict) {
+    var ProductOptionModel = update(pdict);
+    pdict.ProductOptionModel = ProductOptionModel;
+    return PIPELET_NEXT;
+}
+
+/**
+ * Process all product option selections and return a ProductOptionModel.
+ *
+ * @param {Object} params
+ * @param {dw.util.ArrayList} params.SelectedOptions
+ * @param {dw.catalog.Product} params.Product
+ * @returns {dw.catalog.ProductOptionModel}
+ *
+ */
+function update(params)
+{
+    // type: dw.catalog.Product
+    var product = params.Product;
+    // type: ProductOptionModel
+    var optionModel = null;
+
+    if (params.SelectedOptions !== null) {
+        optionModel = product.getOptionModel();
+
+        // loop through all of the optionName/optionValue pairs
+        // type: Iterator
+        var selectedProductOptions = params.SelectedOptions.iterator();
+
+        while(selectedProductOptions.hasNext())
+        {
+            var selectedProductOption = selectedProductOptions.next();
+
+            // if the option name isn't defined then return
+            if (selectedProductOption.optionName === undefined) {
+                return optionModel;
+            }
+
+            // check to make sure we are adding the option to the right product
+            // by looking for the id in the option name, the list options could
+            // be different when dealing a bundle/product set
+            var removeLength = selectedProductOption.optionName.indexOf(product.ID);
+
+            if (removeLength > 0) {
+
+                // need to strip out the option string because it includes a form prefix, product id,
+                // and a "_" separator before the option id
+                removeLength = removeLength + product.ID.length + 1;
+
+                // type: String
+                var selectedOptionID = selectedProductOption.optionName.substring(removeLength, selectedProductOption.optionName.length);
+
+                // type: String
+                var selectedOptionValueID = selectedProductOption.optionValue;
+
+                if (selectedOptionID != null)
+                {
+                    // loop through all the options of the product option model
+                    // to find the product option that matches the user selected one.
+                    // type: Iterator
+                    var options = optionModel.getOptions().iterator();
+                    while(options.hasNext())
+                    {
+                        // type: dw.catalog.ProductOption
+                        var option = options.next();
+
+                        // if the option id equals the selection option id, set the selected option
+                        if (option.getID() == selectedOptionID)
+                        {
+                        	// type: dw.catalog.ProductOptionValue
+                            var productOptionValue = optionModel.getOptionValue(option, selectedOptionValueID);
+                            optionModel.setSelectedOptionValue(option, productOptionValue);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return optionModel;
+}
+
+module.exports = {
+    execute: execute,
+    update: update
+}

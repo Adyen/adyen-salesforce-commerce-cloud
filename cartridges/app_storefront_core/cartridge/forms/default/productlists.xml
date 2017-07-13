@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+	<list formid="items">
+		<action formid="select" valid-form="false" label="resource.select"/>
+	</list>
+
+</form>

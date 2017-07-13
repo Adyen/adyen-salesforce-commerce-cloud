@@ -1,0 +1,238 @@
+.checkout-progress-indicator {
+    overflow: hidden;
+    div {
+        display: inline;
+        padding: 0 .83em 0 0;
+    }
+    span {
+        text-transform: uppercase;
+    }
+    .active span {
+        font-weight: 700;
+        color: $black;
+    }
+    a {
+        color: $night-rider;
+    }
+    i {
+        padding-left: .83em;
+        color: $very-light-gray;
+    }
+    .step-3 {
+        padding-right: 0;
+    }
+}
+
+.gift-message-text {
+    overflow: visible;
+    opacity: 1;
+    transition: all 1s ease;
+    &.hidden {
+        height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    textarea {
+        width: 100%;
+    }
+}
+
+.billing-coupon-code {
+    .form-row,
+    .coupon-apply,
+    .giftcert-apply {
+        display: inline-block;
+    }
+    .form-row {
+        margin: 0;
+        width: 45%;
+    }
+    .tooltip {
+        padding-left: 1rem;
+    }
+}
+
+.redemption {
+    .success {
+        color: $islamic-green;
+    }
+    color: $sangria;
+    span.error {
+        margin-left: 0;
+    }
+}
+
+.payment-method-options {
+    .form-row {
+        clear: none;
+        float: left;
+        width: 30%;
+    }
+}
+
+.payment-method {
+    clear: both;
+    display: none;
+}
+
+.payment-method-expanded {
+    display: block;
+}
+
+.month,
+.year,
+.day {
+    clear: none;
+    float: left;
+    margin: 0 0 2% 2%;
+    label {
+        @extend .visually-hidden;
+    }
+    select {
+        width: auto;
+    }
+}
+
+.month .form-caption {
+    margin-left: 0;
+}
+
+.cvn {
+    clear: left;
+    .field-wrapper {
+        width: 50px;
+    }
+}
+
+.ssn {
+    clear: left;
+}
+
+.bml-terms-and-conditions {
+    border: 1px solid $dark-gray;
+    font-size: 0.8em;
+    height: 400px;
+    overflow: auto;
+    padding: 1em;
+}
+
+.bml-table-col-1 {
+    width: 25%;
+}
+
+.pt_checkout h3 {
+    padding-bottom: 1em;
+}
+
+.checkout-mini-cart {
+    background-color: $white-smoke;
+    max-height: 330px;
+    overflow: auto;
+}
+
+.checkout-order-totals {
+    background-color: $white-smoke;
+    padding: 0.3rem .5rem;
+}
+
+.place-order-totals {
+    clear: both;
+    .order-totals-table {
+        float: right;
+        width: 50%;
+    }
+    .content-asset {}
+}
+
+.order-component-block {
+    margin: 1.67em 0;
+    .section-header a {
+        float: right;
+        font-weight: normal;
+    }
+    .details {
+        background: none repeat scroll 0 0 $gainsboro;
+        color: $dark-gray;
+        padding: 0.5em 1em;
+    }
+}
+
+.order-summary-footer {
+    position: relative;
+    h2 {
+        font-size: 2em;
+        font-style: italic;
+        font-weight: normal;
+    }
+}
+
+.summary-help {
+    float: right;
+    font-size: 0.8em;
+    margin: 1em 0;
+}
+
+.submit-order {
+    clear: both;
+    display: block;
+    padding: 1.67em 0 0;
+    text-align: right;
+    .back-to-cart {
+        font-size: 1.1em;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    button {
+        margin-left: 1.5em;
+    }
+}
+
+.order-discount {
+    color: $sangria;
+}
+
+.gift-cert-used {
+    padding: .83em 0;
+}
+
+.summary .edit {
+    position: absolute;
+    text-transform: uppercase;
+    right: 10px;
+    font-size: 0.9em;
+    line-height: 1.5em;
+}
+
+.pt_checkout #main,
+.pt_cart #main {
+    padding: 0 1.15em;
+}
+
+.pt_cart .breadcrumb {
+    padding-left: 0;
+}
+
+.item-shipping-address {
+    min-width: 120px;
+}
+
+.billing-error {
+    color: red;
+    margin: 0 0 .83em 24%;
+}
+
+.cvn-tooltip {
+    font-weight: bold;
+    margin: 5px;
+    text-align: center;
+
+    img {
+        height: 150px;
+        width: 110px;
+    }
+}
+
+#shipping-method-list {
+    position: relative;
+}

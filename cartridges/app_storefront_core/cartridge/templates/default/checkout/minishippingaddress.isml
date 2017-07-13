@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+    Creates a minishippingaddress display.
+
+    Parameter:
+    p_shipment       : a shipment
+    p_editable       : a boolean indicating if this is an editable address
+    p_showmethod     : a boolean that controls if shipping method should shown
+    p_showpromos     : a boolean that controls if shipping prices and adjustments should be shown
+</iscomment>
+<isset name="ShippingAddress" value="${pdict.p_shipment.shippingAddress}" scope="page"/>
+
+<div class="summarybox">
+	<iscomment>
+		There are some addresses without an ID, catch this here and make this include
+		more universal usable therefore.
+	</iscomment>
+	<isif condition="${'ID' in ShippingAddress && !empty(ShippingAddress.ID)}">
+		<div class="addressname">
+			<isprint value="${ShippingAddress.ID}"/>
+		</div>
+	</isif>
+	<div class="name">
+		<iscomment>
+		<span class="firstname"><isprint value="${ShippingAddress.firstName}"/></span>
+		<span class="lastname"><isprint value="${ShippingAddress.lastName}"/></span>
+		<div class="street">
+			<div class="line1"><isprint value="${ShippingAddress.address1}"/></div>
+			<isif condition="${!empty(ShippingAddress.address2)}">
+				<div class="line2"><isprint value="${ShippingAddress.address2}"/></div>
+			</isif>
+		</div><!-- END:street -->
+		<div class="location">
+			<isif condition="${ShippingAddress.city != null}">
+				<span class="city"><isprint value="${ShippingAddress.city}"/><span class="statedivider">,&nbsp;</span></span>
+			</isif>
+			<span class="state"><isprint value="${ShippingAddress.stateCode}"/>&nbsp;</span>
+			<span class="zip"><isprint value="${ShippingAddress.postalCode}"/></span>
+		</div><!-- END:location -->
+		<div class="country"><isprint value="${Resource.msg(('country.'+ShippingAddress.countryCode).toLowerCase(), 'forms', null)}"/></div>
+		</iscomment>
+		<isminicheckout_address p_address="${ShippingAddress}"/>
+		<div class="phone"><isprint value="${ShippingAddress.phone}"/></div>
+	</div><!-- END:name -->
+
+	<iscomment>Shipping Method</iscomment>
+	<isif condition="${empty(pdict.p_showmethod) || pdict.p_showmethod}">
+		<div class="shippingmethod">
+			<isif condition="${!empty(pdict.p_shipment.shippingMethod)}">
+				<isprint value="${pdict.p_shipment.shippingMethod.displayName}"/>
+			<iselse/>
+				<isprint value="${pdict.p_shipment.shippingMethodID}"/>
+			</isif>
+			-
+			<isif condition="${!empty(pdict.p_shipment.shippingPriceAdjustments)}">
+				<span class="shippingunadjusted"><isprint value="${pdict.p_shipment.shippingTotalPrice}"/></span>
+				<span class="promotiondescription"><isprint value="${pdict.p_shipment.adjustedShippingTotalPrice}"/></span>
+			<iselse/>
+				<isprint value="${pdict.p_shipment.shippingTotalPrice}"/>
+			</isif>
+		</div>
+	</isif>
+
+	<iscomment>Shipping Promotions</iscomment>
+	<isif condition="${empty(pdict.p_showpromos) || pdict.p_showpromos}">
+		<isloop items="${pdict.p_shipment.shippingPriceAdjustments}" var="Promo">
+			<isif condition="${Promo.price.value < 0}">
+				<div class="promotiondescription"><isprint value="${Promo.lineItemText}"/></div>
+			</isif>
+		</isloop>
+	</isif>
+</div>
+
+<iscomment>if there are shipments with addresses, we can show edit button</iscomment>
+<isif condition="${pdict.p_editable}">
+	<div class="buttons">
+		<p/>
+		<form action="${URLUtils.https('COShipping-Start')}" method="post" id="editShippingAddresses">
+			<fieldset>
+			<button name="editaddress" type="submit"><span>${Resource.msg('global.edit','locale',null)}</span></button>
+			</fieldset>
+		</form>
+	</div>
+</isif>

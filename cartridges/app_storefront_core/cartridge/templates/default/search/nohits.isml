@@ -1,0 +1,65 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="search/pt_productsearchresult_nohits">
+
+	<iscache type="relative" minute="30"/>
+	<isinclude template="util/modules"/>
+
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+
+	<div class="no-hits-banner">
+		<isslot id="noresult-banner" description="Banner for searches with no hits" context="global"/>
+	</div>
+
+	<h1>${Resource.msg('search.nohits.header','search',null)}</h1>
+
+	<div class="section-header">
+		<p>
+			${Resource.msg('search.nohits.message','search',null)}
+			<span class="no-hits-search-term">
+				<isprint value="${pdict.ProductSearchResult.searchPhrase}"/>
+			</span>
+		</p>
+
+		<iscomment>render a link to execute the search with an alternative suggested search phrase</iscomment>
+		<isif condition="${!empty(pdict.ProductSearchResult.getSuggestedSearchPhrase())}">
+			<p>
+				${Resource.msg('search.nohits.didyoumean','search',null)}
+				<a class="no-hits-search-term-suggest" title="${pdict.ProductSearchResult.suggestedSearchPhrase}" href="${URLUtils.url('Search-Show', 'q', pdict.ProductSearchResult.suggestedSearchPhrase)}"><isprint value="${pdict.ProductSearchResult.suggestedSearchPhrase}"/></a>?
+			</p>
+		</isif>
+	</div>
+
+	<iscomment>render a link to content search results if any content was found</iscomment>
+	<isif condition="${!empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+		<p class="no-hits-content-results">
+			${Resource.msg('search.nohits.found','search',null)}
+			<a href="${pdict.ContentSearchResult.url('Search-ShowContent')}">
+				${Resource.msgf('search.nohits.contenthits','search',null,pdict.ContentSearchResult.count)}
+			</a>
+		</p>
+	</isif>
+
+	<div class="no-hits-help">
+	 	<iscontentasset aid="noresults-help"/>
+	</div>
+
+	<div class="no-hits-search">
+	 	<form action="${URLUtils.url('Search-Show')}" method="get">
+			<fieldset>
+				<div class="form-row label-above">
+					<label for="q">${Resource.msg('search.nohits.searchlabel','search',null)}</label>
+					<input type="text" class="input-text" name="q" value="" />
+					<button type="submit" value="${Resource.msg('global.go','locale',null)}" name="simplesearch">
+						${Resource.msg('global.go','locale',null)}
+					</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+	<div class="no-hits-footer">
+		<iscontentasset aid="noresults-bottom"/>
+	</div>
+
+</isdecorate>

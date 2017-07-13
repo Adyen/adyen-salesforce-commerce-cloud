@@ -1,0 +1,86 @@
+/**
+*	This script is used by the EditAddress sub-pipeline to add
+*	new addresses to the session address book attribute of the
+*	basket or update them. If applicable the script also adds/
+*	updates addresses for the customer address book.
+*
+*   @input FormAddress : Object The address object created from form fields.
+*   @input ReferenceAddress : Object The address which should be changed.
+*   @input CBasket : dw.order.Basket The current basket.
+*   @input AddToAddressBook : Boolean Add to customer address book if true.
+*
+*   @output FormAddress : Object Form address
+*   @output SessionAddresses : dw.util.ArrayList The Addresses from the session address book.
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.order );
+importPackage( dw.web );
+importPackage( dw.customer );
+
+importScript("account/Utils.js");//APP-41988 - var accountUtils = require ('app_storefront_core/cartridge/scripts/account/Utils');
+importScript("checkout/Utils.ds");//APP-41988 - var checkoutUtils = require('app_storefront_core/cartridge/scripts/checkout/Utils');
+
+function execute( args : PipelineDictionary ) : Number {
+
+	// Initialize global variables
+	var basket : Basket = args.CBasket;
+	var formAddress : Object = args.FormAddress;
+	var referenceAddress : Object = args.ReferenceAddress;
+	var addToCustomerAddressBook : Boolean = args.AddToAddressBook;
+	var sessionAddressBook : String = new String();
+	var sessionAddresses : ArrayList = new ArrayList();
+	var customerAddressBook : AddressBook = null;
+	var customerAddress : CustomerAddress = null;
+	var log : Log = Logger.getLogger("multishipping");
+
+	// Requirements check
+	if (basket == null || formAddress == null){
+		log.error(Resource.msg("multishipping.error.addaddressrequirements", "checkout", null));
+		return PIPELET_ERROR;
+	} else {
+		sessionAddressBook = basket.custom.sessionAddressBook;
+		customerAddressBook = basket.customer.addressBook;
+	}
+
+	// Handle customer address book update process
+	if (addToCustomerAddressBook != null && addToCustomerAddressBook == true){
+		if (referenceAddress == null){
+			// Add address to address book
+			var id : String = determineUniqueAddressID(formAddress.city, customerAddressBook);
+			customerAddress = customerAddressBook.createAddress(id);
+			formAddress.ID = id;
+			formAddress.referenceAddressUUID = customerAddress.getUUID();
+		} else {
+			// Get address from adress book
+			if (referenceAddress.ID != null){
+				customerAddress = customerAddressBook.getAddress(referenceAddress.ID);
+			}
+		}
+
+		if (customerAddress != null){
+			var helperAddress : Object = new ShippingAddress();
+			helperAddress.copyFrom(formAddress);
+			helperAddress.copyTo(customerAddress);
+		}
+	}
+
+	// Handle session address book update process
+	if (referenceAddress == null){
+		// Add Address
+		sessionAddressBook = addAddressToJSON(sessionAddressBook, formAddress);
+	} else {
+		// Update Address
+		formAddress.UUID = referenceAddress.UUID;
+		sessionAddressBook = updateAddressInJSON(sessionAddressBook, formAddress);
+	}
+
+	basket.custom.sessionAddressBook = sessionAddressBook;
+	var sessionAddressesObj : Object = new Object();
+	sessionAddressesObj = JSON.parse(sessionAddressBook);
+	sessionAddresses.add(sessionAddressesObj.addresses);
+	args.SessionAddresses = sessionAddresses;
+	args.FormAddress = formAddress;
+
+	return PIPELET_NEXT;
+}

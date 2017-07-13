@@ -1,0 +1,6 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isscript>
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var av = ProductUtils.getAvailability(pdict.Product, pdict.CurrentHttpParameterMap.Quantity.stringValue);
+</isscript>
+<isprint value="${JSON.stringify(av)}" encoding="off"/>

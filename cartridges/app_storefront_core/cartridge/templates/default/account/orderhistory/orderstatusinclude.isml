@@ -1,0 +1,30 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	This template renders an order's status.
+	There must be an object called 'Order' in page scope.
+</iscomment>
+<div class="order-status">
+
+	<span class="label">${Resource.msg('account.orderstatusinclude.statuslabel','account',null)}</span>
+	
+	<isif condition="${((Order.status==dw.order.Order.ORDER_STATUS_NEW || Order.status == dw.order.Order.ORDER_STATUS_OPEN) && Order.shippingStatus == dw.order.Order.SHIPPING_STATUS_SHIPPED) || Order.status==dw.order.Order.ORDER_STATUS_COMPLETED}">
+
+		<span class="value order_shipped">${Resource.msg('account.orderstatusinclude.ordershipped','account',null)}</span>
+
+	<iselseif condition="${(Order.status==dw.order.Order.ORDER_STATUS_NEW || Order.status==dw.order.Order.ORDER_STATUS_OPEN) && Order.shippingStatus != dw.order.Order.SHIPPING_STATUS_SHIPPED}">
+
+		<span class="value processing order_processed">${Resource.msg('account.orderstatusinclude.orderprocessed','account',null)}</span>
+
+	<iselseif condition="${Order.status==dw.order.Order.ORDER_STATUS_CANCELLED}">
+
+		<span class="value order_canceled">${Resource.msg('account.orderstatusinclude.ordercanceled','account',null)}</span>
+
+	<iselse/>
+
+		<span class="label">${Resource.msg('account.orderstatusinclude.ordercontact','account',null)}</span>
+		<span class="value clearfix"><isprint value="${Order.status}"/></span>
+
+	</isif>
+	
+</div>

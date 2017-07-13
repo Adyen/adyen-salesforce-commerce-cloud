@@ -1,0 +1,60 @@
+.bonus-product-list {
+	.bonus-product-item {
+		@extend %clearfix;
+		border-bottom: 1px solid $gainsboro;
+		.product-col-1,
+		.product-col-2 {
+			@media screen and (max-width: 768px) {
+				float: left;
+				clear: none;
+			}
+		}
+	}
+	.product-add-to-cart {
+		padding-bottom: 0;
+		.inventory {
+			width: auto;
+		}
+	}
+	.product-name {
+		float: none;
+		margin: 1em 0;
+	}
+	.quantity-error {
+		color: red;
+		text-transform: inherit;
+	}
+	.bonus-product-list-footer {
+		@extend %clearfix;
+		padding-top: 1em;
+		padding-bottom: 1em;
+		.add-to-cart-bonus {
+			float: right;
+		}
+	}
+	.selected-bonus-item {
+		margin: 1em 0 1em 1em;
+		position: relative;
+		.item-name {
+			font-weight: bold;
+		}
+		.remove-link {
+			cursor: pointer;
+			color: $sangria;
+			left: -1em;
+			position: absolute;
+			&:hover {
+				color: $charcoal;
+			}
+		}
+	}
+}
+
+.bonus-discount-container {
+	.promo-details {
+		display: none;
+		&.visible {
+			display: block;
+		}
+	}
+}

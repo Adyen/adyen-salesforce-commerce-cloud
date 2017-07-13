@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="Analytics">
+  <description>This pipelines is called  (as include by the WA) whenever a reporting relevant business event need to be logged. The pipeline does nothing and leads to an empty (page cached) template. The only purpose of the pipeline is to serve the dummy request that is used to get reporting information into the web adapter logs.</description>
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is the pipeline hook for the reporting events. Typically no modifications are needed here. Salesforce Commerce Cloud analytics is based on log file analysis. Log file entries are generated using remote includes in page templates.</description>
+        </text-node>
+        <node-display width="2" x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Start">
+    <segment>
+      <node>
+        <start-node name="Start" secure="false"/>
+        <node-display x="1" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="util/reporting/reporting"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

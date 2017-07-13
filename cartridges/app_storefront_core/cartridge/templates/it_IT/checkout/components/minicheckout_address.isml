@@ -1,0 +1,22 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates an Italian localized miniaddress display.
+
+	Parameter:
+	p_address	 	: the address object to display
+</iscomment>
+
+<iscomment> FirstName LastName </iscomment>
+<div><isprint value="${pdict.p_address.firstName}"/> <isprint value="${pdict.p_address.lastName}"/></div>
+
+<iscomment> Address1 Address2 </iscomment>
+<div><isprint value="${pdict.p_address.address1}"/></div>
+<isif condition="${!empty(pdict.p_address.address2)}">
+	<div><isprint value="${pdict.p_address.address2}"/></div>
+</isif>
+
+<iscomment> PostalCode City StateCode </iscomment>
+<div><isprint value="${pdict.p_address.postalCode}"/> <isprint value="${pdict.p_address.city}"/>  <isprint value="${pdict.p_address.stateCode}"/></div>
+
+<iscomment> CountryName </iscomment>
+<div><isprint value="${Resource.msg("country."+pdict.p_address.countryCode, "forms", null)}"/></div>

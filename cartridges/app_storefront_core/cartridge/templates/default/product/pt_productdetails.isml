@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: (pdict.Product.name || 'Product Detail'),
+			type: 'product',
+			ns:'product'
+		};
+	</isscript>
+	<isinclude template="components/header/htmlhead"/>
+
+	<isinclude template="product/pt_productdetails_UI"/>
+
+	<link rel="canonical" href="${URLUtils.url('Product-Show','pid', pdict.Product.ID)}"/>
+
+</head>
+<body>
+
+	<div id="wrapper" class="pt_product-details">
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="full-width clearfix">
+
+			<isinclude template="components/browsertoolscheck"/>
+			<isinclude template="components/productbreadcrumbs"/>
+
+			<div id="primary" class="primary-content">
+
+				<div id="product-nav-container">
+					<isinclude template="search/productnav"/>
+				</div> <!-- /product-nav-container -->
+
+				<isreplace/>
+			</div><!-- /primary-content -->
+
+		</div> <!-- /main -->
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="product/pt_productdetails_VARS"/>
+	</div> <!-- /pt_product-details -->
+</body>
+</html>

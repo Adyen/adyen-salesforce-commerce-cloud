@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template renders the bread crumb navigation for the product detail page.
+</iscomment>
+<div class="breadcrumb">
+
+	<iscomment>
+		the category context is determined based on the product search
+		which was triggered or through the products primary category
+	</iscomment>
+	<isscript>
+		var category : dw.catalog.Category = null;
+
+		// get category from search context
+		if( !empty(pdict.ProductSearchResult) )
+		{
+			category = pdict.ProductSearchResult.category;
+		}
+
+		// get category from parameters
+		if( category == null && pdict.CurrentHttpParameterMap.cgid != null)
+		{
+			categoryTmp = dw.catalog.CatalogMgr.getCategory(pdict.CurrentHttpParameterMap.cgid.stringValue);
+			// check if category is assigned to product
+			if(categoryTmp != null && (pdict.Product.isAssignedToCategory(categoryTmp) ? true : pdict.Product.variationModel.master != null ? pdict.Product.variationModel.master.isAssignedToCategory(categoryTmp) : false) )
+			{
+				category = categoryTmp;
+			}
+		}
+
+		if( category == null )
+		{
+			// get category from products primary category
+			category = pdict.Product.primaryCategory;
+
+			// get category from product master if not set at variant
+			if( category == null && pdict.Product.variant )
+			{
+				category = pdict.Product.variationModel.master.primaryCategory;
+			}
+		}
+	</isscript>
+
+   	<iscomment>if we have any category context, we show it</iscomment>
+  	<isif condition="${category != null && category.online}">
+
+		<isactivedatacontext category="${category}"/>
+
+		<isscript>
+			var path : dw.util.Collection = new dw.util.ArrayList();
+			while( category.parent != null )
+			{
+				if( category.online ) path.addAt( 0, category );
+				category = category.parent;
+			}
+		</isscript>
+
+		<iscomment>display the path</iscomment>
+		<isloop items="${path}" var="cat" status="loopstate">
+			<a class="breadcrumb-element" href="${dw.catalog.ProductSearchModel.urlForCategory('Search-Show',cat.ID)}" title="${Resource.msg('global.breadcrumbs.label.prefix','locale',null)} ${cat.displayName}">${cat.displayName}</a>
+		</isloop>
+
+		<iscomment>append product name</iscomment>
+		<span class="breadcrumb-element">${pdict.Product.name}</span>
+	</isif>
+</div>

@@ -1,0 +1,28 @@
+/**
+ * RemoveBonusDiscountLineItemProduct
+ *
+ * This script deletes all the products associated with a bonus discount line item.
+ *
+ *   @input Basket : dw.order.Basket
+ *   @input bonusDiscountLineItem : dw.order.BonusDiscountLineItem
+ *
+ */
+importPackage( dw.order );
+ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;	
+	var bonusDiscountLineItem = pdict.bonusDiscountLineItem;
+	var plis : Iterator = bonusDiscountLineItem.getBonusProductLineItems().iterator();
+	
+	while(plis.hasNext())
+	{
+		var pli : ProductLineItem = plis.next();
+		if(pli.product != null)
+		{			
+			basket.removeProductLineItem(pli);
+		}
+	}
+	
+    return PIPELET_NEXT;
+}

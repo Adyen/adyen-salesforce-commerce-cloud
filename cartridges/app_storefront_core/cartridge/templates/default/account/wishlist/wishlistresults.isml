@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/wishlist/pt_wishlist"/>
+
+		<isslot id="wishlist-banner" description="Banner for Wish List Search Results" context="global" />
+
+		<h1>${Resource.msg('wishlist.searchheader','account',null)}:</h1>
+
+		<div class="form-inline">
+			<isinclude template="account/wishlist/wishlistsearch"/>
+		</div>
+
+
+		<isif condition="${!empty(pdict.CurrentForms.wishlist.productlists)}">
+
+			<table class="item-list">
+				<tr>
+					<th class="section-header">${Resource.msg('wishlistresult.lastname','account',null)}</th>
+					<th class="section-header">${Resource.msg('wishlistresult.firstname','account',null)}</th>
+					<th class="section-header">${Resource.msg('wishlistresult.location','account',null)}</th>
+					<th class="section-header"><!-- empty --></th>
+				</tr>
+
+				<isloop items="${pdict.CurrentForms.wishlist.productlists}" var="ProductList" status="loopstate">
+					<tr>
+						<td class="last-name">
+							<isprint value="${ProductList.object.owner.profile.lastName}"/>
+						</td>
+						<td class="first-name">
+							<isprint value="${ProductList.object.owner.profile.firstName}"/>
+						</td>
+						<td class="city">
+							<isif condition="${ProductList.object.shippingAddress != null}">
+								<isprint value="${empty(ProductList.object.shippingAddress)?'':ProductList.object.shippingAddress.city + ", " + ProductList.object.shippingAddress.stateCode }"/>
+								<iselse/>
+									<isprint value="${Resource.msg('wishlist.nolocationtoshow','account',null)}"/>
+							</isif>
+						</td>
+						<td class="view">
+							<a href="${URLUtils.url('Wishlist-ShowOther','WishListID',ProductList.object.ID)}">
+								<span>${Resource.msg('wishlistresult.view','account',null)}</span>
+							</a>
+						</td>
+					</tr>
+				</isloop>
+			</table>
+
+		<iselse/>
+			
+			<isscript>
+				var searchName = '';
+				if (pdict.SearchLastName) {
+					searchName += pdict.SearchLastName;
+				}
+				if (pdict.SearchFirstName) {
+					searchName += ' ' + pdict.SearchFirstName;
+				}
+				if (pdict.SearchEmail) {
+					searchName += ' ' + pdict.SearchEmail;
+				}
+			</isscript>
+			
+			<p>${Resource.msgf('searchresult.emptymessage','account',null, searchName)}</p>
+
+		</isif>
+
+</isdecorate>

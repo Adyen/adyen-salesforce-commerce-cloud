@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template renders a static breadcrumb navigation. The template
+	can be called with two optional breadcrumb steps. Each breadcrumb
+	step consists of two value, one for the display text and one
+	for the URL to call.
+</iscomment>
+
+<div class="breadcrumb">
+	<iscomment>FIRST BREADCRUMB</iscomment>
+	<isif condition="${pdict.bctext1 != null}">
+		<a class="breadcrumb-element" <isif condition="${pdict.bcurl1 != null}">href="${pdict.bcurl1}" title="${Resource.msg('global.breadcrumbs.label.prefix','locale',null)} ${pdict.bctext1}"</isif> title="${pdict.bctext1}">${pdict.bctext1}</a>
+	</isif>
+
+	<iscomment>SECOND BREADCRUMB</iscomment>
+	<isif condition="${pdict.bctext2 != null}">
+		<a class="breadcrumb-element" <isif condition="${pdict.bcurl2 != null}">href="${pdict.bcurl2}" title="${Resource.msg('global.breadcrumbs.label.prefix','locale',null)} ${pdict.bctext2}"</isif> title="${pdict.bctext2}">${pdict.bctext2}</a>
+	</isif>
+
+	<iscomment>THIRD BREADCRUMB</iscomment>
+	<isif condition="${pdict.bctext3 != null}">
+		<a class="breadcrumb-element" <isif condition="${pdict.bcurl3 != null}">href="${pdict.bcurl3}" title="${Resource.msg('global.breadcrumbs.label.prefix','locale',null)} ${pdict.bctext3}"</isif> title="${pdict.bctext3}">${pdict.bctext3}</a>
+	</isif>
+</div>

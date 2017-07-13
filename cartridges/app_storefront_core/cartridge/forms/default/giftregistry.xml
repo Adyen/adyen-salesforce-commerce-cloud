@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+	<group formid="event">
+
+		<field formid="type" label="giftregistry.eventType" type="string"
+			mandatory="true" binding="eventType" missing-error="giftregistry.eventType.missing-error">
+			<options>
+				<option optionid="prompt" label="resource.select" value="" />
+				<option optionid="wedding" label="giftregistry.wedding"
+					value="wedding" />
+				<option optionid="weddingshower" label="giftregistry.weddingshower"
+					value="weddingshower" />
+				<option optionid="babyshower" label="giftregistry.babyshower"
+					value="babyshower" />
+				<option optionid="other" label="giftregistry.other" value="other" />
+			</options>
+		</field>
+
+		<field formid="name" label="giftregistry.eventName" type="string"
+			mandatory="true" binding="name" max-length="60"
+			missing-error="giftregistry.eventName.missing-error" />
+
+		<field formid="date" label="giftregistry.eventDate" type="date"
+			timezoned="false" mandatory="true" binding="eventDate" format="yyyy-MM-dd"
+			missing-error="giftregistry.eventDate.missing-error" parse-error="giftregistry.eventDate.parse-error"
+			description="giftregistry.eventDate.description" max-length="10" />
+
+		<!-- include address fields from customeraddress.xml form definition -->
+		<include formid="eventaddress" name="customeraddress" />
+
+		<field formid="town" label="giftregistry.eventCity" type="string"
+			mandatory="true" binding="eventCity" min-length="2" max-length="60"
+			missing-error="giftregistry.eventCity.missing-error" />
+
+		<!-- define sub-group here representing a participant -->
+		<group formid="participant">
+			<field formid="role" label="giftregistry.registrantRole" type="string"
+				mandatory="true" binding="role" missing-error="giftregistry.registrantRole.missing-error">
+				<options>
+					<option optionid="prompt" label="resource.select" value="" />
+					<option optionid="bride" label="giftregistry.bride" value="Bride" />
+					<option optionid="groom" label="giftregistry.groom" value="Groom" />
+					<option optionid="other" label="giftregistry.other" value="Other" />
+				</options>
+			</field>
+
+			<field formid="firstName" label="giftregistry.registrantFirstName"
+				type="string" mandatory="true" binding="firstName"
+				missing-error="giftregistry.registrantFirstName.missing-error"
+				max-length="60" />
+
+			<field formid="lastName" label="giftregistry.registrantLastName"
+				type="string" mandatory="true" binding="lastName"
+				missing-error="giftregistry.registrantLastName.missing-error"
+				max-length="60" />
+
+			<field formid="email" label="resource.email" type="string"
+				mandatory="true" binding="email" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$"
+				parse-error="giftregistry.registrantEmail.parse-error"
+				missing-error="giftregistry.registrantEmail.missing-error"
+				value-error="giftregistry.registrantEmail.parse-error" max-length="60" />
+		</group>
+
+		<!-- define sub-group here representing a participant -->
+		<group formid="coParticipant">
+
+			<!-- co-participant fields -->
+			<field formid="role" label="giftregistry.registrantRole" type="string"
+				mandatory="false" binding="role"
+				missing-error="giftregistry.registrantRole.missing-error">
+				<options>
+					<option optionid="prompt" label="resource.select" value="" />
+					<option optionid="bride" label="giftregistry.bride" value="Bride" />
+					<option optionid="groom" label="giftregistry.groom" value="Groom" />
+					<option optionid="other" label="giftregistry.other" value="Other" />
+				</options>
+			</field>
+
+			<field formid="firstName" label="giftregistry.registrantFirstName"
+				type="string" mandatory="false" binding="firstName"
+				missing-error="giftregistry.registrantFirstName.missing-error"
+				max-length="60" />
+
+			<field formid="lastName" label="giftregistry.registrantLastName"
+				type="string" mandatory="false" binding="lastName"
+				missing-error="giftregistry.registrantLastName.missing-error"
+				max-length="60" />
+
+			<field formid="email" label="resource.email" type="string"
+				mandatory="false" binding="email" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$"
+				parse-error="giftregistry.registrantEmail.parse-error"
+				missing-error="giftregistry.registrantEmail.missing-error"
+				value-error="giftregistry.registrantEmail.parse-error" max-length="60" />
+		</group>
+
+		<!-- Define the action here so that only this form group and child form 
+			groups are validated -->
+		<action formid="confirm" valid-form="true" />
+		<action formid="setParticipants" valid-form="true" />
+
+	</group>
+
+	<group formid="eventaddress">
+
+		<!-- event fields -->
+
+		<include formid="addressBeforeEvent" name="customeraddress" />
+		<include formid="addressAfterEvent" name="customeraddress" />
+
+		<!-- list of available addresses to select from -->
+		<list formid="addressBeforeList">
+
+			<!-- action for actually selecting the address -->
+			<action formid="useThisAddress" valid-form="false" />
+
+		</list>
+
+		<!-- list of available addresses to select from -->
+		<list formid="addressAfterList">
+
+			<!-- action for actually selecting the address -->
+			<action formid="useThisAddress" valid-form="false" />
+
+		</list>
+
+		<!-- options for the before event address -->
+		<field formid="beforeEventAddress" type="string" mandatory="true"
+			default-value="addressbook">
+			<options>
+				<option optionid="addressbook" label="giftregistry.addressSource.addressBook"
+					value="addressbook" default="true" />
+				<option optionid="newaddress" label="giftregistry.addressSource.new"
+					value="newaddress" />
+			</options>
+		</field>
+
+		<!-- options for the after event address -->
+		<field formid="afterEventAddress" type="string" mandatory="true"
+			default-value="sameasbefore">
+			<options>
+				<option optionid="sameasbefore" label="giftregistry.addressSource.asBefore"
+					value="sameasbefore" default="true" />
+				<option optionid="addressbook" label="giftregistry.addressSource.addressBook"
+					value="addressbook" />
+				<option optionid="newaddress" label="giftregistry.addressSource.new"
+					value="newaddress" />
+			</options>
+		</field>
+
+		<!-- Define the action here so that only the parent form group is validated -->
+		<action formid="setBeforeAfterAddresses" valid-form="true" />
+		<action formid="displayBeforeAddress" valid-form="false" />
+		<action formid="displayAfterAddress" valid-form="false" />
+		<action formid="back" valid-form="false" />
+
+	</group>
+
+
+	<list formid="items" binding="items">
+		<field formid="public" label="giftregistry.items.makepublic"
+			type="boolean" binding="public" />
+		<field formid="quantity" label="giftregistry.items.quantity"
+			type="integer" binding="quantityValue" min-length="1" max-length="5"
+			missing-error="giftregistry.items.quantity.missing-error"
+			parse-error="giftregistry.items.quantity.parse-error" value-error="giftregistry.items.quantity.value-error" />
+		<field formid="priority" label="giftregistry.items.priority"
+			type="integer" mandatory="false" binding="priority"
+			missing-error="giftregistry.items.priority.missing-error">
+			<options>
+				<option optionid="0" label="productlist.priority0" value="0" />
+				<option optionid="1" label="productlist.priority1" value="1" />
+				<option optionid="2" label="productlist.priority2" value="2" />
+				<option optionid="3" label="productlist.priority3" value="3" />
+				<option optionid="4" label="productlist.priority4" value="4" />
+				<option optionid="5" label="productlist.priority5" value="5" />
+			</options>
+		</field>
+		<field formid="purchasedQuantity" type="integer" binding="purchasedQuantityValue" />
+		<action formid="update" valid-form="true" label="giftregistry.items.update" />
+		<action formid="remove" valid-form="false" label="giftregistry.items.remove" />
+		<action formid="updateItem" valid-form="true" />
+		<action formid="deleteItem" valid-form="false" label="resource.delete" />
+		<action formid="addItemToCart" valid-form="false" label="resource.addtocart" />
+		<action formid="setItemPublic" valid-form="false"
+			label="productlist.setpublic" />
+		<action formid="setItemPrivate" valid-form="false"
+			label="productlist.setprivate" />
+		<action formid="addGiftCertificate" valid-form="false"
+			label="giftregistry.addgiftcertificate" />
+		<action formid="addToCart" valid-form="false" label="resource.addtocart" />
+	</list>
+
+	<list formid="purchases" binding="purchases">
+	</list>
+
+
+	<!-- list of available addresses to select from -->
+	<list formid="addressList">
+
+		<!-- action for actually selecting the address -->
+		<action formid="useThisAddress" valid-form="false" />
+
+	</list>
+
+
+	<group formid="navigation">
+		<action formid="navRegistry" valid-form="false" label="" />
+		<action formid="navEvent" valid-form="false" label="" />
+		<action formid="navShipping" valid-form="false" label="" />
+		<action formid="navPurchases" valid-form="false" label="" />
+	</group>
+
+	<group formid="send">
+		<field formid="email" label="giftregistry.send.label" type="string"
+			mandatory="true"
+			regexp="^[a-zA-Z0-9_\-\.]+@([a-zA-Z0-9_\-]+\.)+[a-zA-Z][a-zA-Z]+(\s*[,;]\s*([a-zA-Z0-9_\-\.]+@([a-zA-Z0-9_\-]+\.)+[a-zA-Z][a-zA-Z]+))*$"
+			parse-error="giftregistry.send.format" value-error="giftregistry.send.check"
+			missing-error="giftregistry.send.invalid" />
+		<action formid="sendEmail" valid-form="true" label="resource.send" />
+	</group>
+
+	<group formid="search">
+		<group formid="simple">
+			<field formid="registrantLastName" label="giftregistry.registrantLastName"
+				regexp="[^*?]*" type="string" mandatory="true"
+				missing-error="giftregistry.registrantLastName.missing-error"
+				parse-error="giftregistry.registrantLastName.parse-error" />
+			<field formid="registrantFirstName" label="giftregistry.registrantFirstName"
+				regexp="[^*?]*" type="string" mandatory="true"
+				parse-error="giftregistry.registrantFirstName.parse-error" />
+			<field formid="eventType" label="giftregistry.eventType" type="string"
+				mandatory="false" missing-error="giftregistry.eventType.missing-error">
+				<options>
+					<option optionid="blank" label="resource.select" value="" />
+					<option optionid="wedding" label="giftregistry.wedding"
+						value="wedding" />
+					<option optionid="weddingshower" label="giftregistry.weddingshower"
+						value="weddingshower" />
+					<option optionid="babyshower" label="giftregistry.babyshower"
+						value="babyshower" />
+					<option optionid="other" label="giftregistry.other" value="other" />
+				</options>
+			</field>
+		</group>
+
+		<group formid="advanced">
+			<field formid="eventName" label="giftregistry.eventName" type="string"
+				mandatory="false" />
+			<field formid="eventMonth" label="productlist.eventmonth" type="integer"
+				mandatory="false">
+				<options>
+					<option optionid="blank" label="" value="" />
+					<option optionid="jan" label="month.january" value="1" />
+					<option optionid="feb" label="month.february" value="2" />
+					<option optionid="mar" label="month.march" value="3" />
+					<option optionid="apr" label="month.april" value="4" />
+					<option optionid="may" label="month.may" value="5" />
+					<option optionid="jun" label="month.june" value="6" />
+					<option optionid="jul" label="month.july" value="7" />
+					<option optionid="aug" label="month.august" value="8" />
+					<option optionid="sep" label="month.september" value="9" />
+					<option optionid="oct" label="month.october" value="10" />
+					<option optionid="nov" label="month.november" value="11" />
+					<option optionid="dec" label="month.december" value="12" />
+				</options>
+			</field>
+
+			<field formid="eventYear" label="productlist.eventyear" type="integer"
+				mandatory="false" value-error="productlist.eventyearerror">
+				<options>
+					<option optionid="" label="" value="" />
+					<option optionid="2015" label="year.2015" value="2015" />
+					<option optionid="2016" label="year.2016" value="2016" />
+					<option optionid="2017" label="year.2017" value="2017" />
+					<option optionid="2018" label="year.2018" value="2018" />
+					<option optionid="2019" label="year.2019" value="2019" />
+					<option optionid="2020" label="year.2020" value="2020" />
+					<option optionid="2021" label="year.2021" value="2021" />
+					<option optionid="2022" label="year.2022" value="2022" />
+				</options>
+			</field>
+
+			<field formid="eventCity" label="giftregistry.eventCity" type="string"
+				mandatory="false" />
+
+			<include formid="eventAddress" name="customeraddress" />
+		</group>
+		<action formid="search" valid-form="true" />
+	</group>
+
+	<!-- optional flags -->
+	<field formid="addPreEventToAddressBook" label="giftregistry.addtoaddressbook"
+		type="boolean" mandatory="false" />
+	<field formid="addPostEventToAddressBook" label="giftregistry.addtoaddressbook"
+		type="boolean" mandatory="false" />
+	<field formid="copyAddress" label="giftregistry.copyaddress"
+		type="boolean" mandatory="false" />
+
+	<!-- generic actions -->
+	<action formid="update" valid-form="true" />
+	<action formid="remove" valid-form="false" />
+	<action formid="create" valid-form="false" />
+
+	<action formid="setPublic" valid-form="false" label="productlist.setpublic" />
+	<action formid="setPrivate" valid-form="false" label="productlist.setprivate" />
+	<action formid="addGiftCertificate" valid-form="false"
+		label="giftregistry.addgiftcertificate" />
+	<action formid="editEvent" valid-form="false" label="giftregistry.editevent" />
+	<action formid="editAddresses" valid-form="false"
+		label="giftregistry.editshipaddress" />
+	<action formid="showPurchases" valid-form="false"
+		label="giftregistry.showpurchase" />
+
+</form>

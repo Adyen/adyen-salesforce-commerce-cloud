@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Dumps option values as name value pairs.
+e.g. warranty: 1 year
+params:
+pdict.productlistitem
+</iscomment>
+
+<iscomment> display options and values if any </iscomment>
+<isif condition="${pdict.productlistitem.productOptionModel != null}">
+	<div class="product_options <isprint value="${pdict.productlistitem.product.ID}"/>options">
+		<isloop iterator="${pdict.productlistitem.productOptionModel.options}" alias="productOption">
+			<isset name="selectedOptionValue" value="${pdict.productlistitem.productOptionModel.getSelectedOptionValue(productOption)}" scope="page"/>					
+				<span style="display:none" class="<isprint value="${productOption.htmlName}"/>"><isprint value="${selectedOptionValue.ID}"/></span>
+				<isprint value="${productOption.displayName}"/> - <isprint value="${selectedOptionValue.displayValue}"/> +<isprint value="${pdict.productlistitem.productOptionModel.getPrice(selectedOptionValue)}"/>			
+			
+		</isloop>
+	</div><!-- END: product_options -->
+</isif>

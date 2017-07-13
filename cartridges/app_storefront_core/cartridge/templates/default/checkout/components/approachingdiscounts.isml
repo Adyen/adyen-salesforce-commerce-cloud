@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	Renders the approaching discounts for the current basket.
+	
+	Requires: Basket
+</iscomment>
+<isif condition="${!(pdict.Basket == null || (empty(pdict.Basket.productLineItems) && empty(pdict.Basket.giftCertificateLineItems)))}">			
+	<isset name="DiscountPlan" value="${dw.campaign.PromotionMgr.getDiscounts(pdict.Basket)}" scope="page" />
+
+	<iscomment> Approaching order promotions </iscomment>
+	<isloop items="${DiscountPlan.getApproachingOrderDiscounts()}" var="approachingOrderDiscount">
+		<isapproachingdiscount p_approachingdiscount="${approachingOrderDiscount}" />
+	</isloop>
+	
+	<iscomment> Approaching shipping promotions (for default shipment) </iscomment>
+	<isloop items="${DiscountPlan.getApproachingShippingDiscounts(pdict.Basket.getDefaultShipment())}" var="approachingShippingDiscount">
+		<isapproachingdiscount p_approachingdiscount="${approachingShippingDiscount}" />
+	</isloop>
+</isif>

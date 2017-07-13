@@ -1,0 +1,321 @@
+.dw-apple-pay-button,
+.dw-apple-pay-button:hover {
+	margin: 0;
+}
+
+#cart-table {
+	thead {
+		display: none;
+		@media screen and (min-width: 768px) {
+			display: table-header-group;
+		}
+	}
+	td {
+		box-sizing: border-box;
+		display: block;
+		padding: 5px;
+		@media screen and (min-width: 768px) {
+			display: table-cell;
+		}
+	}
+	.cart-row {
+		display: flex;
+		flex-wrap: wrap;
+		@media screen and (min-width: 768px) {
+			display: table-row;
+		}
+	}
+	.header-total-price {
+		text-align: right;
+	}
+	.item-image {
+		float: left; // LEGACY: to support IE (no flexbox)
+		order: 1;
+		text-align: center;
+		flex-basis: 40%;
+		@media screen and (min-width: 768px) {
+			float: none;
+			width: 7rem;
+		}
+	}
+	.item-details {
+		float: left; // LEGACY: to support IE (no flexbox)
+		order: 2;
+		flex-basis: 60%;
+		@media screen and (min-width: 768px) {
+			float: none;
+		}
+		.name {
+			font-size: 1rem;
+		}
+		// Removes Edit Details Quickview link for handheld devices
+		.item-edit-details {
+			display: none;
+			@media screen and (min-width: 768px) {
+				display: block;
+			}
+		}
+	}
+	.item-delivery-options {
+		order: 6;
+		text-align: center;
+		flex-basis: 50%;
+		@media screen and (min-width: 768px) {
+			text-align: left;
+			width: 8rem;
+		}
+		.form-row {
+			margin-top: 0;
+		}
+	}
+	.item-quantity {
+		float: left; // LEGACY: to support IE (no flexbox)
+		order: 4;
+		text-align: center;
+		flex-basis: 33.3333%;
+		@media screen and (min-width: 768px) {
+			float: none;
+			text-align: left;
+		}
+		input {
+			width: 2.7rem;
+		}
+	}
+	.item-quantity-details {
+		float: left; // LEGACY: to support IE (no flexbox)
+		order: 3;
+		text-align: center;
+		flex-basis: 33.3333%;
+		@media screen and (min-width: 768px) {
+			float: none;
+			text-align: left;
+		}
+		.product-availability-list {
+			margin: 0;
+			padding: 0;
+			@media screen and (min-width: 768px) {
+				width: 5em; //for IE
+				width: max-content;
+			}
+			.on-order, .not-available {
+				color: $sangria;
+				font-size: 0.9em;
+			}
+		}
+		.item-user-actions {
+			a,
+			button {
+				display: block;
+				font-size: 1em;
+				width: 100%;
+				margin: .3rem 0;
+				@media screen and (min-width: 768px) {
+					width: auto;
+				}
+			}
+		}
+	}
+	.item-price {
+		order: 5;
+		text-align: center;
+		flex-basis: 33.3333%;
+		@media screen and (min-width: 768px) {
+			text-align: left;
+		}
+	}
+	.price-promotion {
+		.price-sales {
+			color: $sangria;
+		}
+		.price-standard {
+			margin: 0 1em 0 0;
+			text-decoration: line-through;
+		}
+	}
+	.item-total {
+		flex-grow: 2; // take over item-delivery-options that it is not there
+		font-size: 1rem;
+		font-weight: 700;
+		order: 7;
+		text-align: right;
+		flex-basis: 50%;
+		word-wrap: break-word;
+		@media screen and (min-width: 768px) {
+			float: none;
+			font-size: 1em;
+		}
+		.promo-adjustment {
+			@media screen and (min-width: 768px) {
+				width: 100%;
+				float: right;
+			}
+		}
+	}
+	.price-unadjusted {
+		color: $dim-gray;
+		display: block;
+		margin: 0 0 .42em;
+		span {
+			text-decoration: line-through;
+		}
+	}
+	.price-adjusted-total {
+		color: $dim-gray;
+		display: block;
+		margin: .42em 0 0;
+		span {
+			color: $sangria;
+		}
+	}
+	.gift-cert-delivery {
+		color: $sangria;
+	}
+}
+
+.cart-promo {
+	background: url("../images/interface/ui-promo-bg-gray-diag.png") repeat scroll 0 0 transparent;
+	color: $night-rider;
+	font-style: italic;
+	margin: 0.3em 0;
+	padding: 1em;
+	.bonus-item-actions {
+		font-size: 1em !important;
+		text-align: right;
+		vertical-align: middle;
+	}
+}
+
+.cart-footer {
+	@extend %clearfix;
+	margin: .83em 0;
+}
+
+.cart-coupon-code {
+	@media screen and (min-width: 768px) {
+		float: left;
+		width: 60%;
+	}
+	input {
+		margin-bottom: .5rem;
+		width: 34%;
+		@media screen and (min-width: 768px) {
+			width: 45%;
+		}
+	}
+	.error {
+		padding-top: 0.4em;
+	}
+	button {
+		margin-left: .2rem;
+	}
+}
+
+.cart-order-totals {
+	margin: 1rem 0;
+	@media screen and (min-width: 768px) {
+		float: right;
+		margin-top: 0;
+		width: 40%;
+	}
+}
+
+.order-totals-table {
+	td {
+		padding: .3rem;
+		text-align: right;
+
+	}
+	.order-totals-item {
+		width: 60%;
+	}
+
+	.order-totals-value {
+		width: 40%;
+	}
+
+	.order-subtotal {
+		font-weight: 700;
+	}
+	.order-total {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+}
+.order-value {
+	white-space: nowrap;
+}
+
+.cart-actions {
+	@extend %clearfix;
+	.dw-apple-pay-button {
+		font-size: 1.35em;
+		padding: .5em 2em;
+	}
+}
+
+.cart-action-checkout {
+	float: right;
+}
+
+.cart-action-continue-shopping {
+	@media screen and (min-width: 768px) {
+		float: right;
+	}
+	.button-text {
+		margin-top: .2rem;
+		margin-right: 1rem;
+		@media screen and (min-width: 768px) {
+			margin-top: .6rem;
+		}
+	}
+}
+
+.cart-actions-top {
+	margin-top: .5rem;
+	margin-bottom: 1rem;
+	.cart-action-continue-shopping {
+		float: none;
+	}
+}
+
+.cart-empty {
+	@extend %clearfix;
+	margin-top: 4rem;
+	h1 {
+		text-align: center;
+	}
+	.cart-action-continue-shopping {
+		float: none;
+		text-align: center;
+		margin-bottom: 4rem;
+	}
+	.product-listing {
+		@extend %clearfix;
+		background-color: $white-smoke;
+		padding: 1rem 0;
+		h2 {
+			margin-left: 1.3rem;
+		}
+		.search-result-items {
+			margin-top: 1em;
+		}
+	}
+}
+
+.promo-adjustment {
+	color: $sangria;
+}
+
+.account-welcome {
+	.welcome-message {
+		font-size: 1.2em;
+		font-style: italic;
+	}
+	.not-user {
+		margin: .83em 0;
+	}
+}
+
+#password-reset{
+	white-space: nowrap;
+}

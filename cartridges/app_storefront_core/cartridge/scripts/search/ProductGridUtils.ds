@@ -1,0 +1,64 @@
+/**
+importScript('search/ProductGridUtils.ds');
+*/
+importPackage ( dw.system );
+importPackage ( dw.util );
+importPackage ( dw.catalog );
+importPackage ( dw.web );
+
+/**
+*	Provides functions to make work around the product grid easier and better readable
+*	@namespace
+*
+*/
+function ProductGridUtils(){}
+
+/*
+* Gets a list of variation attribute values, which are referenced by a given product search hit
+* @param productHit {ProductSearchHit} the product search hit, given by the Scripting API
+* @param variationAttributeID {String} ID of the varitiation attribute
+*/
+ProductGridUtils.getRepresentedVariationValueIDs = function (productHit, variationAttributeID) {
+	var representedColors = [];
+	var colorValues = productHit.getRepresentedVariationValues(variationAttributeID);
+	for each (var colorValue in colorValues) {
+		representedColors.push(colorValue.ID);
+	}
+
+	return representedColors;
+};
+
+/*
+* Build the URL used for the product grid to include a hit tile.
+* Use with care, as this is essential to the caching strategy. It should just use parameters gathered from the search hit.
+* @param productHit {ProductSearchHit} the product search hit, given by the Scripting API
+* @param cgidValue {String}
+*/
+ProductGridUtils.buildHitTileURL = function (productHit, cgidValue) {
+	var productHitURL = URLUtils.url('Product-HitTile');
+	productHitURL.append('pid', productHit.productID);
+	if (!empty(cgidValue)){
+		productHitURL.append('cgid', cgidValue);
+	}
+	// productHitURL.append('vpid', productHit.firstRepresentedProduct.ID);
+	productHitURL.append('maxprice', productHit.maxPrice);
+	productHitURL.append('minprice', productHit.minPrice);
+	productHitURL.append('showpricing', true);
+	productHitURL.append('showpromotion', true);
+	productHitURL.append('showrating', true);
+	productHitURL.append('showcompare', true);
+	productHitURL.append('pricerange', productHit.isPriceRange());
+	return productHitURL;
+};
+/*
+* Build the URL used for the product grid to include a hit tile.
+* Use with care, as this is essential to the caching strategy. It should just use parameters gathered from the search hit.
+* @param productHit the product search hit, given by the Scripting API
+*/
+ProductGridUtils.getCompareClass = function (category) {
+	if (category && 'enableCompare' in category.custom && category.custom.enableCompare) {
+		return 'show-compare';
+	} else {
+		return 'hide-compare';
+	}
+};

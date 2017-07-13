@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Checkout',
+			type: 'checkout',
+			ns: 'checkout'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="checkout/pt_checkout_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+
+	<div id="wrapper" class="pt_checkout">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="primary-focus clearfix">
+
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+			<div id="secondary" class="nav summary">
+				<isinclude template="checkout/minisummary"/>
+			</div>
+
+		</div>
+
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="checkout/pt_checkout_VARS"/>
+
+	</div>
+
+</body>
+</html>

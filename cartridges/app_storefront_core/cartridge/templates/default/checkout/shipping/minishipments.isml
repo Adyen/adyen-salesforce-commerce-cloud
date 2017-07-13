@@ -1,0 +1,68 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+
+<iscomment>
+	This template renders a summary of all shipments of the basket which is
+	used below the order summary at the right hand side in the checkout
+	process.
+</iscomment>
+<isset name="Shipments" value="${pdict.Basket.shipments}" scope="page"/>
+
+<iscomment>the url to edit shipping addresses depends on the checkout scenario</iscomment>
+<isset name="editUrl" value="${URLUtils.https('COShipping-Start')}" scope="page"/>
+<isif condition="${pdict.CurrentForms.multishipping.entered.value}">
+	<isset name="editUrl" value="${URLUtils.https('COShippingMultiple-Start')}" scope="page"/>
+</isif>
+
+<isif condition="${!empty(Shipments)}">
+	<iscomment>render a box per shipment</iscomment>
+	<isset name="shipmentCount" value="${0}" scope="page"/>
+	<isloop items="${Shipments}" var="shipment" status="loopstate">
+		<isif condition="${(shipment.giftCertificateLineItems.size() > 0 && shipment.shippingAddress == null) || shipment.shippingAddress != null}">
+			<isif condition="${shipment.productLineItems.length <= 0 || shipment.custom.shipmentType == null && shipment.UUID==pdict.Basket.defaultShipment.UUID && !empty(shipment.shippingAddress) && empty(shipment.shippingAddress.address1)}">
+				<iscontinue/>
+			</isif>
+			<isset name="shipmentCount" value="${shipmentCount+1}" scope="page"/>
+			<div class="mini-shipment order-component-block <isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+				<iscomment>omit the shipment name, if there is just one shipment</iscomment>
+				<isif condition="${Shipments.size() > 1 && pdict.Basket.productLineItems.size() > 0}"><div class="name">${Resource.msgf('multishippingshipments.shipment','checkout',null, shipmentCount)}</div></isif>
+
+				<h3 class="section-header">
+					<isif condition="${shipment.giftCertificateLineItems.size() > 0}">
+						${Resource.msg('minishipments.shipping','checkout',null)} <span>${Resource.msg('minishipments.giftcertdelivery','checkout',null)}</span>
+					<iselseif condition="${shipment.custom.shipmentType == 'instore'}"/>
+						<isset name="editUrl" value="${URLUtils.https('Cart-Show')}" scope="page"/>
+						<a href="${editUrl}"  class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+						${Resource.msg('cart.store.instorepickup','checkout',null)}
+					<iselseif condition="${shipment.shippingAddress != null && pdict.Basket.productLineItems.size() > 0}"/>
+						<a href="${editUrl}"  class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+						${Resource.msg('minishipments.shippingaddress','checkout',null)}
+					</isif>
+				</h3>
+
+				<div class="details">
+					<iscomment>
+						render the detail section depending on whether this is a physical shipment with products
+						(shipped to an address) or if this is a gift certificate (send via email)
+					</iscomment>
+					<isif condition="${shipment.giftCertificateLineItems.size() > 0}">
+						<isloop items="${shipment.giftCertificateLineItems}" var="giftCertLI">
+							<div><isprint value="${giftCertLI.recipientName}"/></div>
+							<div>(<isprint value="${giftCertLI.recipientEmail}"/>)</div>
+						</isloop>
+					<iselseif condition="${shipment.shippingAddress != null && pdict.Basket.productLineItems.size() > 0}">
+						<isminicheckout_address p_address="${shipment.shippingAddress}"/>
+
+						<isif condition="${!empty(shipment.shippingMethod)}">
+							<div class="minishipments-method">
+								<span>${Resource.msg('order.orderdetails.shippingmethod','order',null)}</span>
+								<span><isprint value="${shipment.shippingMethod.displayName}"/></span>
+							</div>
+						</isif>
+					</isif>
+				</div>
+
+			</div>
+		</isif>
+	</isloop>
+</isif>

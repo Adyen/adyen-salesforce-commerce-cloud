@@ -1,0 +1,16 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isinclude template="util/jsonmodule"/>
+<iscomment>
+	This template renders the attributes of a customer credit card payment instrument as JSON response.
+</iscomment>
+<isscript>
+	var cc = {		
+		maskedNumber:pdict.SelectedCreditCard.maskedCreditCardNumber,
+		holder:pdict.SelectedCreditCard.creditCardHolder,
+		type:pdict.SelectedCreditCard.creditCardType,
+		expirationMonth:pdict.SelectedCreditCard.creditCardExpirationMonth,
+		expirationYear:pdict.SelectedCreditCard.creditCardExpirationYear		
+	}
+	var json = JSON.stringify(cc);	
+</isscript>
+<isprint value="${json}" encoding="off"/>

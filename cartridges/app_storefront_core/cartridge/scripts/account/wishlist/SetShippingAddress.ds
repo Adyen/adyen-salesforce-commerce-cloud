@@ -1,0 +1,20 @@
+/**
+* This script assigns the shipping addresses used for the wish list.
+* The shipping address may be null which means the user is removing
+* the shipping address from the product list.
+*
+* @input ProductList : dw.customer.ProductList The product list representing the wish list.
+* @input Address : dw.customer.CustomerAddress The customer address.
+*
+*/
+importPackage( dw.customer );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // get product list
+    var productList : ProductList = pdict.ProductList;
+	var address : CustomerAddress = pdict.Address;
+	productList.setShippingAddress(address);
+	
+    return PIPELET_NEXT;
+}

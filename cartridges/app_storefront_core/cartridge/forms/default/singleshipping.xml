@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+
+	<!-- flag indicating whether this checkout step is fulfilled -->
+	<field formid="fulfilled" type="boolean" default-value="false"/>
+
+	<!-- list of available addresses to select from -->
+	<list formid="addressList">
+
+		<!-- action for actually selecting the address -->
+		<action formid="useThisAddress" valid-form="false"/>
+
+	</list>
+
+	<!-- form for creating and editing shipping address -->
+	<group formid="shippingAddress" form-error="address.invalid" >
+		<!-- use fields from shipping address definition -->
+		<include formid="addressFields" name="shippingaddress"/>
+
+		<!-- optional flags -->
+		<field formid="addToAddressBook" label="checkout.addtoaddressbook" type="boolean" mandatory="false" />
+		<field formid="useAsBillingAddress" label="checkout.useasbillingaddress" type="boolean" mandatory="false" />
+
+		<!-- gift options -->
+		<field formid="isGift" label="checkout.shipment.isgift" type="boolean" default-value="false" binding="gift" mandatory="false" >
+			<options>
+				<option label="checkout.shipment.yes" value="true" />
+				<option label="checkout.shipment.no" value="false" />
+			</options>
+		</field>
+		<field formid="giftMessage" label="checkout.shipment.giftmessage" type="string" binding="giftMessage" mandatory="false" />
+
+		<!-- shipping method selection -->
+		<field formid="shippingMethodID" type="string" mandatory="true" />
+
+		<!-- action for actually saving the address -->
+		<action formid="save" valid-form="true"/>
+		<action formid="selectAddress" valid-form="false"/>
+	</group>
+
+	<group formid="inStoreShipments">
+		<!-- list of shipments to set properties for (gift settings and shipping method) -->
+		<list formid="shipments">
+			<!-- store message -->
+			<field formid="storePickupMessage" label="store.storemessage" type="string" binding="custom.storePickupMessage" mandatory="false" />
+		</list>
+	</group>
+
+	<!-- general actions -->
+	<action formid="shipToMultiple" valid-form="false"/>
+
+</form>

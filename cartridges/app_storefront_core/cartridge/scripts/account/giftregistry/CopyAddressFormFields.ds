@@ -1,0 +1,74 @@
+/**
+* This script copies the gift registry event address form fields, clears the form, and
+* copies the values back to the form.  This is done to maintain the state of the form
+* when creating a new gift registry and the customer hits the previous button.
+*
+* @input GiftRegistryForm : dw.web.FormGroup The form definition representing the gift registry.
+*
+*/
+importPackage( dw.system );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var giftRegistryForm : FormGroup = pdict.GiftRegistryForm;
+	var eventAddressForm : FormGroup = giftRegistryForm.eventaddress;
+
+	// copy and save the before event address fields
+	var beforeAddressID : String = eventAddressForm.addressBeforeEvent.addressid.value;
+	var beforeFirstName : String = eventAddressForm.addressBeforeEvent.firstname.value;
+	var beforeLastName : String = eventAddressForm.addressBeforeEvent.lastname.value ;
+	var beforeAddress1 : String = eventAddressForm.addressBeforeEvent.address1.value; 
+	var beforeAddress2 : String = eventAddressForm.addressBeforeEvent.address2.value; 
+	var beforeCity : String = eventAddressForm.addressBeforeEvent.city.value; 
+	var beforeZip : String = eventAddressForm.addressBeforeEvent.postal.value; 
+	var beforeState : String = eventAddressForm.addressBeforeEvent.states.state.value; 
+	var beforeCountry : String = eventAddressForm.addressBeforeEvent.country.value; 
+	var beforePhone : String = eventAddressForm.addressBeforeEvent.phone.value; 
+	
+	// copy and save the after event address fields
+	var afterAddressID : String = eventAddressForm.addressAfterEvent.addressid.value;
+	var afterFirstName : String = eventAddressForm.addressAfterEvent.firstname.value;
+	var afterLastName : String = eventAddressForm.addressAfterEvent.lastname.value ;
+	var afterAddress1 : String = eventAddressForm.addressAfterEvent.address1.value; 
+	var afterAddress2 : String = eventAddressForm.addressAfterEvent.address2.value; 
+	var afterCity : String = eventAddressForm.addressAfterEvent.city.value; 
+	var afterZip : String = eventAddressForm.addressAfterEvent.postal.value; 
+	var afterState : String = eventAddressForm.addressAfterEvent.states.state.value; 
+	var afterCountry : String = eventAddressForm.addressAfterEvent.country.value; 
+	var afterPhone : String = eventAddressForm.addressAfterEvent.phone.value;
+	
+	// copy and save copy address checkbox
+	var copyAddress : Boolean = giftRegistryForm.copyAddress.value;
+
+	// clear the form
+	eventAddressForm.clearFormElement();
+	
+	// copy back the before event address field values
+	eventAddressForm.addressBeforeEvent.addressid.value = beforeAddressID;
+	eventAddressForm.addressBeforeEvent.firstname.value = beforeFirstName;
+	eventAddressForm.addressBeforeEvent.lastname.value = beforeLastName;
+	eventAddressForm.addressBeforeEvent.address1.value = beforeAddress1; 
+	eventAddressForm.addressBeforeEvent.address2.value = beforeAddress2; 
+	eventAddressForm.addressBeforeEvent.city.value = beforeCity; 
+	eventAddressForm.addressBeforeEvent.postal.value = beforeZip ; 
+	eventAddressForm.addressBeforeEvent.states.state.value = beforeState; 
+	eventAddressForm.addressBeforeEvent.country.value = beforeCountry; 
+	eventAddressForm.addressBeforeEvent.phone.value = beforePhone; 
+	
+	// copy back the after event address field values
+	eventAddressForm.addressAfterEvent.addressid.value = afterAddressID;
+	eventAddressForm.addressAfterEvent.firstname.value = afterFirstName;
+	eventAddressForm.addressAfterEvent.lastname.value = afterLastName;
+	eventAddressForm.addressAfterEvent.address1.value = afterAddress1; 
+	eventAddressForm.addressAfterEvent.address2.value = afterAddress2; 
+	eventAddressForm.addressAfterEvent.city.value = afterCity; 
+	eventAddressForm.addressAfterEvent.postal.value = afterZip ; 
+	eventAddressForm.addressAfterEvent.states.state.value = afterState; 
+	eventAddressForm.addressAfterEvent.country.value = afterCountry; 
+	eventAddressForm.addressAfterEvent.phone.value = afterPhone; 
+	
+	// copy back the copy address checkbox value
+	giftRegistryForm.copyAddress.value = copyAddress; 
+	
+   return PIPELET_NEXT;
+}

@@ -1,0 +1,30 @@
+/**
+*
+*   @input AddressId : String This is a sample comment.
+*	@input CurrentCustomer : dw.customer.Customer
+*   @output Customer : dw.customer.Customer
+*	@output LookupId : String
+*
+*/
+importPackage( dw.system );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	try
+	{
+	args.Customer = args.CurrentCustomer;
+	args.LookupId = args.AddressId;
+    var segments = args.AddressId.split("??");    
+	
+	if (segments.length>1) {
+		var profile = dw.customer.CustomerMgr.queryProfile("email = {0}", segments[0]);
+		args.Customer = profile.customer;
+		args.LookupId = segments[1];		
+	}
+	}
+	catch (error) {
+		var msg = "error: "+error;
+	}		
+
+   return PIPELET_NEXT;
+}

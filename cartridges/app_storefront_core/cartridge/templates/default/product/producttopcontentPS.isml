@@ -1,0 +1,212 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+
+<isif condition="${isQuickView}">
+	<div class="quick-view-navigation">
+		<button class="quickview-prev">< ${Resource.msg('global.previous','locale',null)}</button>
+		<button class="quickview-next" style="float:right">${Resource.msg('global.next','locale',null)} ></button>
+	</div>
+</isif>
+
+<!-- dwMarker="product" dwContentID="${pdict.Product.UUID}" -->
+
+<isset name="OrigProduct" value="${pdict.Product}" scope="page"/>
+<isset name="ProductSet" value="${pdict.Product}" scope="pdict"/>
+<isset name="ProductSetList" value="${new dw.util.ArrayList()}" scope="pdict" />
+<isset name="isBundle" value="${pdict.Product.bundle}" scope="pdict"/>
+<isset name="isSet" value="${pdict.Product.productSet}" scope="pdict"/>
+
+<isloop items="${pdict.Product.productSet ? pdict.ProductSet.getProductSetProducts() : pdict.ProductSet.getBundledProducts()}" var="SetProduct" status="productSetLoop">
+	<isif condition="${SetProduct.online}">
+		<isscript>
+			if( SetProduct.master ) {
+				var _variants = SetProduct.getVariants();
+				if(_variants != null) {
+					if(_variants.length > 0) {
+						for each(var _p : dw.product.Product in _variants) {
+							if(_p.onlineFlag == true) {
+								SetProduct = _p;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			pdict.ProductSetList.add(SetProduct);
+		</isscript>
+	</isif>
+</isloop>
+
+<iscomment>
+	Image
+	=============================================================
+</iscomment>
+
+<div class="product-col-1 product-set"><!-- dwMarker="product" dwContentID="${pdict.Product.UUID}" -->
+
+	<isset name="FirstProductInSet" value="${pdict.ProductSetList[0]}" scope="pdict" />
+	<isset name="imageProduct" value="${pdict.FirstProductInSet}" scope="page"/>
+
+	<isif condition="${!empty(imageProduct.getImage('large', 0))}">
+		<isset name="imageUrl" value="${imageProduct.getImage('large', 0).getURL()}" scope="page"/>
+		<isset name="imageAlt" value="${imageProduct.getImage('large', 0).alt}" scope="page"/>
+		<isset name="imageTitle" value="${imageProduct.getImage('large', 0).title}" scope="page"/>
+	<iselse/>
+		<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+		<isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+		<isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+	</isif>
+
+	<isif condition="${!empty(imageProduct.getImage('hi-res', 0))}">
+		<isset name="imageUrlHiRes" value="${imageProduct.getImage('hi-res', 0).getURL()}" scope="page"/>
+	<iselse/>
+		<isset name="imageUrlHiRes" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+	</isif>
+
+	<div class="product-primary-image">
+		<h2 class="visually-hidden">Images</h2>
+
+		<isif condition="${!empty(imageProduct.getImages('hi-res')) && imageProduct.getImages('hi-res').length>0}">
+			<isset name="hi_res" scope="page" value="${imageProduct.getImages('hi-res')[0].getURL().toString()}" />
+			<isset name="href" scope="page" value="${'href='+hi_res+' target=_blank'}" />
+		<iselse/>
+			<isset name="hi_res" scope="page" value="${''}" />
+			<isset name="href" scope="page" value="${'name=product_detail_image'}" />
+		</isif>
+		<a ${href} class="product-image main-image" title="${pdict.Product.name}${imageTitle}">
+			<img itemprop="image" class="primary-image" src="${imageUrl}" alt="${imageAlt}"/>
+		</a>
+	</div>
+
+	<div id="thumbnails" class="product-thumbnails">
+		<ul>
+			<isloop items="${pdict.ProductSetList}" var="product" status="loopstatus">
+				<isset name="lgImage" value="${product.getImages('large')[0]}" scope="page" />
+				<isif condition="${!empty(imageProduct.getImage('hi-res', 0))}">
+					<isset name="hi_res" value="${product.getImages('hi-res')[0]}" scope="page" />
+				</isif>
+				<isset name="href" value="${''}" scope="page" />
+				<isif condition="${!empty(hi_res)}">
+					<isset name="href" value="${hi_res.getURL()}" scope="page" />
+				</isif>
+				<isset name="smImage" value="${product.getImages('small')[0]}" scope="page" />
+				<li class="thumb ${loopstatus.first ? 'selected' : ''}">
+					<a href="${href}" target="_blank" class="thumbnail-link">
+						<img class="productthumbnail"
+							 src="${smImage.getURL()}"
+							 alt="${smImage.alt}"
+							 data-lgimg='{"url":"${lgImage.getURL()}", "title":"${lgImage.title}", "alt":"${lgImage.alt}", "hires":"${href}"}'/>
+					</a>
+				</li>
+			</isloop>
+		</ul>
+	</div>
+</div>
+
+<div class="product-col-2 product-detail product-set">
+
+	<iscomment>
+		primary details
+		=============================================================
+	</iscomment>
+	
+	<h1 class="product-name"  itemprop="name"><isprint value="${pdict.Product.name}"/></h1>
+	
+	<span class="visually-hidden" itemprop="url">${URLUtils.http('Product-Show','pid', pdict.Product.ID)}</span>
+
+	<div class="product-number">
+		${Resource.msg('product.item','product',null)} <span itemprop="productID" data-masterid="${pdict.Product.ID}"><isprint value="${pdict.Product.ID}"/></span>
+	</div>
+
+	<isif condition="${isQuickView}">
+		<!-- shown only in quick view -->
+		<a href="${URLUtils.url('Product-Show','pid', pdict.Product.ID)}" title="${pdict.Product.name}">${Resource.msg('product.viewdetails','product',null)}</a>
+	</isif>
+
+	<isset name="psProduct" value="${pdict.Product}" scope="page"/>
+	
+	<iscomment>
+		product promotions
+		=============================================================
+	</iscomment>
+
+	<isinclude template="product/components/promotions"/>
+	<isif condition=${pdict.isBundle}>
+		<isset name="showTieredPrice" value="${true}" scope="page"/>
+		<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm bundle">
+	</isif>
+	<div id="product-set-list" class="product-set-list">
+		<h2 class="visually-hidden">Products</h2>
+		<isset name="isUnavailable" value="${false}" scope="page"/>
+		<isloop items="${pdict.ProductSetList}" var="SetProduct" status="productSetLoop">
+			<isset name="Product" value="${SetProduct}" scope="pdict"/>
+			<isset name="isUnavailable" value="${isUnavailable || (pdict.Product.availabilityModel.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_NOT_AVAILABLE)}" scope="page"/>
+			<isobject object="${pdict.Product}" view="setproduct">
+				<div class="product-set-item" id="item-${pdict.Product.ID}">
+					<isinclude template="product/components/productsetproduct"/>
+				</div>
+			</isobject>
+		</isloop>
+	</div><!-- END id=productSetScroller -->
+	<isset name="Product" value="${psProduct}" scope="pdict"/>
+	<isif condition="${pdict.isSet}">
+		<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+	</isif>
+		<div class="product-add-to-cart">
+			<isset name="disabledText" value="${isUnavailable?' disabled="disabled"':''}" scope="page"/>
+			
+			<iscomment>
+				product set price
+				=============================================================
+			</iscomment>
+			
+			<label>${Resource.msg('product.setpricelabel','product',null)}</label>
+			<isinclude template="product/components/pricing"/>
+			
+			<isif condition="${pdict.isSet}">
+				<button id="add-all-to-cart" type="submit" value="${Resource.msg('global.addalltocart','locale',null)}" class="button-fancy-large add-all-to-cart"${disabledText}>
+					${Resource.msg('global.addalltocart','locale',null)}
+				</button>
+			<iselse/>
+				<isscript>
+					var updateSources = ["cart", "giftregistry", "wishlist"];
+					var source = pdict.CurrentHttpParameterMap.source.stringValue;
+					var buttonTitle = (empty(source) || updateSources.indexOf(source)<0) ?	dw.web.Resource.msg('global.addtocart','locale','Add to Cart') : dw.web.Resource.msg('global.update','locale','Update');
+				</isscript>
+				<isset name="cartAction" value="add" scope="page"/>
+				<isif condition="${pdict.CurrentHttpParameterMap.uuid.stringValue}">
+					<input type="hidden" name="uuid" id="uuid" value="${pdict.CurrentHttpParameterMap.uuid.stringValue}" />
+					<isset name="cartAction" value="update" scope="page"/>
+				</isif>
+				<input type="hidden" name="cartAction" id="cartAction" value="${cartAction}" />
+				<input type="hidden" name="pid" id="pid" value="${pdict.Product.ID}" />
+				<button id="add-to-cart" type="submit" title="${buttonTitle}" value="${buttonTitle}" class="button-fancy-large add-to-cart bundle"${disabledText}>${buttonTitle}</button>
+			</isif>
+
+		</div><!-- END .addalltocart -->
+	</form>
+
+	<div class="product-actions">
+		<h2 class="visually-hidden">Product Actions</h2>
+		<isscript>
+			var Url = require('~/cartridge/scripts/util/Url');
+			pdict.url = Url.getCurrent(pdict);
+			pdict.title = pdict.Product.name;
+		</isscript>
+		<isinclude template="components/socialsharing"/>
+
+		<isif condition="${pdict.isBundle}">
+			<isif condition="${!empty(pdict.CurrentHttpParameterMap.source.stringValue)}">
+				<isset name="wishlistUrl" value="${URLUtils.https('Wishlist-Add', 'pid', pdict.Product.ID, 'source', pdict.CurrentHttpParameterMap.source.stringValue)}" scope="page"/>
+			<iselse/>
+				<isset name="wishlistUrl" value="${URLUtils.https('Wishlist-Add', 'pid', pdict.Product.ID)}" scope="page"/>
+			</isif>
+			<a data-action="wishlist" href="${wishlistUrl}" title="${Resource.msg('global.addtowishlist.label','locale',null)}">${Resource.msg('global.addtowishlist','locale',null)}</a>
+			<a data-action="gift-registry" href="${URLUtils.https('GiftRegistry-AddProduct', 'pid', pdict.Product.ID)}" title="${Resource.msg('global.addtogiftregistry.label','locale',null)}">${Resource.msg('global.addtogiftregistry','locale',null)}</a>
+		</isif>
+
+	</div><!--  end details block -->
+
+</div>
+<isset name="Product" value="${OrigProduct}" scope="pdict" />

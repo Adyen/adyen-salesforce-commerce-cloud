@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: instoremessages.isml </iscomment>
+<isscript>
+
+	importPackage( dw.system );
+	importPackage( dw.catalog );
+	importPackage( dw.order );
+	var storeID = null;
+	var storeObject = null;
+
+</isscript>
+
+<isloop items="${pdict.CurrentForms.singleshipping.inStoreShipments.shipments}" var="shipment" status="shipmentloopstatus">
+
+	<iscomment></iscomment>
+	<isif condition="${shipment.object.custom.shipmentType != 'instore' || shipment.object.shippingMethod == null}">
+		<iscontinue/>
+	</isif>
+	<isscript>
+		var shippingModel : dw.order.ShipmentShippingModel = dw.order.ShippingMgr.getShipmentShippingModel(shipment.object);
+		storeID = shipment.object.custom.fromStoreId;
+		storeObject = StoreMgr.getStore(storeID)
+	</isscript>
+	<isset name="instoreShipmentsExists" value="${true}" scope="page"/>
+<div class="instore-shipment-message">
+
+	<div class="instore-shipment-header">
+	<legend>
+	${Resource.msg('instore.shipping.storemessage','checkout',null)}
+	</legend>
+
+	</div>
+	<div class="instore-shipment-method">
+		<span>${Resource.msg('resource.shippingmethod','forms',null)}</span> :
+		<isprint value="${shipment.object.shippingMethod.displayName}"/>
+		<isprint value="${shippingModel.getShippingCost(shipment.object.shippingMethod).getAmount()}"/>
+		(<isprint value="${shipment.object.shippingMethod.description}"/>)
+	</div>
+	<div class="instore-shipment-info">
+		<div class="instore-shipment-address">
+			<div><isprint value="${storeObject.name}"/></div>
+			<div><isprint value="${storeObject.address1}"/></div>
+			<isif condition="${!empty(storeObject.address2)}">
+				<div><isprint value="${storeObject.address2}"/></div>
+			</isif>
+			<div><isprint value="${storeObject.city}"/>, <isprint value="${storeObject.stateCode}"/> <isprint value="${storeObject.postalCode}"/></div>
+			<div><isprint value="${storeObject.countryCode}"/></div>
+		</div>
+		<div class="instore-shipment-messagetxt">
+			<isscript>
+				var attributes = {
+					rows: 4,
+					cols: 10,
+					'data-character-limit': 250
+				};
+			</isscript>
+			<isinputfield rowclass="instore-message-text" formfield="${shipment.storePickupMessage}" type="textarea" attributes="${attributes}"/>
+		</div>
+	</div>
+</div>
+
+
+</isloop>

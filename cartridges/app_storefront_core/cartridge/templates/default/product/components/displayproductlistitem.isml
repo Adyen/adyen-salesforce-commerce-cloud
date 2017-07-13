@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates a div rendering a product and product line item information.
+	p_productli : the product line item to render
+</iscomment>
+
+<iscomment>Create page variable representing the product line item</iscomment>
+<isset name="p_productli" value="${pdict.p_productli}" scope="page"/>
+
+<div class="product-list-item">
+
+	<iscomment>See if the items is part of the site catalog, prior to rendering link</iscomment>
+	<isif condition="${p_productli.product != null && p_productli.type != p_productli.TYPE_GIFT_CERTIFICATE && !p_productli.product.assignedToSiteCatalog}">
+		<div class="error">           
+            ${Resource.msg('product.displayproductlistitems.notavailableitem','product',null)}
+		</div>
+		<div class="name><isprint value="${p_productli.product.name}"/></div>
+	</isif>
+
+	<isif condition="${p_productli.type == p_productli.TYPE_GIFT_CERTIFICATE}">
+		
+		<div class="name ">
+			<a href="${URLUtils.https('GiftCert-Purchase')}">${Resource.msg('global.giftcertificate','locale',null)}</a>
+		</div>
+		
+		<div class="sku">
+			<span class="value">${Resource.msg('global.deliveredviaemail','locale',null)}</span>
+		</div>
+			
+	<iselseif condition="${p_productli.product == null}">
+	
+		<div class="sku ">
+			<span class="label">${Resource.msg('global.itemno','locale',null)}</span>
+			<span class="value"><isprint value="${p_productli.productID}"/></span>
+		</div>
+		
+		<div class="notavailable">
+			${Resource.msg('product.displayproductlistitems.notavailable','product',null)}
+		</div>
+		
+	<iselseif condition="${!p_productli.product.availabilityModel.orderable}">
+	
+		<div class="name ">
+			<a href="${URLUtils.http('Product-Show','pid', p_productli.product.ID)}">
+				<isprint value="${p_productli.product.name}"/>
+			</a>
+		</div>
+
+		<div class="sku">
+			<span class="label">${Resource.msg('global.itemno','locale',null)}</span>
+			<span class="value"><isprint value="${p_productli.productID}"/></span>
+		</div>
+
+		<div class="notavailable">
+			${Resource.msg('product.displayproductlistitems.notavailable','product',null)}
+		</div>
+		
+	<iselse/>
+	
+		<div class="name ">
+			<a href="${URLUtils.http('Product-Show','pid', p_productli.product.ID)}">
+				<isprint value="${p_productli.product.name}"/>
+			</a>
+		</div>
+
+		<div class="sku">
+			<span class="label">${Resource.msg('global.itemno','locale',null)}</span>
+			<span class="value"><isprint value="${p_productli.productID}"/></span>
+		</div>
+		
+		<iscomment>display product list item varations using module</iscomment>
+		<isdisplayvariationvalues product="${p_productli.product}"/>
+
+		<iscomment>display product list item options using module</iscomment>
+		<isdisplayoptionvalues productlistitem="${p_productli}"/>			
+		
+		<iscomment>display product pricing using module</iscomment>
+		<div class="price">
+			<span class="label">${Resource.msg('global.price','locale',null)}</span>
+			<span class="value"><isdisplayproductpricing product="${p_productli.product}"/></span>
+		</div>
+	</isif>
+
+</div>

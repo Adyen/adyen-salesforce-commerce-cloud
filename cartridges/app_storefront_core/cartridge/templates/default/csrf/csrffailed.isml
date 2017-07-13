@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!-- redirect to the default home page -->
+
+<isset scope="page" name="Location" value="${URLUtils.url('Home-Show')}"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>${Resource.msg('global.error_forbidden.redirect','locale',null)}</title>
+    <meta http-equiv="refresh" content="5; url=${Location}">
+    <meta http-equiv="Robots" content="noindex, follow" />
+</head>
+<body>
+    <h1>${Resource.msg('global.csrf.failed.heading','locale',null)}</h1>
+    <p class="error-page-message">
+        ${Resource.msg('global.csrf.failed.message','locale',null)} <a href="${Location}">${Resource.msg('global.error_forbidden.home','locale',null)}</a>
+    </p>
+</body>
+</html>

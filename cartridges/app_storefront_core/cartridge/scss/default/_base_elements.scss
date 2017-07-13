@@ -1,0 +1,121 @@
+body {
+	background: none repeat scroll 0 0 $night-rider;
+	color: $night-rider;
+	font-family: $sans-serif;
+	font-size: 12px;
+}
+
+a {
+	color: $citrus;
+	outline: medium none;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+fieldset {
+	border: 0 none;
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	width: 100%;
+}
+
+th {
+	text-align: left;
+}
+
+td {
+	padding: 1em;
+	vertical-align: top;
+}
+
+button,
+.button,
+.buttonstyle,
+input[type="button"] {
+	background-color: $citrus;
+	border-color: darken($citrus, 10%);
+	border-radius: 2px;
+	border-style: solid;
+	border-width: 1px;
+	color: $white;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 1.1em;
+	font-weight: 400;
+	padding: 0.5em 2em;
+	text-align: center;
+	transition: all 0.3s ease;
+	&.large {
+		font-size: 1.35em;
+		text-transform: uppercase;
+	}
+	&:hover {
+		background-color: $white;
+		border-color: $citrus;
+		color: $citrus;
+	}
+	&.raised {
+		border-width: 0;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+		&:hover {
+			background-color: darken($citrus, 10%);
+			color: $white;
+		}
+	}
+	&.simple {
+		background-color: $white;
+		color: darken($citrus, 10%);
+	}
+	&[disabled],
+	&.disabled {
+		background-color: $very-light-gray;
+		border-color: $very-light-gray;
+		color: $dim-gray;
+		opacity: 0.5;
+	}
+	a {
+		color: $white;
+		&:hover {
+			color: $citrus;
+		}
+	}
+	i {
+		&.left {
+			margin-right: 0.6em;
+		}
+		&.right {
+			margin-left: 0.6em;
+		}
+	}
+}
+
+.button-fancy-small {
+}
+
+.button-fancy-medium {
+}
+
+.button-fancy-large {
+	@extend .button.large;
+}
+
+.button-text {
+	background-color: transparent;
+	border-width: 0;
+	color: $citrus;
+	padding: 0;
+	&:hover {
+		background-color: transparent;
+		text-decoration: underline;
+	}
+}
+
+.button-full-width {
+	padding-left: 0;
+	padding-right: 0;
+	text-align: center;
+	width: 100%;
+}

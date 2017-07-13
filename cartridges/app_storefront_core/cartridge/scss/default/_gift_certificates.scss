@@ -1,0 +1,86 @@
+.gift-certificate-purchase {
+	background-color: $white-smoke;
+	margin-bottom: 1em;
+	padding: .83em;
+	.content-asset {
+		@media (min-width: 768px) {
+			box-sizing: border-box;
+			float: left;
+			padding-right: 1rem;
+			width: 50%;
+		}
+		img {
+			margin: 1.66em 0;
+		}
+	}
+	form {
+		background-color: $white;
+		box-sizing: border-box;
+		padding: 0 1.66em 1.66em;
+		width: 100%;
+		@media (min-width: 768px) {
+			float: left;
+			width: 50%;
+		}
+		.cert-amount {
+			clear: none;
+			float: left;
+			margin: 0;
+			width: 40%;
+		}
+		button {
+			margin-top: -4px;
+			width: 12em; //for IE
+			width: max-content;
+		}
+		.form-row-button {
+			clear: none;
+			float: left;
+			margin: 2.1em 0 0 1.66em;
+			width: 50%;
+		}
+	}
+	.cert-amount {
+		.form-caption {
+			margin: 1.66em 0 0;
+			position: absolute;
+			width: 40%;
+		}
+		&.error {
+			padding-bottom: 2.92em;
+		}
+	}
+	span.error {
+		margin-left: 2%;
+	}
+}
+
+.check-balance {
+	border-bottom: 1px solid $gainsboro;
+	margin: 0 0 1.66em;
+	padding: 0 0 1.66em;
+}
+
+.gift-cert-balance {
+	float: left;
+	width: 40%;
+	label {
+		display: none;
+	}
+	input {
+		margin-top: 0;
+		width: 93%;
+	}
+	.form-caption {
+		margin-left: 0;
+	}
+}
+
+.gift-cert-balance-submit {
+	clear: none;
+	float: left;
+}
+
+.gift-cert-balance .label {
+	display: none;
+}

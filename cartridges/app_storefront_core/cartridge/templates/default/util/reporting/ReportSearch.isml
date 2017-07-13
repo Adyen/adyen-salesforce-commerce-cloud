@@ -1,0 +1,28 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>Log events for simple search but only when the simple search button was used</iscomment>
+
+<iscomment>
+	Determine if this is the first search request or a drilldown on refinment attributes.
+	The refinement will not have the parameters of the Go button of the simple search form.
+
+	DO NOT CHANGE THE LOCALE HERE. It just serves the purpose of logging the information
+	to the analytics log file. The customer will never see it and the analytics module expects en_US.
+</iscomment>
+<isif condition="${!empty(pdict.ProductSearchResult)}">
+
+	<iscomment>report only initial searches, not refinements</iscomment>
+
+		<iscomment>check for null, because it can be an empty string and we want to report it</iscomment>
+		<isif condition="${!pdict.ProductSearchResult.emptyQuery && !pdict.ProductSearchResult.refinedSearch}">
+			<isscript>
+				var locale = 'en_US';
+			</isscript>
+
+			<isinclude url="${URLUtils.url('ReportingEvent-Start',
+								 'ID',			'ProductSearch',
+								 'Phrase',	 	pdict.ProductSearchResult.searchPhrase,
+								 'ResultCount', StringUtils.formatNumber(pdict.ProductSearchResult.count, '#,##0', locale)
+								 )}"/>
+		</isif>
+</isif>
+

@@ -1,0 +1,49 @@
+/**
+* Salesforce Commerce Cloud Script File
+* To lookup store inventory the product:
+*
+*
+*  @input pid : String
+*  @input product : dw.catalog.Product
+*  @input stores : dw.util.Set
+*  @input pli : dw.order.ProductLineItem
+*  @output storeAvailability : dw.util.HashMap
+*
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.util );
+
+importScript("storelocator/storepickup/Utils.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	
+	var product : Product = args.product;
+	var stores : Set = args.stores; 
+	var storesItr : dw.util.Iterator = stores.iterator();
+	var store : Store = null;
+	var storeAvailabilityMessage : String = "";
+	var storeAvailabilityMap : HashMap = new HashMap();
+	var storepickup : String;
+	var lineItemItr : Iterator;
+	var productLineItem : ProductLineItem;
+	
+	while (storesItr.hasNext()) {
+		
+		store = storesItr.next();
+		storeAvailabilityMessage = getStoreAvailabilityMessage(store, product);
+		// the inventory check is for a pli consider the qty value for available stores
+		if(args.pli != null){
+			var storeinventory : ProductInventoryList = ProductInventoryMgr.getInventoryList(store.custom.inventoryListId);
+			if(!empty(storeinventory.getRecord(args.pli.productID)) && storeinventory.getRecord(args.pli.productID).ATS.value >= args.pli.quantityValue) {
+				storeAvailabilityMap.put(store.ID, storeAvailabilityMessage);
+			}
+		}else{
+			storeAvailabilityMap.put(store.ID, storeAvailabilityMessage);
+		}
+	}
+	
+	args.storeAvailability = storeAvailabilityMap;
+    return PIPELET_NEXT;
+}

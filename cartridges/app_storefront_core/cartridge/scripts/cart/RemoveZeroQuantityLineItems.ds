@@ -1,0 +1,45 @@
+/**
+ * RemoveZeroQuantityLineItems.ds
+ *
+ * This script checks for product line items that have a quantity of 0 or empty and will
+ * remove them from the cart.
+ *
+ * @input  Basket : dw.order.Basket
+ * @input ShipmentsForm : dw.web.FormGroup The form definition representing the cart shipments.
+ */
+ 
+ importPackage( dw.web );
+ importPackage( dw.order );
+
+/**
+ * Function: execute
+ *
+ * Main function of the script.
+ */
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // ===========================================================
+    // =====     	PROCESS INPUT PARAMETERS 		         =====
+    // ===========================================================
+
+	var basket : Basket = pdict.Basket;
+	var cartShipmentsForm : FormGroup = pdict.ShipmentsForm;
+	
+    // ===========================================================
+    // =====   CHECK FOR 0 QUANTITY LINE ITEMS AND REMOVE    =====
+    // ===========================================================	
+    for each(var shipmentitem in cartShipmentsForm.shipments) {
+		
+        for each(var item in shipmentitem.items) {
+   			
+            var productLineItem : ProductLineItem = item.object;
+            if (item.quantity.value == 0) 
+            {
+                basket.removeProductLineItem(productLineItem);
+            }
+        } 
+    }   		
+    return PIPELET_NEXT;
+}
+
+

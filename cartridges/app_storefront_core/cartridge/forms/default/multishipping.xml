@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+	<!-- flag indicating whether the customer actually entered the multi shipping scenario or not -->
+	<field formid="entered" type="boolean" default-value="false"/>
+
+	<group formid="addressSelection">
+
+		<!-- flag indicating whether this checkout step is fulfilled -->
+		<field formid="fulfilled" type="boolean" default-value="false"/>
+
+		<!-- list of quantity line items to differentiate by shipping address -->
+		<list formid="quantityLineItems">
+			<field formid="lineItemUUID" binding="UUID" type="string"/>
+			
+			<field formid="addressList" type="string" mandatory="true">
+				<options optionid-binding="UUID" value-binding="UUID" label-binding="ID"/>
+			</field>
+		</list>
+	
+		<!-- action for saving the selection -->
+		<action formid="save" valid-form="true"/>
+	</group>
+
+	<group formid="shippingOptions">
+
+		<!-- flag indicating whether this checkout step is fulfilled -->
+		<field formid="fulfilled" type="boolean" default-value="false"/>
+
+		<!-- list of shipments to set properties for (gift settings and shipping method) -->
+		<list formid="shipments">
+			<field formid="shipmentUUID" binding="UUID" type="string"/>
+	
+			<!-- gift options -->
+			<field formid="isGift" label="checkout.shipment.isgift" type="boolean" default-value="false" binding="gift" mandatory="false" >
+				<options>
+					<option label="checkout.shipment.yes" value="true" />
+					<option label="checkout.shipment.no" value="false" />
+				</options>
+			</field>
+			<field formid="giftMessage" label="checkout.shipment.giftmessage" type="string" binding="giftMessage" mandatory="false" />
+			<field formid="storePickupMessage" label="store.storemessage" type="string" binding="custom.storePickupMessage" mandatory="false" />	
+
+			<!-- shipping method selection -->
+			<field formid="shippingMethodID" type="string" mandatory="true" binding="shippingMethodID">
+				<options optionid-binding="UUID" value-binding="ID" />
+			</field>
+		</list>
+
+		<!-- action for saving the properties -->
+		<action formid="save" valid-form="true"/>
+	</group>
+	
+	<group formid="editAddress" form-error="address.invalid">
+		<field formid="addressList" type="string" mandatory="true">
+			<options optionid-binding="UUID" value-binding="UUID" label-binding="ID" />
+		</field>
+		
+		<!-- use fields from shipping address definition -->
+		<include formid="addressFields" name="shippingaddress"/>
+	
+		<field formid="addToAddressBook" label="checkout.addtoaddressbook" type="boolean" mandatory="false" />
+	
+		<action formid="selectAddress" valid-form="false"/>
+		<action formid="save" valid-form="true"/>
+		<action formid="cancel" valid-form="false"/>
+	</group>
+
+</form>

@@ -1,0 +1,60 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+	<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('account.giftregistry.searchheader','account',null)}<div class="dialog-required"> <span class="required-indicator">&#8226;</span> <em>${Resource.msg('global.requiredfield','locale',null)}</em></div></h1>
+
+	<isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+	<isinclude template="account/giftregistry/giftregistrysearch"/>
+
+	<form action="${URLUtils.httpsContinue()}" method="post" class="create-new-registry" id="${pdict.CurrentForms.giftregistry.htmlName}">
+		<fieldset>
+			<p>${Resource.msg('registrylist.newregistrydescription','account',null)}</p>
+			<div class="form-row">
+				<button type="submit" value="${Resource.msg('registrylist.newregistry','account',null)}" name="${pdict.CurrentForms.giftregistry.create.htmlName}">
+					${Resource.msg('registrylist.newregistry','account',null)}
+				</button>
+			</div>
+
+		</fieldset>
+	</form>
+
+		<isif condition="${!empty(pdict.CurrentForms.productlists.items)}">
+
+				<h1>${Resource.msg('registrylist.registriesheader','account',null)}</h1>
+
+				<table class="item-list">
+
+					<tr>
+						<th class="section-header hdr-name">${Resource.msg('registrylist.eventnameheader','account',null)}</th>
+						<th class="section-header hdr-type">${Resource.msg('registrylist.eventtypeheader','account',null)}</th>
+						<th class="section-header hdr-header">${Resource.msg('registrylist.dateheader','account',null)}</th>
+						<th class="section-header hdr-location">${Resource.msg('registrylist.locationheader','account',null)}</th>
+						<th class="section-header hdr-details">${Resource.msg('global.details','locale',null)}</th>
+						<th class="section-header hdr-options">${Resource.msg('global.delete','locale',null)}</th>
+					</tr>
+
+					<isloop items="${pdict.CurrentForms.productlists.items}" var="item" status="loopstate">
+						<tr class="<isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+							<td class="event-name"><isprint value="${item.object.name}"/></td>
+							<td class="event-type"><isprint value="${Resource.msg('giftregistry.' + item.object.eventType, 'forms', item.object.eventType)}"/></td>
+							<td class="event-date"><isprint value="${item.object.eventDate}" timezone="utc"/></td>
+							<td class="event-location">${Resource.msgf('global.event.location','locale', null, item.object.eventCity, item.object.eventState)}</td>
+							<td class="event-details"><a href="${URLUtils.https('GiftRegistry-ShowRegistryByID','ProductListID', item.object.UUID)}" title="${Resource.msg('global.view','locale',null)}">${Resource.msg('global.view','locale',null)}</a></td>
+							<td class="item-dashboard">
+								<div class="item-option delete-registry">
+									<a id="${item.object.ID}" href="${URLUtils.url('GiftRegistry-Delete', 'ProductListID', item.object.UUID)}" alt="${Resource.msg('global.delete','locale',null)}" class="delete">
+										${Resource.msg('global.delete','locale',null)}
+									</a>
+								</div>
+							</td>
+						</tr>
+					</isloop>
+
+				</table>
+
+		</isif>
+
+
+</isdecorate>

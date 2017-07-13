@@ -1,0 +1,170 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${!empty(pdict.Order)}">
+
+	<iscomment>Log the total amount of orders the customer has</iscomment>
+	<isif condition="${!empty(pdict.CurrentCustomer)}">
+		<isinclude url="${URLUtils.url('ReportingEvent-Start',
+			'ID', 	'UserOrders',
+			'Count', StringUtils.formatNumber(pdict.CurrentCustomer.orderHistory.orderCount, '#,##0'))}"/>
+	</isif>
+
+	<iscomment>
+		Log event with total revenue information. The information will be logged always in en_US.
+		DO NOT CHANGE THE LOCALE HERE. It just serves the purpose of logging the revenue information
+		to the analytics log file. The customer will never see it and the analytics module expects en_US.
+	</iscomment>
+	<isscript>
+		var locale = 'en_US';
+	</isscript>
+
+	<iscomment>
+		This reporting include tries to keep track of the source code. So that we have the information, even
+		if it was not tracked before.
+	</iscomment>
+	<isinclude template="util/reporting/ReportSourceCodes.isml"/>
+
+	<iscomment>
+		Report the general information about the order
+	</iscomment>
+	<isinclude url="${URLUtils.url('ReportingEvent-Start',
+		'ID',						'Order',
+		'CurrencyCode', 			pdict.Order.currencyCode,
+
+		'CreationDate',				StringUtils.formatCalendar(new dw.util.Calendar(pdict.Order.creationDate), 'yyyyMMdd\'T\'HH:mm:ss.SSSZ'),
+		'CreatedBy',				pdict.Order.createdBy,
+
+		'MerchandizeTotalNet',		StringUtils.formatNumber(pdict.Order.merchandizeTotalNetPrice.value		, '#,##0.00', locale),
+		'MerchandizeTotalTax',		StringUtils.formatNumber(pdict.Order.merchandizeTotalTax.value			, '#,##0.00', locale),
+		'MerchandizeTotalGross',	StringUtils.formatNumber(pdict.Order.merchandizeTotalGrossPrice.value	, '#,##0.00', locale),
+
+		'ShippingNet',				StringUtils.formatNumber(pdict.Order.shippingTotalNetPrice.value		, '#,##0.00', locale),
+		'ShippingTax', 				StringUtils.formatNumber(pdict.Order.shippingTotalTax.value				, '#,##0.00', locale),
+		'ShippingGross', 			StringUtils.formatNumber(pdict.Order.shippingTotalGrossPrice.value		, '#,##0.00', locale),
+
+		'AdjMerchandizeTotalNet',	StringUtils.formatNumber(pdict.Order.adjustedMerchandizeTotalNetPrice.value		, '#,##0.00', locale),
+		'AdjMerchandizeTotalTax',	StringUtils.formatNumber(pdict.Order.adjustedMerchandizeTotalTax.value			, '#,##0.00', locale),
+		'AdjMerchandizeTotalGross',	StringUtils.formatNumber(pdict.Order.adjustedMerchandizeTotalGrossPrice.value	, '#,##0.00', locale),
+
+		'AdjShippingNet',			StringUtils.formatNumber(pdict.Order.adjustedShippingTotalNetPrice.value	, '#,##0.00', locale),
+		'AdjShippingTax', 			StringUtils.formatNumber(pdict.Order.adjustedShippingTotalTax.value			, '#,##0.00', locale),
+		'AdjShippingGross', 		StringUtils.formatNumber(pdict.Order.adjustedShippingTotalGrossPrice.value	, '#,##0.00', locale),
+
+		'Net', 						StringUtils.formatNumber(pdict.Order.totalNetPrice.value					, '#,##0.00', locale),
+		'Tax', 						StringUtils.formatNumber(pdict.Order.totalTax.value							, '#,##0.00', locale),
+		'Gross', 					StringUtils.formatNumber(pdict.Order.totalGrossPrice.value					, '#,##0.00', locale)
+		)}"/>
+
+	<iscomment>
+		Report all price adjustments for the entire order, such as 25% of entire order.
+	</iscomment>
+	<isloop items="${pdict.Order.priceAdjustments}" var="priceAdjustment">
+		<iscomment>Get Campaign ID</iscomment>
+		<isscript>
+			var campaignID : String = "N/A";
+			if ( priceAdjustment.campaignID != null )
+			{
+			    campaignID = priceAdjustment.campaignID;
+			}
+		</isscript>
+		<isinclude url="${URLUtils.url('ReportingEvent-Start',
+						'ID', 	    'OrderPromo',
+						'campID',   campaignID,
+						'promoID',  priceAdjustment.promotionID,
+						'value',    StringUtils.formatNumber(priceAdjustment.price.value, '#,##0.00', locale),
+						'campaign', !priceAdjustment.isCustom(),
+						'coupon',   priceAdjustment.basedOnCoupon
+						)}"/>
+	</isloop>
+
+	<iscomment>
+		Check all shipments for shipping promotions, lineitems and their promotions
+	</iscomment>
+	<isloop items="${pdict.Order.shipments}" var="shipment">
+		<iscomment>
+			The shipment might have one or more price adjustments
+		</iscomment>
+		<isloop items="${shipment.shippingPriceAdjustments}" var="shippingAdjustment">
+			<iscomment>Get Campaign ID</iscomment>
+			<isscript>
+				var campaignID : String = "N/A";
+				if ( shippingAdjustment.campaignID != null )
+				{
+				    campaignID = shippingAdjustment.campaignID;
+				}
+			</isscript>
+			<isinclude url="${URLUtils.url('ReportingEvent-Start',
+					'ID', 	    'ShippingPromo',
+					'campID',   campaignID,
+					'promoID',  shippingAdjustment.promotionID,
+					'value',    StringUtils.formatNumber(shippingAdjustment.price.value, '#,##0.00', locale),
+					'campaign', !shippingAdjustment.isCustom(),
+					'coupon',   shippingAdjustment.basedOnCoupon
+					)}"/>
+		</isloop>
+
+		<iscomment>Log event for each product line item</iscomment>
+		<isloop items="${shipment.productLineItems}" var="PLI">
+			<isinclude url="${URLUtils.url('ReportingEvent-Start',
+				 'ID',				'Item',
+				 'SKU',				PLI.productID,
+				 'Name',			PLI.productName,
+				 'UUID',			PLI.UUID,
+
+				 'Quantity', 		StringUtils.formatNumber(PLI.quantity.value					, '#,##0.00', locale),
+
+				 'CurrencyCode',	pdict.Order.currencyCode,
+				 'Base',			StringUtils.formatNumber(PLI.basePrice.value				, '#,##0.00', locale),
+
+				 'Net',				StringUtils.formatNumber(PLI.netPrice.value					, '#,##0.00', locale),
+				 'Tax', 			StringUtils.formatNumber(PLI.tax.value						, '#,##0.00', locale),
+				 'Gross', 			StringUtils.formatNumber(PLI.grossPrice.value				, '#,##0.00', locale),
+
+				 'AdjNet',			StringUtils.formatNumber(PLI.adjustedNetPrice.value			, '#,##0.00', locale),
+				 'AdjTax', 			StringUtils.formatNumber(PLI.adjustedTax.value				, '#,##0.00', locale),
+				 'AdjGross', 		StringUtils.formatNumber(PLI.adjustedGrossPrice.value		, '#,##0.00', locale),
+				 'Mfg',				PLI.manufacturerName,
+				 'Bonus',			PLI.bonusProductLineItem
+				 )}"/>
+
+			<iscomment>
+				Each item can have multiple price adjustments
+			</iscomment>
+			<isloop items="${PLI.priceAdjustments}" var="priceAdjustment">
+				<iscomment>Get Campaign ID</iscomment>
+				<isscript>
+					var campaignID : String = "N/A";
+					if ( priceAdjustment.campaignID != null )
+					{
+					    campaignID = priceAdjustment.campaignID;
+					}
+				</isscript>
+				<isinclude url="${URLUtils.url('ReportingEvent-Start',
+								'ID', 	    'ItemPromo',
+								'ItemUUID',	PLI.UUID,
+								'campID',   campaignID,
+								'promoID',  priceAdjustment.promotionID,
+								'value',    StringUtils.formatNumber(priceAdjustment.price.value, '#,##0.00', locale),
+								'campaign', !priceAdjustment.isCustom(),
+								'coupon',   priceAdjustment.basedOnCoupon
+								)}"/>
+			</isloop>
+		</isloop>
+	</isloop>
+
+	<iscomment>Log event for Gift Certificate line item</iscomment>
+	<isloop items="${pdict.Order.giftCertificateLineItems}" var="GCLI">
+		<isinclude url="${URLUtils.url('ReportingEvent-Start',
+		 'ID',		'GCPurchased',
+		 'Amount',	StringUtils.formatNumber(GCLI.basePrice.value, '#,##0.00', locale)
+		 )}"/>
+	</isloop>
+
+	<iscomment>Log event for Gift Certificate Payment Instruments</iscomment>
+	<isloop items="${pdict.Order.giftCertificatePaymentInstruments}" var="GCPI">
+		<isinclude url="${URLUtils.url('ReportingEvent-Start',
+		 'ID',		'GCRedeemed',
+		 'Amount',	StringUtils.formatNumber(GCPI.paymentTransaction.amount.value, '#,##0.00', locale)
+		 )}"/>
+	</isloop>
+
+</isif>

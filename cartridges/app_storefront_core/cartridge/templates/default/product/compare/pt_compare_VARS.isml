@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+
+This template is intentionally empty.
+
+
+The purpose is as a place holder for a template, with the same name 'higher up' in the cartridge path.
+
+pt_xxx_UI.isml is 'injected' into pt_xxx.isml, in the <head> element, to enable custom cartridges to add script and css dependencies,
+
+pt_xxx_VARS.isml is 'injected' into pt_xxx.isml, after the footer element (within the <body>, but near the end), for adding <script> elements that are only loaded after the markup is itself loaded.
+
+</iscomment>

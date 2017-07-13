@@ -1,0 +1,35 @@
+/**
+* This script creates a default shipment for the given basket
+* and returns the created shipment. If the basket already has 
+* a default shipment no new shipment is created and the default 
+* shipment is returned.
+*
+* @input Basket : dw.order.Basket The basket.
+* 
+* @output Shipment : dw.order.Shipment The shipment.
+*/
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.web );
+
+importScript("checkout/Utils.ds");
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// basket
+	var basket : Basket = pdict.Basket;
+	
+	// return the basket's possibly existing default shipment
+	if( basket.defaultShipment != null )
+	{
+		pdict.Shipment = basket.defaultShipment;
+		return PIPELET_NEXT;
+	}
+	
+	// create a new shipment
+	var newShipmentID : String = determineUniqueShipmentID( basket, "Shipment #" );
+	pdict.Shipment = basket.createShipment( newShipmentID );
+	
+    return PIPELET_NEXT;
+}

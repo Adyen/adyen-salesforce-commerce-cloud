@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>memorize some locale variables for reuse</iscomment>
+<isset name="SearchModel" value="${pdict.searchmodel}" scope="page"/>
+<isset name="Folder" value="${pdict.folder}" scope="page"/>
+<isset name="FolderPath" value="${pdict.folderpath}" scope="page"/>
+<isset name="Refinements" value="${pdict.searchmodel.refinements}" scope="page"/>
+<isset name="FolderLevel" value="${new Number(pdict.folderlevel)}" scope="page"/>
+
+<isscript>
+	var IDPath = new dw.util.ArrayList();
+
+	if(FolderPath != null)
+	{
+		// remove the first level successively
+		if(FolderPath.size() > 0)
+		{
+			FolderPath.removeAt(0);
+		}
+
+		// build array list of folder IDs
+		var pathIterator = FolderPath.iterator();
+		while( pathIterator.hasNext() )
+		{
+			IDPath.add( pathIterator.next().ID );
+		}
+	}
+</isscript>
+
+<isif condition="${SearchModel != null}">
+
+	<ul  id="category-level-${FolderLevel.toFixed()}">
+		<iscomment>display the next level folder refinement values for the given category</iscomment>
+		<isloop items="${Refinements.getNextLevelFolderRefinementValues(Folder)}" var="RefinementValue">
+
+			<iscomment>get the folder object</iscomment>
+			<isset name="folderObj" value="${dw.content.ContentMgr.getFolder( RefinementValue.getValue() )}" scope="page"/>
+
+			<li <isif condition="${Refinements.getNextLevelFolderRefinementValues(folderObj).size() > 0}">class="expandable<isif condition="${IDPath.contains(RefinementValue.getValue())}"> active</isif>"</isif>>
+				<iscomment>render the actual link</iscomment>
+				<a class="<isif condition="${IDPath.contains(RefinementValue.getValue())}"> active</isif> refinement-link " title="${Resource.msg('global.folderrefinement.label.prefix','locale',null)} ${RefinementValue.getDisplayValue()}" href="${SearchModel.urlRefineFolder('Search-ShowContent',RefinementValue.getValue())}"><isprint value="${RefinementValue.getDisplayValue()}"/></a>
+
+				<iscomment>display the next level refinement values of the folder in case it is part of the folder path</iscomment>
+				<isif condition="${(FolderPath != null) && (FolderPath.size() > 0) && (IDPath.contains(RefinementValue.getValue()))}">
+					<isfolderrefinementvalues searchmodel="${SearchModel}" folder="${FolderPath.get(0)}" folderpath="${FolderPath}" folderlevel="${FolderLevel+1}"/>
+				</isif>
+			</li>
+		</isloop>
+	</ul>
+</isif>

@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Desc:
+		Includes the options of a product if available
+
+	Parameter:
+		Product - the product to use
+
+	Options:
+		none
+
+	Available if empty: none
+	Full-Block-Element: yes
+</iscomment>
+<isif condition="${pdict.Product.product}">
+
+	<isif condition="${pdict.Product.optionProduct}">
+		<isif condition="${pdict.CurrentOptionModel != null}">
+			<isset name="POM" value="${pdict.CurrentOptionModel}" scope="page"/>
+		<iselse/>
+			<isset name="POM" value="${pdict.Product.getOptionModel()}" scope="page"/>
+		</isif>
+		<isif condition="${!empty(POM.options)}">
+			<div class="product-options">
+				<h2 class="visually-hidden">Product Options</h2>
+				<ul>
+				<isloop items="${POM.options}" var="Option">
+					<li class="attribute option-dropdown">
+						<span class="label"><isprint value="${Option.getDisplayName()}"/></span>
+						<div class="value">
+							<select id="${Option.htmlName}" name="${Option.htmlName}" class="product-option input-select">
+								<isloop items="${POM.getOptionValues(Option)}" var="OptionValue">
+									<isif condition="${POM.isSelectedOptionValue(Option, OptionValue)}">
+										<isset name="selected" value="${'selected="selected"'}" scope="page"/>
+									<iselse/>
+										<isset name="selected" value="" scope="page"/>
+									</isif>
+									<isscript>
+										var optionPrice = POM.getPrice(OptionValue);
+										var combinedPrice = optionPrice.add(empty(pdict.displayPrice) ? 0 : pdict.displayPrice);
+									</isscript>
+									<option value="${OptionValue.ID}" data-combined="${dw.util.StringUtils.formatMoney(combinedPrice)}" <isprint value="${selected}" encoding="off"/>>[<isprint value="${POM.getPrice(OptionValue)}"/>] <isprint value="${OptionValue.getDisplayValue()}"/></option>
+								</isloop>
+							</select>
+						</div>
+					</li>
+				</isloop>
+				</ul>
+			</div>
+		</isif>
+	</isif>
+</isif>

@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/pt_customerservice">
+<isinclude template="util/modules"/>
+
+	<iscontentasset aid="cs-landing"/>
+
+	<isif condition="${!empty(pdict.CustomerServiceLinks)}">
+	<div class="customer-service-directory">
+
+		<isloop items="${pdict.CustomerServiceLinks.keySet()}" var="links" status="loopstate">
+
+			<div class="customer-service-section <isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+
+				<h2><isprint value="${links}"/></h2>
+				<ul>
+					<!-- Loop Through Customer Service Libraries -->
+					<isloop items="${pdict.CustomerServiceLinks.get(links)}" var="ContentAsset" status="loopcounter">
+						<li>
+							<a href="${URLUtils.url('Page-Show','cid', ContentAsset.ID)}" title="${ContentAsset.name}">
+								<isprint value="${ContentAsset.name}"/>
+							</a>
+						</li>
+					</isloop>
+				</ul>
+
+			</div>
+
+		</isloop>
+
+	</div>
+	</isif>
+
+
+</isdecorate>

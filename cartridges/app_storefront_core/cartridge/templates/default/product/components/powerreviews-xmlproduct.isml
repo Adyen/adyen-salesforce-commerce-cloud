@@ -1,0 +1,117 @@
+<iscontent type="text/xml" charset="UTF-8" compact="true"/><isscript>importPackage( dw.util );out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			  out.print("<product xmlns:xsi=\"http://www.w3.prg/2001/XMLSchema-instance\"\n productName=\""+StringUtils.stringToXml(pdict.Product.getName())+"\"\n description=\"");
+			
+			  if ( pdict.Product.getLongDescription() != null)
+			  {
+			     out.print( StringUtils.stringToXml(pdict.Product.getLongDescription()) );
+			  }
+			  else if ( pdict.Product.getShortDescription() != null )
+			  {
+			     out.print( StringUtils.stringToXml(pdict.Product.getShortDescription()) );
+			  }
+			  
+	    	  if (pdict.Product.manufacturerName != null) {
+			   	 out.print("\"\nbrand=\""+StringUtils.stringToXml(pdict.Product.manufacturerName)+"\" \n");
+			  }
+			  else {
+			  	out.print("\"\n");
+			  }
+			 	
+			  var productPageUrl = URLUtils.http('Product-Show', 'pid' , pdict.Product.ID);
+			
+			  productPageUrl = productPageUrl.toString();
+			  // split into base and Uri:
+			
+			  var baseUrl = productPageUrl.substr(0, productPageUrl.lastIndexOf("/"));
+
+			  var productUri = productPageUrl.substr(productPageUrl.lastIndexOf("/") , productPageUrl.length);
+			  productPageUrl = URLUtils.httpStatic("");
+			
+			  out.print("productBaseUrl=\""+StringUtils.stringToXml(baseUrl)+"\" \n");
+			  out.print("productUri=\""+StringUtils.stringToXml(productUri)+"\" \n");
+
+
+               // new httpStatic method:
+              var imgBaseUrl = URLUtils.httpStatic(URLUtils.CONTEXT_CATALOG, null, "");
+
+
+
+              var imgBaseUrlStr = imgBaseUrl.toString();
+              imgBaseUrlParts = imgBaseUrlStr.split("/");
+              var imgBaseUrl2 = imgBaseUrlParts[0] + "//" + imgBaseUrlParts[1] + imgBaseUrlParts[2];
+
+   			  out.print("imageBaseUrl=\""+StringUtils.stringToXml(imgBaseUrl2)+"\" \n");
+			  var imageUri = pdict.Product.getImage("large",0).getURL().toString();
+			
+
+			  out.print("imageUri=\""+StringUtils.stringToXml(imageUri)+"\" \n");
+			  out.print("brandImageUri=\"\"\n");
+			  var price = pdict.Product.getPriceModel().getPrice().toNumberString() ;
+			  // depending on locale:
+			  price = price.replace(",",".");
+			
+			  out.print("price=\""+StringUtils.stringToXml(price)+"\" \n");
+
+			  if (!pdict.Product.master)
+			  {
+			    if (pdict.Product.availabilityModel.inStock)
+			    {
+			       out.print("inStock=\"true\"");
+			    }
+			    else
+			    {
+			      out.print("inStock=\"false\"");
+			    }
+			  }
+			  out.print("\n>\n<categoryHierarchy>\n");
+			  // build the category hierarchy, using alway the first default category, if assigned to more then one category.
+			  var res =  "";
+	          var cats = new Array();
+	          cats = pdict.Product.categories;
+	
+				while (cats[0].parent)
+				{
+				  res = "<category code=\""+cats[0].ID+"\" name=\""+StringUtils.stringToXml(cats[0].displayName)+"\">"+res+"</category>\n";
+				  cats[0] = cats[0].parent;
+				}
+				out.print(res);
+			    out.print("</categoryHierarchy>\n");
+			    out.print("<productIdentifierList>\n");
+			    // Customization to Shop's Products may be necessary here:
+			    out.print("<productIdentifier type=\"UPC\" value=\"" + StringUtils.stringToXml(pdict.Product.UPC) + "\"/>\n");
+			    
+			    if (pdict.Product.manufacturerSKU != null) {
+			   		out.print("<productIdentifier type=\"manufacturerModelNumber\" value=\""+StringUtils.stringToXml(pdict.Product.manufacturerSKU)+"\"/>\n");
+			    }
+			    
+			    //out.print("<productIdentifier type=\"retailerModelId\" value=\""+StringUtils.stringToXml(pdict.Product.manufacturerSKU)+"\"/>\n");
+
+			    out.print("</productIdentifierList>\n");
+			    out.print("<productAttributeList>\n");
+			    var productAttributeModel = pdict.Product.getAttributeModel();
+			    var AttributeGroup : Iterator = productAttributeModel.getVisibleAttributeGroups().iterator();
+			    while(AttributeGroup.hasNext() )
+			    {
+			      var group = AttributeGroup.next();
+			
+			      var Definition : Iterator = productAttributeModel.getVisibleAttributeDefinitions(group).iterator();
+			
+			      while( Definition.hasNext() )
+			      {
+			        var def = Definition.next();
+			        var val = productAttributeModel.getDisplayValue(def);
+			        // Shorten to 150 chars:
+			        // Problem: stringToXml may increase string length here,
+			        // and trunctating afterwards may produce invalid Entities,
+			        // so truncate before:
+			        val = StringUtils.stringToXml(StringUtils.truncate(val, 140 , "TRUNCATE_WORD" , ""));
+			
+			
+
+			        out.print("    <productAttribute type=\""+StringUtils.stringToXml(def.getDisplayName())+"\" value=\""+val+"\"/>\n");
+			      }
+			    }
+			</isscript>
+	</productAttributeList>
+</product>
+	
