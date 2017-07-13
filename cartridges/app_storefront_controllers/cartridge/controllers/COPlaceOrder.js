@@ -124,7 +124,9 @@ function start() {
 
     Transaction.wrap(function () {
         if (!COBilling.ValidatePayment(cart)) {
-            COBilling.Start();
+        	COBilling.Start({
+        		'BillingError': Resource.msg('billing.invalidpaymentinstrument', 'checkout', null)
+        	});
             return {};
         }
     });
@@ -137,16 +139,6 @@ function start() {
             return {};
         }
     });
-
-    // Handle used addresses and credit cards.
-    var saveCCResult = COBilling.SaveCreditCard();
-
-    if (!saveCCResult) {
-        return {
-            error: true,
-            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.technical')
-        };
-    }
 
     // Creates a new order. This will internally ReserveInventoryForOrder and will create a new Order with status
     // 'Created'.
@@ -205,6 +197,12 @@ function start() {
     	}
     }
     if (!orderPlacementStatus.error) {
+    	// update saved credit cards
+    	if (AdyenHelper.getAdyenEnabled() && AdyenHelper.getAdyenRecurringPaymentsEnabled() && customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value) {
+    		require('app_storefront_core/cartridge/scripts/account/payment/UpdateSavedCards').updateSavedCards({
+    			CurrentCustomer: customer
+    		});
+    	}
         clearForms();
     }
     return orderPlacementStatus;
@@ -215,6 +213,8 @@ function clearForms() {
     session.forms.singleshipping.clearFormElement();
     session.forms.multishipping.clearFormElement();
     session.forms.billing.clearFormElement();
+    session.custom.adyenBrandCode = null;
+    session.custom.adyenIssuerID = null;
 }
 
 /**

@@ -171,7 +171,7 @@ function initCreditCardList(cart) {
  * Starting point for billing. After a successful shipping setup, both COShipping
  * and COShippingMultiple call this function.
  */
-function publicStart() {
+function publicStart(params) {
     var cart = app.getModel('Cart').get();
     if (cart) {
 
@@ -195,7 +195,15 @@ function publicStart() {
         
         var AdyenHppPaymentMethods = AdyenController.GetPaymentMethods(cart);
 
-        start(cart, {ApplicableCreditCards: creditCardList.ApplicableCreditCards, AdyenHppPaymentMethods : AdyenHppPaymentMethods});
+        var args = {
+        	ApplicableCreditCards: creditCardList.ApplicableCreditCards,
+        	AdyenHppPaymentMethods: AdyenHppPaymentMethods
+        };
+        
+        if (params) {
+        	 args = require(Resource.msg('scripts.object.js', 'require', null)).extend(args, params);
+        }
+        start(cart, args);
     } else {
         app.getController('Cart').Show();
     }
@@ -393,11 +401,11 @@ function validateBilling() {
         return true;
     }
 
-    if (!empty(app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value) && app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)) {
-        if (!app.getForm('billing').object.valid) {
-            return false;
-        }
-    }
+    if (!empty(app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value) && app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value.equals(PaymentInstrument.METHOD_CREDIT_CARD) && empty(app.getForm('billing').object.paymentMethods.creditCard.selectedCardID.value)) {
+	    if (!app.getForm('billing').object.valid) {
+	            return false;
+	    }
+	}
 
     return true;
 }
@@ -543,7 +551,10 @@ function billing() {
             if (!resetPaymentForms() || !validateBilling() || !handleBillingAddress(cart) || // Performs validation steps, based upon the entered billing address
             // and address options.
             handlePaymentSelection(cart).error) {// Performs payment method specific checks, such as credit card verification.
-                returnToForm(cart);
+            	returnToForm(cart, {
+            		'BillingError': Resource.msg('billing.generic.error', 'checkout', null)
+            	});
+            	return;
             } else {
 	
                 if (customer.authenticated && app.getForm('billing').object.billingAddress.addToAddressBook.value) {
@@ -730,7 +741,7 @@ function selectCreditCard() {
         }
 
         if (selectedCreditCard) {
-            app.getForm('billing').object.paymentMethods.creditCard.number.value = selectedCreditCard.getCreditCardNumber();
+        	 app.getForm('billing').object.paymentMethods.creditCard.selectedCardID.value = selectedCreditCard.UUID;
         }
     }
 
@@ -747,10 +758,7 @@ function selectCreditCard() {
  */
 function validatePayment(cart) {
     var paymentAmount, countryCode, invalidPaymentInstruments, result;
-    if (AdyenHelper.getAdyenCseEnabled()) {
-    	result = true;
-    	return result;
-    }
+
     if (app.getForm('billing').object.fulfilled.value) {
         paymentAmount = cart.getNonGiftCertificateAmount();
         countryCode = Countries.getCurrent({
@@ -782,32 +790,37 @@ function validatePayment(cart) {
  * @return {Boolean} true if credit card is successfully saved.
  */
 function saveCreditCard() {
-    var i, creditCards, newCreditCard;
+    if (AdyenHelper.getAdyenEnabled() && AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+        // saved credit cards are handling in COPlaceOrder and Login for Adyen - saved cards are synced with Adyen ListRecurringDetails API call
+        return true;
+    } else {
+        var i, creditCards, newCreditCard;
 
-    if (customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value) {
-        creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+        if (customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value) {
+            creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
 
-        Transaction.wrap(function () {
-            newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+            Transaction.wrap(function () {
+                newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
-            // copy the credit card details to the payment instrument
-            newCreditCard.setCreditCardHolder(app.getForm('billing').object.paymentMethods.creditCard.owner.value);
-            newCreditCard.setCreditCardNumber(app.getForm('billing').object.paymentMethods.creditCard.number.value);
-            newCreditCard.setCreditCardExpirationMonth(app.getForm('billing').object.paymentMethods.creditCard.expiration.month.value);
-            newCreditCard.setCreditCardExpirationYear(app.getForm('billing').object.paymentMethods.creditCard.expiration.year.value);
-            newCreditCard.setCreditCardType(app.getForm('billing').object.paymentMethods.creditCard.type.value);
+                // copy the credit card details to the payment instrument
+                newCreditCard.setCreditCardHolder(app.getForm('billing').object.paymentMethods.creditCard.owner.value);
+                newCreditCard.setCreditCardNumber(app.getForm('billing').object.paymentMethods.creditCard.number.value);
+                newCreditCard.setCreditCardExpirationMonth(app.getForm('billing').object.paymentMethods.creditCard.expiration.month.value);
+                newCreditCard.setCreditCardExpirationYear(app.getForm('billing').object.paymentMethods.creditCard.expiration.year.value);
+                newCreditCard.setCreditCardType(app.getForm('billing').object.paymentMethods.creditCard.type.value);
 
-            for (i = 0; i < creditCards.length; i++) {
-                var creditcard = creditCards[i];
+                for (i = 0; i < creditCards.length; i++) {
+                    var creditcard = creditCards[i];
 
-                if (creditcard.maskedCreditCardNumber === newCreditCard.maskedCreditCardNumber && creditcard.creditCardType === newCreditCard.creditCardType) {
-                    customer.getProfile().getWallet().removePaymentInstrument(creditcard);
+                    if (creditcard.maskedCreditCardNumber === newCreditCard.maskedCreditCardNumber && creditcard.creditCardType === newCreditCard.creditCardType) {
+                        customer.getProfile().getWallet().removePaymentInstrument(creditcard);
+                    }
                 }
-            }
-        });
+            });
 
+        }
+        return true;
     }
-    return true;
 }
 
 /*

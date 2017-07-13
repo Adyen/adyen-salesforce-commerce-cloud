@@ -34,7 +34,9 @@ function start(context) {
     // redemptions on this page.
     var COBilling = app.getController('COBilling');
     if (!COBilling.ValidatePayment(cart)) {
-        COBilling.Start();
+    	COBilling.Start({
+    		'BillingError': Resource.msg('billing.invalidpaymentinstrument', 'checkout', null)
+    	});
         return;
     } else {
         Transaction.wrap(function () {

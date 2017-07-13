@@ -43,7 +43,7 @@
 			</div>
 	</isif>
 	<iscomment>Display the list of bonus products</iscomment>
-	<isif condition="${(pdict.BonusDiscountLineItem.bonusProducts && pdict.BonusDiscountProducts) && (pdict.BonusDiscountLineItem.bonusProducts.size() == 1 || pdict.BonusDiscountProducts.size() == 1)}"><!-- one item --></isif>
+	<isif condition="${pdict.BonusDiscountLineItem.bonusProducts.size() == 1 || pdict.BonusDiscountProducts.size() == 1}"><!-- one item --></isif>
 
 	<isset name="BonusProductsCollection" value="${pdict.BonusDiscountLineItem.bonusProducts.size() > 0 ? pdict.BonusDiscountLineItem.bonusProducts : pdict.BonusDiscountProducts}" scope="page">
 	<isloop items="${BonusProductsCollection}" var="LoopProductHit" status="loopstate">

@@ -40,7 +40,7 @@ function show() {
     var params = request.httpParameterMap;
 
     if (params.format.stringValue === 'ajax' || params.format.stringValue === 'page-element') {
-
+        // TODO refactor and merge showProductGrid() code into here
         showProductGrid();
         return;
     }

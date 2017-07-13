@@ -190,26 +190,45 @@
         <branch basename="b2" source-connector="error">
           <transition target-connector="in">
             <transition-display>
-              <bend-point relative-to="target" x="0" y="-1"/>
+              <bend-point relative-to="source" x="1" y="0"/>
             </transition-display>
           </transition>
           <segment>
             <node>
               <jump-node start-name-ref="COSummary-Start"/>
-              <node-display x="1" y="2"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
             </node>
           </segment>
         </branch>
         <branch basename="b3" source-connector="order_created">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="target" x="0" y="-1"/>
-            </transition-display>
-          </transition>
+          <transition target-connector="in"/>
           <segment>
             <node>
+              <decision-node condition-key="PaymentInstrument.paymentMethod == 'Adyen'" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <jump-node start-name-ref="Adyen-Redirect"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
               <jump-node start-name-ref="COSummary-ShowConfirmation"/>
-              <node-display x="-1" y="2"/>
+              <node-display x="1" y="1"/>
             </node>
           </segment>
         </branch>

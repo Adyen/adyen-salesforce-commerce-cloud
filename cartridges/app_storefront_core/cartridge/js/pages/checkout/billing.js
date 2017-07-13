@@ -1,11 +1,30 @@
 'use strict';
 
 var ajax = require('../../ajax'),
-    formPrepare = require('./formPrepare'),
-    giftcard = require('../../giftcard'),
-    util = require('../../util'),
-    adyenCse = require('../../adyen-cse');
+	formPrepare = require('./formPrepare'),
+	giftcard = require('../../giftcard'),
+	util = require('../../util'),
+	countryUtil = require('../../countryUtil'),
+	adyenCse = require('../../adyen-cse'),
+	progress = require('../../progress');
 
+function detectCreditCard() {
+	var $checkoutForm = $('.checkout-billing');
+	var $ccContainer = $($checkoutForm).find('.payment-method').filter(function(){
+	    return $(this).data('method')=='CREDIT_CARD';
+	});
+	var $ccNum = $ccContainer.find('[name$="_creditCard_number"]')
+	var $ccType = $ccContainer.find('[name$="_creditCard_type"]');
+	
+	var ccValidateResult = $ccNum.validateCreditCard();
+	$('.cc-icons img').css('display', 'none');
+	if (ccValidateResult.card_type != null && ccValidateResult.card_type.name != null) {
+	    $ccType.val(ccValidateResult.card_type.name);
+	    $('.cc-icons .' + ccValidateResult.card_type.name.toLowerCase()).css('display', 'block');
+	} else if ($ccType.val() !== '' && $ccType.val() !== null) {
+	    $('.cc-icons .' + $ccType.val().toLowerCase()).css('display', 'block');
+	}
+}
 
 /**
  * @function
@@ -15,11 +34,12 @@ var ajax = require('../../ajax'),
 function setCCFields(data) {
     var $creditCard = $('[data-method="CREDIT_CARD"]');
     $creditCard.find('input[name$="creditCard_owner"]').val(data.holder).trigger('change');
-    $creditCard.find('select[name$="_type"]').val(data.type).trigger('change');
-    $creditCard.find('input[name*="_creditCard_number"]').val(data.maskedNumber).trigger('change');
+    $creditCard.find('[name$="_type"]').val(data.type).trigger('change');
     $creditCard.find('[name$="_month"]').val(data.expirationMonth).trigger('change');
     $creditCard.find('[name$="_year"]').val(data.expirationYear).trigger('change');
-    $creditCard.find('input[name$="_cvn"]').val('').trigger('change');
+    $creditCard.find('input[name*="_creditCard_number"]').val(data.maskedNumber).trigger('change');
+    $creditCard.find('[name$="creditCard_selectedCardID"]').val(data.selectedCardID).trigger('change');
+    $creditCard.find('input[name$="_cvn"]').val('');
 }
 
 /**
@@ -79,6 +99,19 @@ function updatePaymentType(selectedPayType, test) {
 	formPrepare.validateForm();
 }
 
+function clearCCTokenData() {
+    if ($('#creditCardList').length > 0) {
+        var cardUUID = $('#creditCardList').val();
+        var $creditCard = $('[data-method="CREDIT_CARD"]');
+        if (!cardUUID) {
+            $creditCard.find('input[name$="_selectedCardID"]').val('');
+            return;
+        }
+        $creditCard.find('[name$="creditCard_subscriptionToken"]').val('').trigger('change');
+        $creditCard.find('input[name*="_creditCard_number"]').val('').trigger('change');
+    }
+}
+
 /**
  * @function
  * @description loads billing address, Gift Certificates, Coupon and Payment methods
@@ -89,6 +122,8 @@ exports.init = function () {
     var $giftCertCode = $('input[name$="_giftCertCode"]');
     var $addCoupon = $('#add-coupon');
     var $couponCode = $('input[name$="_couponCode"]');
+    var $ccNum = $('input[name$="_creditCard_number"]');
+    var $ccCvn = $('input[name$="_creditCard_cvn"]');
     var $selectPaymentMethod = $('.payment-method-options');
     var selectedPaymentMethod = $selectPaymentMethod.find(':checked').val();
     var $payType = $('[name="brandCode"]');
@@ -97,11 +132,65 @@ exports.init = function () {
 	var selectedPayType = $payType.find(':checked').val();
 	var selectedIssuerId = $issuerId.find(':checked').val();
 
+	var $ccContainer = $($checkoutForm).find('.payment-method').filter(function(){
+		return $(this).data('method')=='CREDIT_CARD';
+	});
+	
+	 var $encryptedData = $ccContainer.find('input[name$="_creditCard_encrypteddata"]');
+	 //var $cardNumber = $($checkoutForm).find('input[name*="_number"]');
+	 //var $cvn = $($checkoutForm).find('input[name*="_creditCard_cvn"]');
 
     formPrepare.init({
         formSelector: 'form[id$="billing"]',
         continueSelector: '[name$="billing_save"]'
     });
+    
+    /* ADD per adyen commit
+    
+    detectCreditCard();
+
+	//$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+ 	//$($checkoutForm).find('input[name*="_number"]').val('');
+
+	if ($encryptedData.val() === '' && $($checkoutForm).find('input[name$="_selectedCardID"]').val() == '' && $ccNum.val().indexOf('*') > -1) {
+		$ccNum.val('');
+		$ccCvn.val('');
+    }*/
+    
+    $ccContainer.find('input[name*="_number"]').on('change', function() {
+    	$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+    	if ($encryptedData != null && $encryptedData.val() !== '') {
+    		$($checkoutForm).find('input[name$="_creditCard_cvn"]').val('');
+    		$encryptedData.val('');
+    	}
+    });
+
+    $ccContainer.find('input[name$="_owner"]').on('change', function() {
+    	$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+    	clearCCTokenData();
+  	});
+    
+	$ccContainer.find('[name$="_creditCard_type"]').on('change', function() {
+		$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+		clearCCTokenData();
+	});
+
+	$ccContainer.find('[name$="_creditCard_cvn"]').on('change', function() {
+		if ($encryptedData != null && $encryptedData.val() !== '') {
+			$($checkoutForm).find('input[name$="_creditCard_number"]').val('');
+			$encryptedData.val('');
+		}
+	});
+
+	$ccContainer.find('select[name*="expiration"]').on('change', function() {
+		$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+		clearCCTokenData();
+		if ($encryptedData != null && $encryptedData.val() !== '') {
+			$($checkoutForm).find('input[name$="_creditCard_number"]').val('');
+			$($checkoutForm).find('input[name$="_creditCard_cvn"]').val('');
+			$encryptedData.val('');
+		}
+	});
 
     // default payment method to 'CREDIT_CARD'
     updatePaymentMethod((selectedPaymentMethod) ? selectedPaymentMethod : 'CREDIT_CARD');
@@ -136,7 +225,10 @@ exports.init = function () {
     // select credit card from list
     $('#creditCardList').on('change', function () {
         var cardUUID = $(this).val();
-        if (!cardUUID) {return;}
+        if (!cardUUID) {
+        	$($checkoutForm).find('input[name$="_selectedCardID"]').val('');
+        	return;
+        }
         populateCreditCardForm(cardUUID);
 
         // remove server side error

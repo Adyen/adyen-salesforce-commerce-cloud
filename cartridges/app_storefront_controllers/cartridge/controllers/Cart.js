@@ -367,7 +367,7 @@ function addBonusProductJson() {
 
                     if (childProduct) {
 
-
+                        // TODO: CommonJSify cart/UpdateProductOptionSelections.ds and import here
 
                         var UpdateProductOptionSelections = require('app_storefront_core/cartridge/scripts/cart/UpdateProductOptionSelections');
                         UpdateProductOptionSelections.update({

@@ -6,7 +6,9 @@ var giftcert = require('../giftcert'),
     dialog = require('../dialog'),
     page = require('../page'),
     login = require('../login'),
-    validator = require('../validator');
+    validator = require('../validator'),
+	countryUtil = require('../countryUtil'),
+	adyenCse = require('../adyen-cse');
 
 /**
  * @function
@@ -139,7 +141,13 @@ function initAddressEvents() {
  * @description Binds the events of the payment methods list (delete card)
  */
 function initPaymentEvents() {
-    $('.add-card').on('click', function (e) {
+	if (SitePreferences.ADYEN_CSE_ENABLED) {
+		adyenCse.initAccount();
+	}
+	
+	initializePaymentForm();
+    
+	$('.add-card').on('click', function (e) {
         e.preventDefault();
         dialog.open({
             url: $(e.target).attr('href'),
@@ -176,12 +184,93 @@ function initPaymentEvents() {
 }
 
 function initializePaymentForm() {
-    $('#CreditCardForm').on('click', '.cancel-button', function (e) {
-        e.preventDefault();
-        dialog.close();
-    });
+	var $form = $('#CreditCardForm');
 
+    if (SitePreferences.ADYEN_CSE_ENABLED) {
+        adyenCse.initAccount();
+    }
+
+    tooltip.init();
+	
+    $form.on('click', '.apply-button', function (e) {
+	
+        e.preventDefault();
+        if (!$form.valid()) {
+            return false;
+        }
+        var url = util.appendParamToURL($form.attr('action'), 'format', 'ajax');
+        var applyName = $form.find('.apply-button').attr('name');
+        var options = {
+            url: url,
+            data: $form.serialize() + '&' + applyName + '=x',
+            type: 'POST'
+        };
+        $.ajax(options).done(function (data) {
+            if (typeof(data) !== 'string') {
+                if (data.success) {
+                    dialog.close();
+                    page.refresh();
+                } else {
+                    window.alert(data.message);
+                    return false;
+                }
+            } else {
+                $('#dialog-container').html(data);
+                account.init();
+                tooltip.init();
+            }
+        });
+    });
+    	 
+    // Credit card type detection (returns credit card name when found)
+    detectCreditCard();
+
+    var $ccNum = $form.find('input[name*="_number"]');
+    var $ccCvn = $form.find('input[name*="_cvn"]');
+    var $encryptedData = $form.find('input[name$="_encrypteddata"]');
+
+    $ccNum.on('keypress', function () {
+        detectCreditCard();
+    });
+    $ccNum.on('change', function () {
+        detectCreditCard();
+        if ($encryptedData != null && $encryptedData.val() !== '') {
+            $ccCvn.val('');
+            $encryptedData.val('');
+        }
+    });
+    $form.find('[name$="_cvn"]').on('change', function() {
+        if ($encryptedData != null && $encryptedData.val() !== '') {
+            $ccNum.val('');
+            $encryptedData.val('');
+        }
+    });
+    $form.find('select[name*="expiration"]').on('change', function() {
+        if ($encryptedData != null && $encryptedData.val() !== '') {
+            $ccNum.val('');
+            $ccCvn.val('');
+            $encryptedData.val('');
+        }
+    });
+	
+	validator.init();
 }
+    	
+function detectCreditCard() {
+    var $creditCardForm = $('#CreditCardForm');
+    if ($creditCardForm.length > 0) {
+        var $ccNum = $creditCardForm.find('[name$="_number"]')
+        var $ccType = $creditCardForm.find('[name$="_type"]');
+
+        var ccValidateResult = $ccNum.validateCreditCard();
+        $('.cc-icons img').css('display', 'none');
+        if (ccValidateResult.card_type != null && ccValidateResult.card_type.name != null) {
+            $ccType.val(ccValidateResult.card_type.name);
+            $('.cc-icons .' + ccValidateResult.card_type.name.toLowerCase()).css('display', 'block');
+        }
+    }
+}
+
 /**
  * @private
  * @function

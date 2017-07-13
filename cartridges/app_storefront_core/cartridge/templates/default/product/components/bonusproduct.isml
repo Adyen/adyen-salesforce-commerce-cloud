@@ -80,7 +80,7 @@
                 <isscript>
                     var avm = pdict.Product.availabilityModel;
                     var disableAttr = '';
-                    if (!(avm.availabilityStatus === dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK && avm.inventoryRecord != null && (avm.inventoryRecord.stockLevel.available || avm.inventoryRecord.perpetual))) {
+                    if (!(avm.availabilityStatus === dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK && avm.inventoryRecord != null && (avm.inventoryRecord.stockLevel.available || avm.inventoryRecord.perpetual)) {
                         disableAttr = 'disabled="disabled"';
                     }
                 </isscript>
