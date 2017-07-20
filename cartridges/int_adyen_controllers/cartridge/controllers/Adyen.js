@@ -85,14 +85,17 @@ function showConfirmation() {
 	if (request.httpParameterMap.authResult.value != 'CANCELLED') {
 		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
     	var authorized = authorizeConfirmation.authorize({
-			'AuthResult': request.httpParameterMap.authResult.stringValue,
-			'MerchantReference': request.httpParameterMap.merchantReference.getStringValue(),
-			'PaymentMethod': request.httpParameterMap.paymentMethod.getStringValue(),
-			'PspReference': request.httpParameterMap.pspReference.getStringValue(),
-			'ShopperLocale': request.httpParameterMap.shopperLocale.getStringValue(),
-			'SkinCode': request.httpParameterMap.skinCode.getStringValue(),
-			'MerchantSig': request.httpParameterMap.merchantSig.getStringValue(),
-			'MerchantReturnData': (!empty(request.httpParameterMap.merchantReturnData) ? request.httpParameterMap.merchantReturnData.getStringValue() : "")
+			'authResult': request.httpParameterMap.authResult.getStringValue(),
+			'merchantReference': request.httpParameterMap.merchantReference.getStringValue(),
+			'paymentMethod': request.httpParameterMap.paymentMethod.getStringValue(),
+			'pspReference': request.httpParameterMap.pspReference.getStringValue(),
+			'shopperLocale': request.httpParameterMap.shopperLocale.getStringValue(),
+			'skinCode': request.httpParameterMap.skinCode.getStringValue(),
+			'merchantSig': request.httpParameterMap.merchantSig.getStringValue(),
+			'merchantReturnData': ((request.httpParameterMap.get("merchantReturnData")) ? request.httpParameterMap.get("merchantReturnData").getStringValue() : null),
+			'reason': ((request.httpParameterMap.get("reason")) ? request.httpParameterMap.get("reason").getStringValue() : null),
+			'additionalData.acquirerReference': ((request.httpParameterMap.get("additionalData.acquirerReference")) ? request.httpParameterMap.get("additionalData.acquirerReference").getStringValue() : null)
+			
     	});
     	if (!authorized) {
     		app.getController('Error').Start();

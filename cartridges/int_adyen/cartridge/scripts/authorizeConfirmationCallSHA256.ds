@@ -26,53 +26,39 @@ function execute( args : PipelineDictionary ) : Number
 	return PIPELET_NEXT;
 }
 
- function authorize( args : PipelineDictionary ) : Boolean {
-	if(empty(args.MerchantSig) || empty(args.AuthResult) || empty(args.PspReference) || empty(args.MerchantReference) || empty(args.SkinCode)){
-		 	return false;
-	}
-	var authResult : String = args.AuthResult;
-	var merchantReference : String = args.MerchantReference;
-	var paymentMethod : String = args.PaymentMethod;
-	var pspReference : String = args.PspReference;
-	var shopperLocale : String = args.ShopperLocale;
-	var skinCode : String = args.SkinCode;
-	
-	var merchantSig : String = args.MerchantSig;
-	
-	//Compute the signature from the parameters values and the set hmackey
-	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
-	
-	// authResult merchantReference paymentMethod pspReference shopperLocale skinCode <merchantSig>
-	var adyenRequest : SortedMap = new SortedMap();
-	adyenRequest.put("authResult", authResult );
-	adyenRequest.put("merchantReference", merchantReference );
-	adyenRequest.put("paymentMethod", paymentMethod );	
-	adyenRequest.put("pspReference", pspReference );
-	adyenRequest.put("shopperLocale", shopperLocale );
-	adyenRequest.put("skinCode", skinCode );
-	
-	var keys : String = "";
-	var values : String = "";
-	for(var key in adyenRequest) {
-		
-		keys = keys.concat(key + ":");
-	    var value = adyenRequest[key];
+function authorize( args : PipelineDictionary ) : Boolean {
+if(empty(args.merchantSig))  {
+    return false;
+}
 
-	    // escape chars
-	    value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
-	    values = values.concat(value + ":");
-	}
-	
-	values = values.substring(0, values.length - 1);
-	var requestString : String = keys.concat(values);
-	
-	//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
-	var keyBytes : Bytes = Encoding.fromHex(HMACkey);
-	var c : Mac = Mac(Mac.HMAC_SHA_256);  
-	var signature : String = Encoding.toBase64(c.digest(requestString, keyBytes));
-	
-	// If the signatures match then the call is authorized
-	return merchantSig == signature;
+var merchantSig : String = args.merchantSig;
+//Compute the signature from the parameters values and the set hmackey
+var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
+
+var keys = new Array();
+var values = new Array();
+
+//sort the keys alphabetically
+var sortedKeys = Object.keys(args).sort();
+for(var key in sortedKeys) {
+	var item = sortedKeys[key];
+	    var value = args[item];
+	    if(item !== "merchantSig" && value !== null) {
+			    keys.push(item);
+			    // escape chars
+			    value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
+			    values.push(value);
+	    }
+}
+
+var requestString = keys.join(":") + ":" + values.join(":");
+//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
+var keyBytes : Bytes = Encoding.fromHex(HMACkey);
+var c : Mac = Mac(Mac.HMAC_SHA_256);  
+var signature : String = Encoding.toBase64(c.digest(requestString, keyBytes));
+
+// If the signatures match then the call is authorized
+return merchantSig == signature;
 }
 
 module.exports = {
