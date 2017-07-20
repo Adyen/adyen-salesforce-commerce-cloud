@@ -35,8 +35,8 @@ var merchantSig : String = args.merchantSig;
 //Compute the signature from the parameters values and the set hmackey
 var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
 
-var keys : String = "";
-var values : String = "";
+var keys = new Array();
+var values = new Array();
 
 //sort the keys alphabetically
 var sortedKeys = Object.keys(args).sort();
@@ -44,15 +44,14 @@ for(var key in sortedKeys) {
 	var item = sortedKeys[key];
 	    var value = args[item];
 	    if(item !== "merchantSig" && value !== null) {
-			    keys = keys.concat(item + ":");
+			    keys.push(item);
 			    // escape chars
 			    value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
-			    values = values.concat(value + ":");
+			    values.push(value);
 	    }
 }
 
-values = values.substring(0, values.length - 1);
-var requestString : String = keys.concat(values);
+var requestString = keys.join(":") + ":" + values.join(":");
 //error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
 var keyBytes : Bytes = Encoding.fromHex(HMACkey);
 var c : Mac = Mac(Mac.HMAC_SHA_256);  

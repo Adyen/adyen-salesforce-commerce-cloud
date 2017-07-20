@@ -85,15 +85,15 @@ function showConfirmation() {
 	if (request.httpParameterMap.authResult.value != 'CANCELLED') {
 		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
     	var authorized = authorizeConfirmation.authorize({
-			'authResult': request.httpParameterMap.authResult.stringValue,
+			'authResult': request.httpParameterMap.authResult.getStringValue(),
 			'merchantReference': request.httpParameterMap.merchantReference.getStringValue(),
 			'paymentMethod': request.httpParameterMap.paymentMethod.getStringValue(),
 			'pspReference': request.httpParameterMap.pspReference.getStringValue(),
 			'shopperLocale': request.httpParameterMap.shopperLocale.getStringValue(),
 			'skinCode': request.httpParameterMap.skinCode.getStringValue(),
 			'merchantSig': request.httpParameterMap.merchantSig.getStringValue(),
-			'merchantReturnData': ((request.httpParameterMap.merchantReturnData) ? request.httpParameterMap.merchantReturnData.getStringValue() : null),
-			'reason': ((request.httpParameterMap.reason) ? request.httpParameterMap.reason.getStringValue() : null),
+			'merchantReturnData': ((request.httpParameterMap.get("merchantReturnData")) ? request.httpParameterMap.get("merchantReturnData").getStringValue() : null),
+			'reason': ((request.httpParameterMap.get("reason")) ? request.httpParameterMap.get("reason").getStringValue() : null),
 			'additionalData.acquirerReference': ((request.httpParameterMap.get("additionalData.acquirerReference")) ? request.httpParameterMap.get("additionalData.acquirerReference").getStringValue() : null)
 			
     	});
