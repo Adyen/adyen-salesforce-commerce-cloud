@@ -136,7 +136,7 @@ function verify (args) {
 	adyenRequest.put("shopperReference", currentUser.ID );
 	adyenRequest.put("recurringContract", recurringType );
 	adyenRequest.put("allowedMethods", args.allowedMethods );
-	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation') );
+	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	
 	if(Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")){
 		if( !empty(args.brandCode)){
