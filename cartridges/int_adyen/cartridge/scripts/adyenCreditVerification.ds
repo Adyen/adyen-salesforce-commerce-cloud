@@ -125,14 +125,20 @@ function verify( args : PipelineDictionary ) : Number {
         };
 
         var billingAddr : OrderAddress = args.Order.getBillingAddress();
-
+		var houseNumberBill;  
+        if(billingAddr.address2) {
+        	houseNumberBill = billingAddr.address2; 
+        }
+        else{
+        	houseNumberBill = "N/A";
+        }
         jsonObjNew.billingAddress = {
             "city": billingAddr.city,
             "country": billingAddr.countryCode.value,
-            "houseNumberOrName": billingAddr.suite,
+            "houseNumberOrName": houseNumberBill,
             "postalCode": billingAddr.postalCode,
             "stateOrProvince": billingAddr.stateCode,
-            "street": billingAddr.custom.streetName
+            "street": billingAddr.address1
         };
 
         jsonObjNew.shopperName = {
@@ -200,8 +206,8 @@ function verify( args : PipelineDictionary ) : Number {
 		args.AuthorizationAmount = '';
 		args.Decision = '';
 		
-		// return the AVS result code
-		args.AVSResultCode = (!empty(responseObj.avsResultRaw) ? responseObj.avsResultRaw : '');
+		// return the AVS result code (make sure accountDataSetting addRawAcquirerResult=true in Adyen)
+		args.AVSResultCode = (!empty(responseObj.additionalData.avsResultRaw) ? responseObj.additionalData.avsResultRaw : '');
 		
 		// if the card is enrolled in the 3-D Secure programme the response should contain these 4 fields
 		if ('paRequest' in responseObj) { args.PaRequest = responseObj.paRequest; } // paRequest  

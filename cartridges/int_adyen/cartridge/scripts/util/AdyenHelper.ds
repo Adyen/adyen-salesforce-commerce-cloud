@@ -119,18 +119,11 @@ var __AdyenHelper : Object = {
 		return returnValue;
 	},
 	
+	//Public key needed, since form is customisable 
 	getAdyenCseJsPublicKey : function () : String {
 		var returnValue : String = "";
 		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey'))) {
 			returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey');
-		}
-		return returnValue;
-	},
-	
-	getAdyenAVSEnabled : function () : Boolean {
-		var returnValue : Boolean = false;
-		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS'))) {
-			returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS');
 		}
 		return returnValue;
 	},

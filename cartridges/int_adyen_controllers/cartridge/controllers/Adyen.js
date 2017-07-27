@@ -68,7 +68,6 @@ function redirect(order) {
 		'Amount100' : result.Amount100,
 		'shopperEmail' : result.shopperEmail,
 		'shopperReference' : result.shopperReference,
-		'allowedMethods' : result.allowedMethods,
 		'ParamsMap' : result.paramsMap,
 		'SessionValidity' : result.sessionValidity,
 		'Order': order,

@@ -31,7 +31,6 @@ function getMethods (basket : dw.order.Basket) {
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
     var Mode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
-    var allowedMethods: String = Site.getCurrent().getCustomPreferenceValue("Adyen_allowedMethods");
 
     if (merchantAccount == null) {
         Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -44,9 +43,6 @@ function getMethods (basket : dw.order.Basket) {
     if (HMACkey == null) {
         Logger.getLogger("Adyen").fatal("HMACkey not set.");
         return PIPELET_ERROR;
-    }
-    if (allowedMethods == "null" || allowedMethods == null) {
-        args.allowedMethods = "";
     }
 
     var currencyCode: String = basket.currencyCode;
@@ -71,7 +67,6 @@ function getMethods (basket : dw.order.Basket) {
     adyenRequest.put("merchantAccount", merchantAccount);
     adyenRequest.put("sessionValidity", sessionValidity);
     adyenRequest.put("countryCode", countryCode);
-    adyenRequest.put("allowedMethods", allowedMethods);
     adyenRequest.put("shipBeforeDate", shipBeforeDate );
 
     var keys: String = "";

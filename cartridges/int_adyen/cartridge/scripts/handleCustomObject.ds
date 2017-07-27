@@ -214,11 +214,9 @@ function createLogMessage(customObj){
 
 function createDelayOrderDate(orderCreateDate : Date)
 {
+	//AdyenNotificationDelayMinutes
 	var adyenDelayMin : Number = 1;
-	if (!empty(dw.system.Site.getCurrent().getCustomPreferenceValue("AdyenNotificationDelayMinutes"))) {
-		adyenDelayMin = dw.system.Site.getCurrent().getCustomPreferenceValue("AdyenNotificationDelayMinutes");
-	}
-
+	
 	// Variable in milliseconds 
 	var newDate = new Date();
 	newDate.setTime(orderCreateDate.getTime() + (adyenDelayMin * 60 * 1000));
