@@ -118,6 +118,13 @@ function handle( customObj : CustomObject  ) : Object
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
 				return result;
 				break;
+			//CustomAdyen 
+			case "CAPTURE_FAILED" :
+				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+				OrderMgr.cancelOrder(order);
+				Logger.getLogger("Adyen", "adyen").info ("Capture Failed for order {0}",order.orderNo);
+				break;
 			case "ORDER_OPENED" :
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  				
 				order.setPaymentStatus("PARTIALLY PAID");
