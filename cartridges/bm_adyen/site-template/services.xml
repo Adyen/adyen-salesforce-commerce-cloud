@@ -2,38 +2,25 @@
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="Adyen">
         <url>https://pal-test.adyen.com/pal/adapter/httppost</url>
-        <user-id></user-id>
-        <password masked="true"></password>
+        <user-id/>
+        <password/>
     </service-credential>
 
-    <service-profile service-profile-id="Adyen">
-        <timeout-millis>2000</timeout-millis>
-        <rate-limit-enabled>false</rate-limit-enabled>
-        <rate-limit-calls>0</rate-limit-calls>
-        <rate-limit-millis>0</rate-limit-millis>
-        <cb-enabled>false</cb-enabled>
-        <cb-calls>0</cb-calls>
-        <cb-millis>0</cb-millis>
-    </service-profile>
+    <service-credential service-credential-id="Methods">
+        <url>https://test.adyen.com/hpp/directory.shtml</url>
+        <user-id/>
+        <password/>
+    </service-credential>
 
-    <service service-id="adyen.http.payment.methods">
-        <service-type>HTTP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>adyenMethods</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
-        <credential-id/>
-    </service>
+    <service-credential service-credential-id="Send">
+        <url>https://pal-test.adyen.com/pal/servlet/Payment/v25/authorise</url>
+        <user-id>yourWebServiceUser</user-id>
+        <password/>
+    </service-credential>
 
-    <service service-id="adyen.http.payment.send">
-        <service-type>HTTP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>adyen</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
-        <credential-id>Adyen</credential-id>
-    </service>
-
+    <service-credential service-credential-id="3DSecure">
+        <url>https://pal-test.adyen.com/pal/servlet/Payment/v25/authorise3d</url>
+        <user-id>yourWebServiceUser</user-id>
+        <password/>
+    </service-credential>
 </services>
