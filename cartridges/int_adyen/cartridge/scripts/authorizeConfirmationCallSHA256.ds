@@ -27,38 +27,38 @@ function execute( args : PipelineDictionary ) : Number
 }
 
 function authorize( args : PipelineDictionary ) : Boolean {
-if(empty(args.merchantSig))  {
-    return false;
-}
-
-var merchantSig : String = args.merchantSig;
-//Compute the signature from the parameters values and the set hmackey
-var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
-
-var keys = new Array();
-var values = new Array();
-
-//sort the keys alphabetically
-var sortedKeys = Object.keys(args).sort();
-for(var key in sortedKeys) {
-	var item = sortedKeys[key];
-	    var value = args[item];
-	    if(item !== "merchantSig" && value !== null) {
-			    keys.push(item);
-			    // escape chars
-			    value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
-			    values.push(value);
-	    }
-}
-
-var requestString = keys.join(":") + ":" + values.join(":");
-//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
-var keyBytes : Bytes = Encoding.fromHex(HMACkey);
-var c : Mac = Mac(Mac.HMAC_SHA_256);  
-var signature : String = Encoding.toBase64(c.digest(requestString, keyBytes));
-
-// If the signatures match then the call is authorized
-return merchantSig == signature;
+	if(empty(args.merchantSig))  {
+	    return false;
+	}
+	
+	var merchantSig : String = args.merchantSig;
+	//Compute the signature from the parameters values and the set hmackey
+	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
+	
+	var keys = new Array();
+	var values = new Array();
+	
+	//sort the keys alphabetically
+	var sortedKeys = Object.keys(args).sort();
+	for(var key in sortedKeys) {
+		var item = sortedKeys[key];
+		    var value = args[item];
+		    if(item !== "merchantSig" && value !== null) {
+				    keys.push(item);
+				    // escape chars
+				    value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
+				    values.push(value);
+		    }
+	}
+	
+	var requestString = keys.join(":") + ":" + values.join(":");
+	//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
+	var keyBytes : Bytes = Encoding.fromHex(HMACkey);
+	var c : Mac = Mac(Mac.HMAC_SHA_256);  
+	var signature : String = Encoding.toBase64(c.digest(requestString, keyBytes));
+	
+	// If the signatures match then the call is authorized
+	return merchantSig == signature;
 }
 
 module.exports = {

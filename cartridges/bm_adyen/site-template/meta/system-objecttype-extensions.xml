@@ -75,15 +75,6 @@
     </type-extension>
 
     <type-extension type-id="CustomerAddress">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="streetName">
-                <display-name xml:lang="x-default">Street Name</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-        </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Standard">
                 <display-name xml:lang="x-default">Standard Address</display-name>
@@ -104,23 +95,12 @@
                 <attribute attribute-id="countryCode" system="true"/>
                 <attribute attribute-id="stateCode" system="true"/>
                 <attribute attribute-id="phone" system="true"/>
-                <attribute attribute-id="streetName"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
 
     
     <type-extension type-id="OrderAddress">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="streetName">
-                <display-name xml:lang="x-default">Street Name</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
-        </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Standard">
                 <display-name xml:lang="x-default">Standard Address</display-name>
@@ -140,7 +120,6 @@
                 <attribute attribute-id="countryCode" system="true"/>
                 <attribute attribute-id="stateCode" system="true"/>
                 <attribute attribute-id="phone" system="true"/>
-                <attribute attribute-id="streetName"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -338,14 +317,6 @@
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_enableAVS">
-                <display-name xml:lang="x-default">Enable AVS</display-name>
-                <description xml:lang="x-default">Enable AVS support. Requires Street Name and House Number fields to be sent to Adyen. The result code is returned by the service and should be handled separately</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_merchantCode">
                 <display-name xml:lang="x-default">merchantCode</display-name>

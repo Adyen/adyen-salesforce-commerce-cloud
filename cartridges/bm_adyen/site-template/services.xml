@@ -13,13 +13,13 @@
     </service-credential>
 
     <service-credential service-credential-id="Send">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v18/authorise</url>
+        <url>https://pal-test.adyen.com/pal/servlet/Payment/v25/authorise</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
 
     <service-credential service-credential-id="3DSecure">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v18/authorise3d</url>
+        <url>https://pal-test.adyen.com/pal/servlet/Payment/v25/authorise3d</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
