@@ -241,6 +241,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenShipBeforeDate">
+                <display-name xml:lang="x-default">ShipBeforeDate</display-name>
+                <description xml:lang="x-default">Number of days before shipping</description>
+                <type>integer</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>5</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenPaymentMethodsServicePrefix">
                 <display-name xml:lang="x-default">Adyen Payment Methods Service Prefix</display-name>
                 <type>string</type>
@@ -379,6 +387,7 @@
                 <attribute attribute-id="Adyen_HMACkey"/>          
                 <attribute attribute-id="Adyen_Mode"/>
                 <attribute attribute-id="Adyen_Debug"/>
+                <attribute attribute-id="AdyenShipBeforeDate"/>
                 <attribute attribute-id="AdyenCseEnabled"/>
                 <attribute attribute-id="AdyenCseProdJsURL"/>
                 <attribute attribute-id="AdyenCseTestJsURL"/>

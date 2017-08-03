@@ -55,8 +55,9 @@ function getMethods (basket : dw.order.Basket) {
     sessionValidity.setHours(sessionValidity.getHours() + 1);
     sessionValidity = sessionValidity.toISOString();
 
+    var shipBeforeDays = Site.getCurrent().getCustomPreferenceValue("AdyenShipBeforeDate");
     var shipBeforeDate : String = new Date();
-    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + shipBeforeDays);
     shipBeforeDate = shipBeforeDate.toISOString();
 
     var adyenRequest: SortedMap = new SortedMap();
