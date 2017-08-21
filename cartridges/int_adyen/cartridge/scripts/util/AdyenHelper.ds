@@ -136,13 +136,41 @@ var __AdyenHelper : Object = {
 	},
 	
 	getCurrencyValueForApi : function ( amount ) : String {
-		var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
+		//var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
+		var digitsNumber : Number = dwutil.Currency.getCurrency('EUR').getDefaultFractionDigits();
 		if ( digitsNumber <= 0 ) return amount.value;
 		if ( digitsNumber == 2 ) return amount.value * 100;
 		if ( digitsNumber > 2 ) return amount.value * 1000;
+	},
+	
+	getAdyenOrderPaymentInstrument : function(order : dw.order.Order) {
+		var adyenOrderPaymentInstrument = null;
+		if (order) {
+			var paymentInstruments : dw.util.Collection = order.getPaymentInstruments();
+			for each (let paymentInstrument in paymentInstruments) {			
+				let paymentProcessor = paymentInstrument.getPaymentTransaction().getPaymentProcessor();
+	            let paymentProcessorID = paymentProcessor ? paymentProcessor.getID(): paymentInstrument.getPaymentMethod();
+	
+				if (paymentProcessorID.equals("Adyen") || paymentProcessorID.equals("ADYEN_CREDIT")) {
+					adyenOrderPaymentInstrument = paymentInstrument;
+					break;
+				}
+			}
+		}
+		
+		return adyenOrderPaymentInstrument;
+	},
+	
+	saveAuthResponseAttributes : function(transaction : dw.order.PaymentTransaction, map : dw.web.HttpParameterMap) {
+		transaction.custom.Adyen_authResult = map.isParameterSubmitted('authResult') ? map.authResult.stringValue : '';
+		transaction.custom.Adyen_merchantReference = map.isParameterSubmitted('merchantReference') ? map.merchantReference.stringValue : '';
+		transaction.custom.Adyen_paymentMethod = map.isParameterSubmitted('paymentMethod') ? map.paymentMethod.stringValue : '';
+		transaction.custom.Adyen_pspReference = map.isParameterSubmitted('pspReference') ? map.pspReference.stringValue : '';
+		transaction.custom.Adyen_shopperLocale = map.isParameterSubmitted('shopperLocale') ? map.shopperLocale.stringValue : '';
+		transaction.custom.Adyen_skinCode = map.isParameterSubmitted('skinCode') ? map.skinCode.stringValue : '';
+		transaction.custom.Adyen_merchantSig = map.isParameterSubmitted('merchantSig') ? map.merchantSig.stringValue : '';
+		transaction.custom.Adyen_merchantReturnData = map.isParameterSubmitted('merchantReturnData') ? map.merchantReturnData.stringValue : '';
 	}
-	
-	
 }
 
 module.exports= __AdyenHelper;
