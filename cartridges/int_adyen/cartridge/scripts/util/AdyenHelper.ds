@@ -23,10 +23,10 @@ var __AdyenHelper : Object = {
 	
 	
 	/**
-	 * 	@name getAydenPaymentSendServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentSendServicePrefix
+	 * 	@name getAdyenPaymentSendServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentSendServicePrefix
 	 */
-	getAydenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix');
@@ -36,10 +36,10 @@ var __AdyenHelper : Object = {
 	},
 
 	/**
-	 * 	@name getAydenPaymentMethodsServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 * 	@name getAdyenPaymentMethodsServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
 	 */
-	getAydenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix');
@@ -49,10 +49,10 @@ var __AdyenHelper : Object = {
 	},
 	
 	/**
-	 * 	@name getAydenPaymentSecureServicePrefix
- 	 * 	@desc returns the value of site pref AydenPaymentMethodsServicePrefix
+	 * 	@name getAdyenPaymentSecureServicePrefix
+ 	 * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
 	 */
-	getAydenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
+	getAdyenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
 		var returnValue : String = "";
 		if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix'))) {
 			returnValue = site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix');
@@ -67,13 +67,13 @@ var __AdyenHelper : Object = {
 		var servicePrefix = "";
 		switch (service) {
 			case __AdyenHelper.SERVICE.SEND :
-				servicePrefix = __AdyenHelper.getAydenPaymentSendServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentSendServicePrefix(adyenCurrentSite);
 				break;
 			case __AdyenHelper.SERVICE.METHODS :
-				servicePrefix = __AdyenHelper.getAydenPaymentMethodsServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentMethodsServicePrefix(adyenCurrentSite);
 				break;
 			case __AdyenHelper.SERVICE.SECURE :
-				servicePrefix = __AdyenHelper.getAydenPaymentSecureServicePrefix(adyenCurrentSite);
+				servicePrefix = __AdyenHelper.getAdyenPaymentSecureServicePrefix(adyenCurrentSite);
 				break;
 		}
 		var serviceName = servicePrefix + '.' + adyenCurrentSite.ID;
@@ -119,6 +119,7 @@ var __AdyenHelper : Object = {
 		return returnValue;
 	},
 	
+	//Public key needed, since form is customisable 
 	getAdyenCseJsPublicKey : function () : String {
 		var returnValue : String = "";
 		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey'))) {
@@ -127,20 +128,14 @@ var __AdyenHelper : Object = {
 		return returnValue;
 	},
 	
-	getAdyenAVSEnabled : function () : Boolean {
-		var returnValue : Boolean = false;
-		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS'))) {
-			returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_enableAVS');
-		}
-		return returnValue;
-	},
-	
-	getCurrencyValueForApi : function ( amount ) : String {
-		//var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
-		var digitsNumber : Number = dwutil.Currency.getCurrency('EUR').getDefaultFractionDigits();
-		if ( digitsNumber <= 0 ) return amount.value;
-		if ( digitsNumber == 2 ) return amount.value * 100;
-		if ( digitsNumber > 2 ) return amount.value * 1000;
+	getCurrencyValueForApi : function ( amount ) : String {		
+		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
+		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
+        var apiAmount = amount.multiply(1000).value;
+        if ( digitsNumber == 0 ) apiAmount = amount.value;
+        else if ( digitsNumber == 1 ) apiAmount = amount.multiply(10).value;
+        else if ( digitsNumber == 2 ) apiAmount = amount.multiply(100).value;
+        return Math.round(apiAmount);
 	},
 	
 	getAdyenOrderPaymentInstrument : function(order : dw.order.Order) {
@@ -170,6 +165,46 @@ var __AdyenHelper : Object = {
 		transaction.custom.Adyen_skinCode = map.isParameterSubmitted('skinCode') ? map.skinCode.stringValue : '';
 		transaction.custom.Adyen_merchantSig = map.isParameterSubmitted('merchantSig') ? map.merchantSig.stringValue : '';
 		transaction.custom.Adyen_merchantReturnData = map.isParameterSubmitted('merchantReturnData') ? map.merchantReturnData.stringValue : '';
+	},
+	
+	getFractionDigits : function (currencyCode) : Number {
+		var format;
+		switch(currencyCode) {
+			case "JPY":
+            case "IDR":
+            case "KRW":
+            case "BYR":
+            case "VND":
+            case "CVE":
+            case "DJF":
+            case "GNF":
+            case "PYG":
+            case "RWF":
+            case "UGX":
+            case "VUV":
+            case "XAF":
+            case "XOF":
+            case "XPF":
+            case "GHC":
+            case "KMF":
+                format = 0;
+                break;
+            case "MRO":
+                format = 1;
+                break;
+            case "BHD":
+            case "JOD":
+            case "KWD":
+            case "OMR":
+            case "LYD":
+            case "TND":
+                format = 3;
+                break;
+            default:
+                format = 2;
+                break;
+		}
+		return format;
 	}
 }
 
