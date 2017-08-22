@@ -11,7 +11,7 @@ Afterwards send the Apple Merchant ID and the selected Adyen Web Service User us
 
 ## Salesforce Commerce Cloud settings
 
-1. Go to Merchant Tools → Site Preference → Apple Pay.
+1. Go to Merchant Tools → Site Preferences → Apple Pay.
 2. In the Payment integration section, fill in the following items:
 
 Parameter Name            | Description
