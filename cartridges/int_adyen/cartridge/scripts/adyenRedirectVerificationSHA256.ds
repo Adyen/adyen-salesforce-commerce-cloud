@@ -108,8 +108,9 @@ function verify (args) {
 	sessionValidity.setHours(sessionValidity.getHours() + 1);
 	args.sessionValidity = sessionValidity.toISOString();
 
+ 	var shipBeforeDays = Site.getCurrent().getCustomPreferenceValue("AdyenShipBeforeDate");
     var shipBeforeDate : String = new Date();
-    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + shipBeforeDays);
     args.shipBeforeDate = shipBeforeDate.toISOString();
 
 	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null) {
