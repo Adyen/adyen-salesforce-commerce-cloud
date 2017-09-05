@@ -32,7 +32,6 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
     var Mode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
-    var allowedMethods: String = Site.getCurrent().getCustomPreferenceValue("Adyen_allowedMethods");
 
     if (merchantAccount == null) {
         Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -46,9 +45,6 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         Logger.getLogger("Adyen").fatal("HMACkey not set.");
         return PIPELET_ERROR;
     }
-    if (allowedMethods == "null" || allowedMethods == null) {
-        args.allowedMethods = "";
-    }
 
     var currencyCode: String = 'EUR';//basket.currencyCode;//'EUR' use for Klarna testing
     var merchantReference: String = "Request payment methods";
@@ -57,10 +53,14 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     //Get country code based on Shipping Address and if it changes on the billing address then the payment methods need to be refreshed
     var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
     var countryCode = !empty(CountryCode) ? CountryCode.toUpperCase() : shippingAddr.countryCode.value.toUpperCase();
-    
+
     var sessionValidity: String = new Date();
     sessionValidity.setHours(sessionValidity.getHours() + 1);
     sessionValidity = sessionValidity.toISOString();
+
+    var shipBeforeDate : String = new Date();
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    shipBeforeDate = shipBeforeDate.toISOString();
 
     var adyenRequest: SortedMap = new SortedMap();
     adyenRequest.put("paymentAmount", paymentAmount);
@@ -70,8 +70,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     adyenRequest.put("merchantAccount", merchantAccount);
     adyenRequest.put("sessionValidity", sessionValidity);
     adyenRequest.put("countryCode", countryCode);
-    adyenRequest.put("allowedMethods", allowedMethods);
-    adyenRequest.put("shipBeforeDate", '2017-07-31');
+    adyenRequest.put("shipBeforeDate", shipBeforeDate );
 
     var keys: String = "";
     var values: String = "";

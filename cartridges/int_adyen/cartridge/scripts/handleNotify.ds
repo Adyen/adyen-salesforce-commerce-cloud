@@ -65,6 +65,7 @@ function notify (hpm) {
 		case "CANCELLATION" :
 		case "CANCEL_OR_REFUND" :
 		case "REFUND" :
+		case "CAPTURE_FAILED" :
 		case "ORDER_OPENED" :
 		case "ORDER_CLOSED" :
 		case "PENDING" :
