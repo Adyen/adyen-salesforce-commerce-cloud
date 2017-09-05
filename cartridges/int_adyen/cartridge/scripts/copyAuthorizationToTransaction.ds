@@ -1,0 +1,41 @@
+/**
+* Script  used to authorize any confirmation call coming from Adyen
+*
+*
+*   @input map : dw.web.HttpParameterMap
+*   @input order : dw.order.Order
+**
+*	
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util ); 
+
+function execute( args : PipelineDictionary ) : Number
+{
+	try {
+		var order = args.order;
+		var paymentTransaction;
+		
+		for each (var pi in order.getPaymentInstruments()) {
+			paymentTransaction = pi.getPaymentTransaction();
+			break;
+		}
+	
+		saveAuthResponseAttributes(paymentTransaction, args.map);
+	
+	} catch(e) {
+		return PIPELET_NEXT;
+	}
+}
+
+function saveAuthResponseAttributes(transaction : dw.order.PaymentTransaction, map : dw.web.HttpParameterMap) {
+	transaction.custom.Adyen_authResult = map.isParameterSubmitted('authResult') ? map.authResult.stringValue : '';
+	transaction.custom.Adyen_merchantReference = map.isParameterSubmitted('merchantReference') ? map.merchantReference.stringValue : '';
+	transaction.custom.Adyen_paymentMethod = map.isParameterSubmitted('paymentMethod') ? map.paymentMethod.stringValue : '';
+	transaction.custom.Adyen_pspReference = map.isParameterSubmitted('pspReference') ? map.pspReference.stringValue : '';
+	transaction.custom.Adyen_shopperLocale = map.isParameterSubmitted('shopperLocale') ? map.shopperLocale.stringValue : '';
+	transaction.custom.Adyen_skinCode = map.isParameterSubmitted('skinCode') ? map.skinCode.stringValue : '';
+	transaction.custom.Adyen_merchantSig = map.isParameterSubmitted('merchantSig') ? map.merchantSig.stringValue : '';
+	transaction.custom.Adyen_merchantReturnData = map.isParameterSubmitted('merchantReturnData') ? map.merchantReturnData.stringValue : '';
+}
