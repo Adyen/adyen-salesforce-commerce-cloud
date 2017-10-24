@@ -4,6 +4,7 @@
 *
 
 * @input Basket : dw.order.Basket
+* @input CountryCode : String
 * @output PaymentMethods : Object
 */
 importPackage(dw.crypto);
@@ -18,7 +19,7 @@ var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
 
 function execute( args : PipelineDictionary ) : Number
 {
-	var result = getMethods(args.Basket);
+	var result = getMethods(args.Basket, args.CountryCode);
 	if (result == PIPELET_ERROR) {
 		return result;
 	}
@@ -26,7 +27,7 @@ function execute( args : PipelineDictionary ) : Number
 	return PIPELET_NEXT;
 }
 
-function getMethods (basket : dw.order.Basket) {
+function getMethods (basket : dw.order.Basket, CountryCode) {
     var skinCode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode");
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
@@ -52,7 +53,11 @@ function getMethods (basket : dw.order.Basket) {
     var currencyCode: String = basket.currencyCode;
     var merchantReference: String = "Request payment methods";
     var paymentAmount: Number = basket.getTotalGrossPrice() ? basket.getTotalGrossPrice().getValue() * 100 : 1000;
-    var countryCode: String = request.geolocation.countryCode;
+    
+    //Get country code based on Shipping Address and if it changes on the billing address then the payment methods need to be refreshed
+    var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
+    var countryCode = !empty(CountryCode) ? CountryCode.toUpperCase() : shippingAddr.countryCode.value.toUpperCase();
+    
     var sessionValidity: String = new Date();
     sessionValidity.setHours(sessionValidity.getHours() + 1);
     sessionValidity = sessionValidity.toISOString();
@@ -66,6 +71,7 @@ function getMethods (basket : dw.order.Basket) {
     adyenRequest.put("sessionValidity", sessionValidity);
     adyenRequest.put("countryCode", countryCode);
     adyenRequest.put("allowedMethods", allowedMethods);
+    adyenRequest.put("shipBeforeDate", '2017-07-31');
 
     var keys: String = "";
     var values: String = "";

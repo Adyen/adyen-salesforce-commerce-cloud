@@ -1,0 +1,32 @@
+/**
+* Script  used to authorize any confirmation call coming from Adyen
+*
+*
+*   @input map : dw.web.HttpParameterMap
+*   @input order : dw.order.Order
+**
+*	
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+
+var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	try {
+		var order = args.order;
+		var paymentTransaction;
+		
+		for each (var pi in order.getPaymentInstruments()) {
+			paymentTransaction = pi.getPaymentTransaction();
+			break;
+		}
+	
+		AdyenHelper.saveAuthResponseAttributes(paymentTransaction, args.map);
+	
+	} catch(e) {
+		return PIPELET_NEXT;
+	}
+}
