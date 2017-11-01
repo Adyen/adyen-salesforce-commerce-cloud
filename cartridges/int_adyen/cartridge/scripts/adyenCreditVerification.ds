@@ -108,17 +108,46 @@ function verify(args) {
             'value': myAmount
         };
 
-        if (AdyenHelper.getAdyenAVSEnabled()) {
-            var billingAddr = args.Order.getBillingAddress();
-            jsonObject['billingAddress'] = {
-                'city': billingAddr.city,
-                'country': billingAddr.countryCode.value,
-                'houseNumberOrName': billingAddr.suite,
-                'postalCode': billingAddr.postalCode,
-                'stateOrProvince': billingAddr.stateCode,
-                'street': billingAddr.custom.streetName
-            }
+        var shippingAddr : OrderAddress = args.Order.defaultShipment.shippingAddress;
+        var houseNumberShip;  
+        if(shippingAddr.address2) {
+            houseNumberShip = shippingAddr.address2; 
         }
+        else{
+            houseNumberShip = "N/A";
+        }
+        jsonObject.deliveryAddress = {
+            "city": shippingAddr.city,
+                "country": shippingAddr.countryCode.value,
+                "houseNumberOrName": houseNumberShip,
+                "postalCode": shippingAddr.postalCode,
+                "stateOrProvince": shippingAddr.stateCode,
+                "street": shippingAddr.address1
+        };
+
+        var billingAddr : OrderAddress = args.Order.getBillingAddress();
+        var houseNumberBill;  
+        if(billingAddr.address2) {
+            houseNumberBill = billingAddr.address2; 
+        }
+        else{
+            houseNumberBill = "N/A";
+        }
+        jsonObject.billingAddress = {
+            "city": billingAddr.city,
+            "country": billingAddr.countryCode.value,
+            "houseNumberOrName": houseNumberBill,
+            "postalCode": billingAddr.postalCode,
+            "stateOrProvince": billingAddr.stateCode,
+            "street": billingAddr.address1
+        };
+
+        jsonObject.shopperName = {
+            "firstName" : billingAddr.firstName,
+            "gender" : "UNKNOWN",
+            "infix" : "",
+            "lastName" : billingAddr.lastName
+        };
 
         if (AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
             jsonObject['selectedRecurringDetailReference'] = paymentInstrument.getCreditCardToken();

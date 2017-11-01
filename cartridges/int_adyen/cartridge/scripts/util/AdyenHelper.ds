@@ -519,7 +519,6 @@ var __AdyenHelper : Object = {
 			for each (let paymentInstrument in paymentInstruments) {			
 				let paymentProcessor = paymentInstrument.getPaymentTransaction().getPaymentProcessor();
 	            let paymentProcessorID = paymentProcessor ? paymentProcessor.getID(): paymentInstrument.getPaymentMethod();
-	
 				if (paymentProcessorID.equals("Adyen") || paymentProcessorID.equals("ADYEN_CREDIT")) {
 					adyenOrderPaymentInstrument = paymentInstrument;
 					break;
@@ -530,6 +529,7 @@ var __AdyenHelper : Object = {
 		return adyenOrderPaymentInstrument;
 	},
 	
+
 	saveAuthResponseAttributes : function(transaction : dw.order.PaymentTransaction, map : dw.web.HttpParameterMap) {
 		transaction.custom.Adyen_authResult = map.isParameterSubmitted('authResult') ? map.authResult.stringValue : '';
 		transaction.custom.Adyen_merchantReference = map.isParameterSubmitted('merchantReference') ? map.merchantReference.stringValue : '';
@@ -539,6 +539,66 @@ var __AdyenHelper : Object = {
 		transaction.custom.Adyen_skinCode = map.isParameterSubmitted('skinCode') ? map.skinCode.stringValue : '';
 		transaction.custom.Adyen_merchantSig = map.isParameterSubmitted('merchantSig') ? map.merchantSig.stringValue : '';
 		transaction.custom.Adyen_merchantReturnData = map.isParameterSubmitted('merchantReturnData') ? map.merchantReturnData.stringValue : '';
+
+    },
+
+	//Public key needed, since form is customisable 
+	getAdyenCseJsPublicKey : function () : String {
+		var returnValue : String = "";
+		if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey'))) {
+			returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseJsPublicKey');
+		}
+		return returnValue;
+	},
+	
+	getCurrencyValueForApi : function ( amount ) : String {		
+		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
+		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
+        var apiAmount = amount.multiply(1000).value;
+        if ( digitsNumber == 0 ) apiAmount = amount.value;
+        else if ( digitsNumber == 1 ) apiAmount = amount.multiply(10).value;
+        else if ( digitsNumber == 2 ) apiAmount = amount.multiply(100).value;
+        return Math.round(apiAmount);
+	},
+	
+	getFractionDigits : function (currencyCode) : Number {
+		var format;
+		switch(currencyCode) {
+			case "JPY":
+            case "IDR":
+            case "KRW":
+            case "BYR":
+            case "VND":
+            case "CVE":
+            case "DJF":
+            case "GNF":
+            case "PYG":
+            case "RWF":
+            case "UGX":
+            case "VUV":
+            case "XAF":
+            case "XOF":
+            case "XPF":
+            case "GHC":
+            case "KMF":
+                format = 0;
+                break;
+            case "MRO":
+                format = 1;
+                break;
+            case "BHD":
+            case "JOD":
+            case "KWD":
+            case "OMR":
+            case "LYD":
+            case "TND":
+                format = 3;
+                break;
+            default:
+                format = 2;
+                break;
+		}
+		return format;
 	}
 }
 
