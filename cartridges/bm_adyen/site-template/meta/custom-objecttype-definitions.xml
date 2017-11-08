@@ -159,6 +159,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_log">
+                <display-name xml:lang="x-default">Adyen Log</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="general">
@@ -183,6 +190,7 @@
                 <attribute attribute-id="value"/>
                 <attribute attribute-id="live"/>
                 <attribute attribute-id="eventDate"/>
+                <attribute attribute-id="Adyen_log"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

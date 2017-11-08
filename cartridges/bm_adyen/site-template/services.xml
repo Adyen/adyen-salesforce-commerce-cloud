@@ -23,4 +23,24 @@
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
+    
+    <service service-id="adyen.http.payment.recurring.LCG2Euro">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id></credential-id>
+    </service>
+
+    <service service-id="adyen.http.payment.recurring.disable.LCG2Euro">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id></profile-id>
+        <credential-id></credential-id>
+    </service>
 </services>

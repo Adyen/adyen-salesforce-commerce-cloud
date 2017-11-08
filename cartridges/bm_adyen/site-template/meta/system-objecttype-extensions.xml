@@ -241,6 +241,12 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenEnabled">
+                <display-name xml:lang="x-default">Adyen Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenPaymentMethodsServicePrefix">
                 <display-name xml:lang="x-default">Adyen Payment Methods Service Prefix</display-name>
                 <type>string</type>
@@ -248,6 +254,22 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <default-value>adyen.http.payment.methods</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenPaymentRecurringDisableServicePrefix">
+                <display-name xml:lang="x-default">Adyen Payment Recurring Disable Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.recurring.disable</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenPaymentRecurringServicePrefix">
+                <display-name xml:lang="x-default">Adyen Payment Recurring Service Prefix</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>adyen.http.payment.recurring</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenPaymentSecureServicePrefix">
                 <display-name xml:lang="x-default">Adyen Payment 3D Secure Service Prefix</display-name>
@@ -264,6 +286,21 @@
                 <min-length>0</min-length>
                 <default-value>adyen.http.payment.send</default-value>
             </attribute-definition>
+             <attribute-definition attribute-id="AdyenRatePayID">
+                <display-name xml:lang="x-default">RatePay ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>oj9GsQ</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenRecurringPaymentsEnabled">
+                <display-name xml:lang="x-default">Adyen Recurring Payments Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Debug">
                 <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
                 <description xml:lang="x-default">yes / no</description>
@@ -274,6 +311,13 @@
             <attribute-definition attribute-id="Adyen_HMACkey">
                 <display-name xml:lang="x-default">HMACkey</display-name>
                 <description xml:lang="x-default">Key used to calculate a signature</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_HPP_Type">
+                <display-name xml:lang="x-default">Adyen_HPP_Type</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -294,6 +338,14 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Open_Invoice_Whitelist">
+                <display-name xml:lang="x-default">Open Invoice White List Methods</display-name>
+                <description xml:lang="x-default">CSV (e.g. klarna, payrate and/or afterpay)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+               <min-length>0</min-length>
+	         </attribute-definition>
              <attribute-definition attribute-id="Adyen_PaymentSelection">
                 <display-name xml:lang="x-default">Payment Selection</display-name>
                 <description xml:lang="x-default">Multi-page (multi) or One page (one) payment selection</description>
@@ -352,7 +404,7 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_notification_password">
+            <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
                 <type>string</type>
@@ -361,7 +413,7 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_notification_user">
+            <attribute-definition attribute-id="Adyen_notification_user">
                 <display-name xml:lang="x-default">Adyen Notifications User</display-name>
                 <description xml:lang="x-default">Adyen Notifications User for Basic Authentication</description>
                 <type>string</type>
@@ -386,13 +438,28 @@
                 <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="Adyen_directoryLookup"/>
                 <attribute attribute-id="Adyen_recurringType"/>
-                <attribute attribute-id="adyen_notification_user"/>
-                <attribute attribute-id="adyen_notification_password"/>
                 <attribute attribute-id="AdyenPaymentMethodsServicePrefix"/>
                 <attribute attribute-id="AdyenPaymentSendServicePrefix"/>
                 <attribute attribute-id="AdyenPaymentSecureServicePrefix"/>
+				<attribute attribute-id="AdyenPaymentRecurringServicePrefix"/>
+			    <attribute attribute-id="AdyenPaymentRecurringDisableServicePrefix"/>
+		        <attribute attribute-id="Adyen_notification_password"/>
+	            <attribute attribute-id="Adyen_notification_user"/>
+                <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
+                <attribute attribute-id="Adyen_Open_Invoice_Whitelist"/>
+                <attribute attribute-id="AdyenRatePayID"/>
+	            <attribute attribute-id="AdyenEnabled"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
-
+<type-extension type-id="PaymentTransaction">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="Adyen_log">
+                <display-name xml:lang="x-default">Adyen Log</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+    </type-extension>
 </metadata>
