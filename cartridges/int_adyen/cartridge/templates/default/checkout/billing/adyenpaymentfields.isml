@@ -1,36 +1,180 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
 <isinclude template="util/modules"/>
+
+<div class="form-row ">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_encrypteddata"><span></span></label>
+
+
+<div class="field-wrapper">
+<input class=" " type="hidden" id="dwfrm_billing_paymentMethods_creditCard_encrypteddata" name="dwfrm_billing_paymentMethods_creditCard_encrypteddata" value="">
+</div>
+
+
+
+<div class="form-caption"></div>
+
+</div>
+
+<input type="hidden" value="generate-this-server-side" data-encrypted-name="generationtime">
+<input type="hidden" id="encrypteddata">
+<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true">
 <div class="form-data-error error"></div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.number', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_number" autocomplete="off" data-encrypted-name="number" size="20"/>
+
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row ">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_selectedCardID"><span></span></label>
+
+
+<div class="field-wrapper">
+<input class=" " type="hidden" id="dwfrm_billing_paymentMethods_creditCard_selectedCardID" name="dwfrm_billing_paymentMethods_creditCard_selectedCardID" value="">
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.ownerlabel', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_owner" autocomplete="off" data-encrypted-name="holderName" size="20"/>
+
+
+
+<div class="form-caption"></div>
+
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('resource.month', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_month" autocomplete="off" data-encrypted-name="expiryMonth" size="2" maxlength="2"/>
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row  required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_owner"><span class="required-indicator">• </span><span>Name on Card</span></label>
+
+
+<div class="field-wrapper">
+<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_owner" name="dwfrm_billing_paymentMethods_creditCard_owner" value="" aria-required="true" aria-invalid="true" aria-describedby="dwfrm_billing_paymentMethods_creditCard_owner-error">
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('resource.year', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_year" autocomplete="off" data-encrypted-name="expiryYear" size="4" maxlength="4"/>
+
+
+
+<div class="form-caption"></div>
+
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.cvnlabel', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_cvn_value" autocomplete="off" data-encrypted-name="cvc" size="4" maxlength="4"/>
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row  required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_type"><span class="required-indicator">• </span><span>Type</span></label>
+
+
+<div class="field-wrapper">
+<select class="input-select  required" id="dwfrm_billing_paymentMethods_creditCard_type" name="dwfrm_billing_paymentMethods_creditCard_type" aria-required="true"><option class="select-option" label="Visa" value="Visa">Visa</option><option class="select-option" label="American Express" value="Amex">American Express</option><option class="select-option" label="Master Card" value="Master">Master Card</option><option class="select-option" label="Discover" value="Discover">Discover</option></select>
 </div>
-<input type="hidden" value="generate-this-server-side" data-encrypted-name="generationtime"/>
-<input type="hidden" id="encrypteddata"/>
-<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>
+
+
+
+<div class="form-caption"></div>
+
+</div>
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row  required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw"><span class="required-indicator">• </span><span>Number</span></label>
+
+
+<div class="field-wrapper">
+<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw" name="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw" value="" aria-required="true">
+</div>
+
+
+
+<div class="form-caption">Example: 4111111111111111</div>
+
+</div>
+
+<div class="form-row required" aria-required="true">
+<label>
+<span class="required-indicator">•</span>
+<span>Expiration Date:</span>
+</label>
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/dynamicform.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/dynamicform.isml" -->
+
+
+	<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row month required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_expiration_month"><span class="required-indicator">• </span><span>Month</span></label>
+
+
+<div class="field-wrapper">
+<select class="input-select  required" id="dwfrm_billing_paymentMethods_creditCard_expiration_month" name="dwfrm_billing_paymentMethods_creditCard_expiration_month" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="January" value="1">January</option><option class="select-option" label="February" value="2">February</option><option class="select-option" label="March" value="3">March</option><option class="select-option" label="April" value="4">April</option><option class="select-option" label="May" value="5">May</option><option class="select-option" label="June" value="6">June</option><option class="select-option" label="July" value="7">July</option><option class="select-option" label="August" value="8">August</option><option class="select-option" label="September" value="9">September</option><option class="select-option" label="October" value="10">October</option><option class="select-option" label="November" value="11">November</option><option class="select-option" label="December" value="12">December</option></select>
+</div>
+
+
+
+<div class="form-caption"></div>
+
+</div>
+
+
+	<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row year required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_expiration_year"><span class="required-indicator">• </span><span>Year</span></label>
+
+
+<div class="field-wrapper">
+<select class="input-select  required" id="dwfrm_billing_paymentMethods_creditCard_expiration_year" name="dwfrm_billing_paymentMethods_creditCard_expiration_year" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="2016" value="2016">2016</option><option class="select-option" label="2017" value="2017">2017</option><option class="select-option" label="2018" value="2018">2018</option><option class="select-option" label="2019" value="2019">2019</option><option class="select-option" label="2020" value="2020">2020</option><option class="select-option" label="2021" value="2021">2021</option><option class="select-option" label="2022" value="2022">2022</option></select>
+</div>
+
+
+
+<div class="form-caption"></div>
+
+</div>
+
+
+
+</div>
+
+<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
+
+
+<div class="form-row cvn required" aria-required="true">
+
+
+
+<label for="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws"><span class="required-indicator">• </span><span>Security Code</span></label>
+
+
+<div class="field-wrapper">
+<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws" name="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws" value="" aria-required="true">
+</div>
+
+
+<div class="form-field-tooltip"><a href="/s/LCG2Euro/checkout-security-code.html" class="tooltip">What is this?<div class="tooltip-content" data-layout="small"><div class="cvn-tooltip"><img src="https://adyen04-tech-prtnr-eu04-dw.demandware.net/on/demandware.static/-/Library-Sites-SiteGenesisSharedLibrary/default/dw0f7aafd5/images/Cart/cvnimage.jpg" alt="CVN Number"><p>What is a Card Verification Number (CVN)?</p>
+<p>For Discover, MasterCard and Visa, enter the last three digits on the signature strip. For American Express, enter the four digits in small print on the front of the card.</p></div></div></a></div>
+<div class="form-caption"></div>
+
+</div>

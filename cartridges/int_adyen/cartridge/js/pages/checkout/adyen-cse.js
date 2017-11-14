@@ -32,7 +32,7 @@ function initializeBillingEvents() {
 	        // the public key
 	        var key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY;
 
-	        var options = {};
+	        var options = { enableValidations: false};
 	        var cseInstance = adyen.encrypt.createEncryption(key, options);
 	        var postData = {};
             

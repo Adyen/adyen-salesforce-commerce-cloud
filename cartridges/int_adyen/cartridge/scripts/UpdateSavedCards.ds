@@ -80,7 +80,8 @@ function updateSavedCards(args) {
                         if (!empty(expMonth) && !empty(expYear) && !empty(ccNum) && !empty(token) && !empty(ccType)) {
                             var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
-                            newCreditCard.custom.AdyenPspReference = pspRef;
+							// custom throws error
+                            //newCreditCard.custom.AdyenPspReference = pspRef;
                             newCreditCard.setCreditCardExpirationMonth(Number(expMonth));
                             newCreditCard.setCreditCardExpirationYear(Number(expYear));
                             newCreditCard.setCreditCardType(ccType);
