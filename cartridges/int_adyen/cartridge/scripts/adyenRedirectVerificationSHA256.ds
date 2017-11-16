@@ -172,8 +172,8 @@ function verify (args) {
 
 		if( !empty(args.dob)) {
 			var dob = args.dob.split('/');
-			adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[0] );
-			adyenRequest.put("shopper.dateOfBirthMonth", dob[1] );
+			adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[1] );
+			adyenRequest.put("shopper.dateOfBirthMonth", dob[0] );
 			adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
 		}
 

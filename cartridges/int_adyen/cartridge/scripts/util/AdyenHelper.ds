@@ -337,8 +337,6 @@ var __AdyenHelper : Object = {
 
         if (!empty(customerID)) {
             shopperObject['shopperReference'] = customerID;
-            //shopperObject['selectedRecurringDetailReference'] = 'LATEST';
-            shopperObject['shopperInteraction'] = 'ContAuth';
         }
 
         return shopperObject;

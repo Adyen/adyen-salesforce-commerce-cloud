@@ -63,20 +63,14 @@ function verify(args) {
             customerID = profile.getCustomerNo();
         }
 
-        if (empty(paymentInstrument.getCreditCardToken()) && !empty(session.forms.billing.paymentMethods.creditCard.selectedCardID) && !empty(session.forms.billing.paymentMethods.creditCard.selectedCardID.value)) {
-            tokenID = AdyenHelper.getCardToken(session.forms.billing.paymentMethods.creditCard.selectedCardID.value, customer);
-            if (!empty(tokenID)) {
-                Transaction.wrap(function () {
-                    paymentInstrument.setCreditCardToken(tokenID);
-                });
-            }
+		// TODO: for new cards use the recurring type in the settings
+		// For oneclick cards use ONECICK
+        var recurringType = AdyenHelper.getAdyenRecurringType();
+        
+        if(paymentInstrument.getCreditCardToken()) {
+        		recurringType = 'ONECLICK';
         }
-
-        var recurringType = '';
-        if (saveCreditCard && recurringPaymentsEnabled && !empty(customerID)) {
-           recurringType = 'RECURRING,ONECLICK';
-        }
-
+        
         var jsonObject = AdyenHelper.createAdyenRequestObject({
             Order: order,
             FormType: 'billing',
@@ -151,7 +145,6 @@ function verify(args) {
 
         if (AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
             jsonObject['selectedRecurringDetailReference'] = paymentInstrument.getCreditCardToken();
-            jsonObject['shopperInteraction'] = 'Ecommerce';
         }
 
         // assign default values for the script output variables
