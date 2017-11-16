@@ -1,43 +1,11 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
-<isinclude template="util/modules"/>
-
-<div class="form-row ">
-
-
-
-<label for="dwfrm_billing_paymentMethods_creditCard_encrypteddata"><span></span></label>
-
-
-<div class="field-wrapper">
-<input class=" " type="hidden" id="dwfrm_billing_paymentMethods_creditCard_encrypteddata" name="dwfrm_billing_paymentMethods_creditCard_encrypteddata" value="">
-</div>
-
-
-
-<div class="form-caption"></div>
-
-</div>
-
-<input type="hidden" value="generate-this-server-side" data-encrypted-name="generationtime">
-<input type="hidden" id="encrypteddata">
-<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true">
-<div class="form-data-error error"></div>
-
-
-<!-- dwMarker="linclude" dwTemplateTitle="/default/util/inputfield.isml (app_storefront_core)" dwTemplateURL="http://localhost:60606/target=/app_storefront_core/cartridge/templates/default/util/inputfield.isml" -->
 
 
 <div class="form-row ">
-
-
-
-<label for="dwfrm_billing_paymentMethods_creditCard_selectedCardID"><span></span></label>
-
-
-<div class="field-wrapper">
-<input class=" " type="hidden" id="dwfrm_billing_paymentMethods_creditCard_selectedCardID" name="dwfrm_billing_paymentMethods_creditCard_selectedCardID" value="">
+	<label for="dwfrm_billing_paymentMethods_creditCard_selectedCardID"><span></span></label>
+	<div class="field-wrapper">
+	<input class=" " type="hidden" id="dwfrm_billing_paymentMethods_creditCard_selectedCardID" name="dwfrm_billing_paymentMethods_creditCard_selectedCardID" value="">
 </div>
-
 
 
 <div class="form-caption"></div>
@@ -55,7 +23,7 @@
 
 
 <div class="field-wrapper">
-<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_owner" name="dwfrm_billing_paymentMethods_creditCard_owner" value="" aria-required="true" aria-invalid="true" aria-describedby="dwfrm_billing_paymentMethods_creditCard_owner-error">
+<input class="input-text  required" type="text" id="creditCard_owner" value="" aria-required="true" aria-invalid="true" aria-describedby="dwfrm_billing_paymentMethods_creditCard_owner-error">
 </div>
 
 
@@ -91,11 +59,11 @@
 
 
 
-<label for="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw"><span class="required-indicator">• </span><span>Number</span></label>
+<label for="creditCard_number"><span class="required-indicator">• </span><span>Number</span></label>
 
 
 <div class="field-wrapper">
-<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw" name="dwfrm_billing_paymentMethods_creditCard_number_d0zbnmxfjcdw" value="" aria-required="true">
+<input class="input-text  required" type="text" id="creditCard_number" value="" aria-required="true">
 </div>
 
 
@@ -120,11 +88,11 @@
 
 
 
-<label for="dwfrm_billing_paymentMethods_creditCard_expiration_month"><span class="required-indicator">• </span><span>Month</span></label>
+<label for="creditCard_expiration_month"><span class="required-indicator">• </span><span>Month</span></label>
 
 
 <div class="field-wrapper">
-<select class="input-select  required" id="dwfrm_billing_paymentMethods_creditCard_expiration_month" name="dwfrm_billing_paymentMethods_creditCard_expiration_month" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="January" value="1">January</option><option class="select-option" label="February" value="2">February</option><option class="select-option" label="March" value="3">March</option><option class="select-option" label="April" value="4">April</option><option class="select-option" label="May" value="5">May</option><option class="select-option" label="June" value="6">June</option><option class="select-option" label="July" value="7">July</option><option class="select-option" label="August" value="8">August</option><option class="select-option" label="September" value="9">September</option><option class="select-option" label="October" value="10">October</option><option class="select-option" label="November" value="11">November</option><option class="select-option" label="December" value="12">December</option></select>
+<select class="input-select  required" id="creditCard_expiration_month" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="January" value="1">January</option><option class="select-option" label="February" value="2">February</option><option class="select-option" label="March" value="3">March</option><option class="select-option" label="April" value="4">April</option><option class="select-option" label="May" value="5">May</option><option class="select-option" label="June" value="6">June</option><option class="select-option" label="July" value="7">July</option><option class="select-option" label="August" value="8">August</option><option class="select-option" label="September" value="9">September</option><option class="select-option" label="October" value="10">October</option><option class="select-option" label="November" value="11">November</option><option class="select-option" label="December" value="12">December</option></select>
 </div>
 
 
@@ -141,11 +109,11 @@
 
 
 
-<label for="dwfrm_billing_paymentMethods_creditCard_expiration_year"><span class="required-indicator">• </span><span>Year</span></label>
+<label for="creditCard_expiration_year"><span class="required-indicator">• </span><span>Year</span></label>
 
 
 <div class="field-wrapper">
-<select class="input-select  required" id="dwfrm_billing_paymentMethods_creditCard_expiration_year" name="dwfrm_billing_paymentMethods_creditCard_expiration_year" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="2016" value="2016">2016</option><option class="select-option" label="2017" value="2017">2017</option><option class="select-option" label="2018" value="2018">2018</option><option class="select-option" label="2019" value="2019">2019</option><option class="select-option" label="2020" value="2020">2020</option><option class="select-option" label="2021" value="2021">2021</option><option class="select-option" label="2022" value="2022">2022</option></select>
+<select class="input-select  required" id="creditCard_expiration_year" minlength="0" maxlength="2147483647" aria-required="true"><option class="select-option" label="2016" value="2016">2016</option><option class="select-option" label="2017" value="2017">2017</option><option class="select-option" label="2018" value="2018">2018</option><option class="select-option" label="2019" value="2019">2019</option><option class="select-option" label="2020" value="2020">2020</option><option class="select-option" label="2021" value="2021">2021</option><option class="select-option" label="2022" value="2022">2022</option></select>
 </div>
 
 
@@ -165,11 +133,11 @@
 
 
 
-<label for="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws"><span class="required-indicator">• </span><span>Security Code</span></label>
+<label for="creditCard_cvn"><span class="required-indicator">• </span><span>Security Code</span></label>
 
 
 <div class="field-wrapper">
-<input class="input-text  required" type="text" id="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws" name="dwfrm_billing_paymentMethods_creditCard_cvn_d0cstjjafzws" value="" aria-required="true">
+<input class="input-text  required" type="text" id="creditCard_cvn" value="" aria-required="true">
 </div>
 
 
