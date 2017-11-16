@@ -72,7 +72,6 @@ function initializeBillingEvents() {
 		        	$('.form-data-error').html('');
 		        	encryptedData.val(postData['adyen-encrypted-data']);
 		        	$('#creditCard_number').val(maskValue($('#creditCard_number').val()));
-		        	$('#creditCard_number').val('test1234');
 			    $('#billing-submit-hidden').trigger('click');
 	        }
 		}
@@ -82,7 +81,9 @@ function initializeBillingEvents() {
 		if (!cardUUID) {
 			// TODO: clear all fields
 			$('.checkout-billing').find('input[name$="_selectedCardID"]').val('');
-			$('#creditCard_owner').removeAttribute("disabled").val('');
+			$('#creditCard_owner').removeAttr("disabled").val('');
+			$('#dwfrm_billing_paymentMethods_creditCard_type').removeAttr("disabled").val('');
+			$('#creditCard_number').removeAttr("disabled").val('');
 			$('#creditCard_expiration_month').val('');
 			$('#creditCard_expiration_year').val('');
 			$('#creditCard_expiration_cvn').val('');	
