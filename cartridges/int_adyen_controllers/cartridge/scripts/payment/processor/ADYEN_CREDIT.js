@@ -29,19 +29,21 @@ function Handle(args) {
     }
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
-    var cardNumber = creditCardForm.get('number').value();
-    var maskedCardNumber = cardNumber.replace(/\d(?=\d{4})/g, '*');
     var cardType = creditCardForm.get('type').value();
-    var cardSecurityCode = creditCardForm.get('cvn').value();
-    var expirationMonth = creditCardForm.get('expiration.month').value();
-    var expirationYear = creditCardForm.get('expiration.year').value();
     var encryptedData = creditCardForm.get('encrypteddata').value();
     var paymentCard = PaymentMgr.getPaymentCard(cardType);
-
+    var cardNumber;
+    var cardSecurityCode;
+    var expirationMonth; 
+    var expirationYear;
     var adyenCseEnabled = Site.getCurrent().getCustomPreferenceValue('AdyenCseEnabled');
     if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        // Verify payment card
-        var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
+        // Verify payment card 
+	      cardSecurityCode = creditCardForm.get('cvn').value();
+	      expirationMonth = creditCardForm.get('expiration.month').value();
+	      expirationYear = creditCardForm.get('expiration.year').value();
+	      cardNumber = creditCardForm.get('number').value();
+	      var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
         if (creditCardStatus.error) {
             var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
             invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
@@ -61,7 +63,6 @@ function Handle(args) {
             paymentInstrument.creditCardExpirationMonth = expirationMonth;
             paymentInstrument.creditCardExpirationYear = expirationYear;
         } else {
-            paymentInstrument.creditCardNumber = maskedCardNumber;
             paymentInstrument.creditCardType = cardType;
         }
 
