@@ -154,20 +154,12 @@ function verify (args) {
 	//Open Invoice specific section
 	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form
 	if(!empty(args.brandCode) && Site.getCurrent().getCustomPreferenceValue("Adyen_Open_Invoice_Whitelist").indexOf(args.brandCode) > -1) {
-		var customerProfile = order.getCustomer().getProfile();
-
-		if( !empty(customerProfile )) {
-			adyenRequest.put("shopper.firstName", customerProfile.firstName );
-			adyenRequest.put("shopper.lastName", customerProfile.lastName );
-			adyenRequest.put("shopper.telephoneNumber", order.getBillingAddress().phone );
-		} else {
-			adyenRequest.put("shopper.firstName", order.getBillingAddress.getFirstName() );
-			adyenRequest.put("shopper.lastName", order.getBillingAddress.getLastName() );
-			adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
-		}
-
+		
+		var billingAddr = order.getBillingAddress();	
+		adyenRequest.put("shopper.firstName", order.getBillingAddress().getFirstName() );
+		adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );
+		adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
 		adyenRequest.put("shopperType", '1' );
-
 		adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'NA');
 
 		if( !empty(args.dob)) {
