@@ -141,9 +141,9 @@ function verify (args) {
 		if( !empty(args.brandCode)){
 			adyenRequest.put("brandCode", args.brandCode );
 			if (args.brandCode == "ratepay" && !empty(args.ratePayFingerprint)){
-				adyenRequest.put("deviceFingerprint", args.ratePayFingerprint);
+				adyenRequest.put("dfValue", args.ratePayFingerprint);
 			}else if (!empty(args.adyenFingerprint)){
-				adyenRequest.put("deviceFingerprint", args.adyenFingerprint);
+				adyenRequest.put("dfValue", args.adyenFingerprint);
 			}
 		}
 		if( !empty(args.issuerId)){
@@ -176,30 +176,32 @@ function verify (args) {
 		//open invoice line items
 		var line = 0;
 
+
 		// Add all product and shipping line items to request
 		for each ( var lineItem in order.getAllLineItems() ) {
-			if( (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem) || lineItem instanceof dw.order.ShippingLineItem ) {
+			if( (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem) || lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment) {
 				line = line + 1;
-				var description = (lineItem instanceof dw.order.ShippingLineItem) ? lineItem.getID() : lineItem.product.name;
-				var quantity = (lineItem instanceof dw.order.ShippingLineItem) ? "1" : lineItem.quantityValue.toFixed();
-
-				adyenRequest.put("openinvoicedata.line" + line + '.currencyCode', lineItem.adjustedPrice.currencyCode );
+				var description= getDescription(lineItem);
+				var id = getId(lineItem);
+				var quantity = getQuantity(lineItem);
+				var currencyCode = getCurrency(lineItem);
+				var vatPercentage = getVatPercentage(lineItem);
+				var itemAmount = getItemAmount(lineItem);
+				var vatAmount = getVatAmount(lineItem);
+				adyenRequest.put("openinvoicedata.line" + line + '.currencyCode', currencyCode );
 				adyenRequest.put("openinvoicedata.line" + line + '.description', description );
-				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  (new Number(lineItem.adjustedPrice.value * 100)).toFixed());
-				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', (new Number(lineItem.getAdjustedTax().value)).toFixed() );
-
-				//calculate VAT percentage
-				var vatPercentage = 0;
-				if ( lineItem.getAdjustedTax().value > 0 ) {
-					vatPercentage = ( lineItem.getTaxRate() * 100 );
-				}
-				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', vatPercentage.toFixed() );
+				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  (new Number(itemAmount) * 100 / quantity).toFixed() );
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', (new Number(vatAmount) * 100 / quantity).toFixed() );				
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 100).toFixed() );
 				adyenRequest.put("openinvoicedata.line" + line + '.numberOfItems', quantity );
 				adyenRequest.put("openinvoicedata.line" + line + '.vatCategory', 'None' );
-				adyenRequest.put("openinvoicedata.line" + line + '.itemId', (lineItem instanceof dw.order.ShippingLineItem) ? lineItem.UUID : lineItem.product.ID);
-			} else {
+				adyenRequest.put("openinvoicedata.line" + line + '.itemId', id);
+				
+			} 
+			else {
 				// Do nothing for other line items
 			}
+			
 		}
 		adyenRequest.put("openinvoicedata.numberOfLines", line.toFixed() );
 	}
@@ -274,6 +276,85 @@ function verify (args) {
 	Logger.getLogger("Adyen").debug(orderNo+ " - " +msg);
 
    return args;
+}
+
+function getDescription(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getID();
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem){
+		return lineItem.product.name;
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment){
+		return "Discount";
+	}
+	
+	return null;			
+}
+
+function getId(lineItem){
+	if (lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.UUID;
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.product.ID; 
+	}
+	
+	return null;
+}
+
+function getQuantity(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return "1";
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.quantityValue.toFixed();
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.quantity.toFixed();
+	}
+	
+	return null;
+}
+
+function getVatPercentage(lineItem) {
+	var vatPercentage = 0;
+    if ( getVatAmount() > 0 ) {
+        vatPercentage = lineItem.getTaxRate();
+    }
+	return vatPercentage;
+}
+
+function getVatAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getAdjustedTax().value;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.tax.value;
+	}
+	return null;
+}
+
+function getCurrency(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.adjustedPrice.currencyCode;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.basePrice.currencyCode;
+	}
+	return null;
+
+}
+
+function getItemAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.adjustedPrice.value;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.basePrice.value;
+	}
+	return null;
+	
 }
 
 module.exports = {
