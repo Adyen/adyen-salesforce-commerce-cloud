@@ -225,7 +225,7 @@ function verify(args) {
 
         var resultCode = args.ResultCode;
 
-        if (resultCode.indexOf('Authorised') != -1 || (resultCode.indexOf('RedirectShopper') != -1 && AdyenHelper.getAdyen3DSecureEnabled()) ) {
+        if (resultCode.indexOf('Authorised') != -1 || (resultCode.indexOf('RedirectShopper') != -1) ) {
             args.Decision = 'ACCEPT';
             args.PaymentStatus = resultCode;
 

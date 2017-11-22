@@ -116,10 +116,10 @@ function Authorize(args) {
         };
     }
 
-    if (AdyenHelper.getAdyen3DSecureEnabled() && result.IssuerUrl != '') {
+    if (result.IssuerUrl != '') {
         Transaction.commit();
-        //session.custom.order = order;
-        //session.custom.paymentInstrument = paymentInstrument;
+        session.custom.order = order;
+        session.custom.paymentInstrument = paymentInstrument;
         return {
             authorized: true,
             authorized3d: true,

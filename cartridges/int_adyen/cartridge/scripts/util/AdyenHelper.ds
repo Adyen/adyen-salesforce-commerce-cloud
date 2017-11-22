@@ -189,14 +189,6 @@ var __AdyenHelper : Object = {
         return returnValue;
     },
 
-    getAdyen3DSecureEnabled : function () : Boolean {
-        var returnValue : Boolean = false;
-        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DSecureEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DSecureEnabled');
-        }
-        return returnValue;
-    },
-
     getAdyenRecurringPaymentsEnabled : function () : Boolean {
         var returnValue : Boolean = false;
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled'))) {
