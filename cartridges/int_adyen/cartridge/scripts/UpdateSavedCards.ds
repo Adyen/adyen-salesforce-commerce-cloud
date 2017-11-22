@@ -39,11 +39,14 @@ function updateSavedCards(args) {
                 var creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
 
                 Transaction.wrap(function () {
+                	
+                		// remove all current PaymentIntstuments
                     for (var i = 0; i < creditCards.length; i++) {
                         var creditCard = creditCards[i];
                         customer.getProfile().getWallet().removePaymentInstrument(creditCard);
                     }
 
+					// Create from existing cards a paymentInstrument
                     for (var pspRef in paymentsMap) {
                         var payment = paymentsMap[pspRef];
 
