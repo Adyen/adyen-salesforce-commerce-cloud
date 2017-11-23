@@ -1,6 +1,9 @@
 /* eslint-disable */
 'use strict';
 
+var util = require('./util'),
+ajax = require('./ajax');
+
 function pad ( number ) {
     if ( number < 10 ) {
         return '0' + number;
@@ -82,7 +85,7 @@ function initializeBillingEvents() {
 			// TODO: clear all fields
 			$('.checkout-billing').find('input[name$="_selectedCardID"]').val('');
 			$('#creditCard_owner').removeAttr("disabled").val('');
-			$('#dwfrm_billing_paymentMethods_creditCard_type').removeAttr("disabled").val('');
+			$('#dwfrm_billing_paymentMethods_creditCard_type').removeAttr("disabled").val($("#dwfrm_billing_paymentMethods_creditCard_type option:first").val());
 			$('#creditCard_number').removeAttr("disabled").val('');
 			$('#creditCard_expiration_month').val('');
 			$('#creditCard_expiration_year').val('');
@@ -135,6 +138,7 @@ function initializeBillingEvents() {
  */
 function initializeAccountEvents() {
     $('#add-card-submit').on('click', function (e) {
+    		// TODO: fix this to use IDs and we need to change template to not use name attributes
         e.preventDefault();
         var $creditCard = $('#CreditCardForm');
         var $encryptedData = $creditCard.find('input[name*="_encrypteddata"]');
