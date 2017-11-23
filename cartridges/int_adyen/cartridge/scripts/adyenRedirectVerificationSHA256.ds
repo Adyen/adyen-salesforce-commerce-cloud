@@ -179,7 +179,10 @@ function verify (args) {
 
 		// Add all product and shipping line items to request
 		for each ( var lineItem in order.getAllLineItems() ) {
-			if( (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem) || lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment) {
+			if( (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem) 
+			|| lineItem instanceof dw.order.ShippingLineItem 
+			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass==dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+			) {
 				line = line + 1;
 				var description= getDescription(lineItem);
 				var id = getId(lineItem);
@@ -191,7 +194,7 @@ function verify (args) {
 				adyenRequest.put("openinvoicedata.line" + line + '.currencyCode', currencyCode );
 				adyenRequest.put("openinvoicedata.line" + line + '.description', description );
 				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  (new Number(itemAmount) * 100 / quantity).toFixed() );
-				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', (new Number(vatAmount) * 100 / quantity).toFixed() );				
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', (new Number(vatAmount) * 100 / quantity).toFixed() );					
 				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 100).toFixed() );
 				adyenRequest.put("openinvoicedata.line" + line + '.numberOfItems', quantity );
 				adyenRequest.put("openinvoicedata.line" + line + '.vatCategory', 'None' );
