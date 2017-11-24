@@ -90,6 +90,9 @@ function initializeBillingEvents() {
 			$('#creditCard_expiration_month').val('');
 			$('#creditCard_expiration_year').val('');
 			$('#creditCard_expiration_cvn').val('');	
+			// show the save card input and label because it is a new card
+		    $('#dwfrm_billing_paymentMethods_creditCard_saveCard').show();
+		    $('label[for="dwfrm_billing_paymentMethods_creditCard_saveCard"]').show();
 		} else {
 			populateAdyenCreditCardForm(cardUUID);
 		}
@@ -109,6 +112,9 @@ function initializeBillingEvents() {
 	    $('#creditCard_expiration_year').val(data.expirationYear).trigger('change');
 	    $('#creditCard_expiration_cvn').val('').trigger('change');
 	    $creditCard.find('[name$="creditCard_selectedCardID"]').val(data.selectedCardID).trigger('change');
+	    // hide the save card input and label because it is a stored card
+	    $('#dwfrm_billing_paymentMethods_creditCard_saveCard').hide();
+	    $('label[for="dwfrm_billing_paymentMethods_creditCard_saveCard"]').hide();
 	}
 
 	/**
