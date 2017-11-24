@@ -367,9 +367,11 @@ var __AdyenHelper : Object = {
         var tokenID = '',
             pspReference = '';
 
+ 		var recurringType = AdyenHelper.getAdyenRecurringType();
+ 
         var jsonObject = __AdyenHelper.createAdyenRequestObject({
             FormType: 'account',
-            RecurringType: 'RECURRING,ONECLICK'
+            RecurringType: recurringType
         });
 
         var cardObject = __AdyenHelper.createCardObject({
