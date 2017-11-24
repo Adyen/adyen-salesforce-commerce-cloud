@@ -145,6 +145,9 @@ function verify (args) {
 			}else if (!empty(args.adyenFingerprint)){
 				adyenRequest.put("dfValue", args.adyenFingerprint);
 			}
+			if (args.brandCode == "klarna"){
+				adyenRequest.put("klarna.acceptPrivacyPolicy", "true");
+			}
 		}
 		if( !empty(args.issuerId)){
 			adyenRequest.put("issuerId", args.issuerId );
@@ -184,22 +187,22 @@ function verify (args) {
 			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass==dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
 			) {
 				line = line + 1;
-				var description= getDescription(lineItem);
-				var id = getId(lineItem);
-				var quantity = getQuantity(lineItem);
-				var currencyCode = getCurrency(lineItem);
-				var vatPercentage = getVatPercentage(lineItem);
-				var itemAmount = getItemAmount(lineItem);
-				var vatAmount = getVatAmount(lineItem);
+			
+				var description = getDescription(lineItem),
+					id = getId(lineItem),
+					quantity = getQuantity(lineItem),
+					currencyCode = getCurrency(lineItem),
+					itemAmount:number = AdyenHelper.getCurrencyValueForApi(getItemAmount(lineItem))/quantity,
+					vatAmount:number = AdyenHelper.getCurrencyValueForApi(getVatAmount(lineItem)) / quantity,
+					vatPercentage = getVatPercentage(lineItem);
 				adyenRequest.put("openinvoicedata.line" + line + '.currencyCode', currencyCode );
 				adyenRequest.put("openinvoicedata.line" + line + '.description', description );
-				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  (new Number(itemAmount) * 100 / quantity).toFixed() );
-				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', (new Number(vatAmount) * 100 / quantity).toFixed() );					
+				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  itemAmount.toFixed());
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', vatAmount.toFixed());					
 				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 100).toFixed() );
 				adyenRequest.put("openinvoicedata.line" + line + '.numberOfItems', quantity );
 				adyenRequest.put("openinvoicedata.line" + line + '.vatCategory', 'None' );
 				adyenRequest.put("openinvoicedata.line" + line + '.itemId', id);
-				
 			} 
 			else {
 				// Do nothing for other line items
@@ -322,7 +325,7 @@ function getQuantity(lineItem) {
 
 function getVatPercentage(lineItem) {
 	var vatPercentage = 0;
-    if ( getVatAmount() > 0 ) {
+    if ( getVatAmount(lineItem) != 0 ) {
         vatPercentage = lineItem.getTaxRate();
     }
 	return vatPercentage;
@@ -330,10 +333,10 @@ function getVatPercentage(lineItem) {
 
 function getVatAmount(lineItem) {
 	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
-		return lineItem.getAdjustedTax().value;
+		return lineItem.getAdjustedTax();
 	} 
 	else if (lineItem instanceof dw.order.PriceAdjustment) {
-		return lineItem.tax.value;
+		return lineItem.tax;
 	}
 	return null;
 }
@@ -351,10 +354,10 @@ function getCurrency(lineItem) {
 
 function getItemAmount(lineItem) {
 	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
-		return lineItem.adjustedPrice.value;
+		return lineItem.adjustedPrice;
 	} 
 	else if (lineItem instanceof dw.order.PriceAdjustment) {
-		return lineItem.basePrice.value;
+		return lineItem.basePrice;
 	}
 	return null;
 	
