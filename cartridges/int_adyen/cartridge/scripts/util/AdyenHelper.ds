@@ -213,14 +213,6 @@ var __AdyenHelper : Object = {
         if ( digitsNumber > 2 ) return amount.value * 1000;
     },
 
-    getAdyenEnabled : function () : Boolean {
-        var returnValue : Boolean = false;
-        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenEnabled');
-        }
-        return returnValue;
-    },
-
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';

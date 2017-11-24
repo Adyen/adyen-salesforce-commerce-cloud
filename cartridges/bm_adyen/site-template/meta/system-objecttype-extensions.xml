@@ -241,12 +241,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenEnabled">
-                <display-name xml:lang="x-default">Adyen Enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenPaymentMethodsServicePrefix">
                 <display-name xml:lang="x-default">Adyen Payment Methods Service Prefix</display-name>
                 <type>string</type>
@@ -448,7 +442,6 @@
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
                 <attribute attribute-id="Adyen_Open_Invoice_Whitelist"/>
                 <attribute attribute-id="AdyenRatePayID"/>
-	            <attribute attribute-id="AdyenEnabled"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
