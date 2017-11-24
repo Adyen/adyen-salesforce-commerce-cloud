@@ -79,8 +79,8 @@ function handle( customObj : CustomObject  ) : Object
                     if (paymentInstrument.paymentMethod.equals("Adyen")
                         || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
                         paymentInstrument.paymentTransaction.custom.Adyen_log = customObj.custom.Adyen_log;
+                	}
                 }
-
 				if(customObj.custom.success == "true"){
 
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
