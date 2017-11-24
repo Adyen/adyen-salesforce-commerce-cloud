@@ -395,25 +395,14 @@ function authorizeWithForm()
 		return;
     }
     
-    
 	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
 	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
 	paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
     Transaction.commit();
 	
-    var orderPlacementStatus = OrderModel.submit(order);
-    if (!orderPlacementStatus.error) {
-        // update saved credit cards
-        if (AdyenHelper.getAdyenEnabled() && AdyenHelper.getAdyenRecurringPaymentsEnabled() && customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value) {
-            require('int_adyen/cartridge/scripts/UpdateSavedCards').updateSavedCards({
-                CurrentCustomer: customer
-            });
-        }
-
-        clearForms();
-    }	
-
-    app.getController('COSummary').ShowConfirmation(order);
+    OrderModel.submit(order);
+	clearForms();
+	app.getController('COSummary').ShowConfirmation(order);
 }
 
 /**
