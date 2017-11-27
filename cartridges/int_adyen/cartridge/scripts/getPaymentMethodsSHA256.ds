@@ -4,6 +4,7 @@
 *
 
 * @input Basket : dw.order.Basket
+* @input CountryCode : String
 * @output PaymentMethods : Object
 */
 importPackage(dw.crypto);
@@ -18,7 +19,7 @@ var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
 
 function execute( args : PipelineDictionary ) : Number
 {
-	var result = getMethods(args.Basket);
+	var result = getMethods(args.Basket, args.CountryCode);
 	if (result == PIPELET_ERROR) {
 		return result;
 	}
@@ -26,7 +27,7 @@ function execute( args : PipelineDictionary ) : Number
 	return PIPELET_NEXT;
 }
 
-function getMethods (basket : dw.order.Basket) {
+function getMethods (basket : dw.order.Basket, CountryCode) {
     var skinCode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode");
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
@@ -45,12 +46,14 @@ function getMethods (basket : dw.order.Basket) {
         return PIPELET_ERROR;
     }
 
-    var currencyCode: String = basket.currencyCode;
+    var currencyCode: String = 'EUR';//basket.currencyCode;//'EUR' use for Klarna testing
     var merchantReference: String = "Request payment methods";
     var paymentAmount: Number = basket.getTotalGrossPrice() ? basket.getTotalGrossPrice().getValue() * 100 : 1000;
-
- 	var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
-	var countryCode : String = shippingAddr.countryCode.value.toUpperCase();
+    
+    //Get country code based on Shipping Address and if it changes on the billing address then the payment methods need to be refreshed
+    var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
+    var countryCode = !empty(CountryCode) ? CountryCode.toUpperCase() : shippingAddr.countryCode.value.toUpperCase();
+    
     var sessionValidity: String = new Date();
     sessionValidity.setHours(sessionValidity.getHours() + 1);
     sessionValidity = sessionValidity.toISOString();
