@@ -74,6 +74,7 @@ function capture( order : Order ) : Number
 	
 	try {
 		// Send a request
+		// TODO: fix this to new implementation
 		var params="action=" + "Payment.capture" +
 			"&modificationRequest.reference=" + encodeURIComponent(orderNo) +
 			"&modificationRequest.merchantAccount=" + encodeURIComponent(merchantAccount) +
@@ -83,7 +84,7 @@ function capture( order : Order ) : Number
 		
 		var callResult = null;
 		//var service : Service = ServiceRegistry.get("adyen.http.payment.send");
-		var service = AdyenHelper.getService(AdyenHelper.SERVICE.SEND);
+		var service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENT);
 		if (service == null) {
 			return PIPELET_ERROR;
 		}

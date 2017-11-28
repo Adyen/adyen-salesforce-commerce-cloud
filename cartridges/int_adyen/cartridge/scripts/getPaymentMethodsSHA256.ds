@@ -98,7 +98,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     reqBody = reqBody.concat("merchantSig=" + encodeURIComponent(merchantSig));
 
     var callResult = null;
-   	var service = AdyenHelper.getService(AdyenHelper.SERVICE.METHODS);
+   	var service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENTMETHODS);
 	if (service == null) {
 		return PIPELET_ERROR;
 	}

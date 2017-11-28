@@ -20,60 +20,51 @@ function initializeBillingEvents() {
 	$('#billing-submit').on('click', function (e) {
 		var radioVal = $('.payment-method-options').find(':checked').val();
 		if ('CREDIT_CARD' == radioVal){
-		    var $creditCard = $('[data-method="CREDIT_CARD"]');
-	        var $selectedCardID = $creditCard.find('input[name$="_selectedCardID"]');
-
 			e.preventDefault();
 			
-			// FIXME: should be generated server side
-		    	var currentDate = new Date();
-		    	// TODO: optimize this format ISO 8601
-		    	var dateField = currentDate.getUTCFullYear() + '-' + pad( currentDate.getUTCMonth() + 1 ) + '-' + pad( currentDate.getUTCDate() ) + 'T' + pad( currentDate.getUTCHours() ) + ':' + pad( currentDate.getUTCMinutes() ) + ':' + pad( currentDate.getUTCSeconds() ) + '.'
-		        + ( currentDate.getUTCMilliseconds() / 1000 ).toFixed( 3 ).slice( 2, 5 ) + 'Z';
-
-	        var encryptedData = $('#dwfrm_billing_paymentMethods_creditCard_encrypteddata');
-	        // the public key
-	        var key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY;
-	        
-	        var postData = {};
-	        var options = {};
+			var creditCard = $('[data-method="CREDIT_CARD"]'),
+	        		selectedCardID = creditCard.find('input[name$="_selectedCardID"]'),
+				encryptedData = $('#dwfrm_billing_paymentMethods_creditCard_encrypteddata'),
+				key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY,
+				encryptedDataValue,
+	        		options = {};
    
 	        /**
 	         * We need encrypt only CVC if we used already saved CC from dropdown list
 	         */
-	        if ($('#creditCard_number').val().indexOf('*') > -1 && $selectedCardID != null && $selectedCardID.val() !== '') {
+	        if ($('#creditCard_number').val().indexOf('*') > -1 && selectedCardID != null && selectedCardID.val() !== '') {
 	            var cardData = {
                         cvc : $('#creditCard_cvn').val(),
-                        generationtime : dateField
+                        generationtime : $('#adyen_generationtime').val()
                     };
 	            options = { enableValidations: false};
 	        } else {
-    	        var cardData = {
+    	        		var cardData = {
     		            number :  $('#creditCard_number').val(),
     		            cvc : $('#creditCard_cvn').val(),
     		            holderName : $('#creditCard_owner').val(),
     		            expiryMonth : $('#creditCard_expiration_month').val(),
     		            expiryYear : $('#creditCard_expiration_year').val(),
-    		            generationtime : dateField
+    		            generationtime : $('#adyen_generationtime').val()
     		        };
 	        }
             if (($('#creditCard_number').val().indexOf('*') > -1 || $('#creditCard_cvn').val().indexOf('*') > -1) && encryptedData != null && encryptedData.val() !== '') {
-                postData['adyen-encrypted-data'] = encryptedData.val();
+            		encryptedDataValue = encryptedData.val();
             } else {
             		var cseInstance = adyen.encrypt.createEncryption(key, options);
-                postData['adyen-encrypted-data'] = cseInstance.encrypt(cardData);
+            		encryptedDataValue = cseInstance.encrypt(cardData);
             }
             
             // Clear selectedCardID field if user enter a card number
             if ($('#creditCard_number').val().indexOf('*') === -1) {
-                $selectedCardID.val('');
+                selectedCardID.val('');
             }
 
-            if (postData['adyen-encrypted-data'] === false) {
+            if (encryptedDataValue === false) {
 	        		$('.form-data-error').html(Resources.ADYEN_CC_VALIDATE);
 	        } else {
 		        	$('.form-data-error').html('');
-		        	encryptedData.val(postData['adyen-encrypted-data']);
+		        	encryptedData.val(encryptedDataValue);
 		        	$('#creditCard_number').val(maskValue($('#creditCard_number').val()));
 			    $('#billing-submit-hidden').trigger('click');
 	        }
@@ -142,28 +133,15 @@ function initializeBillingEvents() {
  * @function
  * @description Initializes Adyen CSE My Account events
  */
-/**
- * @function
- * @description Initializes Adyen CSE My Account events
- */
 function initializeAccountEvents() {
     $('#add-card-submit').on('click', function (e) {
     		// TODO: fix this to use IDs and we need to change template to not use name attributes
         e.preventDefault();
-        var $creditCard = $('#CreditCardForm');
-        var $encryptedData = $creditCard.find('input[name*="_encrypteddata"]');
-       
-		// FIXME: should be generated server side
-	    	var currentDate = new Date();
-	    	// TODO: optimize this format ISO 8601
-	    	var dateField = currentDate.getUTCFullYear() + '-' + pad( currentDate.getUTCMonth() + 1 ) + '-' + pad( currentDate.getUTCDate() ) + 'T' + pad( currentDate.getUTCHours() ) + ':' + pad( currentDate.getUTCMinutes() ) + ':' + pad( currentDate.getUTCSeconds() ) + '.'
-	        + ( currentDate.getUTCMilliseconds() / 1000 ).toFixed( 3 ).slice( 2, 5 ) + 'Z';
-
-        var encryptedData = $('#dwfrm_paymentinstruments_creditcards_newcreditcard_encrypteddata');
-        // the public key
-        var key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY;
-        var postData = {};
-        var options = {};
+        var $creditCard = $('#CreditCardForm'),
+        		encryptedData = $('#dwfrm_paymentinstruments_creditcards_newcreditcard_encrypteddata'),
+        		key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY,
+        		encryptedDataValue,
+        		options = {};
       
         var cardData = {
 	            number :  $('#creditCard_number').val(),
@@ -171,17 +149,17 @@ function initializeAccountEvents() {
 	            holderName : $('#creditCard_owner').val(),
 	            expiryMonth : $('#creditCard_expiration_month').val(),
 	            expiryYear : $('#creditCard_expiration_year').val(),
-	            generationtime : dateField
+	            generationtime : $('#adyen_generationtime').val()
         };
     
     		var cseInstance = adyen.encrypt.createEncryption(key, options);
-        postData['adyen-encrypted-data'] = cseInstance.encrypt(cardData);
+    		encryptedDataValue = cseInstance.encrypt(cardData);
            
-        if (postData['adyen-encrypted-data'] === false) {
+        if (encryptedDataValue === false) {
         		$('.form-data-error').html(Resources.ADYEN_CC_VALIDATE);
         } else {
 	        	$('.form-data-error').html('');
-	        	encryptedData.val(postData['adyen-encrypted-data']);
+	        	encryptedData.val(encryptedDataValue);
 	        	$('#creditCard_number').val(maskValue($('#creditCard_number').val()));
 		    $('#add-card-submit-hidden').trigger('click');
         }

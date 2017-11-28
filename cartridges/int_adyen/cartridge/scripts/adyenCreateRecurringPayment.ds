@@ -35,7 +35,7 @@ function createRecurringPayment(args) {
 
         var callResult = null,
             resultObject = null,
-            service = AdyenHelper.getService(AdyenHelper.SERVICE.SEND);
+            service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENT);
 
         if (service == null) {
             return {error: true};

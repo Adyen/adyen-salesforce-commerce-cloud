@@ -12,114 +12,41 @@ var __AdyenHelper : Object = {
 
     //service constants
     SERVICE : {
-        SEND : "SEND",
-        RECURRING: "RECURRING",
-        RECURRING_DISABLE: "RECURRING_DISABLE",
-        METHODS : "METHODS",
-        SECURE : "3DSECURE"
+        PAYMENT : "AdyenPayment",
+        PAYMENT_3DSECURE : "AdyenPayment3DSecure",
+        RECURRING: "AdyenRecurring",
+        RECURRING_DISABLE: "AdyenRecurringDisable",
+        PAYMENTMETHODS : "AdyenPaymentMethods"
     },
     MODE : {
         TEST : "TEST",
         LIVE : "LIVE"
     },
 
-
-    /**
-     * 	@name getAdyenPaymentSendServicePrefix
-      * 	@desc returns the value of site pref AdyenPaymentSendServicePrefix
-     */
-    getAdyenPaymentSendServicePrefix : function(site : dwsystem.Site) : String {
-        var returnValue : String = "";
-        if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix'))) {
-            returnValue = site.getCustomPreferenceValue('AdyenPaymentSendServicePrefix');
-        }
-        dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentSendServicePrefix = {0}, for site {1}", returnValue, site.getID());
-        return returnValue;
-    },
-    
-    /**
-     * 	@name getAdyenPaymentSendServicePrefix
-     * 	@desc returns the value of site pref AdyenPaymentSendServicePrefix
-     */
-    getAdyenPaymentRecurringServicePrefix : function(site : dwsystem.Site) : String {
-        var returnValue : String = "";
-        if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentRecurringServicePrefix'))) {
-            returnValue = site.getCustomPreferenceValue('AdyenPaymentRecurringServicePrefix');
-        }
-        dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentRecurringServicePrefix = {0}, for site {1}", returnValue, site.getID());
-        return returnValue;
-    },
-
-    /**
-     * 	@name getAdyenPaymentMethodsServicePrefix
-      * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
-     */
-    getAdyenPaymentMethodsServicePrefix : function(site : dwsystem.Site) : String {
-        var returnValue : String = "";
-        if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix'))) {
-            returnValue = site.getCustomPreferenceValue('AdyenPaymentMethodsServicePrefix');
-        }
-        dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentMethodsServicePrefix = {0}, for site {1}", returnValue, site.getID());
-        return returnValue;
-    },
-
-    /**
-     * 	@name getAdyenPaymentSecureServicePrefix
-      * 	@desc returns the value of site pref AdyenPaymentMethodsServicePrefix
-     */
-    getAdyenPaymentSecureServicePrefix : function(site : dwsystem.Site) : String {
-        var returnValue : String = "";
-        if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix'))) {
-            returnValue = site.getCustomPreferenceValue('AdyenPaymentSecureServicePrefix');
-        }
-        dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentSecureServicePrefix = {0}, for site {1}", returnValue, site.getID());
-        return returnValue;
-    },
-
-    /**
-     * @name getAdyenPaymentRecurringServicePrefix
-     * @desc returns the value of site pref AdyenPaymentRecurringServicePrefix
-     */
-    getAdyenPaymentRecurringDisableServicePrefix : function(site : dwsystem.Site) : String {
-        var returnValue : String = "";
-        if(!empty(site) && !empty(site.getCustomPreferenceValue('AdyenPaymentRecurringDisableServicePrefix'))) {
-            returnValue = site.getCustomPreferenceValue('AdyenPaymentRecurringDisableServicePrefix');
-        }
-        dwsystem.Logger.getLogger("Adyen", "adyen").debug("AdyenPaymentRecurringDisableServicePrefix = {0}, for site {1}", returnValue, site.getID());
-        return returnValue;
-    },
-
     getService : function (service : String) : Object {
         // Create the service config (used for all services)
         var adyenService = null;
-        var servicePrefix = "";
-        switch (service) {
-            case __AdyenHelper.SERVICE.SEND:
-                servicePrefix = __AdyenHelper.getAdyenPaymentSendServicePrefix(adyenCurrentSite);
-                break;
-            case __AdyenHelper.SERVICE.RECURRING:
-                servicePrefix = __AdyenHelper.getAdyenPaymentRecurringServicePrefix(adyenCurrentSite);
-                break;
-            case __AdyenHelper.SERVICE.RECURRING_DISABLE:
-                servicePrefix = __AdyenHelper.getAdyenPaymentRecurringDisableServicePrefix(adyenCurrentSite);
-                break;
-            case __AdyenHelper.SERVICE.METHODS:
-                servicePrefix = __AdyenHelper.getAdyenPaymentMethodsServicePrefix(adyenCurrentSite);
-                break;
-            case __AdyenHelper.SERVICE.SECURE:
-                servicePrefix = __AdyenHelper.getAdyenPaymentSecureServicePrefix(adyenCurrentSite);
-                break;
-        }
-        var serviceName = servicePrefix + '.' + adyenCurrentSite.ID;
+          
         try {
-            adyenService = dwsvc.ServiceRegistry.get(serviceName);
-            dwsystem.Logger.getLogger("Adyen", "adyen").debug("Succsessffuly retrive service with name {0}", serviceName);
+			var adyenService = dwsvc.LocalServiceRegistry.createService(service, {
+				createRequest: function(svc:HTTPService, args){
+					svc.setRequestMethod("POST");
+					if(args) {
+						return args;
+					} else {
+						return null;
+					}
+				},
+				parseResponse: function(svc:HTTPService, client:HTTPClient) {
+					return client;
+				}
+			 });
+            dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
         } catch (e) {
             var ex = e;
-            dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", serviceName);
+            dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", service);
             //e.message
         }
-
         return adyenService;
     },
 
@@ -171,14 +98,7 @@ var __AdyenHelper : Object = {
 
     getAdyenCseDateField : function () {
         var currentDate = new Date();
-        var dateField = currentDate.getUTCFullYear() + '-' +
-             pad(currentDate.getUTCMonth() + 1) + '-' +
-             pad(currentDate.getUTCDate()) + 'T' +
-             pad(currentDate.getUTCHours()) + ':' +
-             pad(currentDate.getUTCMinutes()) + ':' +
-             pad(currentDate.getUTCSeconds()) + '.' +
-             (currentDate.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + 'Z';
-        return dateField;
+        return currentDate.toISOString();
     },
 
     getAdyenAVSEnabled : function () : Boolean {
@@ -256,8 +176,8 @@ var __AdyenHelper : Object = {
                         }*/
                         cardObject['card'] = {
                             'number': card.number.value,
-                            'expiryMonth': ''+card.expiration.month.value,
-                            'expiryYear': ''+card.expiration.year.value,
+                            'expiryMonth': card.expiration.month.value,
+                            'expiryYear': card.expiration.year.value,
                             'cvc': card.cvn.value,
                             'holderName': card.owner.value
                     	};
@@ -275,8 +195,8 @@ var __AdyenHelper : Object = {
                     } else {
                         cardObject['card'] = {
                             'number': card.number.value,
-                            'expiryMonth': ''+card.expiration.month.value,
-                            'expiryYear': ''+card.expiration.year.value,
+                            'expiryMonth': card.expiration.month.value,
+                            'expiryYear': card.expiration.year.value,
                             'cvc': card.cvn.value,
                             'holderName': card.owner.value
                         };
@@ -359,7 +279,7 @@ var __AdyenHelper : Object = {
         var tokenID = '',
             pspReference = '';
 
- 		var recurringType = AdyenHelper.getAdyenRecurringType();
+ 		var recurringType = __AdyenHelper.getAdyenRecurringType();
  
         var jsonObject = __AdyenHelper.createAdyenRequestObject({
             FormType: 'account',

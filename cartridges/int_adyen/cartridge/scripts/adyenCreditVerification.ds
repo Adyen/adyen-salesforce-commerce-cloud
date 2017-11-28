@@ -164,7 +164,7 @@ function verify(args) {
         var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
         
         var callResult = null;
-        var service = AdyenHelper.getService(AdyenHelper.SERVICE.SEND);
+        var service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENT);
         if (service == null) {
             return {error: true};
         }
