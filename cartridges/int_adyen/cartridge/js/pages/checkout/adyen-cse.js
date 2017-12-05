@@ -33,22 +33,10 @@ function initializeBillingEvents() {
 	         * We need encrypt only CVC if we used already saved CC from dropdown list
 	         */
 	        if ($('#creditCard_number').val().indexOf('*') > -1 && selectedCardID != null && selectedCardID.val() !== '') {
-	        		var cardData = {
-	            		expiryMonth : $('#creditCard_expiration_month').val(),
-	    		        expiryYear : $('#creditCard_expiration_year').val(),
-                    cvc : $('#creditCard_cvn').val(),
-                    generationtime : $('#adyen_generationtime').val()
-                };
+	        		var cardData = getCardData(true);
 	            options = { enableValidations: false};
 	        } else {
-    	        		var cardData = {
-    		            number :  $('#creditCard_number').val(),
-    		            cvc : $('#creditCard_cvn').val(),
-    		            holderName : $('#creditCard_owner').val(),
-    		            expiryMonth : $('#creditCard_expiration_month').val(),
-    		            expiryYear : $('#creditCard_expiration_year').val(),
-    		            generationtime : $('#adyen_generationtime').val()
-    		        };
+    	        		var cardData = getCardData(false);
 	        }
             if (($('#creditCard_number').val().indexOf('*') > -1 || $('#creditCard_cvn').val().indexOf('*') > -1) && encryptedData != null && encryptedData.val() !== '') {
             		encryptedDataValue = encryptedData.val();
@@ -145,14 +133,7 @@ function initializeAccountEvents() {
         		encryptedDataValue,
         		options = {};
       
-        var cardData = {
-	            number :  $('#creditCard_number').val(),
-	            cvc : $('#creditCard_cvn').val(),
-	            holderName : $('#creditCard_owner').val(),
-	            expiryMonth : $('#creditCard_expiration_month').val(),
-	            expiryYear : $('#creditCard_expiration_year').val(),
-	            generationtime : $('#adyen_generationtime').val()
-        };
+        var cardData = getCardData(false);
     
     		var cseInstance = adyen.encrypt.createEncryption(key, options);
     		encryptedDataValue = cseInstance.encrypt(cardData);
@@ -167,6 +148,29 @@ function initializeAccountEvents() {
         }
     });
 }
+
+/**
+ * If selectedCard is used do not encrypt the number and holderName field
+ * @param selectedCard
+ * @returns
+ */
+function getCardData(selectedCard) {
+	
+	var cardData = {
+            cvc : $('#creditCard_cvn').val(),
+            expiryMonth : $('#creditCard_expiration_month').val(),
+            expiryYear : $('#creditCard_expiration_year').val(),
+            generationtime : $('#adyen_generationtime').val()
+    };
+	
+	if (!selectedCard) {
+		cardData.number = $('#creditCard_number').val();
+		cardData.holderName = $('#creditCard_owner').val();
+	}
+	
+	return cardData;
+}
+
 
 function maskValue(value) {
     if (value && value.length > 4) {
