@@ -33,10 +33,12 @@ function initializeBillingEvents() {
 	         * We need encrypt only CVC if we used already saved CC from dropdown list
 	         */
 	        if ($('#creditCard_number').val().indexOf('*') > -1 && selectedCardID != null && selectedCardID.val() !== '') {
-	            var cardData = {
-                        cvc : $('#creditCard_cvn').val(),
-                        generationtime : $('#adyen_generationtime').val()
-                    };
+	        		var cardData = {
+	            		expiryMonth : $('#creditCard_expiration_month').val(),
+	    		        expiryYear : $('#creditCard_expiration_year').val(),
+                    cvc : $('#creditCard_cvn').val(),
+                    generationtime : $('#adyen_generationtime').val()
+                };
 	            options = { enableValidations: false};
 	        } else {
     	        		var cardData = {
