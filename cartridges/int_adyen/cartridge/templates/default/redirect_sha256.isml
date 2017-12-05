@@ -38,9 +38,6 @@
 				hppType = 'select';
 		}
 		
-		if ('Adyen_HPP_Type' in Site.getCurrent().getPreferences().getCustom() && !empty(Site.getCurrent().getCustomPreferenceValue('Adyen_HPP_Type'))) {
-			hppType = Site.getCurrent().getCustomPreferenceValue('Adyen_HPP_Type');
-		}
 		var inputType : String = Debug ? 'text' : 'hidden';
 		
 		if (directoryLookup) {

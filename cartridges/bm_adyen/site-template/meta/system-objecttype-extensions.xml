@@ -310,13 +310,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_HPP_Type">
-                <display-name xml:lang="x-default">Adyen_HPP_Type</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Mode">
                 <display-name xml:lang="x-default">Test/Production Mode</display-name>
                 <description xml:lang="x-default">Set to live for Production or test for test mode</description>
