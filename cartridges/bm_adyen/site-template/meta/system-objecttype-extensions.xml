@@ -220,67 +220,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenCseJsPublicKey">
-                <display-name xml:lang="x-default">CSE Javascript Public Key</display-name>
+            <attribute-definition attribute-id="AdyenCseLibraryToken">
+                <display-name xml:lang="x-default">CSE Library token</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenCseProdJsURL">
-                <display-name xml:lang="x-default">CSE Prod Javascript URL</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenCseTestJsURL">
-                <display-name xml:lang="x-default">CSE Test Javascript URL</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPaymentMethodsServicePrefix">
-                <display-name xml:lang="x-default">Adyen Payment Methods Service Prefix</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>adyen.http.payment.methods</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPaymentRecurringDisableServicePrefix">
-                <display-name xml:lang="x-default">Adyen Payment Recurring Disable Service Prefix</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>adyen.http.payment.recurring.disable</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPaymentRecurringServicePrefix">
-                <display-name xml:lang="x-default">Adyen Payment Recurring Service Prefix</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>adyen.http.payment.recurring</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPaymentSecureServicePrefix">
-                <display-name xml:lang="x-default">Adyen Payment 3D Secure Service Prefix</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPaymentSendServicePrefix">
-                <display-name xml:lang="x-default">Adyen Payment Send Service Prefix</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>adyen.http.payment.send</default-value>
-            </attribute-definition>
-             <attribute-definition attribute-id="AdyenRatePayID">
+            <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -419,17 +366,10 @@
                 <attribute attribute-id="Adyen_Mode"/>
                 <attribute attribute-id="Adyen_Debug"/>
                 <attribute attribute-id="AdyenCseEnabled"/>
-                <attribute attribute-id="AdyenCseProdJsURL"/>
-                <attribute attribute-id="AdyenCseTestJsURL"/>
-                <attribute attribute-id="AdyenCseJsPublicKey"/>
+                <attribute attribute-id="AdyenCseLibraryToken"/>
                 <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="Adyen_directoryLookup"/>
                 <attribute attribute-id="Adyen_recurringType"/>
-                <attribute attribute-id="AdyenPaymentMethodsServicePrefix"/>
-                <attribute attribute-id="AdyenPaymentSendServicePrefix"/>
-                <attribute attribute-id="AdyenPaymentSecureServicePrefix"/>
-				<attribute attribute-id="AdyenPaymentRecurringServicePrefix"/>
-			    <attribute attribute-id="AdyenPaymentRecurringDisableServicePrefix"/>
 		        <attribute attribute-id="Adyen_notification_password"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>

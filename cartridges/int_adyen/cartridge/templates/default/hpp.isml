@@ -69,12 +69,7 @@
 	<script language="JavaScript">
 		var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
 	</script>
-	<script type="text/javascript" src="//d.ratepay.com/${sessionID}/di.js"></script>
-	<noscript><link rel="stylesheet" type="text/css" href="//d.ratepay.com/di.css?t=${sessionID}&v=${ratePayID}&l=Checkout"></noscript>
-	<object type="application/x-shockwave-flash" data="//d.ratepay.com/${ratePayID}/c.swf" width="0" height="0">
-		<param name="movie" value="//d.ratepay.com/${ratePayID}/c.swf" />
-		<param name="flashvars" value="t=${sessionID}&v=4R8Pay"/><param name="AllowScriptAccess" value="always"/>
-	</object>
+	<script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
 </isif>
 
 <iscomment>

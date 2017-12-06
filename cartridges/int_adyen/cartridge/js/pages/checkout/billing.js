@@ -263,41 +263,13 @@ exports.init = function () {
     	initializeHPPFields();
      });
     
-    // Adyen - Country change event for HPP and Payment fields
-    $checkoutForm.find('select.country').on('change', function () {
-	    var countryCode = $(this).find(':selected').val();
-	    if (!countryCode || countryCode.length === 0) { return; }
-	    var url = Urls.adyenpaymentmethods;
-
-	    ajax.getJson({
-	        url: url,
-	        data: 'country='+$(this).val(),
-	        callback: function (data) {
-	            if (!data) {
-	                window.alert('Couldn\'t get list of applicable payment methods.');
-	                return false;
-	            }
-	            if (true) {
-            		$('div[data-method="Adyen"]').find('li.form-row').hide();
-	            	data.paymentMethods.forEach(function(e){
-	            		var $payMethod = $('div[data-method="Adyen"]').find('li.row-' + e.brandCode).show();
-	            		if ($payMethod.find('[name="brandCode"]').length > 0) {
-	            			
-	            		}
-	            	});
-	            	return true;
-	            }
-	        }
-	    });
-	    initializeHPPFields();
-    });
-    
     var currentDate = new Date();
     var currentYear = currentDate.getFullYear();
     var initYear = currentYear - 100;
     $('.openinvoiceInput input[name$="_dob"]').datepicker({
         showOn: 'focus',
         yearRange: initYear + ':' + currentYear,
-        changeYear: true
+        changeYear: true,
+        dateFormat: "yyyy-mm-dd"
     });
 };

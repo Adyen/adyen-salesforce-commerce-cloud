@@ -4,8 +4,7 @@
         <all-instances/>
         <development>
             <preference preference-id="AdyenCseEnabled">true</preference>
-            <preference preference-id="AdyenCseJsPublicKey">yourPublicKey</preference>
-            <preference preference-id="AdyenCseTestJsURL">yourCSEtestURL</preference>
+            <preference preference-id="AdyenCseLibraryToken">Your CSE Library token you can retrieve this from Adyen Customer Area</preference>
             <preference preference-id="Adyen_Debug">true</preference>
             <preference preference-id="Adyen_HMACkey">yourHMAC</preference>
             <preference preference-id="Adyen_Mode">TEST</preference>
@@ -16,9 +15,6 @@
             <preference preference-id="Adyen_skinCode">yourSkinCode</preference>
             <preference preference-id="adyen_notification_user">user</preference>
             <preference preference-id="adyen_notification_password">password</preference>
-            <preference preference-id="AdyenPaymentMethodsServicePrefix">adyen.http.payment.methods</preference>
-            <preference preference-id="AdyenPaymentSecureServicePrefix">adyen.http.payment.3dsecure</preference>
-            <preference preference-id="AdyenPaymentSendServicePrefix">adyen.http.payment.send</preference>
         </development>
         <staging/>
         <production/>

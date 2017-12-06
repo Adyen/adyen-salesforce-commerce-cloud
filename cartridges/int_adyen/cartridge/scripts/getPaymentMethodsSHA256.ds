@@ -32,6 +32,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
     var HMACkey: String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey");
     var Mode: String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+    var locale = request.locale;
 
     if (merchantAccount == null) {
         Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -71,6 +72,10 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     adyenRequest.put("sessionValidity", sessionValidity);
     adyenRequest.put("countryCode", countryCode);
     adyenRequest.put("shipBeforeDate", shipBeforeDate );
+    
+    if(!empty(locale) && locale != "default") {
+    		adyenRequest.put("shopperLocale", locale);
+    }
 
     var keys: String = "";
     var values: String = "";

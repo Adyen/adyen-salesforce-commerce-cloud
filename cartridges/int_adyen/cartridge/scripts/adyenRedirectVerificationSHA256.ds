@@ -135,7 +135,10 @@ function verify (args) {
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.toString().toUpperCase() );
 	// Optional Fields
-	//adyenRequest.put("shopperLocale", dw.system.Site.getCurrent().defaultLocale);
+	var locale = request.locale;
+	if(!empty(locale) && locale != "default") {
+    		adyenRequest.put("shopperLocale", locale);
+    }
 
 	if(Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")){
 		if( !empty(args.brandCode)){
@@ -163,12 +166,12 @@ function verify (args) {
 		adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );
 		adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
 		adyenRequest.put("shopperType", '1' );
-		adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'NA');
+		adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'UNKNOWN');
 
 		if( !empty(args.dob)) {
-			var dob = args.dob.split('/');
-			adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[1] );
-			adyenRequest.put("shopper.dateOfBirthMonth", dob[0] );
+			var dob = args.dob.split('-');
+			adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[0] );
+			adyenRequest.put("shopper.dateOfBirthMonth", dob[1] );
 			adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
 		}
 

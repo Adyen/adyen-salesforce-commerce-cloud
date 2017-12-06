@@ -1,0 +1,8 @@
+<script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
+<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.encrypteddata}" type="hidden"/>
+<input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
+<div  class="form-data-error  error"></div>
+<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.type}" type="select"/>
+<isinclude template="checkout/billing/adyenpaymentfields"/>
+<button id="add-card-submit-hidden" type="hidden" style="display:none" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>
+<button  id="add-card-submit"  type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>

@@ -25,7 +25,6 @@ function initializeBillingEvents() {
 			var creditCard = $('[data-method="CREDIT_CARD"]'),
 	        		selectedCardID = creditCard.find('input[name$="_selectedCardID"]'),
 				encryptedData = $('#dwfrm_billing_paymentMethods_creditCard_encrypteddata'),
-				key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY,
 				encryptedDataValue,
 	        		options = {};
    
@@ -36,12 +35,12 @@ function initializeBillingEvents() {
 	        		var cardData = getCardData(true);
 	            options = { enableValidations: false};
 	        } else {
-    	        		var cardData = getCardData(false);
+	        		var cardData = getCardData(false);
 	        }
             if (($('#creditCard_number').val().indexOf('*') > -1 || $('#creditCard_cvn').val().indexOf('*') > -1) && encryptedData != null && encryptedData.val() !== '') {
             		encryptedDataValue = encryptedData.val();
             } else {
-            		var cseInstance = adyen.encrypt.createEncryption(key, options);
+            		var cseInstance = adyen.createEncryption(options);
             		encryptedDataValue = cseInstance.encrypt(cardData);
             }
             
@@ -129,13 +128,12 @@ function initializeAccountEvents() {
         e.preventDefault();
         var $creditCard = $('#CreditCardForm'),
         		encryptedData = $('#dwfrm_paymentinstruments_creditcards_newcreditcard_encrypteddata'),
-        		key = SitePreferences.ADYEN_CSE_JS_PUBLIC_KEY,
         		encryptedDataValue,
         		options = {};
       
         var cardData = getCardData(false);
     
-    		var cseInstance = adyen.encrypt.createEncryption(key, options);
+    		var cseInstance = adyen.createEncryption(options);
     		encryptedDataValue = cseInstance.encrypt(cardData);
            
         if (encryptedDataValue === false) {

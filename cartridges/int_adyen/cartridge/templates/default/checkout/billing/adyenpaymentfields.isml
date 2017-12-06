@@ -40,19 +40,19 @@
 		<div class="field-wrapper">
 			<select class="input-select  required"
 				id="creditCard_expiration_month" minlength="0"
-				maxlength="2147483647" aria-required="true"><option
-					class="select-option" label="January" value="1">January</option>
-				<option class="select-option" label="February" value="2">February</option>
-				<option class="select-option" label="March" value="3">March</option>
-				<option class="select-option" label="April" value="4">April</option>
-				<option class="select-option" label="May" value="5">May</option>
-				<option class="select-option" label="June" value="6">June</option>
-				<option class="select-option" label="July" value="7">July</option>
-				<option class="select-option" label="August" value="8">August</option>
-				<option class="select-option" label="September" value="9">September</option>
-				<option class="select-option" label="October" value="10">October</option>
-				<option class="select-option" label="November" value="11">November</option>
-				<option class="select-option" label="December" value="12">December</option></select>
+				maxlength="2147483647" aria-required="true">
+				<option class="select-option" value="1">${Resource.msg('month.january', 'forms', null)}</option>
+				<option class="select-option" value="2">${Resource.msg('month.february', 'forms', null)}</option>
+				<option class="select-option" value="3">${Resource.msg('month.march', 'forms', null)}</option>
+				<option class="select-option" value="4">${Resource.msg('month.april', 'forms', null)}</option>
+				<option class="select-option" value="5">${Resource.msg('month.may', 'forms', null)}</option>
+				<option class="select-option" value="6">${Resource.msg('month.june', 'forms', null)}</option>
+				<option class="select-option" value="7">${Resource.msg('month.july', 'forms', null)}</option>
+				<option class="select-option" value="8">${Resource.msg('month.august', 'forms', null)}</option>
+				<option class="select-option" value="9">${Resource.msg('month.september', 'forms', null)}</option>
+				<option class="select-option" value="10">${Resource.msg('month.october', 'forms', null)}</option>
+				<option class="select-option" value="11">${Resource.msg('month.november', 'forms', null)}</option>
+				<option class="select-option" value="12">${Resource.msg('month.december', 'forms', null)}</option></select>
 		</div>
 		<div class="form-caption"></div>
 	</div>
@@ -63,14 +63,21 @@
 		<div class="field-wrapper">
 			<select class="input-select  required"
 				id="creditCard_expiration_year" minlength="0" maxlength="2147483647"
-				aria-required="true"><option class="select-option"
-					label="2016" value="2016">2016</option>
-				<option class="select-option" label="2017" value="2017">2017</option>
-				<option class="select-option" label="2018" value="2018">2018</option>
-				<option class="select-option" label="2019" value="2019">2019</option>
-				<option class="select-option" label="2020" value="2020">2020</option>
-				<option class="select-option" label="2021" value="2021">2021</option>
-				<option class="select-option" label="2022" value="2022">2022</option></select>
+				aria-required="true">
+				
+				<isscript>
+					var date = new Date();
+					var currentYear = date.getFullYear();
+					var years = [];
+					
+					for (i = 0; i < 6; i++) {
+						years.push(Number(currentYear + i).toFixed(0));
+					}
+				 </isscript>
+				<isloop iterator="${years}" alias="year">
+					<option class="select-option" value="${year}">${year}</option>
+				</isloop> 				
+			</select>
 		</div>
 		<div class="form-caption"></div>
 	</div>

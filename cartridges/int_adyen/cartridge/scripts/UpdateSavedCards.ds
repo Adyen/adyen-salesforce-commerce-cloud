@@ -80,7 +80,7 @@ function updateSavedCards(args) {
                         ccHolder = 'cardHolder' in payment && !empty(payment.cardHolder) ? payment.cardHolder : '';
 
                         // if we have everything we need, create a new payment instrument
-                        if (!empty(expMonth) && !empty(expYear) && !empty(ccNum) && !empty(token) && !empty(ccType)) {
+                        if (!empty(expMonth) && !empty(expYear) && !empty(ccNum) && !empty(token) && !empty(ccType) && !empty(ccHolder)) {
                             var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
 							// custom throws error
