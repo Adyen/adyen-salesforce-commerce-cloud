@@ -235,17 +235,14 @@ var __AdyenHelper : Object = {
         return shopperObject;
     },
 
-    createAdyenRequestObject: function (params) {
-        var jsonObject = {};
-        var order = !empty(params) && 'Order' in params && !empty(params.Order) ? params.Order : null;
-        var formType = !empty(params) && 'FormType' in params && !empty(params.FormType) ? params.FormType : 'billing';
-        var recurringType = !empty(params) && 'RecurringType' in params && !empty(params.RecurringType) ? params.RecurringType : '';
-        var reference = '';
+    createAdyenRequestObject: function (recurringType, order, saveCreditCard) {
+        var jsonObject = {},
+        		reference = '';
 
-        if(!empty(order) && !empty(order.getOrderNo())) {
+        if(order && !empty(order.getOrderNo())) {
             reference = order.getOrderNo();
         } else {
-            reference = 'recurringPayment-' + formType;
+            reference = 'recurringPayment-account';
         }
 
         jsonObject['merchantAccount'] = __AdyenHelper.getAdyenMerchantAccount();
@@ -255,7 +252,7 @@ var __AdyenHelper : Object = {
             'userAgent': request.httpUserAgent
         };
 
-        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
+        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType) && saveCreditCard) {
             jsonObject['recurring'] = {
                 'contract': recurringType
             };
@@ -270,10 +267,7 @@ var __AdyenHelper : Object = {
 
  		var recurringType = __AdyenHelper.getAdyenRecurringType();
  
-        var jsonObject = __AdyenHelper.createAdyenRequestObject({
-            FormType: 'account',
-            RecurringType: recurringType
-        });
+        var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true);
 
         var cardObject = __AdyenHelper.createCardObject({
             FormType: 'account'
