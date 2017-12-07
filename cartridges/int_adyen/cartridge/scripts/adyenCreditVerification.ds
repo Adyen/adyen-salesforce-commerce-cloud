@@ -71,11 +71,7 @@ function verify(args) {
         		recurringType = 'ONECLICK';
         }
         
-        var jsonObject = AdyenHelper.createAdyenRequestObject({
-            Order: order,
-            FormType: 'billing',
-            RecurringType: recurringType
-        });
+        var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
 
         var cardType = (!empty(paymentInstrument.creditCardType) ? AdyenHelper.getAdyenCardType(paymentInstrument.creditCardType) : '');
 
