@@ -8,8 +8,8 @@
 *
 * For example:
 *
-* @input CustomObj : dw.object.CustomObject 
-* @output Order			: dw.order.Order	The updated order 
+* @input CustomObj : dw.object.CustomObject
+* @output Order			: dw.order.Order	The updated order
 * @output EventCode		: String 			The event code
 * @output SkipNotification	: Boolean 			Skip email notification
 * @output RefusedHpp		: Boolean			Indicates that payment was made with using Adyen method and was refused
@@ -24,16 +24,16 @@ importPackage( dw.util );
 
 function execute( args : PipelineDictionary ) : Number
 {
-	var result = handle(args.CustomObj);
-	
-	args.EventCode = result.EventCode;
-	args.SkipNotification = result.SkipNotification;
-	args.RefusedHpp = result.RefusedHpp;
-	args.Pending = result.Pending;
-	args.SkipOrder = result.SkipOrder;
-	args.Order = result.Order;
-	
-	return result.status;
+    var result = handle(args.CustomObj);
+
+    args.EventCode = result.EventCode;
+    args.SkipNotification = result.SkipNotification;
+    args.RefusedHpp = result.RefusedHpp;
+    args.Pending = result.Pending;
+    args.SkipOrder = result.SkipOrder;
+    args.Order = result.Order;
+
+    return result.status;
 }
 function handle( customObj : CustomObject  ) : Object
 {
@@ -52,25 +52,43 @@ function handle( customObj : CustomObject  ) : Object
 	result.Order = order;
 	
 	if (order == null) {
-		Logger.getLogger("Adyen", "adyen").fatal("Notification for not existing order {0} received.", customObj.custom.orderId);
+		// check to see if this was a $0.00 auth for recurring payment. if yes, CO can safely be deleted
+        if (orderId.indexOf('recurringPayment-') > -1) {
+            result.SkipNotification = true;
+            result.SkipOrder = true;
+            setProcessedCOInfo(customObj);
+        } else {
+            Logger.getLogger("Adyen", "adyen").fatal("Notification for not existing order {0} received.", customObj.custom.orderId);
+        }
 		return result;
 	}
 	
 	var orderCreateDate : Date = order.creationDate;
 	var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
 	var currentDate = new Date();
+    var reasonCode = ('reason' in customObj.custom && !empty(customObj.custom.reason) ? customObj.custom.reason.toUpperCase() : null);
 		
 	Logger.getLogger("Adyen", "adyen").debug("Order date {0} , orderCreateDateDelay {1} , currentDate {2}", orderCreateDate , orderCreateDateDelay, currentDate);
-	if(orderCreateDateDelay < currentDate) {
+	if(orderCreateDateDelay < currentDate){
 		switch(customObj.custom.eventCode){
 			case "AUTHORISATION" :
+                var paymentInstruments : Collection = order.getPaymentInstruments();
+                var paymentInstrument : PaymentInstrument;
+                // Move adyen log request to order paymet transaction
+                for each (let paymentInstrument in paymentInstruments) {
+                    if (paymentInstrument.paymentMethod.equals("Adyen")
+                        || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
+                        paymentInstrument.paymentTransaction.custom.Adyen_log = customObj.custom.Adyen_log;
+                	}
+                }
 				if(customObj.custom.success == "true"){
+
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
 						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
 						paymentSuccess = true;
 						result.SkipNotification = true;
 					}
-					else if(order.paymentStatus == "PARTIALLY PAID"){
+					else if(order.paymentStatus == Order.PAYMENT_STATUS_PARTPAID){
 						paymentSuccess = true;
 						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
 						result.SkipNotification = true;
@@ -87,17 +105,25 @@ function handle( customObj : CustomObject  ) : Object
 					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
 					result.SkipNotification = true;
 					// Determine if payment was refused and was used Adyen payment method 
-					if (customObj.custom.reason == "Refused") {
-						var paymentInstruments : Collection = order.getPaymentInstruments();
-						var paymentInstrument : PaymentInstrument;
-						for each (paymentInstrument in paymentInstruments) {
-							if (paymentInstrument.paymentMethod.equals("Adyen")) {
-								refusedHpp = true;
-								return result;
-								break;
-							}
-						}
-					} 
+					if (!empty(reasonCode) && (reasonCode == "REFUSED" || reasonCode.indexOf('FAILED') > -1)) {
+                        for each (paymentInstrument in paymentInstruments) {
+                            if (paymentInstrument.paymentMethod.equals("Adyen") || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
+                                refusedHpp = true;
+                                paymentSuccess = false;
+                                setProcessedCOInfo(customObj);
+                                return result;
+                                break;
+                            }
+                        }
+                    } else {
+                        if (order.status == Order.ORDER_STATUS_FAILED) {
+                            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+                            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+                            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+                        }
+                        setProcessedCOInfo(customObj);
+                        return result;
+                    } 
 				}
 				break;
 			case "CANCELLATION" :
@@ -127,7 +153,7 @@ function handle( customObj : CustomObject  ) : Object
 				break;
 			case "ORDER_OPENED" :
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  				
-				order.setPaymentStatus("PARTIALLY PAID");
+				order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
 				break;	
 			case "ORDER_CLOSED" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
@@ -170,46 +196,46 @@ function handle( customObj : CustomObject  ) : Object
 
 		setProcessedCOInfo(customObj);
     } else {
-    	Logger.getLogger("Adyen", "adyen").debug("Order date > current Date.");
-    	result.SkipOrder = true;
-    	result.status = PIPELET_NEXT;
-		return result;
-	}
-	
-	result.status = PIPELET_NEXT;
-	result.RefusedHpp = refusedHpp;
-	result.Pending = pending;
+        Logger.getLogger("Adyen", "adyen").debug("Order date > current Date.");
+        result.SkipOrder = true;
+        result.status = PIPELET_NEXT;
+        return result;
+    }
+
+    result.status = PIPELET_NEXT;
+    result.RefusedHpp = refusedHpp;
+    result.Pending = pending;
 
    return result;
 }
 
 function setProcessedCOInfo(customObj)
 {
-	var now : Date = new Date();
-	customObj.custom.processedDate = now;
-	customObj.custom.updateStatus = "SUCCESS";
-	customObj.custom.processedStatus = "SUCCESS";
+    var now : Date = new Date();
+    customObj.custom.processedDate = now;
+    customObj.custom.updateStatus = "SUCCESS";
+    customObj.custom.processedStatus = "SUCCESS";
 }
 
 function createLogMessage(customObj){
-	var VERSION : String= customObj.custom.version;
-	var msg = "";
-	msg = "AdyenNotification v " + VERSION + " - Payment info (Called from : " + customObj.custom.httpRemoteAddress + ")";
-	msg = msg + "\n================================================================\n";
+    var VERSION : String= customObj.custom.version;
+    var msg = "";
+    msg = "AdyenNotification v " + VERSION + " - Payment info (Called from : " + customObj.custom.httpRemoteAddress + ")";
+    msg = msg + "\n================================================================\n";
     //msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
     msg = msg + "reason : " +customObj.custom.reason;
-	msg = msg + "\neventDate : " + customObj.custom.eventDate;
-	msg = msg + "\nmerchantReference : " + customObj.custom.merchantReference; 
-	msg = msg + "\ncurrency : " + customObj.custom.currency;
-	msg = msg + "\npspReference : " + customObj.custom.pspReference;
-	msg = msg + "\nmerchantAccountCode : " + customObj.custom.merchantAccountCode;
-	msg = msg + "\neventCode : " + customObj.custom.eventCode;
-	msg = msg + "\nvalue : " + customObj.custom.value;
-	msg = msg + "\noperations : " + customObj.custom.operations;
-	msg = msg + "\nsuccess : " + customObj.custom.success;
-	msg = msg + "\npaymentMethod : " + customObj.custom.paymentMethod;
-	msg = msg + "\nlive : " + customObj.custom.live;
-	return msg;
+    msg = msg + "\neventDate : " + customObj.custom.eventDate;
+    msg = msg + "\nmerchantReference : " + customObj.custom.merchantReference;
+    msg = msg + "\ncurrency : " + customObj.custom.currency;
+    msg = msg + "\npspReference : " + customObj.custom.pspReference;
+    msg = msg + "\nmerchantAccountCode : " + customObj.custom.merchantAccountCode;
+    msg = msg + "\neventCode : " + customObj.custom.eventCode;
+    msg = msg + "\nvalue : " + customObj.custom.value;
+    msg = msg + "\noperations : " + customObj.custom.operations;
+    msg = msg + "\nsuccess : " + customObj.custom.success;
+    msg = msg + "\npaymentMethod : " + customObj.custom.paymentMethod;
+    msg = msg + "\nlive : " + customObj.custom.live;
+    return msg;
 }
 
 function createDelayOrderDate(orderCreateDate : Date)
@@ -226,6 +252,6 @@ function createDelayOrderDate(orderCreateDate : Date)
 
 
 module.exports = {
-	'execute': execute,
-	'handle': handle
+    'execute': execute,
+    'handle': handle
 }

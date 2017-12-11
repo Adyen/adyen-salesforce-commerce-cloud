@@ -1,36 +1,94 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
-<isinclude template="util/modules"/>
-<div class="form-data-error error"></div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.number', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_number" autocomplete="off" data-encrypted-name="number" size="20"/>
+
+<div class="form-row ">
+	<label for="dwfrm_billing_paymentMethods_creditCard_selectedCardID"><span></span></label>
+	<div class="field-wrapper">
+		<input class=" " type="hidden"
+			id="dwfrm_billing_paymentMethods_creditCard_selectedCardID"
+			name="dwfrm_billing_paymentMethods_creditCard_selectedCardID"
+			value="">
+	</div>
+	<div class="form-caption"></div>
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.ownerlabel', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_owner" autocomplete="off" data-encrypted-name="holderName" size="20"/>
+<div class="form-row  required" aria-required="true">
+	<label for="dwfrm_billing_paymentMethods_creditCard_owner"><span
+		class="required-indicator">• </span><span>${Resource.msg('creditcard.ownerlabel', 'forms', null)}</span></label>
+	<div class="field-wrapper">
+		<input class="input-text  required" type="text" id="creditCard_owner"
+			value="" aria-required="true" aria-invalid="true"
+			aria-describedby="dwfrm_billing_paymentMethods_creditCard_owner-error">
+	</div>
+	<div class="form-caption"></div>
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('resource.month', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_month" autocomplete="off" data-encrypted-name="expiryMonth" size="2" maxlength="2"/>
+<div class="form-row  required" aria-required="true">
+	<label for="creditCard_number"><span class="required-indicator">•
+	</span><span>Number</span></label>
+	<div class="field-wrapper">
+		<input class="input-text  required" type="text" id="creditCard_number"
+			value="" aria-required="true">
+	</div>
+	<div class="form-caption">Example: 4111111111111111</div>
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('resource.year', 'forms', null)}</span>
+
+<div class="form-row required" aria-required="true">
+	<label> <span class="required-indicator">•</span> <span>Expiration
+			Date:</span>
 	</label>
-	<input type="text" id="adyen_creditCard_year" autocomplete="off" data-encrypted-name="expiryYear" size="4" maxlength="4"/>
+	<div class="form-row month required" aria-required="true">
+		<label for="creditCard_expiration_month"><span
+			class="required-indicator">• </span><span>${Resource.msg('resource.month', 'forms', null)}</span></label>
+		<div class="field-wrapper">
+			<select class="input-select  required"
+				id="creditCard_expiration_month" minlength="0"
+				maxlength="2147483647" aria-required="true">
+				<option class="select-option" value="1">${Resource.msg('month.january', 'forms', null)}</option>
+				<option class="select-option" value="2">${Resource.msg('month.february', 'forms', null)}</option>
+				<option class="select-option" value="3">${Resource.msg('month.march', 'forms', null)}</option>
+				<option class="select-option" value="4">${Resource.msg('month.april', 'forms', null)}</option>
+				<option class="select-option" value="5">${Resource.msg('month.may', 'forms', null)}</option>
+				<option class="select-option" value="6">${Resource.msg('month.june', 'forms', null)}</option>
+				<option class="select-option" value="7">${Resource.msg('month.july', 'forms', null)}</option>
+				<option class="select-option" value="8">${Resource.msg('month.august', 'forms', null)}</option>
+				<option class="select-option" value="9">${Resource.msg('month.september', 'forms', null)}</option>
+				<option class="select-option" value="10">${Resource.msg('month.october', 'forms', null)}</option>
+				<option class="select-option" value="11">${Resource.msg('month.november', 'forms', null)}</option>
+				<option class="select-option" value="12">${Resource.msg('month.december', 'forms', null)}</option></select>
+		</div>
+		<div class="form-caption"></div>
+	</div>
+
+	<div class="form-row year required" aria-required="true">
+		<label for="creditCard_expiration_year"><span
+			class="required-indicator">• </span><span>${Resource.msg('resource.year', 'forms', null)}</span></label>
+		<div class="field-wrapper">
+			<select class="input-select  required"
+				id="creditCard_expiration_year" minlength="0" maxlength="2147483647"
+				aria-required="true">
+				
+				<isscript>
+					var date = new Date();
+					var currentYear = date.getFullYear();
+					var years = [];
+					
+					for (i = 0; i < 6; i++) {
+						years.push(Number(currentYear + i).toFixed(0));
+					}
+				 </isscript>
+				<isloop iterator="${years}" alias="year">
+					<option class="select-option" value="${year}">${year}</option>
+				</isloop> 				
+			</select>
+		</div>
+		<div class="form-caption"></div>
+	</div>
 </div>
-<div class="form-row">
-	<label>
-		<span>${Resource.msg('creditcard.cvnlabel', 'forms', null)}</span>
-	</label>
-	<input type="text" id="adyen_creditCard_cvn_value" autocomplete="off" data-encrypted-name="cvc" size="4" maxlength="4"/>
+
+<div class="form-row cvn required" aria-required="true">
+	<label for="creditCard_cvn"><span class="required-indicator">•
+	</span><span>${Resource.msg('creditcard.cvnlabel', 'forms', null)}</span></label>
+	<div class="field-wrapper">
+		<input class="input-text  required" type="text" id="creditCard_cvn"
+			value="" aria-required="true">
+	</div>
+	<div class="form-caption"></div>
 </div>
-<input type="hidden" value="generate-this-server-side" data-encrypted-name="generationtime"/>
-<input type="hidden" id="encrypteddata"/>
-<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>

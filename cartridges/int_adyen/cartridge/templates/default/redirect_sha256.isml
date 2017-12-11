@@ -24,6 +24,20 @@
 		var directoryLookup : Boolean = Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup");
 		var Mode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
 		var Debug : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Debug");
+		var paymentSelection : String = Site.getCurrent().getCustomPreferenceValue("Adyen_PaymentSelection");
+		
+		var hppType;
+		switch (paymentSelection) {
+			case 'one': 
+				hppType = 'pay';
+				break;
+			case 'multi':
+				hppType = 'select';
+				break;
+			default:
+				hppType = 'select';
+		}
+		
 		var inputType : String = Debug ? 'text' : 'hidden';
 		
 		if (directoryLookup) {
@@ -32,17 +46,17 @@
 				url = "https://live.adyen.com/hpp/skipDetails.shtml";
 			}
 		} else {
-			var url : String = "https://test.adyen.com/hpp/pay.shtml";
+			var url : String = "https://test.adyen.com/hpp/" + hppType + ".shtml";
 			if (Mode == "LIVE") {
-				url = "https://live.adyen.com/hpp/pay.shtml";
+				url = "https://live.adyen.com/hpp/" + hppType + ".shtml";
 			}
 		}
 		
 	</isscript>
 	
-	<!--- TEMPLATENAME: redirect.isml --->
+	<!--- TEMPLATENAME: redirect_sha256.isml --->
 	<form name="adyenForm" id="adyenForm" action="${url}" method="post">
-	
+
 		<isloop items="${pdict.ParamsMap.entrySet()}" var="keyvalue">
 			<input type="${inputType}" name="${keyvalue.key}" value="${keyvalue.value}" /> </br>
 		</isloop>
