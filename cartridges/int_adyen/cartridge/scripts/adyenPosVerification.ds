@@ -1,0 +1,184 @@
+/**
+* Passes on credit card details to Adyen using the Adyen PAL adapter
+* Receives a response and sets the order status accordingly
+* created on 23dec2014
+*
+* @input Order : dw.order.Order
+* @input Amount : dw.value.Money The amount to authorize
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input CurrentSession : dw.system.Session
+* @input CurrentRequest : dw.system.Request
+* @input CreditCardForm : dw.web.Form
+* @input SaveCreditCard : Boolean
+*
+* @output Decision : String
+* @output PaymentStatus : String
+* @output AuthorizationCode :  String
+* @output AuthorizationAmount : String
+* @output PaRequest : String
+* @output PspReference : String
+* @output MD : String
+* @output ResultCode : String
+* @output IssuerUrl : String
+* @output AVSResultCode : String
+* @output AdyenErrorMessage : String
+* @output AdyenAmount : String
+* @output AdyenCardType : String
+*
+*/
+
+/* API Includes */
+var Logger = require('dw/system/Logger');
+var Transaction = require('dw/system/Transaction');
+
+/* Script Modules */
+var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
+
+function execute(args) {
+    var result = verify(args);
+    if (result.error) {
+        return PIPELET_ERROR;
+    }
+    return PIPELET_NEXT;
+}
+
+function verify(args) {
+    try {
+        var order = args.Order;
+        var paymentInstrument = args.PaymentInstrument;
+        var tokenID = '';
+        var errorMessage = '';
+        if (order == null) {
+            Logger.getLogger('Adyen').error('No order present.');
+            return {error: true};
+        }
+        
+        //todobas Variable request
+        var requestPOS = {  
+						   "SaleToPOIRequest":{  
+						      "MessageHeader":{  
+						         "ProtocolVersion":"3.0",
+						         "MessageClass":"Service",
+						         "MessageCategory":"Payment",
+						         "MessageType":"Request",
+						         "ServiceID":"0207111104",
+						         "SaleID":"John",
+						         "POIID":"P400Plus-275039202"
+						      },
+						      "PaymentRequest":{  
+						         "SaleData":{  
+						            "SaleTransactionID":{  
+						               "TransactionID":"12345",
+						               "TimeStamp":"2018-02-07T10:11:04+00:00"
+						            },
+						            "SaleReferenceID":"TestSFCCpos"
+						         },
+						         "PaymentTransaction":{  
+						            "AmountsReq":{  
+						               "Currency":"EUR",
+						               "RequestedAmount":16.99
+						            }
+						         }
+						      }
+						   }
+						}
+
+        var customer = order.getCustomer();
+        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
+        var customerID = '';
+        if (!empty(profile) && !empty(profile.getCustomerNo())) {
+            customerID = profile.getCustomerNo();
+        }
+
+        var shopperObject = AdyenHelper.createShopperObject({
+            Customer: customer,
+            Basket: order
+        });
+
+      /*  var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
+        jsonObject['amount'] = {
+            'currency': args.Amount.currencyCode,
+            'value': myAmount
+        };*/
+        
+        var callResult = null;
+        var service = AdyenHelper.getService(AdyenHelper.SERVICE.POSPAYMENT);
+        if (service == null) {
+            return {error: true};
+        }
+        var resultObject = null;
+
+        service.addHeader('Content-type','application/json');
+        service.addHeader('charset', 'UTF-8');
+        service.addHeader('X-API-KEY', 'AQEshmfxKY3ObRRLw0m/n3Q5qf3VeIdYCppEfGBbyR2/iZPob9s0uRyzF+9z2ykQwV1bDb7kfNy1WIxIIkxgBw==-Z/bb/MRxsWNBAdE+WMSZwArX4NvUTqm0tRcrCKW8zK0=-2zc84xwn3J9fD2Ly');
+        callResult = service.call(JSON.stringify(requestPOS));
+
+        if (callResult.isOk() == false){
+            Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            args.AdyenErrorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
+            return {
+                error: true,
+                args: args
+            };
+        }
+
+        resultObject = callResult.object;
+
+        var resultObj = {
+            statusCode: resultObject.getStatusCode(),
+            statusMessage: resultObject.getStatusMessage(),
+            text: resultObject.getText(),
+            errorText: resultObject.getErrorText(),
+            timeout: resultObject.getTimeout()
+        }
+
+        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+        if (resultText == null) {
+            return {error: true};
+        }
+
+        // build the response object
+        var responseObj;
+        try {
+            responseObj = JSON.parse(resultText);
+        } catch (ex) {
+            Logger.error('error parsing response object ' + ex.message);
+            return {error: true};
+        }
+
+        var resultCode = args.ResultCode;
+
+        if (resultCode.indexOf('Authorised') != -1 || (resultCode.indexOf('RedirectShopper') != -1) ) {
+            args.Decision = 'ACCEPT';
+            args.PaymentStatus = resultCode;
+            
+            if (args.AuthorizationCode == '' && args.MD == '') { // if is not 3DSecure
+                Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);
+            }
+        } else  {
+            args.PaymentStatus = 'Refused';
+            args.Decision = 'REFUSED';
+
+            order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
+            order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+
+            errorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
+            if ('refusalReason' in responseObj && !empty(responseObj.refusalReason)) {
+                errorMessage += ' (' + responseObj.refusalReason + ')';
+            }
+            args.AdyenErrorMessage = errorMessage;
+
+            Logger.getLogger('Adyen').info('Payment result: Refused');
+        }
+    } catch (e) {
+        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
+        return {error: true};
+    }
+
+    return args;
+}
+
+module.exports = {
+    'execute': execute,
+    'verify': verify
+}

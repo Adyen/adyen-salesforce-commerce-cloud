@@ -16,7 +16,8 @@ var __AdyenHelper : Object = {
         PAYMENT_3DSECURE : "AdyenPayment3DSecure",
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
-        PAYMENTMETHODS : "AdyenPaymentMethods"
+        PAYMENTMETHODS : "AdyenPaymentMethods",
+        POSPAYMENT : "AdyenPosPayment"
     },
     MODE : {
         TEST : "TEST",

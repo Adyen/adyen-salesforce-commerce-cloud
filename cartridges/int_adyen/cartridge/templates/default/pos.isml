@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
+<isset name="brandCode" value="" scope="session"/>
+<isset name="issuerId" value="" scope="session"/>
+<isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
+
+	<ul id="type">
+			<li class="form-row row-POS">
+					<input type="radio" class="input-radio" name="brandCode" value="AdyenPOS"/>
+				<img class="logo" src="${URLUtils.staticURL('/images/' + AdyenPOS + '.png')}" alt=""/>
+				<label>Adyen POS</label>
+			</li>
+	</ul>
