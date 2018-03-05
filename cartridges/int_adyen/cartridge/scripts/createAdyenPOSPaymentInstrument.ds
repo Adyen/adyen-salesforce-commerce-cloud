@@ -28,16 +28,16 @@ function execute( args : PipelineDictionary ) : Number
 
 function create( basket : dw.order.Basket ) : Number
 {
-	// verify that we have a basket and a valid credit card form
-	if( basket == null  )//|| !creditCardForm.valid
+	// verify that we have a basket
+	if( basket == null  )
 	{
 		return PIPELET_ERROR;
 	}
 	
-	// calculate the amount to be charged for the credit card
+	// calculate the amount to be charged 
 	var amount = calculateNonGiftCertificateAmount( basket );
 	
-	// create a payment instrument for this credit card
+	// create a payment instrument 
 	var paymentInstr : PaymentInstrument = basket.createPaymentInstrument( "AdyenPOS", amount );
 
     return paymentInstr;

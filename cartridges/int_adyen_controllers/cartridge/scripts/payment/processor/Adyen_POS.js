@@ -32,12 +32,10 @@ function handle(args) {
 }
 
 /**
- * Authorizes a payment using a credit card. 
- * The payment is authorized by using the BASIC_CREDIT processor only and setting the order no as the transaction ID. 
- * Customizations may use other processors and custom logic to authorize credit card payment.
+ * Authorizes a payment using a POS terminal. 
+ * The payment is authorized by using the Adyen_POS processor only and setting the order no as the transaction ID. 
  */
 function authorize(args) { 
-	//todobas Authorise method to Terminal API
 	var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
 	
 	var order = args.Order;
