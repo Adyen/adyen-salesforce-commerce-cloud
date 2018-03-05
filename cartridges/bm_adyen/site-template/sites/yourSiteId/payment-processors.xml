@@ -4,13 +4,22 @@
         <description>redirect to Adyen payment page</description>
         <preferences>
             <all-instances/>
-			<development/>
+            <development/>
             <staging/>
             <production/>
         </preferences>
     </payment-processor>
-	<payment-processor processor-id="ADYEN_CREDIT">
-		 <description>adyen credit card payment procesor</description>
+    <payment-processor processor-id="ADYEN_CREDIT">
+        <description>Adyen credit card payment processor</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+    <payment-processor processor-id="Adyen_POS">
+        <description>Adyen pos payment processor</description>
         <preferences>
             <all-instances/>
             <development/>

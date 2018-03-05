@@ -71,55 +71,35 @@ function authorize(args) {
         };
     }
 
-    if (result.IssuerUrl != '') {
-        Transaction.commit();
-        session.custom.order = order;
-        session.custom.paymentInstrument = paymentInstrument;
-        return {
-            authorized: true,
-            authorized3d: true,
-            view: app.getView({
-                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
-                Basket: order,
-                issuerUrl: result.IssuerUrl,
-                paRequest: result.PaRequest,
-                md: result.MD
-            })};
+    if(result['Response'].SaleToPOIResponse.PaymentResponse){
+	    var paymentResponse = result['Response'].SaleToPOIResponse.PaymentResponse;
+	    if (paymentResponse.Response.Result == 'Success') {
+	    	order.custom.Adyen_eventCode = 'AUTHORISATION';
+	    	if (!empty(paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID)) {
+	        	var pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
+	        	paymentInstrument.paymentTransaction.transactionID = pspReference;
+	        	order.custom.Adyen_pspReference = pspReference;
+	        }
+	    	// Save full response to transaction custom attribute
+	        paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(paymentResponse); 
+	    	Transaction.commit();
+	    	return {authorized: true};
+	    } 
+	    else {
+	    	Transaction.rollback();
+	        return {
+	            error: true,
+	            PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
+	        };
+	    }
     }
-
-    if (result.Decision != 'ACCEPT') {
-        Transaction.rollback();
+    else {
+    	Transaction.rollback();
         return {
             error: true,
             PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
         };
     }
-
-    order.custom.Adyen_eventCode = 'AUTHORISATION';
-    if ('PspReference' in result && !empty(result.PspReference)) {
-        paymentInstrument.paymentTransaction.transactionID = result.PspReference;
-        order.custom.Adyen_pspReference = result.PspReference;
-    }
-
-    if ('AuthorizationCode' in result && !empty(result.AuthorizationCode)) {
-        paymentInstrument.paymentTransaction.custom.authCode = result.AuthorizationCode;
-    }
-
-    if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-        order.custom.Adyen_value = result.AdyenAmount;
-    }
-
-    if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
-        order.custom.Adyen_paymentMethod = result.AdyenCardType;
-    }
-    // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
-    
-    paymentInstrument.paymentTransaction.transactionID = result.PspReference;
-    Transaction.commit();
-
-    return {authorized: true};
-
 }
 
 exports.Handle = handle;
