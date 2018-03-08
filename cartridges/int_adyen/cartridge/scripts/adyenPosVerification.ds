@@ -47,12 +47,11 @@ function verify(args) {
             Basket: order
         });
 
-        var d = new Date();
-	    var dateString =  d.getTime().toString();
+        var date = new Date();
+	    var dateString = date.getTime().toString();
     	var serviceId = dateString.substr(dateString.length - 10);
 	    var poiid = AdyenHelper.getAdyenPOIID();
-	    var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount) / 100; //args.Amount * 100;
-        
+	    var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount) / 100;
         var requestPOS = {  
 						   "SaleToPOIRequest":{  
 						      "MessageHeader":{  
@@ -70,7 +69,7 @@ function verify(args) {
 						               "TransactionID": order.getOrderNo(),
 						               "TimeStamp": new Date()
 						            },
-						            "SaleReferenceID":"TestSFCCpos"
+						            "SaleReferenceID":"SalesforceCommerceCloudPOS"
 						         },
 						         "PaymentTransaction":{  
 						            "AmountsReq":{  
@@ -99,8 +98,8 @@ function verify(args) {
         if (callResult.isOk() == false){
             Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
             args.AdyenErrorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
-            var date = new Date();
-            var newDateString = date.getTime().toString();
+            var newDate = new Date();
+            var newDateString = newDate.getTime().toString();
             var newServiceId = newDateString.substr(newDateString.length - 10);
 
             var abortRequest = {
@@ -132,17 +131,9 @@ function verify(args) {
         }
 
         resultObject = callResult.object;
-
-        var resultObj = {
-            statusCode: resultObject.getStatusCode(),
-            statusMessage: resultObject.getStatusMessage(),
-            text: resultObject.getText(),
-            errorText: resultObject.getErrorText(),
-            timeout: resultObject.getTimeout()
-        }
-
-        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
-        if (resultText == null) {
+        var resultText = resultObject.getText();
+        
+        if (empty(resultText)) {
             return {error: true};
         }
 
