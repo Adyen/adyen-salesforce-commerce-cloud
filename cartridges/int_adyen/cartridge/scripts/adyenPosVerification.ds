@@ -51,7 +51,6 @@ function verify(args) {
 	    var dateString = date.getTime().toString();
     	var serviceId = dateString.substr(dateString.length - 10);
 	    var poiid = AdyenHelper.getAdyenPOIID();
-	    var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount) / 100;
         var requestPOS = {  
 						   "SaleToPOIRequest":{  
 						      "MessageHeader":{  
@@ -73,8 +72,8 @@ function verify(args) {
 						         },
 						         "PaymentTransaction":{  
 						            "AmountsReq":{  
-						               "Currency": "EUR", //args.Amount.currencyCode,
-						               "RequestedAmount": myAmount
+						               "Currency": args.Amount.currencyCode,
+						               "RequestedAmount": args.Amount.value
 						            }
 						         }
 						      }
