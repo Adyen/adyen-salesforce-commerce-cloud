@@ -16,7 +16,8 @@ var __AdyenHelper : Object = {
         PAYMENT_3DSECURE : "AdyenPayment3DSecure",
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
-        PAYMENTMETHODS : "AdyenPaymentMethods"
+        PAYMENTMETHODS : "AdyenPaymentMethods",
+        POSPAYMENT : "AdyenPosPayment"
     },
     MODE : {
         TEST : "TEST",
@@ -124,7 +125,23 @@ var __AdyenHelper : Object = {
         var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
         return Math.pow(10, digitsNumber);
     },
-
+    
+    getAdyenPOIID : function () : String {
+        var returnValue : String = "";
+        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID');
+        }
+        return returnValue;
+    },
+    
+      getAdyenApiKey : function () : String {
+        var returnValue : String = "";
+        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key');
+        }
+        return returnValue;
+    },
+    
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';

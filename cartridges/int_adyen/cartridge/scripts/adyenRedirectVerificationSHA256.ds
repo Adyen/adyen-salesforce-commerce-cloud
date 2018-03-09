@@ -133,7 +133,7 @@ function verify (args) {
 	adyenRequest.put("shopperReference", currentUser.ID );
 	adyenRequest.put("recurringContract", recurringType );
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
-	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.toString().toUpperCase() );
+	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
 	// Optional Fields
 	var locale = request.locale;
 	if(!empty(locale) && locale != "default") {
@@ -219,7 +219,7 @@ function verify (args) {
 	var billingAddr = order.getBillingAddress();
 
 	adyenRequest.put("billingAddress.city", billingAddr.city );
-	adyenRequest.put("billingAddress.country", billingAddr.countryCode.toString().toUpperCase() );
+	adyenRequest.put("billingAddress.country", billingAddr.countryCode.value.toString().toUpperCase() );
 	adyenRequest.put("billingAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
 	adyenRequest.put("billingAddress.postalCode", billingAddr.postalCode );
 	adyenRequest.put("billingAddress.stateOrProvince", (!empty(billingAddr.stateCode)) ? billingAddr.stateCode : 'NA' );
@@ -233,7 +233,7 @@ function verify (args) {
 		var shippingAddr : OrderAddress = s.getShippingAddress();
 
 		adyenRequest.put("deliveryAddress.city", shippingAddr.city );
-		adyenRequest.put("deliveryAddress.country", shippingAddr.countryCode.toString().toUpperCase() );
+		adyenRequest.put("deliveryAddress.country", shippingAddr.countryCode.value.toString().toUpperCase() );
 
 		adyenRequest.put("deliveryAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
 		adyenRequest.put("deliveryAddress.postalCode", shippingAddr.postalCode );

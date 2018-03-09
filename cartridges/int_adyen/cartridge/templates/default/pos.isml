@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="brandCode" value="" scope="session"/>
+<ul id="type">
+	<li class="form-row row-POS">
+			<input type="radio" class="input-radio" name="brandCode" value="AdyenPOS"/>
+		<label>Adyen POS</label>
+	</li>
+</ul>
