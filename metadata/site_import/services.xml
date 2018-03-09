@@ -29,11 +29,8 @@
         <url>https://terminal-api-test.adyen.com/sync</url>
         <user-id></user-id>
         <password/>
-    </service-credential>      
-    <service-profile service-profile-id="Adyen">
-        <timeout-millis>2000</timeout-millis>
-        <cb-enabled>false</cb-enabled>
-    </service-profile>
+    </service-credential> 
+
     <service service-id="AdyenPayment">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
