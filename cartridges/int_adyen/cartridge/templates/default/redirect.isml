@@ -54,7 +54,6 @@
 		<input type="hidden" name="shopperEmail"         value="${pdict.shopperEmail}" /> 
 		<input type="hidden" name="shopperReference"     value="${pdict.shopperReference}" />  
 		<input type="hidden" name="recurringContract"    value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_recurringType')}" /> 
-		<input type="hidden" name="allowedMethods"       value="${pdict.allowedMethods}" /> 
 		<input type="hidden" name="merchantReference"    value="${pdict.OrderNo}" /> 
 		<input type="hidden" name="shipBeforeDate"       value="2019-04-06T18:10:29+02:00" />
 		<input type="hidden" name="sessionValidity"      value="2019-04-06T18:10:29+02:00" />

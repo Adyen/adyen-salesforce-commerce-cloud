@@ -4,6 +4,7 @@
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <isset name="brandCode" value="" scope="session"/>
 <isset name="issuerId" value="" scope="session"/>
+<isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
 
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
 	<isset name="methods" value="${pdict.AdyenHppPaymentMethods.paymentMethods}" scope="page"/>
@@ -12,11 +13,15 @@
 	<isif condition="${!empty(methods) && methods.length > 0}">
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
-				<li class="form-row">
-					<input type="radio" class="input-radio" name="brandCode" value="${method.brandCode}"/>
+				<li class="form-row row-${method.brandCode}">
+					<isif condition="${whitelistMethods.indexOf(method.brandCode) > -1}">
+						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.brandCode}"/>
+					<iselse/>
+						<input type="radio" class="input-radio" name="brandCode" value="${method.brandCode}"/>
+					</isif>
 					<img class="logo" src="${URLUtils.staticURL('/images/' + method.brandCode + '.png')}" alt=""/>
 					<label for="${method.brandCode}">${method.name}</label>
-					
+
 					<isif condition="${typeof method.issuers !== 'undefined' && method.issuers.length > 0}">
 						<ul id="issuer">
 							<isloop items="${method.issuers}" var="issuer" status="loopstate">
@@ -34,3 +39,44 @@
 <iselse>
 	<span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
 </isif>
+<div class="hppAdditionalFields">
+	<div class="openinvoiceInput additionalfield nl at de">
+		<isinputfield type="select" formfield="${pdict.CurrentForms.adyPaydata.gender}" />
+	</div>
+	<div class="openinvoiceInput additionalfield nl at de dk fi no se">
+		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.dob}" />
+	</div>
+	<div class="openinvoiceInput additionalfield nl de">
+		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.houseNumber}" />
+	</div>
+	<div class="openinvoiceInput additionalfield nl">
+		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.houseExtension}" />
+	</div>
+	<div class="openinvoiceInput additionalfield dk fi no se">
+		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.personalNumber}" />
+	</div>
+</div>
+
+<iscomment>
+	Adyen RatePay Device Fingerprint Code
+</iscomment>
+<isif condition="${empty(session.custom.ratePayFingerprint)}">
+	<isscript>
+		var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
+		var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+		session.custom.ratePayFingerprint = sessionID;
+	</isscript>
+	<script language="JavaScript">
+		var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
+	</script>
+	<script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+</isif>
+
+<iscomment>
+	Adyen Generic Device Fingerprint Code
+</iscomment>
+<script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
+<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}" />
+<script type="text/javascript">
+	dfDo('dwfrm_adyPaydata_adyenFingerprint');
+</script>

@@ -81,7 +81,7 @@ function verify( args : PipelineDictionary ) : Number {
 		};
   		
 		var callResult = null;
-		var service = AdyenHelper.getService(AdyenHelper.SERVICE.SECURE);
+		var service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENT_3DSECURE);
 		if (service == null) {
 			return PIPELET_ERROR;
 		}

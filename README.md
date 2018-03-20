@@ -10,8 +10,10 @@ The integration is based on the Site Genesis demo store provided by Commerce Clo
   
 ## Installation, Usage and Configuration
 
-Installation, Usage and Configuration is explained in our [manual](https://docs.adyen.com/developers/salesforce-commerce-cloud#setup).
-                                      
+Installation, Usage and Configuration is explained in our [manual](https://docs.adyen.com/developers/plug-ins-and-partners/salesforce-commerce-cloud).
+
+ApplePay configuration can be found [here](documentation/ApplePay.md)
+
 ## Support
   
 In case of problems with the integration or connection to Adyen, contact the [Adyen Support Team](mailto:support@adyen.com) or your Adyen account manager.

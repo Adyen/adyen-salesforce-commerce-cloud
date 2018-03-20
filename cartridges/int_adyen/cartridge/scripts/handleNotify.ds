@@ -60,11 +60,18 @@ function notify (hpm) {
 	customObj.custom.value = hpm.value.stringValue;
 	customObj.custom.version = "4d";
 	
-	switch(hpm.eventCode.stringValue){
+	switch(hpm.eventCode.stringValue) {
 		case "AUTHORISATION" :
+		    // Save all request to custom attribute for Authorization event
+			var requestObject = {};
+			for each (var paramName in hpm.parameterNames) {
+				requestObject[paramName] = hpm[paramName].stringValue;
+			}
+			customObj.custom.Adyen_log = JSON.stringify(requestObject);
 		case "CANCELLATION" :
 		case "CANCEL_OR_REFUND" :
 		case "REFUND" :
+		case "CAPTURE_FAILED" :
 		case "ORDER_OPENED" :
 		case "ORDER_CLOSED" :
 		case "PENDING" :

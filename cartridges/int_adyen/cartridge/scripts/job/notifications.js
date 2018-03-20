@@ -10,6 +10,7 @@ var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
 var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
+var Email = require('app_storefront_controllers/cartridge/scripts/models/EmailModel');
 
 function execute(pdict) {
 	processNotifications(pdict);
