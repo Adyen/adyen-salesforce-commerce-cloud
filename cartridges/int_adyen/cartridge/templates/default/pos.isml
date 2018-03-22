@@ -4,7 +4,7 @@
 <isset name="brandCode" value="AdyenPOS" scope="session"/>
 
 
-<iscomment>Test dropdown for selection POS terminal per Store</iscomment>
+<iscomment>Dropdown for selection POS terminal per Store</iscomment>
 	<input type="hidden" id="terminalList" value="${pdict.AdyenPosTerminals}"/>
 	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
 	

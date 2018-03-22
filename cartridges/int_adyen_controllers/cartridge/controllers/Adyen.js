@@ -202,9 +202,8 @@ function getPaymentMethodsJSON() {
  * Get configured terminals  
  */
 function getTerminals() {
-	var terminalsText = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
-	var terminals = JSON.stringify(terminalsText);
-   	return terminalsText;
+	var terminals = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
+   	return terminals;
 }
 
 /**
