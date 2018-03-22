@@ -5,27 +5,27 @@
 
 
 <iscomment>Dropdown for selection POS terminal per Store</iscomment>
-	<input type="hidden" id="terminalList" value="${pdict.AdyenPosTerminals}"/>
 	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
 	
 	<div class="form-row">
 		<label class="label">Select Store</label>
 		<div class="field-wrapper">
 			<select id="store_selection" class="input-select valid" onchange="changeStore()">
-				<option value="">Select store</option>
+				<option value="">Select Store</option>
 			</select>
 		</div>
 	</div>
 	<div class="form-row">
 		<label class="label">Select Terminal</label>
 		<div class="field-wrapper">
-			<select id="terminal_selection" name="terminalSelection" onchange="changeTerminal()" class="input-select valid" required>
+			<select id="terminal_selection" onchange="changeTerminal()" class="input-select valid" required>
 				<option value="">Select Terminal</option>
 			</select> 
 		</div>
 	</div>
 	<script type="text/javascript">
-		window.onload = function(){ 
+		var terminalJSON = JSON.parse("<isprint encoding="jsonvalue" value="${pdict.AdyenPosTerminals}" />");
+		window.onload = function(){ 		
 	    	var dd_stores = document.getElementById('store_selection');
 	    	dd_stores.options.length = 1; 
 	    	var stores = getStores();
@@ -34,12 +34,11 @@
 	    	})
 		};
 		
-		function getStores(){
-			var allTerminals = JSON.parse(document.getElementById("terminalList").value);
+		function getStores(){		
 			var uniqueStores = [];
-			for(i = 0; i< allTerminals.length; i++){    
-			    if(uniqueStores.indexOf(allTerminals[i].Store) === -1){
-			        uniqueStores.push(allTerminals[i].Store);        
+			for(i = 0; i< terminalJSON.length; i++){    
+			    if(uniqueStores.indexOf(terminalJSON[i].Store) === -1){
+			        uniqueStores.push(terminalJSON[i].Store);        
 			    }        
 			}
 			return uniqueStores;
@@ -47,8 +46,7 @@
 		
 	    function changeStore(){
 	    	var selectedStore = document.getElementById("store_selection").value;
-	    	var allTerminals = JSON.parse(document.getElementById("terminalList").value);
-	    	var storeTerminals = allTerminals.filter(function(terminal){
+	    	var storeTerminals = terminalJSON.filter(function(terminal){
 	    		return terminal.Store == selectedStore;
 	    	});
 	    	createTerminalList(storeTerminals);	    	
