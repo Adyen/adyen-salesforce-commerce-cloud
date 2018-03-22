@@ -200,37 +200,11 @@ function getPaymentMethodsJSON() {
 
 /**
  * Get configured terminals  
- * todobas get actually configured terminals from custom preferences
  */
 function getTerminals() {
-	var terminals = 
-			[{
-   				"name" : "terminal1", 
-   				"description" : "terminal one",
-   				"storeId" : "store1" 
-   			}, 
-   			{
-   				"name" : "terminal2", 
-   				"description" : "terminal two",
-   				"storeId" : "store2" 
-   			},
-   			{
-   				"name" : "terminal3", 
-   				"description" : "terminal three",
-   				"storeId" : "store2" 
-   			},
-   			{
-   				"name" : "terminal4", 
-   				"description" : "terminal four",
-   				"storeId" : "store1" 
-   			},
-   			{
-   				"name" : "terminal5", 
-   				"description" : "terminal five",
-   				"storeId" : "store1" 
-   			}];
-   			
-   	return terminals;
+	var terminalsText = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
+	var terminals = JSON.stringify(terminalsText);
+   	return terminalsText;
 }
 
 /**

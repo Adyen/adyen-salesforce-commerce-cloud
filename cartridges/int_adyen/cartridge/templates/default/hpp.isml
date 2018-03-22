@@ -5,61 +5,13 @@
 <isset name="brandCode" value="" scope="session"/>
 <isset name="issuerId" value="" scope="session"/>
 <isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
-<isset name="terminals" value="${pdict.AdyenPosTerminals}" scope="page"/>
-
-<isset name="multiTerminals" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_multi_terminals')}" scope="page"/>
 
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
 	<isset name="methods" value="${pdict.AdyenHppPaymentMethods.paymentMethods}" scope="page"/>
 	
-	<iscomment>Test dropdown for selection POS terminal per Store</iscomment>
-	<!-- <select>
-		  <option value="store1">store1</option>
-		  <option value="store2">store2</option>
-	</select>
-	
-	<select>
-		  <option value="terminal1">terminal1</option>
-		  <option value="terminal2">terminal2</option>
-		  <option value="terminal3">terminal3</option>
-		  <option value="terminal4">terminal4</option>
-	</select> -->
-	<select id="store_selection">
-		<isloop items="${terminals}" var="terminal" status="loopstate">
-					<option id="${terminal.storeId}" name="terminal" value="${terminal.storeId}">${terminal.storeId}</option>
-		</isloop>
-	</select>
-	<select>
-		<isloop items="${terminals}" var="terminal" status="loopstate">
-			<option name="terminal" value="${terminal.name}">${terminal.name}</option>
-			<!-- <isif condition="${terminal.storeId == 1}">
-				<isnext/>
-			</isif> -->
-		</isloop>
-	</select>
-	
-	<script type="text/javascript">
-	    function changeTest(){
-	      	var testtt = JSON.parse(${terminals});
-	    };
-	    
-	    function myFunction(item, index){
-	    	var itemTest = item;
-	    };
-		function changeSelection(list) {
-			var storeList = document.getElementById("store_selection");
-			var selectedStore = storeList.options[storeList.selectedIndex].value;
-			appendChilds(selectedStore, list);
-		};
-		
-		function appendChilds(selectedStore, list) {
-			var test = list;
-			let unique = [...new Set(test.map(item => item.storeId))];
-		};
-	</script>
-	
 	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
+	
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
 				<li class="form-row row-${method.brandCode}">

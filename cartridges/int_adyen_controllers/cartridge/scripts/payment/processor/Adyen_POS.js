@@ -56,7 +56,8 @@ function authorize(args) {
         Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,
         CurrentRequest: request,
-        PaymentInstrument: paymentInstrument
+        PaymentInstrument: paymentInstrument,
+        TerminalId: session.forms.adyPaydata.terminalId.value
     });
 
     if (result.error) {
@@ -69,7 +70,7 @@ function authorize(args) {
         };
     }
 
-    if(result['Response'].SaleToPOIResponse.PaymentResponse){
+    if(result['Response'].SaleToPOIResponse){
 	    var paymentResponse = result['Response'].SaleToPOIResponse.PaymentResponse;
 	    if (paymentResponse.Response.Result == 'Success') {
 	    	order.custom.Adyen_eventCode = 'AUTHORISATION';

@@ -1,10 +1,71 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 <isinclude template="util/modules"/>
 
-<isset name="brandCode" value="" scope="session"/>
-<ul id="type">
-	<li class="form-row row-POS">
-			<input type="radio" class="input-radio" name="brandCode" value="AdyenPOS"/>
-		<label>Adyen POS</label>
-	</li>
-</ul>
+<isset name="brandCode" value="AdyenPOS" scope="session"/>
+
+
+<iscomment>Test dropdown for selection POS terminal per Store</iscomment>
+	<input type="hidden" id="terminalList" value="${pdict.AdyenPosTerminals}"/>
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
+	
+	<div class="form-row">
+		<label class="label">Select Store</label>
+		<div class="field-wrapper">
+			<select id="store_selection" class="input-select valid" onchange="changeStore()">
+				<option value="">Select store</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-row">
+		<label class="label">Select Terminal</label>
+		<div class="field-wrapper">
+			<select id="terminal_selection" name="terminalSelection" onchange="changeTerminal()" class="input-select valid" required>
+				<option value="">Select Terminal</option>
+			</select> 
+		</div>
+	</div>
+	<script type="text/javascript">
+		window.onload = function(){ 
+	    	var dd_stores = document.getElementById('store_selection');
+	    	dd_stores.options.length = 1; 
+	    	var stores = getStores();
+	    	stores.forEach(function(store) {
+	    		dd_stores.options[dd_stores.options.length] = new Option(store, store);
+	    	})
+		};
+		
+		function getStores(){
+			var allTerminals = JSON.parse(document.getElementById("terminalList").value);
+			var uniqueStores = [];
+			for(i = 0; i< allTerminals.length; i++){    
+			    if(uniqueStores.indexOf(allTerminals[i].Store) === -1){
+			        uniqueStores.push(allTerminals[i].Store);        
+			    }        
+			}
+			return uniqueStores;
+		};
+		
+	    function changeStore(){
+	    	var selectedStore = document.getElementById("store_selection").value;
+	    	var allTerminals = JSON.parse(document.getElementById("terminalList").value);
+	    	var storeTerminals = allTerminals.filter(function(terminal){
+	    		return terminal.Store == selectedStore;
+	    	});
+	    	createTerminalList(storeTerminals);	    	
+	    };
+	    
+	    function createTerminalList(storeTerminals){
+	    var dd_terminals = document.getElementById("terminal_selection");
+	    dd_terminals.options.length = 1;
+	    	storeTerminals.forEach(function(terminal) {
+	    		dd_terminals.options[dd_terminals.options.length] = new Option(terminal.Description, terminal.POIID);
+	    	})
+	    };
+	    
+	    function changeTerminal(){
+	    var selectedTerminal = document.getElementById("terminal_selection").value;
+	     	document.getElementById("dwfrm_adyPaydata_terminalId").value = selectedTerminal;
+	     	document.getElementById("billing-submit").removeAttribute("disabled");
+	    };
+	</script>
+		
