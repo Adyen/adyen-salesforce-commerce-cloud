@@ -19,5 +19,7 @@
 	<field formid="houseExtension" label="House Extension"  type="string" mandatory="false" />
 	<field formid="personalNumber" label="Personal Number (last digits)"  type="string" mandatory="false" />
 	<field formid="adyenFingerprint" type="string" mandatory="false" />
+	<field formid="terminalId" type="string" mandatory="false" />
+	
 	<action formid="Pay" valid-form="true"/>
 </form>

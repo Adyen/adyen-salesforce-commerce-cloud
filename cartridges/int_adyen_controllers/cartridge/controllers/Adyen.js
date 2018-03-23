@@ -199,6 +199,14 @@ function getPaymentMethodsJSON() {
 }
 
 /**
+ * Get configured terminals  
+ */
+function getTerminals() {
+	var terminals = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
+   	return terminals;
+}
+
+/**
  * Get orderdata for the Afterpay Payment method
  */
 function afterpay() {
@@ -460,6 +468,8 @@ exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 exports.GetPaymentMethods = getPaymentMethods;
 
 exports.GetPaymentMethodsJSON = guard.ensure(['get'], getPaymentMethodsJSON);
+
+exports.GetTerminals = getTerminals;
 
 exports.RefusedPayment = refusedPayment;
 
