@@ -222,7 +222,7 @@ function verify (args) {
 	adyenRequest.put("billingAddress.country", billingAddr.countryCode.toString().toUpperCase() );
 	adyenRequest.put("billingAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
 	adyenRequest.put("billingAddress.postalCode", billingAddr.postalCode );
-	adyenRequest.put("billingAddress.stateOrProvince", (!empty(billingAddr.stateCode)) ? billingAddr.stateCode : 'NA' );
+	adyenRequest.put("billingAddress.stateOrProvince", (!empty(billingAddr.stateCode) ? billingAddr.stateCode : 'NA'));
 	adyenRequest.put("billingAddress.street", billingAddr.address1 );
 	adyenRequest.put("billingAddressType", '1' );
 
@@ -237,7 +237,7 @@ function verify (args) {
 
 		adyenRequest.put("deliveryAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
 		adyenRequest.put("deliveryAddress.postalCode", shippingAddr.postalCode );
-		adyenRequest.put("deliveryAddress.stateOrProvince", (!empty(shippingAddr.stateCode)) ? shippingAddr.stateCode : 'NA' );
+		adyenRequest.put("deliveryAddress.stateOrProvince",(!empty( shippingAddr.stateCode) ? shippingAddr.stateCode : 'NA'));
 		adyenRequest.put("deliveryAddress.street", shippingAddr.address1 );
 		adyenRequest.put("deliveryAddressType", '1' );
 
