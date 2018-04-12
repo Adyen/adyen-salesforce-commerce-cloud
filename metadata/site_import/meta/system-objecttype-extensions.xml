@@ -274,7 +274,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_Open_Invoice_Whitelist">
                 <display-name xml:lang="x-default">Open Invoice White List Methods</display-name>
-                <description xml:lang="x-default">CSV (e.g. klarna, payrate and/or afterpay)</description>
+                <description xml:lang="x-default">csv formatted string e.g. klarna,ratepay,afterpay_default,afterpay_directdebit</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
