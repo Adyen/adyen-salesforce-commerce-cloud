@@ -43,8 +43,7 @@ function notify (hpm) {
 	customObj.custom.currency = hpm.currency.stringValue;
 	customObj.custom.eventCode = hpm.eventCode.stringValue;
 	
-	//var timeString : String = StringUtils.formatCalendar(calObj, "yyyy-MM-dd'T'hh:mm:ss.sssZ");
-	var timeString : String = StringUtils.formatCalendar(calObj, "YYYY-MM-DD'T'HH:mm:ss.sssZ");
+	var timeString : String = StringUtils.formatCalendar(calObj, "yyyy-MM-dd'T'hh:mm:ss.sssZ");
 	customObj.custom.eventDate = timeString;
 	customObj.custom.httpRemoteAddress = request.httpRemoteAddress; 
 	customObj.custom.live = hpm.live.stringValue;

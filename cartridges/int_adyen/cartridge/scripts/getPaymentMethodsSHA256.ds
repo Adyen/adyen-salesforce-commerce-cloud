@@ -47,10 +47,10 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         return PIPELET_ERROR;
     }
 
-    var currencyCode: String = basket.currencyCode;
+    var currencyCode: String = basket.currencyCode; 
     var merchantReference: String = "Request payment methods";
-    var paymentAmount: Number = basket.getTotalGrossPrice() ? basket.getTotalGrossPrice().getValue() * 100 : 1000;
-    
+    var paymentAmount: Number = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
+	
     //Get country code based on Shipping Address and if it changes on the billing address then the payment methods need to be refreshed
     var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
     var countryCode = !empty(CountryCode) ? CountryCode.toUpperCase() : shippingAddr.countryCode.value.toUpperCase();
@@ -64,7 +64,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     shipBeforeDate = shipBeforeDate.toISOString();
 
     var adyenRequest: SortedMap = new SortedMap();
-    adyenRequest.put("paymentAmount", paymentAmount);
+    adyenRequest.put("paymentAmount", paymentAmount.toFixed(0));
     adyenRequest.put("currencyCode", currencyCode);
     adyenRequest.put("merchantReference", merchantReference);
     adyenRequest.put("skinCode", skinCode);
