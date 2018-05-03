@@ -27,7 +27,7 @@
     </service-credential>
      
      <service-profile service-profile-id="Adyen">
-          <timeout-millis>2000</timeout-millis>
+          <timeout-millis>30000</timeout-millis>
           <cb-enabled>false</cb-enabled>
      </service-profile>
 
