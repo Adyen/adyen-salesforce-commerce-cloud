@@ -1,6 +1,0 @@
-{
-   "hooks": "./cartridge/scripts/hooks.json",
-   "paths": {
-   "base": "../sitegenesis-mfra/cartridges/app_storefront_base/"
-   }
-}
