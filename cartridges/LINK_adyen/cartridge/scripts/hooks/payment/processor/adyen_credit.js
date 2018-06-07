@@ -16,12 +16,6 @@ var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
-    Logger.getLogger("Adyen").error("HandleCallEntered");
-    // return {
-    //     error: true,
-    //     PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
-    // };
-    //
     var currentBasket = basket;
     var cardErrors = {};
     var cardNumber = paymentInformation.cardNumber.value;
@@ -46,7 +40,7 @@ function Handle(basket, paymentInformation) {
 
         var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
         if(!adyenCseEnabled) {
-            paymentInstrument.setCreditCardHolder("BasValue");
+            paymentInstrument.setCreditCardHolder(paymentInformation.cardOwner.value);
             paymentInstrument.setCreditCardNumber(cardNumber);
             paymentInstrument.setCreditCardType(cardType);
             paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
@@ -56,33 +50,7 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardType(cardType);
         }
 
-        // var adyenRemovePreviousPI = require('int_adyen/cartridge/scripts/adyenRemovePreviousPI');
-        // var result;
-        // Transaction.wrap(function () {
-        //     result = adyenRemovePreviousPI.removePaymentInstruments(currentBasket);
-        //     var paymentInstrument = currentBasket.createPaymentInstrument(
-        //         PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
-        //     );
-        //
-        //     var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-        //     if(!adyenCseEnabled) {
-        //         paymentInstrument.setCreditCardHolder("BasValue");
-        //         paymentInstrument.setCreditCardNumber(cardNumber);
-        //         paymentInstrument.setCreditCardType(cardType);
-        //         paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
-        //         paymentInstrument.setCreditCardExpirationYear(expirationYear);
-        //     }
-        //     else {
-        //         paymentInstrument.setCreditCardType(cardType);
-        //     }
-        // });
-        //
-        // if (result === PIPELET_ERROR) {
-        //     return {error: true};
-        // }
-
     });
-
     return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };
 
 }
@@ -102,16 +70,11 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     var OrderMgr = require('dw/order/OrderMgr');
     var Transaction = require('dw/system/Transaction');
-
     var order = OrderMgr.getOrder(orderNumber);
-
-    var apmName = paymentInstrument.getPaymentMethod();
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
-
     var adyenCreditVerification = require('int_adyen/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
 
-    Logger.getLogger("Adyen").error("AuthorizeCallEntered, orderNumber: " + orderNumber + " paymentInstrument: " + apmName + " paymentProcessor: " + paymentProcessor.getID());
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -121,12 +84,22 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         CreditCardForm: creditCardForm
     });
 
-    Logger.getLogger("Adyen").error("AuthorizeCall" + JSON.stringify(result));
-
     if(result.error) {
         var errors = [];
         errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
         return { authorized: false, fieldErrors: [], serverErrors: errors, error: true };
+    }
+
+    if (result.IssuerUrl != '') {
+        Transaction.commit();
+        return {
+            authorized: true,
+            authorized3d: true,
+            Basket: order,
+            issuerUrl: result.IssuerUrl,
+            paRequest: result.PaRequest,
+            md: result.MD
+            };
     }
 
     if (result.Decision != 'ACCEPT') {
@@ -156,10 +129,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
-
     paymentInstrument.paymentTransaction.transactionID = result.PspReference;
     Transaction.commit();
-
 
     return { authorized: true, error: false };
 
