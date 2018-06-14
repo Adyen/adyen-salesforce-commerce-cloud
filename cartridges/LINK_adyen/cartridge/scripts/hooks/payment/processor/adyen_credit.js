@@ -8,19 +8,12 @@ var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
 
 var PaymentInstrument = require('dw/order/PaymentInstrument');
-var PaymentMgr = require('dw/order/PaymentMgr');
-var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
-var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
-var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
     var cardErrors = {};
-    var cardNumber = paymentInformation.cardNumber.value;
-    var expirationMonth = paymentInformation.expirationMonth.value;
-    var expirationYear = paymentInformation.expirationYear.value;
     var serverErrors = [];
 
     var cardType = paymentInformation.cardType.value;
@@ -38,17 +31,8 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
-        var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-        if(!adyenCseEnabled) {
-            paymentInstrument.setCreditCardHolder(paymentInformation.cardOwner.value);
-            paymentInstrument.setCreditCardNumber(cardNumber);
-            paymentInstrument.setCreditCardType(cardType);
-            paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
-            paymentInstrument.setCreditCardExpirationYear(expirationYear);
-        }
-        else {
-            paymentInstrument.setCreditCardType(cardType);
-        }
+        //Only CSE integration
+        paymentInstrument.setCreditCardType(cardType);
 
     });
     return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };
@@ -92,10 +76,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     if (result.IssuerUrl != '') {
         Transaction.commit();
+        //session.custom.order = order;
         return {
             authorized: true,
             authorized3d: true,
-            Basket: order,
+            order: order,
+            paymentInstrument: paymentInstrument,
             issuerUrl: result.IssuerUrl,
             paRequest: result.PaRequest,
             md: result.MD
