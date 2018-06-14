@@ -11,11 +11,6 @@
 
 <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
-<!--<input type="hidden" class="form-control cardNumber" id="cardNumber2" name="cardNumber"-->
-       <!--autocomplete="cc-number"-->
-       <!--value=""-->
-<!--&gt;-->
-
 <div class="row">
     <div class="col-12">
         <div class="form-group
