@@ -5,7 +5,6 @@
             name="${pdict.forms.billingForm.paymentMethod.htmlName}"
             value="CREDIT_CARD"
     >
-    <!--<input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" name="${pdict.forms.billingForm.paymentMethod.htmlName}" encoding="off"/>-->
     <!--- register/authenticated user --->
     <isif condition="${pdict.customer.registeredUser}">
         <div class="user-payment-instruments container ${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? '' : 'checkout-hidden'}">
