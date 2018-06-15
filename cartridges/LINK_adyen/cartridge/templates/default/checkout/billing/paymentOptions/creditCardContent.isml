@@ -5,7 +5,6 @@
             name="${pdict.forms.billingForm.paymentMethod.htmlName}"
             value="CREDIT_CARD"
     >
-
     <!--- register/authenticated user --->
     <isif condition="${pdict.customer.registeredUser}">
         <div class="user-payment-instruments container ${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? '' : 'checkout-hidden'}">

@@ -6,7 +6,9 @@
        value="">
 
 <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encrypteddata}" type="hidden"/>
+
+<input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" <isprint value=${creditFields.adyenEncryptedData.attributes} encoding="off"/> >
+
 <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
 <div class="row">
@@ -14,10 +16,10 @@
         <div class="form-group
             required">
             <label class="form-control-label" for="holderName">${Resource.msg('field.credit.card.holderName','creditCard',null)}</label>
-                <input type="text" class="form-control holderName" id="holderName"
-                    value=""
-                    data-encrypted-name="holderName">
-                <div class="invalid-feedback"></div>
+            <input type="text" class="form-control holderName" id="holderName"
+                   value=""
+                   data-encrypted-name="holderName">
+            <div class="invalid-feedback"></div>
         </div>
     </div>
 </div>
@@ -29,13 +31,10 @@
             ${creditFields.cardNumber.htmlName}">
             <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
             <div class="card-number-wrapper">
-                <input type="text" class="form-control cardNumber" id="cardNumber"
-                    value="${pdict.order.billing.payment.selectedPaymentInstruments
-                        && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
-                        ? pdict.order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber||''
-                        : ''}"
-                    autocomplete="cc-number"
-                    data-encrypted-name="number"
+                <input type="text" class="form-control cardNumber" id="cardNumber" name="cardNumber"
+                       autocomplete="cc-number"
+                       data-encrypted-name="number"
+                       value=""
                 >
                 <div class="invalid-feedback"></div>
             </div>
@@ -50,15 +49,15 @@
             ${creditFields.expirationMonth.htmlName}">
             <label class="form-control-label" for="expirationMonth">${Resource.msg('field.credit.card.expiration.month','creditCard',null)}</label>
             <select class="form-control expirationMonth custom-select" id="expirationMonth"
-             autocomplete="cc-exp-month" data-encrypted-name="expiryMonth">
+                    autocomplete="cc-exp-month" data-encrypted-name="expiryMonth">
                 <isloop items=${creditFields.expirationMonth.options} var="month">
                     <option id="${month.id}" value="${month.htmlValue}"
-                        <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
+                    <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
                             && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
                             && month.id == pdict.order.billing.payment.selectedPaymentInstruments[0].expirationMonth}">
-                            selected
-                        </isif> >
-                        ${month.label}
+                        selected
+                    </isif> >
+                    ${month.label}
                     </option>
                 </isloop>
             </select>
@@ -71,15 +70,15 @@
             ${creditFields.expirationYear.htmlName}">
             <label class="form-control-label" for="expirationYear">${Resource.msg('field.credit.card.expiration.year','creditCard',null)}</label>
             <select class="form-control expirationYear custom-select" id="expirationYear"
-            data-encrypted-name="expiryYear" autocomplete="cc-exp-year">
+                    data-encrypted-name="expiryYear" autocomplete="cc-exp-year">
                 <option value="${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].htmlValue}">${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].label}</option>
                 <isloop items=${pdict.expirationYears} var="year">
                     <option id="${year.toFixed(0)}" value="${year.toFixed(0)}"
-                        <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
+                    <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
                             && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
                             && year == pdict.order.billing.payment.selectedPaymentInstruments[0].expirationYear}">
-                                selected
-                        </isif> >
+                        selected
+                    </isif> >
                     <isprint value="${year}" formatter="####" /></option>
                 </isloop>
             </select>
@@ -102,7 +101,7 @@
             </span>
 
             <input type="text" class="form-control securityCode" id="securityCode"
-                data-encrypted-name="cvc" >
+                   data-encrypted-name="cvc" >
             <div class="invalid-feedback"></div>
         </div>
     </div>
@@ -121,7 +120,7 @@
                 </div>
             </span>
             <input type="text" class="form-control email" id="email"
-                value="${pdict.order.orderEmail||''}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+                   value="${pdict.order.orderEmail||''}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
             <div class="invalid-feedback"></div>
         </div>
     </div>
@@ -137,7 +136,7 @@
                 </div>
             </span>
             <input type="tel" class="form-control phone" id="phoneNumber"
-                value="${pdict.order.billing.billingAddress.address
+                   value="${pdict.order.billing.billingAddress.address
                 ? pdict.order.billing.billingAddress.address.phone||''
                 : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
             <div class="invalid-feedback"></div>

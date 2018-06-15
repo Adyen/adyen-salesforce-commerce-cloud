@@ -1,4 +1,4 @@
-<isset name="AdyenHelper" value="${require('int_adyen/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
 
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
