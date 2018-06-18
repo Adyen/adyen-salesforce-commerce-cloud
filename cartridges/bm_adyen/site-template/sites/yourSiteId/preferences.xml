@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="AdyenCseEnabled">true</preference>
+            <preference preference-id="AdyenCseLibraryToken">Your CSE Library token you can retrieve this from Adyen Customer Area</preference>
+            <preference preference-id="Adyen_Debug">true</preference>
+            <preference preference-id="Adyen_HMACkey">yourHMAC</preference>
+            <preference preference-id="Adyen_Mode">TEST</preference>
+            <preference preference-id="Adyen_PaymentSelection">one</preference>
+            <preference preference-id="Adyen_directoryLookup">true</preference>
+            <preference preference-id="Adyen_merchantCode">yourMerchantAccount</preference>
+            <preference preference-id="Adyen_recurringType">ONECLICK</preference>
+            <preference preference-id="Adyen_skinCode">yourSkinCode</preference>
+            <preference preference-id="adyen_notification_user">user</preference>
+            <preference preference-id="adyen_notification_password">password</preference>
+        </development>
+        <staging/>
+        <production/>
+    </custom-preferences>
+</preferences>
+
