@@ -79,7 +79,7 @@ function authorize(args) {
 	        	pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
 	        }
 	    	else if(!empty(paymentResponse.POIData.POITransactionID.TransactionID)){
-	    		pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID.split(".")[1];
+	    		pspReference = paymentResponse.POIData.POITransactionID.TransactionID.split(".")[1];
 	    	}
 	    	// Save full response to transaction custom attribute
 	    	paymentInstrument.paymentTransaction.transactionID = pspReference;
