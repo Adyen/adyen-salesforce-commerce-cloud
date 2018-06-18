@@ -74,12 +74,16 @@ function authorize(args) {
 	    var paymentResponse = result['Response'].SaleToPOIResponse.PaymentResponse;
 	    if (paymentResponse.Response.Result == 'Success') {
 	    	order.custom.Adyen_eventCode = 'AUTHORISATION';
+	    	var pspReference = "";
 	    	if (!empty(paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID)) {
-	        	var pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
-	        	paymentInstrument.paymentTransaction.transactionID = pspReference;
-	        	order.custom.Adyen_pspReference = pspReference;
+	        	pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
 	        }
+	    	else if(!empty(paymentResponse.POIData.POITransactionID.TransactionID)){
+	    		pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID.split(".")[1];
+	    	}
 	    	// Save full response to transaction custom attribute
+	    	paymentInstrument.paymentTransaction.transactionID = pspReference;
+        	order.custom.Adyen_pspReference = pspReference;
 	        paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(paymentResponse); 
 	    	Transaction.commit();
 	    	return {authorized: true};
