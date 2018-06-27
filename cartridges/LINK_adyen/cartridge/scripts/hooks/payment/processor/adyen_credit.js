@@ -1,8 +1,3 @@
-/**
- *
- */
-
-
 'use strict';
 var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
