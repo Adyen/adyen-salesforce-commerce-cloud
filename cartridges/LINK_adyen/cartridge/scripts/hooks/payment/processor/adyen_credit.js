@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 'use strict';
 var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
@@ -5,10 +9,14 @@ var collections = require('*/cartridge/scripts/util/collections');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
+var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
     var cardErrors = {};
+    var cardNumber = paymentInformation.cardNumber.value;
+    var expirationMonth = paymentInformation.expirationMonth.value;
+    var expirationYear = paymentInformation.expirationYear.value;
     var serverErrors = [];
 
     var cardType = paymentInformation.cardType.value;
@@ -26,8 +34,17 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
-        //Only CSE integration
-        paymentInstrument.setCreditCardType(cardType);
+        var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
+        if(!adyenCseEnabled) {
+            paymentInstrument.setCreditCardHolder(paymentInformation.cardOwner.value);
+            paymentInstrument.setCreditCardNumber(cardNumber);
+            paymentInstrument.setCreditCardType(cardType);
+            paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
+            paymentInstrument.setCreditCardExpirationYear(expirationYear);
+        }
+        else {
+            paymentInstrument.setCreditCardType(cardType);
+        }
 
     });
     return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };
@@ -46,14 +63,12 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-
     var OrderMgr = require('dw/order/OrderMgr');
     var Transaction = require('dw/system/Transaction');
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
-
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -71,7 +86,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     if (result.IssuerUrl != '') {
         Transaction.commit();
-        //session.custom.order = order;
+        session.custom.order = order;
+        session.custom.paymentInstrument = paymentInstrument;
         return {
             authorized: true,
             authorized3d: true,
