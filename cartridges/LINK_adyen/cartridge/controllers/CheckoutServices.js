@@ -128,7 +128,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         });
         return next();
     }
-    Logger.getLogger("Adyen").error("handlePaymentResult IssuerTest: " + JSON.stringify(handlePaymentResult));
+
     if(handlePaymentResult.issuerUrl != "" && handlePaymentResult.authorized3d)
     {
         res.json({
