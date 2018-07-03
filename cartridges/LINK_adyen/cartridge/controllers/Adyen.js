@@ -10,7 +10,7 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
      var IssuerURL = req.querystring.IssuerURL;
      var PaRequest = req.querystring.PaRequest;
      var MD = req.querystring.MD;
-     var TermURL = URLUtils.https('Adyen-AuthorizeWithForm', 'MD', MD);
+     var TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
 
     res.render('adyenform', {
         issuerUrl: IssuerURL,
@@ -28,10 +28,8 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     var result = adyen3DVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
-        PaymentInstrument: paymentInstrument,
-        CurrentSession: req.session,
         CurrentRequest: req.request,
-        MD: req.querystring.MD,
+        MD: req.form.MD,
         PaResponse: req.form.PaRes
     });
 
@@ -40,7 +38,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
         Transaction.wrap(function () {
             OrderMgr.failOrder(order);
         });
-        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
 
         return next();
     }
@@ -48,11 +46,10 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     // Places the order
     var placeOrderResult = COHelpers.placeOrder(order);
     if (placeOrderResult.error) {
-        Transaction.rollback();
         Transaction.wrap(function () {
             OrderMgr.failOrder(order);
         });
-        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
 

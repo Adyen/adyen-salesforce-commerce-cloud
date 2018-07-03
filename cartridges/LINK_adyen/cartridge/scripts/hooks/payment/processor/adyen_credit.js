@@ -38,20 +38,15 @@ function Handle(basket, paymentInformation) {
         if(!adyenCseEnabled) {
             paymentInstrument.setCreditCardHolder(paymentInformation.cardOwner.value);
             paymentInstrument.setCreditCardNumber(cardNumber);
-            paymentInstrument.setCreditCardType(cardType);
             paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
             paymentInstrument.setCreditCardExpirationYear(expirationYear);
         }
-        else {
             paymentInstrument.setCreditCardType(cardType);
-        }
 
     });
     return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };
 
 }
-
-
 
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom

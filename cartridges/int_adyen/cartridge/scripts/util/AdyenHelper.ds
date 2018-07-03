@@ -153,6 +153,7 @@ var __AdyenHelper : Object = {
 
         switch (formType) {
             case 'billing':
+                var encryptedData;
                 if(session.forms.billing.paymentMethods) {
                     card = session.forms.billing.paymentMethods.creditCard;
                     encryptedData = card.encrypteddata.value;
