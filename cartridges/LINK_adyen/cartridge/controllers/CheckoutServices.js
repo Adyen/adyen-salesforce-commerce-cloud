@@ -144,7 +144,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         Logger.getLogger("Adyen").error("placeOrderResult error: " + JSON.stringify(placeOrderResult));
         res.json({
             error: true,
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
+            errorMessage: Resource.msg('error.placeorder', 'checkout', null)
         });
         return next();
     }
