@@ -131,6 +131,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
     if(handlePaymentResult.issuerUrl != "" && handlePaymentResult.authorized3d)
     {
+        session.custom.MD = handlePaymentResult.md;
         res.json({
             error: false,
             continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.issuerUrl, 'PaRequest', handlePaymentResult.paRequest, 'MD', handlePaymentResult.md).toString()

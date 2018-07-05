@@ -25,44 +25,49 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     var	adyen3DVerification = require('int_adyen/cartridge/scripts/adyen3DVerification');
     var order = session.custom.order;
     var paymentInstrument = session.custom.paymentInstrument;
-    var result = adyen3DVerification.verify({
-        Order: order,
-        Amount: paymentInstrument.paymentTransaction.amount,
-        CurrentRequest: req.request,
-        MD: req.form.MD,
-        PaResponse: req.form.PaRes
-    });
 
-    //if error, return to checkout page
-    if (result.error || result.Decision != 'ACCEPT') {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
+    if (session.custom.MD == req.form.MD) {
+        var result = adyen3DVerification.verify({
+            Order: order,
+            Amount: paymentInstrument.paymentTransaction.amount,
+            CurrentRequest: req.request,
+            MD: req.form.MD,
+            PaResponse: req.form.PaRes
         });
+
+        //if error, return to checkout page
+        if (result.error || result.Decision != 'ACCEPT') {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+            return next();
+        }
+
+        // Places the order
+        var placeOrderResult = COHelpers.placeOrder(order);
+        if (placeOrderResult.error) {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+            return next();
+        }
+
+        Transaction.begin();
+        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+        paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
+        Transaction.commit();
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+        clearForms();
+        res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+        return next();
+    }
+    else {
         res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
-
         return next();
     }
-
-    // Places the order
-    var placeOrderResult = COHelpers.placeOrder(order);
-    if (placeOrderResult.error) {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
-        });
-        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
-        return next();
-    }
-
-    Transaction.begin();
-    order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-    order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-    paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
-    Transaction.commit();
-    COHelpers.sendConfirmationEmail(order, req.locale.id);
-    clearForms();
-    res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
-    return next();
-
 });
 
 /**
