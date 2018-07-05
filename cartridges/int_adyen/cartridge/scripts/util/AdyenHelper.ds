@@ -120,7 +120,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
     getAdyenPOIID : function () : String {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
@@ -128,7 +128,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
       getAdyenApiKey : function () : String {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key'))) {
@@ -136,7 +136,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';
