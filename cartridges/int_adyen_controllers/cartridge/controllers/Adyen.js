@@ -114,7 +114,7 @@ function showConfirmation() {
 
 		var requestMap = new Array();
 		for(var item in request.httpParameterMap) {
-			requestMap[item] = (request.httpParameterMap.get(item).getStringValue() ? request.httpParameterMap.get(item).getStringValue() : null);
+			requestMap[item] = request.httpParameterMap.get(item).getStringValue();
 		}
 		
 		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
