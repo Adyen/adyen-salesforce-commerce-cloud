@@ -111,20 +111,14 @@ function showConfirmation() {
 		ERROR: An error occurred during the payment processing.
 	*/
 	if (request.httpParameterMap.authResult.value != 'CANCELLED') {
+
+		var requestMap = new Array();
+		for(var item in request.httpParameterMap) {
+			requestMap[item] = (request.httpParameterMap.get(item).getStringValue() ? request.httpParameterMap.get(item).getStringValue() : null);
+		}
+		
 		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
-    	var authorized = authorizeConfirmation.authorize({
-			'authResult': request.httpParameterMap.authResult.getStringValue(),
-			'merchantReference': request.httpParameterMap.merchantReference.getStringValue(),
-			'paymentMethod': request.httpParameterMap.paymentMethod.getStringValue(),
-			'pspReference': request.httpParameterMap.pspReference.getStringValue(),
-			'shopperLocale': request.httpParameterMap.shopperLocale.getStringValue(),
-			'skinCode': request.httpParameterMap.skinCode.getStringValue(),
-			'merchantSig': request.httpParameterMap.merchantSig.getStringValue(),
-			'merchantReturnData': ((request.httpParameterMap.get("merchantReturnData")) ? request.httpParameterMap.get("merchantReturnData").getStringValue() : null),
-			'reason': ((request.httpParameterMap.get("reason")) ? request.httpParameterMap.get("reason").getStringValue() : null),
-			'additionalData.acquirerReference': ((request.httpParameterMap.get("additionalData.acquirerReference")) ? request.httpParameterMap.get("additionalData.acquirerReference").getStringValue() : null)
-			
-    	});
+    	var authorized = authorizeConfirmation.authorize(requestMap);
     	if (!authorized) {
     		app.getController('Error').Start();
     		return {};
