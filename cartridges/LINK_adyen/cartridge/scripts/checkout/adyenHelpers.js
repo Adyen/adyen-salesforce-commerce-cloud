@@ -3,6 +3,8 @@ var Transaction = require('dw/system/Transaction');
 var HookMgr = require('dw/system/HookMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var OrderMgr = require('dw/order/OrderMgr');
+var Order = require('dw/order/Order');
+var Status = require('dw/system/Status');
 
 /**
  * handles the payment authorization for each payment instrument
@@ -19,9 +21,9 @@ function handlePayments(order, orderNumber) {
             Transaction.wrap(function () { OrderMgr.failOrder(order); });
             result.error = true;
         }
-
         if (!result.error) {
             for (var i = 0; i < paymentInstruments.length; i++) {
+
                 var paymentInstrument = paymentInstruments[i];
                 var paymentProcessor = PaymentMgr
                     .getPaymentMethod(paymentInstrument.paymentMethod)
@@ -61,6 +63,37 @@ function handlePayments(order, orderNumber) {
     return result;
 }
 
+/**
+ * Attempts to place the order
+ * @param {dw.order.Order} order - The order object to be placed
+ * @returns {Object} an error object
+ */
+function placeOrder(order) {
+    var result = { error: false, order : order, order_created : false };
+
+    try {
+        if (order.paymentInstrument.paymentMethod == "Adyen") {
+            result.order_created = true;
+        }
+        else {
+            Transaction.begin();
+            var placeOrderStatus = OrderMgr.placeOrder(order);
+            if (placeOrderStatus === Status.ERROR) {
+                throw new Error();
+            }
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+            order.setExportStatus(Order.EXPORT_STATUS_READY);
+            Transaction.commit();
+        }
+    } catch (e) {
+        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        result.error = true;
+    }
+
+    return result;
+}
+
 module.exports = {
-    handlePayments : handlePayments
+    handlePayments : handlePayments,
+    placeOrder : placeOrder
 };

@@ -1,4 +1,4 @@
-<isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
+
 
 <!--- Hidden input for credit card type --->
 <input type="hidden" class="form-control" id="cardType"
@@ -6,6 +6,7 @@
        value="">
 
 <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
+
 
 <input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" <isprint value=${creditFields.adyenEncryptedData.attributes} encoding="off"/> >
 
@@ -102,43 +103,6 @@
 
             <input type="text" class="form-control securityCode" id="securityCode"
                    data-encrypted-name="cvc" >
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-6">
-        <div class="form-group
-            <isif condition=${creditFields.email.mandatory === true}>required</isif>
-            ${creditFields.email.htmlName}">
-            <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.email','creditCard',null)}
-                </div>
-            </span>
-            <input type="text" class="form-control email" id="email"
-                   value="${pdict.order.orderEmail||''}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group
-            <isif condition=${creditFields.phone.mandatory === true}>required</isif>
-            ${creditFields.phone.htmlName}">
-            <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.phone.number','creditCard',null)}
-                </div>
-            </span>
-            <input type="tel" class="form-control phone" id="phoneNumber"
-                   value="${pdict.order.billing.billingAddress.address
-                ? pdict.order.billing.billingAddress.address.phone||''
-                : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
             <div class="invalid-feedback"></div>
         </div>
     </div>

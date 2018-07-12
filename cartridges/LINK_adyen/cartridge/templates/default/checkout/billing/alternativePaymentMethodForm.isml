@@ -1,0 +1,3 @@
+<!--- TEMPLATENAME: alternativePaymentMethodForm.isml --->
+<iscontent compact="true"/>
+<span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
