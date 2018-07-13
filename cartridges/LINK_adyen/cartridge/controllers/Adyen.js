@@ -70,6 +70,85 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     }
 });
 
+server.get('Redirect', server.middleware.https, function (req, res, next) {
+
+    var	adyenVerificationSHA256 = require('int_adyen/cartridge/scripts/adyenRedirectVerificationSHA256'),
+        result;
+    var order = OrderMgr.getOrder(session.custom.orderNo);
+    Transaction.wrap(function () {
+        result = adyenVerificationSHA256.verify({
+            'Order': order,
+            'OrderNo': order.orderNo,
+            'CurrentSession' : session,
+            'CurrentUser' : customer,
+            'PaymentInstrument' : order.paymentInstrument
+        });
+    });
+
+    if (result === PIPELET_ERROR) {
+        res.render('error');
+        return next();
+    }
+
+    var pdict = {
+        'merchantSig' :	result.merchantSig,
+        'Amount100' : result.Amount100,
+        'shopperEmail' : result.shopperEmail,
+        'shopperReference' : result.shopperReference,
+        'ParamsMap' : result.paramsMap,
+        'SessionValidity' : result.sessionValidity,
+        'Order': order,
+        'OrderNo': order.orderNo
+    };
+
+    res.render('redirectHPP',  pdict);
+    return next();
+});
+
+server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
+    var order = null;
+    if (req.querystring.merchantReference) {
+        order = OrderMgr.getOrder(req.querystring.merchantReference.toString());
+    }
+
+    if (req.querystring.authResult.value != 'CANCELLED') {
+        var requestMap = new Array();
+        for (var item in req.querystring) {
+            if (item !== "toString") {
+                requestMap[item] = req.querystring[item];
+            }
+        }
+
+        var authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
+        var authorized = authorizeConfirmation.authorize(requestMap);
+        if (!authorized) {
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+            return next();
+        }
+    }
+    //AUTHORISED: The payment authorisation was successfully completed.
+    if (req.querystring["authResult"]  == 'AUTHORISED') {
+        Transaction.begin();
+        order.setConfirmationStatus(dw.order.Order.CONFIRMATION_STATUS_CONFIRMED);
+        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+        Transaction.commit();
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+        clearForms();
+        res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+        return next();
+    }
+    else {
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order);
+        });
+
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+        return next();
+    }
+
+});
+
 /**
  * Clear system session data
  */

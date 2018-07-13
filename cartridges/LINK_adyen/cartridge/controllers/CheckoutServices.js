@@ -140,12 +140,25 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     // Places the order
-    var placeOrderResult = COHelpers.placeOrder(order);
+    var placeOrderResult = adyenHelpers.placeOrder(order);
+
     if (placeOrderResult.error) {
         Logger.getLogger("Adyen").error("placeOrderResult error: " + JSON.stringify(placeOrderResult));
         res.json({
             error: true,
             errorMessage: Resource.msg('error.placeorder', 'checkout', null)
+        });
+        return next();
+    }
+
+    //If payment is redirected, order is created first
+    if (placeOrderResult.order.paymentInstrument.paymentMethod == "Adyen" && placeOrderResult.order_created) {
+        session.custom.orderNo = placeOrderResult.order.orderNo;
+        res.json({
+            error: false,
+            orderID: placeOrderResult.order.orderNo,
+            orderToken: placeOrderResult.order.orderToken,
+            continueUrl: URLUtils.url('Adyen-Redirect').toString()
         });
         return next();
     }

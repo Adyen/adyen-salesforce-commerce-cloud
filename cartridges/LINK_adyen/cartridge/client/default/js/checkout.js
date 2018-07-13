@@ -11,4 +11,10 @@ $(document).ready(function () { // eslint-disable-line
     }
     processInclude(require('./base/checkout/checkout'));
     processInclude(require('./checkout/checkout'));
+    $("#selectedPaymentOption").val($(".payment-options .nav-item .active").parent().attr('data-method-id'));
 });
+
+$(".payment-options .nav-link").click( function() {
+    $("#selectedPaymentOption").val($(this).parent().attr('data-method-id'));
+});
+
