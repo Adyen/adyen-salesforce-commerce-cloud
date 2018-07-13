@@ -22,11 +22,7 @@ function Handle(basket, paymentInformation) {
     var cardType = paymentInformation.cardType.value;
 
     Transaction.wrap(function () {
-        var paymentInstruments = currentBasket.getPaymentInstruments(
-            PaymentInstrument.METHOD_CREDIT_CARD
-        );
-
-        collections.forEach(paymentInstruments, function (item) {
+        collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
         });
 
