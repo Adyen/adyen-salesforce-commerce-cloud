@@ -91,7 +91,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
     }
 
     var pdict = {
-        'merchantSig' :	result.merchantSig,
+        'merchantSig' : result.merchantSig,
         'Amount100' : result.Amount100,
         'shopperEmail' : result.shopperEmail,
         'shopperReference' : result.shopperReference,
