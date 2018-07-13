@@ -103,7 +103,7 @@ function verify (args) {
 
 	args.Amount100 = myAmount.toFixed(0);
 
-	var currencyCode:String	 		= "EUR"; //order.currencyCode;
+	var currencyCode:String	 		= order.currencyCode;
 	var merchantReference:String 	= orderNo;
 	args.shopperEmail				= order.customerEmail;
 	args.shopperReference			= currentUser.ID;
@@ -123,7 +123,7 @@ function verify (args) {
 		
 	var adyenRequest : SortedMap = new SortedMap();
 	adyenRequest.put("paymentAmount", args.Amount100 );
-	adyenRequest.put("currencyCode", "EUR"); //currencyCode );
+	adyenRequest.put("currencyCode", currencyCode );
 	adyenRequest.put("sessionValidity", args.sessionValidity );
 	adyenRequest.put("shipBeforeDate", args.shipBeforeDate );
 	adyenRequest.put("merchantReference", merchantReference );
@@ -194,7 +194,7 @@ function verify (args) {
 				var description = getDescription(lineItem),
 					id = getId(lineItem),
 					quantity = getQuantity(lineItem),
-					currencyCode = "EUR", // getCurrency(lineItem),
+					currencyCode = getCurrency(lineItem),
 					itemAmount:number = AdyenHelper.getCurrencyValueForApi(getItemAmount(lineItem))/quantity,
 					vatAmount:number = AdyenHelper.getCurrencyValueForApi(getVatAmount(lineItem)) / quantity,
 					vatPercentage = getVatPercentage(lineItem);
