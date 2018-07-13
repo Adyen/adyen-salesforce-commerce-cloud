@@ -4,12 +4,7 @@
 
 </isscript>
 
-<script>
-
-</script>
-
 <div class="form-nav billing-nav payment-information"
-     data-payment-method-id="${paymentOption.ID}"
      data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
 >
 
