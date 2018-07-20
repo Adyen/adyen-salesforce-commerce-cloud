@@ -165,10 +165,16 @@ var __AdyenHelper : Object = {
 
         switch (formType) {
             case 'billing':
+                    var encryptedData;
+                if(session.forms.billing.paymentMethods) {
                     card = session.forms.billing.paymentMethods.creditCard;
-                    var encryptedData = card.encrypteddata.value;
-
-                    
+                    encryptedData = card.encrypteddata.value;
+                }
+                else {
+                    //different form structure for SFRA
+                    card = session.forms.billing.creditCardFields;
+                    encryptedData = card.adyenEncryptedData.value;
+                }
                     
                     if (__AdyenHelper.getAdyenCseEnabled() && !empty(encryptedData)) {
                         cardObject['additionalData'] = {

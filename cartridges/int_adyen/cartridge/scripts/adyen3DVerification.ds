@@ -123,7 +123,7 @@ function verify( args : PipelineDictionary ) : Number {
 		args.RequestToken = responseObj.pspReference;
 		args.AuthorizationCode = responseObj.authCode;
 		
-		if (resultCode.indexOf("Authorised") != -1 && !empty(responseObj.authCode)) {
+		if (resultCode.indexOf("Authorised") != -1) {
 			args.Decision = "ACCEPT";
 			args.PaymentStatus = resultCode;
 			Logger.getLogger("Adyen").info ("Payment result: Authorised");
