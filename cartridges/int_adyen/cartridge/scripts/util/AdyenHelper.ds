@@ -449,11 +449,7 @@ var __AdyenHelper : Object = {
 	getCurrencyValueForApi : function ( amount ) : String {		
 		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
 		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
-        var apiAmount = amount.multiply(1000).value;
-        if ( digitsNumber == 0 ) apiAmount = amount.value;
-        else if ( digitsNumber == 1 ) apiAmount = amount.multiply(10).value;
-        else if ( digitsNumber == 2 ) apiAmount = amount.multiply(100).value;
-        return Math.round(apiAmount);
+        return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value);
 	},
 	
 	getFractionDigits : function (currencyCode) : Number {

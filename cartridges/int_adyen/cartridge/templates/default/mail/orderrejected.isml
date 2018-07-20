@@ -1,7 +1,7 @@
 <iscontent type="text/html " charset="UTF-8"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <iscomment>The "subject" tag contains the mail subject and can contain dynamic information, like the order number.</iscomment>
-<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/><isprint value="${Resource.msg('order.orderconfirmation-email.001','order',null)}" encoding="off"/> <isprint value="${pdict.Order.orderNo}"/></isif></subject>
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/><isprint value="${Resource.msg('order.orderconfirmation-email.001','order',null)}" encoding="on"/> <isprint value="${pdict.Order.orderNo}"/></isif></subject>
 <iscomment>
 	The "to" tag contains the email address of the recipient, the "from" tag the email address of the sender. 
 	Each tag is to be specified max. once. Multiple email address can be separated by "," (see RFC2822).
