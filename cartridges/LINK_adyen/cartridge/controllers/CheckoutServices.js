@@ -150,7 +150,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     //If payment is redirected, order is created first
-    if (placeOrderResult.order.paymentInstrument.paymentMethod == "Adyen" && placeOrderResult.order_created) {
+    if (placeOrderResult.order && placeOrderResult.order.paymentInstrument.paymentMethod == "Adyen" && placeOrderResult.order_created) {
         session.custom.orderNo = placeOrderResult.order.orderNo;
         res.json({
             error: false,
