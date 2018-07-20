@@ -120,11 +120,6 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-
-    getCurrencyValueForApi : function ( amount ) : String {
-        var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
-        return Math.pow(10, digitsNumber);
-    },
     
     getAdyenPOIID : function () : String {
         var returnValue : String = "";
