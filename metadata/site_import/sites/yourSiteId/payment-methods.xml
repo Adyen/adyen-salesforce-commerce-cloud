@@ -3,7 +3,6 @@
     <payment-method method-id="Adyen">
         <name xml:lang="x-default">Adyen</name>
         <description xml:lang="x-default">Adyen Redirect</description>
-        <image>adyen.png</image>
         <enabled-flag>true</enabled-flag>
         <processor-id>Adyen</processor-id>
     </payment-method>
@@ -15,7 +14,6 @@
       <payment-method method-id="AdyenPOS">
         <name xml:lang="x-default">AdyenPOS</name>
         <description xml:lang="x-default">Adyen POS</description>
-        <image>adyen.png</image>
         <enabled-flag>true</enabled-flag>
         <processor-id>Adyen_POS</processor-id>
     </payment-method>
