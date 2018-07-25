@@ -7,6 +7,10 @@
 		{
 			"name": "app.payment.processor.Adyen",
 			"script": "./payment/processor/Adyen"
+		},
+				{
+			"name": "app.payment.processor.Adyen_POS",
+			"script": "./payment/processor/Adyen_POS"
 		}
 	]
 }

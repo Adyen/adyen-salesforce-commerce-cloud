@@ -11,6 +11,7 @@
 	
 	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
+	
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
 				<li class="form-row row-${method.brandCode}">

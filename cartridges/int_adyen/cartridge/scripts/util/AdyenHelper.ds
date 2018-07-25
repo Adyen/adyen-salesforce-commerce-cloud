@@ -16,7 +16,8 @@ var __AdyenHelper : Object = {
         PAYMENT_3DSECURE : "AdyenPayment3DSecure",
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
-        PAYMENTMETHODS : "AdyenPaymentMethods"
+        PAYMENTMETHODS : "AdyenPaymentMethods",
+        POSPAYMENT : "AdyenPosPayment"
     },
     MODE : {
         TEST : "TEST",
@@ -119,12 +120,23 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-
-    getCurrencyValueForApi : function ( amount ) : String {
-        var digitsNumber : Number = dwutil.Currency.getCurrency(amount.currencyCode).getDefaultFractionDigits();
-        return Math.pow(10, digitsNumber);
+    
+    getAdyenPOIID : function () : String {
+        var returnValue : String = "";
+        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID');
+        }
+        return returnValue;
     },
-
+    
+      getAdyenApiKey : function () : String {
+        var returnValue : String = "";
+        if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key');
+        }
+        return returnValue;
+    },
+    
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';
@@ -438,11 +450,7 @@ var __AdyenHelper : Object = {
 	getCurrencyValueForApi : function ( amount ) : String {		
 		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
 		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
-        var apiAmount = amount.multiply(1000).value;
-        if ( digitsNumber == 0 ) apiAmount = amount.value;
-        else if ( digitsNumber == 1 ) apiAmount = amount.multiply(10).value;
-        else if ( digitsNumber == 2 ) apiAmount = amount.multiply(100).value;
-        return Math.round(apiAmount);
+        return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value);
 	},
 	
 	getFractionDigits : function (currencyCode) : Number {

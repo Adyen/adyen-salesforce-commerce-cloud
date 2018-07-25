@@ -25,6 +25,11 @@
         <user-id/>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPosPayment">
+        <url>https://terminal-api-test.adyen.com/sync</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>   
      
      <service-profile service-profile-id="Adyen">
           <timeout-millis>30000</timeout-millis>
@@ -75,5 +80,14 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id></profile-id>
         <credential-id>AdyenRecurringDisable</credential-id>
+    </service>
+     <service service-id="AdyenPosPayment">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPosPayment</credential-id>
     </service>
 </services>
