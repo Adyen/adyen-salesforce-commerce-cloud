@@ -59,6 +59,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen/cartridge/scripts/adyenCreditVerification');
+
     Transaction.begin();
     var result = adyenCreditVerification.verify({
         Order: order,
@@ -66,7 +67,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         CurrentSession: session,
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
-        CreditCardForm: creditCardForm
+        CreditCardForm: creditCardForm,
+        SaveCreditCard: creditCardForm.saveCardAdyen.value
     });
 
     if(result.error) {
