@@ -1,8 +1,0 @@
-{
-	"hooks": [
-		{
-			"name": "app.payment.processor.adyen_credit",
-			"script": "./hooks/payment/processor/adyen_credit"
-		}
-	]
-}
