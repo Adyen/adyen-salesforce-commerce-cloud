@@ -11,7 +11,9 @@ function getEncryptedData(){
     return paymentForm.creditCardFields.adyenEncryptedData.value;
 }
 
-server.append('SubmitPayment', function(req, res, next) {
+server.append('SubmitPayment',
+    server.middleware.https,
+    function(req, res, next) {
     var viewData = res.getViewData();
     viewData.adyenEncryptedData =  getEncryptedData();
     //Not saving card until Recurring is implemented
@@ -173,4 +175,4 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
 });
 
-module.exports = server.exports()
+module.exports = server.exports();
