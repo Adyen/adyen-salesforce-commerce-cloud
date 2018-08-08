@@ -81,7 +81,8 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
             'OrderNo': order.orderNo,
             'CurrentSession' : session,
             'CurrentUser' : customer,
-            'PaymentInstrument' : order.paymentInstrument
+            'PaymentInstrument' : order.paymentInstrument,
+            'brandCode' : session.custom.brandCode
         });
     });
 
@@ -147,6 +148,16 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         return next();
     }
 
+});
+
+server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var	getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
+    var paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket());
+    res.json({
+        AdyenHppPaymentMethods : paymentMethods
+    });
+    return next();
 });
 
 /**
