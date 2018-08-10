@@ -113,8 +113,8 @@
         <isif condition="${pdict.customer.registeredUser}">
             <div class="form-check save-credit-card">
                 <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="${creditFields.saveCard.htmlName}" value="true" checked>
-                    ${creditFields.saveCard.label}
+                    <input type="checkbox" class="form-check-input" name="${creditFields.saveCardAdyen.htmlName}" value="true" checked>
+                    ${creditFields.saveCardAdyen.label}
                 </label>
             </div>
         </isif>
