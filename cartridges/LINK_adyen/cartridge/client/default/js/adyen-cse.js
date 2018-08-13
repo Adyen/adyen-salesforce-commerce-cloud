@@ -40,7 +40,7 @@ function displayPaymentMethods() {
             })
 
             $('input[type=radio][name=brandCode]').change(function(){
-                $( ".hppAditionalFields" ).hide();
+                $( ".hppAdditionalFields" ).hide();
                 $('#extraFields_' + $(this).val()).show();
             })
         });
@@ -70,7 +70,7 @@ function addPaymentMethod(paymentMethod, imagePath){
     li.append($('<img>').addClass("paymentMethod_img").attr('src', imagePath + paymentMethod.brandCode + '.png'));
     li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
 
-    var additionalFields = $('<div>').addClass('hppAditionalFields')
+    var additionalFields = $('<div>').addClass('hppAdditionalFields')
         .attr('id', 'extraFields_' + paymentMethod.brandCode)
         .attr('style', 'display:none');
 
