@@ -9,7 +9,7 @@
 <isif condition="${directoryLookup}">
     <ul id="paymentMethodsUl">
     </ul>
-    <span id="requiredBrandCode" class="invalid-feedback" style="display:none">Select a payment method</span>
+    <span id="requiredBrandCode" class="invalid-feedback" style="display:none">${Resource.msg('hpp.noPaymentMethodSelected', 'hpp', null)}</span>
 <iselse>
     <span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
 </isif>
