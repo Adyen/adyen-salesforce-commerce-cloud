@@ -51,6 +51,7 @@ function verify (args) {
 	var merchantAccount : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
 	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
 	var recurringType : EnumValue = Site.getCurrent().getCustomPreferenceValue("Adyen_recurringType"); 
+	var recurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenRecurringPaymentsEnabled");
 	
 	if(merchantAccount == null){
 		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -116,7 +117,7 @@ function verify (args) {
     shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
     args.shipBeforeDate = shipBeforeDate.toISOString();
 
-	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null) {
+	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null || !recurringEnabled || !currentUser.registered) {
 		recurringType = "";
 	}	
 	else recurringType = recurringType.value; //recurringType.value has type string 
