@@ -53,9 +53,6 @@ function getPaymentMethods(paymentMethods){
         type: 'get',
         success: function (data) {
             paymentMethods(data);
-        },
-        error: function (err) {
-
         }
     });
 };

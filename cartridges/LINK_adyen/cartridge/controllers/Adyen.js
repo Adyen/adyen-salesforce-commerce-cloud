@@ -159,7 +159,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket());
     }
     catch(err){
-        paymentMethods = "No payment methods";
+        paymentMethods = "{}";
     }
 
     res.json({
