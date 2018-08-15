@@ -66,7 +66,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         CurrentSession: session,
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
-        CreditCardForm: creditCardForm
+        CreditCardForm: creditCardForm,
+        SaveCreditCard: creditCardForm.saveCardAdyen.value
     });
 
     if(result.error) {

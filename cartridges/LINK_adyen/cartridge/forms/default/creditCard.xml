@@ -56,6 +56,7 @@
            binding="phone" max-length="20" missing-error="error.card.info.missing.phone" />
 
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false" checked="true" />
+    <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false" checked="true" />
 
     <field formid="adyenEncryptedData" label="adyenEncryptedData" type="string" mandatory="true" binding="adyenEncryptedData"
             />

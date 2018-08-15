@@ -16,12 +16,11 @@ server.append('SubmitPayment',
     function(req, res, next) {
     var viewData = res.getViewData();
     viewData.adyenEncryptedData =  getEncryptedData();
-    //Not saving card until Recurring is implemented
-    viewData.saveCard = false;
 
     //set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
     session.custom.issuerId = req.form.issuerId;
+
     res.setViewData(viewData);
     next();
 });
