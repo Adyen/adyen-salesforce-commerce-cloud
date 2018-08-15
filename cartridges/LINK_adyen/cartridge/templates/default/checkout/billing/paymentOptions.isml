@@ -1,12 +1,8 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addJs('/js/adyen-cse.js');
-
+    assets.addCss('/css/adyenCss.css');
 </isscript>
-
-<script>
-
-</script>
 
 <div class="form-nav billing-nav payment-information"
      data-payment-method-id="${paymentOption.ID}"

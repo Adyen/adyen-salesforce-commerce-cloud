@@ -81,7 +81,9 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
             'OrderNo': order.orderNo,
             'CurrentSession' : session,
             'CurrentUser' : customer,
-            'PaymentInstrument' : order.paymentInstrument
+            'PaymentInstrument' : order.paymentInstrument,
+            'brandCode' : session.custom.brandCode,
+            'issuerId' : session.custom.issuerId
         });
     });
 
@@ -149,6 +151,24 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
 });
 
+server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var	getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
+    var paymentMethods;
+    try{
+        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
+    }
+    catch(err){
+        paymentMethods = [];
+    }
+
+    res.json({
+        AdyenHppPaymentMethods : paymentMethods,
+        ImagePath : URLUtils.staticURL('/images/').toString()
+    });
+    return next();
+});
+
 /**
  * Clear system session data
  */
@@ -166,6 +186,8 @@ function clearCustomSessionFields() {
     // Clears all fields used in the 3d secure payment.
     session.custom.paymentInstrument = null;
     session.custom.order = null;
+    session.custom.brandCode = null;
+    session.custom.issuerId = null;
 }
 
 module.exports = server.exports()

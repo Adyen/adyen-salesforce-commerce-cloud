@@ -11,9 +11,16 @@ function getEncryptedData(){
     return paymentForm.creditCardFields.adyenEncryptedData.value;
 }
 
-server.append('SubmitPayment', function(req, res, next) {
+server.append('SubmitPayment',
+    server.middleware.https,
+    function(req, res, next) {
     var viewData = res.getViewData();
     viewData.adyenEncryptedData =  getEncryptedData();
+
+    //set selected brandCode & issuerId to session variable
+    session.custom.brandCode = req.form.brandCode;
+    session.custom.issuerId = req.form.issuerId;
+
     res.setViewData(viewData);
     next();
 });
@@ -171,4 +178,4 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
 });
 
-module.exports = server.exports()
+module.exports = server.exports();
