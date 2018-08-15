@@ -156,10 +156,10 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var	getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
     var paymentMethods;
     try{
-        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket());
+        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
     }
     catch(err){
-        paymentMethods = "{}";
+        paymentMethods = [];
     }
 
     res.json({

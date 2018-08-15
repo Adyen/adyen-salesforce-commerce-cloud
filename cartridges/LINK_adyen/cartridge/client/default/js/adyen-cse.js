@@ -35,7 +35,7 @@ function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
     if($('#directoryLookup').val() == "true"){
         getPaymentMethods(function(data){
-            jQuery.each(data.AdyenHppPaymentMethods.paymentMethods, function(i, method){
+            jQuery.each(data.AdyenHppPaymentMethods, function(i, method){
                 addPaymentMethod(method, data.ImagePath);
             })
 
