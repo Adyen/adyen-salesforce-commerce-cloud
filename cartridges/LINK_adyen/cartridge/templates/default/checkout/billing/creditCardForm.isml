@@ -12,6 +12,8 @@
 
 <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
+<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"  <isprint value=${creditFields.selectedCardID.attributes} encoding="off"/> >
+
 <div class="row">
     <div class="col-12">
         <div class="form-group
@@ -32,11 +34,7 @@
             ${creditFields.cardNumber.htmlName}">
             <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
             <div class="card-number-wrapper">
-                <input type="text" class="form-control cardNumber" id="cardNumber" name="cardNumber"
-                       autocomplete="cc-number"
-                       data-encrypted-name="number"
-                       value=""
-                >
+                <input type="text" class="form-control cardNumber" autocomplete="cc-number" data-encrypted-name="number" value="" id="cardNumber"  <isprint value=${creditFields.cardNumber.attributes} encoding="off"/>>
                 <div class="invalid-feedback"></div>
             </div>
         </div>

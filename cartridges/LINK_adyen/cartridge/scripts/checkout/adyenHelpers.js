@@ -5,6 +5,7 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var Status = require('dw/system/Status');
+var PaymentInstrument = require('dw/order/PaymentInstrument');
 
 /**
  * handles the payment authorization for each payment instrument
@@ -64,6 +65,63 @@ function handlePayments(order, orderNumber) {
 }
 
 /**
+ * Validates payment
+ * @param {Object} req - The local instance of the request object
+ * @param {dw.order.Basket} currentBasket - The current basket
+ * @returns {Object} an object that has error information
+ */
+function validatePayment(req, currentBasket) {
+    var applicablePaymentCards;
+    var applicablePaymentMethods;
+    var creditCardPaymentMethod = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD);
+    var paymentAmount = currentBasket.totalGrossPrice.value;
+    var countryCode = req.geolocation.countryCode;
+    var currentCustomer = req.currentCustomer.raw;
+    var paymentInstruments = currentBasket.paymentInstruments;
+    var result = {};
+
+    applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
+        currentCustomer,
+        countryCode,
+        paymentAmount
+    );
+    applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
+        currentCustomer,
+        countryCode,
+        paymentAmount
+    );
+
+    var invalid = true;
+
+    for (var i = 0; i < paymentInstruments.length; i++) {
+        var paymentInstrument = paymentInstruments[i];
+        if (PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstrument.paymentMethod)) {
+            invalid = false;
+        }
+
+        var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
+        if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
+            if (PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstrument.paymentMethod)) {
+                var card = PaymentMgr.getPaymentCard(paymentInstrument.creditCardType);
+                // Checks whether payment card is still applicable or if there is a credit card token set.
+                if ((card && applicablePaymentCards.contains(card)) || paymentInstrument.getCreditCardToken()) {
+                    invalid = false;
+                }
+            } else {
+                invalid = false;
+            }
+        }
+
+        if (invalid) {
+            break; // there is an invalid payment instrument
+        }
+    }
+
+    result.error = invalid;
+    return result;
+}
+
+/**
  * Attempts to place the order
  * @param {dw.order.Order} order - The order object to be placed
  * @returns {Object} an error object
@@ -95,5 +153,6 @@ function placeOrder(order) {
 
 module.exports = {
     handlePayments : handlePayments,
-    placeOrder : placeOrder
+    placeOrder : placeOrder,
+    validatePayment : validatePayment
 };

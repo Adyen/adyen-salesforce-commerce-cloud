@@ -43,6 +43,7 @@ function getRecurringDetailsList(args) {
 
         requestObject['merchantAccount'] = AdyenHelper.getAdyenMerchantAccount();
         requestObject['shopperReference'] = customerID;
+        requestObject['recurring'] = {"contract":"ONECLICK"};
 
         var callResult = null,
             resultObject = null,

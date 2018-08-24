@@ -90,7 +90,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     });
 
     // Re-validates existing payment instruments
-    var validPayment = COHelpers.validatePayment(req, currentBasket);
+    var validPayment = adyenHelpers.validatePayment(req, currentBasket);
     if (validPayment.error) {
         res.json({
             error: true,
@@ -126,7 +126,6 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
     if (handlePaymentResult.error) {
-        Logger.getLogger("Adyen").error("handlePaymentResult error: " + JSON.stringify(handlePaymentResult));
         res.json({
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)

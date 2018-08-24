@@ -1,16 +1,20 @@
 $('button[value="submit-payment"]').on('click', function (e) {
+    var cardData;
     var encryptedData = $('#adyenEncryptedData'),
         encryptedDataValue,
         options = {};
 
-    var cardData = {
-        cvc : $('#securityCode').val(),
-        expiryMonth : $('#expirationMonth').val(),
-        expiryYear : $('#expirationYear').val(),
-        generationtime : $('#adyen_generationtime').val(),
-        number : $('#cardNumber').val(),
-        holderName : $('#holderName').val()
-    };
+    if(!$('.payment-information').data('is-new-payment')) {
+        $('#selectedCardID').val($('.selected-payment').data('uuid'));
+        cardData = getCardData(true);
+        cardData.cvc = $('.selected-payment #saved-payment-security-code').val();
+        options = { enableValidations: false};
+    }
+    else {
+        $('#selectedCardID').val('');
+        cardData = getCardData(false);
+        cardData.cvc = $('#securityCode').val();
+    }
 
     var cseInstance = adyen.createEncryption(options);
     encryptedDataValue = cseInstance.encrypt(cardData);
@@ -22,6 +26,20 @@ $('button[value="submit-payment"]').on('click', function (e) {
         return false;
     }
 });
+
+function getCardData(selectedCard){
+    var cardData = {
+        expiryMonth: $('#expirationMonth').val(),
+        expiryYear: $('#expirationYear').val(),
+        generationtime: $('#adyen_generationtime').val()
+    }
+    if(!selectedCard){
+        cardData.number = $('#cardNumber').val();
+        cardData.holderName = $('#holderName').val();
+    };
+
+    return cardData;
+}
 
 $('button[value="submit-shipping"]').on('click', function (e) {
     displayPaymentMethods();
