@@ -7,13 +7,11 @@ $('button[value="submit-payment"]').on('click', function (e) {
     if(!$('.payment-information').data('is-new-payment')) {
         $('#selectedCardID').val($('.selected-payment').data('uuid'));
         cardData = getCardData(true);
-        cardData.cvc = $('.selected-payment #saved-payment-security-code').val();
         options = { enableValidations: false};
     }
     else {
         $('#selectedCardID').val('');
         cardData = getCardData(false);
-        cardData.cvc = $('#securityCode').val();
     }
 
     var cseInstance = adyen.createEncryption(options);
@@ -36,8 +34,11 @@ function getCardData(selectedCard){
     if(!selectedCard){
         cardData.number = $('#cardNumber').val();
         cardData.holderName = $('#holderName').val();
-    };
-
+        cardData.cvc = $('#securityCode').val();
+    }
+    else {
+        cardData.cvc = $('.selected-payment #saved-payment-security-code').val();
+    }
     return cardData;
 }
 
