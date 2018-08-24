@@ -5,7 +5,7 @@
 'use strict';
 var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
-
+var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
@@ -18,8 +18,29 @@ function Handle(basket, paymentInformation) {
     var expirationMonth = paymentInformation.expirationMonth.value;
     var expirationYear = paymentInformation.expirationYear.value;
     var serverErrors = [];
-
+    var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var cardType = paymentInformation.cardType.value;
+
+
+    var tokenID = AdyenHelper.getCardToken(creditCardForm.selectedCardID.value, customer);
+    var encryptedData = creditCardForm.adyenEncryptedData.value;
+    var paymentCard = PaymentMgr.getPaymentCard(cardType);
+    var cardSecurityCode;
+    var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
+    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
+        // Verify payment card
+        cardSecurityCode = creditCardForm.get('cvn').value();
+        expirationMonth = creditCardForm.get('expiration.month').value();
+        expirationYear = creditCardForm.get('expiration.year').value();
+        cardNumber = creditCardForm.get('number').value();
+        var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
+        if (creditCardStatus.error) {
+            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
+            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
+
+            return {error: true};
+        }
+    }
 
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -38,6 +59,10 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardExpirationYear(expirationYear);
         }
             paymentInstrument.setCreditCardType(cardType);
+
+        if (!empty(tokenID)) {
+            paymentInstrument.setCreditCardToken(tokenID);
+        }
 
     });
     return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };

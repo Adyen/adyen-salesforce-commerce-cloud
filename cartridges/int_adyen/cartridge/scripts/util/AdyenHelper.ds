@@ -393,7 +393,7 @@ var __AdyenHelper : Object = {
                     cardType='Visa';
                     break;
                 case 'mc':
-                    cardType='Master';
+                    cardType='Mastercard';
                     break;
                 case 'amex':
                     cardType='Amex';
