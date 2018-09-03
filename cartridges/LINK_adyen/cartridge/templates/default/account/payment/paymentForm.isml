@@ -1,0 +1,126 @@
+<form
+    action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+    class="payment-form"
+    method="POST"
+    name="payment-form" ${pdict.paymentForm.attributes}>
+
+    <!-- Credit Card Type -->
+    <input type="hidden" class="form-control" id="cardType" value="" <isprint value="${pdict.paymentForm.cardType.attributes}" encoding="off" /> autocomplete="cc-type">
+
+    <div class="form-group custom-control custom-radio">
+        <input
+            id="paymentOption-Credit"
+            name="paymentOption-Credit"
+            type="radio"
+            class="custom-control-input"
+            checked
+            <isprint value="${pdict.paymentForm.paymentMethod.attributes}" encoding="off" />
+        >
+        <label for="paymentOption-Credit" class="custom-control-label">
+            <span>${Resource.msg('label.payment.credit','payment',null)}</span>
+        </label>
+        <div class="invalid-feedback"></div>
+    </div>
+
+    <!-- Name on Card -->
+    <div class="form-group
+        <isif condition="${pdict.paymentForm.cardOwner.mandatory === true}">required</isif>">
+        <label class="form-control-label" for="cardOwner">
+            <isprint value="${pdict.paymentForm.cardOwner.label}" encoding="htmlcontent" />
+        </label>
+        <input type="text" class="form-control" id="cardOwner"
+            <isprint value="${pdict.paymentForm.cardOwner.attributes}" encoding="off" />
+            autocomplete="cc-name">
+        <div class="invalid-feedback">
+            <isprint value="${pdict.paymentForm.cardOwner.error}" encoding="htmlcontent" />
+        </div>
+    </div>
+
+    <isif condition="${pdict.UUID}">
+        <!-- Edit Card Number -->
+        <div class="form-group">
+            ${pdict.paymentForm.editNumber.label}
+            <span class="info-icon">
+                <span class="icon">i</span>
+                <div class="tooltip">
+                    ${Resource.msg('msg.edit.card.tooltip','payment',null)}
+                </div>
+            </span>
+            <p class="masked-card-number">${pdict.paymentForm.editNumber.htmlValue}</p>
+        </div>
+        <iselse>
+        <!-- Card Number -->
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.cardNumber.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="cardNumber">
+                <isprint value="${pdict.paymentForm.cardNumber.label}" encoding="htmlcontent" />
+            </label>
+            <div class="card-number-wrapper">
+                <input type="text" class="form-control" id="cardNumber"
+                    <isprint value="${pdict.paymentForm.cardNumber.attributes}" encoding="off" />
+                    autocomplete="cc-number">
+                <div class="invalid-feedback">
+                    <isprint value="${pdict.paymentForm.cardNumber.error}" encoding="htmlcontent" />
+                </div>
+            </div>
+        </div>
+    </isif>
+
+    <!-- Month -->
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group
+                <isif condition="${pdict.paymentForm.expirationMonth.mandatory === true}">required</isif>">
+                <label class="form-control-label" for="month">
+                    <isprint value="${pdict.paymentForm.expirationMonth.label}" encoding="htmlcontent" />
+                </label>
+                <select class="form-control custom-select" id="month" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="off" /> autocomplete="cc-exp-month">
+                    <isloop items=${pdict.paymentForm.expirationMonth.options} var="month">
+                        <option id="${month.id}" value="${month.htmlValue}" <isif condition="${month.selected}">selected</isif> >${month.label}</option>
+                    </isloop>
+                </select>
+                <div class="invalid-feedback">
+                    <isprint value="${pdict.paymentForm.expirationMonth.error}" encoding="htmlcontent" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="form-group
+                <isif condition="${pdict.paymentForm.expirationYear.mandatory === true}">required</isif>">
+                <label class="form-control-label" for="year">
+                    <isprint value="${pdict.paymentForm.expirationYear.label}" encoding="htmlcontent" />
+                </label>
+                <select class="form-control custom-select" id="year" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="off" /> autocomplete="cc-exp-year">
+                    <option value="${pdict.paymentForm.expirationYear.options[0].htmlValue}">${pdict.paymentForm.expirationYear.options[0].label}</option>
+                    <isloop items=${pdict.expirationYears} var="year">
+                        <option id="${year}" value="${year}" <isif condition="${year == pdict.paymentForm.expirationYear.value}">selected</isif> >${year}</option>
+                    </isloop>
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="make-default-payment">-->
+        <!--<div class="form-group custom-control custom-checkbox">-->
+            <!--<input type="checkbox" class="custom-control-input" id="makeDefaultPayment" name="makeDefaultPayment">-->
+            <!--<label class="custom-control-label" for="makeDefaultPayment">-->
+                <!--${Resource.msg('label.payment.checkbox.makedefault', 'payment', null)}-->
+            <!--</label>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
+    <!-- Cancel and Save Buttons -->
+    <div class="row">
+        <div class="col">
+            <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+        </div>
+        <div class="col">
+            <button type="submit" name="save" class="btn btn-save btn-block btn-primary">${Resource.msg('button.save','account',null)}</button>
+        </div>
+    </div>
+
+</form>

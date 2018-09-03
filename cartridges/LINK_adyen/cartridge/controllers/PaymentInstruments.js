@@ -5,6 +5,7 @@ server.extend(module.superModule);
 
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 var Logger = require('dw/system/Logger');
 
