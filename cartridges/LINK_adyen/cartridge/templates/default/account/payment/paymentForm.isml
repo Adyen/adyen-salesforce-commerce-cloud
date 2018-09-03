@@ -1,3 +1,12 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/adyen-cse.js');
+    assets.addCss('/css/adyenCss.css');
+</isscript>
+
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
+
 <form
     action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
     class="payment-form"
@@ -6,6 +15,9 @@
 
     <!-- Credit Card Type -->
     <input type="hidden" class="form-control" id="cardType" value="" <isprint value="${pdict.paymentForm.cardType.attributes}" encoding="off" /> autocomplete="cc-type">
+
+    <input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData"  <isprint value="${pdict.paymentForm.adyenEncryptedData.attributes}" encoding="off" /> >
+    <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
     <div class="form-group custom-control custom-radio">
         <input
@@ -28,7 +40,7 @@
         <label class="form-control-label" for="cardOwner">
             <isprint value="${pdict.paymentForm.cardOwner.label}" encoding="htmlcontent" />
         </label>
-        <input type="text" class="form-control" id="cardOwner"
+        <input type="text" class="form-control" id="cardOwner" data-encrypted-name="holderName"
             <isprint value="${pdict.paymentForm.cardOwner.attributes}" encoding="off" />
             autocomplete="cc-name">
         <div class="invalid-feedback">
@@ -56,7 +68,7 @@
                 <isprint value="${pdict.paymentForm.cardNumber.label}" encoding="htmlcontent" />
             </label>
             <div class="card-number-wrapper">
-                <input type="text" class="form-control" id="cardNumber"
+                <input type="text" class="form-control" id="cardNumber" data-encrypted-name="number"
                     <isprint value="${pdict.paymentForm.cardNumber.attributes}" encoding="off" />
                     autocomplete="cc-number">
                 <div class="invalid-feedback">
@@ -74,7 +86,7 @@
                 <label class="form-control-label" for="month">
                     <isprint value="${pdict.paymentForm.expirationMonth.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="month" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="off" /> autocomplete="cc-exp-month">
+                <select class="form-control custom-select" id="month" data-encrypted-name="expiryMonth" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="off" /> autocomplete="cc-exp-month">
                     <isloop items=${pdict.paymentForm.expirationMonth.options} var="month">
                         <option id="${month.id}" value="${month.htmlValue}" <isif condition="${month.selected}">selected</isif> >${month.label}</option>
                     </isloop>
@@ -91,12 +103,29 @@
                 <label class="form-control-label" for="year">
                     <isprint value="${pdict.paymentForm.expirationYear.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="year" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="off" /> autocomplete="cc-exp-year">
+                <select class="form-control custom-select" id="year" data-encrypted-name="expiryYear" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="off" /> autocomplete="cc-exp-year">
                     <option value="${pdict.paymentForm.expirationYear.options[0].htmlValue}">${pdict.paymentForm.expirationYear.options[0].label}</option>
                     <isloop items=${pdict.expirationYears} var="year">
                         <option id="${year}" value="${year}" <isif condition="${year == pdict.paymentForm.expirationYear.value}">selected</isif> >${year}</option>
                     </isloop>
                 </select>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
+                <span class="info-icon">
+                <span class="icon">i</span>
+                <div class="tooltip">
+                    ${Resource.msg('tooltip.security.code','creditCard',null)}
+                </div>
+            </span>
+                <input type="text" class="form-control securityCode" id="securityCode"
+                       data-encrypted-name="cvc" >
                 <div class="invalid-feedback"></div>
             </div>
         </div>
@@ -119,7 +148,7 @@
             <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
         </div>
         <div class="col">
-            <button type="submit" name="save" class="btn btn-save btn-block btn-primary">${Resource.msg('button.save','account',null)}</button>
+            <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">${Resource.msg('button.save','account',null)}</button>
         </div>
     </div>
 

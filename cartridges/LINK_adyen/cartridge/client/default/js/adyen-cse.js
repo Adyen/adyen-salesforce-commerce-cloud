@@ -25,6 +25,27 @@ $('button[value="submit-payment"]').on('click', function (e) {
     }
 });
 
+$('button[value="add-new-payment"]').on('click', function (e) {
+    var encryptedData = $('#adyenEncryptedData'),
+        encryptedDataValue,
+        options = {};
+
+    var cardData = {
+        number: $('#cardNumber').val(),
+        expiryMonth: $('#month').val(),
+        expiryYear: $('#year').val(),
+        generationtime: $('#adyen_generationtime').val(),
+        holderName: $('#cardOwner').val(),
+        cvc: $('#securityCode').val()
+    }
+
+    var cseInstance = adyen.createEncryption(options);
+    encryptedDataValue = cseInstance.encrypt(cardData);
+    encryptedData.val(encryptedDataValue);
+    $('#cardNumber').val("");
+
+});
+
 function getCardData(selectedCard){
     var cardData = {
         expiryMonth: $('#expirationMonth').val(),
