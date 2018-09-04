@@ -7,6 +7,7 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
 
+
 <form
     action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
     class="payment-form"
@@ -14,34 +15,18 @@
     name="payment-form" ${pdict.paymentForm.attributes}>
 
     <!-- Credit Card Type -->
-    <input type="hidden" class="form-control" id="cardType" value="" <isprint value="${pdict.paymentForm.cardType.attributes}" encoding="off" /> autocomplete="cc-type">
+    <input type="hidden" class="form-control" id="cardType" value="" autocomplete="cc-type">
 
     <input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData"  <isprint value="${pdict.paymentForm.adyenEncryptedData.attributes}" encoding="off" /> >
     <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
-    <div class="form-group custom-control custom-radio">
-        <input
-            id="paymentOption-Credit"
-            name="paymentOption-Credit"
-            type="radio"
-            class="custom-control-input"
-            checked
-            <isprint value="${pdict.paymentForm.paymentMethod.attributes}" encoding="off" />
-        >
-        <label for="paymentOption-Credit" class="custom-control-label">
-            <span>${Resource.msg('label.payment.credit','payment',null)}</span>
-        </label>
-        <div class="invalid-feedback"></div>
-    </div>
-
     <!-- Name on Card -->
     <div class="form-group
         <isif condition="${pdict.paymentForm.cardOwner.mandatory === true}">required</isif>">
-        <label class="form-control-label" for="cardOwner">
+        <label class="form-control-label" for="holderName">
             <isprint value="${pdict.paymentForm.cardOwner.label}" encoding="htmlcontent" />
         </label>
-        <input type="text" class="form-control" id="cardOwner" data-encrypted-name="holderName"
-            <isprint value="${pdict.paymentForm.cardOwner.attributes}" encoding="off" />
+        <input type="text" class="form-control" id="holderName" data-encrypted-name="holderName"
             autocomplete="cc-name">
         <div class="invalid-feedback">
             <isprint value="${pdict.paymentForm.cardOwner.error}" encoding="htmlcontent" />
@@ -69,7 +54,6 @@
             </label>
             <div class="card-number-wrapper">
                 <input type="text" class="form-control" id="cardNumber" data-encrypted-name="number"
-                    <isprint value="${pdict.paymentForm.cardNumber.attributes}" encoding="off" />
                     autocomplete="cc-number">
                 <div class="invalid-feedback">
                     <isprint value="${pdict.paymentForm.cardNumber.error}" encoding="htmlcontent" />
@@ -83,10 +67,10 @@
         <div class="col-6">
             <div class="form-group
                 <isif condition="${pdict.paymentForm.expirationMonth.mandatory === true}">required</isif>">
-                <label class="form-control-label" for="month">
+                <label class="form-control-label" for="expirationMonth">
                     <isprint value="${pdict.paymentForm.expirationMonth.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="month" data-encrypted-name="expiryMonth" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="off" /> autocomplete="cc-exp-month">
+                <select class="form-control custom-select" id="expirationMonth" data-encrypted-name="expiryMonth" autocomplete="cc-exp-month">
                     <isloop items=${pdict.paymentForm.expirationMonth.options} var="month">
                         <option id="${month.id}" value="${month.htmlValue}" <isif condition="${month.selected}">selected</isif> >${month.label}</option>
                     </isloop>
@@ -100,10 +84,10 @@
         <div class="col-6">
             <div class="form-group
                 <isif condition="${pdict.paymentForm.expirationYear.mandatory === true}">required</isif>">
-                <label class="form-control-label" for="year">
+                <label class="form-control-label" for="expirationYear">
                     <isprint value="${pdict.paymentForm.expirationYear.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="year" data-encrypted-name="expiryYear" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="off" /> autocomplete="cc-exp-year">
+                <select class="form-control custom-select" id="expirationYear" data-encrypted-name="expiryYear" autocomplete="cc-exp-year">
                     <option value="${pdict.paymentForm.expirationYear.options[0].htmlValue}">${pdict.paymentForm.expirationYear.options[0].label}</option>
                     <isloop items=${pdict.expirationYears} var="year">
                         <option id="${year}" value="${year}" <isif condition="${year == pdict.paymentForm.expirationYear.value}">selected</isif> >${year}</option>
@@ -130,15 +114,6 @@
             </div>
         </div>
     </div>
-
-    <!--<div class="make-default-payment">-->
-        <!--<div class="form-group custom-control custom-checkbox">-->
-            <!--<input type="checkbox" class="custom-control-input" id="makeDefaultPayment" name="makeDefaultPayment">-->
-            <!--<label class="custom-control-label" for="makeDefaultPayment">-->
-                <!--${Resource.msg('label.payment.checkbox.makedefault', 'payment', null)}-->
-            <!--</label>-->
-        <!--</div>-->
-    <!--</div>-->
 
     <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
 
