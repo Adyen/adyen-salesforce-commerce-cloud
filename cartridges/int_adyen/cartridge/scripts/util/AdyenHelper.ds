@@ -191,9 +191,16 @@ var __AdyenHelper : Object = {
                     }
                 break;
             case 'account':
-                    var test = session.forms;
-                    card = session.forms.paymentinstruments.creditcards.newcreditcard;
-                    var encryptedData = card.encrypteddata.value;
+                var encryptedData;
+                    if(session.forms.paymentinstruments){
+                        card = session.forms.paymentinstruments.creditcards.newcreditcard;
+                        encryptedData = card.encrypteddata.value;
+                    }
+                    else {
+                        //different form structure for SFRA
+                        card = session.forms.creditCard;
+                        encryptedData = card.adyenEncryptedData.value;
+                    }
 
                     if (__AdyenHelper.getAdyenCseEnabled() && !empty(encryptedData)) {
                         cardObject['additionalData'] = {
