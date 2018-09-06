@@ -1,8 +1,6 @@
 $('button[value="submit-payment"]').on('click', function (e) {
     var cardData;
-    var encryptedData = $('#adyenEncryptedData'),
-        encryptedDataValue,
-        options = {};
+    var options = {};
 
     if(!$('.payment-information').data('is-new-payment')) {
         $('#selectedCardID').val($('.selected-payment').data('uuid'));
@@ -14,15 +12,19 @@ $('button[value="submit-payment"]').on('click', function (e) {
         cardData = getCardData(false);
     }
 
-    var cseInstance = adyen.createEncryption(options);
-    encryptedDataValue = cseInstance.encrypt(cardData);
-    encryptedData.val(encryptedDataValue);
+    encryptData(cardData, options);
     $('#cardNumber').val("");
 
     if($('#selectedPaymentOption').val() == "Adyen" && $('#directoryLookup').val() == "true" && !$("input[name='brandCode']:checked").val()) {
         $('#requiredBrandCode').show();
         return false;
     }
+});
+
+$('button[value="add-new-payment"]').on('click', function (e) {
+    var cardData = getCardData(false);
+    var options = {};
+    encryptData(cardData, options);
 });
 
 function getCardData(selectedCard){
@@ -40,6 +42,15 @@ function getCardData(selectedCard){
         cardData.cvc = $('.selected-payment #saved-payment-security-code').val();
     }
     return cardData;
+}
+
+function encryptData(cardData, options){
+    var encryptedData = $('#adyenEncryptedData'),
+        encryptedDataValue;
+
+    var cseInstance = adyen.createEncryption(options);
+    encryptedDataValue = cseInstance.encrypt(cardData);
+    encryptedData.val(encryptedDataValue);
 }
 
 $('button[value="submit-shipping"]').on('click', function (e) {
