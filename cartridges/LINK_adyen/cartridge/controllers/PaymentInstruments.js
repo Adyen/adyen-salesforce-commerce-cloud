@@ -6,6 +6,7 @@ server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+
 var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
@@ -64,7 +65,8 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
     var CustomerMgr = require('dw/customer/CustomerMgr');
     var payment = res.getViewData();
 
-    if(!empty(payment)) {
+
+    if(!empty(payment)){
         var customer = CustomerMgr.getCustomerByCustomerNumber(
             req.currentCustomer.profile.customerNo
         );
