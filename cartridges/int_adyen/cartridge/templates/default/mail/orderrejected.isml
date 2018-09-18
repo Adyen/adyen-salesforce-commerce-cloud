@@ -3,7 +3,7 @@
 <iscomment>The "subject" tag contains the mail subject and can contain dynamic information, like the order number.</iscomment>
 <subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/><isprint value="${Resource.msg('order.orderconfirmation-email.001','order',null)}" encoding="on"/> <isprint value="${pdict.Order.orderNo}"/></isif></subject>
 <iscomment>
-	The "to" tag contains the email address of the recipient, the "from" tag the email address of the sender. 
+	The "to" tag contains the email address of the recipient, the "from" tag the email address of the sender.
 	Each tag is to be specified max. once. Multiple email address can be separated by "," (see RFC2822).
 </iscomment>
 <to>${pdict.Order.customerEmail}</to>
@@ -36,7 +36,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="${Resource.msg('email.tablecell','email',null)}">
-						
+
 							<table  style="${Resource.msg('email.containertable','emailrejected',null)}">
 								<tr>
 									<th style="${Resource.msg('email.tableheader','emailrejected',null)}">${Resource.msg('email.paymentrejected','emailrejected',null)}</th>
@@ -56,12 +56,12 @@
 							<isemailorderdetails order="${pdict.Order}"/>
 						</td>
 					</tr>
-				</table>						
+				</table>
 			</center>
 		</td>
 	</tr>
-</table>	
-					
+</table>
+
 
 </body>
 </html>
