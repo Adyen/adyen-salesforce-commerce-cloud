@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
-    <type-extension type-id="Order">        
+    <type-extension type-id="Order">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="Adyen_eventCode">
                 <display-name xml:lang="x-default">eventCode</display-name>
@@ -35,7 +35,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-            </attribute-definition>       
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayments">
@@ -44,88 +44,11 @@
                 <attribute attribute-id="Adyen_eventCode"/>
                 <attribute attribute-id="Adyen_paymentMethod"/>
                 <attribute attribute-id="Adyen_value"/>
-            </attribute-group>           
-        </group-definitions>
-    </type-extension>
-
-    <type-extension type-id="Shipment">       
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="shipmentType">
-                <display-name xml:lang="x-default">shipmentType</display-name>
-                <description xml:lang="x-default">Shipment Type</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>   
-        </custom-attribute-definitions>
-    </type-extension>
-
-    <type-extension type-id="ShippingMethod">        
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="storePickupEnabled">
-                <display-name xml:lang="x-default">storePickupEnabled</display-name>
-                <description xml:lang="x-default">storePickupEnabled</description>
-                <type>boolean</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>   
-        </custom-attribute-definitions>
-    </type-extension>
-
-    <type-extension type-id="CustomerAddress">
-        <group-definitions>
-            <attribute-group group-id="Standard">
-                <display-name xml:lang="x-default">Standard Address</display-name>
-                <attribute attribute-id="ID" system="true"/>
-                <attribute attribute-id="title" system="true"/>
-                <attribute attribute-id="companyName" system="true"/>
-                <attribute attribute-id="salutation" system="true"/>
-                <attribute attribute-id="firstName" system="true"/>
-                <attribute attribute-id="secondName" system="true"/>
-                <attribute attribute-id="lastName" system="true"/>
-                <attribute attribute-id="suffix" system="true"/>
-                <attribute attribute-id="address1" system="true"/>
-                <attribute attribute-id="address2" system="true"/>
-                <attribute attribute-id="suite" system="true"/>
-                <attribute attribute-id="postBox" system="true"/>
-                <attribute attribute-id="city" system="true"/>
-                <attribute attribute-id="postalCode" system="true"/>
-                <attribute attribute-id="countryCode" system="true"/>
-                <attribute attribute-id="stateCode" system="true"/>
-                <attribute attribute-id="phone" system="true"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
 
-    
-    <type-extension type-id="OrderAddress">
-        <group-definitions>
-            <attribute-group group-id="Standard">
-                <display-name xml:lang="x-default">Standard Address</display-name>
-                <attribute attribute-id="title" system="true"/>
-                <attribute attribute-id="companyName" system="true"/>
-                <attribute attribute-id="salutation" system="true"/>
-                <attribute attribute-id="firstName" system="true"/>
-                <attribute attribute-id="secondName" system="true"/>
-                <attribute attribute-id="lastName" system="true"/>
-                <attribute attribute-id="suffix" system="true"/>
-                <attribute attribute-id="address1" system="true"/>
-                <attribute attribute-id="address2" system="true"/>
-                <attribute attribute-id="suite" system="true"/>
-                <attribute attribute-id="postBox" system="true"/>
-                <attribute attribute-id="city" system="true"/>
-                <attribute attribute-id="postalCode" system="true"/>
-                <attribute attribute-id="countryCode" system="true"/>
-                <attribute attribute-id="stateCode" system="true"/>
-                <attribute attribute-id="phone" system="true"/>
-            </attribute-group>
-        </group-definitions>
-    </type-extension>
 
-    
-    
     <type-extension type-id="PaymentTransaction">
         <system-attribute-definitions>
             <attribute-definition attribute-id="UUID">
@@ -207,10 +130,64 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_log">
+                <display-name xml:lang="x-default">Adyen Log</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_authResult">
+                <display-name xml:lang="x-default">Adyen_authResult</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_merchantReference">
+                <display-name xml:lang="x-default">Adyen_merchantReference</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_merchantReturnData">
+                <display-name xml:lang="x-default">Adyen_merchantReturnData</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_merchantSig">
+                <display-name xml:lang="x-default">Adyen_merchantSig</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_paymentMethod">
+                <display-name xml:lang="x-default">Adyen_paymentMethod</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_pspReference">
+                <display-name xml:lang="x-default">Adyen_pspReference</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_shopperLocale">
+                <display-name xml:lang="x-default">Adyen_shopperLocale</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_skinCode">
+                <display-name xml:lang="x-default">Adyen_skinCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
     </type-extension>
 
- 
+
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="AdyenCseEnabled">
@@ -356,84 +333,56 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+              <attribute-definition attribute-id="Adyen_POIID">
+                <display-name xml:lang="x-default">Adyen POS unique terminal ID</display-name>
+                <description xml:lang="x-default">Adyen POS unique terminal ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+             <attribute-definition attribute-id="Adyen_API_Key">
+                <display-name xml:lang="x-default">X-API-KEY of Web service</display-name>
+                <description xml:lang="x-default">X-API-KEY of Web service</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_multi_terminals">
+                <display-name xml:lang="x-default">Terminal configuration JSON</display-name>
+                <description xml:lang="x-default">Terminal configuration JSON</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
                 <display-name xml:lang="x-default">Adyen Account Settings</display-name>
                 <attribute attribute-id="Adyen_merchantCode"/>
-                <attribute attribute-id="Adyen_skinCode"/>
-                <attribute attribute-id="Adyen_HMACkey"/>          
                 <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_skinCode"/>
+                <attribute attribute-id="Adyen_HMACkey"/>
                 <attribute attribute-id="Adyen_Debug"/>
                 <attribute attribute-id="AdyenCseEnabled"/>
                 <attribute attribute-id="AdyenCseLibraryToken"/>
-                <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="Adyen_directoryLookup"/>
-                <attribute attribute-id="Adyen_recurringType"/>
-		        <attribute attribute-id="Adyen_notification_password"/>
-	            <attribute attribute-id="Adyen_notification_user"/>
+                <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
+                <attribute attribute-id="Adyen_recurringType"/>
+	            <attribute attribute-id="Adyen_notification_user"/>
+                <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="Adyen_Open_Invoice_Whitelist"/>
                 <attribute attribute-id="AdyenRatePayID"/>
+                <attribute attribute-id="Adyen_POIID"/>
+                <attribute attribute-id="Adyen_API_Key"/>
+                <attribute attribute-id="Adyen_multi_terminals"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
-<type-extension type-id="PaymentTransaction">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="Adyen_log">
-                <display-name xml:lang="x-default">Adyen Log</display-name>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_authResult">
-                <display-name xml:lang="x-default">Adyen_authResult</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_merchantReference">
-                <display-name xml:lang="x-default">Adyen_merchantReference</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_merchantReturnData">
-                <display-name xml:lang="x-default">Adyen_merchantReturnData</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_merchantSig">
-                <display-name xml:lang="x-default">Adyen_merchantSig</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_paymentMethod">
-                <display-name xml:lang="x-default">Adyen_paymentMethod</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_pspReference">
-                <display-name xml:lang="x-default">Adyen_pspReference</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_shopperLocale">
-                <display-name xml:lang="x-default">Adyen_shopperLocale</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-             <attribute-definition attribute-id="Adyen_skinCode">
-                <display-name xml:lang="x-default">Adyen_skinCode</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-        </custom-attribute-definitions>
-    </type-extension>
 </metadata>

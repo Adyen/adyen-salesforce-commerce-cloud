@@ -21,7 +21,7 @@ function check (request) {
 	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
 		return false;
 	}
-	
+
 	return AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
 }
 

@@ -1,0 +1,49 @@
+/**
+ * Creates a Adyen payment instrument for the given basket. If any error occurs the pipelet returns PIPELET_ERROR with
+ * no payment instrument being created. If the creation succeeded the script returns 
+ * the newly created payment instrument.
+ *
+ *
+ *  @input Basket : dw.order.Basket The basket.
+ *  @output PaymentInstrument : dw.order.PaymentInstrument The created payment instrument.
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.web );
+
+importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_adyen', 'app_storefront_core') + ':checkout/Utils.ds' );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var result = create(args.Basket);
+	if (result == PIPELET_ERROR){
+		return PIPELET_ERROR;
+	}
+	
+	args.PaymentInstrument = result;
+	return PIPELET_NEXT;
+}
+
+function create( basket : dw.order.Basket ) : Number
+{
+	// verify that we have a basket
+	if( basket == null  )
+	{
+		return PIPELET_ERROR;
+	}
+	
+	// calculate the amount to be charged 
+	var amount = calculateNonGiftCertificateAmount( basket );
+	
+	// create a payment instrument 
+	var paymentInstr : PaymentInstrument = basket.createPaymentInstrument( "AdyenPOS", amount );
+
+    return paymentInstr;
+}
+
+module.exports = {
+	'execute': execute,
+	'create': create
+}
