@@ -13,8 +13,8 @@ $('button[value="submit-payment"]').on('click', function (e) {
             cardData = getCardData(false);
             masked = maskValue(cardData.number.replace(/\s/g, ''));
         }
-        var notValidCard = encryptData(cardData, options);
-        if(notValidCard){
+        var validCard = encryptData(cardData, options);
+        if(!validCard){
             return false;
         }
         $('#cardNumber').val(masked);
@@ -53,10 +53,10 @@ function encryptData(cardData, options) {
   var encryptedDataValue;
   var cseInstance = adyen.createEncryption(options);
   encryptedDataValue = cseInstance.encrypt(cardData);
-  if(encryptedDataValue != false){
-      encryptedData.val(encryptedDataValue);
+  if(encryptedDataValue == false){
       return false;
   }
+  encryptedData.val(encryptedDataValue);
   return true;
 }
 
