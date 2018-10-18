@@ -45,8 +45,11 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
       return next();
     }
 
+    //custom fraudDetection
+    var fraudDetectionStatus = {status: 'success'};
+
     // Places the order
-    var placeOrderResult = adyenHelpers.placeOrder(order);
+    var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
       if (placeOrderResult.error) {
       Transaction.wrap(function () {
         OrderMgr.failOrder(order);

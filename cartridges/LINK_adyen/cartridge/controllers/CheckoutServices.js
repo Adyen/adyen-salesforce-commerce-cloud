@@ -5,7 +5,6 @@ server.extend(module.superModule);
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-var Logger = require('dw/system/Logger');
 
 function getEncryptedData() {
   var paymentForm = server.forms.getForm('billing');
@@ -159,11 +158,13 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  // Places the order
-  var placeOrderResult = adyenHelpers.placeOrder(order);
+    //custom fraudDetection
+    var fraudDetectionStatus = {status: 'success'};
+
+    // Places the order
+    var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
 
   if (placeOrderResult.error) {
-    Logger.getLogger('Adyen').error('placeOrderResult error: ' + JSON.stringify(placeOrderResult));
     res.json({
       error: true,
       errorMessage: Resource.msg('error.placeorder', 'checkout', null)
