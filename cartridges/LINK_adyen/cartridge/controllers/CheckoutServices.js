@@ -158,8 +158,22 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-    //custom fraudDetection
-    var fraudDetectionStatus = {status: 'success'};
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+    if (fraudDetectionStatus.status === 'fail') {
+        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+
+        // fraud detection failed
+        req.session.privacyCache.set('fraudDetectionStatus', true);
+
+        res.json({
+            error: true,
+            cartError: true,
+            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+            errorMessage: Resource.msg('error.technical', 'checkout', null)
+        });
+
+        return next();
+    }
 
     // Places the order
     var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
