@@ -58,7 +58,7 @@
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false" checked="false" />
     <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false" checked="true" />
 
-    <field formid="adyenEncryptedData" label="adyenEncryptedData" type="string" mandatory="true" binding="adyenEncryptedData"/>
+    <field formid="adyenEncryptedData" label="adyenEncryptedData" type="string" mandatory="false" binding="adyenEncryptedData"/>
 
     <!--  field  for  credit  card  recurring  payments  /  tokenization  -->
     <field formid="selectedCardID" mandatory="false" type="string"/>

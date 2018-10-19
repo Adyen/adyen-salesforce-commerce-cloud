@@ -3,9 +3,9 @@
  */
 
 'use strict';
+
 var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
-var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
@@ -14,32 +14,15 @@ var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
     var cardErrors = {};
-    var cardNumber = paymentInformation.cardNumber.value;
-    var expirationMonth = paymentInformation.expirationMonth.value;
-    var expirationYear = paymentInformation.expirationYear.value;
     var serverErrors = [];
-    var creditCardForm = server.forms.getForm('billing').creditCardFields;
+    var creditCardForm = server.forms.getForm('billing');
     var cardType = paymentInformation.cardType.value;
-
-
-    var tokenID = AdyenHelper.getCardToken(creditCardForm.selectedCardID.value, customer);
-    var encryptedData = creditCardForm.adyenEncryptedData.value;
-    var paymentCard = PaymentMgr.getPaymentCard(cardType);
-    var cardSecurityCode;
+    var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
+    var encryptedData = creditCardForm.creditCardFields.adyenEncryptedData.value;
     var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        // Verify payment card
-        cardSecurityCode = creditCardForm.get('cvn').value();
-        expirationMonth = creditCardForm.get('expiration.month').value();
-        expirationYear = creditCardForm.get('expiration.year').value();
-        cardNumber = creditCardForm.get('number').value();
-        var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
-        if (creditCardStatus.error) {
-            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
-            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
 
-            return {error: true};
-        }
+    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
+        return {error: true};
     }
 
     Transaction.wrap(function () {
@@ -51,22 +34,20 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
-        var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-        if(!adyenCseEnabled) {
-            paymentInstrument.setCreditCardHolder(paymentInformation.cardOwner.value);
-            paymentInstrument.setCreditCardNumber(cardNumber);
-            paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
-            paymentInstrument.setCreditCardExpirationYear(expirationYear);
-        }
-            paymentInstrument.setCreditCardType(cardType);
-
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
+        else {
+            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
+            paymentInstrument.setCreditCardType(cardType);
+        }
+
+
 
     });
-    return { fieldErrors: cardErrors, serverErrors: serverErrors, error: false };
-
+    return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }
 
 /**
@@ -95,10 +76,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         SaveCreditCard: creditCardForm.saveCardAdyen.value
     });
 
-    if(result.error) {
+    if (result.error) {
         var errors = [];
         errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
-        return { authorized: false, fieldErrors: [], serverErrors: errors, error: true };
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
     }
 
     if (result.IssuerUrl != '') {
@@ -113,7 +96,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             issuerUrl: result.IssuerUrl,
             paRequest: result.PaRequest,
             md: result.MD
-            };
+        };
     }
 
     if (result.Decision != 'ACCEPT') {
@@ -147,7 +130,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     Transaction.commit();
 
     return { authorized: true, error: false };
-
 }
 
 

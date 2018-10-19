@@ -3,24 +3,22 @@
  */
 
 'use strict';
+
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
 
 function Handle(basket, paymentInformation) {
-    Transaction.wrap(function () {
-
-        collections.forEach(basket.getPaymentInstruments(), function (item) {
-            basket.removePaymentInstrument(item);
-        });
-
-        basket.createPaymentInstrument(
-            "Adyen", basket.totalGrossPrice
-        );
-
+  Transaction.wrap(function () {
+    collections.forEach(basket.getPaymentInstruments(), function (item) {
+      basket.removePaymentInstrument(item);
     });
 
-    return { error : false };
+    basket.createPaymentInstrument(
+      'Adyen', basket.totalGrossPrice
+    );
+  });
 
+  return { error: false };
 }
 
 /**
@@ -32,13 +30,12 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
+  Transaction.wrap(function () {
+    paymentInstrument.paymentTransaction.transactionID = orderNumber;
+    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+  });
 
-    Transaction.wrap(function () {
-        paymentInstrument.paymentTransaction.transactionID = orderNumber;
-        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-    });
-
-    return {authorized: true, error : false};
+  return { authorized: true, error: false };
 }
 
 exports.Handle = Handle;
