@@ -120,7 +120,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
     getAdyenPOIID : function () : String {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
@@ -128,7 +128,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
       getAdyenApiKey : function () : String {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key'))) {
@@ -136,7 +136,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';
@@ -191,9 +191,16 @@ var __AdyenHelper : Object = {
                     }
                 break;
             case 'account':
-                    var test = session.forms;
-                    card = session.forms.paymentinstruments.creditcards.newcreditcard;
-                    var encryptedData = card.encrypteddata.value;
+                var encryptedData;
+                    if(session.forms.paymentinstruments){
+                        card = session.forms.paymentinstruments.creditcards.newcreditcard;
+                        encryptedData = card.encrypteddata.value;
+                    }
+                    else {
+                        //different form structure for SFRA
+                        card = session.forms.creditCard;
+                        encryptedData = card.adyenEncryptedData.value;
+                    }
 
                     if (__AdyenHelper.getAdyenCseEnabled() && !empty(encryptedData)) {
                         cardObject['additionalData'] = {
@@ -393,7 +400,7 @@ var __AdyenHelper : Object = {
                     cardType='Visa';
                     break;
                 case 'mc':
-                    cardType='Master';
+                    cardType='Mastercard';
                     break;
                 case 'amex':
                     cardType='Amex';

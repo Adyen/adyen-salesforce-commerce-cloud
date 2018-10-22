@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "extends": "airbnb-base/legacy",
+  "rules": {
+        "import/no-unresolved": "off",
+        "indent": ["error", 4, { "SwitchCase": 1, "VariableDeclarator": 1 }],
+        "func-names": "off",
+        "valid-jsdoc": ["error", { "preferType": { "Boolean": "boolean", "Number": "number", "object": "Object", "String": "string" }, "requireReturn": false}],
+        "vars-on-top": "off",
+        "global-require": "off",
+        "no-shadow":"off",
+        "max-len": "off",
+        "no-underscore-dangle": "off",
+        "linebreak-style": 0,
+        "no-undef":"off",
+        "no-use-before-define":"off",
+        "no-param-reassign":"off",
+        "no-unused-vars":"off",
+        "eqeqeq":"off",
+        "no-array-constructor":"off",
+        "no-tabs":"off",
+        "no-restricted-syntax":"off",
+        "no-restricted-globals":"off",
+        "consistent-return":"off",
+        "no-redeclare":"off",
+        "no-plusplus":"off"
+    }
+}

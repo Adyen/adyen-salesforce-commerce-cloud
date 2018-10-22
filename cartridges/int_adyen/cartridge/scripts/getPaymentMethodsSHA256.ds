@@ -16,6 +16,8 @@ importPackage( dw.svc );
 
 //script include
 var AdyenHelper = require("int_adyen/cartridge/scripts/util/AdyenHelper");
+var PaymentMgr = require('dw/order/PaymentMgr');
+var PaymentInstrument = require('dw/order/PaymentInstrument');
 
 function execute( args : PipelineDictionary ) : Number
 {
@@ -75,6 +77,10 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
     
     if(!empty(locale) && locale != "default") {
             adyenRequest.put("shopperLocale", locale);
+    }
+
+    if(PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD).active){
+        adyenRequest.put("blockedMethods", "card" );
     }
 
     var keys: String = "";
