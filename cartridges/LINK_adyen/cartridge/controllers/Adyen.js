@@ -7,6 +7,7 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
+var Site = require('dw/system/Site');
 
 server.get('Adyen3D', server.middleware.https, function (req, res, next) {
   var IssuerURL = req.querystring.IssuerURL;
@@ -155,7 +156,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
   var BasketMgr = require('dw/order/BasketMgr');
-  var	getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
+  var getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
   var paymentMethods;
   try {
     paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
@@ -168,6 +169,29 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     ImagePath: URLUtils.staticURL('/images/').toString()
   });
   return next();
+});
+
+/**
+ * Get OriginKey for Secured Fields
+ */
+server.get('GetConfigSecuredFields', server.middleware.https, function (req, res, next) {
+    var adyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+    var	adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+    var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
+    var originKey;
+    var loadingContext = "";
+
+    try {
+        originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
+        loadingContext = adyenHelper.getLoadingContext();
+    } catch (err) {
+        originKey = [];
+    }
+    res.json({
+        adyenOriginKey: originKey,
+        adyenLoadingContext: loadingContext
+    });
+    return next();
 });
 
 /**
