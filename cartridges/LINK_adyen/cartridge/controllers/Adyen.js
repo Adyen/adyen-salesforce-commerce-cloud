@@ -179,15 +179,20 @@ server.get('GetConfigSecuredFields', server.middleware.https, function (req, res
     var	adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
     var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
     var originKey;
+    var error = false;
+    var errorMessage = "";
     var loadingContext = "";
 
     try {
         originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
         loadingContext = adyenHelper.getLoadingContext();
     } catch (err) {
-        originKey = [];
+        error = true;
+        errorMessage = Resource.msg('load.component.error','creditCard', null);
     }
     res.json({
+        error: error,
+        errorMessage: errorMessage,
         adyenOriginKey: originKey,
         adyenLoadingContext: loadingContext
     });

@@ -1,4 +1,6 @@
 <input type="hidden" class="cardNumber" value="" id="cardNumber" >
+<input type="hidden" id="currentLocale" value="${request.locale}"/>
+<span id="errorLoadComponent"></span>
 
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div id="card"></div>

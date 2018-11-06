@@ -141,17 +141,10 @@ var __AdyenHelper : Object = {
     },
 
     getCheckoutUrl : function () : String {
-        var returnValue : String = "";
-        switch (__AdyenHelper.getAdyenMode()) {
-            case __AdyenHelper.MODE.TEST:
-                returnValue = __AdyenHelper.LOADING_CONTEXT_TEST + "sdk/2.0.0-beta.4/adyen.js";
-                break;
-            case __AdyenHelper.MODE.LIVE:
-                returnValue = __AdyenHelper.LOADING_CONTEXT_LIVE +  "sdk/2.0.0-beta.4/adyen.js";
-                break;
-        }
-        return returnValue;
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.0.0-beta.4/adyen.js";
+        return checkoutUrl;
     },
+
     getLoadingContext : function () : String {
         var returnValue : String = "";
         switch (__AdyenHelper.getAdyenMode()) {
