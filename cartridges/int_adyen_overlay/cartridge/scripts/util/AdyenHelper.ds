@@ -7,6 +7,7 @@ var dwsystem	= require ("dw/system");
 var dwutil		= require ("dw/util");
 
 var adyenCurrentSite = dwsystem.Site.getCurrent();
+
 var __AdyenHelper : Object = {
 
     //service constants
@@ -356,7 +357,7 @@ var __AdyenHelper : Object = {
             'currency': session.currency.currencyCode,
             'value': 0
         };
-        
+
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
         var CreateRecurringPayment = require('int_adyen_overlay/cartridge/scripts/adyenCreateRecurringPayment.ds');
         var createRecurringPaymentResult = CreateRecurringPayment.createRecurringPayment({RequestObject: requestObject});
