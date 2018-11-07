@@ -9,6 +9,7 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
+var Site = require('dw/system/Site');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
