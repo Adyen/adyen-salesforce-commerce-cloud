@@ -31,7 +31,7 @@
         <password/>
     </service-credential>   
     <service-credential service-credential-id="AdyenOriginKeys">
-        <url>https://checkout-test.adyen.com/v40/originKeys</url>
+        <url>https://checkout-test.adyen.com/v1/originKeys</url>
         <user-id></user-id>
         <password/>
     </service-credential>   
