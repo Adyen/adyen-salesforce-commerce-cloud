@@ -17,7 +17,8 @@ var __AdyenHelper : Object = {
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
         PAYMENTMETHODS : "AdyenPaymentMethods",
-        POSPAYMENT : "AdyenPosPayment"
+        POSPAYMENT : "AdyenPosPayment",
+        ORIGINKEYS : "AdyenOriginKeys"
     },
     MODE : {
         TEST : "TEST",
@@ -27,6 +28,8 @@ var __AdyenHelper : Object = {
     CSE_LIVE_URL: "https://live.adyen.com/hpp/cse/js/",
     CSE_TEST_URL: "https://test.adyen.com/hpp/cse/js/",
     CSE_URL_EXTENSION: ".shtml",
+    LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
+    LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
     VERSION: "18.3.0",
 
@@ -143,6 +146,24 @@ var __AdyenHelper : Object = {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_API_Key');
+        }
+        return returnValue;
+    },
+
+    getCheckoutUrl : function () : String {
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.0.0-beta.4/adyen.js";
+        return checkoutUrl;
+    },
+
+    getLoadingContext : function () : String {
+        var returnValue : String = "";
+        switch (__AdyenHelper.getAdyenMode()) {
+            case __AdyenHelper.MODE.TEST:
+                returnValue = __AdyenHelper.LOADING_CONTEXT_TEST;
+                break;
+            case __AdyenHelper.MODE.LIVE:
+                returnValue = __AdyenHelper.LOADING_CONTEXT_LIVE;
+                break;
         }
         return returnValue;
     },
