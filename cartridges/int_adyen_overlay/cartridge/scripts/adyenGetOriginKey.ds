@@ -1,0 +1,85 @@
+/**
+* Gets recurring payment list from Adyen
+*
+* @input Customer : dw.customer.Customer
+*
+*/
+
+/* API Includes */
+var Logger = require('dw/system/Logger');
+
+/* Script Modules */
+var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
+
+function execute(args) {
+    var result = getOriginKey(args);
+    if (result == PIPELET_ERROR) {
+        return PIPELET_ERROR;
+    }
+    return PIPELET_NEXT;
+}
+
+function getOriginKey(args) {
+    try {
+        var requestObject = {};
+
+        var callResult = null,
+            resultObject = null,
+            service = AdyenHelper.getService(AdyenHelper.SERVICE.ORIGINKEYS);
+
+        if (service == null) {
+            return PIPELET_ERROR;
+        }
+
+        var domain = [];
+        domain.push(args);
+        requestObject['originDomains'] = domain;
+
+        var xapikey = AdyenHelper.getAdyenApiKey();
+
+        service.addHeader('Content-type', 'application/json');
+        service.addHeader('charset', 'UTF-8');
+        service.addHeader('X-API-key', xapikey);
+        callResult = service.call(JSON.stringify(requestObject));
+
+        if (callResult.isOk() == false) {
+            Logger.error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            return PIPELET_ERROR;
+        }
+
+        resultObject = ('object' in callResult ? callResult.object : null);
+
+        var resultObj = {
+            statusCode: resultObject.getStatusCode(),
+            statusMessage: resultObject.getStatusMessage(),
+            text: resultObject.getText(),
+            errorText: resultObject.getErrorText(),
+            timeout: resultObject.getTimeout()
+        }
+
+        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+        if (resultText == null) {
+            return PIPELET_ERROR;
+        }
+
+        // build the response object
+        var responseObj;
+        try {
+            responseObj = JSON.parse(resultText);
+        } catch (ex) {
+            Logger.error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
+            return PIPELET_ERROR;
+        }
+
+    } catch (e) {
+        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
+        return PIPELET_ERROR;
+    }
+
+    return responseObj;
+}
+
+module.exports = {
+    'execute': execute,
+    'getOriginKey': getOriginKey
+}
