@@ -8,6 +8,7 @@ var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
+var Site = require('dw/system/Site');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -194,6 +195,34 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
       AdyenDescriptions : descriptions
   });
   return next();
+});
+
+/**
+ * Get OriginKey for Secured Fields
+ */
+server.get('GetConfigSecuredFields', server.middleware.https, function (req, res, next) {
+    var adyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+    var	adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+    var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
+    var originKey;
+    var error = false;
+    var errorMessage = "";
+    var loadingContext = "";
+
+    try {
+        originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
+        loadingContext = adyenHelper.getLoadingContext();
+    } catch (err) {
+        error = true;
+        errorMessage = Resource.msg('load.component.error','creditCard', null);
+    }
+    res.json({
+        error: error,
+        errorMessage: errorMessage,
+        adyenOriginKey: originKey,
+        adyenLoadingContext: loadingContext
+    });
+    return next();
 });
 
 /**
