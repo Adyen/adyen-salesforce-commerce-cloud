@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
      <service-credential service-credential-id="AdyenPayment">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/authorise</url>
+        <url>https://checkout-test.adyen.com/checkout/v40/payments</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
-    </service-credential> 
+    </service-credential>
     <service-credential service-credential-id="AdyenPayment3DSecure">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/authorise3d</url>
+        <url>https://checkout-test.adyen.com/checkout/v40/payments/details</url>
+        <user-id>yourWebServiceUser</user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetails">
+        <url>https://checkout-test.adyen.com/checkout/v40/payments/details</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
@@ -29,8 +34,18 @@
         <url>https://terminal-api-test.adyen.com/sync</url>
         <user-id></user-id>
         <password/>
-    </service-credential>   
-     
+    </service-credential>
+    <service-credential service-credential-id="AdyenOriginKeys">
+        <url>https://checkout-test.adyen.com/v1/originKeys</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCheckoutPaymentMethods">
+        <url>https://checkout-test.adyen.com/v40/paymentMethods</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+
      <service-profile service-profile-id="Adyen">
           <timeout-millis>30000</timeout-millis>
           <cb-enabled>false</cb-enabled>
@@ -54,6 +69,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPayment3DSecure</credential-id>
     </service>
+    <service service-id="AdyenPaymentDetails">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentDetails</credential-id>
+    </service>
      <service service-id="AdyenRecurring">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -72,6 +96,15 @@
         <profile-id></profile-id>
         <credential-id>AdyenPaymentMethods</credential-id>
     </service>
+    <service service-id="AdyenCheckoutPaymentMethods">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenCheckoutPaymentMethods</credential-id>
+    </service>
     <service service-id="AdyenRecurringDisable">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -89,5 +122,14 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPosPayment</credential-id>
+    </service>
+    <service service-id="AdyenOriginKeys">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenOriginKeys</credential-id>
     </service>
 </services>

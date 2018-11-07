@@ -18,14 +18,14 @@
 
     var hppType;
     switch (String(paymentSelection)) {
-        case "one":
-            hppType = 'pay';
-            break;
-        case "multi":
-            hppType = 'select';
-            break;
-        default:
-            hppType = 'pay';
+    case "one":
+    hppType = 'pay';
+    break;
+    case "multi":
+    hppType = 'select';
+    break;
+    default:
+    hppType = 'pay';
     }
 
     var inputType: String = Debug ? 'text' : 'hidden';
@@ -34,24 +34,24 @@
 
     if (directoryLookup) {
 
-        if (AdyenHelper.isOpenInvoiceMethod(paymentMethod) || AdyenHelper.isMolpayMethod(paymentMethod)) {
+    if (AdyenHelper.isOpenInvoiceMethod(paymentMethod) || AdyenHelper.isMolpayMethod(paymentMethod)) {
 
-            var url: String = "https://test.adyen.com/hpp/skipDetails.shtml";
-            if (Mode == "LIVE") {
-                url = "https://live.adyen.com/hpp/skipDetails.shtml";
-            }
-        } else {
-            var url: String = "https://test.adyen.com/hpp/details.shtml";
-            if (Mode == "LIVE") {
-                url = "https://live.adyen.com/hpp/details.shtml";
-            }
-        }
+    var url: String = "https://test.adyen.com/hpp/skipDetails.shtml";
+    if (Mode == "LIVE") {
+    url = "https://live.adyen.com/hpp/skipDetails.shtml";
+    }
+    } else {
+    var url: String = "https://test.adyen.com/hpp/details.shtml";
+    if (Mode == "LIVE") {
+    url = "https://live.adyen.com/hpp/details.shtml";
+    }
+    }
 
     } else {
-        var url: String = "https://test.adyen.com/hpp/" + hppType + ".shtml";
-        if (Mode == "LIVE") {
-            url = "https://live.adyen.com/hpp/" + hppType + ".shtml";
-        }
+    var url: String = "https://test.adyen.com/hpp/" + hppType + ".shtml";
+    if (Mode == "LIVE") {
+    url = "https://live.adyen.com/hpp/" + hppType + ".shtml";
+    }
     }
 </isscript>
 
