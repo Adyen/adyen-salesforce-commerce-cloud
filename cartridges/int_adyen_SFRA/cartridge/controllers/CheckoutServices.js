@@ -11,6 +11,7 @@ function getEncryptedData() {
   return paymentForm.creditCardFields.adyenEncryptedData.value;
 }
 
+
 server.append('SubmitPayment',
   server.middleware.https,
   function (req, res, next) {
@@ -32,10 +33,11 @@ server.append('SubmitPayment',
         value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
       }
     };
-
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
+    session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
     session.custom.issuerId = req.form.issuerId;
+    session.custom.adyenIssuerName = req.form.adyenIssuerName;
 
     res.setViewData(viewData);
     next();

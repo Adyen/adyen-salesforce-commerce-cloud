@@ -13,6 +13,7 @@ $('button[value="submit-payment"]').on('click', function (e) {
             cardData = getCardData(false);
             masked = maskValue(cardData.number.replace(/\s/g, ''));
         }
+
         var validCard = encryptData(cardData, options);
         if(!validCard){
             return false;
@@ -24,6 +25,17 @@ $('button[value="submit-payment"]').on('click', function (e) {
       $('#requiredBrandCode').show();
       return false;
   }
+    if ($('#selectedPaymentOption').val() == 'Adyen' && $("input[name='brandCode']:checked").val())  {
+        $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").closest(".paymentMethod").find("label").text());
+
+        if ($("input[name='brandCode']:checked").parent().find('#issuerList').length){
+            $('#adyenIssuerName').val($('#issuerList :selected').attr('label'));
+        }
+        else {
+            $('#issuerList').val("");
+            $('#adyenIssuerName').val("");
+        }
+    }
 });
 
 $('button[value="add-new-payment"]').on('click', function (e) {
@@ -35,8 +47,7 @@ $('button[value="add-new-payment"]').on('click', function (e) {
 function getCardData(selectedCard) {
   var cardData = {
     expiryMonth: $('#expirationMonth').val(),
-    expiryYear: $('#expirationYear').val(),
-    generationtime: $('#adyen_generationtime').val()
+    expiryYear: $('#expirationYear').val()
   };
   if (!selectedCard) {
     cardData.number = $('#cardNumber').val();
@@ -52,12 +63,44 @@ function encryptData(cardData, options) {
   var encryptedData = $('#adyenEncryptedData');
   var encryptedDataValue;
   var cseInstance = adyen.createEncryption(options);
-  encryptedDataValue = cseInstance.encrypt(cardData);
-  if(encryptedDataValue == false){
-      return false;
-  }
-  encryptedData.val(encryptedDataValue);
-  return true;
+    var validationResult = cseInstance.validate(cardData);
+    if(!validationResult.valid){
+        showValidation(validationResult);
+        return false;
+    }
+    else {
+        cardData.generationtime = $('#adyen_generationtime').val();
+        encryptedDataValue = cseInstance.encrypt(cardData);
+        encryptedData.val(encryptedDataValue);
+        return true;
+    }
+}
+
+function showValidation(validationResult){
+    for(var key in validationResult) {
+        if(validationResult[key] === false) {
+            switch (key) {
+                case "holderName":
+                    $('#holderName').addClass('is-invalid');
+                    break;
+                case "number":
+                    $('#cardNumber').addClass('is-invalid');
+                    break;
+                case "expiryMonth":
+                    $('#expirationMonth').addClass('is-invalid');
+                    break;
+                case "expiryYear":
+                    $('#expirationYear').addClass('is-invalid');
+                    break;
+                case "cvc":
+                    $('#securityCode').addClass('is-invalid');
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    $('#invalidCardDetails').show();
 }
 
 function maskValue(value) {
@@ -80,7 +123,7 @@ function displayPaymentMethods() {
   if ($('#directoryLookup').val() == 'true') {
     getPaymentMethods(function (data) {
       jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
-        addPaymentMethod(method, data.ImagePath);
+        addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
       });
 
       $('input[type=radio][name=brandCode]').change(function () {
@@ -101,7 +144,7 @@ function getPaymentMethods(paymentMethods) {
   });
 }
 
-function addPaymentMethod(paymentMethod, imagePath) {
+function addPaymentMethod(paymentMethod, imagePath, description) {
   var li = $('<li>').addClass('paymentMethod');
   li.append($('<input>')
     .attr('id', 'rb_' + paymentMethod.name)
@@ -110,13 +153,14 @@ function addPaymentMethod(paymentMethod, imagePath) {
     .attr('value', paymentMethod.brandCode));
   li.append($('<img>').addClass('paymentMethod_img').attr('src', imagePath + paymentMethod.brandCode + '.png'));
   li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
+  li.append($('<p>').text(description));
 
   var additionalFields = $('<div>').addClass('hppAdditionalFields')
     .attr('id', 'extraFields_' + paymentMethod.brandCode)
     .attr('style', 'display:none');
 
   if (paymentMethod.issuers) {
-    var issuers = $('<select>').attr('name', 'issuerId');
+    var issuers = $('<select>').attr('id', 'issuerList').attr('name', 'issuerId');
     jQuery.each(paymentMethod.issuers, function (i, issuer) {
       var issuer = $('<option>')
         .attr('label', issuer.name)

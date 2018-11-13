@@ -13,9 +13,11 @@ function Handle(basket, paymentInformation) {
       basket.removePaymentInstrument(item);
     });
 
-    basket.createPaymentInstrument(
+    var paymentInstrument = basket.createPaymentInstrument(
       'Adyen', basket.totalGrossPrice
     );
+      paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
+      paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
   });
 
   return { error: false };
@@ -29,13 +31,13 @@ function Handle(basket, paymentInformation) {
  *      payment method
  * @return {Object} returns an error object
  */
+
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   Transaction.wrap(function () {
     paymentInstrument.paymentTransaction.transactionID = orderNumber;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
-
-  return { authorized: true, error: false };
+    return { authorized: true, error: false };
 }
 
 exports.Handle = Handle;
