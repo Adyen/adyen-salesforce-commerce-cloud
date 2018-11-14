@@ -6,33 +6,17 @@ server.extend(module.superModule);
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
-function getEncryptedData() {
-  var paymentForm = server.forms.getForm('billing');
-  return paymentForm.creditCardFields.adyenEncryptedData.value;
-}
-
-
 server.append('SubmitPayment',
   server.middleware.https,
   function (req, res, next) {
     var viewData = res.getViewData();
-    viewData.adyenEncryptedData = getEncryptedData();
     var paymentForm = server.forms.getForm('billing');
 
-    viewData.paymentInformation = {
-      cardType: {
-        value: paymentForm.creditCardFields.cardType.value
-      },
-      cardNumber: {
-        value: paymentForm.creditCardFields.cardNumber.value
-      },
-      expirationMonth: {
-        value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
-      },
-      expirationYear: {
-        value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
-      }
-    };
+      viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
+      viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
+      viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
+      viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
+
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
     session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;

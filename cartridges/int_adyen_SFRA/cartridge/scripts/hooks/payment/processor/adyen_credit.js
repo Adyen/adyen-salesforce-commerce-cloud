@@ -18,12 +18,6 @@ function Handle(basket, paymentInformation) {
     var creditCardForm = server.forms.getForm('billing');
     var cardType = paymentInformation.cardType.value;
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-    var encryptedData = creditCardForm.creditCardFields.adyenEncryptedData.value;
-    var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        return {error: true};
-    }
 
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -38,10 +32,11 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
         else {
-            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
-            paymentInstrument.setCreditCardType(cardType);
+            //TODOBAS   Can not retrieve values from Secured Fields..
+            paymentInstrument.setCreditCardNumber("4111111111111111");
+            paymentInstrument.setCreditCardExpirationMonth(10);
+            paymentInstrument.setCreditCardExpirationYear(2020);
+            paymentInstrument.setCreditCardType("Visa");
         }
 
 

@@ -1,5 +1,15 @@
 <input type="hidden" class="cardNumber" value="" id="cardNumber" >
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
+<input type="hidden" class="form-control cardNumber" id="cardNumber" <isprint value=${creditFields.cardNumber.attributes} encoding="off"/> >
+<input type="hidden" class="form-control expirationMonth" id="expirationMonth" <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/> >
+<input type="hidden" class="form-control expirationYear" id="expirationYear" <isprint value=${creditFields.expirationYear.attributes} encoding="off"/> >
+<input type="hidden" class="form-control securityCode" id="securityCode" <isprint value=${creditFields.securityCode.attributes} encoding="off"/> >
+
+<input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber" <isprint value=${creditFields.adyenEncryptedCardNumber.attributes} encoding="off"/> >
+<input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" <isprint value=${creditFields.adyenEncryptedExpiryMonth.attributes} encoding="off"/> >
+<input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear" <isprint value=${creditFields.adyenEncryptedExpiryYear.attributes} encoding="off"/> >
+<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" <isprint value=${creditFields.adyenEncryptedSecurityCode.attributes} encoding="off"/> >
+
 <span id="errorLoadComponent"></span>
 
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
