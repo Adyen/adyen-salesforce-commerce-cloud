@@ -5,7 +5,7 @@
 
     const checkout = new AdyenCheckout(configuration);
     const cardNode = document.getElementById('card');
-
+    var card;
     getConfigurationSecureFields();
 
     var originKey = "";
@@ -17,7 +17,7 @@
     };
 
     function renderCardComponent() {
-        const card = checkout.create('card', {
+        card = checkout.create('card', {
             // Mandatory fields
             originKey: originKey,
             loadingContext: loadingContext, // The environment where we should loads the secured fields from
@@ -35,7 +35,7 @@
             onBinValue: function(bin) {} // Provides the BIN Number of the card (up to 6 digits), called as the user types in the PAN
         });
         card.mount(cardNode);
-    }
+    };
 
     function getConfigurationSecureFields() {
         $.ajax({
@@ -53,5 +53,19 @@
                 }
             }
         });
-    }
+    };
+
+
+    $('button[value="submit-payment"]').on('click', function (e) {
+        if($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
+            console.log('creditcardselected');
+            console.log(card.paymentData);
+            $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+            $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+            $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+            $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+        }
+    });
+
+
 

@@ -1,17 +1,11 @@
 <?xml version="1.0"?>
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
-
-    <!-- field for edit credit card number -->
-    <field
-        formid="editNumber"
-        label="label.input.creditcard.number"
-        type="string"
-        mandatory="false"
-        max-length="16"/>
-
     <field formid="paymentMethod" type="string" mandatory="true" />
 
     <field formid="cardType" label="profile.cardtype" type="string" mandatory="false" binding="cardType"
+           max-length="16" missing-error="error.message.required" />
+
+    <field formid="cardOwner" label="label.input.creditcard.owner" type="string" mandatory="false" binding="cardOwner"
            max-length="16" missing-error="error.message.required" />
 
     <field formid="cardNumber" label="label.input.creditcard.number" type="string" mandatory="false" binding="cardNumber"
@@ -49,6 +43,7 @@
     <field formid="securityCode" label="profile.securitycode" type="string" mandatory="false" binding="securityCode"
            max-length="4" missing-error="error.card.info.missing.securityCode" />
 
+
     <field formid="email" label="profile.email" type="string" mandatory="true" binding="email"
            max-length="254" missing-error="error.card.info.missing.email" />
 
@@ -58,7 +53,10 @@
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false" checked="false" />
     <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false" checked="true" />
 
-    <field formid="adyenEncryptedData" label="adyenEncryptedData" type="string" mandatory="false" binding="adyenEncryptedData"/>
+    <field formid="adyenEncryptedCardNumber" label="adyenEncryptedCardNumber" type="string" mandatory="false" binding="adyenEncryptedCardNumber"/>
+    <field formid="adyenEncryptedExpiryMonth" label="adyenEncryptedExpiryMonth" type="string" mandatory="false" binding="adyenEncryptedExpiryMonth"/>
+    <field formid="adyenEncryptedExpiryYear" label="adyenEncryptedExpiryYear" type="string" mandatory="false" binding="adyenEncryptedExpiryYear"/>
+    <field formid="adyenEncryptedSecurityCode" label="adyenEncryptedSecurityCode" type="string" mandatory="false" binding="adyenEncryptedSecurityCode"/>
 
     <!--  field  for  credit  card  recurring  payments  /  tokenization  -->
     <field formid="selectedCardID" mandatory="false" type="string"/>
