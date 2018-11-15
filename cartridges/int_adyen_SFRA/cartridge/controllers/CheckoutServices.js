@@ -17,6 +17,14 @@ server.append('SubmitPayment',
       viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
       viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
 
+      viewData.paymentInformation = {
+            cardType: {
+              value: paymentForm.creditCardFields.cardType.value
+            },
+            cardNumber: {
+              value: paymentForm.creditCardFields.cardNumber.value
+            }
+      };
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
     session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
@@ -135,11 +143,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  if (handlePaymentResult.issuerUrl != '' && handlePaymentResult.authorized3d) {
-    session.custom.MD = handlePaymentResult.md;
+  if (handlePaymentResult.redirectObject != '' && handlePaymentResult.authorized3d) {
+    session.custom.MD = handlePaymentResult.redirectObject.data.MD;
+
     res.json({
       error: false,
-      continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.issuerUrl, 'PaRequest', handlePaymentResult.paRequest, 'MD', handlePaymentResult.md).toString()
+      continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.redirectObject.url, 'PaRequest', handlePaymentResult.redirectObject.data.PaReq, 'MD', handlePaymentResult.redirectObject.data.MD).toString()
     });
     return next();
   }

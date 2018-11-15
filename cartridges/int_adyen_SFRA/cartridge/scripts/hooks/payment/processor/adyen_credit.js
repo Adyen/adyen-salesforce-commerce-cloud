@@ -16,7 +16,7 @@ function Handle(basket, paymentInformation) {
     var cardErrors = {};
     var serverErrors = [];
     var creditCardForm = server.forms.getForm('billing');
-    var cardType = paymentInformation.cardType.value;
+    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
 
     Transaction.wrap(function () {
@@ -32,14 +32,9 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
         else {
-            //TODOBAS   Can not retrieve values from Secured Fields..
-            paymentInstrument.setCreditCardNumber("4111111111111111");
-            paymentInstrument.setCreditCardExpirationMonth(10);
-            paymentInstrument.setCreditCardExpirationYear(2020);
-            paymentInstrument.setCreditCardType("Visa");
+            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+            paymentInstrument.setCreditCardType(cardType);
         }
-
-
 
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
@@ -61,6 +56,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
+
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -79,8 +75,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;
         return {
@@ -88,9 +88,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            issuerUrl: result.IssuerUrl,
-            paRequest: result.PaRequest,
-            md: result.MD
+            redirectObject : result.RedirectObject
         };
     }
 

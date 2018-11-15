@@ -34,7 +34,8 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
       Amount: paymentInstrument.paymentTransaction.amount,
       CurrentRequest: req.request,
       MD: req.form.MD,
-      PaResponse: req.form.PaRes
+      PaResponse: req.form.PaRes,
+        PaymentData: paymentInstrument.custom.adyenPaymentData
     });
 
     // if error, return to checkout page
