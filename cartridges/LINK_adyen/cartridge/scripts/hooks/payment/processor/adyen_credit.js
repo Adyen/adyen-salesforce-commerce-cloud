@@ -10,13 +10,12 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
-var Logger = require('dw/system/Logger');
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
     var creditCardForm = server.forms.getForm('billing');
-    var cardType = paymentInformation.cardType.value;
+    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
 
     Transaction.wrap(function () {
@@ -32,14 +31,9 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
         else {
-            //TODOBAS   Can not retrieve values from Secured Fields..
-            paymentInstrument.setCreditCardNumber("4111111111111111");
-            paymentInstrument.setCreditCardExpirationMonth(10);
-            paymentInstrument.setCreditCardExpirationYear(2020);
-            paymentInstrument.setCreditCardType("Visa");
+            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+            paymentInstrument.setCreditCardType(cardType);
         }
-
-
 
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
@@ -55,7 +49,6 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-    Logger.getLogger('Adyen').error('Authorize');
     var OrderMgr = require('dw/order/OrderMgr');
     var Transaction = require('dw/system/Transaction');
     var order = OrderMgr.getOrder(orderNumber);
@@ -63,7 +56,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var adyenCreditVerification = require('int_adyen/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
 
-    Logger.getLogger('Adyen').error('order = ' + order);
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -74,7 +66,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         SaveCreditCard: creditCardForm.saveCardAdyen.value
     });
 
-    Logger.getLogger('Adyen').error('order = ' + order);
     if (result.error) {
         var errors = [];
         errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
@@ -83,8 +74,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;
         return {
@@ -92,9 +87,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            issuerUrl: result.IssuerUrl,
-            paRequest: result.PaRequest,
-            md: result.MD
+            redirectObject : result.RedirectObject
         };
     }
 

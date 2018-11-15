@@ -4,6 +4,7 @@
 <input type="hidden" class="form-control expirationMonth" id="expirationMonth" <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/> >
 <input type="hidden" class="form-control expirationYear" id="expirationYear" <isprint value=${creditFields.expirationYear.attributes} encoding="off"/> >
 <input type="hidden" class="form-control securityCode" id="securityCode" <isprint value=${creditFields.securityCode.attributes} encoding="off"/> >
+<input type="hidden" class="form-control" id="cardType" <isprint value=${creditFields.cardType.attributes} encoding="off"/> >
 
 <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber" <isprint value=${creditFields.adyenEncryptedCardNumber.attributes} encoding="off"/> >
 <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" <isprint value=${creditFields.adyenEncryptedExpiryMonth.attributes} encoding="off"/> >

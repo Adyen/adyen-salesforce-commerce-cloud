@@ -6,6 +6,7 @@
     const checkout = new AdyenCheckout(configuration);
     const cardNode = document.getElementById('card');
     var card;
+    var isValid = false;
     getConfigurationSecureFields();
 
     var originKey = "";
@@ -24,15 +25,26 @@
             type: 'card',
 
             // Events
-            onChange: function() {}, // Gets triggered whenever a user changes input
-            onValid : function() {}, // Gets triggered when all fields are valid.
+            onChange: function() {
+                isValid = false;
+            }, // Gets triggered whenever a user changes input
+            onValid : function() {
+                isValid = true;
+            }, // Gets triggered when all fields are valid.
             onLoad: function() {}, // Called once all the secured fields have been created (but are not yet ready to use)
             onConfigSuccess: function() {}, // Called once the secured fields are ready to use
             onFieldValid : function() {}, // Called as a specific secured field is validated and encrypted.
-            onBrand: function() {}, // Called once we detect the card brand
-            onError: function() {}, // Called in the case of invalid card number / invalid expiry date / incomplete field.
+            onBrand: function(brandObject) {
+                $('#cardType').val(brandObject.brand);
+            }, // Called once we detect the card brand
+            onError: function() {
+
+            }, // Called in the case of invalid card number / invalid expiry date / incomplete field.
             onFocus: function() {}, // Called when a secured field gains or loses focus
-            onBinValue: function(bin) {} // Provides the BIN Number of the card (up to 6 digits), called as the user types in the PAN
+            onBinValue: function(bin) {
+                console.log(bin);
+                $('#cardNumber').val(bin.binValue);
+            } // Provides the BIN Number of the card (up to 6 digits), called as the user types in the PAN
         });
         card.mount(cardNode);
     };
@@ -58,12 +70,15 @@
 
     $('button[value="submit-payment"]').on('click', function (e) {
         if($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
-            console.log('creditcardselected');
-            console.log(card.paymentData);
-            $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
-            $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
-            $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
-            $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+            if(!isValid){
+                return false;
+            }
+            else {
+                $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+                $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+                $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+                $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+            }
         }
     });
 
