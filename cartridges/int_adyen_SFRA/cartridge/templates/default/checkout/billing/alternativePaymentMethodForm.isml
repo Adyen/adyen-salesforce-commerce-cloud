@@ -1,7 +1,7 @@
 <!--- TEMPLATENAME: alternativePaymentMethodForm.isml --->
 <iscontent compact="true"/>
 
-
+<isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <input id="OpenInvoiceWhiteList" type="hidden" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}">
 <input id="directoryLookup" type="hidden" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}">
 
