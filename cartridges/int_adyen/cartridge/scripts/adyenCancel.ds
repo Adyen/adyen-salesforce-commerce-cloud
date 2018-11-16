@@ -52,11 +52,6 @@ function cancel( order : Order ) : Number
 		return PIPELET_ERROR;
 	}
 	
-	if (endpoint == null) {
-		Logger.getLogger("Adyen").fatal(fatalErrMsgPrefix + "Pal service URL is not set.");
-		return PIPELET_ERROR;
-	}
-	
 	// Get order values needed for the API call
 	var pspReference : String = order.custom.Adyen_pspReference;
 	if (pspReference == null) {

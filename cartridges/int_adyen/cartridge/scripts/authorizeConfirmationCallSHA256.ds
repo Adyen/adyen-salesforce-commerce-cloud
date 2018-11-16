@@ -27,11 +27,11 @@ function execute( args : PipelineDictionary ) : Number
 }
 
 function authorize( args : PipelineDictionary ) : Boolean {
-	if(empty(args.merchantSig))  {
+	if(empty(args.MerchantSig))  {
 	    return false;
 	}
 	
-	var merchantSig : String = args.merchantSig;
+	var merchantSig : String = args.MerchantSig;
 	//Compute the signature from the parameters values and the set hmackey
 	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
 	
