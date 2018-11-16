@@ -16,8 +16,8 @@ var Cart = require(Resource.msg('script.models.cartmodel', 'require', null));
  */
 function Handle(args) {
     var cart = Cart.get(args.Basket);
-    var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
-    var adyenRemovePreviousPI = require('int_adyen/cartridge/scripts/adyenRemovePreviousPI');
+    var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+    var adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI');
     var result;
 
     Transaction.wrap(function () {
@@ -78,7 +78,7 @@ function Handle(args) {
  * Call the  Adyen API to Authorize CC using details entered by shopper.
  */
 function Authorize(args) {
-    var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
+    var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
     // TODO: check is that one needed
     if (args.RequestID) {
@@ -94,7 +94,7 @@ function Authorize(args) {
     });
 
     // ScriptFile	adyenCreditVerification.ds
-    var adyenCreditVerification = require('int_adyen/cartridge/scripts/adyenCreditVerification');
+    var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
     var result = adyenCreditVerification.verify({
         Order: order,

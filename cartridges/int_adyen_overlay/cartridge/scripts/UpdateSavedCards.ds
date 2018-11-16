@@ -11,7 +11,7 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Transaction = require('dw/system/Transaction');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 function execute(args) {
     var result = updateSavedCards(args);
@@ -120,7 +120,7 @@ function deleteExpiredCards(customer) {
 }
 
 function getRecurringDetails(customer) {
-    var GetRecurringDetailsList = require('int_adyen/cartridge/scripts/adyenGetRecurringDetailsList.ds');
+    var GetRecurringDetailsList = require('int_adyen_overlay/cartridge/scripts/adyenGetRecurringDetailsList.ds');
     var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
         Customer: customer
     });

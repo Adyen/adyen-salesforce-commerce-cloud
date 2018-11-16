@@ -23,7 +23,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_adyen:checkNotificationAuth.ds"/>
+          <config-property key="ScriptFile" value="int_adyen_overlay:checkNotificationAuth.ds"/>
           <key-binding alias="Log" key="ScriptLog"/>
           <key-binding alias="RequestAuthenticated" key="Authenticated"/>
           <key-binding alias="CurrentRequest" key="CurrentRequest"/>
@@ -52,7 +52,7 @@
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:handleNotify.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:handleNotify.ds"/>
                 <key-binding alias="Log" key="ScriptLog"/>
                 <key-binding alias="CurrentHttpParameterMap" key="CurrentHttpParameterMap"/>
               </pipelet-node>
@@ -164,7 +164,7 @@ after saving order etc.</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_adyen:adyenRedirectVerificationSHA256.ds"/>
+          <config-property key="ScriptFile" value="int_adyen_overlay:adyenRedirectVerificationSHA256.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="merchantSig" key="merchantSig"/>
           <key-binding alias="CurrentSession" key="CurrentSession"/>
@@ -251,7 +251,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:authorizeConfirmationCallSHA256.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:authorizeConfirmationCallSHA256.ds"/>
                 <key-binding alias="ScriptLog" key="ScriptLog"/>
                 <key-binding alias="CurrentHttpParameterMap.authResult.stringValue" key="AuthResult"/>
                 <key-binding alias="CurrentHttpParameterMap.merchantReference.getStringValue()" key="MerchantReference"/>
@@ -329,7 +329,7 @@ after saving order etc.</description>
                           <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                             <config-property key="Transactional" value="false"/>
                             <config-property key="OnError" value="PIPELET_ERROR"/>
-                            <config-property key="ScriptFile" value="int_adyen:copyAuthorizationToTransaction.ds"/>
+                            <config-property key="ScriptFile" value="int_adyen_overlay:copyAuthorizationToTransaction.ds"/>
                             <key-binding alias="null" key="ScriptLog"/>
                             <key-binding alias="CurrentHttpParameterMap" key="map"/>
                             <key-binding alias="Order" key="order"/>
@@ -564,7 +564,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:getPaymentMethodsSHA256.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:getPaymentMethodsSHA256.ds"/>
                 <key-binding alias="Log" key="ScriptLog"/>
                 <key-binding alias="AdyenHppPaymentMethods" key="PaymentMethods"/>
                 <key-binding alias="Basket" key="Basket"/>
@@ -667,7 +667,7 @@ after saving order etc.</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_adyen:adyenRemovePreviousPI.ds"/>
+          <config-property key="ScriptFile" value="int_adyen_overlay:adyenRemovePreviousPI.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
         </pipelet-node>
@@ -681,7 +681,7 @@ after saving order etc.</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_adyen:createAdyenPaymentInstrument.ds"/>
+          <config-property key="ScriptFile" value="int_adyen_overlay:createAdyenPaymentInstrument.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
         </pipelet-node>
@@ -814,7 +814,7 @@ after saving order etc.</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_adyen:readOpenInvoiceRequest.ds"/>
+          <config-property key="ScriptFile" value="int_adyen_overlay:readOpenInvoiceRequest.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="OpenInvoiceReference" key="openInvoiceReference"/>
           <key-binding alias="CurrentHttpParameterMap" key="httpParameterMap"/>
@@ -884,7 +884,7 @@ after saving order etc.</description>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="false"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_adyen:buildOpenInvoiceResponse.ds"/>
+                      <config-property key="ScriptFile" value="int_adyen_overlay:buildOpenInvoiceResponse.ds"/>
                       <key-binding alias="Log" key="ScriptLog"/>
                       <key-binding alias="Order" key="Order"/>
                       <key-binding alias="OpenInvoiceResponse" key="openInvoiceResponse"/>
@@ -982,7 +982,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:adyenHppRefusedPayment.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:adyenHppRefusedPayment.ds"/>
                 <key-binding alias="CurrentHttpParameterMap" key="CurrentHttpParameterMap"/>
                 <key-binding alias="Order" key="Order"/>
               </pipelet-node>
@@ -1094,7 +1094,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:adyenHppCancelledPayment.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:adyenHppCancelledPayment.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="CurrentHttpParameterMap" key="CurrentHttpParameterMap"/>
                 <key-binding alias="Order" key="Order"/>
@@ -1158,7 +1158,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:adyenHppPendingPayment.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:adyenHppPendingPayment.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="CurrentHttpParameterMap" key="CurrentHttpParameterMap"/>
                 <key-binding alias="Order" key="Order"/>
@@ -1287,7 +1287,7 @@ after saving order etc.</description>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_adyen:adyenCapture.ds"/>
+                      <config-property key="ScriptFile" value="int_adyen_overlay:adyenCapture.ds"/>
                       <key-binding alias="null" key="ScriptLog"/>
                       <key-binding alias="Order" key="Order"/>
                       <key-binding alias="CaptureDecision" key="Decision"/>
@@ -1421,7 +1421,7 @@ after saving order etc.</description>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_adyen:adyenCancel.ds"/>
+                      <config-property key="ScriptFile" value="int_adyen_overlay:adyenCancel.ds"/>
                       <key-binding alias="null" key="ScriptLog"/>
                       <key-binding alias="Order" key="Order"/>
                       <key-binding alias="CancelDecision" key="Decision"/>
@@ -1555,7 +1555,7 @@ after saving order etc.</description>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_adyen:adyenCancelOrRefund.ds"/>
+                      <config-property key="ScriptFile" value="int_adyen_overlay:adyenCancelOrRefund.ds"/>
                       <key-binding alias="null" key="ScriptLog"/>
                       <key-binding alias="Order" key="Order"/>
                       <key-binding alias="CancelOrRefundDecision" key="Decision"/>
@@ -1689,7 +1689,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:handleCustomObject.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:handleCustomObject.ds"/>
                 <key-binding alias="Log" key="ScriptLog"/>
                 <key-binding alias="EventCode" key="EventCode"/>
                 <key-binding alias="CustomObj" key="CustomObj"/>
@@ -2022,7 +2022,7 @@ after saving order etc.</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_adyen:deleteCustomObjects.ds"/>
+                <config-property key="ScriptFile" value="int_adyen_overlay:deleteCustomObjects.ds"/>
                 <key-binding alias="Log" key="ScriptLog"/>
                 <key-binding alias="orderID" key="orderID"/>
               </pipelet-node>

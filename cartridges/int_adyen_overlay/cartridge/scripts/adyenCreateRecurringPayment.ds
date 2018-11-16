@@ -12,8 +12,8 @@
 var Logger = require('dw/system/Logger');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
-var THIS_SCRIPT = 'int_adyen/scripts/adyenCreateRecurringPayment.ds';
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var THIS_SCRIPT = 'int_adyen_overlay/scripts/adyenCreateRecurringPayment.ds';
 
 function execute(args) {
     var result = createRecurringPayment(args);

@@ -11,8 +11,8 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
  * Creates a Adyen payment instrument for the given basket
  */
 function handle(args) {
-	var	adyenRemovePreviousPI = require('int_adyen/cartridge/scripts/adyenRemovePreviousPI'),
-	adyenPaymentInstrument = require('int_adyen/cartridge/scripts/createAdyenPaymentInstrument'),
+	var	adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI'),
+	adyenPaymentInstrument = require('int_adyen_overlay/cartridge/scripts/createAdyenPaymentInstrument'),
 	result;
 	
     Transaction.wrap(function () {

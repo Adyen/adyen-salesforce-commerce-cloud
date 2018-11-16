@@ -314,7 +314,7 @@ var __AdyenHelper : Object = {
         };
 
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
-        var CreateRecurringPayment = require('int_adyen/cartridge/scripts/adyenCreateRecurringPayment.ds');
+        var CreateRecurringPayment = require('int_adyen_overlay/cartridge/scripts/adyenCreateRecurringPayment.ds');
         var createRecurringPaymentResult = CreateRecurringPayment.createRecurringPayment({RequestObject: requestObject});
 
         if (createRecurringPaymentResult === PIPELET_ERROR || createRecurringPaymentResult.Decision == 'ERROR') {
@@ -325,7 +325,7 @@ var __AdyenHelper : Object = {
 
         if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('PspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.PspReference)) {
             pspReference = createRecurringPaymentResult.PspReference;
-            var GetRecurringDetailsList = require('int_adyen/cartridge/scripts/adyenGetRecurringDetailsList.ds');
+            var GetRecurringDetailsList = require('int_adyen_overlay/cartridge/scripts/adyenGetRecurringDetailsList.ds');
             var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
                 Customer: params.Customer
             });
