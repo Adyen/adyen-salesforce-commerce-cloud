@@ -64,6 +64,7 @@ function encryptData(cardData, options) {
   var encryptedDataValue;
   var cseInstance = adyen.createEncryption(options);
     var validationResult = cseInstance.validate(cardData);
+    $('#invalidCardDetails').hide();
     if(!validationResult.valid){
         showValidation(validationResult);
         return false;
@@ -77,6 +78,7 @@ function encryptData(cardData, options) {
 }
 
 function showValidation(validationResult){
+    clearValidations();
     for(var key in validationResult) {
         if(validationResult[key] === false) {
             switch (key) {
@@ -101,6 +103,14 @@ function showValidation(validationResult){
         }
     }
     $('#invalidCardDetails').show();
+}
+
+function clearValidations(){
+    $('#holderName').removeClass('is-invalid');
+    $('#cardNumber').removeClass('is-invalid');
+    $('#expirationMonth').removeClass('is-invalid');
+    $('#expirationYear').removeClass('is-invalid');
+    $('#securityCode').removeClass('is-invalid');
 }
 
 function maskValue(value) {
