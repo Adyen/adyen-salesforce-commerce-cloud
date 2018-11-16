@@ -106,6 +106,7 @@
         </div>
     </div>
 </div>
+<span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 
 <div class="row">
     <div class="col">

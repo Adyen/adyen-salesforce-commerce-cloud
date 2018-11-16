@@ -10,7 +10,9 @@ $(document).ready(function () { // eslint-disable-line
     $('.error-message-text').text(decodeURIComponent(error[1]));
   }
 
-  processInclude(require('base/checkout/checkout'));
+    processInclude(require('base/checkout/checkout'));
+    processInclude(require('./checkout/billing'));
+    processInclude(require('./checkout/checkout'));
 
   $('#selectedPaymentOption').val($('.payment-options .nav-item .active').parent().attr('data-method-id'));
 });

@@ -1,3 +1,6 @@
 <!--- TEMPLATENAME: alternativePaymentMethodSummary.isml --->
 <iscontent compact="true"/>
-Adyen payment method
+<div>${payment.selectedAdyenPM}</div>
+<isif condition="${payment.selectedIssuerName != null}">
+        <div>${payment.selectedIssuerName}</div>
+</isif>

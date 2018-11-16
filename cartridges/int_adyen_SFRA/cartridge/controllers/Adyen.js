@@ -155,7 +155,8 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
   var BasketMgr = require('dw/order/BasketMgr');
-  var	getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
+  var Resource = require('dw/web/Resource');
+  var getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
   var paymentMethods;
   try {
     paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
@@ -163,9 +164,15 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     paymentMethods = [];
   }
 
+  var descriptions = [];
+  paymentMethods.forEach(function (method){
+     descriptions.push({ brandCode : method.brandCode, description : Resource.msg('hpp.description.' + method.brandCode, 'hpp', "")});
+   })
+
   res.json({
-    AdyenHppPaymentMethods: paymentMethods,
-    ImagePath: URLUtils.staticURL('/images/').toString()
+      AdyenHppPaymentMethods: paymentMethods,
+      ImagePath: URLUtils.staticURL('/images/').toString(),
+      AdyenDescriptions : descriptions
   });
   return next();
 });
@@ -189,6 +196,8 @@ function clearCustomSessionFields() {
   session.custom.order = null;
   session.custom.brandCode = null;
   session.custom.issuerId = null;
+  session.custom.adyenPaymentMethod = null;
+  session.custom.adyenIssuerName = null;
 }
 
 module.exports = server.exports();
