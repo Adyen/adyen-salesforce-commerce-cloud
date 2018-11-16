@@ -31,7 +31,6 @@ importScript('libs/libAdyen.ds');
 
 //script include
 var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
-var Logger = require('dw/system/Logger');
 
 function execute( args : PipelineDictionary ) : Number
 {

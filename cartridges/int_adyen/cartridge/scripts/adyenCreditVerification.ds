@@ -200,7 +200,6 @@ function verify(args) {
         if ('redirect' in responseObj) {args.RedirectObject = responseObj.redirect;} // issuerUrl
         args.ResultCode = responseObj.resultCode; // resultCode
 
-        //args.AuthorizationCode = ('authCode' in responseObj && !empty(responseObj.authCode) ? responseObj.authCode : '');
         args.PspReference = ('pspReference' in responseObj && !empty(responseObj.pspReference) ? responseObj.pspReference : '');
         args.PaymentStatus = resultObj.errorText;
         args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
