@@ -12,7 +12,7 @@ server.append(
   userLoggedIn.validateLoggedIn,
   consentTracking.consent,
   function (req, res, next) {
-    require('int_adyen/cartridge/scripts/UpdateSavedCards').updateSavedCards({ CurrentCustomer: req.currentCustomer.raw });
+    require('int_adyen_overlay/cartridge/scripts/UpdateSavedCards').updateSavedCards({ CurrentCustomer: req.currentCustomer.raw });
     next();
   }
 );

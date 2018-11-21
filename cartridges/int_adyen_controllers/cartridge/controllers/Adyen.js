@@ -14,7 +14,7 @@ var Transaction = require('dw/system/Transaction');
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
-var AdyenHelper = require('int_adyen/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 var OrderModel = app.getModel('Order');
 
@@ -28,7 +28,7 @@ var OrderModel = app.getModel('Order');
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 function notify() {
-    var	checkAuth = require('int_adyen/cartridge/scripts/checkNotificationAuth');
+    var	checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
 	
     var status = checkAuth.check(request);
     if (!status) {
@@ -36,7 +36,7 @@ function notify() {
     	return {};
 	}
 
-	var	handleNotify = require('int_adyen/cartridge/scripts/handleNotify');
+	var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
 	Transaction.wrap(function () {
    		handleNotify.notify(request.httpParameterMap);
 	});
@@ -47,7 +47,7 @@ function notify() {
  * Redirect to Adyen after saving order etc.
  */
 function redirect(order) {
-	var	adyenVerificationSHA256 = require('int_adyen/cartridge/scripts/adyenRedirectVerificationSHA256'),
+	var	adyenVerificationSHA256 = require('int_adyen_overlay/cartridge/scripts/adyenRedirectVerificationSHA256'),
 	result;
 	
 	Transaction.wrap(function () {
@@ -117,7 +117,7 @@ function showConfirmation() {
 			requestMap[item] = request.httpParameterMap.get(item).getStringValue();
 		}
 		
-		var	authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
+		var	authorizeConfirmation = require('int_adyen_overlay/cartridge/scripts/authorizeConfirmationCallSHA256');
     	var authorized = authorizeConfirmation.authorize(requestMap);
     	if (!authorized) {
     		app.getController('Error').Start();
@@ -172,7 +172,7 @@ function getPaymentMethods(cart) {
     // TODO: check is that used CSE Enabled (AdyenCseEnabled) Site.getCurrent().getCustomPreferenceValue("AdyenCseEnabled");
     // Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")
     if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
-        var	getPaymentMethods = require('int_adyen/cartridge/scripts/getPaymentMethodsSHA256');
+        var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/getPaymentMethodsSHA256');
         return getPaymentMethods.getMethods(cart.object);
     }
     return {};
@@ -184,7 +184,7 @@ function getPaymentMethods(cart) {
 function getPaymentMethodsJSON() {
 	var cart = app.getModel('Cart').get();
     if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
-    	var	getPaymentMethods = require('int_adyen/cartridge/scripts/getPaymentMethodsSHA256');
+    	var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/getPaymentMethodsSHA256');
     	var json = JSON.stringify(getPaymentMethods.getMethods(cart.object, request.httpParameterMap.country.getStringValue()));
     }
     app.getView({
@@ -204,7 +204,7 @@ function getTerminals() {
  * Get orderdata for the Afterpay Payment method
  */
 function afterpay() {
-	var	readOpenInvoiceRequest = require('int_adyen/cartridge/scripts/readOpenInvoiceRequest');
+	var	readOpenInvoiceRequest = require('int_adyen_overlay/cartridge/scripts/readOpenInvoiceRequest');
    	var invoice = readOpenInvoiceRequest.getInvoiceParams(request.httpParameterMap);
    	var order = OrderMgr.getOrder(invoice.penInvoiceReference);
    	// show error if data mismach
@@ -218,7 +218,7 @@ function afterpay() {
    		return {};
    	}
    	
-   	var	buildOpenInvoiceResponse = require('int_adyen/cartridge/scripts/buildOpenInvoiceResponse');
+   	var	buildOpenInvoiceResponse = require('int_adyen_overlay/cartridge/scripts/buildOpenInvoiceResponse');
    	var invoiceResponse = buildOpenInvoiceResponse.getInvoiceResponse(order);
    	app.getView({OpenInvoiceResponse:invoiceResponse}).render('afterpay');
 }
@@ -229,7 +229,7 @@ function afterpay() {
  */
 function refusedPayment(order) {
     if (request.httpParameterMap.authResult.value == 'REFUSED') {
-		var	adyenHppRefusedPayment = require('int_adyen/cartridge/scripts/adyenHppRefusedPayment.ds');
+		var	adyenHppRefusedPayment = require('int_adyen_overlay/cartridge/scripts/adyenHppRefusedPayment.ds');
 		Transaction.wrap(function () {
 			adyenHppRefusedPayment.handle(request.httpParameterMap, order);
 		});
@@ -244,7 +244,7 @@ function refusedPayment(order) {
  */
 function cancelledPayment(order) {
     if (request.httpParameterMap.authResult.value == 'CANCELLED') {
-		var	adyenHppCancelledPayment = require('int_adyen/cartridge/scripts/adyenHppCancelledPayment');
+		var	adyenHppCancelledPayment = require('int_adyen_overlay/cartridge/scripts/adyenHppCancelledPayment');
 		Transaction.wrap(function () {
 			adyenHppCancelledPayment.handle(request.httpParameterMap, order);
 		});
@@ -258,7 +258,7 @@ function cancelledPayment(order) {
  */
 function pendingPayment(order) {
 	if (request.httpParameterMap.authResult.value == 'PENDING') {
-		var	adyenHppPendingPayment = require('int_adyen/cartridge/scripts/adyenHppPendingPayment');
+		var	adyenHppPendingPayment = require('int_adyen_overlay/cartridge/scripts/adyenHppPendingPayment');
 		Transaction.wrap(function () {
 			adyenHppPendingPayment.handle(request.httpParameterMap, order);
 		});
@@ -286,7 +286,7 @@ function capture(args) {
 	}
 
 	
-	var	adyenCapture = require('int_adyen/cartridge/scripts/adyenCapture'), result;
+	var	adyenCapture = require('int_adyen_overlay/cartridge/scripts/adyenCapture'), result;
     Transaction.wrap(function () {
 		result = adyenCapture.capture(order);
 	});
@@ -318,7 +318,7 @@ function cancel() {
 	}
 
 	
-	var	adyenCancel = require('int_adyen/cartridge/scripts/adyenCancel'), result;
+	var	adyenCancel = require('int_adyen_overlay/cartridge/scripts/adyenCancel'), result;
     Transaction.wrap(function () {
 		result = adyenCancel.cancel(order);
 	});
@@ -350,7 +350,7 @@ function cancelOrRefund() {
 	}
 
 	
-	var	adyenCapture = require('int_adyen/cartridge/scripts/adyenCapture'), result;
+	var	adyenCapture = require('int_adyen_overlay/cartridge/scripts/adyenCapture'), result;
     Transaction.wrap(function () {
 		result = adyenCapture.capture(order);
 	});
@@ -369,7 +369,7 @@ function cancelOrRefund() {
  */
 function authorizeWithForm()
 {
-	var	adyen3DVerification = require('int_adyen/cartridge/scripts/adyen3DVerification'), result,
+	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result,
 	order = session.custom.order,
 	paymentInstrument = session.custom.paymentInstrument,
 	adyenResponse  = session.custom.adyenResponse;

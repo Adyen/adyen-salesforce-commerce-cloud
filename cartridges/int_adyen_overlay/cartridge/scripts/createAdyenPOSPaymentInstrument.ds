@@ -13,7 +13,7 @@ importPackage( dw.util );
 importPackage( dw.value );
 importPackage( dw.web );
 
-importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_adyen', 'app_storefront_core') + ':checkout/Utils.ds' );
+importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_adyen_overlay', 'app_storefront_core') + ':checkout/Utils.ds' );
 
 function execute( args : PipelineDictionary ) : Number
 {

@@ -30,7 +30,7 @@ importPackage( dw.svc );
 importScript('libs/libAdyen.ds');
 
 //script include
-var AdyenHelper = require ("int_adyen/cartridge/scripts/util/AdyenHelper");
+var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
 function execute( args : PipelineDictionary ) : Number
 {

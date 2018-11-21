@@ -24,7 +24,7 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
 });
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
-  var adyen3DVerification = require('int_adyen/cartridge/scripts/adyen3DVerification');
+  var adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification');
   var order = session.custom.order;
   var paymentInstrument = session.custom.paymentInstrument;
   if (session.custom.MD == req.form.MD) {
@@ -74,7 +74,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
 });
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
-  var	adyenVerificationSHA256 = require('int_adyen/cartridge/scripts/adyenRedirectVerificationSHA256');
+  var	adyenVerificationSHA256 = require('int_adyen_overlay/cartridge/scripts/adyenRedirectVerificationSHA256');
 
 
   var result;
@@ -125,7 +125,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
       }
     }
 
-    var authorizeConfirmation = require('int_adyen/cartridge/scripts/authorizeConfirmationCallSHA256');
+    var authorizeConfirmation = require('int_adyen_overlay/cartridge/scripts/authorizeConfirmationCallSHA256');
     var authorized = authorizeConfirmation.authorize(requestMap);
     if (!authorized) {
       res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
