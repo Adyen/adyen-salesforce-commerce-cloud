@@ -44,8 +44,6 @@ function Handle(basket, paymentInformation) {
             paymentInstrument.setCreditCardType(cardType);
         }
 
-
-
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }
@@ -127,6 +125,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
     paymentInstrument.paymentTransaction.transactionID = result.PspReference;
+    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+
     Transaction.commit();
 
     return { authorized: true, error: false };

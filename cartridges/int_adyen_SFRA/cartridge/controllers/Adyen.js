@@ -171,6 +171,24 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
 });
 
 /**
+ * Called by Adyen to update status of payments. It should always display [accepted] when finished.
+ */
+server.post('Notify', server.middleware.https, function (req, res, next) {
+    var	checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
+    var status = checkAuth.check(req);
+    if (!status) {
+        res.render('/error');
+        return {};
+    }
+    var	handleNotify = require('*/cartridge/scripts/handleNotify');
+    Transaction.wrap(function () {
+        handleNotify.notify(req.form);
+    });
+    res.render('/notify');
+    next();
+});
+
+/**
  * Clear system session data
  */
 function clearForms() {
