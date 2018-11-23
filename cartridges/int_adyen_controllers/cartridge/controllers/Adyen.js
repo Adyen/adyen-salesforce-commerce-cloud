@@ -38,7 +38,7 @@ function notify() {
 
 	var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
 	Transaction.wrap(function () {
-   		handleNotify.notify(request.httpParameterMap);
+   		handleNotify.notify(request.httpParameterMap, true);
 	});
 	app.getView().render('notify');
 }
