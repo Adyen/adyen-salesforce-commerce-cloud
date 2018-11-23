@@ -1,0 +1,53 @@
+{
+  "name": "int_adyen_SFRA",
+  "version": "0.0.1",
+  "description": "New SFRA cartridge",
+  "main": "index.js",
+  "paths": {
+    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+  },
+  "scripts": {
+    "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
+    "upload": "sgmf-scripts --upload -- ",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA",
+    "watch": "sgmf-scripts --watch",
+    "compile:js": "sgmf-scripts --compile js",
+    "compile:scss": "sgmf-scripts --compile css"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "cleave.js": "^1.0.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "css-loader": "^1.0.0",
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-base": "^5.0.3",
+    "eslint-formatter-pretty": "^1.3.0",
+    "eslint-formatter-summary": "^1.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "istanbul": "^0.4.4",
+    "mocha": "^5.2.0",
+    "node-sass": "^4.9.4",
+    "postcss-loader": "^3.0.0",
+    "proxyquire": "1.7.4",
+    "resolve-url-loader": "^3.0.0",
+    "sass-loader": "^7.1.0",
+    "serviceworker-webpack-plugin": "^1.0.0-alpha02",
+    "sgmf-scripts": "^2.1.1",
+    "sinon": "^1.17.4",
+    "style-loader": "^0.23.1",
+    "stylelint": "^7.1.0",
+    "stylelint-config-standard": "^12.0.0",
+    "stylelint-scss": "^1.3.4",
+    "webpack": "^4.20.2", 
+    "webpack-cli": "^3.1.2"
+  }
+}
