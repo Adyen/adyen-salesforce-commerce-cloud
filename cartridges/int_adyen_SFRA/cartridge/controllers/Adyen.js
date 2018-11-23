@@ -182,7 +182,7 @@ server.post('Notify', server.middleware.https, function (req, res, next) {
     }
     var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
     Transaction.wrap(function () {
-        handleNotify.notify(req.form, false);
+        handleNotify.notify(req.form);
     });
     res.render('/notify');
     next();

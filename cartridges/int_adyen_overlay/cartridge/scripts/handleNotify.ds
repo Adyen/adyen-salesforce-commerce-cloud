@@ -18,27 +18,29 @@ importPackage( dw.object );
 
 function execute( args : PipelineDictionary ) : Number
 {
-	return notify(args.CurrentHttpParameterMap, true);
+	return notifyHttpParameterMap(args.CurrentHttpParameterMap);
 }
 
-function notify (hpm, isHttpParameterMap) {
-    var notificationData = {};
-    if(isHttpParameterMap){
-        for each (var param in hpm.parameterNames) {
-            notificationData[param] = hpm[param].stringValue;
-        }
+function notifyHttpParameterMap (hpm) {
+    if (hpm == null) {
+        Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
+        return PIPELET_NEXT;
     }
-    else {
-        notificationData = hpm;
+    var notificationData = {};
+    for each (var param in hpm.parameterNames) {
+        notificationData[param] = hpm[param].stringValue;
     }
 
+    return notify(notificationData);
+}
+function notify (notificationData) {
     // Check the input parameters
     if (notificationData == null) {
         Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
         return PIPELET_NEXT;
     }
-    try {
 
+    try {
         var msg : String = createLogMessage(notificationData);
         Logger.getLogger("Adyen").debug(msg);
 
@@ -51,12 +53,6 @@ function notify (hpm, isHttpParameterMap) {
             }
             catch (e) {
             }
-        }
-
-        // Check the input parameters
-        if (hpm == null) {
-            Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
-            return PIPELET_NEXT;
         }
 
         switch(notificationData.eventCode) {
@@ -108,5 +104,6 @@ function createLogMessage(notificationData){
 
 module.exports = {
 	'execute': execute,
-	'notify': notify
+	'notify': notify,
+    'notifyHttpParameterMap': notifyHttpParameterMap
 }
