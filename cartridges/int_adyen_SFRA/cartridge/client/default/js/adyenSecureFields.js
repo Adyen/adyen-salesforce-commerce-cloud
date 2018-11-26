@@ -94,6 +94,24 @@
         });
     };
 
+
+    $('button[value="submit-payment"]').on('click', function (e) {
+        if($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
+            if(!isValid){
+                return false;
+            }
+            else {
+                $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+                $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+                $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+                $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+            }
+        }
+    });
+
+
+    };
+
     $('.payment-summary .edit-button').on('click', function (e) {
         jQuery.each(oneClickCard, function(i) {
             oneClickCard[i].unmount();
