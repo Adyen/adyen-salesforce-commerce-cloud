@@ -61,6 +61,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     Transaction.begin();
+
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,

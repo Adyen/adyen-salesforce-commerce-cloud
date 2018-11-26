@@ -5,6 +5,9 @@
     <field formid="cardType" label="profile.cardtype" type="string" mandatory="false" binding="cardType"
            max-length="16" missing-error="error.message.required" />
 
+    <field formid="cardOwner" label="label.input.creditcard.owner" type="string" mandatory="false" binding="cardOwner"
+           max-length="16" missing-error="error.message.required" />
+
     <field formid="cardNumber" label="label.input.creditcard.number" type="string" mandatory="false" binding="cardNumber"
            max-length="20" missing-error="error.message.required" parse-error="error.message.required" />
 
