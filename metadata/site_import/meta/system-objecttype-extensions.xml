@@ -48,6 +48,45 @@
         </group-definitions>
     </type-extension>
 
+    <type-extension type-id="OrderPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="adyenIssuerName">
+                <display-name xml:lang="x-default">adyenIssuerName</display-name>
+                <description xml:lang="x-default">Selected issuer name</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="adyenPaymentMethod">
+                <display-name xml:lang="x-default">adyenPaymentMethod</display-name>
+                <description xml:lang="x-default">paymentMethod used by shopper</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="adyenPaymentData">
+                <display-name xml:lang="x-default">adyenPaymentData</display-name>
+                <description xml:lang="x-default">Adyen PaymentData 3D Secure</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="AdyenPayment">
+                <display-name xml:lang="x-default">AdyenPayment</display-name>
+                <attribute attribute-id="adyenIssuerName"/>
+                <attribute attribute-id="adyenPaymentMethod"/>
+                <attribute attribute-id="adyenPaymentData"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
 
     <type-extension type-id="PaymentTransaction">
         <system-attribute-definitions>
