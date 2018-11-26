@@ -6,33 +6,25 @@ server.extend(module.superModule);
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
-function getEncryptedData() {
-  var paymentForm = server.forms.getForm('billing');
-  return paymentForm.creditCardFields.adyenEncryptedData.value;
-}
-
-
 server.append('SubmitPayment',
   server.middleware.https,
   function (req, res, next) {
     var viewData = res.getViewData();
-    viewData.adyenEncryptedData = getEncryptedData();
     var paymentForm = server.forms.getForm('billing');
 
-    viewData.paymentInformation = {
-      cardType: {
-        value: paymentForm.creditCardFields.cardType.value
-      },
-      cardNumber: {
-        value: paymentForm.creditCardFields.cardNumber.value
-      },
-      expirationMonth: {
-        value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
-      },
-      expirationYear: {
-        value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
-      }
-    };
+      viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
+      viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
+      viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
+      viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
+
+      viewData.paymentInformation = {
+            cardType: {
+              value: paymentForm.creditCardFields.cardType.value
+            },
+            cardNumber: {
+              value: paymentForm.creditCardFields.cardNumber.value
+            }
+      };
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
     session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
@@ -151,11 +143,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  if (handlePaymentResult.issuerUrl != '' && handlePaymentResult.authorized3d) {
-    session.custom.MD = handlePaymentResult.md;
+  if (handlePaymentResult.redirectObject != '' && handlePaymentResult.authorized3d) {
+    session.custom.MD = handlePaymentResult.redirectObject.data.MD;
+
     res.json({
       error: false,
-      continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.issuerUrl, 'PaRequest', handlePaymentResult.paRequest, 'MD', handlePaymentResult.md).toString()
+      continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.redirectObject.url, 'PaRequest', handlePaymentResult.redirectObject.data.PaReq, 'MD', handlePaymentResult.redirectObject.data.MD).toString()
     });
     return next();
   }

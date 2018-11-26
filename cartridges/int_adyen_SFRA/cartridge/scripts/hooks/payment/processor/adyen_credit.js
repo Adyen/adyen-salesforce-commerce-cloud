@@ -16,14 +16,8 @@ function Handle(basket, paymentInformation) {
     var cardErrors = {};
     var serverErrors = [];
     var creditCardForm = server.forms.getForm('billing');
-    var cardType = paymentInformation.cardType.value;
+    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-    var encryptedData = creditCardForm.creditCardFields.adyenEncryptedData.value;
-    var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        return {error: true};
-    }
 
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -39,12 +33,8 @@ function Handle(basket, paymentInformation) {
         }
         else {
             paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
             paymentInstrument.setCreditCardType(cardType);
         }
-
-
 
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
@@ -66,6 +56,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
+
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -84,8 +75,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;
         return {
@@ -93,9 +88,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            issuerUrl: result.IssuerUrl,
-            paRequest: result.PaRequest,
-            md: result.MD
+            redirectObject : result.RedirectObject
         };
     }
 
