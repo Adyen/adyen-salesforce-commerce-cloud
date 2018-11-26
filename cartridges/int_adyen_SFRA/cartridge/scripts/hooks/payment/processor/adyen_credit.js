@@ -16,14 +16,8 @@ function Handle(basket, paymentInformation) {
     var cardErrors = {};
     var serverErrors = [];
     var creditCardForm = server.forms.getForm('billing');
-    var cardType = paymentInformation.cardType.value;
+    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-    var encryptedData = creditCardForm.creditCardFields.adyenEncryptedData.value;
-    var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        return {error: true};
-    }
 
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -35,11 +29,12 @@ function Handle(basket, paymentInformation) {
         );
 
         paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-        paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-        paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
         paymentInstrument.setCreditCardType(cardType);
 
         if (!empty(tokenID)) {
+            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
+            paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
 
@@ -84,8 +79,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
         session.custom.orderNo = order.orderNo;
         session.custom.paymentMethod = paymentInstrument.paymentMethod;
         return {
@@ -93,9 +92,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            issuerUrl: result.IssuerUrl,
-            paRequest: result.PaRequest,
-            md: result.MD
+            redirectObject : result.RedirectObject
         };
     }
 
