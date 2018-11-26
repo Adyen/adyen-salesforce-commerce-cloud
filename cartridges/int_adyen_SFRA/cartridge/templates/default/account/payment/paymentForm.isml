@@ -1,6 +1,5 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('/js/adyen-cse.js');
     assets.addCss('/css/adyenCss.css');
 </isscript>
 <iscontent type="text/html" encoding="off" />
