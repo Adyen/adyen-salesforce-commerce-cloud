@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
      <service-credential service-credential-id="AdyenPayment">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/authorise</url>
+        <url>https://checkout-test.adyen.com/checkout/v40/payments</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential> 
     <service-credential service-credential-id="AdyenPayment3DSecure">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/authorise3d</url>
+        <url>https://checkout-test.adyen.com/checkout/v40/payments/details</url>
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
