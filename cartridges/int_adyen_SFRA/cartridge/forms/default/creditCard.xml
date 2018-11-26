@@ -12,7 +12,7 @@
            max-length="20" missing-error="error.message.required" parse-error="error.message.required" />
 
     <field formid="cardOwner" label="label.input.creditcard.owner" type="string" mandatory="false" binding="cardOwner"
-           max-length="16" missing-error="error.message.required" />
+           max-length="22" missing-error="error.message.required" />
 
     <field formid="expirationMonth" label="label.input.payment.expirationmonth" type="integer" mandatory="false" binding="expirationMonth" missing-error="error.message.required"
            value-error="address.field.invalid">

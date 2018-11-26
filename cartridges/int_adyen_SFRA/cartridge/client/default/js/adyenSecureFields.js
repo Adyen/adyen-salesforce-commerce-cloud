@@ -25,24 +25,13 @@
             type: 'card',
 
             // Events
-            onChange: function() {
-                isValid = false;
+            onChange: function(state) {
+                isValid = state.isValid;
             }, // Gets triggered whenever a user changes input
-            onValid : function() {
-                isValid = true;
-            }, // Gets triggered when all fields are valid.
-            onLoad: function() {}, // Called once all the secured fields have been created (but are not yet ready to use)
-            onConfigSuccess: function() {}, // Called once the secured fields are ready to use
-            onFieldValid : function() {}, // Called as a specific secured field is validated and encrypted.
             onBrand: function(brandObject) {
                 $('#cardType').val(brandObject.brand);
             }, // Called once we detect the card brand
-            onError: function() {
-
-            }, // Called in the case of invalid card number / invalid expiry date / incomplete field.
-            onFocus: function() {}, // Called when a secured field gains or loses focus
             onBinValue: function(bin) {
-                console.log(bin);
                 $('#cardNumber').val(bin.binValue);
             } // Provides the BIN Number of the card (up to 6 digits), called as the user types in the PAN
         });
