@@ -1,3 +1,4 @@
+
 $('button[value="submit-payment"]').on('click', function (e) {
     if($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
         var cardData;
