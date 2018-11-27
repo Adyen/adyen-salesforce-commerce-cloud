@@ -5,6 +5,9 @@
 
     const checkout = new AdyenCheckout(configuration);
     const cardNode = document.getElementById('card');
+    const oneClickCardNode = document.getElementById('oneClickCard');
+
+    var oneClickCard;
     var card;
     var isValid = false;
     getConfigurationSecureFields();
@@ -38,6 +41,18 @@
         card.mount(cardNode);
     };
 
+    function renderOneClickComponent() {
+        oneClickCard = checkout
+            .create('card', {
+                // Specific for oneClick cards
+                details: oneClickData.details, // <--- Pass the specific details for this paymentMethod
+                oneClick: true, //<--- enable oneClick 'mode'
+                storedDetails: oneClickData.storedDetails, // <--- Pass the storedDetails
+                type: oneClickData.type // <--- Pass the type
+        })
+        .mount(oneClickCardNode);
+    }
+
     function getConfigurationSecureFields() {
         $.ajax({
             url: 'Adyen-GetConfigSecuredFields',
@@ -47,6 +62,7 @@
                 if(!data.error){
                     setConfigData(data, function() {
                         renderCardComponent();
+                        renderOneClickComponent();
                     });
                 }
                 else {
