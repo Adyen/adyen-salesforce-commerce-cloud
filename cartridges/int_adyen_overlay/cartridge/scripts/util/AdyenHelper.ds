@@ -23,15 +23,17 @@ var __AdyenHelper : Object = {
         TEST : "TEST",
         LIVE : "LIVE"
     },
-    
+
     CSE_LIVE_URL: "https://live.adyen.com/hpp/cse/js/",
     CSE_TEST_URL: "https://test.adyen.com/hpp/cse/js/",
     CSE_URL_EXTENSION: ".shtml",
 
+    VERSION: "18.1.1",
+
     getService : function (service : String) : Object {
         // Create the service config (used for all services)
         var adyenService = null;
-          
+
         try {
 			var adyenService = dwsvc.LocalServiceRegistry.createService(service, {
 				createRequest: function(svc:HTTPService, args){
@@ -175,12 +177,12 @@ var __AdyenHelper : Object = {
                     card = session.forms.billing.creditCardFields;
                     encryptedData = card.adyenEncryptedData.value;
                 }
-                    
+
                     if (__AdyenHelper.getAdyenCseEnabled() && !empty(encryptedData)) {
                         cardObject['additionalData'] = {
                             'card.encrypted.json': encryptedData
                         };
-                    } else { 
+                    } else {
                     		cardObject['card'] = {
                             'number': card.number.value,
                             'expiryMonth': card.expiration.month.value,
@@ -283,6 +285,8 @@ var __AdyenHelper : Object = {
             };
         }
 
+        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
+
         return jsonObject;
     },
 
@@ -291,7 +295,7 @@ var __AdyenHelper : Object = {
             pspReference = '';
 
  		var recurringType = __AdyenHelper.getAdyenRecurringType();
- 
+
         var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true);
 
         var cardObject = __AdyenHelper.createCardObject({
@@ -428,7 +432,7 @@ var __AdyenHelper : Object = {
 		var adyenOrderPaymentInstrument = null;
 		if (order) {
 			var paymentInstruments : dw.util.Collection = order.getPaymentInstruments();
-			for each (let paymentInstrument in paymentInstruments) {			
+			for each (let paymentInstrument in paymentInstruments) {
 				let paymentProcessor = paymentInstrument.getPaymentTransaction().getPaymentProcessor();
 	            let paymentProcessorID = paymentProcessor ? paymentProcessor.getID(): paymentInstrument.getPaymentMethod();
 				if (paymentProcessorID.equals("Adyen") || paymentProcessorID.equals("ADYEN_CREDIT")) {
@@ -437,10 +441,10 @@ var __AdyenHelper : Object = {
 				}
 			}
 		}
-		
+
 		return adyenOrderPaymentInstrument;
 	},
-	
+
 
 	saveAuthResponseAttributes : function(transaction : dw.order.PaymentTransaction, map : dw.web.HttpParameterMap) {
 		transaction.custom.Adyen_authResult = map.isParameterSubmitted('authResult') ? map.authResult.stringValue : '';
@@ -453,13 +457,13 @@ var __AdyenHelper : Object = {
 		transaction.custom.Adyen_merchantReturnData = map.isParameterSubmitted('merchantReturnData') ? map.merchantReturnData.stringValue : '';
 
     },
-	
-	getCurrencyValueForApi : function ( amount ) : String {		
-		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode); 
+
+	getCurrencyValueForApi : function ( amount ) : String {
+		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
 		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
         return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value);
 	},
-	
+
 	getFractionDigits : function (currencyCode) : Number {
 		var format;
 		switch(currencyCode) {
@@ -498,7 +502,32 @@ var __AdyenHelper : Object = {
                 break;
 		}
 		return format;
-	}
+	},
+
+	getApplicationInfo : function () {
+
+        var externalPlatformVersion = "SiteGenesis";
+
+        // If int_adyen_SFRA is present, send SFRA in applicationInfo
+        try {
+            require( 'int_adyen_SFRA/package.json' );
+            externalPlatformVersion = "SFRA";
+        }
+        catch(e){}
+
+        var applicationInfo = {
+            "adyenPaymentSource": {
+                "name": "adyen-salesforce-commerce-cloud",
+                "version": __AdyenHelper.VERSION
+            },
+            "externalPlatform": {
+                "name": "SalesforceCommerceCloud",
+                "version": externalPlatformVersion
+            }
+        };
+
+        return applicationInfo;
+    }
 }
 
 function pad(num) {
