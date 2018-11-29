@@ -10,6 +10,6 @@
 
 <span id="errorLoadComponent"></span>
 
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
 <div id="card"></div>
 

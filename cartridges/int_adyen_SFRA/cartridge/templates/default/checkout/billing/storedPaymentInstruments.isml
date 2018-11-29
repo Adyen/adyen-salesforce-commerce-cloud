@@ -1,0 +1,47 @@
+<div id="oneClickCard"></div>
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/adyenSecureFields.js');
+    assets.addCss('/css/adyen-checkout.2.0.0-beta.1.css');
+</isscript>
+
+<isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
+    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
+        <div class="form-group required saved-security-code col-6 col-md-3">
+            <img class="card-image ${loopSate.first ? 'checkout-hidden' : ''}"
+                 src="${paymentInstrument.cardTypeImage.src}"
+                 alt="${paymentInstrument.cardTypeImage.alt}"
+            >
+            <div class="security-code-input ${loopSate.first ? '' : 'checkout-hidden'}">
+                <label class="form-control-label" for="saved-payment-security-code">${Resource.msg('label.credit.card-security.code','checkout',null)}</label>
+                <span class="info-icon">
+                    <span class="icon">i</span>
+                    <div class="tooltip">
+                        ${Resource.msg('tooltip.security.code','creditCard',null)}
+                    </div>
+                </span>
+
+                <!--<input type="text" class="form-control saved-payment-security-code" id="saved-payment-security-code" maxlength="4">-->
+                <div id="cvc-${paymentInstrument.UUID}" class="cvc-container"></div>
+                <div class="invalid-feedback">${Resource.msg('error.message.security.code.required', 'checkout', null)}</div>
+            </div>
+        </div>
+        <div class="saved-payment-information col-6 col-md-9">
+            <div class="saved-credit-card-type">
+                <span>
+                    ${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
+                    ${paymentInstrument.creditCardType}
+                </span>
+            </div>
+            <div class="saved-credit-card-number">
+                ${paymentInstrument.maskedCreditCardNumber}
+            </div>
+            <div class="saved-credit-card-expiration-date">
+                <span>
+                    ${Resource.msg('msg.card.type.ending', 'confirmation', null)}
+                    ${paymentInstrument.creditCardExpirationMonth}/${paymentInstrument.creditCardExpirationYear}
+                </span>
+            </div>
+        </div>
+    </div>
+</isloop>
