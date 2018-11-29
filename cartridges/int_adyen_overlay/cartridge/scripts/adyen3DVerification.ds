@@ -77,7 +77,8 @@ function verify( args : PipelineDictionary ) : Number {
 		  "merchantAccount": MERCHANTACCOUNT,
 		  "paResponse": args.PaResponse,
 		  "shopperEmail": order.customerEmail,
-		  "shopperIP": shopperIp
+		  "shopperIP": shopperIp,
+			"applicationInfo": AdyenHelper.getApplicationInfo()
 		};
   		
 		var callResult = null;

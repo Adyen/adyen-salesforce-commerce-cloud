@@ -18,6 +18,7 @@ var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper'
 
 var OrderModel = app.getModel('Order');
 
+const EXTERNAL_PLATFORM_VERSION = "SiteGenesis";
 /**
  * Controller for all storefront processes.
  *
@@ -447,6 +448,10 @@ function clearCustomSessionFields() {
     session.custom.adyenIssuerID = null;
 }
 
+function getExternalPlatformVersion(){
+	return EXTERNAL_PLATFORM_VERSION;
+}
+
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
 
 exports.CloseIFrame = guard.ensure(['https', 'post'], closeIFrame);
@@ -476,3 +481,5 @@ exports.Capture = capture;
 exports.Cancel = cancel;
 
 exports.CancelOrRefund = cancelOrRefund;
+
+exports.getExternalPlatformVersion = getExternalPlatformVersion();
