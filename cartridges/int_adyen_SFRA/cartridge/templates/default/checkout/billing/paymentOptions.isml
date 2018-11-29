@@ -3,7 +3,7 @@
     assets.addJs('/js/adyen-cse.js');
     assets.addCss('/css/adyenCss.css');
 </isscript>
-
+<iscontent type="text/html" encoding="off" />
 <div class="form-nav billing-nav payment-information"
      data-payment-method-id=""
      data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
@@ -33,7 +33,7 @@
                 </div>
             </span>
             <input type="text" class="form-control email" id="email"
-                   value="${pdict.order.orderEmail||''}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+                   value="${pdict.order.orderEmail||''}" ${creditFields.email.attributes} >
             <div class="invalid-feedback"></div>
         </div>
     </div>
@@ -51,7 +51,7 @@
             <input type="tel" class="form-control phone" id="phoneNumber"
                    value="${pdict.order.billing.billingAddress.address
                 ? pdict.order.billing.billingAddress.address.phone||''
-                : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
+                : ''}" ${creditFields.phone.attributes} >
             <div class="invalid-feedback"></div>
         </div>
     </div>

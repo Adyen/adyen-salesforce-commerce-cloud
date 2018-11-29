@@ -1,5 +1,5 @@
-<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<iscontent type="application/json" charset="UTF-8" compact="true" encoding="off"/>
 <iscomment>
 	This template renders the available HPP methods as JSON response.
 </iscomment>
-<isprint value="${pdict.hppJson}" encoding="off"/>
+<isprint value="${pdict.hppJson}"/>
