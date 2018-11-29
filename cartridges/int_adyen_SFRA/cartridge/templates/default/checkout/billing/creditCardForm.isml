@@ -7,12 +7,12 @@
 
 <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
 
-
-<input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" <isprint value=${creditFields.adyenEncryptedData.attributes} encoding="off"/> >
+<iscontent type="text/html" encoding="off" />
+<input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" ${creditFields.adyenEncryptedData.attributes} >
 
 <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
-<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"  <isprint value=${creditFields.selectedCardID.attributes} encoding="off"/> >
+<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"  ${creditFields.selectedCardID.attributes} >
 
 <div class="row">
     <div class="col-12">
@@ -34,7 +34,7 @@
             ${creditFields.cardNumber.htmlName}">
             <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
             <div class="card-number-wrapper">
-                <input type="text" class="form-control cardNumber" autocomplete="cc-number" data-encrypted-name="number" value="" id="cardNumber"  <isprint value=${creditFields.cardNumber.attributes} encoding="off"/>>
+                <input type="text" class="form-control cardNumber" autocomplete="cc-number" data-encrypted-name="number" value="" id="cardNumber" ${creditFields.cardNumber.attributes}>
                 <div class="invalid-feedback"></div>
             </div>
         </div>
@@ -47,8 +47,7 @@
             <isif condition=${creditFields.expirationMonth.mandatory === true}>required</isif>
             ${creditFields.expirationMonth.htmlName}">
             <label class="form-control-label" for="expirationMonth">${Resource.msg('field.credit.card.expiration.month','creditCard',null)}</label>
-            <select class="form-control expirationMonth custom-select" id="expirationMonth"
-            <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/>
+            <select class="form-control expirationMonth custom-select" id="expirationMonth" ${creditFields.expirationMonth.attributes}
                     autocomplete="cc-exp-month" data-encrypted-name="expiryMonth">
                 <isloop items=${creditFields.expirationMonth.options} var="month">
                     <option id="${month.id}" value="${month.htmlValue}"
@@ -70,7 +69,7 @@
             ${creditFields.expirationYear.htmlName}">
             <label class="form-control-label" for="expirationYear">${Resource.msg('field.credit.card.expiration.year','creditCard',null)}</label>
             <select class="form-control expirationYear custom-select" id="expirationYear"
-                    data-encrypted-name="expiryYear" <isprint value=${creditFields.expirationYear.attributes} encoding="off"/> autocomplete="cc-exp-year">
+                    data-encrypted-name="expiryYear" ${creditFields.expirationYear.attributes} autocomplete="cc-exp-year">
                 <option value="${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].htmlValue}">${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].label}</option>
                 <isloop items=${pdict.expirationYears} var="year">
                     <option id="${year.toFixed(0)}" value="${year.toFixed(0)}"

@@ -3,7 +3,7 @@
     assets.addJs('/js/adyen-cse.js');
     assets.addCss('/css/adyenCss.css');
 </isscript>
-
+<iscontent type="text/html" encoding="off" />
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
 
@@ -17,7 +17,7 @@
     <!-- Credit Card Type -->
     <input type="hidden" class="form-control" id="cardType" value="" autocomplete="cc-type">
 
-    <input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData"  <isprint value="${pdict.paymentForm.adyenEncryptedData.attributes}" encoding="off" /> >
+    <input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" ${pdict.paymentForm.adyenEncryptedData.attributes} >
     <input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
 
     <!-- Name on Card -->

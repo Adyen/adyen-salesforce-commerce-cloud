@@ -1,1 +1,2 @@
-<isprint value="${pdict.OpenInvoiceResponse}" encoding="off"/>
+<iscontent type="text/html" encoding="off" />
+<isprint value="${pdict.OpenInvoiceResponse}" />
