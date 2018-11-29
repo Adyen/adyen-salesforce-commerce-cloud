@@ -8,6 +8,8 @@ var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 
+const EXTERNAL_PLATFORM_VERSION = "SFRA";
+
 server.get('Adyen3D', server.middleware.https, function (req, res, next) {
   var IssuerURL = req.querystring.IssuerURL;
   var PaRequest = req.querystring.PaRequest;
@@ -218,4 +220,10 @@ function clearCustomSessionFields() {
   session.custom.adyenIssuerName = null;
 }
 
+function getExternalPlatformVersion(){
+    return EXTERNAL_PLATFORM_VERSION;
+}
+
 module.exports = server.exports();
+
+module.exports.getExternalPlatformVersion = getExternalPlatformVersion();

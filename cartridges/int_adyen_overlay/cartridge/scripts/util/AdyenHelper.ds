@@ -506,12 +506,12 @@ var __AdyenHelper : Object = {
 
 	getApplicationInfo : function () {
 
-        var externalPlatformVersion = "SiteGenesis";
+        var externalPlatformVersion = "";
 
-        // If int_adyen_SFRA is present, send SFRA in applicationInfo
         try {
-            require( 'int_adyen_SFRA/package.json' );
-            externalPlatformVersion = "SFRA";
+            // AdyenController can be coming either from int_adyen_controllers or int_adyen_SFRA, depending on the cartridge path
+            var AdyenController = require('*/cartridge/controllers/Adyen.js');
+            externalPlatformVersion = AdyenController.getExternalPlatformVersion;
         }
         catch(e){}
 
