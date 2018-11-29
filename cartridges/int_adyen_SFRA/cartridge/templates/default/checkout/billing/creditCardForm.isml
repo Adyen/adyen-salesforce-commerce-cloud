@@ -1,15 +1,29 @@
 <!--<input type="hidden" class="cardNumber" value="" id="cardNumber" >-->
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
-<input type="hidden" class="form-control cardNumber" id="cardNumber" <isprint value=${creditFields.cardNumber.attributes} encoding="off"/> >
-<input type="hidden" class="form-control" id="cardType" <isprint value=${creditFields.cardType.attributes} encoding="off"/> >
+<iscontent type="text/html" encoding="off" />
+<input type="hidden" class="form-control cardNumber" id="cardNumber" ${creditFields.cardNumber.attributes} >
+<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes} >
 
-<input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber" <isprint value=${creditFields.adyenEncryptedCardNumber.attributes} encoding="off"/> >
-<input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" <isprint value=${creditFields.adyenEncryptedExpiryMonth.attributes} encoding="off"/> >
-<input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear" <isprint value=${creditFields.adyenEncryptedExpiryYear.attributes} encoding="off"/> >
-<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" <isprint value=${creditFields.adyenEncryptedSecurityCode.attributes} encoding="off"/> >
+<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID" ${creditFields.selectedCardID.attributes} >
+
+<input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber" ${creditFields.adyenEncryptedCardNumber.attributes} >
+<input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" ${creditFields.adyenEncryptedExpiryMonth.attributes} >
+<input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear" ${creditFields.adyenEncryptedExpiryYear.attributes} >
+<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" ${creditFields.adyenEncryptedSecurityCode.attributes} >
 
 <span id="errorLoadComponent"></span>
-
-
 <div id="card"></div>
+
+<div class="row">
+    <div class="col">
+        <isif condition="${pdict.customer.registeredUser}">
+            <div class="form-check save-credit-card">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="${creditFields.saveCardAdyen.htmlName}" value="true" checked>
+                    ${creditFields.saveCardAdyen.label}
+                </label>
+            </div>
+        </isif>
+    </div>
+</div>
 

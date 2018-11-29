@@ -1,10 +1,10 @@
-<div id="oneClickCard"></div>
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addJs('/js/adyenSecureFields.js');
     assets.addCss('/css/adyen-checkout.2.0.0-beta.1.css');
 </isscript>
-
+<iscontent type="text/html" encoding="off" />
+<!--<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" ${creditFields.adyenEncryptedSecurityCode.attributes} >-->
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
     <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
         <div class="form-group required saved-security-code col-6 col-md-3">
@@ -13,7 +13,6 @@
                  alt="${paymentInstrument.cardTypeImage.alt}"
             >
             <div class="security-code-input ${loopSate.first ? '' : 'checkout-hidden'}">
-                <label class="form-control-label" for="saved-payment-security-code">${Resource.msg('label.credit.card-security.code','checkout',null)}</label>
                 <span class="info-icon">
                     <span class="icon">i</span>
                     <div class="tooltip">
@@ -23,6 +22,8 @@
 
                 <!--<input type="text" class="form-control saved-payment-security-code" id="saved-payment-security-code" maxlength="4">-->
                 <div id="cvc-${paymentInstrument.UUID}" class="cvc-container"></div>
+                <input type="hidden" id="cardType-${paymentInstrument.UUID}" value="${paymentInstrument.creditCardType}">
+
                 <div class="invalid-feedback">${Resource.msg('error.message.security.code.required', 'checkout', null)}</div>
             </div>
         </div>

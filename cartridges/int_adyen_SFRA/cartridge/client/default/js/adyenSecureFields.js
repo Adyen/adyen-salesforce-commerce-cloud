@@ -40,6 +40,7 @@
         card.mount(cardNode);
     };
 
+    var oneClickValid;
     function renderOneClickComponents() {
         var componentContainers = document.getElementsByClassName("cvc-container");
         try{
@@ -56,12 +57,18 @@
                         oneClick: true, //<--- enable oneClick 'mode'
                         storedDetails: {
                             "card": {
-                                "expiryMonth": "10",
-                                "expiryYear": "2020",
-                                "holderName": "Pepe",
-                                "number": "1111"
+                                "expiryMonth": "",
+                                "expiryYear": "",
+                                "holderName": "",
+                                "number": ""
                             }
+                        },
+                    onChange: function(state) {
+                        oneClickValid = state.isValid;
+                        if(state.isValid){
+                            $('#adyenEncryptedSecurityCode').val(state.data.encryptedSecurityCode);
                         }
+                    } // Gets triggered whenever a user changes input
                     })
                     .mount(container);
             });
@@ -90,6 +97,10 @@
             }
         });
     };
+
+    $('button[value="submit-shipping"]').on('click', function (e) {
+        displayPaymentMethods();
+    });
 
     $(document).ready(function () {
         displayPaymentMethods();
@@ -170,7 +181,16 @@
         }
         else if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && !$('.payment-information').data('is-new-payment'))
         {
-            $('#selectedCardID').val($('.selected-payment').data('uuid'));
+            var uuid = $('.selected-payment').data('uuid');
+            if(!oneClickValid){
+                return false;
+            }
+            else{
+                var selectedCardType = document.getElementById('cardType-' + uuid).value;
+                $('#cardType').val(selectedCardType)
+                $('#selectedCardID').val($('.selected-payment').data('uuid'));
+            }
+
         }
     });
 
