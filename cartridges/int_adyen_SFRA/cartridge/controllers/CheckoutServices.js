@@ -23,7 +23,10 @@ server.append('SubmitPayment',
             },
             cardNumber: {
               value: paymentForm.creditCardFields.cardNumber.value
-            }
+            },
+            securityCode: {
+              value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
+          },
       };
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;

@@ -5,14 +5,19 @@
 
     const checkout = new AdyenCheckout(configuration);
     const cardNode = document.getElementById('card');
-
-    //var oneClickCard;
+    var oneClickCard;
     var card;
     var isValid = false;
+
     getConfigurationSecureFields();
+
+    $(document).ready(function () {
+        displayPaymentMethods();
+    });
 
     var originKey = "";
     var loadingContext = "";
+
     function setConfigData(data, callback){
         originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
         loadingContext = data.adyenLoadingContext;
@@ -46,9 +51,7 @@
         try{
             jQuery.each(componentContainers, function(i, oneClickCardNode){
                 var container = document.getElementById(oneClickCardNode.id);
-                var oneClickCard = checkout.create('card', {
-                    //TODOBAS css margin, storedDetails??
-                    //Field validation
+                oneClickCard = checkout.create('card', {
                     //Get selected card, send in payment request
                         originKey: originKey,
                         loadingContext: loadingContext, // The environment where we should loads the secured fields from
@@ -99,10 +102,6 @@
     };
 
     $('button[value="submit-shipping"]').on('click', function (e) {
-        displayPaymentMethods();
-    });
-
-    $(document).ready(function () {
         displayPaymentMethods();
     });
 
@@ -185,8 +184,8 @@
             if(!oneClickValid){
                 return false;
             }
-            else{
-                var selectedCardType = document.getElementById('cardType-' + uuid).value;
+            else {
+                var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
             }

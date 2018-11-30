@@ -247,6 +247,7 @@ var __AdyenHelper : Object = {
 
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
+        paymentMethodObject['holderName'] = card.cardOwner.value;
 
         if(!isOneClick){
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;

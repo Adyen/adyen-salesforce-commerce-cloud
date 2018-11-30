@@ -4,10 +4,9 @@
     assets.addCss('/css/adyen-checkout.2.0.0-beta.1.css');
 </isscript>
 <iscontent type="text/html" encoding="off" />
-<!--<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" ${creditFields.adyenEncryptedSecurityCode.attributes} >-->
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
     <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
-        <div class="form-group required saved-security-code col-6 col-md-3">
+        <div class="form-group saved-security-code col-6 col-md-3">
             <img class="card-image ${loopSate.first ? 'checkout-hidden' : ''}"
                  src="${paymentInstrument.cardTypeImage.src}"
                  alt="${paymentInstrument.cardTypeImage.alt}"
@@ -20,17 +19,13 @@
                     </div>
                 </span>
 
-                <!--<input type="text" class="form-control saved-payment-security-code" id="saved-payment-security-code" maxlength="4">-->
                 <div id="cvc-${paymentInstrument.UUID}" class="cvc-container"></div>
-                <input type="hidden" id="cardType-${paymentInstrument.UUID}" value="${paymentInstrument.creditCardType}">
-
-                <div class="invalid-feedback">${Resource.msg('error.message.security.code.required', 'checkout', null)}</div>
+                <input type="hidden" class="saved-payment-security-code" id="saved-payment-security-code">
             </div>
         </div>
         <div class="saved-payment-information col-6 col-md-9">
             <div class="saved-credit-card-type">
-                <span>
-                    ${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
+                <span id="cardType-${paymentInstrument.UUID}">
                     ${paymentInstrument.creditCardType}
                 </span>
             </div>
