@@ -158,7 +158,6 @@ function verify(args) {
         // make API call
         var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
-        Logger.getLogger("Adyen").error(JSON.stringify(requestObject));
         var callResult = null;
         var service = AdyenHelper.getService(AdyenHelper.SERVICE.PAYMENT);
         if (service == null) {
