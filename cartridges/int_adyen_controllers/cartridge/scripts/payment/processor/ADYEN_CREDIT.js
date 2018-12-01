@@ -30,41 +30,41 @@ function Handle(args) {
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
     var cardType = creditCardForm.get('type').value();
-    var encryptedData = creditCardForm.get('encrypteddata').value();
+    // var encryptedData = creditCardForm.get('encrypteddata').value();
     var paymentCard = PaymentMgr.getPaymentCard(cardType);
     var cardNumber;
     var cardSecurityCode;
     var expirationMonth; 
     var expirationYear;
     var adyenCseEnabled = Site.getCurrent().getCustomPreferenceValue('AdyenCseEnabled');
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        // Verify payment card 
-	      cardSecurityCode = creditCardForm.get('cvn').value();
-	      expirationMonth = creditCardForm.get('expiration.month').value();
-	      expirationYear = creditCardForm.get('expiration.year').value();
-	      cardNumber = creditCardForm.get('number').value();
-	      var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
-        if (creditCardStatus.error) {
-            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
-            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
-
-            return {error: true};
-        }
-    }
+//    if (empty(tokenID) && (!adyenCseEnabled)) {
+//        // Verify payment card 
+//	      cardSecurityCode = creditCardForm.get('cvn').value();
+//	      expirationMonth = creditCardForm.get('expiration.month').value();
+//	      expirationYear = creditCardForm.get('expiration.year').value();
+//	      cardNumber = creditCardForm.get('number').value();
+//	      var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
+//        if (creditCardStatus.error) {
+//            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
+//            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
+//
+//            return {error: true};
+//        }
+//    }
 
     // create payment instrument
     Transaction.wrap(function () {
         cart.removeExistingPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
         var paymentInstrument = cart.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
-        if (!adyenCseEnabled) {
+//        if (!adyenCseEnabled) {
             paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
-            paymentInstrument.creditCardNumber = cardNumber;
+//            paymentInstrument.creditCardNumber = cardNumber;
             paymentInstrument.creditCardType = cardType;
-            paymentInstrument.creditCardExpirationMonth = expirationMonth;
-            paymentInstrument.creditCardExpirationYear = expirationYear;
-        } else {
-            paymentInstrument.creditCardType = cardType;
-        }
+            //paymentInstrument.creditCardExpirationMonth = expirationMonth;
+            //paymentInstrument.creditCardExpirationYear = expirationYear;
+//        } else {
+//            paymentInstrument.creditCardType = cardType;
+//        }
 
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
@@ -116,7 +116,7 @@ function Authorize(args) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;

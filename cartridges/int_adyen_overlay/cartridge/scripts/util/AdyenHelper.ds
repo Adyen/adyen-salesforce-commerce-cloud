@@ -7,7 +7,6 @@ var dwsystem	= require ("dw/system");
 var dwutil		= require ("dw/util");
 
 var adyenCurrentSite = dwsystem.Site.getCurrent();
-
 var __AdyenHelper : Object = {
 
     //service constants
