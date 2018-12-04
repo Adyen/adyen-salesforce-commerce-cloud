@@ -460,7 +460,7 @@ var __AdyenHelper : Object = {
 
 	getCurrencyValueForApi : function ( amount ) : String {
 		var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
-		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode);
+		var digitsNumber = __AdyenHelper.getFractionDigits(currencyCode.toString());
         return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value);
 	},
 
