@@ -1,0 +1,373 @@
+/**
+* Generate the parameters needed for the redirect to the Adyen Hosted Payment Page.
+* A signature is calculated based on the configured HMAC code
+*
+* @input Order : dw.order.Order
+* @input OrderNo : String The order no
+* @input CurrentSession : dw.system.Session
+* @input CurrentUser : dw.customer.Customer
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input brandCode : String
+* @input issuerId : String
+* @input dob : String
+* @input gender : String
+* @input houseNumber : String
+* @input houseExtension : String
+* @input personalNumber : String
+*
+* @output merchantSig : String;
+* @output Amount100 : String;
+* @output shopperEmail : String;
+* @output shopperReference : String;
+* @output paramsMap : dw.util.SortedMap;
+* @output sessionValidity : String;
+*
+*/
+importPackage( dw.crypto );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value);
+importPackage( dw.net );
+importPackage( dw.web );
+
+//script include
+var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	if (verify(args) === PIPELET_ERROR) {
+		return PIPELET_ERROR;
+	}
+	return PIPELET_NEXT;
+}
+
+function verify (args) {
+	//configuration
+	var VERSION : String= "8";
+
+	var Mode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+	var skinCode : String = Site.getCurrent().getCustomPreferenceValue("Adyen_skinCode");
+	var merchantAccount : String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
+	var recurringType : EnumValue = Site.getCurrent().getCustomPreferenceValue("Adyen_recurringType"); 
+	var recurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenRecurringPaymentsEnabled");
+	
+	if(merchantAccount == null){
+		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
+		return PIPELET_ERROR;
+	}
+	if(skinCode == null){
+		Logger.getLogger("Adyen").fatal("skinCode not set.");
+		return PIPELET_ERROR;
+	}
+	if(HMACkey == null){
+		Logger.getLogger("Adyen").fatal("HMACkey not set.");
+		return PIPELET_ERROR;
+	}
+
+	var paymentInstrument = args.PaymentInstrument;
+
+	if(paymentInstrument == null){
+		Logger.getLogger("Adyen").fatal("paymentInstrument is null.");
+	}
+
+	Logger.getLogger("Adyen").debug("PM  : " +paymentInstrument.paymentMethod);
+	Logger.getLogger("Adyen").debug("merchantAccount : " + merchantAccount);
+	Logger.getLogger("Adyen").debug("skinCode : " + skinCode);
+	Logger.getLogger("Adyen").debug("HMACkey : " + HMACkey);
+	
+	var orderNo = args.OrderNo;
+
+	if(orderNo == null){
+		Logger.getLogger("Adyen").fatal("No orderNo received.");
+	}
+
+	var order = args.Order;
+
+	if(order == null){
+		Logger.getLogger("Adyen").fatal("No existing order {0} received.",orderNo);
+	}
+
+	var currentUser = args.CurrentUser;
+
+	if(currentUser == null){
+		Logger.getLogger("Adyen").fatal("currentUser is null.",orderNo);
+	}
+
+	if (paymentInstrument.paymentMethod != "Adyen"){
+		return PIPELET_ERROR;
+	}
+
+	var myAmount:number = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount);
+	Logger.getLogger("Adyen").debug("Payment amount : " + myAmount + " - PIAmount : " + paymentInstrument.paymentTransaction.amount + "\n");
+
+	args.Amount100 = myAmount.toFixed(0);
+
+	var currencyCode:String	 		= order.currencyCode;
+	var merchantReference:String 	= orderNo;
+	args.shopperEmail				= order.customerEmail;
+	args.shopperReference			= currentUser.ID;
+
+	var sessionValidity : String	 	= new Date();
+	sessionValidity.setHours(sessionValidity.getHours() + 1);
+	args.sessionValidity = sessionValidity.toISOString();
+
+    var shipBeforeDate : String = new Date();
+    shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
+    args.shipBeforeDate = shipBeforeDate.toISOString();
+
+	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null || !recurringEnabled || !currentUser.registered) {
+		recurringType = "";
+	}	
+	else recurringType = recurringType.value; //recurringType.value has type string 
+		
+	var adyenRequest : SortedMap = new SortedMap();
+	adyenRequest.put("paymentAmount", args.Amount100 );
+	adyenRequest.put("currencyCode", currencyCode );
+	adyenRequest.put("sessionValidity", args.sessionValidity );
+	adyenRequest.put("shipBeforeDate", args.shipBeforeDate );
+	adyenRequest.put("merchantReference", merchantReference );
+	adyenRequest.put("skinCode", skinCode );
+	adyenRequest.put("merchantAccount", merchantAccount );
+	adyenRequest.put("shopperEmail", order.customerEmail );
+	adyenRequest.put("shopperReference", currentUser.ID );
+	adyenRequest.put("recurringContract", recurringType );
+	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
+	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
+	// Optional Fields
+	var locale = request.locale;
+	if(!empty(locale) && locale != "default") {
+    		adyenRequest.put("shopperLocale", locale);
+    }
+
+	if(Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")){
+		if( !empty(args.brandCode)){
+			adyenRequest.put("brandCode", args.brandCode );
+			if (args.brandCode == "ratepay" && !empty(args.ratePayFingerprint)){
+				adyenRequest.put("dfValue", args.ratePayFingerprint);
+			}else if (!empty(args.adyenFingerprint)){
+				adyenRequest.put("dfValue", args.adyenFingerprint);
+			}
+			if (args.brandCode == "klarna"){
+				adyenRequest.put("klarna.acceptPrivacyPolicy", "true");
+			}
+		}
+		if( !empty(args.issuerId)){
+			adyenRequest.put("issuerId", args.issuerId );
+		}
+	}
+
+	//Open Invoice specific section
+	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form
+	if(!empty(args.brandCode) && Site.getCurrent().getCustomPreferenceValue("Adyen_Open_Invoice_Whitelist").indexOf(args.brandCode) > -1) {
+		
+		var billingAddr = order.getBillingAddress();	
+		adyenRequest.put("shopper.firstName", order.getBillingAddress().getFirstName() );
+		adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );
+		adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
+		adyenRequest.put("shopperType", '1' );
+		adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'UNKNOWN');
+
+		if( !empty(args.dob)) {
+			var dob = args.dob.split('-');
+			adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[0] );
+			adyenRequest.put("shopper.dateOfBirthMonth", dob[1] );
+			adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
+		}
+
+		if( !empty(args.personalNumber)) {
+			adyenRequest.put("shopper.socialSecurityNumber", args.personalNumber );
+		}
+
+		//open invoice line items
+		var line = 0;
+
+
+		// Add all product and shipping line items to request
+		for each ( var lineItem in order.getAllLineItems() ) {
+			if( (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem) 
+			|| lineItem instanceof dw.order.ShippingLineItem 
+			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass==dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+			) {
+				line = line + 1;
+			
+				var description = getDescription(lineItem),
+					id = getId(lineItem),
+					quantity = getQuantity(lineItem),
+					currencyCode = getCurrency(lineItem),
+					itemAmount:number = AdyenHelper.getCurrencyValueForApi(getItemAmount(lineItem))/quantity,
+					vatAmount:number = AdyenHelper.getCurrencyValueForApi(getVatAmount(lineItem)) / quantity,
+					vatPercentage = getVatPercentage(lineItem);
+				adyenRequest.put("openinvoicedata.line" + line + '.currencyCode', currencyCode );
+				adyenRequest.put("openinvoicedata.line" + line + '.description', description );
+				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  itemAmount.toFixed());
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', vatAmount.toFixed());					
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 100).toFixed() );
+				adyenRequest.put("openinvoicedata.line" + line + '.numberOfItems', quantity );
+				adyenRequest.put("openinvoicedata.line" + line + '.vatCategory', 'None' );
+				adyenRequest.put("openinvoicedata.line" + line + '.itemId', id);
+			} 
+			else {
+				// Do nothing for other line items
+			}
+			
+		}
+		adyenRequest.put("openinvoicedata.numberOfLines", line.toFixed() );
+	}
+
+	//Billing Address
+	var billingAddr = order.getBillingAddress();
+
+	adyenRequest.put("billingAddress.city", billingAddr.city );
+	adyenRequest.put("billingAddress.country", billingAddr.countryCode.value.toString().toUpperCase() );
+	adyenRequest.put("billingAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
+	adyenRequest.put("billingAddress.postalCode", billingAddr.postalCode );
+	adyenRequest.put("billingAddress.stateOrProvince", (!empty(billingAddr.stateCode) ? billingAddr.stateCode : 'NA')   );
+	adyenRequest.put("billingAddress.street", billingAddr.address1 );
+	adyenRequest.put("billingAddressType", '1' );
+
+	//Shipping / Delivery Address
+	var shipments = order.getShipments();
+
+	for each ( var s : Shipment in shipments) {
+		var shippingAddr : OrderAddress = s.getShippingAddress();
+
+		adyenRequest.put("deliveryAddress.city", shippingAddr.city );
+		adyenRequest.put("deliveryAddress.country", shippingAddr.countryCode.value.toString().toUpperCase() );
+
+		adyenRequest.put("deliveryAddress.houseNumberOrName", (!empty(args.houseNumber)) ? args.houseNumber : 'NA' );
+		adyenRequest.put("deliveryAddress.postalCode", shippingAddr.postalCode );
+		adyenRequest.put("deliveryAddress.stateOrProvince",(!empty( shippingAddr.stateCode) ? shippingAddr.stateCode : 'NA') );
+		adyenRequest.put("deliveryAddress.street", shippingAddr.address1 );
+		adyenRequest.put("deliveryAddressType", '1' );
+
+		break;
+	}
+
+	var keys : String = "";
+	var values : String = "";
+	for(var key in adyenRequest) {
+		keys = keys.concat(key + ":");
+		var value = adyenRequest[key];
+
+		// escape chars
+		value = value.toString().replace(/\\/g, "\\\\").replace(/\:/g, "\\:");
+		values = values.concat(value + ":");
+	}
+
+	values = values.substring(0, values.length - 1);
+	var requestString : String = keys.concat(values);
+
+	//error in doc https://documentation.demandware.com/display/DOCAPI2111/dw.crypto.Mac
+	var keyBytes : Bytes = Encoding.fromHex(HMACkey);
+	var c : Mac = Mac(Mac.HMAC_SHA_256);
+	var merchantSig : String = Encoding.toBase64(c.digest(requestString, keyBytes));
+
+	Logger.getLogger("Adyen").debug("merchantSig : " + merchantSig + "\n");
+
+	adyenRequest.put("merchantSig", merchantSig );
+
+	args.paramsMap = adyenRequest;
+
+ 	//MAKE SURE TO PROTECT THIS INFO (or don't log it)
+ 	var msg:String;
+    msg = "DW2AdyenRedir v " + VERSION + " - Payment info\n================================================================";
+    msg += "\nMode : " + Mode;
+    msg += "\nRecurring : " + recurringType;
+    msg += "\nSessionID : " + args.CurrentSession.sessionID;
+    msg += "\nmRef : " + orderNo ;
+    msg += "\nShopper email : " + order.customerEmail + " , ID : " + currentUser.ID;
+	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
+	msg += "\nPaydata : " + requestString ;
+	msg += "\nSignature : " + merchantSig ;
+
+	//Log those information just when custom logs debug mode is enabled
+	Logger.getLogger("Adyen").debug(orderNo+ " - " +msg);
+
+   return args;
+}
+
+function getDescription(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getID();
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem){
+		return lineItem.product.name;
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment){
+		return "Discount";
+	}
+	
+	return null;			
+}
+
+function getId(lineItem){
+	if (lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.UUID;
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.product.ID; 
+	}
+	
+	return null;
+}
+
+function getQuantity(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return "1";
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.quantityValue.toFixed();
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.quantity.toFixed();
+	}
+	
+	return null;
+}
+
+function getVatPercentage(lineItem) {
+	var vatPercentage = 0;
+    if ( getVatAmount(lineItem) != 0 ) {
+        vatPercentage = lineItem.getTaxRate();
+    }
+	return vatPercentage;
+}
+
+function getVatAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getAdjustedTax();
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.tax;
+	}
+	return null;
+}
+
+function getCurrency(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.adjustedPrice.currencyCode;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.basePrice.currencyCode;
+	}
+	return null;
+
+}
+
+function getItemAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.adjustedPrice;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.basePrice;
+	}
+	return null;
+	
+}
+
+module.exports = {
+	'execute': execute,
+	'verify': verify
+}
