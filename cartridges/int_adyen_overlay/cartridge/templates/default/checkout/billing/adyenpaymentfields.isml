@@ -8,7 +8,7 @@
 	window.AdyenLoadingContext = "${AdyenHelper.getLoadingContext()}";
 </script>
 
-<!-- <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.0.0-beta.4/adyen.css"/> -->
+<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.0.0-beta.4/adyen.css"/>
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div id="card"></div>
 
