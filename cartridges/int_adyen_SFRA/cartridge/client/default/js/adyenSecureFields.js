@@ -48,38 +48,31 @@
     var oneClickValid = false;
     function renderOneClickComponents() {
         var componentContainers = document.getElementsByClassName("cvc-container");
-        try{
-            jQuery.each(componentContainers, function(i, oneClickCardNode){
-                var container = document.getElementById(oneClickCardNode.id);
-                oneClickCard[i] = checkout.create('card', {
-                    //Get selected card, send in payment request
-                        originKey: originKey,
-                        loadingContext: loadingContext, // The environment where we should loads the secured fields from
-                        // Specific for oneClick cards
-                        details: [{"key":"cardDetails.cvc","type":"cvc"}], // <--- Pass the specific details for this paymentMethod
-                        oneClick: true, //<--- enable oneClick 'mode'
-                        storedDetails: {
-                            "card": {
-                                "expiryMonth": "",
-                                "expiryYear": "",
-                                "holderName": "",
-                                "number": ""
-                            }
-                        },
-                    onChange: function(state) {
-                        oneClickValid = state.isValid;
-                        if(state.isValid){
-                            $('#adyenEncryptedSecurityCode').val(state.data.encryptedSecurityCode);
+        jQuery.each(componentContainers, function(i, oneClickCardNode){
+            var container = document.getElementById(oneClickCardNode.id);
+            oneClickCard[i] = checkout.create('card', {
+                //Get selected card, send in payment request
+                    originKey: originKey,
+                    loadingContext: loadingContext, // The environment where we should loads the secured fields from
+                    // Specific for oneClick cards
+                    details: [{"key":"cardDetails.cvc","type":"cvc"}], // <--- Pass the specific details for this paymentMethod
+                    oneClick: true, //<--- enable oneClick 'mode'
+                    storedDetails: {
+                        "card": {
+                            "expiryMonth": "",
+                            "expiryYear": "",
+                            "holderName": "",
+                            "number": ""
                         }
-                    } // Gets triggered whenever a user changes input
-                    })
-                    .mount(container);
-            });
-        }
-        catch(e){
-            console.log('error ' + e);
-        }
-
+                    },
+                onChange: function(state) {
+                    oneClickValid = state.isValid;
+                    if(state.isValid){
+                        $('#adyenEncryptedSecurityCode').val(state.data.encryptedSecurityCode);
+                    }
+                } // Gets triggered whenever a user changes input
+            }).mount(container);
+        });
     };
 
     function getConfigurationSecureFields() {
