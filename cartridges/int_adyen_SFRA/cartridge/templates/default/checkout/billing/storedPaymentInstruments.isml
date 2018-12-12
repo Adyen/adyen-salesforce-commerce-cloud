@@ -1,0 +1,44 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    <!--assets.addJs('/js/adyenSecureFields.js');-->
+    assets.addCss('/css/adyen-checkout.2.0.0-beta.1.css');
+</isscript>
+<iscontent type="text/html" encoding="off" />
+<isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
+    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
+        <div class="form-group saved-security-code col-6 col-md-3">
+            <img class="card-image ${loopSate.first ? 'checkout-hidden' : ''}"
+                 src="${paymentInstrument.cardTypeImage.src}"
+                 alt="${paymentInstrument.cardTypeImage.alt}"
+            >
+            <div class="security-code-input ${loopSate.first ? '' : 'checkout-hidden'}">
+                <label class="form-control-label">${Resource.msg('label.credit.card-security.code','checkout',null)}</label>
+                <span class="info-icon">
+                    <span class="icon">i</span>
+                    <div class="tooltip">
+                        ${Resource.msg('tooltip.security.code','creditCard',null)}
+                    </div>
+                </span>
+
+                <div id="cvc-${paymentInstrument.UUID}" class="cvc-container"></div>
+                <input type="hidden" class="saved-payment-security-code" id="saved-payment-security-code-${paymentInstrument.UUID}">
+            </div>
+        </div>
+        <div class="saved-payment-information col-6 col-md-9">
+            <div class="saved-credit-card-type">
+                <span id="cardType-${paymentInstrument.UUID}">
+                    ${paymentInstrument.creditCardType}
+                </span>
+            </div>
+            <div class="saved-credit-card-number">
+                ${paymentInstrument.maskedCreditCardNumber}
+            </div>
+            <div class="saved-credit-card-expiration-date">
+                <span>
+                    ${Resource.msg('msg.card.type.ending', 'confirmation', null)}
+                    ${paymentInstrument.creditCardExpirationMonth}/${paymentInstrument.creditCardExpirationYear}
+                </span>
+            </div>
+        </div>
+    </div>
+</isloop>
