@@ -11,3 +11,19 @@
     display: inline-block;
     margin: 0 0 0 10px;
 }
+
+.security-code-input .adyen-checkout__label__text {
+    display: none !important;
+}
+
+.security-code-input .adyen-checkout__card__exp-date__input--oneclick{
+    display: none !important;
+}
+
+.security-code-input .adyen-checkout__field {
+    margin: 0 !important;
+}
+
+.security-code-input .adyen-checkout__card__exp-cvc .adyen-checkout__field:first-child {
+    display: none;
+}
