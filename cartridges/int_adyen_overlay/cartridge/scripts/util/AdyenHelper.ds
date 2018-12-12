@@ -17,7 +17,8 @@ var __AdyenHelper : Object = {
         RECURRING_DISABLE: "AdyenRecurringDisable",
         PAYMENTMETHODS : "AdyenPaymentMethods",
         POSPAYMENT : "AdyenPosPayment",
-        ORIGINKEYS : "AdyenOriginKeys"
+        ORIGINKEYS : "AdyenOriginKeys",
+        CHECKOUTPAYMENTMETHODS : "AdyenCheckoutPaymentMethods"
     },
     MODE : {
         TEST : "TEST",
