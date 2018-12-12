@@ -44,7 +44,7 @@ function execute(args) {
 }
 
 function verify(args) {
-    try {
+    try { 
         var order = args.Order;
         var paymentInstrument = args.PaymentInstrument;
         var tokenID = '';
