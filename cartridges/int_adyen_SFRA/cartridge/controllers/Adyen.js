@@ -176,7 +176,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
   var BasketMgr = require('dw/order/BasketMgr');
   var Resource = require('dw/web/Resource');
-  var getPaymentMethods = require('*/cartridge/scripts/getPaymentMethodsSHA256');
+  var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
   var paymentMethods;
   try {
     paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
@@ -184,9 +184,10 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     paymentMethods = [];
   }
 
+  paymentMethods = paymentMethods.filter(function (method) { return method.type != "scheme"; });
   var descriptions = [];
   paymentMethods.forEach(function (method){
-     descriptions.push({ brandCode : method.brandCode, description : Resource.msg('hpp.description.' + method.brandCode, 'hpp', "")});
+     descriptions.push({ brandCode : method.type, description : Resource.msg('hpp.description.' + method.type, 'hpp', "")});
    })
 
   res.json({
