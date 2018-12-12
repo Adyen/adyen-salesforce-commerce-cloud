@@ -28,17 +28,15 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
+        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+        paymentInstrument.setCreditCardType(cardType);
+
         if (!empty(tokenID)) {
+            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
+            paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
-        else {
-            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-            paymentInstrument.setCreditCardType(cardType);
-        }
-        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-        paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-        paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
-        paymentInstrument.setCreditCardType(cardType);
 
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
@@ -60,6 +58,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
     Transaction.begin();
+
     var result = adyenCreditVerification.verify({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
