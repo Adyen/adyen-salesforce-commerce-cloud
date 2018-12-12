@@ -67,15 +67,27 @@ function verify(args) {
 		// TODO: for new cards use the recurring type in the settings
 		// For oneclick cards use ONECICK
         var recurringType = AdyenHelper.getAdyenRecurringType();
-        
+        var isOneClick = false;
         if(paymentInstrument.getCreditCardToken()) {
         		recurringType = 'ONECLICK';
+                isOneClick = true;
         }
 
         var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
         var cardType = (!empty(paymentInstrument.creditCardType) ? AdyenHelper.getAdyenCardType(paymentInstrument.creditCardType) : '');
-        var paymentMethodObject = AdyenHelper.createCardObjectSF();
+        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick);
         jsonObject['paymentMethod'] = paymentMethodObject;
+
+        if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+            if(!empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
+                jsonObject['paymentMethod'].recurringDetailReference = paymentInstrument.getCreditCardToken();
+            }
+            else if (!empty(recurringType) && saveCreditCard) {
+                jsonObject['paymentMethod'].storeDetails = true;
+            }
+
+        }
+
         jsonObject['returnUrl'] = URLUtils.https('Order-Confirm').toString();
         jsonObject.additionalData = {
             "executeThreeD":true
@@ -131,10 +143,6 @@ function verify(args) {
             "infix" : "",
             "lastName" : billingAddr.lastName
         };
-
-        if (AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
-            jsonObject['selectedRecurringDetailReference'] = paymentInstrument.getCreditCardToken();
-        }
 
         // assign default values for the script output variables
         args.RedirectObject = '';
