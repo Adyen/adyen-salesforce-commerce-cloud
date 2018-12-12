@@ -5,7 +5,6 @@ server.extend(module.superModule);
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-var Logger = require('dw/system/Logger');
 
 server.append('SubmitPayment',
   server.middleware.https,
