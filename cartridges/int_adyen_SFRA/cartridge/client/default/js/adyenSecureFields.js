@@ -5,7 +5,7 @@
 
     const checkout = new AdyenCheckout(configuration);
     const cardNode = document.getElementById('card');
-    var oneClickCard;
+    var oneClickCard = [];
     var card;
     var isValid = false;
 
@@ -45,13 +45,13 @@
         card.mount(cardNode);
     };
 
-    var oneClickValid;
+    var oneClickValid = false;
     function renderOneClickComponents() {
         var componentContainers = document.getElementsByClassName("cvc-container");
         try{
             jQuery.each(componentContainers, function(i, oneClickCardNode){
                 var container = document.getElementById(oneClickCardNode.id);
-                oneClickCard = checkout.create('card', {
+                oneClickCard[i] = checkout.create('card', {
                     //Get selected card, send in payment request
                         originKey: originKey,
                         loadingContext: loadingContext, // The environment where we should loads the secured fields from
@@ -100,6 +100,14 @@
             }
         });
     };
+
+    $('.payment-summary .edit-button').on('click', function (e) {
+        jQuery.each(oneClickCard, function(i) {
+            oneClickCard[i].unmount();
+        });
+        renderOneClickComponents();
+        oneClickValid = false;
+    });
 
     $('button[value="submit-shipping"]').on('click', function (e) {
         displayPaymentMethods();
@@ -186,10 +194,11 @@
             }
             else {
                 var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
+                document.getElementById('saved-payment-security-code-' + uuid).value = "000";
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
+                return true;
             }
-
         }
     });
 

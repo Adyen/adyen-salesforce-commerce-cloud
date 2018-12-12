@@ -18,7 +18,6 @@ function Handle(basket, paymentInformation) {
     var creditCardForm = server.forms.getForm('billing');
     var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
@@ -28,12 +27,14 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
+        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+        paymentInstrument.setCreditCardType(cardType);
+
         if (!empty(tokenID)) {
+            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
+            paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
-        }
-        else {
-            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-            paymentInstrument.setCreditCardType(cardType);
         }
 
     });

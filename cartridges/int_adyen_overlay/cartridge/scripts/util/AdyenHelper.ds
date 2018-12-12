@@ -140,7 +140,7 @@ var __AdyenHelper : Object = {
     },
 
     getCheckoutUrl : function () : String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.0.0-beta.4/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.0.0/adyen.js";
         return checkoutUrl;
     },
 

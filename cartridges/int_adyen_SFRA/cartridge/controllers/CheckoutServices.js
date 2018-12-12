@@ -5,6 +5,7 @@ server.extend(module.superModule);
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+var Logger = require('dw/system/Logger');
 
 server.append('SubmitPayment',
   server.middleware.https,
@@ -24,10 +25,21 @@ server.append('SubmitPayment',
             cardNumber: {
               value: paymentForm.creditCardFields.cardNumber.value
             },
+            expirationMonth: {
+                value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
+            },
+            expirationYear: {
+                value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
+            },
             securityCode: {
               value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
-          },
+          }
       };
+
+      if(paymentForm.creditCardFields.selectedCardID) {
+        viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
+      }
+
     // set selected brandCode & issuerId to session variable
     session.custom.brandCode = req.form.brandCode;
     session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
