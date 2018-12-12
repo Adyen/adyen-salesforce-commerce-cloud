@@ -241,10 +241,17 @@ var __AdyenHelper : Object = {
         return cardObject;
     },
 
-    createCardObjectSF: function (isOneClick) {
-        var card = session.forms.billing.creditCardFields;
+    createCardObjectSF: function (isOneClick, formType) {
+        var card;
         var paymentMethodObject = {};
-
+        switch(formType) {
+            case 'billing':
+                card = session.forms.billing.creditCardFields;
+                break;
+            case 'account':
+                card = session.forms.creditCard;
+                break;
+        }
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
         paymentMethodObject['holderName'] = card.cardOwner.value;
@@ -331,15 +338,13 @@ var __AdyenHelper : Object = {
  
         var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true);
 
-        var cardObject = __AdyenHelper.createCardObject({
-            FormType: 'account'
-        });
-        if ('card' in cardObject) {
-            jsonObject['card'] = cardObject.card;
-        }
-        if ('additionalData' in cardObject) {
-            jsonObject['additionalData'] = cardObject.additionalData;
-        }
+        var paymentMethodObject = __AdyenHelper.createCardObjectSF(false, 'account');
+        jsonObject['paymentMethod'] = paymentMethodObject;
+
+        jsonObject['recurring'] = {
+            'contract': 'ONECLICK'
+        };
+        jsonObject['paymentMethod'].storeDetails = true;
 
         var shopperObject = __AdyenHelper.createShopperObject({
             Customer: params.Customer
@@ -349,7 +354,7 @@ var __AdyenHelper : Object = {
             'currency': session.currency.currencyCode,
             'value': 0
         };
-
+        
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
         var CreateRecurringPayment = require('int_adyen_overlay/cartridge/scripts/adyenCreateRecurringPayment.ds');
         var createRecurringPaymentResult = CreateRecurringPayment.createRecurringPayment({RequestObject: requestObject});
