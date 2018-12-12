@@ -18,7 +18,6 @@ function Handle(basket, paymentInformation) {
     var creditCardForm = server.forms.getForm('billing');
     var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
