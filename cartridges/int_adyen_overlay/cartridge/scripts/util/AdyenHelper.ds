@@ -341,9 +341,7 @@ var __AdyenHelper : Object = {
         var paymentMethodObject = __AdyenHelper.createCardObjectSF(false, 'account');
         jsonObject['paymentMethod'] = paymentMethodObject;
 
-        jsonObject['recurring'] = {
-            'contract': 'ONECLICK'
-        };
+        jsonObject['enableOneClick'] = true;
         jsonObject['paymentMethod'].storeDetails = true;
 
         var shopperObject = __AdyenHelper.createShopperObject({
