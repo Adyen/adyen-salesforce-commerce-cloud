@@ -158,6 +158,7 @@ function placeOrder(order, fraudDetectionStatus) {
     return result;
 }
 
+
 module.exports = {
   handlePayments: handlePayments,
   placeOrder: placeOrder,

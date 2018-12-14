@@ -98,7 +98,6 @@ function handle( customObj : CustomObject  ) : Object
 						order.setExportStatus(Order.EXPORT_STATUS_READY);
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-						result.SkipNotification = true;
 						paymentSuccess = true;
 					}  
 				}else{

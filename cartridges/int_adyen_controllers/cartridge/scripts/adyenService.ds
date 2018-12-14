@@ -1,0 +1,17 @@
+var Email = require('app_storefront_controllers/cartridge/scripts/models/EmailModel');
+var Resource = require('dw/web/Resource');
+
+function sendEmail(order){
+    Email.sendMail({
+        template: 'mail/orderconfirmation',
+        recipient: order.getCustomerEmail(),
+        subject: Resource.msg('order.orderconfirmation-email.001', 'order', null),
+        context: {
+            Order: order
+        }
+    });
+}
+
+module.exports = {
+    'sendEmail': sendEmail
+}
