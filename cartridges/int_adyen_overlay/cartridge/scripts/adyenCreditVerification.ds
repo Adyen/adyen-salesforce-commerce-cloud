@@ -75,7 +75,7 @@ function verify(args) {
 
         var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
         var cardType = (!empty(paymentInstrument.creditCardType) ? AdyenHelper.getAdyenCardType(paymentInstrument.creditCardType) : '');
-        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick);
+        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick, 'billing');
         jsonObject['paymentMethod'] = paymentMethodObject;
 
         if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {

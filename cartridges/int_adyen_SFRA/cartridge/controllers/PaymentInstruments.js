@@ -14,17 +14,16 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
   next();
 });
 
-function getEncryptedData() {
-  var paymentForm = server.forms.getForm('creditCard');
-  return paymentForm.adyenEncryptedData.value;
-}
-
 server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
   var viewData = res.getViewData();
-  viewData.adyenEncryptedData = getEncryptedData();
+  var paymentForm = server.forms.getForm('creditCard');
+
+  viewData.adyenEncryptedCardNumber = paymentForm.adyenEncryptedCardNumber.value;
+  viewData.adyenEncryptedExpiryMonth = paymentForm.adyenEncryptedExpiryMonth.value;
+  viewData.adyenEncryptedExpiryYear = paymentForm.adyenEncryptedExpiryYear.value;
+  viewData.adyenEncryptedSecurityCode = paymentForm.adyenEncryptedSecurityCode.value;
   res.setViewData(viewData);
 
-  var paymentForm = server.forms.getForm('creditCard');
   if (paymentForm.valid) {
     this.on('route:BeforeComplete', function (req, res) {
       var URLUtils = require('dw/web/URLUtils');
