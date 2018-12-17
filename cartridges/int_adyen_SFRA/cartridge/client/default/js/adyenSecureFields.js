@@ -173,10 +173,7 @@
             }
             else {
                 $('#selectedCardID').val('');
-                $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
-                $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
-                $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
-                $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+                setPaymentData();
             }
         }
         else if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && !$('.payment-information').data('is-new-payment'))
@@ -195,5 +192,15 @@
         }
     });
 
+    $('button[value="add-new-payment"]').on('click', function (e) {
+        setPaymentData();
+    });
+
+    function setPaymentData(){
+        $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+        $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+        $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+        $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+    }
 
 
