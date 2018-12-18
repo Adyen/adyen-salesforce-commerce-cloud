@@ -30,41 +30,20 @@ function Handle(args) {
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
     var cardType = creditCardForm.get('type').value();
-    // var encryptedData = creditCardForm.get('encrypteddata').value();
     var paymentCard = PaymentMgr.getPaymentCard(cardType);
     var cardNumber;
     var cardSecurityCode;
     var expirationMonth; 
     var expirationYear;
     var adyenCseEnabled = Site.getCurrent().getCustomPreferenceValue('AdyenCseEnabled');
-//    if (empty(tokenID) && (!adyenCseEnabled)) {
-//        // Verify payment card 
-//	      cardSecurityCode = creditCardForm.get('cvn').value();
-//	      expirationMonth = creditCardForm.get('expiration.month').value();
-//	      expirationYear = creditCardForm.get('expiration.year').value();
-//	      cardNumber = creditCardForm.get('number').value();
-//	      var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
-//        if (creditCardStatus.error) {
-//            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
-//            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
-//
-//            return {error: true};
-//        }
-//    }
 
     // create payment instrument
     Transaction.wrap(function () {
         cart.removeExistingPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
         var paymentInstrument = cart.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
-//        if (!adyenCseEnabled) {
-            paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
-//            paymentInstrument.creditCardNumber = cardNumber;
-            paymentInstrument.creditCardType = cardType;
-            //paymentInstrument.creditCardExpirationMonth = expirationMonth;
-            //paymentInstrument.creditCardExpirationYear = expirationYear;
-//        } else {
-//            paymentInstrument.creditCardType = cardType;
-//        }
+       
+        paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
+        paymentInstrument.creditCardType = cardType;
 
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
@@ -79,7 +58,7 @@ function Handle(args) {
  */
 function Authorize(args) {
     var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-
+    
     // TODO: check is that one needed
     if (args.RequestID) {
         return {authorized: true};
@@ -116,7 +95,12 @@ function Authorize(args) {
         };
     }
 
+    // 3D Secure Check: Is this the correct way to test for 3D Secure (result.redirectObject). Could be result.RedirectObject.url
+    AdyenHelper.adyenLogTest("3D Secure TEST");
+    
+    // Check RedirectObject for paymentData, use in 3D request
     if (result.RedirectObject != '') {
+    	AdyenHelper.adyenLogTest("This is a 3D Secure payment: " + JSON.stringify(result.RedirectObject));
         Transaction.commit();
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;
@@ -126,11 +110,12 @@ function Authorize(args) {
             view: app.getView({
                 ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
                 Basket: order,
-                issuerUrl: result.IssuerUrl,
-                paRequest: result.PaRequest,
-                md: result.MD
+                issuerUrl: result.RedirectObject.url,
+                paRequest: result.RedirectObject.PaReq,
+                md: result.RedirectObject.MD
             })};
     }
+     
 
     if (result.Decision != 'ACCEPT') {
         Transaction.rollback();

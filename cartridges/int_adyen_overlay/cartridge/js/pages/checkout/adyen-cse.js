@@ -25,12 +25,12 @@ function initializeBillingEvents() {
 		if ('CREDIT_CARD' == radioVal){
 			e.preventDefault();
 			
-			var card = window.AdyenCard;
-			$('#dwfrm_billing_paymentMethods_creditCard_type').val(card.state.brand);
-            $('#dwfrm_billing_paymentMethods_creditCard_encryptedCardNumber').val(card.paymentData.encryptedCardNumber);
-            $('#dwfrm_billing_paymentMethods_creditCard_encryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
-            $('#dwfrm_billing_paymentMethods_creditCard_encryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
-            $('#dwfrm_billing_paymentMethods_creditCard_encryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+//			var card = window.AdyenCard;
+//			$('#dwfrm_billing_paymentMethods_creditCard_type').val(card.state.brand);
+//            $('#dwfrm_billing_paymentMethods_creditCard_encryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+//            $('#dwfrm_billing_paymentMethods_creditCard_encryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+//            $('#dwfrm_billing_paymentMethods_creditCard_encryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+//            $('#dwfrm_billing_paymentMethods_creditCard_encryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
 			
 			var creditCard = $('[data-method="CREDIT_CARD"]'),
 	        		selectedCardID = creditCard.find('input[name$="_selectedCardID"]'),

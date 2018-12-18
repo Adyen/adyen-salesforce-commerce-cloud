@@ -1,4 +1,4 @@
-<script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
+<!-- <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script> -->
 <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="hidden"/>
 <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedCardNumber}" type="hidden" />
 <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedExpiryMonth}" type="hidden"/>
