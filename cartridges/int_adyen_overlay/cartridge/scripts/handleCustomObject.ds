@@ -128,19 +128,16 @@ function handle( customObj : CustomObject  ) : Object
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled.",order.orderNo);
-				return result;
 				break;
 			case "CANCEL_OR_REFUND" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was cancelled or refunded.",order.orderNo);
-				return result;
 				break;
 			case "REFUND" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
-				//return result;
 				break;
 			//CustomAdyen 
 			case "CAPTURE_FAILED" :
