@@ -5,7 +5,8 @@ var Mail = require('dw/net/Mail');
 var Template = require('dw/util/Template');
 var Transaction = require('dw/system/Transaction');
 
-function sendEmail(order){
+
+function submit(order){
     var confirmationEmail = new Mail();
     var context = new HashMap();
 
@@ -32,5 +33,5 @@ function sendEmail(order){
 }
 
 module.exports = {
-    'sendEmail': sendEmail
+    'submit': submit
 }

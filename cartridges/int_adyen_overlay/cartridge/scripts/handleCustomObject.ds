@@ -44,7 +44,7 @@ function handle( customObj : CustomObject  ) : Object
 	result.status = PIPELET_ERROR;
 	
 	result.EventCode = customObj.custom.eventCode;
-	result.SkipNotification = false;
+	result.SkipNotification = true;
 	result.SkipOrder = false;
 
 	var orderId = customObj.custom.orderId.split("-", 1);	
@@ -54,7 +54,6 @@ function handle( customObj : CustomObject  ) : Object
 	if (order == null) {
 		// check to see if this was a $0.00 auth for recurring payment. if yes, CO can safely be deleted
         if (orderId.indexOf('recurringPayment-') > -1) {
-            result.SkipNotification = true;
             result.SkipOrder = true;
             setProcessedCOInfo(customObj);
         } else {
@@ -86,12 +85,11 @@ function handle( customObj : CustomObject  ) : Object
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
 						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
 						paymentSuccess = true;
-						result.SkipNotification = true;
 					}
 					else if(order.paymentStatus == Order.PAYMENT_STATUS_PARTPAID){
 						paymentSuccess = true;
 						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
-						result.SkipNotification = true;
+
 					}
 					else {
 						order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
@@ -99,10 +97,11 @@ function handle( customObj : CustomObject  ) : Object
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
 						paymentSuccess = true;
+                        result.SkipNotification = false;
 					}  
-				}else{
+				}
+				else{
 					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
-					result.SkipNotification = true;
 					// Determine if payment was refused and was used Adyen payment method 
 					if (!empty(reasonCode) && (reasonCode == "REFUSED" || reasonCode.indexOf('FAILED') > -1)) {
                         for each (paymentInstrument in paymentInstruments) {
@@ -141,7 +140,7 @@ function handle( customObj : CustomObject  ) : Object
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
-				return result;
+				//return result;
 				break;
 			//CustomAdyen 
 			case "CAPTURE_FAILED" :
@@ -166,8 +165,6 @@ function handle( customObj : CustomObject  ) : Object
 			default:
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} received unhandled status {1}",order.orderNo,customObj.custom.eventCode);
 		}
-		//result.RefusedHpp = refusedHpp;
-		//result.Pending = pending;
 		
 		// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
 		if (!refusedHpp) {
@@ -188,13 +185,14 @@ function handle( customObj : CustomObject  ) : Object
 			if (empty(order.custom.Adyen_paymentMethod) && !empty(customObj.custom.paymentMethod)) {
 				order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
 			}
-			
+
 			// Add a note with all details
 			order.addNote("Adyen Payment Notification", createLogMessage(customObj));
 		}
 
 		setProcessedCOInfo(customObj);
-    } else {
+    }
+    else {
         Logger.getLogger("Adyen", "adyen").debug("Order date > current Date.");
         result.SkipOrder = true;
         result.status = PIPELET_NEXT;
