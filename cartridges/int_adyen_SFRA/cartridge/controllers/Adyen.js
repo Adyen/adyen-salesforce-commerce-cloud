@@ -136,7 +136,6 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
   }
   // AUTHORISED: The payment authorisation was successfully completed.
   if (req.querystring.authResult == 'AUTHORISED') {
-      var Logger = require('dw/system/Logger');
       var OrderModel = require('*/cartridge/models/order');
       var Locale = require('dw/util/Locale');
 
