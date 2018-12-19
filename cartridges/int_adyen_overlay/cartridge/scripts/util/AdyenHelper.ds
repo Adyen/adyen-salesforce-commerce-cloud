@@ -315,11 +315,11 @@ var __AdyenHelper : Object = {
             'userAgent': request.httpUserAgent
         };
 
-        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType) && saveCreditCard) {
-            jsonObject['recurring'] = {
-                'contract': recurringType
-            };
-        }
+        // if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType) && saveCreditCard) {
+        //     jsonObject['recurring'] = {
+        //         'contract': recurringType
+        //     };
+        // }
 
         return jsonObject;
     },

@@ -6,6 +6,8 @@
 
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
+var Resource = require('dw/web/Resource');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
   Transaction.wrap(function () {
@@ -19,7 +21,7 @@ function Handle(basket, paymentInformation) {
       paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
       paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
   });
-
+    Logger.getLogger("Adyen").error("paymentMethodType = " + paymentInformation.paymentMethodType);
   return { error: false };
 }
 
@@ -37,6 +39,46 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     paymentInstrument.paymentTransaction.transactionID = orderNumber;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
+
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(orderNumber);
+
+    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    Transaction.begin();
+
+    var result = adyenCheckout.alternativePaymentMethod({
+        Order: order,
+        Amount: paymentInstrument.paymentTransaction.amount,
+        CurrentSession: session,
+        CurrentRequest: request,
+        PaymentInstrument: paymentInstrument,
+        PaymentType: "ideal",
+        IssuerId: "1121"
+    });
+
+    if (result.error) {
+        var errors = [];
+        errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
+    }
+    if (result.resultCode == 'RedirectShopper') {
+        return { authorized: false, error: true };
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+        // session.custom.order = order;
+        // session.custom.paymentInstrument = paymentInstrument;
+        // return {
+        //     authorized: true,
+        //     authorized3d: true,
+        //     order: order,
+        //     paymentInstrument: paymentInstrument,
+        //     redirectObject : result.RedirectObject
+        // };
+    }
+
     return { authorized: true, error: false };
 }
 

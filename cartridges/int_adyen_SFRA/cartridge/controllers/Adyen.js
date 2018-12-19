@@ -156,15 +156,19 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 });
 
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
+  var Logger = require('dw/system/Logger');
   var BasketMgr = require('dw/order/BasketMgr');
   var Resource = require('dw/web/Resource');
   var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
   var paymentMethods;
+    Logger.getLogger("Adyen").error("basketCurrent = " + JSON.stringify(BasketMgr.getCurrentBasket()));
   try {
     paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
   } catch (err) {
     paymentMethods = [];
   }
+
+  Logger.getLogger("Adyen").error("pms = " + JSON.stringify(paymentMethods));
 
   paymentMethods = paymentMethods.filter(function (method) { return method.type != "scheme"; });
   var descriptions = [];

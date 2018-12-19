@@ -39,11 +39,15 @@ server.append('SubmitPayment',
         viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
       }
 
-    // set selected brandCode & issuerId to session variable
-    session.custom.brandCode = req.form.brandCode;
-    session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
-    session.custom.issuerId = req.form.issuerId;
-    session.custom.adyenIssuerName = req.form.adyenIssuerName;
+      viewData.paymentInformation.paymentMethodType = req.form.brandCode;
+      viewData.paymentInformation.adyenPaymentMethod = req.form.adyenPaymentMethod;
+      viewData.paymentInformation.issuerId = req.form.issuerId;
+      viewData.paymentInformation.adyenIssuerName = req.form.adyenIssuerName;
+
+      // TODO BAS
+    // set selected brandCode & issuerId to session variable.. Not needed anymore for Checkout
+    // session.custom.brandCode = req.form.brandCode;
+    // session.custom.issuerId = req.form.issuerId;
 
     res.setViewData(viewData);
     next();
