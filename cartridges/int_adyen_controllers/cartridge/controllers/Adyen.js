@@ -384,7 +384,8 @@ function authorizeWithForm()
 		CurrentSession: session,
 		CurrentRequest: request,
 		MD: adyenResponse.MD,
-		PaResponse: adyenResponse.PaRes
+		PaResponse: adyenResponse.PaRes,
+		PaymentData : paymentInstrument.custom.adyenPaymentData
 	});
 	
     if (result.error || result.Decision != 'ACCEPT') {

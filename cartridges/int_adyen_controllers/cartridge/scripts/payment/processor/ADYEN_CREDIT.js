@@ -94,14 +94,14 @@ function Authorize(args) {
             PlaceOrderError: (!empty(args) && 'AdyenErrorMessage' in args && !empty(args.AdyenErrorMessage) ? args.AdyenErrorMessage : '')
         };
     }
-
-    // 3D Secure Check: Is this the correct way to test for 3D Secure (result.redirectObject). Could be result.RedirectObject.url
-    AdyenHelper.adyenLogTest("3D Secure TEST");
-    
-    // Check RedirectObject for paymentData, use in 3D request
+ 
     if (result.RedirectObject != '') {
-    	AdyenHelper.adyenLogTest("This is a 3D Secure payment: " + JSON.stringify(result.RedirectObject));
+    	// AdyenHelper.adyenLogTest("This is a 3D Secure payment: " + JSON.stringify(result));
         Transaction.commit();
+        Transaction.wrap( function() {
+        	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+        
         session.custom.order = order;
         session.custom.paymentInstrument = paymentInstrument;
         return {
@@ -110,12 +110,11 @@ function Authorize(args) {
             view: app.getView({
                 ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
                 Basket: order,
-                issuerUrl: result.RedirectObject.url,
-                paRequest: result.RedirectObject.PaReq,
-                md: result.RedirectObject.MD
+                issuerUrl : result.RedirectObject.url,
+                paRequest : result.RedirectObject.data.PaReq,
+                md : result.RedirectObject.data.MD
             })};
-    }
-     
+    }   
 
     if (result.Decision != 'ACCEPT') {
         Transaction.rollback();
