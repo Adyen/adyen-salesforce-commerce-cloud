@@ -41,7 +41,6 @@ server.append('SubmitPayment',
 
       session.custom.paymentType = req.form.brandCode;
       session.custom.issuer = req.form.issuer;
-      session.custom.issuerId = req.form.issuerId;
       session.custom.adyenIssuerName = req.form.adyenIssuerName;
       session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
 

@@ -29,17 +29,12 @@
 
 /* API Includes */
 var Logger = require('dw/system/Logger');
-var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 function execute(args) {
-    var result = verify(args);
-    if (result.error) {
-        return PIPELET_ERROR;
-    }
     return PIPELET_NEXT;  
 }
 

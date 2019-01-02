@@ -29,7 +29,6 @@ function execute(args) {
 
 function getMethods (basket : dw.order.Basket, CountryCode) {
     try {
-        Logger.getLogger("Adyen").error("getMethods entered");
         var requestObject = {};
 
         var callResult = null,
@@ -50,15 +49,12 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
             value: paymentAmount
         };
 
-        Logger.getLogger("Adyen").error("requestObject = " + JSON.stringify(requestObject));
         var xapikey = AdyenHelper.getAdyenApiKey();
         service.addHeader('Content-type', 'application/json');
         service.addHeader('charset', 'UTF-8');
         service.addHeader('X-API-key', xapikey);
         callResult = service.call(JSON.stringify(requestObject));
 
-
-        Logger.getLogger("Adyen").error("callResult = " + callResult);
 
         if (callResult.isOk() == false) {
             Logger.error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
