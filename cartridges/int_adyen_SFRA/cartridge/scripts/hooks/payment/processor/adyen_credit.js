@@ -56,6 +56,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    Transaction.wrap(function () {
+        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
     Transaction.begin();
 
     var result = adyenCheckout.creditCard({

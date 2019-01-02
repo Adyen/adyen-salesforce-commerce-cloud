@@ -21,7 +21,7 @@ function Handle(basket, paymentInformation) {
       paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
       paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
   });
-    Logger.getLogger("Adyen").error("paymentMethodType = " + paymentInformation.paymentMethodType);
+
   return { error: false };
 }
 
@@ -52,8 +52,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         CurrentSession: session,
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
-        PaymentType: "ideal",
-        IssuerId: "1121"
+        PaymentType: session.custom.paymentType,
+        Issuer: session.custom.issuer
     });
 
     if (result.error) {
@@ -63,20 +63,18 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
     }
-    if (result.resultCode == 'RedirectShopper') {
-        return { authorized: false, error: true };
+
+    if (result.ResultCode == 'RedirectShopper') {
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
-        // session.custom.order = order;
-        // session.custom.paymentInstrument = paymentInstrument;
-        // return {
-        //     authorized: true,
-        //     authorized3d: true,
-        //     order: order,
-        //     paymentInstrument: paymentInstrument,
-        //     redirectObject : result.RedirectObject
-        // };
+
+        return {
+            authorized: true,
+            order: order,
+            paymentInstrument: paymentInstrument,
+            redirectObject : result.RedirectObject
+        };
     }
 
     return { authorized: true, error: false };
