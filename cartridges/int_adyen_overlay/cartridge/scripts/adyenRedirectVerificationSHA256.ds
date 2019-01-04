@@ -203,7 +203,7 @@ function verify (args) {
 				adyenRequest.put("openinvoicedata.line" + line + '.description', description );
 				adyenRequest.put("openinvoicedata.line" + line + '.itemAmount',  itemAmount.toFixed());
 				adyenRequest.put("openinvoicedata.line" + line + '.itemVatAmount', vatAmount.toFixed());					
-				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 100).toFixed() );
+				adyenRequest.put("openinvoicedata.line" + line + '.itemVatPercentage', (new Number(vatPercentage) * 10000).toFixed() );
 				adyenRequest.put("openinvoicedata.line" + line + '.numberOfItems', quantity );
 				adyenRequest.put("openinvoicedata.line" + line + '.vatCategory', 'None' );
 				adyenRequest.put("openinvoicedata.line" + line + '.itemId', id);
@@ -358,7 +358,7 @@ function getCurrency(lineItem) {
 
 function getItemAmount(lineItem) {
 	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
-		return lineItem.adjustedPrice;
+		return lineItem.adjustedNetPrice;
 	} 
 	else if (lineItem instanceof dw.order.PriceAdjustment) {
 		return lineItem.basePrice;
