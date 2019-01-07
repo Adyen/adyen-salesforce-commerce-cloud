@@ -9,8 +9,8 @@ var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 server.append('SubmitPayment',
   server.middleware.https,
   function (req, res, next) {
-    var viewData = res.getViewData();
-    var paymentForm = server.forms.getForm('billing');
+      var viewData = res.getViewData();
+      var paymentForm = server.forms.getForm('billing');
 
       viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
       viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
@@ -18,35 +18,44 @@ server.append('SubmitPayment',
       viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
 
       viewData.paymentInformation = {
-            cardType: {
+          cardType: {
               value: paymentForm.creditCardFields.cardType.value
-            },
-            cardNumber: {
+          },
+          cardNumber: {
               value: paymentForm.creditCardFields.cardNumber.value
-            },
-            expirationMonth: {
-                value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
-            },
-            expirationYear: {
-                value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
-            },
-            securityCode: {
+          },
+          expirationMonth: {
+              value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
+          },
+          expirationYear: {
+              value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
+          },
+          securityCode: {
               value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
           }
       };
 
-      if(paymentForm.creditCardFields.selectedCardID) {
-        viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
+      if (paymentForm.creditCardFields.selectedCardID) {
+          viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
       }
 
-    // set selected brandCode & issuerId to session variable
-    session.custom.brandCode = req.form.brandCode;
-    session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
-    session.custom.issuerId = req.form.issuerId;
-    session.custom.adyenIssuerName = req.form.adyenIssuerName;
+      session.custom.paymentType = req.form.brandCode;
+      session.custom.issuer = req.form.issuer;
+      if(typeof req.form.adyenPaymentMethod !== "undefined"){
+          session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
+      }
+      else {
+          session.custom.adyenPaymentMethod = null;
+      }
+      if(typeof req.form.adyenIssuerName !== "undefined"){
+          session.custom.adyenIssuerName = req.form.adyenIssuerName;
+      }
+      else {
+          session.custom.adyenIssuerName = null;
+      }
 
-    res.setViewData(viewData);
-    next();
+      res.setViewData(viewData);
+      next();
   });
 
 server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
@@ -164,14 +173,23 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  if (handlePaymentResult.redirectObject != '' && handlePaymentResult.authorized3d) {
-    session.custom.MD = handlePaymentResult.redirectObject.data.MD;
-
-    res.json({
-      error: false,
-      continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.redirectObject.url, 'PaRequest', handlePaymentResult.redirectObject.data.PaReq, 'MD', handlePaymentResult.redirectObject.data.MD).toString()
-    });
-    return next();
+  if (handlePaymentResult.redirectObject) {
+      //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
+    if(handlePaymentResult.authorized3d){
+        session.custom.MD = handlePaymentResult.redirectObject.data.MD;
+        res.json({
+            error: false,
+            continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.redirectObject.url, 'PaRequest', handlePaymentResult.redirectObject.data.PaReq, 'MD', handlePaymentResult.redirectObject.data.MD).toString()
+        });
+        return next();
+    }
+    else{
+        res.json({
+            error: false,
+            continueUrl: URLUtils.url('Adyen-Redirect', 'redirectUrl', handlePaymentResult.redirectObject.url).toString()
+        });
+        return next();
+    }
   }
 
   var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
@@ -199,18 +217,6 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     res.json({
       error: true,
       errorMessage: Resource.msg('error.technical', 'checkout', null)
-    });
-    return next();
-  }
-
-  // If payment is redirected, order is created first
-  if (placeOrderResult.order.paymentInstrument.paymentMethod == 'Adyen' && placeOrderResult.order_created) {
-    session.custom.orderNo = placeOrderResult.order.orderNo;
-    res.json({
-      error: false,
-      orderID: placeOrderResult.order.orderNo,
-      orderToken: placeOrderResult.order.orderToken,
-      continueUrl: URLUtils.url('Adyen-Redirect').toString()
     });
     return next();
   }

@@ -55,12 +55,13 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var Transaction = require('dw/system/Transaction');
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
-    var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
+    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     Transaction.begin();
-    var result = adyenCreditVerification.verify({
+
+    var result = adyenCheckout.creditCard({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,

@@ -10,6 +10,11 @@
         <user-id>yourWebServiceUser</user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetails">
+        <url>https://checkout-test.adyen.com/checkout/v40/payments/details</url>
+        <user-id>yourWebServiceUser</user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenRecurring">
         <url>https://pal-test.adyen.com/pal/servlet/Recurring/v25/listRecurringDetails</url>
         <user-id>yourWebServiceUser</user-id>
@@ -58,6 +63,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPayment3DSecure</credential-id>
+    </service>
+    <service service-id="AdyenPaymentDetails">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentDetails</credential-id>
     </service>
      <service service-id="AdyenRecurring">
         <service-type>HTTP</service-type>
