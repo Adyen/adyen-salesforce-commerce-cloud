@@ -12,6 +12,7 @@ var __AdyenHelper : Object = {
     //service constants
     SERVICE : {
         PAYMENT : "AdyenPayment",
+        PAYMENTDETAILS: "AdyenPaymentDetails",
         PAYMENT_3DSECURE : "AdyenPayment3DSecure",
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
@@ -264,7 +265,7 @@ var __AdyenHelper : Object = {
         }
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
-        
+
         if(!isOneClick){
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
