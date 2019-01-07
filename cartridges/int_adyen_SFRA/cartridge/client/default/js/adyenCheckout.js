@@ -148,7 +148,7 @@
             .attr('style', 'display:none');
 
         if (paymentMethod.details) {
-            if(paymentMethod.details[0].key == "issuer")
+            if(paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer")
             {
                 var issuers = $('<select>').attr('id', 'issuerList');
                 jQuery.each(paymentMethod.details[0].items, function (i, issuer) {

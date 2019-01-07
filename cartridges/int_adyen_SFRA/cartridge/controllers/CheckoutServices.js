@@ -41,8 +41,18 @@ server.append('SubmitPayment',
 
       session.custom.paymentType = req.form.brandCode;
       session.custom.issuer = req.form.issuer;
-      session.custom.adyenIssuerName = req.form.adyenIssuerName;
-      session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
+      if(typeof req.form.adyenPaymentMethod !== "undefined"){
+          session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
+      }
+      else {
+          session.custom.adyenPaymentMethod = null;
+      }
+      if(typeof req.form.adyenIssuerName !== "undefined"){
+          session.custom.adyenIssuerName = req.form.adyenIssuerName;
+      }
+      else {
+          session.custom.adyenIssuerName = null;
+      }
 
       res.setViewData(viewData);
       next();

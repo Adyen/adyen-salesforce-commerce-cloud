@@ -8,6 +8,7 @@ var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
+var Logger = require('dw/system/Logger');
 
 server.get('Adyen3D', server.middleware.https, function (req, res, next) {
   var IssuerURL = req.querystring.IssuerURL;
@@ -103,6 +104,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         Transaction.wrap(function () {
             OrderMgr.failOrder(order);
         });
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
     }
     return next();

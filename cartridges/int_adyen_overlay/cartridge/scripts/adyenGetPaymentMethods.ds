@@ -8,12 +8,8 @@
 * @output PaymentMethods : Object
 */
 
-importPackage(dw.crypto);
 importPackage(dw.system);
 importPackage(dw.order);
-importPackage(dw.net);
-importPackage(dw.util);
-importPackage( dw.svc );
 
 //script include
 var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");

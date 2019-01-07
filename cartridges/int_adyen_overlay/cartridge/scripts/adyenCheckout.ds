@@ -65,12 +65,9 @@ function creditCard(args) {
             customerID = profile.getCustomerNo();
         }
 
-        // TODO: for new cards use the recurring type in the settings
-        // For oneclick cards use ONECICK
         var recurringType = AdyenHelper.getAdyenRecurringType();
         var isOneClick = false;
         if (paymentInstrument.getCreditCardToken()) {
-            recurringType = 'ONECLICK';
             isOneClick = true;
         }
         var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick);

@@ -18,7 +18,10 @@ function Handle(basket, paymentInformation) {
       'Adyen', basket.totalGrossPrice
     );
       paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
-      paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+      if(session.custom.adyenIssuerName){
+          paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+      }
+
   });
 
   return { error: false };
@@ -75,8 +78,14 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             redirectObject : result.RedirectObject
         };
     }
-
-    return { authorized: true, error: false };
+    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Pending'){
+        return { authorized: true, error: false };
+    }
+    else {
+        return {
+            authorized: false, error: true
+        };
+    }
 }
 
 exports.Handle = Handle;
