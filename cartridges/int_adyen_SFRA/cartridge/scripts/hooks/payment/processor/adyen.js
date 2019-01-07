@@ -7,6 +7,7 @@
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
   Transaction.wrap(function () {
@@ -57,7 +58,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         PaymentType: session.custom.paymentType,
         Issuer: session.custom.issuer
     });
-
     if (result.error) {
         var errors = [];
         errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
@@ -82,6 +82,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         return { authorized: true, error: false };
     }
     else {
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         return {
             authorized: false, error: true
         };
