@@ -9,6 +9,7 @@
 */
 
 importPackage(dw.system);
+importPackage(dw.order);
 
 //script include
 var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
@@ -33,26 +34,23 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         if (service == null) {
             return PIPELET_ERROR;
         }
+        //
+        var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+        var paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
 
-        var merchantAccount: String = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
-        var paymentAmount: Number = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
-        var shippingAddr : Shipment = basket.defaultShipment.shippingAddress;
-        var countryCode = !empty(CountryCode) ? CountryCode.toUpperCase() : shippingAddr.countryCode.value.toUpperCase();
-        var currencyCode: String = basket.currencyCode;
-
+        var currencyCode = basket.currencyCode;
         requestObject['merchantAccount'] = merchantAccount;
-        requestObject['countryCode'] = countryCode;
         requestObject['amount'] = {
             currency: currencyCode,
             value: paymentAmount
         };
 
         var xapikey = AdyenHelper.getAdyenApiKey();
-
         service.addHeader('Content-type', 'application/json');
         service.addHeader('charset', 'UTF-8');
         service.addHeader('X-API-key', xapikey);
         callResult = service.call(JSON.stringify(requestObject));
+
 
         if (callResult.isOk() == false) {
             Logger.error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
@@ -76,7 +74,8 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
 
         try {
             return JSON.parse(resultText);
-        } catch (ex) {
+        }
+        catch (ex) {
             Logger.error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
             return PIPELET_ERROR;
         }
@@ -85,7 +84,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         return PIPELET_ERROR;
     }
 
-    return null;
+    return JSON.parse(resultObject.text);
 }
 
 

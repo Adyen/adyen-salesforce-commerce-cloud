@@ -6,6 +6,8 @@
 
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
+var Resource = require('dw/web/Resource');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
   Transaction.wrap(function () {
@@ -17,7 +19,10 @@ function Handle(basket, paymentInformation) {
       'Adyen', basket.totalGrossPrice
     );
       paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
-      paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+      if(session.custom.adyenIssuerName){
+          paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+      }
+
   });
 
   return { error: false };
@@ -37,7 +42,51 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     paymentInstrument.paymentTransaction.transactionID = orderNumber;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
-    return { authorized: true, error: false };
+
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(orderNumber);
+
+    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    Transaction.begin();
+
+    var result = adyenCheckout.alternativePaymentMethod({
+        Order: order,
+        Amount: paymentInstrument.paymentTransaction.amount,
+        CurrentSession: session,
+        CurrentRequest: request,
+        PaymentInstrument: paymentInstrument,
+        PaymentType: session.custom.paymentType,
+        Issuer: session.custom.issuer
+    });
+    if (result.error) {
+        var errors = [];
+        errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
+    }
+
+    if (result.ResultCode == 'RedirectShopper') {
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
+        return {
+            authorized: true,
+            order: order,
+            paymentInstrument: paymentInstrument,
+            redirectObject : result.RedirectObject
+        };
+    }
+    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Pending'){
+        return { authorized: true, error: false };
+    }
+    else {
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+        return {
+            authorized: false, error: true
+        };
+    }
 }
 
 exports.Handle = Handle;
