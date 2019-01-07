@@ -11,7 +11,6 @@ function updatePaymentInformation(order) {
 
     if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
         && order.billing.payment.selectedPaymentInstruments.length > 0) {
-
         if(order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "CREDIT_CARD"){
             htmlToAppend += '<span>' + order.resources.cardType + ' '
                 + order.billing.payment.selectedPaymentInstruments[0].type
@@ -24,9 +23,15 @@ function updatePaymentInformation(order) {
                 + '</span></div>';
         }
         else if(order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen"){
-            htmlToAppend += '<span>'
+            htmlToAppend += '<div><span>'
                 + order.billing.payment.selectedPaymentInstruments[0].selectedAdyenPM
-                + '</span>';
+                + '</span></div>';
+
+            if(typeof order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName !== "undefined") {
+                htmlToAppend += '<div><span>'
+                    + order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName
+                    + '</span></div>';
+            }
         }
     }
 

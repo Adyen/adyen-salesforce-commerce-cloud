@@ -7,7 +7,7 @@
 
 <input id="adyenPaymentMethod" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
-
+<input id="selectedIssuer" type="hidden" name="issuer"/>
 <isif condition="${directoryLookup}">
     <ul id="paymentMethodsUl">
     </ul>

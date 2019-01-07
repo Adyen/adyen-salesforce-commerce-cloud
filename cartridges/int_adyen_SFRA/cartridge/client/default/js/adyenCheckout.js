@@ -138,33 +138,32 @@
             .attr('id', 'rb_' + paymentMethod.name)
             .attr('type', 'radio')
             .attr('name', 'brandCode')
-            .attr('value', paymentMethod.brandCode));
-        li.append($('<img>').addClass('paymentMethod_img').attr('src', imagePath + paymentMethod.brandCode + '.png'));
+            .attr('value', paymentMethod.type));
+        li.append($('<img>').addClass('paymentMethod_img').attr('src', imagePath + paymentMethod.type + '.png'));
         li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
         li.append($('<p>').text(description));
 
         var additionalFields = $('<div>').addClass('hppAdditionalFields')
-            .attr('id', 'extraFields_' + paymentMethod.brandCode)
+            .attr('id', 'extraFields_' + paymentMethod.type)
             .attr('style', 'display:none');
 
-        if (paymentMethod.issuers) {
-            var issuers = $('<select>').attr('id', 'issuerList').attr('name', 'issuerId');
-            jQuery.each(paymentMethod.issuers, function (i, issuer) {
-                var issuer = $('<option>')
-                    .attr('label', issuer.name)
-                    .attr('value', issuer.issuerId);
-                issuers.append(issuer);
-            });
-            additionalFields.append(issuers);
-            li.append(additionalFields);
+        if (paymentMethod.details) {
+            if(paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer")
+            {
+                var issuers = $('<select>').attr('id', 'issuerList');
+                jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
+                    var issuer = $('<option>')
+                        .attr('label', issuer.name)
+                        .attr('value', issuer.id);
+                    issuers.append(issuer);
+                });
+                additionalFields.append(issuers);
+                li.append(additionalFields);
+            }
         }
-        if ($('#OpenInvoiceWhiteList').val().indexOf(paymentMethod.brandCode) !== -1) {
-            // Display Additional Open Invoice fields
-            li.append(additionalFields);
-        }
+
         $('#paymentMethodsUl').append(li);
     };
-
 
     $('button[value="submit-payment"]').on('click', function (e) {
         if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && $('.payment-information').data('is-new-payment')) {
@@ -191,6 +190,22 @@
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
                 return true;
+            }
+        }
+        else if($('#selectedPaymentOption').val() == 'Adyen' && $('#directoryLookup').val() == 'true' && !$("input[name='brandCode']:checked").val()) {
+            $('#requiredBrandCode').show();
+            return false;
+        }
+        else if ($('#selectedPaymentOption').val() == 'Adyen' && $("input[name='brandCode']:checked").val()) {
+            $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").closest(".paymentMethod").find("label").text());
+            if ($("input[name='brandCode']:checked").parent().find('#issuerList').length) {
+                $('#adyenIssuerName').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('label'));
+                $('#selectedIssuer').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('value'));
+            }
+            else {
+                $('#issuerList').val("");
+                $('#adyenIssuerName').val("");
+                $('#selectedIssuer').val("");
             }
         }
     });

@@ -12,6 +12,7 @@ var __AdyenHelper : Object = {
     //service constants
     SERVICE : {
         PAYMENT : "AdyenPayment",
+        PAYMENTDETAILS: "AdyenPaymentDetails",
         PAYMENT_3DSECURE : "AdyenPayment3DSecure",
         RECURRING: "AdyenRecurring",
         RECURRING_DISABLE: "AdyenRecurringDisable",
@@ -248,9 +249,9 @@ var __AdyenHelper : Object = {
 
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
-        paymentMethodObject['holderName'] = card.cardOwner.value;
 
         if(!isOneClick){
+            paymentMethodObject['holderName'] = card.cardOwner.value;
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
             paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
@@ -314,12 +315,6 @@ var __AdyenHelper : Object = {
             'acceptHeader': request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding'),
             'userAgent': request.httpUserAgent
         };
-
-        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType) && saveCreditCard) {
-            jsonObject['recurring'] = {
-                'contract': recurringType
-            };
-        }
 
         return jsonObject;
     },
