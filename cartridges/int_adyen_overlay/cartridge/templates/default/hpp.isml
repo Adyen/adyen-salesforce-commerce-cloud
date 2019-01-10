@@ -3,35 +3,32 @@
 
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <isset name="brandCode" value="" scope="session"/>
-<isset name="issuerId" value="" scope="session"/>
+<isset name="issuer" value="" scope="session"/>
 <isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
 
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
-	<isset name="methods" value="${pdict.AdyenHppPaymentMethods.paymentMethods}" scope="page"/>
+	<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
 	
 	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
 	
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
-				<li class="form-row row-${method.brandCode}">
-					<isif condition="${whitelistMethods.indexOf(method.brandCode) > -1}">
-						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.brandCode}"/>
+				<li class="form-row row-${method.type}">
+					<isif condition="${whitelistMethods.indexOf(method.type) > -1}">
+						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.type}" id="${method.type}"/>
 					<iselse/>
-						<input type="radio" class="input-radio" name="brandCode" value="${method.brandCode}"/>
+						<input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
 					</isif>
-					<img class="logo" src="${URLUtils.staticURL('/images/' + method.brandCode + '.png')}" alt=""/>
-					<label for="${method.brandCode}">${method.name}</label>
+					<img class="logo" src="${URLUtils.staticURL('/images/' + method.type + '.png')}" alt=""/>
+					<label for="${method.type}">${method.name}</label>
 
-					<isif condition="${typeof method.issuers !== 'undefined' && method.issuers.length > 0}">
-						<ul id="issuer">
-							<isloop items="${method.issuers}" var="issuer" status="loopstate">
-								<li class="form-row">
-									<input type="radio" class="input-radio" name="issuerId" value="${issuer.issuerId}"/>
-									<img class="logo" src="${URLUtils.staticURL('/images/' + issuer.name.replace(/\s+/g, '').toUpperCase() + '.png')}" alt=""/>
-								</li>
+					<isif condition="${method.details[0].key == 'issuer'}">
+						<select class="issuer" id="${method.type}_issuer" name="issuer">
+							<isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
+								<option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
 							</isloop>
-						</ul>
+						</select>
 					</isif>
 				</li>
 			</isloop>
