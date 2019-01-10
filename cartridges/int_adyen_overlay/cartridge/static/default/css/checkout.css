@@ -2,7 +2,7 @@
   margin-left: 22%;
 }
 
-.payment-method #issuer {
+.payment-method .issuer {
   margin: 1% 5%;
   display: none;
 }

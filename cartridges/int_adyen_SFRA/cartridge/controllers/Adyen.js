@@ -110,6 +110,11 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
     return next();
 });
 
+server.get('OrderConfirm', server.middleware.https, function (req, res, next) {
+    res.redirect(URLUtils.url('Order-Confirm', 'ID', req.querystring.ID, 'token', req.querystring.token).toString());
+    return next();
+});
+
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
   var BasketMgr = require('dw/order/BasketMgr');
   var Resource = require('dw/web/Resource');
