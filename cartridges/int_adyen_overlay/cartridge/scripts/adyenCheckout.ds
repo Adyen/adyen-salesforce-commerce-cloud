@@ -80,7 +80,7 @@ function creditCard(args) {
                 paymentMethodObject['storeDetails'] = true;
             }
         }
-        var returnUrl = URLUtils.https('Order-Confirm').toString();
+        var returnUrl = URLUtils.https('Adyen-OrderConfirm').toString();
         return createPaymentRequest(args, paymentMethodObject, returnUrl);
 
     }
