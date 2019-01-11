@@ -45,15 +45,15 @@ $('button[value="add-new-payment"]').on('click', function (e) {
 });
 
 function getCardData(selectedCard) {
-  var cardData = {
-    expiryMonth: $('#expirationMonth').val(),
-    expiryYear: $('#expirationYear').val()
-  };
+  var cardData = {};
   if (!selectedCard) {
     cardData.number = $('#cardNumber').val();
     cardData.holderName = $('#holderName').val();
+    cardData.expiryMonth = $('#expirationMonth').val();
+    cardData.expiryYear = $('#expirationYear').val();
     cardData.cvc = $('#securityCode').val();
-  } else {
+  }
+  else {
     cardData.cvc = $('.selected-payment #saved-payment-security-code').val();
   }
   return cardData;

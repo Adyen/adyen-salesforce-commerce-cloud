@@ -34,14 +34,13 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
+        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
+        paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+        paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
+        paymentInstrument.setCreditCardType(cardType);
+
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
-        }
-        else {
-            paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
-            paymentInstrument.setCreditCardType(cardType);
         }
 
     });
