@@ -252,11 +252,13 @@ var __AdyenHelper : Object = {
         var paymentMethodObject = {};
         switch(formType) {
             case 'billing':
-                if(session.forms.paymentinstruments) {
+                if(session.forms.billing.paymentMethods)  {
                     card = session.forms.billing.paymentMethods.creditCard;
+ 			        paymentMethodObject['holderName'] = card.owner.value;
                 } else {
                     // structure for SFRA
                     card = session.forms.billing.creditCardFields;
+                    paymentMethodObject['holderName'] = card.cardOwner.value;
                 }
                 break;
             case 'account':
@@ -265,8 +267,7 @@ var __AdyenHelper : Object = {
         }
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
-        paymentMethodObject['holderName'] = card.cardOwner.value;
-
+        
         if(!isOneClick){
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;

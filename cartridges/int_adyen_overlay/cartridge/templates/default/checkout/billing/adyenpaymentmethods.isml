@@ -1,10 +1,14 @@
-<!-- <script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script> -->
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="hidden"/>
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedCardNumber}" type="hidden" />
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedExpiryMonth}" type="hidden"/>
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedExpiryYear}" type="hidden"/>
-<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.encryptedSecurityCode}" type="hidden"/>
-<input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
+<div class="hiddenFields">
+	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="hidden"/>
+	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber}" type="hidden"/>
+	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth}" type="hidden"/>
+	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear}" type="hidden"/>
+	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode}" type="hidden"/>
+</div>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 <input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>
+
+<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner}" type="input"/>
+
 <div class="form-data-error error"></div>
 <isinclude template="checkout/billing/adyenpaymentfields"/>
