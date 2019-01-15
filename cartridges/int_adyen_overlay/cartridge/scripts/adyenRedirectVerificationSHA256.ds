@@ -52,6 +52,8 @@ function verify (args) {
 	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
 	var recurringType : EnumValue = Site.getCurrent().getCustomPreferenceValue("Adyen_recurringType"); 
 	var recurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenRecurringPaymentsEnabled");
+	var guestRecurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenGuestRecurringEnabled");
+	
 	
 	if(merchantAccount == null){
 		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -107,7 +109,16 @@ function verify (args) {
 	var currencyCode:String	 		= order.currencyCode;
 	var merchantReference:String 	= orderNo;
 	args.shopperEmail				= order.customerEmail;
-	args.shopperReference			= currentUser.ID;
+	var customerID = '';
+	
+	if (!empty(currentUser.ID)) {
+		customerID = currentUser.ID;	
+	} else {
+		// set shopperReference for guest shopper (order.customerNo)
+		customerID = order.customerNo;
+	}
+	
+	args.shopperReference			= customerID;
 
 	var sessionValidity : String	 	= new Date();
 	sessionValidity.setHours(sessionValidity.getHours() + 1);
@@ -118,8 +129,13 @@ function verify (args) {
     args.shipBeforeDate = shipBeforeDate.toISOString();
 
 	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null || !recurringEnabled || !currentUser.registered) {
-		recurringType = "";
-	}	
+		
+		if (guestRecurringEnabled) {
+			recurringType = "RECURRING";	
+		} else {
+			recurringType = "";	
+		}
+	}
 	else recurringType = recurringType.value; //recurringType.value has type string 
 		
 	var adyenRequest : SortedMap = new SortedMap();
@@ -131,7 +147,7 @@ function verify (args) {
 	adyenRequest.put("skinCode", skinCode );
 	adyenRequest.put("merchantAccount", merchantAccount );
 	adyenRequest.put("shopperEmail", order.customerEmail );
-	adyenRequest.put("shopperReference", currentUser.ID );
+	adyenRequest.put("shopperReference", customerID );
 	adyenRequest.put("recurringContract", recurringType );
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
@@ -277,7 +293,7 @@ function verify (args) {
     msg += "\nRecurring : " + recurringType;
     msg += "\nSessionID : " + args.CurrentSession.sessionID;
     msg += "\nmRef : " + orderNo ;
-    msg += "\nShopper email : " + order.customerEmail + " , ID : " + currentUser.ID;
+    msg += "\nShopper email : " + order.customerEmail + " , ID : " + customerID;
 	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
 	msg += "\nPaydata : " + requestString ;
 	msg += "\nSignature : " + merchantSig ;
