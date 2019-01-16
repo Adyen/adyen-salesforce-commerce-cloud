@@ -131,37 +131,6 @@ function initializeAccountEvents() {
     });
 }
 
-function initializeCheckout(locale) {
-	
-	var configuration = {
-	        locale: locale, // Defaults to en_US
-	        translations: {} // Override translations
-	};
-
-	window.AdyenCheckoutObject = new AdyenCheckout(configuration);
-}
-
-function initializeCardComponent(cardNode, originKey, loadingContext) {
-	window.AdyenCard = checkout.create('card', {
-        // Mandatory fields
-        originKey: originKey,
-        loadingContext: loadingContext, // The environment where we should loads the secured fields from
-        type: 'card',
-
-        // Events
-        onChange: function(state) {
-            isValid = state.isValid;
-        }, // Gets triggered whenever a user changes input
-        onBrand: function(brandObject) {
-            $('#cardType').val(brandObject.brand);
-        }, // Called once we detect the card brand
-        onBinValue: function(bin) {
-            $('#cardNumber').val(bin.binValue);
-        } // Provides the BIN Number of the card (up to 6 digits), called as the user types in the PAN
-    });
-    window.AdyenCard.mount(cardNode);	
-}
-
 /**
  * If selectedCard is used do not encrypt the number and holderName field
  * @param selectedCard
