@@ -2,13 +2,42 @@
 
 <isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<script>
-	window.AdyenOriginKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
-	window.AdyenLocale = "${request.locale}";  
-	window.AdyenLoadingContext = "${AdyenHelper.getLoadingContext()}";
-</script>
-
 <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.0.0/adyen.css"/>
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div id="card"></div>
 
+<script type="text/javascript">
+	window.onload = function() {
+		var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+		var loadingContext = "${AdyenHelper.getLoadingContext()}";
+		initializeCardComponent(document.getElementById('card'), originKey, loadingContext);
+	};
+
+	function initializeCardComponent(cardNode, originKey, loadingContext) {		
+		var locale = "${request.locale}";
+		var configuration = {
+		        locale: locale, // 'en_US', // Defaults to en_US
+		        translations: {} // Override translations
+		};
+
+		var AdyenCheckoutObject = new AdyenCheckout(configuration);
+		
+		window.CardValid = false;
+		window.AdyenCard = AdyenCheckoutObject.create('card', {
+	        // Mandatory fields
+	        originKey: originKey,
+	        loadingContext: loadingContext, // The environment where we should loads the secured fields from
+	        type: 'card',
+	        hasHolderName: true,
+            holderNameRequired: true,
+
+	        // Events
+	        onChange: function(state) {
+	        	// checks whether card was valid then was changed to be invalid
+	        	window.CardValid = state.isValid;
+	        }
+	    });
+	    window.AdyenCard.mount(cardNode);	
+
+	}
+</script>

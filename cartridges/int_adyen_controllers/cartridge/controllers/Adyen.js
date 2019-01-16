@@ -391,6 +391,7 @@ function authorizeWithForm()
     if (result.error || result.Decision != 'ACCEPT') {
     	Transaction.rollback();
     	Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = ""; 
 			OrderMgr.failOrder(order);
 		});
 		app.getController('COSummary').Start({
@@ -402,6 +403,7 @@ function authorizeWithForm()
 	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
 	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
 	paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
+    paymentInstrument.custom.adyenPaymentData = "";
     Transaction.commit();
 	
     OrderModel.submit(order);
