@@ -96,7 +96,6 @@ function Authorize(args) {
     }
  
     if (result.RedirectObject != '') {
-    	// AdyenHelper.adyenLogTest("This is a 3D Secure payment: " + JSON.stringify(result));
         Transaction.commit();
         Transaction.wrap( function() {
         	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
