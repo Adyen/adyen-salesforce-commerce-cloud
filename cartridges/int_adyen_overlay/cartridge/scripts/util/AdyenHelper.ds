@@ -273,7 +273,14 @@ var __AdyenHelper : Object = {
         var paymentMethodObject = {};
         switch(formType) {
             case 'billing':
-                card = session.forms.billing.creditCardFields;
+                if(session.forms.billing.paymentMethods)  {
+                    card = session.forms.billing.paymentMethods.creditCard;
+ 			        paymentMethodObject['holderName'] = card.owner.value;
+                } else {
+                    // structure for SFRA
+                    card = session.forms.billing.creditCardFields;
+                    paymentMethodObject['holderName'] = card.cardOwner.value;
+                }
                 break;
             case 'account':
                 card = session.forms.creditCard;
@@ -281,8 +288,7 @@ var __AdyenHelper : Object = {
         }
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
         paymentMethodObject['type'] = "scheme";
-        paymentMethodObject['holderName'] = card.cardOwner.value;
-
+        
         if(!isOneClick){
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
@@ -396,7 +402,7 @@ var __AdyenHelper : Object = {
             'currency': session.currency.currencyCode,
             'value': 0
         };
-        
+
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
         var CreateRecurringPayment = require('int_adyen_overlay/cartridge/scripts/adyenCreateRecurringPayment.ds');
         var createRecurringPaymentResult = CreateRecurringPayment.createRecurringPayment({RequestObject: requestObject});
