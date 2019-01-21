@@ -1,0 +1,14 @@
+.adyen-checkout__label {
+	float: none !important;
+	width: 100% !important;
+	text-align: left !important;
+}
+
+#card {
+	margin-left: 27%;
+}
+
+.hiddenFields {
+	display: none;
+}
+

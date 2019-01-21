@@ -16,49 +16,25 @@ function pad ( number ) {
  * @description Initializes Adyen CSE  Billing events
  */
 function initializeBillingEvents() {
-
+	
 	$('#billing-submit').on('click', function (e) {
 		var radioVal = $('.payment-method-options').find(':checked').val();
 		if ('CREDIT_CARD' == radioVal){
+			
+			if(!window.CardValid) {
+				return false;
+			}
+			
+			copyCardData(window.AdyenCard)      
 			e.preventDefault();
 			
-			var creditCard = $('[data-method="CREDIT_CARD"]'),
-	        		selectedCardID = creditCard.find('input[name$="_selectedCardID"]'),
-				encryptedData = $('#dwfrm_billing_paymentMethods_creditCard_encrypteddata'),
-				encryptedDataValue,
-	        		options = {};
-   
-	        /**
-	         * We need encrypt only CVC if we used already saved CC from dropdown list
-	         */
-	        if ($('#creditCard_number').val().indexOf('*') > -1 && selectedCardID != null && selectedCardID.val() !== '') {
-	        		var cardData = getCardData(true);
-	            options = { enableValidations: false};
-	        } else {
-	        		var cardData = getCardData(false);
-	        }
-            if (($('#creditCard_number').val().indexOf('*') > -1 || $('#creditCard_cvn').val().indexOf('*') > -1) && encryptedData != null && encryptedData.val() !== '') {
-            		encryptedDataValue = encryptedData.val();
-            } else {
-            		var cseInstance = adyen.createEncryption(options);
-            		encryptedDataValue = cseInstance.encrypt(cardData);
-            }
-            
-            // Clear selectedCardID field if user enter a card number
-            if ($('#creditCard_number').val().indexOf('*') === -1) {
-                selectedCardID.val('');
-            }
-
-            if (encryptedDataValue === false) {
-	        		$('.form-data-error').html(Resources.ADYEN_CC_VALIDATE);
-	        } else {
-		        	$('.form-data-error').html('');
-		        	encryptedData.val(encryptedDataValue);
-		        	$('#creditCard_number').val(maskValue($('#creditCard_number').val()));
-			    $('#billing-submit-hidden').trigger('click');
-	        }
+	        $('.form-data-error').html('');
+	        $('#creditCard_number').val(maskValue($('#creditCard_number').val()));
+		    $('#billing-submit-hidden').trigger('click');
+			    
 		}
     });
+	
 	$('#adyenCreditCardList').on('change', function () {
 		var cardUUID = $(this).val();
 		if (!cardUUID) {
@@ -116,6 +92,15 @@ function initializeBillingEvents() {
 	        }
 	    });
 	}
+}
+
+function copyCardData(card){
+	$('#dwfrm_billing_paymentMethods_creditCard_type').val(card.state.brand);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+    $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.paymentData.holderName);
 }
 
 /**

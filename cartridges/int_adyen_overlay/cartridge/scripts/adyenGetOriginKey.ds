@@ -21,6 +21,7 @@ function execute(args) {
 
 function getOriginKey(args) {
     try {
+
         var requestObject = {};
 
         var callResult = null,
@@ -79,7 +80,16 @@ function getOriginKey(args) {
     return responseObj;
 }
 
+function getOriginKeyFromRequest(protocol, host) {
+	var origin = protocol + "://" + host;
+	var originKeysResponse = getOriginKey(origin);
+	
+	return originKeysResponse["originKeys"][origin];
+}
+
+
 module.exports = {
     'execute': execute,
-    'getOriginKey': getOriginKey
+    'getOriginKey': getOriginKey,
+    'getOriginKeyFromRequest': getOriginKeyFromRequest    
 }

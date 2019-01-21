@@ -6,6 +6,7 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
@@ -30,41 +31,20 @@ function Handle(args) {
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
     var cardType = creditCardForm.get('type').value();
-    var encryptedData = creditCardForm.get('encrypteddata').value();
     var paymentCard = PaymentMgr.getPaymentCard(cardType);
     var cardNumber;
     var cardSecurityCode;
     var expirationMonth; 
     var expirationYear;
     var adyenCseEnabled = Site.getCurrent().getCustomPreferenceValue('AdyenCseEnabled');
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        // Verify payment card 
-	      cardSecurityCode = creditCardForm.get('cvn').value();
-	      expirationMonth = creditCardForm.get('expiration.month').value();
-	      expirationYear = creditCardForm.get('expiration.year').value();
-	      cardNumber = creditCardForm.get('number').value();
-	      var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
-        if (creditCardStatus.error) {
-            var invalidatePaymentCardFormElements = require(Resource.msg('scripts.checkout.invalidatepaymentcardformelements.js', 'require', null));
-            invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
-
-            return {error: true};
-        }
-    }
 
     // create payment instrument
     Transaction.wrap(function () {
         cart.removeExistingPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
         var paymentInstrument = cart.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
-        if (!adyenCseEnabled) {
-            paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
-            paymentInstrument.creditCardNumber = cardNumber;
-            paymentInstrument.creditCardType = cardType;
-            paymentInstrument.creditCardExpirationMonth = expirationMonth;
-            paymentInstrument.creditCardExpirationYear = expirationYear;
-        } else {
-            paymentInstrument.creditCardType = cardType;
-        }
+       
+        paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
+        paymentInstrument.creditCardType = cardType;
 
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
@@ -79,7 +59,7 @@ function Handle(args) {
  */
 function Authorize(args) {
     var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-
+    
     // TODO: check is that one needed
     if (args.RequestID) {
         return {authorized: true};
@@ -115,24 +95,37 @@ function Authorize(args) {
             PlaceOrderError: (!empty(args) && 'AdyenErrorMessage' in args && !empty(args.AdyenErrorMessage) ? args.AdyenErrorMessage : '')
         };
     }
-
-    if (result.IssuerUrl != '') {
-        Transaction.commit();
-        session.custom.order = order;
-        session.custom.paymentInstrument = paymentInstrument;
-        return {
-            authorized: true,
-            authorized3d: true,
-            view: app.getView({
-                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
-                Basket: order,
-                issuerUrl: result.IssuerUrl,
-                paRequest: result.PaRequest,
-                md: result.MD
-            })};
-    }
-
-    if (result.Decision != 'ACCEPT') {
+ 
+    if(result.RedirectObject != ''){ 	
+	    if(result.RedirectObject.url && result.RedirectObject.data.PaReq && result.RedirectObject.data.MD){
+	        Transaction.commit();
+	        if(result.PaymentData){
+	            Transaction.wrap( function() {
+	            	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+	            });
+	        }
+	        session.custom.order = order;
+	        session.custom.paymentInstrument = paymentInstrument;
+	        return {
+	            authorized: true,
+	            authorized3d: true,
+	            view: app.getView({
+	                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
+	                Basket: order,
+	                issuerUrl : result.RedirectObject.url,
+	                paRequest : result.RedirectObject.data.PaReq,
+	                md : result.RedirectObject.data.MD
+	            })};
+	    }
+	    else{
+	    	Logger.getLogger("Adyen").error("3DS details incomplete");
+	    	 return {
+	             error: true,
+	             PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
+	         };
+	    }
+    } 	
+	if (result.Decision != 'ACCEPT') {
         Transaction.rollback();
         return {
             error: true,
