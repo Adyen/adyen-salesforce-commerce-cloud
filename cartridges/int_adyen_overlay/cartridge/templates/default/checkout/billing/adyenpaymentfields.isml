@@ -17,7 +17,8 @@
 		var locale = "${request.locale}";
 		var configuration = {
 		        locale: locale, // 'en_US', // Defaults to en_US
-		        translations: {} // Override translations
+		        originKey: originKey,
+	        	loadingContext: loadingContext // The environment where we should loads the secured fields from
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(configuration);
@@ -25,9 +26,7 @@
 		window.CardValid = false;
 		window.AdyenCard = AdyenCheckoutObject.create('card', {
 	        // Mandatory fields
-	        originKey: originKey,
-	        loadingContext: loadingContext, // The environment where we should loads the secured fields from
-	        type: 'card',
+	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
 

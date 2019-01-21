@@ -25,15 +25,7 @@ function initializeBillingEvents() {
 				return false;
 			}
 			
-			var card = window.AdyenCard;
-		
-			$('#dwfrm_billing_paymentMethods_creditCard_type').val(card.state.brand);
-            $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
-            $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
-            $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
-            $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
-            $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.paymentData.holderName);
-      
+			copyCardData(window.AdyenCard)      
 			e.preventDefault();
 			
 	        $('.form-data-error').html('');
@@ -100,6 +92,15 @@ function initializeBillingEvents() {
 	        }
 	    });
 	}
+}
+
+function copyCardData(card){
+	$('#dwfrm_billing_paymentMethods_creditCard_type').val(card.state.brand);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
+    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+    $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.paymentData.holderName);
 }
 
 /**

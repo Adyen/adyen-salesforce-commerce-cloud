@@ -6,6 +6,7 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
@@ -95,27 +96,36 @@ function Authorize(args) {
         };
     }
  
-    if (result.RedirectObject != '') {
-        Transaction.commit();
-        Transaction.wrap( function() {
-        	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
-        });
-        
-        session.custom.order = order;
-        session.custom.paymentInstrument = paymentInstrument;
-        return {
-            authorized: true,
-            authorized3d: true,
-            view: app.getView({
-                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
-                Basket: order,
-                issuerUrl : result.RedirectObject.url,
-                paRequest : result.RedirectObject.data.PaReq,
-                md : result.RedirectObject.data.MD
-            })};
-    }   
-
-    if (result.Decision != 'ACCEPT') {
+    if(result.RedirectObject != ''){ 	
+	    if(result.RedirectObject.url && result.RedirectObject.data.PaReq && result.RedirectObject.data.MD){
+	        Transaction.commit();
+	        if(result.PaymentData){
+	            Transaction.wrap( function() {
+	            	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+	            });
+	        }
+	        session.custom.order = order;
+	        session.custom.paymentInstrument = paymentInstrument;
+	        return {
+	            authorized: true,
+	            authorized3d: true,
+	            view: app.getView({
+	                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
+	                Basket: order,
+	                issuerUrl : result.RedirectObject.url,
+	                paRequest : result.RedirectObject.data.PaReq,
+	                md : result.RedirectObject.data.MD
+	            })};
+	    }
+	    else{
+	    	Logger.getLogger("Adyen").error("3DS details incomplete");
+	    	 return {
+	             error: true,
+	             PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
+	         };
+	    }
+    } 	
+	if (result.Decision != 'ACCEPT') {
         Transaction.rollback();
         return {
             error: true,

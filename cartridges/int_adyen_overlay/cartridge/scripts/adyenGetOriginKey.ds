@@ -82,9 +82,9 @@ function getOriginKey(args) {
 
 function getOriginKeyFromRequest(protocol, host) {
 	var origin = protocol + "://" + host;
-	var originKeys = getOriginKey(origin);
+	var originKeysResponse = getOriginKey(origin);
 	
-	return originKeys["originKeys"][origin];
+	return originKeysResponse["originKeys"][origin];
 }
 
 
