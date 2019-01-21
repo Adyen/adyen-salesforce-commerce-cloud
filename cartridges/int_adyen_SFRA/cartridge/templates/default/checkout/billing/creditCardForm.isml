@@ -1,4 +1,5 @@
-<!--<input type="hidden" class="cardNumber" value="" id="cardNumber" >-->
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off" />
 <input type="hidden" class="form-control cardNumber" id="cardNumber" ${creditFields.cardNumber.attributes} >
@@ -36,4 +37,3 @@
         </isif>
     </div>
 </div>
-

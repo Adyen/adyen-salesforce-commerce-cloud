@@ -40,11 +40,11 @@ function execute(args) {
     if (result.error) {
         return PIPELET_ERROR;
     }
-    return PIPELET_NEXT;  
+    return PIPELET_NEXT;
 }
 
 function verify(args) {
-    try { 
+    try {
         var order = args.Order;
         var paymentInstrument = args.PaymentInstrument;
         var tokenID = '';
@@ -93,7 +93,7 @@ function verify(args) {
             "executeThreeD":true
         };
         var shopperObject = AdyenHelper.createShopperObject({
-            Customer: customer, 
+            Customer: customer,
             Basket: order
         });
 
