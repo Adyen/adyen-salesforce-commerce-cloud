@@ -59,10 +59,6 @@ var __AdyenHelper : Object = {
         return adyenService;
     },
 
-    adyenLogTest : function(debugLine : String) {
-    	dwsystem.Logger.getLogger("Adyen", "adyen").error("Adyen Custom Log: {0}", debugLine);
-    },
-
     getAdyenMode : function () : String {
         var returnValue : String = "";
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode'))) {
