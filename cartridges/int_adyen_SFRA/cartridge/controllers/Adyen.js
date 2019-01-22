@@ -98,11 +98,20 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised") {
+        var OrderModel = require('*/cartridge/models/order');
+        var Locale = require('dw/util/Locale');
+        var currentLocale = Locale.getLocale(req.locale.id);
+        var orderModel = new OrderModel(order, { countryCode: currentLocale.country });
+
+        //Save orderModel to custom object during session
+        Transaction.wrap(function () {
+            order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
+        });
+
         var paymentInstrument = order.getPaymentInstrument();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = null;
         });
-        COHelpers.sendConfirmationEmail(order, req.locale.id);
         clearForms();
         res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
     }
