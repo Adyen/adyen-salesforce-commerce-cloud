@@ -63,29 +63,28 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
                 return next();
             }
 
-            //custom fraudDetection
-            var fraudDetectionStatus = {status: 'success'};
+        //custom fraudDetection
+        var fraudDetectionStatus = {status: 'success'};
 
-            // Places the order
-            var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
-            if (placeOrderResult.error) {
-                Transaction.wrap(function () {
-                    OrderMgr.failOrder(order);
-                });
-                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
-                return next();
-            }
-
-            Transaction.begin();
-            order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-            order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-            paymentInstrument.paymentTransaction.transactionID = result.pspReference;
-            Transaction.commit();
-            COHelpers.sendConfirmationEmail(order, req.locale.id);
-            clearForms();
-            res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+        // Places the order
+        var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
+        if (placeOrderResult.error) {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
             return next();
         }
+
+        Transaction.begin();
+        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+        paymentInstrument.paymentTransaction.transactionID = result.pspReference;
+        Transaction.commit();
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+        clearForms();
+        res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+        return next();
     }
   Logger.getLogger("Adyen").error("Session variable does not exists");
   res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));

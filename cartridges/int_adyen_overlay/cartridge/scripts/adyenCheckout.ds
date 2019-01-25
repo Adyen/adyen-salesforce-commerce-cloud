@@ -70,7 +70,7 @@ function creditCard(args) {
         if (paymentInstrument.getCreditCardToken()) {
             isOneClick = true;
         }
-        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick);
+        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick, 'billing');
 
         if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
             if (!empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
@@ -85,7 +85,8 @@ function creditCard(args) {
 
     }
     catch(e){
-
+        Logger.error('error processing creditCard');
+        return {error: true};
     }
     return args;
 }
@@ -208,6 +209,7 @@ function doPaymentCall(args, requestObject){
             Logger.error('error parsing response object ' + ex.message);
             return {error: true};
         }
+
         // return the AVS result code
         args.AVSResultCode = (!empty(responseObj.avsResultRaw) ? responseObj.avsResultRaw : '');
 
