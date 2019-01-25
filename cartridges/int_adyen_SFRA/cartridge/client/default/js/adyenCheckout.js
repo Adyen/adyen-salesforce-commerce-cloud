@@ -1,6 +1,7 @@
     const configuration = {
         locale: $('#currentLocale').val(), // Defaults to en_US
-        translations: {} // Override translations
+        originKey: originKey,
+        loadingContext: loadingContext
     };
 
     const checkout = new AdyenCheckout(configuration);
@@ -30,6 +31,8 @@
             originKey: originKey,
             loadingContext: loadingContext, // The environment where we should loads the secured fields from
             type: 'card',
+            hasHolderName: true,
+            holderNameRequired: true,
 
             // Events
             onChange: function(state) {
@@ -216,6 +219,7 @@
         $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
         $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
         $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
+        $('#cardOwner').val(card.paymentData.holderName);
     }
 
 
