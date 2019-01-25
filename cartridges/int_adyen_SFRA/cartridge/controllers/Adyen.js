@@ -41,7 +41,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
         };
         var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
         Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = "";
+            paymentInstrument.custom.adyenPaymentData = null;
         });
         // if error, return to checkout page
         if (result.error || result.resultCode != 'Authorised') {
@@ -98,7 +98,20 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised") {
-        COHelpers.sendConfirmationEmail(order, req.locale.id);
+        var OrderModel = require('*/cartridge/models/order');
+        var Locale = require('dw/util/Locale');
+        var currentLocale = Locale.getLocale(req.locale.id);
+        var orderModel = new OrderModel(order, { countryCode: currentLocale.country });
+
+        //Save orderModel to custom object during session
+        Transaction.wrap(function () {
+            order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
+        });
+
+        var paymentInstrument = order.getPaymentInstrument();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = null;
+        });
         clearForms();
         res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
     }

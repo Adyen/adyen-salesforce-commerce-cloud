@@ -11,16 +11,7 @@
 <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" ${creditFields.adyenEncryptedExpiryMonth.attributes} >
 <input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear" ${creditFields.adyenEncryptedExpiryYear.attributes} >
 <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" ${creditFields.adyenEncryptedSecurityCode.attributes} >
-
-<div class="row">
-    <div class="col-12">
-        <div class="form-group">
-            <label class="form-control-label" for="cardOwner">${Resource.msg('field.credit.card.holderName','creditCard',null)}</label>
-            <input type="text" class="form-control cardOwner" id="cardOwner" ${creditFields.cardOwner.attributes}>
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
+<input type="hidden" class="form-control cardOwner" id="cardOwner" ${creditFields.cardOwner.attributes} >
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
