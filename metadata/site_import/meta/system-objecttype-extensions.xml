@@ -266,6 +266,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenGuestRecurringEnabled">
+                <display-name xml:lang="x-default">Adyen Guest Recurring Enabled</display-name>
+                <description xml:lang="x-default">Tokenize payments made by guests as recurring</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Debug">
                 <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
                 <description xml:lang="x-default">yes / no</description>
@@ -422,6 +430,7 @@
                 <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
                 <attribute attribute-id="Adyen_recurringType"/>
+                <attribute attribute-id="AdyenGuestRecurringEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="Adyen_Open_Invoice_Whitelist"/>
