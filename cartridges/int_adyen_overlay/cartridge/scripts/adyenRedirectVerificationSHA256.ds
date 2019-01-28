@@ -114,11 +114,8 @@ function verify (args) {
 	if (currentUser.registered) {
 		customerID = currentUser.ID;	
 		
-	} else {
-		// set shopperReference for guest shopper (order.customerNo)
-		if (!empty(order.customerNo)) {
+	} else if (!empty(order.customerNo)) {
 			customerID = order.customerNo;	
-		}
 	}
 	
 	args.shopperReference			= customerID;
@@ -131,7 +128,7 @@ function verify (args) {
     shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
     args.shipBeforeDate = shipBeforeDate.toISOString();
     
-    var setRecurringType = "";	
+    var setRecurringType = '';	
     
     if (recurringEnabled && currentUser.registered) {
     	setRecurringType = recurringType.value;
@@ -151,7 +148,7 @@ function verify (args) {
 	adyenRequest.put("skinCode", skinCode );
 	adyenRequest.put("merchantAccount", merchantAccount );
 	adyenRequest.put("shopperEmail", order.customerEmail );
-	adyenRequest.put("shopperReference", customerID ); // currentUser.ID
+	adyenRequest.put("shopperReference", customerID );		
 	adyenRequest.put("recurringContract", setRecurringType );
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
