@@ -268,7 +268,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenGuestRecurringEnabled">
                 <display-name xml:lang="x-default">Adyen Guest Recurring Enabled</display-name>
-                <description xml:lang="x-default">Tokenize payments made by guests as recurring</description>
+                <description xml:lang="x-default">Tokenize guest payments as recurring. Set Generate Customer Number for Guest Orders in the Order Preferences section to Yes.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

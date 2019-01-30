@@ -132,12 +132,9 @@ function verify (args) {
     
     if (recurringEnabled && currentUser.registered) {
     	setRecurringType = recurringType.value;
-    } else if (recurringEnabled && !currentUser.registered) {
-    	if (guestRecurringEnabled) {
-			setRecurringType = "RECURRING";	
-		} 
+    } else if (recurringEnabled && !currentUser.registered && guestRecurringEnabled) {
+		setRecurringType = "RECURRING";	
     } 
-    
 		
 	var adyenRequest : SortedMap = new SortedMap();
 	adyenRequest.put("paymentAmount", args.Amount100 );
@@ -147,12 +144,15 @@ function verify (args) {
 	adyenRequest.put("merchantReference", merchantReference );
 	adyenRequest.put("skinCode", skinCode );
 	adyenRequest.put("merchantAccount", merchantAccount );
-	adyenRequest.put("shopperEmail", order.customerEmail );
-	adyenRequest.put("shopperReference", customerID );		
+	adyenRequest.put("shopperEmail", order.customerEmail );	
 	adyenRequest.put("recurringContract", setRecurringType );
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
 	// Optional Fields
+	if (customerID) {
+		adyenRequest.put("shopperReference", customerID );
+	}
+	
 	var locale = request.locale;
 	if(!empty(locale) && locale != "default") {
     		adyenRequest.put("shopperLocale", locale);
