@@ -52,6 +52,8 @@ function verify (args) {
 	var HMACkey : String = Site.getCurrent().getCustomPreferenceValue("Adyen_HMACkey"); 
 	var recurringType : EnumValue = Site.getCurrent().getCustomPreferenceValue("Adyen_recurringType"); 
 	var recurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenRecurringPaymentsEnabled");
+	var guestRecurringEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue("AdyenGuestRecurringEnabled");
+	
 	
 	if(merchantAccount == null){
 		Logger.getLogger("Adyen").fatal("MERCHANTACCOUNT not set.");
@@ -107,7 +109,16 @@ function verify (args) {
 	var currencyCode:String	 		= order.currencyCode;
 	var merchantReference:String 	= orderNo;
 	args.shopperEmail				= order.customerEmail;
-	args.shopperReference			= currentUser.ID;
+	var customerID = '';
+	
+	if (currentUser.registered) {
+		customerID = currentUser.ID;	
+		
+	} else if (!empty(order.customerNo)) {
+			customerID = order.customerNo;	
+	}
+	
+	args.shopperReference			= customerID;
 
 	var sessionValidity : String	 	= new Date();
 	sessionValidity.setHours(sessionValidity.getHours() + 1);
@@ -116,11 +127,14 @@ function verify (args) {
     var shipBeforeDate : String = new Date();
     shipBeforeDate.setDate(shipBeforeDate.getDate() + 5);
     args.shipBeforeDate = shipBeforeDate.toISOString();
-
-	if (recurringType.value  == ""  || recurringType.value == "null" || recurringType.value == null || !recurringEnabled || !currentUser.registered) {
-		recurringType = "";
-	}	
-	else recurringType = recurringType.value; //recurringType.value has type string 
+    
+    var setRecurringType = '';	
+    
+    if (recurringEnabled && currentUser.registered) {
+    	setRecurringType = recurringType.value;
+    } else if (recurringEnabled && !currentUser.registered && guestRecurringEnabled) {
+		setRecurringType = "RECURRING";	
+    } 
 		
 	var adyenRequest : SortedMap = new SortedMap();
 	adyenRequest.put("paymentAmount", args.Amount100 );
@@ -130,12 +144,15 @@ function verify (args) {
 	adyenRequest.put("merchantReference", merchantReference );
 	adyenRequest.put("skinCode", skinCode );
 	adyenRequest.put("merchantAccount", merchantAccount );
-	adyenRequest.put("shopperEmail", order.customerEmail );
-	adyenRequest.put("shopperReference", currentUser.ID );
-	adyenRequest.put("recurringContract", recurringType );
+	adyenRequest.put("shopperEmail", order.customerEmail );	
+	adyenRequest.put("recurringContract", setRecurringType );
 	adyenRequest.put("resURL", URLUtils.https('Adyen-ShowConfirmation'));
 	adyenRequest.put("countryCode", order.getBillingAddress().countryCode.value.toString().toUpperCase() );
 	// Optional Fields
+	if (customerID) {
+		adyenRequest.put("shopperReference", customerID );
+	}
+	
 	var locale = request.locale;
 	if(!empty(locale) && locale != "default") {
     		adyenRequest.put("shopperLocale", locale);
@@ -274,10 +291,10 @@ function verify (args) {
  	var msg:String;
     msg = "DW2AdyenRedir v " + VERSION + " - Payment info\n================================================================";
     msg += "\nMode : " + Mode;
-    msg += "\nRecurring : " + recurringType;
+    msg += "\nRecurring : " + setRecurringType;
     msg += "\nSessionID : " + args.CurrentSession.sessionID;
     msg += "\nmRef : " + orderNo ;
-    msg += "\nShopper email : " + order.customerEmail + " , ID : " + currentUser.ID;
+    msg += "\nShopper email : " + order.customerEmail + " , ID : " + customerID;
 	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
 	msg += "\nPaydata : " + requestString ;
 	msg += "\nSignature : " + merchantSig ;
