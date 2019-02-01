@@ -303,45 +303,41 @@ function cancelOrRefund() {
  * 
  * @returns redering template or error
  */
-function authorizeWithForm()
-{
-	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result,
-	order = session.custom.order,
-	paymentInstrument = session.custom.paymentInstrument,
-	adyenResponse  = session.custom.adyenResponse;
+function authorizeWithForm() {
+	var order = session.custom.order,
+		paymentInstrument = session.custom.paymentInstrument,
+		adyenResponse = session.custom.adyenResponse;
+
 	clearCustomSessionFields();
-	
 	Transaction.begin();
-	result = adyen3DVerification.verify({
-		Order: order,
-		Amount: paymentInstrument.paymentTransaction.amount,
-		PaymentInstrument: paymentInstrument,
-		CurrentSession: session,
-		CurrentRequest: request,
-		MD: adyenResponse.MD,
-		PaResponse: adyenResponse.PaRes,
-		PaymentData : paymentInstrument.custom.adyenPaymentData
-	});
-	
-    if (result.error || result.Decision != 'ACCEPT') {
-    	Transaction.rollback();
-    	Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = null; 
+	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+	var jsonRequest = {
+		"paymentData": paymentInstrument.custom.adyenPaymentData,
+		"details": {
+			"MD": adyenResponse.MD,
+			"PaRes": adyenResponse.PaRes
+		}
+	};
+
+	var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+
+	if (result.error || result.resultCode != 'Authorised') {
+		Transaction.rollback();
+		Transaction.wrap(function () {
+			paymentInstrument.custom.adyenPaymentData = null;
 			OrderMgr.failOrder(order);
 		});
 		app.getController('COSummary').Start({
-            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
-        });
+			PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+		});
 		return;
-    }
-    
+	}
 	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
 	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-	paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
-    paymentInstrument.custom.adyenPaymentData = null;
-    Transaction.commit();
-	
-    OrderModel.submit(order);
+	paymentInstrument.custom.adyenPaymentData = null;
+	Transaction.commit();
+
+	OrderModel.submit(order);
 	clearForms();
 	app.getController('COSummary').ShowConfirmation(order);
 }

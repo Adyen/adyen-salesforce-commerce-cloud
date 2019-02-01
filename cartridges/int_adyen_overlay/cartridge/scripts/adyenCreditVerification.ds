@@ -64,7 +64,6 @@ function verify(args) {
             customerID = profile.getCustomerNo();
         }
 
-		// TODO: for new cards use the recurring type in the settings
 		// For oneclick cards use ONECICK
         var recurringType = AdyenHelper.getAdyenRecurringType();
         var isOneClick = false;

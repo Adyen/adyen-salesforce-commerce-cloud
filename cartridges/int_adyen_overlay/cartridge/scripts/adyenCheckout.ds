@@ -85,7 +85,7 @@ function creditCard(args) {
 
     }
     catch(e){
-        Logger.error('error processing creditCard');
+        Logger.getLogger("Adyen").error('error processing creditCard');
         return {error: true};
     }
     return args;
