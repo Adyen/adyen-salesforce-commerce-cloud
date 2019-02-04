@@ -370,12 +370,20 @@ function cancelOrRefund() {
  */
 function authorizeWithForm()
 {
-	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result,
-	order = session.custom.order,
-	paymentInstrument = session.custom.paymentInstrument,
+	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result, order, paymentInstrument,
 	adyenResponse  = session.custom.adyenResponse;
+
+	if(session.custom.orderNo && session.custom.paymentMethod) {
+		order = OrderMgr.getOrder(session.custom.orderNo);
+		paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+	}
+	else {
+		app.getController('COSummary').Start({
+			PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+		});
+		return;
+	}
 	clearCustomSessionFields();
-	
 	Transaction.begin();
 	result = adyen3DVerification.verify({
 		Order: order,
@@ -442,8 +450,8 @@ function clearForms() {
 function clearCustomSessionFields() {
 	// Clears all fields used in the 3d secure payment.
     session.custom.adyenResponse = null;
-    session.custom.paymentInstrument = null;
-    session.custom.order = null;
+    session.custom.paymentMethod = null;
+    session.custom.orderNo = null;
     session.custom.adyenBrandCode = null;
     session.custom.adyenIssuerID = null;
 }

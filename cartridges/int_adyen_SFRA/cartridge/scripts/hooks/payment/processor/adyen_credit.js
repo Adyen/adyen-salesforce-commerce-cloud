@@ -62,6 +62,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
     var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
+    Transaction.wrap(function () {
+        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
     Transaction.begin();
     var result = adyenCreditVerification.verify({
         Order: order,
@@ -83,8 +86,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     if (result.IssuerUrl != '') {
         Transaction.commit();
-        session.custom.order = order;
-        session.custom.paymentInstrument = paymentInstrument;
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
         return {
             authorized: true,
             authorized3d: true,
