@@ -154,10 +154,40 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     };
     jsonObject.shopperName = {
         "firstName": billingAddr.firstName,
-        "gender": "UNKNOWN",
+        "gender": "UNKNOWN", // So this is always going to be UNKNOWN?
         "infix": "",
         "lastName": billingAddr.lastName
     };
+    
+    //Open Invoice specific section
+	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form	]
+	
+	// Need to ensure that a shopperReference has been generated - Guest Tokenization?
+	// Also need to ensure shopperEmail is present
+	
+	// brandCode = args.PaymentType
+	if(!empty(args.PaymentType) && AdyenHelper.getOpenInvoiceMethods().indexOf(args.PaymentType) > -1) {
+		
+		jsonObject['selectedBrand'] = args.PaymentType;
+		// jsonObject['dateOfBirth'] = dob; // Need UI to get this? // Put in shopperObject (?)
+		// jsonObject['telephoneNumber'] = shippingAddr.getPhone(); // order.getDefaultShipment().getShippingAddress().getPhone(); // Put in shopperObject (?)
+		
+		// jsonObject['socialSecurityNumber'] = args.personalNumber // Put in shopperObject (?)
+		
+		if (args.PaymentType == "ratepay" && !empty(AdyenHelper.getRatePayID())) {
+				jsonObject['deviceFingerprint'] = AdyenHelper.getRatePayID();
+		}
+		
+		
+		
+		
+	
+		
+	}
+    
+    
+    
+    
 
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
