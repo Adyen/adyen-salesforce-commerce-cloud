@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud Adyen Cartridge
 
-Adyen provides a LINK cartridge to integrate with a Salesforce Commerce Cloud (SCC). This cartridge enables a SCC store to use the Adyen payment service. This cartridge supports SFRA, JS-Controllers and pipelines.
+Adyen provides a LINK cartridge to integrate with a Salesforce Commerce Cloud (SCC). This cartridge enables a SCC store to use the Adyen payment service. This cartridge supports SFRA and JS-Controllers.
 
 ## Integration
 The plugin integrates Classic integration for all card payments. Local/redirect payment methods are integrated with DirectoryLookup and HPP. For Point Of Sale (POS) payments we use Terminal API using Cloud-based communication. 
