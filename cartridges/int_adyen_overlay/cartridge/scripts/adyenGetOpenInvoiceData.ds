@@ -35,6 +35,24 @@ importPackage( dw.web );
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 var Logger = require('dw/system/Logger');
 
+function getShopperData(args, shopperObject){
+	Logger.getLogger("Adyen").error("shopperObject = " + shopperObject);
+	if(args.personalNumber){
+		shopperObject["socialSecurityNumber"] = args.personalNumber;
+	}
+	if(args.dob){
+		shopperObject["dob"] = args.dob;
+	}
+	if(args.gender){
+		shopperObject["gender"] = args.gender;
+	}
+	if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
+		shopperObject["telephoneNumber"] = order.getDefaultShipment().getShippingAddress().getPhone()
+	}
+	Logger.getLogger("Adyen").error("shopperObject after = " + shopperObject);
+	return shopperObject;
+}
+
 function getLineItems(args) {
 	Logger.getLogger("Adyen").error("getLineItems " + args.order);
 	//Open Invoice specific section
@@ -64,6 +82,8 @@ function getLineItems(args) {
 	// if( !empty(args.personalNumber)) {
 	// 	adyenRequest.put("shopper.socialSecurityNumber", args.personalNumber );
 	// }
+
+
 
 	var lineItems = [];
 
@@ -169,5 +189,6 @@ function getItemAmount(lineItem) {
 }
 
 module.exports = {
-	'getLineItems': getLineItems
+	'getLineItems': getLineItems,
+	'getShopperData': getShopperData
 }
