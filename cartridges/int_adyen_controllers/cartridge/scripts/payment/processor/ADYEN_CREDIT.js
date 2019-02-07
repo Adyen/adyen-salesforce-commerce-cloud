@@ -141,8 +141,7 @@ function Authorize(args) {
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
-    
-    paymentInstrument.paymentTransaction.transactionID = result.PspReference;
+
     Transaction.commit();
 
     return {authorized: true};

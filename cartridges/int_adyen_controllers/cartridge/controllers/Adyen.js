@@ -17,6 +17,7 @@ var guard = require('app_storefront_controllers/cartridge/scripts/guard');
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 var OrderModel = app.getModel('Order');
+var Logger = require('dw/system/Logger');
 
 const EXTERNAL_PLATFORM_VERSION = "SiteGenesis";
 /**
@@ -56,35 +57,33 @@ function redirect(order, redirectUrl) {
  */
 function showConfirmation() {
 	var payLoad = request.httpParameterMap.payload.value;
-    //redirect to payment/details
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
-    var requestObject = {};
-    requestObject['details'] = {};
-    requestObject.details['payload'] = payLoad;
-    var result = adyenCheckout.doPaymentDetailsCall(requestObject);
-	var orderNumber = result.merchantReference; 
+	//redirect to payment/details
+	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+	var requestObject = {};
+	requestObject['details'] = {};
+	requestObject.details['payload'] = payLoad;
+	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+	var orderNumber = result.merchantReference;
 
-	//AUTHORISED: The payment authorisation was successfully completed.
 	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending') {
 		orderConfirm(orderNumber);
-		return {};
-	}
-	else {
+	} else {
 		var OrderMgr = require('dw/order/OrderMgr');
-	    var order = OrderMgr.getOrder(orderNumber);		
+		var order = OrderMgr.getOrder(orderNumber);
 		// fail order
 		Transaction.wrap(function () {
 			OrderMgr.failOrder(order);
 		});
-	    Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+		Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
 		// should be assingned by previous calls or not
 		var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
-		
+
 		app.getController('COSummary').Start({
-	            PlaceOrderError: errorStatus
-	        });
-	    return {};
+			PlaceOrderError: errorStatus
+		});
 	}
+
+	return {};
 }
 
 /**
@@ -332,6 +331,17 @@ function authorizeWithForm() {
 		});
 		return;
 	}
+	if ('pspReference' in result && !empty(result.pspReference)) {
+		paymentInstrument.paymentTransaction.transactionID = result.pspReference; 
+		order.custom.Adyen_pspReference = result.pspReference;
+	}
+	if ('resultCode' in result && !empty(result.resultCode)) {
+		paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
+	}
+
+	// Save full response to transaction custom attribute
+	paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
+
 	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
 	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
 	paymentInstrument.custom.adyenPaymentData = null;
