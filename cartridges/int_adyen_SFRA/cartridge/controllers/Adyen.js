@@ -7,6 +7,7 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
+var Logger = require('dw/system/Logger');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -27,10 +28,20 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
   var adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification');
+  var paymentInstrument;
+  var order;
 
   if(session.custom.orderNo && session.custom.paymentMethod) {
-    var order = OrderMgr.getOrder(session.custom.orderNo);
-    var paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+    try {
+      order = OrderMgr.getOrder(session.custom.orderNo);
+      paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+    }
+    catch(e){
+      Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+      res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+      return next();
+    }
+
     if (session.custom.MD == req.form.MD) {
       var result = adyen3DVerification.verify({
         Order: order,
@@ -73,7 +84,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
       return next();
     }
   }
-
+  Logger.getLogger("Adyen").error("Session variable does not exists");
   res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
   return next();
 });
