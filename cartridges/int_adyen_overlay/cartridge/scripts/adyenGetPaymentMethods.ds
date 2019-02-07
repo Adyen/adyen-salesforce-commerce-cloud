@@ -38,13 +38,12 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
         var paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
 
-        var currencyCode = "EUR"; //basket.currencyCode;
+        var currencyCode = basket.currencyCode;
         requestObject['merchantAccount'] = merchantAccount;
         requestObject['amount'] = {
             currency: currencyCode,
             value: paymentAmount
         };
-        requestObject['countryCode'] = "DE";
 
         var xapikey = AdyenHelper.getAdyenApiKey();
         service.addHeader('Content-type', 'application/json');

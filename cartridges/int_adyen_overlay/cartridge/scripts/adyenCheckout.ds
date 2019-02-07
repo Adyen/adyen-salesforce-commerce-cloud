@@ -33,7 +33,7 @@ var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-var AdyenGetLineItems = require('int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
+var AdyenGetOpenInvoiceData = require('int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
 
 function execute(args) {
     return PIPELET_NEXT;  
@@ -116,7 +116,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
-        'currency': "EUR",  //args.Amount.currencyCode,
+        'currency': args.Amount.currencyCode,
         'value': myAmount
     };
 
@@ -128,11 +128,11 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     else {
         houseNumberShip = "N/A";
     }
-    jsonObject["countryCode"] = "DE"; //shippingAddr.countryCode.value;
+    jsonObject["countryCode"] = shippingAddr.countryCode.value;
     
     jsonObject.deliveryAddress = {
         "city": shippingAddr.city,
-        "country": "DE", // shippingAddr.countryCode.value,
+        "country": shippingAddr.countryCode.value,
         "houseNumberOrName": houseNumberShip,
         "postalCode": shippingAddr.postalCode,
         "stateOrProvince": shippingAddr.stateCode,
@@ -149,7 +149,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
     jsonObject.billingAddress = {
         "city": billingAddr.city,
-        "country": "DE", // billingAddr.countryCode.value,
+        "country": billingAddr.countryCode.value,
         "houseNumberOrName": houseNumberBill,
         "postalCode": billingAddr.postalCode,
         "stateOrProvince": billingAddr.stateCode,
@@ -171,20 +171,15 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 	// brandCode = args.PaymentType
 	if(!empty(args.PaymentType) && AdyenHelper.getOpenInvoiceMethods().indexOf(args.PaymentType) > -1) {
 
-	    jsonObject["lineItems"] = AdyenGetLineItems.getLineItems(args);
-
-		// jsonObject['selectedBrand'] = args.PaymentType;
-		// // jsonObject['dateOfBirth'] = dob; // Need UI to get this? // Put in shopperObject (?)
-		// // jsonObject['telephoneNumber'] = shippingAddr.getPhone(); // order.getDefaultShipment().getShippingAddress().getPhone(); // Put in shopperObject (?)
-		//
-		// // jsonObject['socialSecurityNumber'] = args.personalNumber // Put in shopperObject (?)
-		//
-		// if (args.PaymentType == "ratepay" && !empty(AdyenHelper.getRatePayID())) {
-		// 		jsonObject['deviceFingerprint'] = AdyenHelper.getRatePayID();
-		// }
-		//
-		//
-	}
+        jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
+        if(args.ratePayFingerprint){
+            jsonObject["dfValue"] = args.ratePayFingerprint;
+        }
+        if(args.adyenFingerprint){
+            jsonObject["dfValue"] = args.adyenFingerprint
+        }
+        shopperObject = AdyenGetOpenInvoiceData.getShopperData(args, shopperObject);
+    }
 
 	Logger.getLogger("Adyen").error("jsonObject = " + JSON.stringify(jsonObject));
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
