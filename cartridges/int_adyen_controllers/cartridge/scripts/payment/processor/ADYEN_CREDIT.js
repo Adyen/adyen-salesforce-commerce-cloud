@@ -118,8 +118,8 @@ function Authorize(args) {
 
     if (result.IssuerUrl != '') {
         Transaction.commit();
-        session.custom.order = order;
-        session.custom.paymentInstrument = paymentInstrument;
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
         return {
             authorized: true,
             authorized3d: true,
