@@ -28,7 +28,7 @@ var __AdyenHelper : Object = {
     CSE_TEST_URL: "https://test.adyen.com/hpp/cse/js/",
     CSE_URL_EXTENSION: ".shtml",
 
-    VERSION: "18.2.3",
+    VERSION: "18.3.0",
 
     getService : function (service : String) : Object {
         // Create the service config (used for all services)
