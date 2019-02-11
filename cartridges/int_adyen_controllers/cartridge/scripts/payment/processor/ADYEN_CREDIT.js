@@ -31,12 +31,6 @@ function Handle(args) {
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
     var cardType = creditCardForm.get('type').value();
-    var paymentCard = PaymentMgr.getPaymentCard(cardType);
-    var cardNumber;
-    var cardSecurityCode;
-    var expirationMonth; 
-    var expirationYear;
-    var adyenCseEnabled = Site.getCurrent().getCustomPreferenceValue('AdyenCseEnabled');
 
     // create payment instrument
     Transaction.wrap(function () {
@@ -58,13 +52,6 @@ function Handle(args) {
  * Call the  Adyen API to Authorize CC using details entered by shopper.
  */
 function Authorize(args) {
-    var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-
-    // TODO: check is that one needed
-    if (args.RequestID) {
-        return {authorized: true};
-    }
-
     var order = args.Order;
     var paymentInstrument = args.PaymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
@@ -73,10 +60,11 @@ function Authorize(args) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
-    // ScriptFile	adyenCreditVerification.ds
-    var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
+    // ScriptFile adyenCheckout.ds
+    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+
     Transaction.begin();
-    var result = adyenCreditVerification.verify({
+    var result = adyenCheckout.creditCard({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,
@@ -109,6 +97,7 @@ function Authorize(args) {
 	        return {
 	            authorized: true,
 	            authorized3d: true,
+	            redirectObject: result.RedirectObject,
 	            view: app.getView({
 	                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
 	                Basket: order,
@@ -152,8 +141,7 @@ function Authorize(args) {
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
-    
-    paymentInstrument.paymentTransaction.transactionID = result.PspReference;
+
     Transaction.commit();
 
     return {authorized: true};
