@@ -4,7 +4,54 @@
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
 <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.0.0/adyen.css"/>
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<div id="card"></div>
+
+
+<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
+<iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
+<isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
+
+    <div class="form-row">
+        <label class="label">${Resource.msg('billing.selectcreditcard','checkout',null)}</label>
+        <div class="field-wrapper">
+
+            <isif condition="${AdyenCseEnabled}">
+                <select id="adyenCreditCardList" class="input-select">
+                    <iselse/>
+                    <select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="creditCardList" class="input-select">
+            </isif>
+            <option value="" selected="selected">${Resource.msg('billing.creditcardlistselect','checkout',null)}</option>
+            <isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+                <option id="${creditCardInstr.UUID}" value="${creditCardInstr.custom.adyenCreditCardType}">(<isprint value="${creditCardInstr.creditCardType}"/>) <isprint value="${creditCardInstr.maskedCreditCardNumber}"/> - ${Resource.msg('billing.creditcardlistexp','checkout',null)} <isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />.<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" /></option>
+            </isloop>
+            </select>
+        </div>
+    </div>
+
+    <div id="selectedCard" class="creditCard security-code-input" style="display:none">
+        <div id="oneClickCard"></div>
+    </div>
+
+    <iscomment>
+        <isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+            <a href="${URLUtils.https('COBilling-UpdateCreditCardSelection', 'creditCardUUID', creditCardInstr.UUID)}">
+                (<isprint value="${creditCardInstr.creditCardType}"/>)
+                <isprint value="${creditCardInstr.maskedCreditCardNumber}"/>
+                - ${Resource.msg('billing.creditcardlistexp','checkout',null)}
+                <isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />
+                .<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" />
+            </a>
+        </isloop>
+    </iscomment>
+</isif>
+
+<div id="newCard">
+    <div id="card" class="creditCard"></div>
+    <isif condition="${pdict.CurrentCustomer.authenticated}">
+        <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+    </isif>
+</div>
+
 
 <script type="text/javascript">
 	window.onload = function() {
@@ -13,15 +60,15 @@
 		initializeCardComponent(document.getElementById('card'), originKey, loadingContext);
 	};
 
-	function initializeCardComponent(cardNode, originKey, loadingContext) {		
+	function initializeCardComponent(cardNode, originKey, loadingContext) {
 		var locale = "${request.locale}";
-		var configuration = {
+		window.Configuration = {
 		        locale: locale, // 'en_US', // Defaults to en_US
 		        originKey: originKey,
 	        	loadingContext: loadingContext // The environment where we should loads the secured fields from
 		};
 
-		var AdyenCheckoutObject = new AdyenCheckout(configuration);
+		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
 		
 		window.CardValid = false;
 		window.AdyenCard = AdyenCheckoutObject.create('card', {
@@ -29,6 +76,7 @@
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
 
 	        // Events
 	        onChange: function(state) {
@@ -36,7 +84,8 @@
 	        	window.CardValid = state.isValid;
 	        }
 	    });
-	    window.AdyenCard.mount(cardNode);	
+	    window.AdyenCard.mount(cardNode);
 
-	}
+    };
+
 </script>
