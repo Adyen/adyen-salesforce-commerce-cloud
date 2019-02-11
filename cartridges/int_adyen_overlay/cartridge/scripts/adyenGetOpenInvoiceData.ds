@@ -33,30 +33,24 @@ importPackage( dw.web );
 
 //script include
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
-var Logger = require('dw/system/Logger');
 
-function getShopperData(args, shopperObject){
-	Logger.getLogger("Adyen").error("shopperObject = " + shopperObject);
+function getShopperData(args, paymentMethodObject){
 	if(args.personalNumber){
-		shopperObject["socialSecurityNumber"] = args.personalNumber;
+		paymentMethodObject["personalDetails"].socialSecurityNumber = args.personalNumber;
 	}
 	if(args.dob){
-		shopperObject["dob"] = args.dob;
+		paymentMethodObject["personalDetails"].dateOfBirth = args.dob;
 	}
 	if(args.gender){
-		shopperObject["gender"] = args.gender;
+		paymentMethodObject["personalDetails"].gender = args.gender;
 	}
 	if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
-		shopperObject["telephoneNumber"] = order.getDefaultShipment().getShippingAddress().getPhone()
+		paymentMethodObject["personalDetails"].telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
 	}
-	Logger.getLogger("Adyen").error("shopperObject after = " + shopperObject);
-	return shopperObject;
+	return paymentMethodObject;
 }
 
 function getLineItems(args) {
-	Logger.getLogger("Adyen").error("getLineItems " + args.order);
-	//Open Invoice specific section
-	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form
 	var order;
 	if(args.Order){
 		order = args.Order;
@@ -64,30 +58,9 @@ function getLineItems(args) {
 	else {
 		return null;
 	}
-	//
-	// var billingAddr = order.getBillingAddress();
-	// adyenRequest.put("shopper.firstName", order.getBillingAddress().getFirstName() );
-	// adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );
-	// adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
-	// adyenRequest.put("shopperType", '1' );
-	// adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'UNKNOWN');
-	//
-	// if( !empty(args.dob)) {
-	// 	var dob = args.dob.split('-');
-	// 	adyenRequest.put("shopper.dateOfBirthDayOfMonth", dob[0] );
-	// 	adyenRequest.put("shopper.dateOfBirthMonth", dob[1] );
-	// 	adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
-	// }
-	//
-	// if( !empty(args.personalNumber)) {
-	// 	adyenRequest.put("shopper.socialSecurityNumber", args.personalNumber );
-	// }
-
-
-
-	var lineItems = [];
-
+		
 	// Add all product and shipping line items to request
+	var lineItems = [];
 	for each (var lineItem in order.getAllLineItems())
 	{
 		if ((lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem)

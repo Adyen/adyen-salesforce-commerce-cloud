@@ -46,8 +46,10 @@ function alternativePaymentMethod(args){
    if(args.Issuer){
         paymentMethodObject['issuer'] = args.Issuer;
     }
-    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
-    return createPaymentRequest(args, paymentMethodObject, returnUrl);
+
+
+   var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+   return createPaymentRequest(args, paymentMethodObject, returnUrl);
 }
 
 function creditCard(args) {
@@ -89,7 +91,6 @@ function creditCard(args) {
         Logger.error('error processing creditCard');
         return {error: true};
     }
-    return args;
 }
 
 function createPaymentRequest(args, paymentMethodObject, returnUrl) {
@@ -100,19 +101,20 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var customer = order.getCustomer();
     var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
     var customerID = '';
+
     if (!empty(profile) && !empty(profile.getCustomerNo())) {
         customerID = profile.getCustomerNo();
     }
 
     jsonObject['returnUrl'] = returnUrl;
-    jsonObject['paymentMethod'] = paymentMethodObject;
     jsonObject.additionalData = {
         "executeThreeD": true
     };
-    var shopperObject = AdyenHelper.createShopperObject({
-        Customer: customer,
-        Basket: order
-    });
+    var shopperObject = {};
+    // var shopperObject = AdyenHelper.createShopperObject({
+    //     Customer: customer,
+    //     Basket: order
+    // });
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
@@ -155,22 +157,18 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "stateOrProvince": billingAddr.stateCode,
         "street": billingAddr.address1
     };
-    jsonObject.shopperName = {
+
+    //TODO BAS add personal details
+    jsonObject['paymentMethod'] = paymentMethodObject;
+    jsonObject['paymentMethod'].personalDetails["firstName"] = {
         "firstName": billingAddr.firstName,
         "gender": "UNKNOWN", // So this is always going to be UNKNOWN?
         "infix": "",
         "lastName": billingAddr.lastName
     };
-    
-    //Open Invoice specific section
-	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form	]
-	
-	// Need to ensure that a shopperReference has been generated - Guest Tokenization?
-	// Also need to ensure shopperEmail is present
-	
-	// brandCode = args.PaymentType
-	if(!empty(args.PaymentType) && AdyenHelper.getOpenInvoiceMethods().indexOf(args.PaymentType) > -1) {
 
+    Logger.getLogger("Adyen").error("paymentMethod = " + JSON.stringify(paymentMethodObject));
+	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
         if(args.ratePayFingerprint){
             jsonObject["dfValue"] = args.ratePayFingerprint;
@@ -178,13 +176,14 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         if(args.adyenFingerprint){
             jsonObject["dfValue"] = args.adyenFingerprint
         }
-        shopperObject = AdyenGetOpenInvoiceData.getShopperData(args, shopperObject);
+        paymentMethodObject = AdyenGetOpenInvoiceData.getShopperData(args, paymentMethodObject);
     }
 
-	Logger.getLogger("Adyen").error("jsonObject = " + JSON.stringify(jsonObject));
-    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
-    Logger.getLogger("Adyen").error("requestObject = " + JSON.stringify(requestObject));
+
+    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
+    Logger.getLogger("Adyen").error("requestObject after = " + JSON.stringify(requestObject));
+
     // assign default values for the script output variables
     args.RedirectObject = '';
     args.ResultCode = '';

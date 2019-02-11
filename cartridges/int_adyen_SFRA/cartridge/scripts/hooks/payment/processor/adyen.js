@@ -14,7 +14,7 @@ function Handle(basket, paymentInformation) {
     collections.forEach(basket.getPaymentInstruments(), function (item) {
       basket.removePaymentInstrument(item);
     });
-
+    
     var paymentInstrument = basket.createPaymentInstrument(
       'Adyen', basket.totalGrossPrice
     );
