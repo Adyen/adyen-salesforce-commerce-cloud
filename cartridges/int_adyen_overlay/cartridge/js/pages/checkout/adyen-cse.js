@@ -182,7 +182,6 @@
 	 * @function
 	 * @description Initializes Adyen CSE billing events
 	 */
-	// exports.initializeBillingEvents = initializeBillingEvents;
 
 	exports.initBilling = function() {
 		initializeBillingEvents();

@@ -267,6 +267,7 @@ var __AdyenHelper : Object = {
         paymentMethodObject['type'] = card.type.value;
 
         if(!isOneClick){
+            paymentMethodObject['type'] = "scheme";
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
             paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
