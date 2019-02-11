@@ -34,20 +34,20 @@ importPackage( dw.web );
 //script include
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
-function getShopperData(args, paymentMethodObject){
+function getShopperData(args, personalDetails){
 	if(args.personalNumber){
-		paymentMethodObject["personalDetails"].socialSecurityNumber = args.personalNumber;
+		personalDetails.socialSecurityNumber = args.personalNumber;
 	}
 	if(args.dob){
-		paymentMethodObject["personalDetails"].dateOfBirth = args.dob;
+		personalDetails.dateOfBirth = args.dob;
 	}
 	if(args.gender){
-		paymentMethodObject["personalDetails"].gender = args.gender;
+		personalDetails.gender = args.gender;
 	}
 	if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
-		paymentMethodObject["personalDetails"].telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
+		personalDetails.telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
 	}
-	return paymentMethodObject;
+	return personalDetails;
 }
 
 function getLineItems(args) {

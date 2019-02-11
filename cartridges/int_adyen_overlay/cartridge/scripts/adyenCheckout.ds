@@ -110,11 +110,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     jsonObject.additionalData = {
         "executeThreeD": true
     };
-    var shopperObject = {};
-    // var shopperObject = AdyenHelper.createShopperObject({
-    //     Customer: customer,
-    //     Basket: order
-    // });
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
@@ -130,11 +125,11 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     else {
         houseNumberShip = "N/A";
     }
-    jsonObject["countryCode"] = shippingAddr.countryCode.value;
+    jsonObject["countryCode"] = shippingAddr.countryCode.value.toUpperCase();
     
     jsonObject.deliveryAddress = {
         "city": shippingAddr.city,
-        "country": shippingAddr.countryCode.value,
+        "country": shippingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberShip,
         "postalCode": shippingAddr.postalCode,
         "stateOrProvince": shippingAddr.stateCode,
@@ -151,23 +146,21 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
     jsonObject.billingAddress = {
         "city": billingAddr.city,
-        "country": billingAddr.countryCode.value,
+        "country": billingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberBill,
         "postalCode": billingAddr.postalCode,
         "stateOrProvince": billingAddr.stateCode,
         "street": billingAddr.address1
     };
 
-    //TODO BAS add personal details
     jsonObject['paymentMethod'] = paymentMethodObject;
-    jsonObject['paymentMethod'].personalDetails["firstName"] = {
+    var personalDetails = {
         "firstName": billingAddr.firstName,
-        "gender": "UNKNOWN", // So this is always going to be UNKNOWN?
+        "gender": "UNKNOWN", 
         "infix": "",
         "lastName": billingAddr.lastName
     };
 
-    Logger.getLogger("Adyen").error("paymentMethod = " + JSON.stringify(paymentMethodObject));
 	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
         if(args.ratePayFingerprint){
@@ -176,15 +169,11 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         if(args.adyenFingerprint){
             jsonObject["dfValue"] = args.adyenFingerprint
         }
-        paymentMethodObject = AdyenGetOpenInvoiceData.getShopperData(args, paymentMethodObject);
+        personalDetails = AdyenGetOpenInvoiceData.getShopperData(args, personalDetails);
     }
-
-
-
-    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
-    Logger.getLogger("Adyen").error("requestObject after = " + JSON.stringify(requestObject));
-
-    // assign default values for the script output variables
+    jsonObject['paymentMethod'].personalDetails = personalDetails;
+    
+    // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
     args.AuthorizationCode = '';
@@ -195,7 +184,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     args.AdyenErrorMessage = '';
 
     // make API call
-    return doPaymentCall(args, requestObject);
+    return doPaymentCall(args, jsonObject);
 }
 
 function doPaymentCall(args, requestObject){
