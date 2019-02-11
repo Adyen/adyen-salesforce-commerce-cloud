@@ -289,9 +289,10 @@ var __AdyenHelper : Object = {
                 break;
         }
         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
-        paymentMethodObject['type'] = "scheme";
+        paymentMethodObject['type'] = card.type.value;
 
         if(!isOneClick){
+            paymentMethodObject['type'] = "scheme";
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
             paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
@@ -474,6 +475,9 @@ var __AdyenHelper : Object = {
                 case 'Diners':
                     cardType='diners';
                     break;
+                case 'Bancontact':
+                    cardType='bcmc';
+                    break;
                 default:
                     cardType = cardType.toLowerCase();
                     break;
@@ -506,6 +510,9 @@ var __AdyenHelper : Object = {
                     break;
                 case 'diners':
                     cardType='Diners';
+                    break;
+                case 'bcmc':
+                    cardType='Bancontact';
                     break;
                 default:
                     cardType = '';

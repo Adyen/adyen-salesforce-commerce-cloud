@@ -55,7 +55,8 @@ function updateSavedCards(args) {
                             ccNum,
                             token,
                             ccType,
-                            ccHolder;
+                            ccHolder,
+                            adyenCardType;
 
                         // card expiration
                         expMonth = 'cardExpiryMonth' in payment && !empty(payment.cardExpiryMonth) ? payment.cardExpiryMonth : '';
@@ -72,7 +73,7 @@ function updateSavedCards(args) {
 
                         // card type
                         if ('cardType' in payment && !empty(payment.cardType)) {
-                            var adyenCardType = payment.cardType;
+                            adyenCardType = payment.cardType;
                             ccType = AdyenHelper.getSFCCCardType(adyenCardType);
                         }
 
@@ -84,7 +85,7 @@ function updateSavedCards(args) {
                             var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
 							// custom throws error
-                            //newCreditCard.custom.AdyenPspReference = pspRef;
+                            newCreditCard.custom.adyenCreditCardType = adyenCardType;
                             newCreditCard.setCreditCardExpirationMonth(Number(expMonth));
                             newCreditCard.setCreditCardExpirationYear(Number(expYear));
                             newCreditCard.setCreditCardType(ccType);

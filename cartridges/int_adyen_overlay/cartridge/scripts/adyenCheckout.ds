@@ -85,7 +85,7 @@ function creditCard(args) {
 
     }
     catch(e){
-        Logger.error('error processing creditCard');
+        Logger.getLogger("Adyen").error('error processing creditCard');
         return {error: true};
     }
     return args;
@@ -220,6 +220,7 @@ function doPaymentCall(args, requestObject){
         args.PspReference = ('pspReference' in responseObj && !empty(responseObj.pspReference) ? responseObj.pspReference : '');
         args.PaymentStatus = resultObj.errorText;
         args.AuthorizationAmount = args.Amount.getValue().toFixed(2);
+        args.AdyenAmount = requestObject["amount"].value;
         args.Decision = 'ERROR';
 
         var resultCode = args.ResultCode;
