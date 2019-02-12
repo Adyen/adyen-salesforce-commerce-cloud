@@ -18,7 +18,7 @@ function handle (hpm : Object, order : Order) : Number {
 	// Log detailed response to ScriptLog and log file
 	var msg : String = createLogMessage(hpm);
 	Logger.getLogger("Adyen").debug(msg);
-	
+
 	// Check the input parameters
 	if (order == null) {
 		Logger.getLogger("Adyen").fatal("Payment for not existing order was cancelled. No order was provided to the script.");
@@ -28,7 +28,9 @@ function handle (hpm : Object, order : Order) : Number {
 	// Indicates that payment was cancelled on Adyen HPP
 	var cancelledHpp = false;
 	var paymentInstrument : PaymentInstrument;
-	
+	var OrderMgr = require('dw/order/OrderMgr');
+	var Transaction = require('dw/system/Transaction');
+
 	try {
 		// Check if payment was cancelled and was used Adyen payment method
 		if (hpm.authResult.stringValue == "CANCELLED") {
@@ -57,6 +59,10 @@ function handle (hpm : Object, order : Order) : Number {
 			
 			// Add a note with all details
 			order.addNote("Adyen Payment Notification", msg);
+
+			Transaction.wrap(function () {
+				OrderMgr.failOrder(order);
+			});
 		}
 	} catch (e) {
 		// Log the error and exit
