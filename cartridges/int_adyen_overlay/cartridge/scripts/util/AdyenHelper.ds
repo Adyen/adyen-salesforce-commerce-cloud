@@ -173,7 +173,9 @@ var __AdyenHelper : Object = {
 
     isOpenInvoiceMethod: function(paymentMethod){
         if(paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 ){
-            return true;
+            if(paymentMethod.indexOf("afterpaytouch") == -1 ){
+                return true;
+            }
         }
         return false;
     },
@@ -321,6 +323,10 @@ var __AdyenHelper : Object = {
         var customerID = '';
         if (!empty(profile) && !empty(profile.getCustomerNo())) {
             customerID = profile.getCustomerNo();
+        } else {
+            if (!empty(basket.getCustomerNo())) {
+                customerID = basket.getCustomerNo();
+            }
         }
 
         var shopperIP = !empty(request) && !empty(request.getHttpRemoteAddress()) ? request.getHttpRemoteAddress() : '';

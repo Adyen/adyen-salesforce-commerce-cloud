@@ -153,10 +153,15 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "street": billingAddr.address1
     };
 
+    var shopperObject = AdyenHelper.createShopperObject({
+            Customer: customer,
+            Basket: order
+        });
+
     jsonObject['paymentMethod'] = paymentMethodObject;
-    var personalDetails = {
+    var shopperDetails = {
         "firstName": billingAddr.firstName,
-        "gender": "UNKNOWN", 
+        "gender": "UNKNOWN",
         "infix": "",
         "lastName": billingAddr.lastName
     };
@@ -169,10 +174,16 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         if(args.adyenFingerprint){
             jsonObject["dfValue"] = args.adyenFingerprint
         }
-        personalDetails = AdyenGetOpenInvoiceData.getShopperData(args, personalDetails);
+
+        var personalDetails = AdyenGetOpenInvoiceData.getShopperData(args, shopperDetails);
+        jsonObject['paymentMethod'].personalDetails = personalDetails;
     }
-    jsonObject['paymentMethod'].personalDetails = personalDetails;
-    
+	else {
+	    jsonObject['shopperName'] = shopperDetails;
+    }
+
+    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
+
     // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
@@ -184,7 +195,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     args.AdyenErrorMessage = '';
 
     // make API call
-    return doPaymentCall(args, jsonObject);
+    return doPaymentCall(args, requestObject);
 }
 
 function doPaymentCall(args, requestObject){
