@@ -38,10 +38,19 @@ function notify() {
 	}
 
 	var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
-	Transaction.wrap(function () {
-   		handleNotify.notifyHttpParameterMap(request.httpParameterMap);
-	});
-	app.getView().render('notify');
+
+	Transaction.begin();
+	var success = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
+
+	if(success){
+		Transaction.commit();
+		app.getView().render('notify');
+	}
+	else {
+		Transaction.rollback();
+	}
+
+
 }
 
 /**
