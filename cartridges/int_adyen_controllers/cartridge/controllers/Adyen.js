@@ -3,7 +3,7 @@
 /* API Includes */
 var Resource = require('dw/web/Resource');
 var URLUtils = require('dw/web/URLUtils');
-var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
+var Logger = require('dw/system/Logger');
 var OrderMgr = require('dw/order/OrderMgr');
 var BasketMgr = require('dw/order/BasketMgr');
 var Site = require('dw/system/Site');
@@ -370,42 +370,66 @@ function cancelOrRefund() {
  */
 function authorizeWithForm()
 {
-	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result,
-	order = session.custom.order,
-	paymentInstrument = session.custom.paymentInstrument,
+	var	adyen3DVerification = require('int_adyen_overlay/cartridge/scripts/adyen3DVerification'), result, order, paymentInstrument,
 	adyenResponse  = session.custom.adyenResponse;
-	clearCustomSessionFields();
-	
-	Transaction.begin();
-	result = adyen3DVerification.verify({
-		Order: order,
-		Amount: paymentInstrument.paymentTransaction.amount,
-		PaymentInstrument: paymentInstrument,
-		CurrentSession: session,
-		CurrentRequest: request,
-		MD: adyenResponse.MD,
-		PaResponse: adyenResponse.PaRes
-	});
-	
-    if (result.error || result.Decision != 'ACCEPT') {
-    	Transaction.rollback();
-    	Transaction.wrap(function () {
-			OrderMgr.failOrder(order);
+
+	if(session.custom.orderNo && session.custom.paymentMethod) {
+		try {
+			order = OrderMgr.getOrder(session.custom.orderNo);
+			paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+		}
+		catch(e){
+			Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+			Transaction.wrap(function () {
+				OrderMgr.failOrder(order);
+			});
+			app.getController('COSummary').Start({
+				PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+			});
+			return {};
+		}
+
+		clearCustomSessionFields();
+		Transaction.begin();
+		result = adyen3DVerification.verify({
+			Order: order,
+			Amount: paymentInstrument.paymentTransaction.amount,
+			PaymentInstrument: paymentInstrument,
+			CurrentSession: session,
+			CurrentRequest: request,
+			MD: adyenResponse.MD,
+			PaResponse: adyenResponse.PaRes
 		});
+
+		if (result.error || result.Decision != 'ACCEPT') {
+			Transaction.rollback();
+			Transaction.wrap(function () {
+				OrderMgr.failOrder(order);
+			});
+			app.getController('COSummary').Start({
+				PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+			});
+			return {};
+		}
+
+		order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+		order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+		paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
+		Transaction.commit();
+
+		OrderModel.submit(order);
+		clearForms();
+		app.getController('COSummary').ShowConfirmation(order);
+		return {};
+	}
+	else {
+		Logger.getLogger("Adyen").error("Session variable does not exists");
 		app.getController('COSummary').Start({
-            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
-        });
-		return;
-    }
-    
-	order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-	order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-	paymentInstrument.paymentTransaction.transactionID = result.RequestToken;
-    Transaction.commit();
-	
-    OrderModel.submit(order);
-	clearForms();
-	app.getController('COSummary').ShowConfirmation(order);
+			PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+		});
+		return {};
+	}
+
 }
 
 /**
@@ -442,8 +466,8 @@ function clearForms() {
 function clearCustomSessionFields() {
 	// Clears all fields used in the 3d secure payment.
     session.custom.adyenResponse = null;
-    session.custom.paymentInstrument = null;
-    session.custom.order = null;
+    session.custom.paymentMethod = null;
+    session.custom.orderNo = null;
     session.custom.adyenBrandCode = null;
     session.custom.adyenIssuerID = null;
 }
