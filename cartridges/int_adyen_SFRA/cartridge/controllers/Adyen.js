@@ -203,14 +203,21 @@ server.post('Notify', server.middleware.https, function (req, res, next) {
     var	checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
     var status = checkAuth.check(req);
     if (!status) {
-        res.render('/error');
+        res.render('/adyen/error');
         return {};
     }
     var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
-    Transaction.wrap(function () {
-        handleNotify.notify(req.form);
-    });
-    res.render('/notify');
+    Transaction.begin();
+    var success = handleNotify.notify(req.form);
+
+    if(success){
+      Transaction.commit();
+      res.render('/notify');
+    }
+    else {
+      res.json({error: "Notification not handled"});
+      Transaction.rollback();
+    }
     next();
 });
 
