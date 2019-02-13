@@ -169,6 +169,25 @@ var __AdyenHelper : Object = {
         return returnValue;
     },
 
+    getOpenInvoiceMethods: function () : Array {
+
+    	var returnArray : Array = [];
+    	if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist'))) {
+            returnArray = adyenCurrentSite.getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist');
+        }
+
+        return returnArray;
+    },
+
+    getRatePayID : function () : String {
+
+    	var returnValue : String = "";
+    	if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
+        }
+        return returnValue;
+    },
+
     isOpenInvoiceMethod: function(paymentMethod){
             if(paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 ){
                 if(paymentMethod.indexOf("afterpaytouch") == -1 ){

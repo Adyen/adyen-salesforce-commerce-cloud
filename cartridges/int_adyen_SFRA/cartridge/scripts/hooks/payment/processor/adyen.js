@@ -14,7 +14,7 @@ function Handle(basket, paymentInformation) {
     collections.forEach(basket.getPaymentInstruments(), function (item) {
       basket.removePaymentInstrument(item);
     });
-
+    
     var paymentInstrument = basket.createPaymentInstrument(
       'Adyen', basket.totalGrossPrice
     );
@@ -56,7 +56,14 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
         PaymentType: session.custom.paymentType,
-        Issuer: session.custom.issuer
+        Issuer: session.custom.issuer,
+        dob : session.forms.adyPaydata.dob.value,
+        gender : session.forms.adyPaydata.gender.value,
+        houseNumber : session.forms.adyPaydata.houseNumber.value,
+        houseExtension : session.forms.adyPaydata.houseExtension.value,
+        personalNumber : session.forms.adyPaydata.personalNumber.value,
+        ratePayFingerprint : session.custom.ratePayFingerprint,
+        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value
     });
     if (result.error) {
         var errors = [];
