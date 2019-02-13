@@ -1,0 +1,164 @@
+/**
+* Generate the parameters needed for the redirect to the Adyen Hosted Payment Page.
+* A signature is calculated based on the configured HMAC code
+*
+* @input Order : dw.order.Order
+* @input OrderNo : String The order no
+* @input CurrentSession : dw.system.Session
+* @input CurrentUser : dw.customer.Customer
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input brandCode : String
+* @input issuerId : String
+* @input dob : String
+* @input gender : String
+* @input houseNumber : String
+* @input houseExtension : String
+* @input personalNumber : String
+*
+* @output merchantSig : String;
+* @output Amount100 : String;
+* @output shopperEmail : String;
+* @output shopperReference : String;
+* @output paramsMap : dw.util.SortedMap;
+* @output sessionValidity : String;
+*
+*/
+importPackage( dw.crypto );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value);
+importPackage( dw.net );
+importPackage( dw.web );
+
+//script include
+var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
+
+function getShopperData(args, personalDetails){
+	if(args.personalNumber){
+		personalDetails.socialSecurityNumber = args.personalNumber;
+	}
+	if(args.dob){
+		personalDetails.dateOfBirth = args.dob;
+	}
+	if(args.gender){
+		personalDetails.gender = args.gender;
+	}
+	if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
+		personalDetails.telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
+	}
+	return personalDetails;
+}
+
+function getLineItems(args) {
+	var order;
+	if(args.Order){
+		order = args.Order;
+	}
+	else {
+		return null;
+	}
+		
+	// Add all product and shipping line items to request
+	var lineItems = [];
+	for each (var lineItem in order.getAllLineItems())
+	{
+		if ((lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem)
+			|| lineItem instanceof dw.order.ShippingLineItem
+			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass == dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+		) {
+			var lineItemObject = {};
+			var description = getDescription(lineItem),
+				id = getId(lineItem),
+				quantity = getQuantity(lineItem),
+				itemAmount: number = AdyenHelper.getCurrencyValueForApi(getItemAmount(lineItem)) / quantity,
+				vatAmount: number = AdyenHelper.getCurrencyValueForApi(getVatAmount(lineItem)) / quantity,
+				vatPercentage = getVatPercentage(lineItem);
+
+			lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
+			lineItemObject["taxAmount"] = vatAmount.toFixed();
+			lineItemObject["description"] = description;
+			lineItemObject["id"] = id;
+			lineItemObject["quantity"] = quantity;
+			lineItemObject["taxCategory"] = "None";
+			lineItemObject["taxPercentage"] = (new Number(vatPercentage) * 10000).toFixed();
+
+			lineItems.push(lineItemObject);
+		} 
+	}
+
+   return lineItems;
+}
+
+function getDescription(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getID();
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem){
+		return lineItem.product.name;
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment){
+		return "Discount";
+	}
+	
+	return null;			
+}
+
+function getId(lineItem){
+	if (lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.UUID;
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.product.ID; 
+	}
+	
+	return null;
+}
+
+function getQuantity(lineItem) {
+	if (lineItem instanceof dw.order.ShippingLineItem) {
+		return "1";
+	}
+	else if (lineItem instanceof dw.order.ProductLineItem) {
+		return lineItem.quantityValue.toFixed();
+	}
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.quantity.toFixed();
+	}
+	
+	return null;
+}
+
+function getVatPercentage(lineItem) {
+	var vatPercentage = 0;
+    if ( getVatAmount(lineItem) != 0 ) {
+        vatPercentage = lineItem.getTaxRate();
+    }
+	return vatPercentage;
+}
+
+function getVatAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.getAdjustedTax();
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.tax;
+	}
+	return null;
+}
+
+function getItemAmount(lineItem) {
+	if(lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
+		return lineItem.adjustedNetPrice;
+	} 
+	else if (lineItem instanceof dw.order.PriceAdjustment) {
+		return lineItem.basePrice;
+	}
+	return null;
+	
+}
+
+module.exports = {
+	'getLineItems': getLineItems,
+	'getShopperData': getShopperData
+}

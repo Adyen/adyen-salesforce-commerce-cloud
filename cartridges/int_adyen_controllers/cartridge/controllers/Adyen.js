@@ -15,7 +15,7 @@ var Transaction = require('dw/system/Transaction');
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-
+var Logger = require('dw/system/Logger')
 var OrderModel = app.getModel('Order');
 var Logger = require('dw/system/Logger');
 

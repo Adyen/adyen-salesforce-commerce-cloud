@@ -126,7 +126,7 @@ var __AdyenHelper : Object = {
         }
         return returnValue;
     },
-    
+
     getAdyenGuestRecurringEnabled : function () : Boolean {
         var returnValue : Boolean = false;
         if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGuestRecurringEnabled'))) {
@@ -165,6 +165,34 @@ var __AdyenHelper : Object = {
             case __AdyenHelper.MODE.LIVE:
                 returnValue = __AdyenHelper.LOADING_CONTEXT_LIVE;
                 break;
+        }
+        return returnValue;
+    },
+
+    getOpenInvoiceMethods: function () : Array {
+
+    	var returnArray : Array = [];
+    	if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist'))) {
+            returnArray = adyenCurrentSite.getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist');
+        }
+
+        return returnArray;
+    },
+
+    isOpenInvoiceMethod: function(paymentMethod){
+        if(paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 ){
+            if(paymentMethod.indexOf("afterpaytouch") == -1 ){
+                return true;
+            }
+        }
+        return false;
+    },
+
+    getRatePayID : function () : String {
+
+    	var returnValue : String = "";
+    	if(!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
         return returnValue;
     },
@@ -305,9 +333,9 @@ var __AdyenHelper : Object = {
         if (!empty(profile) && !empty(profile.getCustomerNo())) {
             customerID = profile.getCustomerNo();
         } else {
-        	if (!empty(basket.getCustomerNo())) {
-        		customerID = basket.getCustomerNo();	
-        	}	
+            if (!empty(basket.getCustomerNo())) {
+                customerID = basket.getCustomerNo();
+            }
         }
 
         var shopperIP = !empty(request) && !empty(request.getHttpRemoteAddress()) ? request.getHttpRemoteAddress() : '';
@@ -355,11 +383,11 @@ var __AdyenHelper : Object = {
                 if (__AdyenHelper.getAdyenGuestRecurringEnabled()) {
                 	jsonObject['recurring'] = {
                     	'contract': 'RECURRING'
-                	};	
+                	};
                 }
-              
+
             }
-        } 
+        }
 
         jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
 

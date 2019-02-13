@@ -33,6 +33,7 @@ var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenGetOpenInvoiceData = require('int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
 
 function execute(args) {
     return PIPELET_NEXT;  
@@ -45,8 +46,10 @@ function alternativePaymentMethod(args){
    if(args.Issuer){
         paymentMethodObject['issuer'] = args.Issuer;
     }
-    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
-    return createPaymentRequest(args, paymentMethodObject, returnUrl);
+
+
+   var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+   return createPaymentRequest(args, paymentMethodObject, returnUrl);
 }
 
 function creditCard(args) {
@@ -88,7 +91,6 @@ function creditCard(args) {
         Logger.getLogger("Adyen").error('error processing creditCard');
         return {error: true};
     }
-    return args;
 }
 
 function createPaymentRequest(args, paymentMethodObject, returnUrl) {
@@ -99,19 +101,15 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var customer = order.getCustomer();
     var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
     var customerID = '';
+
     if (!empty(profile) && !empty(profile.getCustomerNo())) {
         customerID = profile.getCustomerNo();
     }
 
     jsonObject['returnUrl'] = returnUrl;
-    jsonObject['paymentMethod'] = paymentMethodObject;
     jsonObject.additionalData = {
         "executeThreeD": true
     };
-    var shopperObject = AdyenHelper.createShopperObject({
-        Customer: customer,
-        Basket: order
-    });
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
@@ -127,9 +125,11 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     else {
         houseNumberShip = "N/A";
     }
+    jsonObject["countryCode"] = shippingAddr.countryCode.value.toUpperCase();
+    
     jsonObject.deliveryAddress = {
         "city": shippingAddr.city,
-        "country": shippingAddr.countryCode.value,
+        "country": shippingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberShip,
         "postalCode": shippingAddr.postalCode,
         "stateOrProvince": shippingAddr.stateCode,
@@ -146,22 +146,45 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
     jsonObject.billingAddress = {
         "city": billingAddr.city,
-        "country": billingAddr.countryCode.value,
+        "country": billingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberBill,
         "postalCode": billingAddr.postalCode,
         "stateOrProvince": billingAddr.stateCode,
         "street": billingAddr.address1
     };
-    jsonObject.shopperName = {
+
+    var shopperObject = AdyenHelper.createShopperObject({
+            Customer: customer,
+            Basket: order
+        });
+
+    jsonObject['paymentMethod'] = paymentMethodObject;
+    var shopperDetails = {
         "firstName": billingAddr.firstName,
         "gender": "UNKNOWN",
         "infix": "",
         "lastName": billingAddr.lastName
     };
 
+	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
+        jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
+        if(args.ratePayFingerprint){
+            jsonObject["dfValue"] = args.ratePayFingerprint;
+        }
+        if(args.adyenFingerprint){
+            jsonObject["dfValue"] = args.adyenFingerprint
+        }
+
+        var personalDetails = AdyenGetOpenInvoiceData.getShopperData(args, shopperDetails);
+        jsonObject['paymentMethod'].personalDetails = personalDetails;
+    }
+	else {
+	    jsonObject['shopperName'] = shopperDetails;
+    }
+
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
-    // assign default values for the script output variables
+    // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
     args.AuthorizationCode = '';
