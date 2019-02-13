@@ -84,10 +84,7 @@ function getLineItems(args) {
 			lineItemObject["taxPercentage"] = (new Number(vatPercentage) * 10000).toFixed();
 
 			lineItems.push(lineItemObject);
-		} else {
-			// Do nothing for other line items
-		}
-
+		} 
 	}
 
    return lineItems;
