@@ -120,6 +120,8 @@
                 });
 
                 $('input[type=radio][name=brandCode]').change(function () {
+                    $('#selectedIssuer').val("");
+                    $('#adyenIssuerName').val("");
                     idealComponent.componentRef.setState({
                         data: { issuer: null }
                     });
@@ -156,17 +158,18 @@
             $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             idealComponent = checkout.create('ideal', {
                 items: paymentMethod.details[0].items,
-                onChange: function (state, component) {
-                    console.log(component.componentRef.props.items.find(x => x.id == state.data.issuer).name);
-                    console.log(component);
+                onChange: function (state) {
                     // isValid is not present on start
                     if (typeof state.isValid !== 'undefined' && state.isValid === false) {
+                        //TODO BAS Check if issuer is not selected
                         console.log("false");
                     }
                 },
-                onValid: function (state) {
+                onValid: function (state, component) {
                     console.log("valid");
                     $('#selectedIssuer').val(state.data.issuer);
+                    $('#adyenIssuerName').val(component.componentRef.props.items.find(x => x.id == state.data.issuer).name);
+
                 },
                 onError: function (state) {
                     console.log("error");
@@ -203,24 +206,24 @@
                 return true;
             }
         }
-        else if($('#selectedPaymentOption').val() == 'Adyen' && $('#directoryLookup').val() == 'true' && !$("input[name='brandCode']:checked").val()) {
+        else if(!adyenPaymentMethodSelected()) {
             $('#requiredBrandCode').show();
             return false;
         }
-        else if ($('#selectedPaymentOption').val() == 'Adyen' && $("input[name='brandCode']:checked").val()) {
-            //TODO BAS check which issuer and populate issuer name
-            //$('#adyenPaymentMethod').val($("input[name='brandCode']:checked").closest(".paymentMethod").find("label").text());
-            // if ($("input[name='brandCode']:checked").parent().find('#issuerList').length) {
-            //     $('#adyenIssuerName').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('label'));
-            //     $('#selectedIssuer').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('value'));
-            // }
-            // else {
-            //     $('#issuerList').val("");
-            //     $('#adyenIssuerName').val("");
-            //     $('#selectedIssuer').val("");
-            // }
+        else if (adyenPaymentMethodSelected()) {
+            $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
+            return true;
         }
     });
+
+    function adyenPaymentMethodSelected(){
+        if($('#selectedPaymentOption').val() == 'Adyen' && $('#directoryLookup').val() == 'true') {
+            if(!$("input[name='brandCode']:checked").val()){
+                return false;
+            }
+        }
+        return true;
+    }
 
     $('button[value="add-new-payment"]').on('click', function (e) {
         setPaymentData();
