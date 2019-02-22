@@ -120,11 +120,9 @@
                 });
 
                 $('input[type=radio][name=brandCode]').change(function () {
+                    $('#requiredBrandCode').hide();
                     $('#selectedIssuer').val("");
                     $('#adyenIssuerName').val("");
-                    idealComponent.componentRef.setState({
-                        data: { issuer: null }
-                    });
                     $('.hppAdditionalFields').hide();
                     $('#component_' + $(this).val()).show();
                 });
@@ -159,20 +157,12 @@
             idealComponent = checkout.create('ideal', {
                 items: paymentMethod.details[0].items,
                 onChange: function (state) {
-                    // isValid is not present on start
-                    if (typeof state.isValid !== 'undefined' && state.isValid === false) {
-                        //TODO BAS Check if issuer is not selected
-                        console.log("false");
-                    }
                 },
                 onValid: function (state, component) {
-                    console.log("valid");
                     $('#selectedIssuer').val(state.data.issuer);
                     $('#adyenIssuerName').val(component.componentRef.props.items.find(x => x.id == state.data.issuer).name);
-
                 },
                 onError: function (state) {
-                    console.log("error");
                 }
             });
             li.append(idealContainer);
@@ -183,42 +173,62 @@
     };
 
     $('button[value="submit-payment"]').on('click', function (e) {
-        if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && $('.payment-information').data('is-new-payment')) {
-            if(!isValid){
-                return false;
-            }
-            else {
-                $('#selectedCardID').val('');
-                setPaymentData();
-            }
-        }
-        else if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && !$('.payment-information').data('is-new-payment'))
+        if($('#selectedPaymentOption').val() == 'CREDIT_CARD')
         {
-            var uuid = $('.selected-payment').data('uuid');
-            if(!oneClickValid){
+            //new card payment
+            if($('.payment-information').data('is-new-payment')){
+                if(!isValid){
+                    return false;
+                }
+                else {
+                    $('#selectedCardID').val('');
+                    setPaymentData();
+                }
+            }
+            //oneclick payment
+            else {
+                var uuid = $('.selected-payment').data('uuid');
+                if(!oneClickValid){
+                    return false;
+                }
+                else {
+                    var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
+                    document.getElementById('saved-payment-security-code-' + uuid).value = "000";
+                    $('#cardType').val(selectedCardType)
+                    $('#selectedCardID').val($('.selected-payment').data('uuid'));
+                    return true;
+                }
+            }
+        }
+        else if($('#selectedPaymentOption').val() == 'Adyen'){
+            var selectedMethod = $("input[name='brandCode']:checked").val();
+
+            //no paymentmethod selected
+            if(!adyenPaymentMethodSelected(selectedMethod)) {
+                $('#requiredBrandCode').show();
                 return false;
             }
             else {
-                var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
-                document.getElementById('saved-payment-security-code-' + uuid).value = "000";
-                $('#cardType').val(selectedCardType)
-                $('#selectedCardID').val($('.selected-payment').data('uuid'));
-                return true;
+                var componentState = checkComponentDetails(selectedMethod);
+                $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
+                return componentState;
             }
         }
-        else if(!adyenPaymentMethodSelected()) {
-            $('#requiredBrandCode').show();
-            return false;
-        }
-        else if (adyenPaymentMethodSelected()) {
-            $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
-            return true;
-        }
+
+        return true;
     });
 
-    function adyenPaymentMethodSelected(){
-        if($('#selectedPaymentOption').val() == 'Adyen' && $('#directoryLookup').val() == 'true') {
-            if(!$("input[name='brandCode']:checked").val()){
+    function checkComponentDetails(selectedMethod){
+        if(selectedMethod == "ideal"){
+            $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+            return idealComponent.componentRef.state.isValid;
+        }
+        return true;
+    }
+
+    function adyenPaymentMethodSelected(selectedMethod){
+        if($('#directoryLookup').val() == 'true') {
+            if(!selectedMethod){
                 return false;
             }
         }
