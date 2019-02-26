@@ -30,10 +30,22 @@
     var inputType: String = Debug ? 'text' : 'hidden';
 
     if (directoryLookup) {
-        var url: String = "https://test.adyen.com/hpp/skipDetails.shtml";
-        if (Mode == "LIVE") {
-            url = "https://live.adyen.com/hpp/skipDetails.shtml";
+
+        if (pdict.ParamsMap.brandCode == "klarna" || pdict.ParamsMap.brandCode == "klarna_b2b" || pdict.ParamsMap.brandCode == "afterpay_default"
+        || pdict.ParamsMap.brandCode == "klarna_account" || pdict.ParamsMap.brandCode == "ratepay" || pdict.ParamsMap.brandCode == "molpay_cash" || pdict.ParamsMap.brandCode == "molpay_epay"
+        || pdict.ParamsMap.brandCode == "molpay_paysbuy") {
+
+            var url: String = "https://test.adyen.com/hpp/skipDetails.shtml";
+            if (Mode == "LIVE") {
+                url = "https://live.adyen.com/hpp/skipDetails.shtml";
+            }
+        } else {
+            var url: String = "https://test.adyen.com/hpp/details.shtml";
+            if (Mode == "LIVE") {
+                url = "https://live.adyen.com/hpp/details.shtml";
+            }
         }
+
     } else {
         var url: String = "https://test.adyen.com/hpp/" + hppType + ".shtml";
         if (Mode == "LIVE") {
