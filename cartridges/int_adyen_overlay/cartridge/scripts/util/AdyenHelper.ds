@@ -152,7 +152,7 @@ var __AdyenHelper : Object = {
     },
 
     getCheckoutUrl : function () : String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.0.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.1.0/adyen.js";
         return checkoutUrl;
     },
 
@@ -291,15 +291,22 @@ var __AdyenHelper : Object = {
 
     createCardObjectSF: function (isOneClick, formType) {
         var card;
+        var cardType = "scheme";
         var paymentMethodObject = {};
         switch(formType) {
             case 'billing':
                 if(session.forms.billing.paymentMethods)  {
                     card = session.forms.billing.paymentMethods.creditCard;
  			        paymentMethodObject['holderName'] = card.owner.value;
+ 			        if(card.type.value){
+                        cardType = card.type.value;
+                    }
                 } else {
                     // structure for SFRA
                     card = session.forms.billing.creditCardFields;
+                    if(card.cardType.value && isOneClick){
+                        cardType = __AdyenHelper.getAdyenCardType(card.cardType.value);
+                    }
                     paymentMethodObject['holderName'] = card.cardOwner.value;
                 }
                 break;
@@ -307,15 +314,19 @@ var __AdyenHelper : Object = {
                 card = session.forms.creditCard;
                 break;
         }
-        paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
-        paymentMethodObject['type'] = card.type.value;
 
-        if(!isOneClick){
-            paymentMethodObject['type'] = "scheme";
+        if(card.adyenEncryptedSecurityCode.value){
+            paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
+        }
+
+        paymentMethodObject['type'] = cardType;
+        
+        if(!isOneClick){    
             paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
             paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
             paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
-        }
+        } 
+        
 
         return paymentMethodObject;
     },
@@ -480,6 +491,7 @@ var __AdyenHelper : Object = {
                     break;
                 case 'Master':
                 case 'MasterCard':
+                case 'Mastercard':
                     cardType='mc';
                     break;
                 case 'Amex':
