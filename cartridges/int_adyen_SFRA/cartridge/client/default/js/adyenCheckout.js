@@ -8,6 +8,7 @@
     const cardNode = document.getElementById('card');
     var oneClickCard = [];
     var card;
+    var idealComponent;
     var isValid = false;
 
     getConfigurationSecureFields();
@@ -33,6 +34,7 @@
             type: 'card',
             hasHolderName: true,
             holderNameRequired: true,
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
 
             // Events
             onChange: function(state) {
@@ -118,11 +120,18 @@
                 });
 
                 $('input[type=radio][name=brandCode]').change(function () {
-                    $('.hppAdditionalFields').hide();
-                    $('#extraFields_' + $(this).val()).show();
+                    resetPaymentMethod();
+                    $('#component_' + $(this).val()).show();
                 });
             });
         }
+    };
+
+    function resetPaymentMethod(){
+        $('#requiredBrandCode').hide();
+        $('#selectedIssuer').val("");
+        $('#adyenIssuerName').val("");
+        $('.hppAdditionalFields').hide();
     };
 
     function getPaymentMethods(paymentMethods) {
@@ -146,69 +155,85 @@
         li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
         li.append($('<p>').text(description));
 
-        var additionalFields = $('<div>').addClass('hppAdditionalFields')
-            .attr('id', 'extraFields_' + paymentMethod.type)
-            .attr('style', 'display:none');
-
-        if (paymentMethod.details) {
-            if(paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer")
-            {
-                var issuers = $('<select>').attr('id', 'issuerList');
-                jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
-                    var issuer = $('<option>')
-                        .attr('label', issuer.name)
-                        .attr('value', issuer.id);
-                    issuers.append(issuer);
-                });
-                additionalFields.append(issuers);
-                li.append(additionalFields);
-            }
+        if (paymentMethod.type == "ideal") {
+            var idealContainer = document.createElement("div");
+            $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            idealComponent = checkout.create('ideal', {
+                items: paymentMethod.details[0].items
+            });
+            li.append(idealContainer);
+            idealComponent.mount(idealContainer);
         }
 
         $('#paymentMethodsUl').append(li);
     };
 
     $('button[value="submit-payment"]').on('click', function (e) {
-        if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && $('.payment-information').data('is-new-payment')) {
-            if(!isValid){
-                return false;
-            }
-            else {
-                $('#selectedCardID').val('');
-                setPaymentData();
-            }
-        }
-        else if($('#selectedPaymentOption').val() == 'CREDIT_CARD' && !$('.payment-information').data('is-new-payment'))
+        if($('#selectedPaymentOption').val() == 'CREDIT_CARD')
         {
-            var uuid = $('.selected-payment').data('uuid');
-            if(!oneClickValid){
+            //new card payment
+            if($('.payment-information').data('is-new-payment')){
+                if(!isValid){
+                    return false;
+                }
+                else {
+                    $('#selectedCardID').val('');
+                    setPaymentData();
+                }
+            }
+            //oneclick payment
+            else {
+                var uuid = $('.selected-payment').data('uuid');
+                if(!oneClickValid){
+                    return false;
+                }
+                else {
+                    var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
+                    document.getElementById('saved-payment-security-code-' + uuid).value = "000";
+                    $('#cardType').val(selectedCardType)
+                    $('#selectedCardID').val($('.selected-payment').data('uuid'));
+                    return true;
+                }
+            }
+        }
+        else if($('#selectedPaymentOption').val() == 'Adyen'){
+            var selectedMethod = $("input[name='brandCode']:checked").val();
+
+            //no paymentmethod selected
+            if(!adyenPaymentMethodSelected(selectedMethod)) {
+                $('#requiredBrandCode').show();
                 return false;
             }
             else {
-                var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
-                document.getElementById('saved-payment-security-code-' + uuid).value = "000";
-                $('#cardType').val(selectedCardType)
-                $('#selectedCardID').val($('.selected-payment').data('uuid'));
-                return true;
+                var componentState = checkComponentDetails(selectedMethod);
+                $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
+                return componentState;
             }
         }
-        else if($('#selectedPaymentOption').val() == 'Adyen' && $('#directoryLookup').val() == 'true' && !$("input[name='brandCode']:checked").val()) {
-            $('#requiredBrandCode').show();
-            return false;
-        }
-        else if ($('#selectedPaymentOption').val() == 'Adyen' && $("input[name='brandCode']:checked").val()) {
-            $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").closest(".paymentMethod").find("label").text());
-            if ($("input[name='brandCode']:checked").parent().find('#issuerList').length) {
-                $('#adyenIssuerName').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('label'));
-                $('#selectedIssuer').val($("input[name='brandCode']:checked").parent().find('#issuerList :selected').attr('value'));
-            }
-            else {
-                $('#issuerList').val("");
-                $('#adyenIssuerName').val("");
-                $('#selectedIssuer').val("");
-            }
-        }
+
+        return true;
     });
+
+    function checkComponentDetails(selectedMethod){
+        //set data from components
+        if(selectedMethod == "ideal"){
+            if(idealComponent.componentRef.state.isValid){
+                $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+                $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
+            }
+            return idealComponent.componentRef.state.isValid;
+        }
+        return true;
+    }
+
+    function adyenPaymentMethodSelected(selectedMethod){
+        if($('#directoryLookup').val() == 'true') {
+            if(!selectedMethod){
+                return false;
+            }
+        }
+        return true;
+    }
 
     $('button[value="add-new-payment"]').on('click', function (e) {
         setPaymentData();

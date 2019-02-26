@@ -49,7 +49,7 @@ function alternativePaymentMethod(args){
 
 
    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
-   return createPaymentRequest(args, paymentMethodObject, returnUrl);
+   return createPaymentRequest(args, paymentMethodObject, returnUrl); 
 }
 
 function creditCard(args) {
@@ -88,7 +88,7 @@ function creditCard(args) {
 
     }
     catch(e){
-        Logger.getLogger("Adyen").error('error processing creditCard');
+        Logger.getLogger("Adyen").error('error processing creditCard. Error message: ' + e.message + " more details: "+ e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
         return {error: true};
     }
 }
