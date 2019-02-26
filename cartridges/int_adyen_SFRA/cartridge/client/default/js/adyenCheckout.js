@@ -120,14 +120,18 @@
                 });
 
                 $('input[type=radio][name=brandCode]').change(function () {
-                    $('#requiredBrandCode').hide();
-                    $('#selectedIssuer').val("");
-                    $('#adyenIssuerName').val("");
-                    $('.hppAdditionalFields').hide();
+                    resetPaymentMethod();
                     $('#component_' + $(this).val()).show();
                 });
             });
         }
+    };
+
+    function resetPaymentMethod(){
+        $('#requiredBrandCode').hide();
+        $('#selectedIssuer').val("");
+        $('#adyenIssuerName').val("");
+        $('.hppAdditionalFields').hide();
     };
 
     function getPaymentMethods(paymentMethods) {
@@ -155,15 +159,7 @@
             var idealContainer = document.createElement("div");
             $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             idealComponent = checkout.create('ideal', {
-                items: paymentMethod.details[0].items,
-                onChange: function (state) {
-                },
-                onValid: function (state, component) {
-                    $('#selectedIssuer').val(state.data.issuer);
-                    $('#adyenIssuerName').val(component.componentRef.props.items.find(x => x.id == state.data.issuer).name);
-                },
-                onError: function (state) {
-                }
+                items: paymentMethod.details[0].items
             });
             li.append(idealContainer);
             idealComponent.mount(idealContainer);
@@ -219,8 +215,12 @@
     });
 
     function checkComponentDetails(selectedMethod){
+        //set data from components
         if(selectedMethod == "ideal"){
-            $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+            if(idealComponent.componentRef.state.isValid){
+                $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+                $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
+            }
             return idealComponent.componentRef.state.isValid;
         }
         return true;
