@@ -14,6 +14,7 @@
     var Debug: String = Site.getCurrent().getCustomPreferenceValue("Adyen_Debug");
     var paymentSelection: String = Site.getCurrent().getCustomPreferenceValue("Adyen_PaymentSelection");
 
+    var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
     var hppType;
     switch (String(paymentSelection)) {
@@ -29,11 +30,11 @@
 
     var inputType: String = Debug ? 'text' : 'hidden';
 
+    var paymentMethod = pdict.ParamsMap.brandCode;
+
     if (directoryLookup) {
 
-        if (pdict.ParamsMap.brandCode == "klarna" || pdict.ParamsMap.brandCode == "klarna_b2b" || pdict.ParamsMap.brandCode == "afterpay_default"
-        || pdict.ParamsMap.brandCode == "klarna_account" || pdict.ParamsMap.brandCode == "ratepay" || pdict.ParamsMap.brandCode == "molpay_cash" || pdict.ParamsMap.brandCode == "molpay_epay"
-        || pdict.ParamsMap.brandCode == "molpay_paysbuy") {
+        if (AdyenHelper.isOpenInvoiceMethod(paymentMethod) || AdyenHelper.isMolpayMethod(paymentMethod)) {
 
             var url: String = "https://test.adyen.com/hpp/skipDetails.shtml";
             if (Mode == "LIVE") {

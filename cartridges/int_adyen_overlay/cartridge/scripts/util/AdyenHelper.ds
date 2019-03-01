@@ -147,6 +147,23 @@ var __AdyenHelper : Object = {
         return returnValue;
     },
 
+    isOpenInvoiceMethod: function(paymentMethod){
+            if(paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 ){
+                if(paymentMethod.indexOf("afterpaytouch") == -1 ){
+                    return true;
+                }
+            }
+            return false;
+    },
+
+    isMolpayMethod: function(paymentMethod) {
+        if (paymentMethod.indexOf("molpay") > -1) {
+            return true;
+        }
+
+        return false;
+    },
+
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
         var token = '';
