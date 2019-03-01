@@ -187,6 +187,13 @@ var __AdyenHelper : Object = {
         }
         return false;
     },
+    
+     hasCheckoutComponent : function (paymentMethod){
+     	if(paymentMethod.indexOf("ideal") > -1){
+     		return true;
+     	}
+        return false;
+    },
 
     getRatePayID : function () : String {
 

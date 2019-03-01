@@ -1,3 +1,5 @@
+/*Credit Cards*/
+
 .adyen-checkout__label {
 	float: none !important;
 	width: 100% !important;
@@ -32,4 +34,10 @@
 
 .security-code-input .adyen-checkout__field:first-child {
 	display: none;
+}
+
+/*Checkout Components*/
+
+.checkoutComponent {
+	display:none;
 }

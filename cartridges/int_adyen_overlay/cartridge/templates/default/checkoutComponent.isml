@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<div id="component_${method.type}" class="checkoutComponent"></div>
+<script type="text/javascript">				
+var paymentMethodDetails = JSON.parse("${methodDetails}".replace(/&quot;/g, '\"'));
+
+switch("${method.type}"){
+	case "ideal": 
+		var component = document.getElementById("component_ideal");
+		var idealContainer = document.createElement("div");
+       	var idealComponent = AdyenCheckoutObject.create('ideal', {
+               items: paymentMethodDetails.details[0].items
+           });
+           component.append(idealContainer);
+           idealComponent.mount(idealContainer);
+        break;
+     default:
+		//no component
+};
+
+</script>
