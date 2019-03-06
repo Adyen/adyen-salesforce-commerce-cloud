@@ -8,6 +8,10 @@
 <input id="adyenPaymentMethod" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
 <input id="selectedIssuer" type="hidden" name="issuer"/>
+<input id="dateOfBirth" type="hidden" name="dob"/>
+<input id="telephoneNumber" type="hidden" name="telephoneNumber"/>
+<input id="gender" type="hidden" name="gender"/>
+
 <isif condition="${directoryLookup}">
     <ul id="paymentMethodsUl">
     </ul>

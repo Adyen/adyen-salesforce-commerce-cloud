@@ -9,6 +9,8 @@
     var oneClickCard = [];
     var card;
     var idealComponent;
+    var afterpayComponent;
+    var klarnaComponent;
     var isValid = false;
 
     getConfigurationSecureFields();
@@ -131,6 +133,9 @@
         $('#requiredBrandCode').hide();
         $('#selectedIssuer').val("");
         $('#adyenIssuerName').val("");
+        $('#dateOfBirth').val("");
+        $('#telephoneNumber').val("");
+        $('#gender').val("");
         $('.hppAdditionalFields').hide();
     };
 
@@ -165,7 +170,47 @@
             idealComponent.mount(idealContainer);
         }
 
+        if(paymentMethod.type.indexOf("klarna") !== -1){
+            console.log("klarna component");
+            var klarnaContainer = document.createElement("div");
+            $(klarnaContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            window.klarnaComponent = checkout.create('klarna', {
+                countryCode: $('#currentLocale').val(),
+                details: paymentMethod.details,
+                visibility: {
+                    personalDetails: "editable",
+                    billingAddress: "hidden",
+                    deliveryAddress: "hidden"
+                }
+            });
+            li.append(klarnaContainer);
+            window.klarnaComponent.mount(klarnaContainer);
+        };
+
+        if(paymentMethod.type.indexOf("afterpay_default") !== -1){
+            console.log("afterpay component");
+            var openInvoiceDetails = filterOpenInvoiceData(paymentMethod.details);
+            var afterpayContainer = document.createElement("div");
+            $(afterpayContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            afterpayComponent = checkout.create('afterpay', {
+                countryCode: $('#currentLocale').val(),
+                details: openInvoiceDetails,
+                visibility: {
+                    personalDetails: "editable",
+                    billingAddress: "hidden",
+                    deliveryAddress: "hidden"
+                }
+            });
+            li.append(afterpayContainer);
+            afterpayComponent.mount(afterpayContainer);
+        };
+
         $('#paymentMethodsUl').append(li);
+    };
+
+    function filterOpenInvoiceData(paymentDetails){
+        var personalDetails = paymentDetails.find(details => details.key == "personalDetails");
+        return personalDetails.details;
     };
 
     $('button[value="submit-payment"]').on('click', function (e) {
@@ -223,7 +268,27 @@
             }
             return idealComponent.componentRef.state.isValid;
         }
+        else if(selectedMethod.indexOf("klarna") > -1) {
+            //if(window.klarnaComponent.componentRef.state.isValid){
+                setOpenInvoiceData(window.klarnaComponent);
+            //}
+            return true; //window.klarnaComponent.componentRef.state.isValid;
+        }
+
+        else if(selectedMethod.indexOf("afterpay_default") > -1) {
+            if(afterpayComponent.componentRef.state.isValid){
+                setOpenInvoiceData(afterpayComponent);
+            }
+            return afterpayComponent.componentRef.state.isValid;
+        }
         return true;
+    }
+
+    function setOpenInvoiceData(component){
+        console.log(component);
+        $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
+        $('#telephoneNumber').val(component.componentRef.state.data.personalDetails.telephoneNumber);
+        $('#gender').val(component.componentRef.state.data.personalDetails.gender);
     }
 
     function adyenPaymentMethodSelected(selectedMethod){
