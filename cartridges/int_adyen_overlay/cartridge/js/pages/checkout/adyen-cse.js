@@ -38,9 +38,7 @@
                 }
                 else if (radioVal == "Adyen"){
                     var selectedMethod = $('[name="brandCode"]:checked').val();
-                    if(!componentDetailsValid(selectedMethod)){
-                        return false;
-                    }
+                    return componentDetailsValid(selectedMethod);
                 }
 
                 e.preventDefault();
