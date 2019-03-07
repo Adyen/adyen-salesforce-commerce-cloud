@@ -19,19 +19,24 @@ function handle( orderID : String ) : Object {
 	}
 	while (searchQuery.hasNext()) {
 		var co : CustomObject = searchQuery.next();
-		dw.system.Logger.getLogger("Adyen", "adyen").info("Remove CO object with merchantReference {0} and pspReferenceNumber  {1}", co.custom.merchantReference, co.custom.pspReference);
-		try {
-			CustomObjectMgr.remove(co);
-		} catch (e) {
-			var ex = e;
-			dw.system.Logger.getLogger("Adyen", "adyen").error("Error occured during delete CO, ID: {0}, erorr message {1}", co.custom.orderId, e.message);
-		}
+		remove(co);
 	}
 	searchQuery.close();
    return PIPELET_NEXT;
 }
 
+function remove ( co ) {
+	dw.system.Logger.getLogger("Adyen", "adyen").info("Remove CO object with merchantReference {0} and pspReferenceNumber  {1}", co.custom.merchantReference, co.custom.pspReference);
+	try {
+		CustomObjectMgr.remove(co);
+	} catch (e) {
+		var ex = e;
+		dw.system.Logger.getLogger("Adyen", "adyen").error("Error occured during delete CO, ID: {0}, erorr message {1}", co.custom.orderId, e.message);
+	}
+}
+
 module.exports = {
 	'execute': execute,
-	'handle': handle
+	'handle': handle,
+	'remove': remove
 }

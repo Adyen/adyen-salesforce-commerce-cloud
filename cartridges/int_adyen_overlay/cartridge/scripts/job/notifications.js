@@ -78,12 +78,11 @@ function clearNotifications(pdict) {
 	var searchQuery = CustomObjectMgr.queryCustomObjects("adyenNotification", "custom.processedStatus = 'SUCCESS'", null);
 	logger.info("Removing Processed Custom Objects start with count {0}", searchQuery.count);
 
-	var customObj, orderID;
+	var customObj;
 	while (searchQuery.hasNext()) {
 		customObj = searchQuery.next();
-		orderID = customObj.custom.orderId.split("-", 1)[0];
 		Transaction.wrap(function () {
-			deleteCustomObjects.handle(orderID);
+			deleteCustomObjects.remove(customObj);
 		});
 		
 	}
