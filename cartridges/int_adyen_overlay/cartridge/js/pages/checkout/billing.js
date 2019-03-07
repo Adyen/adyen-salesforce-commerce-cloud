@@ -136,6 +136,18 @@ exports.init = function () {
     	updatePaymentType($(this).val(), true);
     });
 
+    //brandcode onchange
+    $payType.on('change', function() {
+    	$('#selectedIssuer').val("");  
+    	$issuer.hide();
+    	$('.checkoutComponent').hide();
+    	$('#component_' + $(this).val()).show();  	
+    	if($(this).siblings( ".issuer").length > 0){
+    		$('#selectedIssuer').val($(this).siblings( ".issuer" ).val());
+    		$(this).siblings('.issuer').show();
+    	}
+    });
+    
     // select credit card from list
     $('#creditCardList').on('change', function () {
         var cardUUID = $(this).val();
@@ -247,21 +259,6 @@ exports.init = function () {
     if (SitePreferences.ADYEN_CSE_ENABLED) {
     	adyenCse.initBilling();
     }
-
-    // Adyen - Click event for payment methods
-    $payType.on('click', function () {
-    	updatePaymentType($(this).val(), false);
-      	//if the payment type contains issuerId fields, expand form with the values
-    	if ($(this).siblings('#issuer').length > 0) {
-    	  $issuer.show();
-    	  updatePaymentType( 
-    (selectedIssuerId) ? selectedIssuerId : $issuerId[0].value, true);
-    	} else {
-    		$issuer.hide();
-    		$('input[name="issuerId"]').removeAttr('checked');
-    	}
-    	initializeHPPFields();
-     });
     
     var currentDate = new Date();
     var currentYear = currentDate.getFullYear();

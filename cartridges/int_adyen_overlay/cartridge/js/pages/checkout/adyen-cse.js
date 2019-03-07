@@ -19,7 +19,7 @@
             var isOneClick = false;
             $('#billing-submit').on('click', function (e) {
                 var radioVal = $('.payment-method-options').find(':checked').val();
-                if ('CREDIT_CARD' == radioVal) {
+                if (radioVal == 'CREDIT_CARD') {
 
                     if (!window.CardValid) {
                         return false;
@@ -35,14 +35,17 @@
                         $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val("");
                         copyCardData(window.AdyenCard);
                     }
-                    
-                    e.preventDefault();
-                    $('.form-data-error').html('');
-                    $('#billing-submit-hidden').trigger('click');
-
                 }
-            });
+                else if (radioVal == "Adyen"){
+                    var selectedMethod = $('[name="brandCode"]:checked').val();
+                    return componentDetailsValid(selectedMethod);
+                }
 
+                e.preventDefault();
+                $('.form-data-error').html('');
+                $('#billing-submit-hidden').trigger('click');
+            });
+            
             $('#adyenCreditCardList').on('change', function () {
             	var selectedCard = $('#adyenCreditCardList').val();
             	var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
@@ -98,6 +101,18 @@
                 }
             });
             window.AdyenOneClick.mount(cardNode);
+        }
+
+        //Check the validity of checkout component
+        function componentDetailsValid(selectedMethod){
+            //set data from components
+            if(selectedMethod == "ideal"){
+                if(idealComponent.componentRef.state.isValid){
+                    $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+                }
+                return idealComponent.componentRef.state.isValid;
+            }
+            return true;
         }
 
         function copyCardData(card) {

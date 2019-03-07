@@ -5,16 +5,19 @@
 <isset name="brandCode" value="" scope="session"/>
 <isset name="issuer" value="" scope="session"/>
 <isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
-
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<input id="selectedIssuer" type="hidden" name="issuer"/>
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
 	<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
 	
 	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
-	
+	<script type="text/javascript">				
+		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
+	</script>
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
-				<li class="form-row row-${method.type}">
+				<li class="form-row row-${method.type}" id="li_${method.type}">
 					<isif condition="${whitelistMethods.indexOf(method.type) > -1}">
 						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.type}" id="${method.type}"/>
 					<iselse/>
@@ -22,14 +25,20 @@
 					</isif>
 					<img class="logo" src="${URLUtils.staticURL('/images/' + method.type + '.png')}" alt=""/>
 					<label for="${method.type}">${method.name}</label>
-
-					<isif condition="${method.details[0].key == 'issuer'}">
-						<select class="issuer" id="${method.type}_issuer" name="issuer">
-							<isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
-								<option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
-							</isloop>
-						</select>
-					</isif>
+					<isscript>
+					    var methodDetails = JSON.stringify(method);
+					</isscript>
+					<isif condition="${AdyenHelper.hasCheckoutComponent(method.type)}">
+						<isinclude template="checkoutComponent"/>
+					<iselse/>
+						<isif condition="${method.details[0].key == 'issuer'}">
+							<select class="issuer" id="${method.type}_issuer">
+								<isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
+									<option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
+								</isloop>
+							</select>
+						</isif>
+					</isif> 
 				</li>
 			</isloop>
 		</ul>
