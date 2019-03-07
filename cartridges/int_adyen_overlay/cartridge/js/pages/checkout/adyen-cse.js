@@ -125,7 +125,6 @@
     function initializeAccountEvents() {
         $('#add-card-submit').on('click', function (e) {
         	e.preventDefault();
-            console.log(window.AdyenCard);
             if (window.AdyenCard.isValid()) {
             	copyCardData(window.AdyenCard);
             	$('#add-card-submit-hidden').trigger('click');
