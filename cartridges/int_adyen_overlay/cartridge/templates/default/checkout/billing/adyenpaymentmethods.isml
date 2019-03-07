@@ -1,14 +1,3 @@
-<div class="hiddenFields">
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner}" type="hidden"/>
-	<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
-</div>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 <input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>
-
 <div class="form-data-error error"></div>
 <isinclude template="checkout/billing/adyenpaymentfields"/>

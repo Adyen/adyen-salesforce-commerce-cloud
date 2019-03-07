@@ -2,8 +2,8 @@
 
 <isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.0.0/adyen.css"/>
-<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.1.0/adyen.css"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
 
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
@@ -50,42 +50,70 @@
     <isif condition="${pdict.CurrentCustomer.authenticated}">
         <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
     </isif>
+    
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
 </div>
 
 
 <script type="text/javascript">
-	window.onload = function() {
-		var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
-		var loadingContext = "${AdyenHelper.getLoadingContext()}";
-		initializeCardComponent(document.getElementById('card'), originKey, loadingContext);
-	};
 
-	function initializeCardComponent(cardNode, originKey, loadingContext) {
-		var locale = "${request.locale}";
+	var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+	var loadingContext = "${AdyenHelper.getLoadingContext()}";
+	var locale = "${request.locale}";
+	
+	// Init Adyen checkout component js file
+	var scriptTag = document.createElement('script');
+	
+    scriptTag.src = "${AdyenHelper.getCheckoutUrl()}";
+    scriptTag.type = "text/javascript";
+    document.body.appendChild(scriptTag);
+	
+	// Wait for it to load
+	// Working for older browsers
+    if (scriptTag.readyState) {
+        scriptTag.onreadystatechange = function () {
+            if (script.readyState == "loaded" ||
+                script.readyState == "complete") {
+                script.onreadystatechange = null;
+                // Init Component
+                initializeCardComponent(originKey, loadingContext, locale);
+            }
+        };
+    }
+    // Working for new browsers
+    else {
+        scriptTag.onload = function () {
+            // Init Component
+            initializeCardComponent(originKey, loadingContext, locale);
+        };
+    }
+
+	function initializeCardComponent(originKey, loadingContext, locale) {
 		window.Configuration = {
-		        locale: locale, // 'en_US', // Defaults to en_US
+		        locale: locale,
 		        originKey: originKey,
-	        	loadingContext: loadingContext // The environment where we should loads the secured fields from
+	        	loadingContext: loadingContext
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
 		
 		window.CardValid = false;
 		window.AdyenCard = AdyenCheckoutObject.create('card', {
-	        // Mandatory fields
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
             groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
-
-	        // Events
 	        onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;
 	        }
 	    });
-	    window.AdyenCard.mount(cardNode);
-
+	    
+	    window.AdyenCard.mount(document.getElementById('card'));
     };
-
 </script>
