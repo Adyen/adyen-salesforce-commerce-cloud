@@ -35,12 +35,15 @@
                     $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val("");
                     copyCardData(window.AdyenCard);
                 }
-                
-                e.preventDefault();
-                $('.form-data-error').html('');
-                $('#billing-submit-hidden').trigger('click');
-
+            }	
+            else if (radioVal == "Adyen"){	
+                var selectedMethod = $('[name="brandCode"]:checked').val();	
+                return componentDetailsValid(selectedMethod);	
             }
+                
+            e.preventDefault();
+            $('.form-data-error').html('');
+            $('#billing-submit-hidden').trigger('click');
         });
 
         $('#adyenCreditCardList').on('change', function () {
@@ -98,6 +101,18 @@
             }
         });
         window.AdyenOneClick.mount(cardNode);
+    }
+    
+    //Check the validity of checkout component	
+    function componentDetailsValid(selectedMethod){	
+        //set data from components	
+        if(selectedMethod == "ideal"){	
+            if(idealComponent.componentRef.state.isValid){	
+                $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);	
+            }	
+            return idealComponent.componentRef.state.isValid;	
+        }	
+        return true;	
     }
 
     function copyCardData(card) {
