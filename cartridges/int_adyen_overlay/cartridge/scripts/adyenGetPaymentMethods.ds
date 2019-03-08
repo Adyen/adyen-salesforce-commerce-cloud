@@ -44,7 +44,11 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
             currency: currencyCode,
             value: paymentAmount
         };
-
+        
+        if (CountryCode) {
+        	requestObject['countryCode'] = CountryCode;
+        }
+        	
         var xapikey = AdyenHelper.getAdyenApiKey();
         service.addHeader('Content-type', 'application/json');
         service.addHeader('charset', 'UTF-8');

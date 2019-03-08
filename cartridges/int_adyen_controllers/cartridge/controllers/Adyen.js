@@ -117,9 +117,61 @@ function getPaymentMethods(cart) {
     if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
         var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
         var paymentMethods = getPaymentMethods.getMethods(cart.object).paymentMethods;
-        return paymentMethods.filter(function (method) { return method.type != "scheme"; })
+        return paymentMethods.filter(function (method) { 
+        	return isPaymentMethodTypeNotFilteredOut(method.type); 
+        });
     }
     return {};
+}
+
+/**
+ * Checks if payment method is not filtered out
+ */
+function isPaymentMethodTypeNotFilteredOut(methodType) {
+	if (!isPaymentMethodTypeScheme(methodType) && 
+		!isPaymentMethodTypeBcmcMobileQR(methodType) &&
+		!isPaymentMethodTypeWechatpayExceptWeb(methodType)
+	) {
+		return true;
+	}
+	
+	return false;
+}
+
+/**
+ * Checks if payment method type is bcmc mobile QR
+ */
+function isPaymentMethodTypeBcmcMobileQR(methodType) {
+	if (methodType.indexOf('bcmc_mobile_QR') !== -1) {
+		return true;
+	}
+	
+	return false;
+}
+
+/**
+ * Checks if payment method type is wechatpay but not wechatpay web
+ */
+function isPaymentMethodTypeWechatpayExceptWeb(methodType) {
+	if (methodType.indexOf('wechatpay') !== -1) {
+		if (methodType.indexOf('wechatpayWeb') !== -1) {
+			return false;
+		}
+		return true;
+	}
+	
+	return false;
+}
+
+/**
+ * Checks if payment method type is scheme
+ */
+function isPaymentMethodTypeScheme(methodType) {
+	if (methodType == "scheme") {
+		return true;
+	}
+	
+	return false;
 }
 
 /**
