@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
@@ -43,6 +43,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
 
+    var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
+
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
 
@@ -57,11 +59,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         PaymentInstrument: paymentInstrument,
         PaymentType: session.custom.paymentType,
         Issuer: session.custom.issuer,
-        dob : session.forms.adyPaydata.dob.value,
-        gender : session.forms.adyPaydata.gender.value,
-        houseNumber : session.forms.adyPaydata.houseNumber.value,
-        houseExtension : session.forms.adyPaydata.houseExtension.value,
-        personalNumber : session.forms.adyPaydata.personalNumber.value,
+        dob : adyenPaymentForm.dateOfBirth.value,
+        gender : adyenPaymentForm.gender.value,
+        socialSecurityNumber : adyenPaymentForm.socialSecurityNumber.value,
         ratePayFingerprint : session.custom.ratePayFingerprint,
         adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value
     });

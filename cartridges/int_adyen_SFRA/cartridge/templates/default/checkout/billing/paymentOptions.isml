@@ -21,6 +21,7 @@
            value="paymentMethod">
 
     <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
+    <isset name="adyenPaymentFields" value="${pdict.forms.billingForm.adyenPaymentFields}" scope="page"/>
 <div class="row">
     <div class="col-sm-6">
         <div class="form-group

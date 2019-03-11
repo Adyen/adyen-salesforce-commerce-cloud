@@ -171,34 +171,44 @@
         }
 
         if(paymentMethod.type.indexOf("klarna") !== -1){
-            console.log("klarna component");
             var klarnaContainer = document.createElement("div");
             $(klarnaContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             window.klarnaComponent = checkout.create('klarna', {
                 countryCode: $('#currentLocale').val(),
-                details: paymentMethod.details,
+                details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
                 visibility: {
-                    personalDetails: "editable",
-                    billingAddress: "hidden",
-                    deliveryAddress: "hidden"
+                    personalDetails: "editable"
                 }
             });
-            li.append(klarnaContainer);
+
             window.klarnaComponent.mount(klarnaContainer);
+
+            var ssnLength = getSsnLengthNordicCountry($('#shippingCountry').val());
+            if(ssnLength > 0){
+                var ssnContainer = document.createElement("div");
+                $(ssnContainer).attr('id', 'ssn_' + paymentMethod.type);
+                var socialSecurityNumberLabel = document.createElement("span");
+                $(socialSecurityNumberLabel).text("Social Security Number").attr('class', 'adyen-checkout__label');
+                var socialSecurityNumber = document.createElement("input");
+                $(socialSecurityNumber).attr('id', 'ssnValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', ssnLength);
+
+                ssnContainer.append(socialSecurityNumberLabel);
+                ssnContainer.append(socialSecurityNumber);
+                klarnaContainer.append(ssnContainer);
+            }
+
+            li.append(klarnaContainer);
+
         };
 
         if(paymentMethod.type.indexOf("afterpay_default") !== -1){
-            console.log("afterpay component");
-            var openInvoiceDetails = filterOpenInvoiceData(paymentMethod.details);
             var afterpayContainer = document.createElement("div");
             $(afterpayContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             afterpayComponent = checkout.create('afterpay', {
                 countryCode: $('#currentLocale').val(),
-                details: openInvoiceDetails,
+                details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
                 visibility: {
-                    personalDetails: "editable",
-                    billingAddress: "hidden",
-                    deliveryAddress: "hidden"
+                    personalDetails: "editable"
                 }
             });
             li.append(afterpayContainer);
@@ -208,11 +218,53 @@
         $('#paymentMethodsUl').append(li);
     };
 
-    function filterOpenInvoiceData(paymentDetails){
-        var personalDetails = paymentDetails.find(details => details.key == "personalDetails");
-        return personalDetails.details;
+
+    //Filter fields for open invoice validation
+    function filterOutOpenInvoiceComponentDetails(details) {
+        var filteredDetails = details.map(function (detail) {
+            if (detail.key == "personalDetails") {
+                var detailObject = detail.details.map(function (childDetail) {
+                    if (childDetail.key == 'dateOfBirth' ||
+                        childDetail.key == 'gender') {
+                        return childDetail;
+                    }
+                });
+
+                if (!!detailObject) {
+                    return {
+                        "key": detail.key,
+                        "type": detail.type,
+                        "details": filterUndefinedItemsInArray(detailObject)
+                    };
+                }
+            }
+        });
+
+        return filterUndefinedItemsInArray(filteredDetails);
     };
 
+    /**
+     * Helper function to filter out the undefined items from an array
+     * @param arr
+     * @returns {*}
+     */
+    function filterUndefinedItemsInArray(arr) {
+        return arr.filter(function (item) {
+            return typeof item !== 'undefined';
+        });
+    };
+
+    function getSsnLengthNordicCountry(country){
+        if(country.indexOf("NO") > -1 || country.indexOf("SE") > -1 || country.indexOf("FI") > -1 || country.indexOf("DK") > -1){
+            if(country.indexOf("NO") > -1){
+                return 5;
+            }
+            return 4;
+        }
+        return 0;
+    };
+
+    //Submit the payment
     $('button[value="submit-payment"]').on('click', function (e) {
         if($('#selectedPaymentOption').val() == 'CREDIT_CARD')
         {
@@ -269,10 +321,13 @@
             return idealComponent.componentRef.state.isValid;
         }
         else if(selectedMethod.indexOf("klarna") > -1) {
-            //if(window.klarnaComponent.componentRef.state.isValid){
+            if(window.klarnaComponent.componentRef.state.isValid){
                 setOpenInvoiceData(window.klarnaComponent);
-            //}
-            return true; //window.klarnaComponent.componentRef.state.isValid;
+                if($('#ssnValue')){
+                    $('#socialSecurityNumber').val($('#ssnValue').val());
+                }
+            }
+            return window.klarnaComponent.componentRef.state.isValid;
         }
 
         else if(selectedMethod.indexOf("afterpay_default") > -1) {
@@ -285,9 +340,7 @@
     }
 
     function setOpenInvoiceData(component){
-        console.log(component);
         $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
-        $('#telephoneNumber').val(component.componentRef.state.data.personalDetails.telephoneNumber);
         $('#gender').val(component.componentRef.state.data.personalDetails.gender);
     }
 
