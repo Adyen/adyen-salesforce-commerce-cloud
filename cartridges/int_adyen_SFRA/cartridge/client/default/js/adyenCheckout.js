@@ -134,7 +134,6 @@
         $('#selectedIssuer').val("");
         $('#adyenIssuerName').val("");
         $('#dateOfBirth').val("");
-        $('#telephoneNumber').val("");
         $('#gender').val("");
         $('.hppAdditionalFields').hide();
     };
