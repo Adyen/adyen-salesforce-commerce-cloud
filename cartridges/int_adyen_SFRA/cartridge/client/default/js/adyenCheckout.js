@@ -55,8 +55,8 @@
         var componentContainers = document.getElementsByClassName("cvc-container");
         jQuery.each(componentContainers, function(i, oneClickCardNode){
             var container = document.getElementById(oneClickCardNode.id);
-            var UUID = container.id.split("-")[1];
-            var brandCode = document.getElementById('cardType-' + UUID).innerText;
+            var cardId = container.id.split("-")[1];
+            var brandCode = document.getElementById('cardType-' + cardId).innerText;
 
             oneClickCard[i] = checkout.create('card', {
                 //Get selected card, send in payment request
