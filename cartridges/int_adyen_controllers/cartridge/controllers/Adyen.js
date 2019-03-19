@@ -125,53 +125,16 @@ function getPaymentMethods(cart) {
 }
 
 /**
- * Checks if payment method is not filtered out
+ * Checks if payment method is blocked
  */
-function isPaymentMethodTypeNotFilteredOut(methodType) {
-	if (!isPaymentMethodTypeScheme(methodType) && 
-		!isPaymentMethodTypeBcmcMobileQR(methodType) &&
-		!isPaymentMethodTypeWechatpayExceptWeb(methodType)
+function isMethodTypeBlocked(String methodType)
+{
+	if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
+		(methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
+		methodType == "scheme"
 	) {
 		return true;
 	}
-	
-	return false;
-}
-
-/**
- * Checks if payment method type is bcmc mobile QR
- */
-function isPaymentMethodTypeBcmcMobileQR(methodType) {
-	if (methodType.indexOf('bcmc_mobile_QR') !== -1) {
-		return true;
-	}
-	
-	return false;
-}
-
-/**
- * Checks if payment method type is wechatpay but not wechatpay web
- */
-function isPaymentMethodTypeWechatpayExceptWeb(methodType) {
-	if (methodType.indexOf('wechatpay') !== -1) {
-		if (methodType.indexOf('wechatpayWeb') !== -1) {
-			return false;
-		}
-		return true;
-	}
-	
-	return false;
-}
-
-/**
- * Checks if payment method type is scheme
- */
-function isPaymentMethodTypeScheme(methodType) {
-	if (methodType == "scheme") {
-		return true;
-	}
-	
-	return false;
 }
 
 /**
