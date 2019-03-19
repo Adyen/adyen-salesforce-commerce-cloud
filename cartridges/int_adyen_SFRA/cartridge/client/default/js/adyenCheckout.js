@@ -254,7 +254,7 @@
     };
 
     function getSsnLengthNordicCountry(country){
-        if(country.indexOf("NO") > -1 || country.indexOf("SE") > -1 || country.indexOf("FI") > -1 || country.indexOf("DK") > -1){
+        if(country === "NO" || country === "SE"|| country === "FI" || country === "DK"){
             if(country.indexOf("NO") > -1){
                 return 5;
             }
