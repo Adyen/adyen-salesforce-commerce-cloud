@@ -255,7 +255,7 @@
 
     function getSsnLengthNordicCountry(country){
         if(country === "NO" || country === "SE"|| country === "FI" || country === "DK"){
-            if(country.indexOf("NO") > -1){
+            if(country === "NO"){
                 return 5;
             }
             return 4;
