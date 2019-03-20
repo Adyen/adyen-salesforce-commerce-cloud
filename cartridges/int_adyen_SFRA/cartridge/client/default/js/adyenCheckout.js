@@ -254,10 +254,10 @@
     };
 
     function getSsnLengthNordicCountry(country){
-        if(country === "NO" || country === "SE"|| country === "FI" || country === "DK"){
-            if(country === "NO"){
-                return 5;
-            }
+        if(country === "NO"){
+            return 5;
+        }
+        if(country === "SE"|| country === "FI" || country === "DK") {
             return 4;
         }
         return 0;
