@@ -118,9 +118,10 @@ function getPaymentMethods(cart) {
         var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
         var paymentMethods = getPaymentMethods.getMethods(cart.object).paymentMethods;
         return paymentMethods.filter(function (method) { 
-        	return isPaymentMethodTypeNotFilteredOut(method.type); 
+        	return !isMethodTypeBlocked(method.type); 
         });
     }
+    
     return {};
 }
 
@@ -135,6 +136,8 @@ function isMethodTypeBlocked(String methodType)
 	) {
 		return true;
 	}
+	
+	return false;
 }
 
 /**
