@@ -177,6 +177,9 @@ function isMethodTypeBlocked(methodType)
         methodType == "scheme") {
         return true;
     }
+    else {
+        return false;
+    }
 }
 
 /**
