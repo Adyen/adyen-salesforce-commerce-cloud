@@ -153,7 +153,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     paymentMethods = [];
   }
 
-  paymentMethods = paymentMethods.filter(function (method) { return method.type != "scheme"; });
+  paymentMethods = paymentMethods.filter(function (method) { return !isMethodTypeBlocked(method.type); });
   var descriptions = [];
   paymentMethods.forEach(function (method){
      descriptions.push({ brandCode : method.type, description : Resource.msg('hpp.description.' + method.type, 'hpp', "")});
@@ -166,6 +166,21 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
   });
   return next();
 });
+
+/**
+ * Checks if payment method is blocked
+ */
+function isMethodTypeBlocked(methodType)
+{
+    if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
+        (methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
+        methodType == "scheme") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 /**
  * Get OriginKey for Secured Fields
