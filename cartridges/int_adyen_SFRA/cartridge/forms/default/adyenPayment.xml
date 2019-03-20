@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="dateOfBirth" label="Date of Birth" type="string" mandatory="false"/>
+    <field formid="gender" label="Gender" type="string" mandatory="false"/>
+    <field formid="socialSecurityNumber" label="Social Security Number" type="string" mandatory="false"/>
+</form>

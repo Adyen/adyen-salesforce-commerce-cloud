@@ -1,5 +1,6 @@
 <!--- TEMPLATENAME: alternativePaymentMethodForm.isml --->
 <iscontent compact="true"/>
+<iscontent type="text/html" encoding="off" />
 
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <input id="OpenInvoiceWhiteList" type="hidden" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}">
@@ -8,6 +9,11 @@
 <input id="adyenPaymentMethod" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
 <input id="selectedIssuer" type="hidden" name="issuer"/>
+
+<input id="dateOfBirth" type="hidden" ${adyenPaymentFields.dateOfBirth.attributes}/>
+<input id="gender" type="hidden"  ${adyenPaymentFields.gender.attributes} />
+<input id="socialSecurityNumber" type="hidden"  ${adyenPaymentFields.socialSecurityNumber.attributes} />
+
 <isif condition="${directoryLookup}">
     <ul id="paymentMethodsUl">
     </ul>

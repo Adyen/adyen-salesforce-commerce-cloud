@@ -35,8 +35,8 @@ importPackage( dw.web );
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
 function getShopperData(args, personalDetails){
-	if(args.personalNumber){
-		personalDetails.socialSecurityNumber = args.personalNumber;
+	if(args.socialSecurityNumber){
+		personalDetails.socialSecurityNumber = args.socialSecurityNumber;
 	}
 	if(args.dob){
 		personalDetails.dateOfBirth = args.dob;
