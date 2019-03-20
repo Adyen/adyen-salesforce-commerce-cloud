@@ -2,7 +2,7 @@
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addCss('/css/adyenCss.css');
     assets.addJs('/js/adyenCheckout.js');
-    assets.addCss('/css/adyen-checkout.2.0.0-beta.1.css');
+    assets.addCss('/css/adyen-checkout-2.1.0.css');
 </isscript>
 <iscontent type="text/html" encoding="off" />
 <div class="form-nav billing-nav payment-information"

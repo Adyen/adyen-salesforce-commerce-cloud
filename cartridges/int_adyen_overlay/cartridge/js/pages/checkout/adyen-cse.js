@@ -78,7 +78,7 @@
         window.AdyenOneClick = AdyenCheckoutObject.create('card', {
             // Mandatory fields
             type: selectedCard,
-            details: [{"key":"cardDetails.cvc","type":"cvc"}], // <--- Pass the specific details for this paymentMethod
+            details: (selectedCard == "bcmc") ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
             oneClick: true, //<--- enable oneClick 'mode'
             hideCVC: hideCVC,
             storedDetails: {
