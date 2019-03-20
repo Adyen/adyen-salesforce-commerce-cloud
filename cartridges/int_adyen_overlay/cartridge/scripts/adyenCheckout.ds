@@ -43,10 +43,9 @@ function alternativePaymentMethod(args){
     var paymentMethodObject = {
         "type" : args.PaymentType
     };
-   if(args.Issuer){
+   if(args.Issuer !== "undefined"){
         paymentMethodObject['issuer'] = args.Issuer;
     }
-
 
    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
    return createPaymentRequest(args, paymentMethodObject, returnUrl); 
