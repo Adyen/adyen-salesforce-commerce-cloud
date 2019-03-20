@@ -92,8 +92,8 @@ function Authorize(args) {
 	            	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
 	            });
 	        }
-	        session.custom.order = order;
-	        session.custom.paymentInstrument = paymentInstrument;
+            session.custom.orderNo = order.orderNo;
+            session.custom.paymentMethod = paymentInstrument.paymentMethod;
 	        return {
 	            authorized: true,
 	            authorized3d: true,

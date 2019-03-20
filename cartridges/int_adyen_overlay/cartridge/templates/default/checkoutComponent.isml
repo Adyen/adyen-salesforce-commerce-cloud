@@ -9,7 +9,7 @@ switch("${method.type}"){
 		var component = document.getElementById("component_ideal");
 		var idealContainer = document.createElement("div");
        	var idealComponent = AdyenCheckoutObject.create('ideal', {
-               items: paymentMethodDetails.details[0].items
+               details: paymentMethodDetails.details
            });
            component.append(idealContainer);
            idealComponent.mount(idealContainer);

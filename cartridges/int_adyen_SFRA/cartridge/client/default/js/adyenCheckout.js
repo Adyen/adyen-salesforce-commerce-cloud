@@ -57,13 +57,15 @@
         var componentContainers = document.getElementsByClassName("cvc-container");
         jQuery.each(componentContainers, function(i, oneClickCardNode){
             var container = document.getElementById(oneClickCardNode.id);
+            var cardId = container.id.split("-")[1];
+            var brandCode = document.getElementById('cardType-' + cardId).innerText;
+
             oneClickCard[i] = checkout.create('card', {
                 //Get selected card, send in payment request
                     originKey: originKey,
                     loadingContext: loadingContext, // The environment where we should loads the secured fields from
                     // Specific for oneClick cards
-                    details: [{"key":"cardDetails.cvc","type":"cvc"}], // <--- Pass the specific details for this paymentMethod
-                    oneClick: true, //<--- enable oneClick 'mode'
+
                     storedDetails: {
                         "card": {
                             "expiryMonth": "",
@@ -72,6 +74,7 @@
                             "number": ""
                         }
                     },
+                    details: brandCode.includes('Bancontact') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
                 onChange: function(state) {
                     oneClickValid = state.isValid;
                     if(state.isValid){
@@ -163,7 +166,7 @@
             var idealContainer = document.createElement("div");
             $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             idealComponent = checkout.create('ideal', {
-                items: paymentMethod.details[0].items
+                details: paymentMethod.details
             });
             li.append(idealContainer);
             idealComponent.mount(idealContainer);
