@@ -1,11 +1,12 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 
+<isset name="openInvoiceMethodDetails" value="${AdyenHelper.filterOutOpenInvoiceComponentDetails(methodDetails)}" scope="page">
 <div id="component_${method.type}" class="checkoutComponent"></div>
-<script type="text/javascript">				
-var paymentMethodDetails = JSON.parse("${methodDetails}".replace(/&quot;/g, '\"'));
+<script type="text/javascript">
 
 switch("${method.type}"){
 	case "ideal": 
+		var paymentMethodDetails = JSON.parse("${methodDetails}".replace(/&quot;/g, '\"'));
 		var component = document.getElementById("component_ideal");
 		var idealContainer = document.createElement("div");
        	var idealComponent = AdyenCheckoutObject.create('ideal', {
@@ -13,6 +14,32 @@ switch("${method.type}"){
            });
            component.append(idealContainer);
            idealComponent.mount(idealContainer);
+        break;
+     case "klarna":
+     	var paymentMethodDetails = JSON.parse("${openInvoiceMethodDetails}".replace(/&quot;/g, '\"'));
+     	var component = document.getElementById("component_klarna");
+		var klarnaContainer = document.createElement("div");
+       	var klarnaComponent = AdyenCheckoutObject.create('klarna', {
+               details: paymentMethodDetails,
+               visibility: {
+               		personalDetails: "editable"
+               },
+           });
+           component.append(klarnaContainer);
+           klarnaComponent.mount(klarnaContainer);
+        break;
+     case "afterpay":
+     	var paymentMethodDetails = JSON.parse("${openInvoiceMethodDetails}".replace(/&quot;/g, '\"'));
+     	var component = document.getElementById("component_afterpay");
+		var afterpayContainer = document.createElement("div");
+       	var afterpayComponent = AdyenCheckoutObject.create('afterpay', {
+               details: paymentMethodDetails,
+               visibility: {
+               		personalDetails: "editable"
+               },
+           });
+           component.append(afterpayContainer);
+           afterpayComponent.mount(afterpayContainer);
         break;
      default:
 		//no component
