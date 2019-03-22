@@ -11,6 +11,7 @@
 * @input issuerId : String
 * @input dob : String
 * @input gender : String
+* @input telephoneNumber : String
 * @input houseNumber : String
 * @input houseExtension : String
 * @input personalNumber : String
@@ -44,7 +45,10 @@ function getShopperData(args, personalDetails){
 	if(args.gender){
 		personalDetails.gender = args.gender;
 	}
-	if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
+	if(args.telephoneNumber){
+		personalDetails.telephoneNumber = args.telephoneNumber;
+	}
+	else if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
 		personalDetails.telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
 	}
 	return personalDetails;

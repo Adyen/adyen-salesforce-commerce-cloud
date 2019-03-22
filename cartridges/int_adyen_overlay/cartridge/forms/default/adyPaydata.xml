@@ -15,6 +15,7 @@
 		</options>
 	</field>
 	<field formid="dob" label="Date of Birth"  type="string"  mandatory="true" />
+	<field formid="telephoneNumber" label="Telephone number"  type="string"  mandatory="false" />
 	<field formid="houseNumber" label="House Number"  type="string" mandatory="false" />
 	<field formid="houseExtension" label="House Extension"  type="string" mandatory="false" />
 	<field formid="personalNumber" label="Personal Number (last digits)"  type="string" mandatory="false" />

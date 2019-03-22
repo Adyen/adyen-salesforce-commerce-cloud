@@ -1,6 +1,6 @@
 /*Credit Cards*/
 
-.adyen-checkout__label {
+.adyen-checkout__label, .adyen-checkout__label__text {
 	float: none !important;
 	width: 100% !important;
 	text-align: left !important;
@@ -40,4 +40,5 @@
 
 .checkoutComponent {
 	display:none;
+	margin-top: 20px;
 }

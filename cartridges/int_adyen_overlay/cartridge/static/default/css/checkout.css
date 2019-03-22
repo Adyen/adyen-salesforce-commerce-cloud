@@ -839,8 +839,11 @@
 .payment-method #type label {
   display: inline;
   float: none;
-  padding: 0.75em 6em 0;
   width: auto;
+}
+
+.payment_method_label{
+	padding: 0.75em 6em 0;
 }
 
 .openinvoiceInput {
