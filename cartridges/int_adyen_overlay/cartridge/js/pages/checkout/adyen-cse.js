@@ -133,7 +133,7 @@
     		  return afterpayComponent.componentRef.state.isValid;
       	    break;
     	  default:
-    	    return false;
+    	    return true;
     	} 	
     }
 
