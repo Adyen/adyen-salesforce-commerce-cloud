@@ -126,7 +126,7 @@
 
                 $('input[type=radio][name=brandCode]').change(function () {
                     resetPaymentMethod();
-                    $('#component_' + $(this).val()).show();
+                    $('#component_' + $(this).val() + ', #fields_' + $(this).val()).show();
                 });
             });
         }
@@ -162,7 +162,7 @@
         li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
         li.append($('<p>').text(description));
 
-        if (paymentMethod.type == "ideal") {
+            if (paymentMethod.type == "ideal") {
             var idealContainer = document.createElement("div");
             $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             idealComponent = checkout.create('ideal', {
@@ -170,6 +170,38 @@
             });
             li.append(idealContainer);
             idealComponent.mount(idealContainer);
+        }
+
+        if (paymentMethod.type.indexOf("ach") !== -1) {
+            var achContainer = document.createElement("div");
+            $(achContainer).addClass('hppAdditionalFields').attr('id', 'fields_' + paymentMethod.type).attr('style', 'display:none');
+
+            var bankAccountOwnerNameLabel = document.createElement("span");
+            $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
+            var bankAccountOwnerName = document.createElement("input");
+            $(bankAccountOwnerName).attr('id', 'bankAccountOwnerName').attr('class', 'adyen-checkout__input').attr('type', 'text');
+
+            var bankAccountNumberLabel = document.createElement("span");
+            $(bankAccountNumberLabel).text("Bank Account Number").attr('class', 'adyen-checkout__label');
+            var bankAccountNumber = document.createElement("input");
+            $(bankAccountNumber).attr('id', 'bankAccountNumber').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 17);
+
+            var bankLocationIdLabel = document.createElement("span");
+            $(bankLocationIdLabel).text("Routing Number").attr('class', 'adyen-checkout__label');
+            var bankLocationId = document.createElement("input");
+            $(bankLocationId).attr('id', 'bankLocationId').attr('class', 'adyen-checkout__input').attr('type', 'text');
+
+
+            achContainer.append(bankAccountOwnerNameLabel);
+            achContainer.append(bankAccountOwnerName);
+
+            achContainer.append(bankAccountNumberLabel);
+            achContainer.append(bankAccountNumber);
+
+            achContainer.append(bankLocationIdLabel);
+            achContainer.append(bankLocationId);
+
+            li.append(achContainer);
         }
 
         if(paymentMethod.type.indexOf("klarna") !== -1){
