@@ -264,6 +264,26 @@ function doPaymentCall(args, requestObject){
                 Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);
             }
         }
+        else if(responseObj.resultCode.indexOf('Received') != -1) {
+            args.Decision = 'PENDING';
+            args.PaymentStatus = resultCode;
+
+            if(responseObj.additionalData['bankTransfer.owner']){
+                var bankTransferData = [];
+                for (var data in responseObj.additionalData){
+                    if(data.indexOf('bankTransfer.') != -1) {
+                        bankTransferData.push({
+                            key: data,
+                            value: responseObj.additionalData[data]
+                        })
+                    }
+                }
+                args.PaymentInstrument.custom.adyenBankTransferData = JSON.stringify(bankTransferData);
+            }
+
+            order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
+            order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+        }
         else  {
             args.PaymentStatus = 'Refused';
             args.Decision = 'REFUSED';

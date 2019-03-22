@@ -4,3 +4,23 @@
 <isif condition="${payment.selectedIssuerName}">
         <div>${payment.selectedIssuerName}</div>
 </isif>
+<br/>
+<isif condition="${payment.adyenBankTransferData}">
+        <span class="summary-details">${Resource.msg('bankTransfer.description', 'checkout', null)}:</span><br/><br/>
+        <span class="summary-section-label">${Resource.msg('bankTransfer.amount', 'checkout', null)}:</span>
+        <span class="summary-details">${pdict.order.totals.grandTotal}</span><br/>
+        <isloop items="${payment.adyenBankTransferData}" var="bankTransferItem">
+                <isif condition="${bankTransferItem.key == 'bankTransfer.reference'}">
+                        <span class="summary-section-label">${Resource.msg('bankTransfer.reference', 'checkout', null)}:</span>
+                        <span class="summary-details">${bankTransferItem.value}</span><br/>
+                </isif>
+                <isif condition="${bankTransferItem.key == 'bankTransfer.owner'}">
+                        <span class="summary-section-label">${Resource.msg('bankTransfer.owner', 'checkout', null)}:</span>
+                        <span class="summary-details">${bankTransferItem.value}</span><br/>
+                </isif>
+                <isif condition="${bankTransferItem.key == 'bankTransfer.iban'}">
+                        <span class="summary-section-label">${Resource.msg('bankTransfer.iban', 'checkout', null)}:</span>
+                        <span class="summary-details">${bankTransferItem.value}</span><br/>
+                </isif>
+        </isloop>
+</isif>
