@@ -85,7 +85,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             redirectObject : result.RedirectObject
         };
     }
-    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Pending'){
+    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Received'){
         return { authorized: true, error: false };
     }
     else {

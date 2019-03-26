@@ -9,6 +9,7 @@
 		var paymentInstrument = paymentInstruments.next();
 		var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
 		var amount = order.custom.Adyen_value/100;
+		var adyenBankTransferData = JSON.parse(paymentInstrument.custom.adyenBankTransferData);
 	}
 </isscript>
 <BR><BR>
@@ -22,18 +23,39 @@
 			<img border='0' src='https://ca-test.adyen.com/ca/css/csr/images/adyen-logo.condensed.hr.png?c4e4' width='111'></A></th>
 			<th>Payment info</th>
 		</tr>
-	</thead>			
-<tr><td colspan='2'><hr size='1'></hr></td></tr>
-<tbody>
-			<tr><td class='infobox_title'>PSP reference</td><td class='infobox_item'><A target='new' HREF='https://ca-test.adyen.com/ca/ca/payments/searchPayments.shtml?skipList=firstResult&query=${order.custom.Adyen_pspReference}'><isprint value="${order.custom.Adyen_pspReference}"> </A></td></tr>
-		
-			<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
-			<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
-			<tr><td class='infobox_title'>Amount</td><td class='infobox_item'><isprint value="${amount}"></td></tr>
+	</thead>
+	<tbody>
+		<tr><td class='infobox_title'>PSP reference</td><td class='infobox_item'><A target='new' HREF='https://ca-test.adyen.com/ca/ca/payments/searchPayments.shtml?skipList=firstResult&query=${order.custom.Adyen_pspReference}'><isprint value="${order.custom.Adyen_pspReference}"> </A></td></tr>
+		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
+		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
+		<tr></tr>
+		<isif condition="${adyenBankTransferData != null}">
+			<isloop items="${adyenBankTransferData}" var="bankTransferItem" status="loopstate">
+				<isif condition="${bankTransferItem.key == 'bankTransfer.reference'}">
+					<tr>
+						<td><span class="infobox_title">Reference:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+				<isif condition="${bankTransferItem.key == 'bankTransfer.owner'}">
+					<tr>
+						<td><span class="infobox_title">Beneficiary Name:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+				<isif condition="${bankTransferItem.key == 'bankTransfer.iban'}">
+					<tr>
+						<td><span class="infobox_title">Bankaccount:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+			</isloop>
+		</isif>
 	</tbody>
 </table>
-<BR>
 </div>
+<BR>
+
 <!-- END: Adyentable 
 			
 
