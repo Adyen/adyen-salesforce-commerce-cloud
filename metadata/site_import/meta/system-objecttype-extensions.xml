@@ -75,6 +75,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenBankTransferData">
+                <display-name xml:lang="x-default">adyenBankTransferData</display-name>
+                <description xml:lang="x-default">Bank Transfer data</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenPaymentData">
                 <display-name xml:lang="x-default">adyenPaymentData</display-name>
                 <description xml:lang="x-default">Adyen PaymentData 3D Secure</description>

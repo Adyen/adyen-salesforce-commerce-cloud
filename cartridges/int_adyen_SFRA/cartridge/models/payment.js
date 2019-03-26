@@ -22,6 +22,9 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
         if(paymentInstrument.custom.adyenIssuerName){
             results.selectedIssuerName = paymentInstrument.custom.adyenIssuerName;
         }
+        if(paymentInstrument.custom.adyenBankTransferData){
+            results.adyenBankTransferData = JSON.parse(paymentInstrument.custom.adyenBankTransferData);
+        }
 
         if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
             results.lastFour = paymentInstrument.creditCardNumberLastDigits;
