@@ -54,6 +54,12 @@ server.append('SubmitPayment',
           session.custom.adyenIssuerName = null;
       }
 
+      // if(typeof req.form !== "undefined" && typeof req.form.bankAccountNumber && typeof req.form.) {
+      //
+      // } else {
+      //
+      // }
+
       res.setViewData(viewData);
       next();
   });

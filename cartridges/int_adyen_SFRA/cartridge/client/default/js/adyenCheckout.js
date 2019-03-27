@@ -138,6 +138,9 @@
         $('#adyenIssuerName').val("");
         $('#dateOfBirth').val("");
         $('#gender').val("");
+        $('#bankAccountOwnerName').val("");
+        $('#bankAccountNumber').val("");
+        $('#bankLocationId').val("");
         $('.hppAdditionalFields').hide();
     };
 
@@ -336,9 +339,16 @@
                 return false;
             }
             else {
-                var componentState = checkComponentDetails(selectedMethod);
+
                 $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
-                return componentState;
+                if (selectedMethod.indexOf("ach") !== -1) {
+                    setAchData();
+                    return true
+
+                } else {
+                    var componentState = checkComponentDetails(selectedMethod);
+                    return componentState;
+                }
             }
         }
 
@@ -376,6 +386,12 @@
     function setOpenInvoiceData(component){
         $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
         $('#gender').val(component.componentRef.state.data.personalDetails.gender);
+    }
+
+    function setAchData() {
+        $('#bankAccountOwnerName').val(document.getElementById("bankAccountOwnerName").value);
+        $('#bankAccountNumber').val(document.getElementById("bankAccountNumber").value;
+        $('#bankLocationId').val(document.getElementById("bankLocationId").value);
     }
 
     function adyenPaymentMethodSelected(selectedMethod){
