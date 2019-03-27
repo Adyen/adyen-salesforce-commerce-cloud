@@ -14,7 +14,7 @@
 * @input telephoneNumber : String
 * @input houseNumber : String
 * @input houseExtension : String
-* @input personalNumber : String
+* @input socialSecurityNumber : String
 *
 * @output merchantSig : String;
 * @output Amount100 : String;
@@ -194,8 +194,8 @@ function verify (args) {
 			adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
 		}
 
-		if( !empty(args.personalNumber)) {
-			adyenRequest.put("shopper.socialSecurityNumber", args.personalNumber );
+		if( !empty(args.socialSecurityNumber)) {
+			adyenRequest.put("shopper.socialSecurityNumber", args.socialSecurityNumber );
 		}
 
 		//open invoice line items

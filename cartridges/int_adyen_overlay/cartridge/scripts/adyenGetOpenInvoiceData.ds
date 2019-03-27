@@ -14,7 +14,7 @@
 * @input telephoneNumber : String
 * @input houseNumber : String
 * @input houseExtension : String
-* @input personalNumber : String
+* @input socialSecurityNumber : String
 *
 * @output merchantSig : String;
 * @output Amount100 : String;

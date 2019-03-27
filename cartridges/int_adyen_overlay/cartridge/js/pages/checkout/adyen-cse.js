@@ -122,6 +122,9 @@
     	  case "klarna":
     		  if (klarnaComponent.componentRef.state.isValid) {	
     			  parseOpenInvoiceComponentData(klarnaComponent.componentRef.state);
+                  if($('#ssnValue')){
+                      $('#dwfrm_adyPaydata_socialSecurityNumber').val($('#ssnValue').val());
+                  }
     		  }
     		  
     		  return klarnaComponent.componentRef.state.isValid;
