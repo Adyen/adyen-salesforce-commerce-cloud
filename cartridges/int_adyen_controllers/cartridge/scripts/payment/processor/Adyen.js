@@ -61,7 +61,14 @@ function authorize(args) {
 			'CurrentUser' : customer,
 			'PaymentInstrument' : order.paymentInstrument,
 			'PaymentType': session.custom.brandCode,
-			'Issuer' : session.custom.issuer
+			'Issuer' : session.custom.issuer,
+			'dob' : session.forms.adyPaydata.dob.value,
+			'gender' : session.forms.adyPaydata.gender.value,
+			'houseNumber' : session.forms.adyPaydata.houseNumber.value,
+			'houseExtension' : session.forms.adyPaydata.houseExtension.value,
+			'socialSecurityNumber' : session.forms.adyPaydata.socialSecurityNumber.value,
+			'ratePayFingerprint' : session.custom.ratePayFingerprint,
+			'adyenFingerprint' : session.forms.adyPaydata.adyenFingerprint.value
 		});
 	});
 	

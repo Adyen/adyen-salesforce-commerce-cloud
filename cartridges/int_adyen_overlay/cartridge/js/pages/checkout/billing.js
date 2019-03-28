@@ -6,7 +6,7 @@ var ajax = require('../../ajax'),
     formPrepare = require('./formPrepare'),
     giftcard = require('../../giftcard'),
     util = require('../../util'),
-    adyenCse = require('./adyen-cse');
+    adyenCse = require('../../adyen-cse');
 
 
 /**
@@ -63,7 +63,7 @@ function updatePaymentMethod(paymentMethodID) {
     // ensure checkbox of payment method is checked
     $('input[name$="_selectedPaymentMethodID"]').removeAttr('checked');
     $('input[value=' + paymentMethodID + ']').prop('checked', 'checked');
-
+  
     formPrepare.validateForm();
 }
 
@@ -79,6 +79,10 @@ function updatePaymentType(selectedPayType, test) {
 		$('input[name="issuerId"]').removeAttr('checked');
 	}
 	$('input[value=' + selectedPayType + ']').prop('checked', 'checked');
+	
+	// if the payment type has hidden fields reveal it
+	$('#component_' + selectedPayType).show(); 
+	
 	formPrepare.validateForm();
 }
 
@@ -270,3 +274,4 @@ exports.init = function () {
         dateFormat: "yyyy-mm-dd"
     });
 };
+
