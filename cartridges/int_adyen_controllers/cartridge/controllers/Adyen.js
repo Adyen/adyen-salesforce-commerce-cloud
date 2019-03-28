@@ -117,9 +117,27 @@ function getPaymentMethods(cart) {
     if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
         var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
         var paymentMethods = getPaymentMethods.getMethods(cart.object).paymentMethods;
-        return paymentMethods.filter(function (method) { return method.type != "scheme"; })
+        return paymentMethods.filter(function (method) { 
+        	return !isMethodTypeBlocked(method.type); 
+        });
     }
+    
     return {};
+}
+
+/**
+ * Checks if payment method is blocked
+ */
+function isMethodTypeBlocked(String methodType)
+{
+	if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
+		(methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
+		methodType == "scheme"
+	) {
+		return true;
+	}
+	
+	return false;
 }
 
 /**
