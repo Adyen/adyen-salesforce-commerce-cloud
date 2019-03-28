@@ -180,12 +180,57 @@ var __AdyenHelper : Object = {
     },
 
      hasCheckoutComponent : function (paymentMethod){
-     	if(paymentMethod.indexOf("ideal") > -1){
+     	if (paymentMethod.indexOf("ideal") > -1 ||
+     		paymentMethod.indexOf("klarna") > -1 ||
+     		paymentMethod.indexOf("afterpay") > -1
+     	){
      		return true;
      	}
         return false;
     },
+    
+    /**
+     * In the open invoice components we need to validate only the personal details and only the
+     * dateOfBirth, telephoneNumber and gender if it's set in the admin
+     * @param details
+     * @returns {Array}
+     */
+    filterOutOpenInvoiceComponentDetails: function (details) {
+    	var methodDetailsObj = JSON.parse(details);
+    	
+        var filteredDetails = methodDetailsObj.details.map(function (parentDetail) {
+            if (parentDetail.key == "personalDetails") {
+                var detailObject = parentDetail.details.map(function (detail) {
+                    if (detail.key == 'dateOfBirth' ||
+                        detail.key == 'telephoneNumber' ||
+                        detail.key == 'gender') {
+                        return detail;
+                    }
+                });
 
+                 if (!!detailObject) {
+                    return {
+                        "key": parentDetail.key,
+                        "type": parentDetail.type,
+                        "details": __AdyenHelper.filterUndefinedItemsInArray(detailObject)
+                    };
+                }
+            }
+        });
+        
+		methodDetailsObj = __AdyenHelper.filterUndefinedItemsInArray(filteredDetails);
+        return JSON.stringify(methodDetailsObj);
+    },
+    /**
+     * Helper function to filter out the undefined items from an array
+     * @param arr
+     * @returns {*}
+     */
+    filterUndefinedItemsInArray: function(arr) {
+        return arr.filter(function(item){
+            return typeof item !== 'undefined';
+        });
+    },
     getRatePayID : function () : String {
 
     	var returnValue : String = "";
