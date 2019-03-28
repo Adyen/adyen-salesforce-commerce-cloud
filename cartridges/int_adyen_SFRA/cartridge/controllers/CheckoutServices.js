@@ -53,11 +53,12 @@ server.append('SubmitPayment',
 
 server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
   var BasketMgr = require('dw/order/BasketMgr');
-  var HookMgr = require('dw/system/HookMgr');
+  var OrderMgr = require('dw/order/OrderMgr');
   var Resource = require('dw/web/Resource');
   var Transaction = require('dw/system/Transaction');
   var URLUtils = require('dw/web/URLUtils');
   var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+  var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
   var currentBasket = BasketMgr.getCurrentBasket();
   if (!currentBasket) {
@@ -71,16 +72,22 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  var validationBasketStatus = HookMgr.callHook(
-    'app.validate.basket',
-    'validateBasket',
-    currentBasket,
-    false
-  );
-  if (validationBasketStatus.error) {
+  if (req.session.privacyCache.get('fraudDetectionStatus')) {
     res.json({
       error: true,
-      errorMessage: validationBasketStatus.message
+      cartError: true,
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
+      errorMessage: Resource.msg('error.technical', 'checkout', null)
+    });
+
+    return next();
+  }
+
+  var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket, require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
+  if (validationOrderStatus.error) {
+    res.json({
+      error: true,
+      errorMessage: validationOrderStatus.message
     });
     return next();
   }
@@ -168,30 +175,31 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
-    if (fraudDetectionStatus.status === 'fail') {
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+  var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+  if (fraudDetectionStatus.status === 'fail') {
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order);
+    });
 
-        // fraud detection failed
-        req.session.privacyCache.set('fraudDetectionStatus', true);
+    // fraud detection failed
+    req.session.privacyCache.set('fraudDetectionStatus', true);
 
-        res.json({
-            error: true,
-            cartError: true,
-            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+    res.json({
+      error: true,
+      cartError: true,
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+      errorMessage: Resource.msg('error.technical', 'checkout', null)
+    });
 
-        return next();
-    }
+    return next();
+  }
 
-    // Places the order
-    var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
-
+  // Places the order
+  var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
   if (placeOrderResult.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg('error.placeorder', 'checkout', null)
+      errorMessage: Resource.msg('error.technical', 'checkout', null)
     });
     return next();
   }
@@ -209,6 +217,10 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
   }
 
   COHelpers.sendConfirmationEmail(order, req.locale.id);
+
+  // Reset usingMultiShip after successful Order placement
+  req.session.privacyCache.set('usingMultiShipping', false);
+
   res.json({
     error: false,
     orderID: order.orderNo,
