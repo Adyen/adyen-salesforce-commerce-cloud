@@ -42,3 +42,23 @@
 	display:none;
 	margin-top: 20px;
 }
+
+#ssnValue {
+    background: #fff;
+    border: 1px solid #b9c4c9;
+    border-radius: 3px;
+    color: #001b2b;
+    display: block;
+    font-family: inherit;
+    font-size: 16px;
+    height: 40px;
+    outline: none;
+    padding: 5px 8px;
+    position: relative;
+    transition: border .2s ease-out,box-shadow .2s ease-out;
+    width: 200px;
+}
+
+#ssn_klarna {
+	margin-top: 16px;
+}
