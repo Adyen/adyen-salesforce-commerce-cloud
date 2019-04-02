@@ -53,14 +53,14 @@
 					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
 				<br/>
 				<isscript>
-					var bankDetailTest = JSON.parse(paymentInstr.custom.adyenBankTransferData);
+					var bankDetails = JSON.parse(paymentInstr.custom.adyenBankTransferData);
 				</isscript>
-				<isif condition="${bankDetailTest != null}">
+				<isif condition="${bankDetails != null}">
 					<br/>
 				        <span class="summary-details">${Resource.msg('bankTransfer.description', 'adyen', null)}:</span><br/><br/>
 				        <span class="summary-label">${Resource.msg('bankTransfer.amount', 'adyen', null)}:</span>
 				        <span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span><br/>
-				        <isloop items="${bankDetailTest}" var="bankTransferItem">
+				        <isloop items="${bankDetails}" var="bankTransferItem">
 				                <isif condition="${bankTransferItem.key == 'bankTransfer.reference'}">
 				                        <span class="summary-label">${Resource.msg('bankTransfer.reference', 'adyen', null)}:</span>
 				                        <span class="value">${bankTransferItem.value}</span><br/>
