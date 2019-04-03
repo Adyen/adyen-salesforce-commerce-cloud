@@ -62,3 +62,9 @@
 #ssn_klarna {
 	margin-top: 16px;
 }
+
+/*Summary page*/
+
+.summary-label{
+	font-weight: bold;
+}

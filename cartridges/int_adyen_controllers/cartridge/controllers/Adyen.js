@@ -128,7 +128,7 @@ function getPaymentMethods(cart) {
 /**
  * Checks if payment method is blocked
  */
-function isMethodTypeBlocked(String methodType)
+function isMethodTypeBlocked(methodType)
 {
 	if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
 		(methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
