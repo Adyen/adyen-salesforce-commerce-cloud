@@ -66,32 +66,9 @@
 				<isminicreditcard card="${paymentInstr}" show_expiration="${false}"/>
 				<div class="payment-amount">
 					<span class="label">${Resource.msg('global.amount','locale',null)}:</span>
-					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>		
-				<br/>
-				<isscript>
-				var bankDetails = JSON.parse(paymentInstr.custom.adyenAdditionalPaymentData);
-				</isscript>
-				<isif condition="${bankDetails != null}">
+					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
 					<br/>
-				        <span class="summary-details">${Resource.msg('bankTransfer.description', 'adyen', null)}:</span><br/><br/>
-				        <span class="summary-label">${Resource.msg('bankTransfer.amount', 'adyen', null)}:</span>
-				        <span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span><br/>
-				        <isloop items="${bankDetails}" var="bankTransferItem">
-				                <isif condition="${bankTransferItem.key == 'bankTransfer.reference'}">
-				                        <span class="summary-label">${Resource.msg('bankTransfer.reference', 'adyen', null)}:</span>
-				                        <span class="value">${bankTransferItem.value}</span><br/>
-				                </isif>
-				                <isif condition="${bankTransferItem.key == 'bankTransfer.owner'}">
-				                        <span class="summary-label">${Resource.msg('bankTransfer.owner', 'adyen', null)}:</span>
-				                        <span class="value">${bankTransferItem.value}</span><br/>
-				                </isif>
-				                <isif condition="${bankTransferItem.key == 'bankTransfer.iban'}">
-				                        <span class="summary-label">${Resource.msg('bankTransfer.iban', 'adyen', null)}:</span>
-				                        <span class="value">${bankTransferItem.value}</span><br/>
-				                </isif>
-				        </isloop>
-					<br/>
-				</isif>
+					<isinclude template="adyenOrderDetails" />
 				</div><!-- END: payment-amount -->
 			</isif>
 		</isloop>

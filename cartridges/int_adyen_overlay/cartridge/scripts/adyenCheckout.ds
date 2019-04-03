@@ -131,7 +131,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "country": shippingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberShip,
         "postalCode": shippingAddr.postalCode,
-        "stateOrProvince": shippingAddr.stateCode,
+        "stateOrProvince": (!empty(shippingAddr.stateCode) ? shippingAddr.stateCode : 'NA'),
         "street": shippingAddr.address1
     };
 
@@ -148,7 +148,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "country": billingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberBill,
         "postalCode": billingAddr.postalCode,
-        "stateOrProvince": billingAddr.stateCode,
+        "stateOrProvince": (!empty(billingAddr.stateCode) ? billingAddr.stateCode : 'NA'),
         "street": billingAddr.address1
     };
 
