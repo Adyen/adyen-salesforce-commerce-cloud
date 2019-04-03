@@ -53,7 +53,7 @@
 					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
 				<br/>
 				<isscript>
-					var bankDetails = JSON.parse(paymentInstr.custom.adyenBankTransferData);
+					var bankDetails = JSON.parse(paymentInstr.custom.adyenAdditionalPaymentData);
 				</isscript>
 				<isif condition="${bankDetails != null}">
 					<br/>
