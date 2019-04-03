@@ -12,4 +12,5 @@
 
     <include formid="adyenPaymentFields" name="adyenPayment"/>
 
+    <field formid="subscribe" type="boolean" checked="false" default-value="false" mandatory="false" />
 </form>
