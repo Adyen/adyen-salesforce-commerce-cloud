@@ -3,4 +3,7 @@
     <field formid="dateOfBirth" label="Date of Birth" type="string" mandatory="false"/>
     <field formid="gender" label="Gender" type="string" mandatory="false"/>
     <field formid="socialSecurityNumber" label="Social Security Number" type="string" mandatory="false"/>
+    <field formid="bankAccountOwnerName" type="string" mandatory="false"/>
+    <field formid="bankAccountNumber" type="string" mandatory="false"/>
+    <field formid="bankLocationId" type="string" mandatory="false"/>
 </form>

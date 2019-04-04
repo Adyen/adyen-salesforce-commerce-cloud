@@ -14,10 +14,6 @@
 <input id="gender" type="hidden"  ${adyenPaymentFields.gender.attributes} />
 <input id="socialSecurityNumber" type="hidden"  ${adyenPaymentFields.socialSecurityNumber.attributes} />
 
-<input id="bankAccountOwnerName" type="hidden" name="bankAccountOwnerName"/>
-<input id="bankAccountNumber" type="hidden" name="bankAccountNumber"/>
-<input id="bankLocationId" type="hidden" name="bankLocationId"/>
-
 <isif condition="${directoryLookup}">
     <ul id="paymentMethodsUl">
     </ul>

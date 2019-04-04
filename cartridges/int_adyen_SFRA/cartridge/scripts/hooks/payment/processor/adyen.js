@@ -51,6 +51,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     Transaction.begin();
 
+
+
     var result = adyenCheckout.alternativePaymentMethod({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
@@ -63,6 +65,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         gender : adyenPaymentForm.gender.value,
         socialSecurityNumber : adyenPaymentForm.socialSecurityNumber.value,
         ratePayFingerprint : session.custom.ratePayFingerprint,
+        bankAccountOwnerName : adyenPaymentForm.bankAccountOwnerName.value,
+        bankAccountNumber : adyenPaymentForm.bankAccountNumber.value,
+        bankLocationId : adyenPaymentForm.bankLocationId.value,
         adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value
     });
     if (result.error) {

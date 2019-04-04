@@ -181,6 +181,24 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 	    jsonObject['shopperName'] = shopperDetails;
     }
 
+    if(!empty(args.PaymentType) && args.PaymentType.toString() == "ach") {
+
+        if (!empty(args.bankAccountOwnerName)) {
+
+            var bankAccount = {
+                "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
+                "ownerName" : args.bankAccountOwnerName,
+                "bankAccountNumber" : args.bankAccountNumber,
+                "bankLocationId" : args.bankLocationId
+            }
+
+            jsonObject["bankAccount"] = bankAccount;
+
+        }
+
+        Logger.getLogger('Adyen').error(JSON.stringify(jsonObject));
+    }
+
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
     // assign default values for the script output variables 

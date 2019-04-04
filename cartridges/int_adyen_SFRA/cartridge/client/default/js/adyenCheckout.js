@@ -175,6 +175,7 @@
             idealComponent.mount(idealContainer);
         }
 
+        // TODO: Logic for checking ach substring (can't use indexOf ex: visacheckout)
         if (paymentMethod.type.indexOf("ach") !== -1) {
             var achContainer = document.createElement("div");
             $(achContainer).addClass('hppAdditionalFields').attr('id', 'fields_' + paymentMethod.type).attr('style', 'display:none');
@@ -182,7 +183,7 @@
             var bankAccountOwnerNameLabel = document.createElement("span");
             $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
             var bankAccountOwnerName = document.createElement("input");
-            $(bankAccountOwnerName).attr('id', 'bankAccountOwnerName').attr('class', 'adyen-checkout__input').attr('type', 'text');
+            $(bankAccountOwnerName).attr('id', 'bankAccountOwnerName').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('name','bankAccountOwnerName');
 
             var bankAccountNumberLabel = document.createElement("span");
             $(bankAccountNumberLabel).text("Bank Account Number").attr('class', 'adyen-checkout__label');
@@ -341,14 +342,10 @@
             else {
 
                 $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
-                if (selectedMethod.indexOf("ach") !== -1) {
-                    setAchData();
-                    return true
 
-                } else {
-                    var componentState = checkComponentDetails(selectedMethod);
-                    return componentState;
-                }
+                var componentState = checkComponentDetails(selectedMethod);
+                return componentState;
+
             }
         }
 
@@ -388,11 +385,6 @@
         $('#gender').val(component.componentRef.state.data.personalDetails.gender);
     }
 
-    function setAchData() {
-        $('#bankAccountOwnerName').val(document.getElementById("bankAccountOwnerName").value);
-        $('#bankAccountNumber').val(document.getElementById("bankAccountNumber").value;
-        $('#bankLocationId').val(document.getElementById("bankLocationId").value);
-    }
 
     function adyenPaymentMethodSelected(selectedMethod){
         if($('#directoryLookup').val() == 'true') {
