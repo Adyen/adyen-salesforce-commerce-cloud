@@ -9,7 +9,7 @@
 		var paymentInstrument = paymentInstruments.next();
 		var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
 		var amount = order.custom.Adyen_value/100;
-		var adyenBankTransferData = JSON.parse(paymentInstrument.custom.adyenBankTransferData);
+		var adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
 	}
 </isscript>
 <BR><BR>
@@ -29,8 +29,8 @@
 		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
 		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
 		<tr></tr>
-		<isif condition="${adyenBankTransferData != null}">
-			<isloop items="${adyenBankTransferData}" var="bankTransferItem" status="loopstate">
+		<isif condition="${adyenAdditionalPaymentData != null}">
+			<isloop items="${adyenAdditionalPaymentData}" var="bankTransferItem" status="loopstate">
 				<isif condition="${bankTransferItem.key == 'bankTransfer.reference'}">
 					<tr>
 						<td><span class="infobox_title">Reference:</span></td>

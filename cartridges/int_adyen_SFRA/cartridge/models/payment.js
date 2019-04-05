@@ -22,8 +22,8 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
         if(paymentInstrument.custom.adyenIssuerName){
             results.selectedIssuerName = paymentInstrument.custom.adyenIssuerName;
         }
-        if(paymentInstrument.custom.adyenBankTransferData){
-            results.adyenBankTransferData = JSON.parse(paymentInstrument.custom.adyenBankTransferData);
+        if(paymentInstrument.custom.adyenAdditionalPaymentData){
+            results.adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
         }
 
         if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {

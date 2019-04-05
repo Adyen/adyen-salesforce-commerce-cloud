@@ -75,9 +75,9 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyenBankTransferData">
-                <display-name xml:lang="x-default">adyenBankTransferData</display-name>
-                <description xml:lang="x-default">Bank Transfer data</description>
+            <attribute-definition attribute-id="adyenAdditionalPaymentData">
+                <display-name xml:lang="x-default">adyenAdditionalPaymentData</display-name>
+                <description xml:lang="x-default">Additional data for payment method</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

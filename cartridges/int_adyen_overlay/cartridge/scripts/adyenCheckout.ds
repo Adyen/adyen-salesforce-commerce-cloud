@@ -131,7 +131,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "country": shippingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberShip,
         "postalCode": shippingAddr.postalCode,
-        "stateOrProvince": shippingAddr.stateCode,
+        "stateOrProvince": (!empty(shippingAddr.stateCode) ? shippingAddr.stateCode : 'NA'),
         "street": shippingAddr.address1
     };
 
@@ -148,7 +148,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "country": billingAddr.countryCode.value.toUpperCase(),
         "houseNumberOrName": houseNumberBill,
         "postalCode": billingAddr.postalCode,
-        "stateOrProvince": billingAddr.stateCode,
+        "stateOrProvince": (!empty(billingAddr.stateCode) ? billingAddr.stateCode : 'NA'),
         "street": billingAddr.address1
     };
 
@@ -267,9 +267,8 @@ function doPaymentCall(args, requestObject){
         else if(responseObj.resultCode.indexOf('Received') != -1) {
             args.Decision = 'PENDING';
             args.PaymentStatus = resultCode;
-
             if(responseObj.additionalData['bankTransfer.owner']){
-                var bankTransferData = [];
+                var bankTransferData = [{"key":"bankTransfer.description","value":"bankTransfer.description"}];
                 for (var data in responseObj.additionalData){
                     if(data.indexOf('bankTransfer.') != -1) {
                         bankTransferData.push({
@@ -278,7 +277,20 @@ function doPaymentCall(args, requestObject){
                         })
                     }
                 }
-                args.PaymentInstrument.custom.adyenBankTransferData = JSON.stringify(bankTransferData);
+                args.PaymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(bankTransferData);
+            }
+
+            if(responseObj.additionalData['comprafacil.entity']){
+                var multiBancoData = [{"key":"comprafacil.description","value":"comprafacil.description"}];
+                for (var data in responseObj.additionalData){
+                    if(data.indexOf('comprafacil.') != -1) {
+                        multiBancoData.push({
+                            key: data,
+                            value: responseObj.additionalData[data]
+                        })
+                    }
+                }
+                args.PaymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(multiBancoData);
             }
 
             order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
