@@ -181,20 +181,18 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 	    jsonObject['shopperName'] = shopperDetails;
     }
 
-    if(!empty(args.PaymentType) && args.PaymentType.toString() == "ach") {
+    Logger.getLogger('Adyen').error("Evaluating ACH");
 
-        if (!empty(args.bankAccountOwnerName)) {
+    if(!empty(args.PaymentType) && args.PaymentType.indexOf("ach") !== -1) {
 
-            var bankAccount = {
-                "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
-                "ownerName" : args.bankAccountOwnerName,
-                "bankAccountNumber" : args.bankAccountNumber,
-                "bankLocationId" : args.bankLocationId
-            }
-
-            jsonObject["bankAccount"] = bankAccount;
-
+        var bankAccount = {
+            "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
+            "ownerName" : args.bankAccountOwnerName,
+            "bankAccountNumber" : args.bankAccountNumber,
+            "bankLocationId" : args.bankLocationId
         }
+
+        jsonObject["bankAccount"] = bankAccount;
 
         Logger.getLogger('Adyen').error(JSON.stringify(jsonObject));
     }

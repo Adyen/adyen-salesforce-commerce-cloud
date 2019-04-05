@@ -51,7 +51,14 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     Transaction.begin();
 
+    Logger.getLogger("Adyen").error("Bank Account Details: " + JSON.stringify(adyenPaymentForm.bankAccountOwnerName));
+    Logger.getLogger("Adyen").error("Bank Account Owner Name: " + adyenPaymentForm.bankAccountOwnerName.value);
 
+    Logger.getLogger("Adyen").error("Bank Account Details: " + JSON.stringify(adyenPaymentForm.bankAccountNumber));
+    Logger.getLogger("Adyen").error("Bank Account Owner Name: " + adyenPaymentForm.bankAccountNumber.value);
+
+    Logger.getLogger("Adyen").error("Bank Account Details: " + JSON.stringify(adyenPaymentForm.bankLocationId));
+    Logger.getLogger("Adyen").error("Bank Account Owner Name: " + adyenPaymentForm.bankLocationId.value);
 
     var result = adyenCheckout.alternativePaymentMethod({
         Order: order,

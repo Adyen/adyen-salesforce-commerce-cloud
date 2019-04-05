@@ -193,7 +193,7 @@
             var bankLocationIdLabel = document.createElement("span");
             $(bankLocationIdLabel).text("Routing Number").attr('class', 'adyen-checkout__label');
             var bankLocationId = document.createElement("input");
-            $(bankLocationId).attr('id', 'bankLocationId').attr('class', 'adyen-checkout__input').attr('type', 'text');
+            $(bankLocationId).attr('id', 'bankLocationId').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 9);
 
 
             achContainer.append(bankAccountOwnerNameLabel);
@@ -377,6 +377,20 @@
             }
             return afterpayComponent.componentRef.state.isValid;
         }
+        else if (selectedMethod.indexOf("ach") > -1) {
+
+            console.log("Bank Account Elements 3");
+
+            console.log(document.getElementById("bankAccountOwnerName1"));
+            console.log(document.getElementById("bankAccountOwnerName").title.toString());
+
+            document.getElementById("bankAccountOwnerName").value = $('#bankAccountOwnerName').val();
+
+            // $('#bankAccountOwnerName').val(document.getElementById("bankAccountOwnerName"));
+            // $('#bankAccountNumber').val(document.getElementById("bankAccountNumber").valueOf().toString());
+            // $('#bankLocationId').val(document.getElementById("bankLocationId").getAttribute("text").valueOf());
+        }
+
         return true;
     }
 
