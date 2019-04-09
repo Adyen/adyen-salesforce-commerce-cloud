@@ -241,8 +241,8 @@ var __AdyenHelper : Object = {
     },
 
     isOpenInvoiceMethod: function(paymentMethod){
-            if(paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1 ){
-                if(paymentMethod.indexOf("afterpaytouch") == -1 ){
+            if(paymentMethod.includes("afterpay") || paymentMethod.includes("klarna") || paymentMethod.includes("ratepay") || paymentMethod.includes("facilypay")){
+                if(!paymentMethod.includes("afterpaytouch")){
                     return true;
                 }
             }
