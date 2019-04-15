@@ -15,6 +15,11 @@
 	<field formid="socialSecurityNumber" label="Personal Number (last digits)"  type="string" mandatory="false" />
 	<field formid="adyenFingerprint" type="string" mandatory="false" />
 	<field formid="terminalId" type="string" mandatory="false" />
+
+	<!--ACH details-->
+	<field formid="bankAccountOwnerName" label="Bank account holdername" type="string" mandatory="false"/>
+	<field formid="bankAccountNumber" label="Bank account number" type="string" mandatory="false"/>
+	<field formid="bankLocationId" label="Location Id" type="string" mandatory="false"/>
 	
 	<action formid="Pay" valid-form="true"/>
 </form>

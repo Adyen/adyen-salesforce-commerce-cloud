@@ -38,6 +38,13 @@
 								</isloop>
 							</select>
 						</isif>
+						<isif condition="${method.type.substring(0, 3) == 'ach'}">
+							<div id="component_ach" class="checkoutComponent">
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}" type="input"/>
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountNumber}" type="input"/>
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
+							</div>
+						</isif>
 					</isif> 
 				</li>
 			</isloop>
