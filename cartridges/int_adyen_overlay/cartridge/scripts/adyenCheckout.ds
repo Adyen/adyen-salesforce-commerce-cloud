@@ -43,8 +43,8 @@ function alternativePaymentMethod(args){
     var paymentMethodObject = {
         "type" : args.PaymentType
     };
-   if(args.Issuer !== "undefined"){
-        paymentMethodObject['issuer'] = args.Issuer;
+   if(args.adyenForm.issuer.value !== null){
+        paymentMethodObject['issuer'] = args.adyenForm.issuer.value;
     }
 
    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
@@ -166,12 +166,12 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     };
 
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
-        if (!empty(args.bankAccountOwnerName)) {
+        if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
             var bankAccount = {
                 "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
-                "ownerName" : args.bankAccountOwnerName,
-                "bankAccountNumber" : args.bankAccountNumber,
-                "bankLocationId" : args.bankLocationId
+                "ownerName" : args.adyenForm.bankAccountOwnerName.value,
+                "bankAccountNumber" : args.adyenForm.bankAccountNumber.value,
+                "bankLocationId" : args.adyenForm.bankLocationId.value
             }
             jsonObject["bankAccount"] = bankAccount;
         }
@@ -195,6 +195,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
+	Logger.getLogger("Adyen").error("reuqet = " + JSON.stringify(requestObject));
     // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';

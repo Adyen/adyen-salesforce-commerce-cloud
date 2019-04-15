@@ -8,7 +8,7 @@
 
 <input id="adyenPaymentMethod" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
-<input id="selectedIssuer" type="hidden" name="issuer"/>
+<input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>
 
 <input id="dateOfBirth" type="hidden" ${adyenPaymentFields.dateOfBirth.attributes}/>
 <input id="gender" type="hidden"  ${adyenPaymentFields.gender.attributes} />
