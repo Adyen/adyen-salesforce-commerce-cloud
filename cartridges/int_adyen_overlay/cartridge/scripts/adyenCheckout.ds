@@ -195,7 +195,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
-	Logger.getLogger("Adyen").error("reuqet = " + JSON.stringify(requestObject));
     // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
