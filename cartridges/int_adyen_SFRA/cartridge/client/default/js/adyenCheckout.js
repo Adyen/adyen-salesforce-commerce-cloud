@@ -138,6 +138,9 @@
         $('#adyenIssuerName').val("");
         $('#dateOfBirth').val("");
         $('#gender').val("");
+        $('#bankAccountOwnerName').val("");
+        $('#bankAccountNumber').val("");
+        $('#bankLocationId').val("");
         $('.hppAdditionalFields').hide();
     };
 
@@ -216,6 +219,38 @@
             li.append(afterpayContainer);
             afterpayComponent.mount(afterpayContainer);
         };
+
+        if (paymentMethod.type.substring(0, 3) == "ach") {
+            var achContainer = document.createElement("div");
+            $(achContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+
+            var bankAccountOwnerNameLabel = document.createElement("span");
+            $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
+            var bankAccountOwnerName = document.createElement("input");
+            $(bankAccountOwnerName).attr('id', 'bankAccountOwnerNameValue').attr('class', 'adyen-checkout__input').attr('type', 'text');
+
+            var bankAccountNumberLabel = document.createElement("span");
+            $(bankAccountNumberLabel).text("Bank Account Number").attr('class', 'adyen-checkout__label');
+            var bankAccountNumber = document.createElement("input");
+            $(bankAccountNumber).attr('id', 'bankAccountNumberValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 17);
+
+            var bankLocationIdLabel = document.createElement("span");
+            $(bankLocationIdLabel).text("Routing Number").attr('class', 'adyen-checkout__label');
+            var bankLocationId = document.createElement("input");
+            $(bankLocationId).attr('id', 'bankLocationIdValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 9);
+
+
+            achContainer.append(bankAccountOwnerNameLabel);
+            achContainer.append(bankAccountOwnerName);
+
+            achContainer.append(bankAccountNumberLabel);
+            achContainer.append(bankAccountNumber);
+
+            achContainer.append(bankLocationIdLabel);
+            achContainer.append(bankLocationId);
+
+            li.append(achContainer);
+        }
 
         $('#paymentMethodsUl').append(li);
     };
@@ -338,6 +373,17 @@
             }
             return afterpayComponent.componentRef.state.isValid;
         }
+
+        else if(selectedMethod.substring(0, 3) == "ach") {
+            $('#bankAccountOwnerName').val($('#bankAccountOwnerNameValue').val());
+            $('#bankAccountNumber').val($('#bankAccountNumberValue').val());
+            $('#bankLocationId').val($('#bankLocationIdValue').val());
+
+            if(!$('#bankLocationIdValue').val() || !$('#bankAccountNumberValue').val() || !$('#bankAccountOwnerNameValue').val()){
+                return false;
+            }
+        }
+
         return true;
     }
 

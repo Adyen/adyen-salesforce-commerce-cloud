@@ -165,6 +165,18 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "lastName": billingAddr.lastName
     };
 
+    if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
+        if (!empty(args.bankAccountOwnerName)) {
+            var bankAccount = {
+                "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
+                "ownerName" : args.bankAccountOwnerName,
+                "bankAccountNumber" : args.bankAccountNumber,
+                "bankLocationId" : args.bankLocationId
+            }
+            jsonObject["bankAccount"] = bankAccount;
+        }
+    }
+
 	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
         if(args.ratePayFingerprint){

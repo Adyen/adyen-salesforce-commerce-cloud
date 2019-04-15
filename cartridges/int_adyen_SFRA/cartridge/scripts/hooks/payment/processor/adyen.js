@@ -63,7 +63,10 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         gender : adyenPaymentForm.gender.value,
         socialSecurityNumber : adyenPaymentForm.socialSecurityNumber.value,
         ratePayFingerprint : session.custom.ratePayFingerprint,
-        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value
+        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value,
+        bankAccountOwnerName : adyenPaymentForm.bankAccountOwnerName.value,
+        bankAccountNumber : adyenPaymentForm.bankAccountNumber.value,
+        bankLocationId : adyenPaymentForm.bankLocationId.value
     });
     if (result.error) {
         var errors = [];
