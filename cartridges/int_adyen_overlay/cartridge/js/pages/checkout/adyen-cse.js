@@ -115,7 +115,7 @@
     	switch(selectedMethod) {
     	  case "ideal":
     		  if (idealComponent.componentRef.state.isValid) {	
-                  $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);	
+                  $('#dwfrm_adyPaydata_issuer').val(idealComponent.componentRef.state.data.issuer);	
               }	
               return idealComponent.componentRef.state.isValid;
     	    break;

@@ -3,26 +3,22 @@
 
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <isset name="brandCode" value="" scope="session"/>
-<isset name="issuer" value="" scope="session"/>
-<isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
+
+<isinputfield formfield="${pdict.CurrentForms.adyPaydata.issuer}" type="hidden"/>
+
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<input id="selectedIssuer" type="hidden" name="issuer"/>
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
 	<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
 	
-	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
+	<iscomment>Loop through the returned payment methods after calling /paymentMethods and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
-	<script type="text/javascript">				
+	<script type="text/javascript">
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
 	</script>
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
 				<li class="form-row row-${method.type}" id="li_${method.type}">
-					<isif condition="${whitelistMethods.indexOf(method.type) > -1}">
-						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.type}" id="${method.type}"/>
-					<iselse/>
-						<input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
-					</isif>
+					<input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
 					<img class="logo" src="${URLUtils.staticURL('/images/' + method.type + '.png')}" alt=""/>
 					<label class="payment_method_label" for="${method.type}">${method.name}</label>
 					<isscript>
