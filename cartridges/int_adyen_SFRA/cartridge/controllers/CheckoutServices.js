@@ -40,7 +40,6 @@ server.append('SubmitPayment',
       }
 
       session.custom.paymentType = req.form.brandCode;
-      session.custom.issuer = req.form.issuer;
       if(typeof req.form.adyenPaymentMethod !== "undefined"){
           session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
       }

@@ -43,8 +43,8 @@ function alternativePaymentMethod(args){
     var paymentMethodObject = {
         "type" : args.PaymentType
     };
-   if(args.Issuer !== "undefined"){
-        paymentMethodObject['issuer'] = args.Issuer;
+   if(args.adyenForm.issuer.value !== null){
+        paymentMethodObject['issuer'] = args.adyenForm.issuer.value;
     }
 
    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
@@ -164,6 +164,18 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "infix": "",
         "lastName": billingAddr.lastName
     };
+
+    if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
+        if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
+            var bankAccount = {
+                "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
+                "ownerName" : args.adyenForm.bankAccountOwnerName.value,
+                "bankAccountNumber" : args.adyenForm.bankAccountNumber.value,
+                "bankLocationId" : args.adyenForm.bankLocationId.value
+            }
+            jsonObject["bankAccount"] = bankAccount;
+        }
+    }
 
 	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);

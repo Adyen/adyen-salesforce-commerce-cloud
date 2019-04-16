@@ -36,14 +36,14 @@ importPackage( dw.web );
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
 function getShopperData(args, personalDetails){
-	if(args.socialSecurityNumber){
-		personalDetails.socialSecurityNumber = args.socialSecurityNumber;
+	if(args.adyenForm.socialSecurityNumber.value){
+		personalDetails.socialSecurityNumber = args.adyenForm.socialSecurityNumber.value;
 	}
-	if(args.dob){
-		personalDetails.dateOfBirth = args.dob;
+	if(args.adyenForm.dateOfBirth.value){
+		personalDetails.dateOfBirth = args.adyenForm.dateOfBirth.value;
 	}
-	if(args.gender){
-		personalDetails.gender = args.gender;
+	if(args.adyenForm.gender.value){
+		personalDetails.gender = args.adyenForm.gender.value;
 	}
 	if(args.telephoneNumber){
 		personalDetails.telephoneNumber = args.telephoneNumber;

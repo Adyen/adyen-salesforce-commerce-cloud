@@ -43,6 +43,14 @@
 	margin-top: 20px;
 }
 
+#component_ach .form-row label {
+	float: left;
+}
+
+#type {
+	list-style-type: none;
+}
+
 #ssnValue {
     background: #fff;
     border: 1px solid #b9c4c9;

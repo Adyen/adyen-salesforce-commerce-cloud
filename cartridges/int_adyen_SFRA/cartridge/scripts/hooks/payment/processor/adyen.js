@@ -54,16 +54,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var result = adyenCheckout.alternativePaymentMethod({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
-        CurrentSession: session,
-        CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
         PaymentType: session.custom.paymentType,
-        Issuer: session.custom.issuer,
-        dob : adyenPaymentForm.dateOfBirth.value,
-        gender : adyenPaymentForm.gender.value,
-        socialSecurityNumber : adyenPaymentForm.socialSecurityNumber.value,
         ratePayFingerprint : session.custom.ratePayFingerprint,
-        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value
+        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value,
+        adyenForm : adyenPaymentForm
+
     });
     if (result.error) {
         var errors = [];

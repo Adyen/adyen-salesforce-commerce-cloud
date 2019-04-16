@@ -104,7 +104,7 @@
     }
     
     function parseOpenInvoiceComponentData(state) {
-    	$('#dwfrm_adyPaydata_dob').val(state.data.personalDetails.dateOfBirth);
+    	$('#dwfrm_adyPaydata_dateOfBirth').val(state.data.personalDetails.dateOfBirth);
     	$('#dwfrm_adyPaydata_telephoneNumber').val(state.data.personalDetails.telephoneNumber);
     	$('#dwfrm_adyPaydata_gender').val(state.data.personalDetails.gender);
     }
@@ -115,7 +115,7 @@
     	switch(selectedMethod) {
     	  case "ideal":
     		  if (idealComponent.componentRef.state.isValid) {	
-                  $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);	
+                  $('#dwfrm_adyPaydata_issuer').val(idealComponent.componentRef.state.data.issuer);	
               }	
               return idealComponent.componentRef.state.isValid;
     	    break;
