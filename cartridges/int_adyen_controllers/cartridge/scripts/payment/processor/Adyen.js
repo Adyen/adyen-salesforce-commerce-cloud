@@ -52,6 +52,7 @@ function authorize(args) {
     var	adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout'),
 	result;
 
+    Logger.getLogger("Adyen").error("Form = " + session.forms.adyPaydata.dateOfBirth.value);
 	Transaction.wrap(function () {
 		result = adyenCheckout.alternativePaymentMethod({
 			'Order': order,
@@ -62,7 +63,6 @@ function authorize(args) {
 			'PaymentInstrument' : order.paymentInstrument,
 			'PaymentType': session.custom.brandCode,
 			'ratePayFingerprint' : session.custom.ratePayFingerprint,
-
 			'adyenForm' : session.forms.adyPaydata
 		});
 	});

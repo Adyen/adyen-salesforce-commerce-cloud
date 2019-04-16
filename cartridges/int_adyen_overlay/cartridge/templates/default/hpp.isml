@@ -52,7 +52,7 @@
 
 <div class="openinvoiceInput">
 	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.gender}" />
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.dob}" />
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.dateOfBirth}" />
 	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.telephoneNumber}" />
 	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.socialSecurityNumber}" />
 </div>

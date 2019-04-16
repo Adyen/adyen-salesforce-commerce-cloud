@@ -104,7 +104,7 @@
     }
     
     function parseOpenInvoiceComponentData(state) {
-    	$('#dwfrm_adyPaydata_dob').val(state.data.personalDetails.dateOfBirth);
+    	$('#dwfrm_adyPaydata_dateOfBirth').val(state.data.personalDetails.dateOfBirth);
     	$('#dwfrm_adyPaydata_telephoneNumber').val(state.data.personalDetails.telephoneNumber);
     	$('#dwfrm_adyPaydata_gender').val(state.data.personalDetails.gender);
     }
