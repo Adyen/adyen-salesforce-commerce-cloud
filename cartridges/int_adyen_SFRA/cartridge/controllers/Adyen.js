@@ -146,9 +146,16 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
   var BasketMgr = require('dw/order/BasketMgr');
   var Resource = require('dw/web/Resource');
   var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+  var Locale = require('dw/util/Locale');
+  var countryCode = Locale.getLocale(req.locale.id).country;
+  var currentBasket = BasketMgr.getCurrentBasket();
+  if(currentBasket.defaultShipment){
+      countryCode = currentBasket.defaultShipment.shippingAddress.countryCode.value;
+  }
+
   var paymentMethods;
   try {
-    paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
+    paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode).paymentMethods;
   } catch (err) {
     paymentMethods = [];
   }

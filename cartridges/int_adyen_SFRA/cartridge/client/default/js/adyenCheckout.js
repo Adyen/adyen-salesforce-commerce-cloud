@@ -252,6 +252,25 @@
             li.append(achContainer);
         }
 
+        if (paymentMethod.details) {
+            if(paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer")
+            {
+                var additionalFields = $('<div>').addClass('hppAdditionalFields')
+                    .attr('id', 'component_' + paymentMethod.type)
+                    .attr('style', 'display:none');
+
+                var issuers = $('<select>').attr('id', 'issuerList');
+                jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
+                    var issuer = $('<option>')
+                        .attr('label', issuer.name)
+                        .attr('value', issuer.id);
+                    issuers.append(issuer);
+                });
+                additionalFields.append(issuers);
+                li.append(additionalFields);
+            }
+        }
+
         $('#paymentMethodsUl').append(li);
     };
 
@@ -372,6 +391,11 @@
                 setOpenInvoiceData(afterpayComponent);
             }
             return afterpayComponent.componentRef.state.isValid;
+        }
+
+        else if($('#issuerList').val()){
+            $('#selectedIssuer').val($('#issuerList').val());
+            $('#adyenIssuerName').val($('#issuerList option:selected').attr('label'));
         }
 
         else if(selectedMethod.substring(0, 3) == "ach") {
