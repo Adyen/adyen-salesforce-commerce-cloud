@@ -141,7 +141,7 @@
         $('#bankAccountOwnerName').val("");
         $('#bankAccountNumber').val("");
         $('#bankLocationId').val("");
-        $('.hppAdditionalFields').hide();
+        $('.additionalFields').hide();
     };
 
     function getPaymentMethods(paymentMethods) {
@@ -167,7 +167,7 @@
 
         if (paymentMethod.type == "ideal") {
             var idealContainer = document.createElement("div");
-            $(idealContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            $(idealContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             idealComponent = checkout.create('ideal', {
                 details: paymentMethod.details
             });
@@ -177,7 +177,7 @@
 
         if(paymentMethod.type.indexOf("klarna") !== -1){
             var klarnaContainer = document.createElement("div");
-            $(klarnaContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            $(klarnaContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             window.klarnaComponent = checkout.create('klarna', {
                 countryCode: $('#currentLocale').val(),
                 details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
@@ -208,7 +208,7 @@
 
         if(paymentMethod.type.indexOf("afterpay_default") !== -1){
             var afterpayContainer = document.createElement("div");
-            $(afterpayContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            $(afterpayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
             afterpayComponent = checkout.create('afterpay', {
                 countryCode: $('#currentLocale').val(),
                 details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
@@ -222,7 +222,7 @@
 
         if (paymentMethod.type.substring(0, 3) == "ach") {
             var achContainer = document.createElement("div");
-            $(achContainer).addClass('hppAdditionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+            $(achContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
 
             var bankAccountOwnerNameLabel = document.createElement("span");
             $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
@@ -255,7 +255,7 @@
         if (paymentMethod.details) {
             if(paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer")
             {
-                var additionalFields = $('<div>').addClass('hppAdditionalFields')
+                var additionalFields = $('<div>').addClass('additionalFields')
                     .attr('id', 'component_' + paymentMethod.type)
                     .attr('style', 'display:none');
 
@@ -350,13 +350,14 @@
             }
         }
         else if($('#selectedPaymentOption').val() == 'Adyen'){
-            var selectedMethod = $("input[name='brandCode']:checked").val();
-
-            //no paymentmethod selected
+            var selectedMethod = $("input[name='brandCode']:checked");
+            //no payment method selected
             if(!adyenPaymentMethodSelected(selectedMethod)) {
                 $('#requiredBrandCode').show();
                 return false;
             }
+
+            //check component details
             else {
                 var componentState = checkComponentDetails(selectedMethod);
                 $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
@@ -369,14 +370,14 @@
 
     function checkComponentDetails(selectedMethod){
         //set data from components
-        if(selectedMethod == "ideal"){
+        if(selectedMethod.val() == "ideal"){
             if(idealComponent.componentRef.state.isValid){
                 $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
                 $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
             }
             return idealComponent.componentRef.state.isValid;
         }
-        else if(selectedMethod.indexOf("klarna") > -1) {
+        else if(selectedMethod.val().indexOf("klarna") > -1) {
             if(window.klarnaComponent.componentRef.state.isValid){
                 setOpenInvoiceData(window.klarnaComponent);
                 if($('#ssnValue')){
@@ -385,20 +386,18 @@
             }
             return window.klarnaComponent.componentRef.state.isValid;
         }
-
-        else if(selectedMethod.indexOf("afterpay_default") > -1) {
+        else if(selectedMethod.val().indexOf("afterpay_default") > -1) {
             if(afterpayComponent.componentRef.state.isValid){
                 setOpenInvoiceData(afterpayComponent);
             }
             return afterpayComponent.componentRef.state.isValid;
         }
-
-        else if($('#issuerList').val()){
-            $('#selectedIssuer').val($('#issuerList').val());
-            $('#adyenIssuerName').val($('#issuerList option:selected').attr('label'));
+        //if issuer is selected
+        else if (selectedMethod.closest('li').find('.additionalFields #issuerList').val()){
+            $('#selectedIssuer').val(selectedMethod.closest('li').find('.additionalFields #issuerList').val());
+            $('#adyenIssuerName').val(selectedMethod.closest('li').find('.additionalFields #issuerList').find('option:selected').attr('label'));
         }
-
-        else if(selectedMethod.substring(0, 3) == "ach") {
+        else if(selectedMethod.val().substring(0, 3) == "ach") {
             $('#bankAccountOwnerName').val($('#bankAccountOwnerNameValue').val());
             $('#bankAccountNumber').val($('#bankAccountNumberValue').val());
             $('#bankLocationId').val($('#bankLocationIdValue').val());
