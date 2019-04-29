@@ -52,7 +52,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
             };
             var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
             Transaction.wrap(function () {
-                paymentInstrument.custom.adyenPaymentData = "";
+                paymentInstrument.custom.adyenPaymentData = null;
             });
             // if error, return to checkout page
             if (result.error || result.resultCode != 'Authorised') {
@@ -107,7 +107,10 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
     requestObject.details['payload'] = payLoad;
     var result = adyenCheckout.doPaymentDetailsCall(requestObject);
     var order = OrderMgr.getOrder(result.merchantReference);
-
+    var paymentInstrument = order.getPaymentInstrument();
+    Transaction.wrap(function () {
+        paymentInstrument.custom.adyenPaymentData = null;
+    });
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised") {
         var OrderModel = require('*/cartridge/models/order');
@@ -120,10 +123,6 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
         });
 
-        var paymentInstrument = order.getPaymentInstrument();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = null;
-        });
         clearForms();
         res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
     }
@@ -149,13 +148,12 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
   var Locale = require('dw/util/Locale');
   var countryCode = Locale.getLocale(req.locale.id).country;
   var currentBasket = BasketMgr.getCurrentBasket();
-  if(currentBasket.defaultShipment){
-      countryCode = currentBasket.defaultShipment.shippingAddress.countryCode.value;
-  }
-
+    if(currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+    }
   var paymentMethods;
   try {
-    paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode).paymentMethods;
+    paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
   } catch (err) {
     paymentMethods = [];
   }

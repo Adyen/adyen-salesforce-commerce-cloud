@@ -112,10 +112,6 @@
         oneClickValid = false;
     });
 
-    $('button[value="submit-shipping"]').on('click', function (e) {
-        displayPaymentMethods();
-    });
-
     function displayPaymentMethods() {
         $('#paymentMethodsUl').empty();
         if ($('#directoryLookup').val() == 'true') {
@@ -178,7 +174,7 @@
         if(paymentMethod.type.indexOf("klarna") !== -1){
             var klarnaContainer = document.createElement("div");
             $(klarnaContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-            window.klarnaComponent = checkout.create('klarna', {
+            klarnaComponent = checkout.create('klarna', {
                 countryCode: $('#currentLocale').val(),
                 details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
                 visibility: {
@@ -186,7 +182,7 @@
                 }
             });
 
-            window.klarnaComponent.mount(klarnaContainer);
+            klarnaComponent.mount(klarnaContainer);
 
             var ssnLength = getSsnLengthNordicCountry($('#shippingCountry').val());
             if(ssnLength > 0){
@@ -352,11 +348,10 @@
         else if($('#selectedPaymentOption').val() == 'Adyen'){
             var selectedMethod = $("input[name='brandCode']:checked");
             //no payment method selected
-            if(!adyenPaymentMethodSelected(selectedMethod)) {
+            if(!adyenPaymentMethodSelected(selectedMethod.val())) {
                 $('#requiredBrandCode').show();
                 return false;
             }
-
             //check component details
             else {
                 var componentState = checkComponentDetails(selectedMethod);
@@ -378,13 +373,13 @@
             return idealComponent.componentRef.state.isValid;
         }
         else if(selectedMethod.val().indexOf("klarna") > -1) {
-            if(window.klarnaComponent.componentRef.state.isValid){
-                setOpenInvoiceData(window.klarnaComponent);
+            if(klarnaComponent.componentRef.state.isValid){
+                setOpenInvoiceData(klarnaComponent);
                 if($('#ssnValue')){
                     $('#socialSecurityNumber').val($('#ssnValue').val());
                 }
             }
-            return window.klarnaComponent.componentRef.state.isValid;
+            return klarnaComponent.componentRef.state.isValid;
         }
         else if(selectedMethod.val().indexOf("afterpay_default") > -1) {
             if(afterpayComponent.componentRef.state.isValid){
@@ -436,4 +431,9 @@
         $('#cardOwner').val(card.paymentData.holderName);
     }
 
+    module.exports = {
+        methods: {
+            displayPaymentMethods: displayPaymentMethods
+        }
+    };
 
