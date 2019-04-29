@@ -93,16 +93,7 @@
         <div>
             <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
                 <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
-                    <div>
-                        <span>${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
-                            ${payment.type}</span>
-                    </div>
-                    <div>
-                        ${payment.maskedCreditCardNumber}
-                    </div>
-                    <div>
-                        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
-                    </div>
+                    <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
                 </isif>
                 <isif condition="${payment.paymentMethod === 'Adyen'}">
                     <isinclude template="checkout/confirmation/adyenConfirmationDetails" />

@@ -2,9 +2,12 @@
     <span>${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
     ${payment.type}</span>
 </div>
-<div class="credit-card-number">
-    ${payment.maskedCreditCardNumber}
-</div>
-<div class="credit-card-expiration-date">
-    <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
-</div>
+<isif condition="${payment.expirationMonth && payment.expirationYear && payment.maskedCreditCardNumber}">
+    <div class="credit-card-number">
+        ${payment.maskedCreditCardNumber}
+    </div>
+    <div class="credit-card-expiration-date">
+        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
+    </div>
+</isif>
+
