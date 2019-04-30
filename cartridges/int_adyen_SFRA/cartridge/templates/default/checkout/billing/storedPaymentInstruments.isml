@@ -2,9 +2,10 @@
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addCss('/css/adyen-checkout-2.1.0.css');
 </isscript>
-<iscontent type="text/html" encoding="off" />
+<iscontent type="text/html" encoding="off"/>
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
-    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
+    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}"
+         data-uuid="${paymentInstrument.UUID}">
         <div class="form-group saved-security-code col-6 col-md-3">
             <img class="card-image ${loopSate.first ? 'checkout-hidden' : ''}"
                  src="${paymentInstrument.cardTypeImage.src}"
@@ -20,7 +21,8 @@
                 </span>
 
                 <div id="cvc-${paymentInstrument.UUID}" class="cvc-container"></div>
-                <input type="hidden" class="saved-payment-security-code" id="saved-payment-security-code-${paymentInstrument.UUID}">
+                <input type="hidden" class="saved-payment-security-code"
+                       id="saved-payment-security-code-${paymentInstrument.UUID}">
             </div>
         </div>
         <div class="saved-payment-information col-6 col-md-9">

@@ -92,7 +92,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            redirectObject : result.RedirectObject
+            redirectObject: result.RedirectObject
         };
     }
 
@@ -128,7 +128,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     Transaction.commit();
 
-    return { authorized: true, error: false };
+    return {authorized: true, error: false};
 }
 
 

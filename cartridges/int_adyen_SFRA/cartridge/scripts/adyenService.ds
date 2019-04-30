@@ -6,12 +6,12 @@ var Template = require('dw/util/Template');
 var Transaction = require('dw/system/Transaction');
 
 
-function submit(order){
+function submit(order) {
     var confirmationEmail = new Mail();
     var context = new HashMap();
 
     var savedOrderModel = order.custom.Adyen_CustomerEmail;
-    var orderObject = { order: JSON.parse(savedOrderModel) };
+    var orderObject = {order: JSON.parse(savedOrderModel)};
 
     confirmationEmail.addTo(order.customerEmail);
     confirmationEmail.setSubject(Resource.msg('subject.order.confirmation.email', 'order', null));

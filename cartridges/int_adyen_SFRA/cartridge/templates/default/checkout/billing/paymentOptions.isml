@@ -3,14 +3,14 @@
     assets.addCss('/css/adyenCss.css');
     assets.addCss('/css/adyen-checkout-2.1.0.css');
 </isscript>
-<iscontent type="text/html" encoding="off" />
+<iscontent type="text/html" encoding="off"/>
 <div class="form-nav billing-nav payment-information"
      data-payment-method-id=""
      data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
 >
 
     <ul class="nav nav-tabs nav-fill payment-options" id="paymentOptions" role="tablist">
-        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs"/>
     </ul>
 </div>
 
@@ -21,45 +21,46 @@
 
     <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
     <isset name="adyenPaymentFields" value="${pdict.forms.billingForm.adyenPaymentFields}" scope="page"/>
-<div class="row">
-    <div class="col-sm-6">
-        <div class="form-group
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group
             <isif condition=${creditFields.email.mandatory === true}>required</isif>
             ${creditFields.email.htmlName}">
-            <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
-            <span class="info-icon">
+                <label class="form-control-label"
+                       for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
+                <span class="info-icon">
                 <span class="icon">i</span>
                 <div class="tooltip">
                     ${Resource.msg('tooltip.email','creditCard',null)}
                 </div>
             </span>
-            <input type="text" class="form-control email" id="email"
-                   value="${pdict.order.orderEmail||''}" ${creditFields.email.attributes} >
-            <div class="invalid-feedback"></div>
+                <input type="text" class="form-control email" id="email"
+                       value="${pdict.order.orderEmail||''}" ${creditFields.email.attributes}>
+                <div class="invalid-feedback"></div>
+            </div>
         </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group
+        <div class="col-sm-6">
+            <div class="form-group
             <isif condition=${creditFields.phone.mandatory === true}>required</isif>
             ${creditFields.phone.htmlName}">
-            <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
-            <span class="info-icon">
+                <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
+                <span class="info-icon">
                 <span class="icon">i</span>
                 <div class="tooltip">
                     ${Resource.msg('tooltip.phone.number','creditCard',null)}
                 </div>
             </span>
-            <input type="tel" class="form-control phone" id="phoneNumber"
-                   value="${pdict.order.billing.billingAddress.address
+                <input type="tel" class="form-control phone" id="phoneNumber"
+                       value="${pdict.order.billing.billingAddress.address
                 ? pdict.order.billing.billingAddress.address.phone||''
-                : ''}" ${creditFields.phone.attributes} >
-            <div class="invalid-feedback"></div>
+                : ''}" ${creditFields.phone.attributes}>
+                <div class="invalid-feedback"></div>
+            </div>
         </div>
     </div>
-</div>
-<div class="credit-card-selection-new" >
-    <div class="tab-content">
-        <isinclude template="checkout/billing/paymentOptions/paymentOptionsContent" />
+    <div class="credit-card-selection-new">
+        <div class="tab-content">
+            <isinclude template="checkout/billing/paymentOptions/paymentOptionsContent"/>
+        </div>
     </div>
-</div>
 </fieldset>

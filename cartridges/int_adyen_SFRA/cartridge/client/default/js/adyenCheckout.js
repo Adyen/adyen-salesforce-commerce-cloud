@@ -178,17 +178,15 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
                 personalDetails: "editable"
             }
         });
-
         klarnaComponent.mount(klarnaContainer);
 
-        var ssnLength = getSsnLengthNordicCountry($('#shippingCountry').val());
-        if (ssnLength > 0) {
+        if (isNordicCountry($('#shippingCountry').val())) {
             var ssnContainer = document.createElement("div");
             $(ssnContainer).attr('id', 'ssn_' + paymentMethod.type);
             var socialSecurityNumberLabel = document.createElement("span");
             $(socialSecurityNumberLabel).text("Social Security Number").attr('class', 'adyen-checkout__label');
             var socialSecurityNumber = document.createElement("input");
-            $(socialSecurityNumber).attr('id', 'ssnValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', ssnLength);
+            $(socialSecurityNumber).attr('id', 'ssnValue').attr('class', 'adyen-checkout__input').attr('type', 'text'); //.attr('maxlength', ssnLength);
 
             ssnContainer.append(socialSecurityNumberLabel);
             ssnContainer.append(socialSecurityNumber);
@@ -275,6 +273,7 @@ function filterOutOpenInvoiceComponentDetails(details) {
         if (detail.key == "personalDetails") {
             var detailObject = detail.details.map(function (childDetail) {
                 if (childDetail.key == 'dateOfBirth' ||
+                    childDetail.key == 'telephoneNumber' ||
                     childDetail.key == 'gender') {
                     return childDetail;
                 }
@@ -304,14 +303,11 @@ function filterUndefinedItemsInArray(arr) {
     });
 };
 
-function getSsnLengthNordicCountry(country) {
-    if (country === "NO") {
-        return 5;
+function isNordicCountry(country) {
+    if (country === "SE" || country === "FI" || country === "DK" || country === "NO") {
+        return true;
     }
-    if (country === "SE" || country === "FI" || country === "DK") {
-        return 4;
-    }
-    return 0;
+    return false;
 };
 
 //Submit the payment
@@ -397,8 +393,14 @@ function checkComponentDetails(selectedMethod) {
 }
 
 function setOpenInvoiceData(component) {
-    $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
-    $('#gender').val(component.componentRef.state.data.personalDetails.gender);
+    if(component.componentRef.state.data.personalDetails){
+        if(component.componentRef.state.data.personalDetails.dateOfBirth){
+            $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
+        }
+        if(component.componentRef.state.data.personalDetails.gender){
+            $('#gender').val(component.componentRef.state.data.personalDetails.gender);
+        }
+    }
 }
 
 function adyenPaymentMethodSelected(selectedMethod) {

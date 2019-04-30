@@ -10,22 +10,22 @@ var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
-  Transaction.wrap(function () {
-    collections.forEach(basket.getPaymentInstruments(), function (item) {
-      basket.removePaymentInstrument(item);
+    Transaction.wrap(function () {
+        collections.forEach(basket.getPaymentInstruments(), function (item) {
+            basket.removePaymentInstrument(item);
+        });
+
+        var paymentInstrument = basket.createPaymentInstrument(
+            'Adyen', basket.totalGrossPrice
+        );
+        paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
+        if (session.custom.adyenIssuerName) {
+            paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+        }
+
     });
-    
-    var paymentInstrument = basket.createPaymentInstrument(
-      'Adyen', basket.totalGrossPrice
-    );
-      paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
-      if(session.custom.adyenIssuerName){
-          paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
-      }
 
-  });
-
-  return { error: false };
+    return {error: false};
 }
 
 /**
@@ -38,10 +38,10 @@ function Handle(basket, paymentInformation) {
  */
 
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  Transaction.wrap(function () {
-    paymentInstrument.paymentTransaction.transactionID = orderNumber;
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-  });
+    Transaction.wrap(function () {
+        paymentInstrument.paymentTransaction.transactionID = orderNumber;
+        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
 
     var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
 
@@ -56,9 +56,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Amount: paymentInstrument.paymentTransaction.amount,
         PaymentInstrument: paymentInstrument,
         PaymentType: session.custom.paymentType,
-        ratePayFingerprint : session.custom.ratePayFingerprint,
-        adyenFingerprint : session.forms.adyPaydata.adyenFingerprint.value,
-        adyenForm : adyenPaymentForm
+        ratePayFingerprint: session.custom.ratePayFingerprint,
+        adyenFingerprint: session.forms.adyPaydata.adyenFingerprint.value,
+        adyenForm: adyenPaymentForm
 
     });
     if (result.error) {
@@ -78,13 +78,11 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            redirectObject : result.RedirectObject
+            redirectObject: result.RedirectObject
         };
-    }
-    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Received'){
-        return { authorized: true, error: false };
-    }
-    else {
+    } else if (result.ResultCode == 'Authorised' || result.ResultCode == 'Received') {
+        return {authorized: true, error: false};
+    } else {
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         return {
             authorized: false, error: true
