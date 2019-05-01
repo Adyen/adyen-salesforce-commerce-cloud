@@ -130,6 +130,7 @@ function resetPaymentMethod() {
     $('#selectedIssuer').val("");
     $('#adyenIssuerName').val("");
     $('#dateOfBirth').val("");
+    $('#telephoneNumber').val("");
     $('#gender').val("");
     $('#bankAccountOwnerName').val("");
     $('#bankAccountNumber').val("");
@@ -399,6 +400,9 @@ function setOpenInvoiceData(component) {
         }
         if(component.componentRef.state.data.personalDetails.gender){
             $('#gender').val(component.componentRef.state.data.personalDetails.gender);
+        }
+        if(component.componentRef.state.data.personalDetails.telephoneNumber){
+            $('#telephoneNumber').val(component.componentRef.state.data.personalDetails.telephoneNumber);
         }
     }
 }
