@@ -11,23 +11,26 @@ function updatePaymentInformation(order) {
 
     if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
         && order.billing.payment.selectedPaymentInstruments.length > 0) {
-        if(order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "CREDIT_CARD"){
+        if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "CREDIT_CARD") {
             htmlToAppend += '<span>' + order.resources.cardType + ' '
                 + order.billing.payment.selectedPaymentInstruments[0].type
-                + '</span><div>'
-                + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
-                + '</div><div><span>'
-                + order.resources.cardEnding + ' '
-                + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
-                + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
-                + '</span></div>';
-        }
-        else if(order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen"){
+                + '</span>';
+
+            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber != null && order.billing.payment.selectedPaymentInstruments[0].expirationMonth != null) {
+                htmlToAppend += '<div>'
+                    + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
+                    + '</div><div><span>'
+                    + order.resources.cardEnding + ' '
+                    + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
+                    + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
+                    + '</span></div>';
+            }
+        } else if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen") {
             htmlToAppend += '<div><span>'
                 + order.billing.payment.selectedPaymentInstruments[0].selectedAdyenPM
                 + '</span></div>';
 
-            if(typeof order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName !== "undefined") {
+            if (typeof order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName !== "undefined") {
                 htmlToAppend += '<div><span>'
                     + order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName
                     + '</span></div>';

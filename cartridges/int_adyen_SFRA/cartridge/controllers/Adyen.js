@@ -9,22 +9,23 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
+var adyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
 server.get('Adyen3D', server.middleware.https, function (req, res, next) {
-  var IssuerURL = req.querystring.IssuerURL;
-  var PaRequest = req.querystring.PaRequest;
-  var MD = req.querystring.MD;
-  var TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
+    var IssuerURL = req.querystring.IssuerURL;
+    var PaRequest = req.querystring.PaRequest;
+    var MD = req.querystring.MD;
+    var TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
 
-  res.render('adyenform', {
-    issuerUrl: IssuerURL,
-    paRequest: PaRequest,
-    md: MD,
-    ContinueURL: TermURL
-  });
-  next();
+    res.render('adyenform', {
+        issuerUrl: IssuerURL,
+        paRequest: PaRequest,
+        md: MD,
+        ContinueURL: TermURL
+    });
+    next();
 });
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
@@ -52,7 +53,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
             };
             var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
             Transaction.wrap(function () {
-                paymentInstrument.custom.adyenPaymentData = "";
+                paymentInstrument.custom.adyenPaymentData = null;
             });
             // if error, return to checkout page
             if (result.error || result.resultCode != 'Authorised') {
@@ -93,8 +94,8 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
 });
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
-  res.redirect(req.querystring.redirectUrl);
-  return next();
+    res.redirect(req.querystring.redirectUrl);
+    return next();
 });
 
 server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
@@ -107,27 +108,25 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
     requestObject.details['payload'] = payLoad;
     var result = adyenCheckout.doPaymentDetailsCall(requestObject);
     var order = OrderMgr.getOrder(result.merchantReference);
-
+    var paymentInstrument = order.getPaymentInstrument();
+    Transaction.wrap(function () {
+        paymentInstrument.custom.adyenPaymentData = null;
+    });
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised") {
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');
         var currentLocale = Locale.getLocale(req.locale.id);
-        var orderModel = new OrderModel(order, { countryCode: currentLocale.country });
+        var orderModel = new OrderModel(order, {countryCode: currentLocale.country});
 
         //Save orderModel to custom object during session
         Transaction.wrap(function () {
             order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
         });
 
-        var paymentInstrument = order.getPaymentInstrument();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = null;
-        });
         clearForms();
         res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
-    }
-    else {
+    } else {
         Transaction.wrap(function () {
             OrderMgr.failOrder(order);
         });
@@ -143,41 +142,52 @@ server.get('OrderConfirm', server.middleware.https, function (req, res, next) {
 });
 
 server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
-  var BasketMgr = require('dw/order/BasketMgr');
-  var Resource = require('dw/web/Resource');
-  var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-  var paymentMethods;
-  try {
-    paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket()).paymentMethods;
-  } catch (err) {
-    paymentMethods = [];
-  }
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Resource = require('dw/web/Resource');
+    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+    var Locale = require('dw/util/Locale');
+    var countryCode = Locale.getLocale(req.locale.id).country;
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+    }
+    var paymentMethods;
+    try {
+        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
+    } catch (err) {
+        paymentMethods = [];
+    }
 
-  paymentMethods = paymentMethods.filter(function (method) { return !isMethodTypeBlocked(method.type); });
-  var descriptions = [];
-  paymentMethods.forEach(function (method){
-     descriptions.push({ brandCode : method.type, description : Resource.msg('hpp.description.' + method.type, 'hpp', "")});
-   })
+    paymentMethods = paymentMethods.filter(function (method) {
+        return !isMethodTypeBlocked(method.type);
+    });
+    var descriptions = [];
+    paymentMethods.forEach(function (method) {
+        descriptions.push({
+            brandCode: method.type,
+            description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
+        });
+    })
 
-  res.json({
-      AdyenHppPaymentMethods: paymentMethods,
-      ImagePath: URLUtils.staticURL('/images/').toString(),
-      AdyenDescriptions : descriptions
-  });
-  return next();
+    var adyenURL = adyenHelper.getAdyenUrl() + "hpp/img/pm/";
+
+    res.json({
+        AdyenHppPaymentMethods: paymentMethods,
+        ImagePath: adyenURL,
+        AdyenDescriptions: descriptions
+    });
+    return next();
 });
 
 /**
  * Checks if payment method is blocked
  */
-function isMethodTypeBlocked(methodType)
-{
+function isMethodTypeBlocked(methodType) {
     if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
         (methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
         methodType == "scheme") {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
@@ -186,8 +196,7 @@ function isMethodTypeBlocked(methodType)
  * Get OriginKey for Secured Fields
  */
 server.get('GetConfigSecuredFields', server.middleware.https, function (req, res, next) {
-    var adyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-    var	adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+    var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
     var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
     var originKey;
     var error = false;
@@ -199,7 +208,7 @@ server.get('GetConfigSecuredFields', server.middleware.https, function (req, res
         loadingContext = adyenHelper.getLoadingContext();
     } catch (err) {
         error = true;
-        errorMessage = Resource.msg('load.component.error','creditCard', null);
+        errorMessage = Resource.msg('load.component.error', 'creditCard', null);
     }
     res.json({
         error: error,
@@ -214,23 +223,22 @@ server.get('GetConfigSecuredFields', server.middleware.https, function (req, res
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, function (req, res, next) {
-    var	checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
+    var checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
     var status = checkAuth.check(req);
     if (!status) {
         res.render('/adyen/error');
         return {};
     }
-    var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
+    var handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
     Transaction.begin();
     var success = handleNotify.notify(req.form);
 
-    if(success){
-      Transaction.commit();
-      res.render('/notify');
-    }
-    else {
-      res.json({error: "Notification not handled"});
-      Transaction.rollback();
+    if (success) {
+        Transaction.commit();
+        res.render('/notify');
+    } else {
+        res.json({error: "Notification not handled"});
+        Transaction.rollback();
     }
     next();
 });
@@ -239,25 +247,25 @@ server.post('Notify', server.middleware.https, function (req, res, next) {
  * Clear system session data
  */
 function clearForms() {
-  // Clears all forms used in the checkout process.
-  session.forms.billing.clearFormElement();
-  clearCustomSessionFields();
+    // Clears all forms used in the checkout process.
+    session.forms.billing.clearFormElement();
+    clearCustomSessionFields();
 }
 
 /**
  * Clear custom session data
  */
 function clearCustomSessionFields() {
-  // Clears all fields used in the 3d secure payment.
-  session.custom.paymentMethod = null;
-  session.custom.orderNo = null;
-  session.custom.brandCode = null;
-  session.custom.issuer = null;
-  session.custom.adyenPaymentMethod = null;
-  session.custom.adyenIssuerName = null;
+    // Clears all fields used in the 3d secure payment.
+    session.custom.paymentMethod = null;
+    session.custom.orderNo = null;
+    session.custom.brandCode = null;
+    session.custom.issuer = null;
+    session.custom.adyenPaymentMethod = null;
+    session.custom.adyenIssuerName = null;
 }
 
-function getExternalPlatformVersion(){
+function getExternalPlatformVersion() {
     return EXTERNAL_PLATFORM_VERSION;
 }
 

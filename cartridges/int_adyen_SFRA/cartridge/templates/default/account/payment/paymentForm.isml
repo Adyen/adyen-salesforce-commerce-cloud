@@ -4,30 +4,35 @@
     assets.addJs('/js/adyenSecureFields.js');
     assets.addCss('/css/adyen-checkout-2.1.0.css');
 </isscript>
-<iscontent type="text/html" encoding="off" />
+<iscontent type="text/html" encoding="off"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <form
-    action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
-    class="payment-form"
-    method="POST"
-    name="payment-form" ${pdict.paymentForm.attributes}>
+        action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+        class="payment-form"
+        method="POST"
+        name="payment-form" ${pdict.paymentForm.attributes}>
 
     <input type="hidden" id="currentLocale" value="${request.locale}"/>
-    <iscontent type="text/html" encoding="off" />
-    <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes} >
-    <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes} >
+    <iscontent type="text/html" encoding="off"/>
+    <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>
+    <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>
 
-    <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber" ${pdict.paymentForm.adyenEncryptedCardNumber.attributes} >
-    <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth" ${pdict.paymentForm.adyenEncryptedExpiryMonth.attributes} >
-    <input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear" ${pdict.paymentForm.adyenEncryptedExpiryYear.attributes} >
-    <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode" ${pdict.paymentForm.adyenEncryptedSecurityCode.attributes} >
+    <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber"
+           ${pdict.paymentForm.adyenEncryptedCardNumber.attributes}>
+    <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth"
+           ${pdict.paymentForm.adyenEncryptedExpiryMonth.attributes}>
+    <input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear"
+           ${pdict.paymentForm.adyenEncryptedExpiryYear.attributes}>
+    <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"
+           ${pdict.paymentForm.adyenEncryptedSecurityCode.attributes}>
 
     <div class="row">
         <div class="col-12">
             <div class="form-group">
                 <label class="form-control-label" for="cardOwner">${Resource.msg('field.credit.card.holderName','creditCard',null)}</label>
-                <input type="text" class="form-control cardOwner" id="cardOwner" ${pdict.paymentForm.cardOwner.attributes}>
+                <input type="text" class="form-control cardOwner" id="cardOwner"
+                       ${pdict.paymentForm.cardOwner.attributes}>
                 <div class="invalid-feedback"></div>
             </div>
         </div>
@@ -44,7 +49,9 @@
             <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
         </div>
         <div class="col">
-            <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">${Resource.msg('button.save','account',null)}</button>
+            <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">
+                ${Resource.msg('button.save','account',null)}
+            </button>
         </div>
     </div>
 

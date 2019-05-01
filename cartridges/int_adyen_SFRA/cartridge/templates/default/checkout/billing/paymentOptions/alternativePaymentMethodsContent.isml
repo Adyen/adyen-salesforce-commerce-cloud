@@ -1,6 +1,6 @@
 <!--- applicable credit cards--->
 <div class="tab-pane adyen-content" id="adyen-content" role="tabpanel">
     <fieldset class="">
-        <isinclude template="checkout/billing/alternativePaymentMethodForm" />
+        <isinclude template="checkout/billing/alternativePaymentMethodForm"/>
     </fieldset>
 </div>

@@ -2,6 +2,7 @@ var shippingHelpers = require('base/checkout/shipping');
 var billingHelpers = require('base/checkout/billing');
 var summaryHelpers = require('base/checkout/summary');
 var billing = require('./billing');
+var adyenCheckout = require('../adyenCheckout');
 
 module.exports = {
     updateCheckoutView: function () {
@@ -16,6 +17,7 @@ module.exports = {
                     data.options
                 );
             });
+            adyenCheckout.methods.displayPaymentMethods();
             billingHelpers.methods.updateBillingInformation(
                 data.order,
                 data.customer,

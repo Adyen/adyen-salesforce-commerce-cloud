@@ -16,13 +16,13 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
             amount: paymentInstrument.paymentTransaction.amount.value
         };
 
-        if(paymentInstrument.custom.adyenPaymentMethod) {
+        if (paymentInstrument.custom.adyenPaymentMethod) {
             results.selectedAdyenPM = paymentInstrument.custom.adyenPaymentMethod;
         }
-        if(paymentInstrument.custom.adyenIssuerName){
+        if (paymentInstrument.custom.adyenIssuerName) {
             results.selectedIssuerName = paymentInstrument.custom.adyenIssuerName;
         }
-        if(paymentInstrument.custom.adyenAdditionalPaymentData){
+        if (paymentInstrument.custom.adyenAdditionalPaymentData) {
             results.adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
         }
 
