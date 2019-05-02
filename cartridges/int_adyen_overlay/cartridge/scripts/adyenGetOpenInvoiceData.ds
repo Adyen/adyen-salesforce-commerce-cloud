@@ -45,8 +45,8 @@ function getShopperData(args, personalDetails){
 	if(args.adyenForm.gender.value){
 		personalDetails.gender = args.adyenForm.gender.value;
 	}
-	if(args.telephoneNumber){
-		personalDetails.telephoneNumber = args.telephoneNumber;
+	if(args.adyenForm.telephoneNumber){
+		personalDetails.telephoneNumber = args.adyenForm.telephoneNumber.value;
 	}
 	else if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
 		personalDetails.telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()

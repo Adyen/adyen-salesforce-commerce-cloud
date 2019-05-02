@@ -5,6 +5,7 @@
 
     <!--Open Invoice details-->
     <field formid="dateOfBirth" label="Date of Birth" type="string" mandatory="false"/>
+    <field formid="telephoneNumber" label="telephoneNumber" type="string" mandatory="false"/>
     <field formid="gender" label="Gender" type="string" mandatory="false"/>
     <field formid="socialSecurityNumber" label="Social Security Number" type="string" mandatory="false"/>
 

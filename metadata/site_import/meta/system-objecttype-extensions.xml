@@ -362,6 +362,7 @@
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_merchantCode">
                 <display-name xml:lang="x-default">merchantCode</display-name>
@@ -456,20 +457,13 @@
             <attribute-group group-id="Adyen">
                 <display-name xml:lang="x-default">Adyen Account Settings</display-name>
                 <attribute attribute-id="Adyen_merchantCode"/>
-                <attribute attribute-id="Adyen_Mode"/>
-                <attribute attribute-id="Adyen_skinCode"/>
-                <attribute attribute-id="Adyen_HMACkey"/>
+                <attribute attribute-id="Adyen_Mode"/>            
                 <attribute attribute-id="Adyen_Debug"/>
-                <attribute attribute-id="AdyenCseEnabled"/>
-                <attribute attribute-id="AdyenCseLibraryToken"/>
-                <attribute attribute-id="Adyen_directoryLookup"/>
-                <attribute attribute-id="Adyen_PaymentSelection"/>
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
                 <attribute attribute-id="Adyen_recurringType"/>
                 <attribute attribute-id="AdyenGuestRecurringEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
-                <attribute attribute-id="Adyen_Open_Invoice_Whitelist"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_POIID"/>
                 <attribute attribute-id="Adyen_API_Key"/>
