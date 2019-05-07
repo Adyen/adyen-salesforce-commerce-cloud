@@ -94,7 +94,7 @@ function creditCard(args) {
 
 function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var order = args.Order;
-    var recurringType = "";
+    var recurringType = AdyenHelper.getAdyenRecurringType();
     var saveCreditCard = !empty(args.SaveCreditCard) ? args.SaveCreditCard : false;
     var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
     var customer = order.getCustomer();
