@@ -29,8 +29,7 @@ switch("${method.type}"){
            klarnaComponent.mount(klarnaContainer);
 
          var billingCountry = document.getElementsByClassName("input-select country")[0].value;
-         var ssnLength = getSsnLengthNordicCountry(billingCountry.toUpperCase());
-         if(ssnLength > 0){
+         if(isNordicCountry(billingCountry.toUpperCase())){
              var ssnContainer = document.createElement("div");
              ssnContainer.setAttribute("id", "ssn_klarna");
              var socialSecurityNumberLabel = document.createElement("span");
@@ -39,7 +38,6 @@ switch("${method.type}"){
              socialSecurityNumber.setAttribute("id", "ssnValue");
              socialSecurityNumber.setAttribute("class", "adyen-checkout__input");
              socialSecurityNumber.setAttribute("type", "text");
-             socialSecurityNumber.setAttribute("maxlength", ssnLength);
              
              ssnContainer.append(socialSecurityNumberLabel);
              ssnContainer.append(socialSecurityNumber);
@@ -64,14 +62,11 @@ switch("${method.type}"){
 		//no component
 };
 
-function getSsnLengthNordicCountry(country){
-    if(country === "NO"){
-        return 5;
+function isNordicCountry(country){
+    if(country === "SE"|| country === "FI" || country === "DK" || country === "NO") {
+        return true;
     }
-    if(country === "SE"|| country === "FI" || country === "DK") {
-        return 4;
-    }
-    return 0;
+    return false;
 };
 
 </script>
