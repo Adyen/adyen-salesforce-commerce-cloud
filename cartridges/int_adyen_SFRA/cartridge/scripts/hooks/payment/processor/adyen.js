@@ -6,8 +6,6 @@
 
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
-var Logger = require('dw/system/Logger');
-
 
 function Handle(basket, paymentInformation) {
   Transaction.wrap(function () {
