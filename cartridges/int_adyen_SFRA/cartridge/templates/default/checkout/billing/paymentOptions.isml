@@ -1,16 +1,16 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('/js/adyen-cse.js');
     assets.addCss('/css/adyenCss.css');
+    assets.addCss('/css/adyen-checkout-2.1.0.css');
 </isscript>
-<iscontent type="text/html" encoding="off" />
+<iscontent type="text/html" encoding="off"/>
 <div class="form-nav billing-nav payment-information"
      data-payment-method-id=""
      data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
 >
 
     <ul class="nav nav-tabs nav-fill payment-options" id="paymentOptions" role="tablist">
-        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs"/>
     </ul>
 </div>
 

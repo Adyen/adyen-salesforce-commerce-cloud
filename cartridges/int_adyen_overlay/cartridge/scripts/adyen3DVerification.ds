@@ -68,17 +68,13 @@ function verify( args : PipelineDictionary ) : Number {
 		if (shopperIp == null) { shopperIp = ''; }
 		 
 		// set-up the 3D Secure post call
-	   	var jsonRequest : JSON = {
-		  "browserInfo": {
-		    "acceptHeader": acceptHeader,
-		    "userAgent": userAgent
-		  },
-		  "md": args.MD,
-		  "merchantAccount": MERCHANTACCOUNT,
-		  "paResponse": args.PaResponse,
-		  "shopperEmail": order.customerEmail,
-		  "shopperIP": shopperIp,
-			"applicationInfo": AdyenHelper.getApplicationInfo()
+	   	var jsonRequest = {
+		  "paymentData": args.PaymentData,
+		  "details": {
+              "MD": args.MD,
+              "PaRes": args.PaResponse
+          },
+            "applicationInfo": AdyenHelper.getApplicationInfo()
 		};
   		
 		var callResult = null;

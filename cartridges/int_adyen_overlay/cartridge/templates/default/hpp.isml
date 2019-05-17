@@ -3,36 +3,45 @@
 
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
 <isset name="brandCode" value="" scope="session"/>
-<isset name="issuerId" value="" scope="session"/>
-<isset name="whitelistMethods" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_Open_Invoice_Whitelist')}" scope="page"/>
 
+<isinputfield formfield="${pdict.CurrentForms.adyPaydata.issuer}" type="hidden"/>
+
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
-	<isset name="methods" value="${pdict.AdyenHppPaymentMethods.paymentMethods}" scope="page"/>
+	<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
 	
-	<iscomment>Loop through the returned payment methods after calling directory.shtml and print them</iscomment>
+	<iscomment>Loop through the returned payment methods after calling /paymentMethods and print them</iscomment>
 	<isif condition="${!empty(methods) && methods.length > 0}">
-	
+	<script type="text/javascript">
+		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
+	</script>
 		<ul id="type">
 			<isloop items="${methods}" var="method" status="loopstate">
-				<li class="form-row row-${method.brandCode}">
-					<isif condition="${whitelistMethods.indexOf(method.brandCode) > -1}">
-						<input type="radio" class="input-radio openInvoice" name="brandCode" value="${method.brandCode}"/>
+				<li class="form-row row-${method.type}" id="li_${method.type}">
+					<input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
+					<img class="logo" src="${AdyenHelper.getAdyenUrl()}/hpp/img/pm/${method.type}.png" alt=""/>
+					<label class="payment_method_label" for="${method.type}">${method.name}</label>
+					<isscript>
+					    var methodDetails = JSON.stringify(method);
+					</isscript>
+					<isif condition="${AdyenHelper.hasCheckoutComponent(method.type)}">
+						<isinclude template="checkoutComponent"/>
 					<iselse/>
-						<input type="radio" class="input-radio" name="brandCode" value="${method.brandCode}"/>
-					</isif>
-					<img class="logo" src="${URLUtils.staticURL('/images/' + method.brandCode + '.png')}" alt=""/>
-					<label for="${method.brandCode}">${method.name}</label>
-
-					<isif condition="${typeof method.issuers !== 'undefined' && method.issuers.length > 0}">
-						<ul id="issuer">
-							<isloop items="${method.issuers}" var="issuer" status="loopstate">
-								<li class="form-row">
-									<input type="radio" class="input-radio" name="issuerId" value="${issuer.issuerId}"/>
-									<img class="logo" src="${URLUtils.staticURL('/images/' + issuer.name.replace(/\s+/g, '').toUpperCase() + '.png')}" alt=""/>
-								</li>
-							</isloop>
-						</ul>
-					</isif>
+						<isif condition="${method.details[0].key == 'issuer'}">
+							<select class="issuer" id="${method.type}_issuer">
+								<isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
+									<option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
+								</isloop>
+							</select>
+						</isif>
+						<isif condition="${method.type.substring(0, 3) == 'ach'}">
+							<div id="component_ach" class="checkoutComponent">
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}" type="input"/>
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountNumber}" type="input"/>
+								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
+							</div>
+						</isif>
+					</isif> 
 				</li>
 			</isloop>
 		</ul>
@@ -40,22 +49,12 @@
 <iselse>
 	<span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
 </isif>
-<div class="hppAdditionalFields">
-	<div class="openinvoiceInput additionalfield nl at de">
-		<isinputfield type="select" formfield="${pdict.CurrentForms.adyPaydata.gender}" />
-	</div>
-	<div class="openinvoiceInput additionalfield nl at de dk fi no se">
-		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.dob}" />
-	</div>
-	<div class="openinvoiceInput additionalfield nl de">
-		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.houseNumber}" />
-	</div>
-	<div class="openinvoiceInput additionalfield nl">
-		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.houseExtension}" />
-	</div>
-	<div class="openinvoiceInput additionalfield dk fi no se">
-		<isinputfield type="text" formfield="${pdict.CurrentForms.adyPaydata.personalNumber}" />
-	</div>
+
+<div class="openinvoiceInput">
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.gender}" />
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.dateOfBirth}" />
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.telephoneNumber}" />
+	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.socialSecurityNumber}" />
 </div>
 
 <iscomment>

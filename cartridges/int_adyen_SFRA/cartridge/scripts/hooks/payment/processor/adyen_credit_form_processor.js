@@ -38,37 +38,32 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value
     };
 
+    viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
+    viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
+    viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
+    viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
+
     viewData.paymentInformation = {
         cardType: {
-            value: paymentForm.creditCardFields.cardType.value,
-            htmlName: paymentForm.creditCardFields.cardType.htmlName
+            value: paymentForm.creditCardFields.cardType.value
         },
         cardNumber: {
-            value: paymentForm.creditCardFields.cardNumber.value,
-            htmlName: paymentForm.creditCardFields.cardNumber.htmlName
-        },
-        securityCode: {
-            value: paymentForm.creditCardFields.securityCode.value,
-            htmlName: paymentForm.creditCardFields.securityCode.htmlName
+            value: paymentForm.creditCardFields.cardNumber.value
         },
         expirationMonth: {
-            value: parseInt(
-                paymentForm.creditCardFields.expirationMonth.selectedOption,
-                10
-            ),
-            htmlName: paymentForm.creditCardFields.expirationMonth.htmlName
+            value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
         },
         expirationYear: {
-            value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10),
-            htmlName: paymentForm.creditCardFields.expirationYear.htmlName
+            value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
+        },
+        securityCode: {
+            value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
         }
     };
 
-    if (req.form.storedPaymentUUID) {
-        viewData.storedPaymentUUID = req.form.storedPaymentUUID;
+    if (paymentForm.creditCardFields.selectedCardID) {
+        viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
     }
-
-    viewData.adyenEncryptedData = getEncryptedData();
 
     viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;
 

@@ -16,15 +16,8 @@ function Handle(basket, paymentInformation) {
     var cardErrors = {};
     var serverErrors = [];
     var creditCardForm = server.forms.getForm('billing');
-    var cardType = paymentInformation.cardType.value;
+    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
     var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
-    var encryptedData = creditCardForm.creditCardFields.adyenEncryptedData.value;
-    var adyenCseEnabled = AdyenHelper.getAdyenCseEnabled();
-
-    if (empty(tokenID) && (!adyenCseEnabled || empty(encryptedData))) {
-        return {error: true};
-    }
-
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
@@ -35,11 +28,12 @@ function Handle(basket, paymentInformation) {
         );
 
         paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-        paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
-        paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
         paymentInstrument.setCreditCardType(cardType);
 
         if (!empty(tokenID)) {
+            paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
+            paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
+            paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
 
@@ -61,12 +55,13 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var Transaction = require('dw/system/Transaction');
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
-    var adyenCreditVerification = require('int_adyen_overlay/cartridge/scripts/adyenCreditVerification');
+    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     Transaction.begin();
-    var result = adyenCreditVerification.verify({
+
+    var result = adyenCheckout.creditCard({
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,
@@ -84,8 +79,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.IssuerUrl != '') {
+    if (result.RedirectObject != '') {
         Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
         session.custom.orderNo = order.orderNo;
         session.custom.paymentMethod = paymentInstrument.paymentMethod;
         return {
@@ -93,9 +92,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized3d: true,
             order: order,
             paymentInstrument: paymentInstrument,
-            issuerUrl: result.IssuerUrl,
-            paRequest: result.PaRequest,
-            md: result.MD
+            redirectObject: result.RedirectObject
         };
     }
 
@@ -131,7 +128,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     Transaction.commit();
 
-    return { authorized: true, error: false };
+    return {authorized: true, error: false};
 }
 
 
