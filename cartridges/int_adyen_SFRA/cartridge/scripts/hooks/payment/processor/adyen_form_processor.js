@@ -1,7 +1,6 @@
 'use strict';
 
 var server = require('server');
-var Logger = require('dw/system/Logger');
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
@@ -20,11 +19,17 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value
     };
 
-    // set selected brandCode & issuerId to session variable
-    session.custom.brandCode = req.form.brandCode;
-    session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
-    session.custom.issuerId = req.form.issuerId;
-    session.custom.adyenIssuerName = req.form.adyenIssuerName;
+    session.custom.paymentType = req.form.brandCode;
+    if (typeof req.form.adyenPaymentMethod !== "undefined") {
+        session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
+    } else {
+        session.custom.adyenPaymentMethod = null;
+    }
+    if (typeof req.form.adyenIssuerName !== "undefined") {
+        session.custom.adyenIssuerName = req.form.adyenIssuerName;
+    } else {
+        session.custom.adyenIssuerName = null;
+    }
 
     return {
         error: false,

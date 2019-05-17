@@ -1,7 +1,7 @@
 <!--- TEMPLATENAME: alternativePaymentMethodForm.isml --->
 <iscontent compact="true"/>
 <iscontent type="text/html" encoding="off"/>
-
+<isset name="adyenPaymentFields" value="${pdict.forms.billingForm.adyenPaymentFields}" scope="page"/>
 <isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}"
        scope="page"/>
 <input id="OpenInvoiceWhiteList" type="hidden"
