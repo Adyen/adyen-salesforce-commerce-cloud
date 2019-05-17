@@ -42,13 +42,6 @@
     <field formid="securityCode" label="profile.securitycode" type="string" mandatory="false" binding="securityCode"
            max-length="4" missing-error="error.card.info.missing.securityCode"/>
 
-
-    <field formid="email" label="profile.email" type="string" mandatory="true" binding="email"
-           max-length="254" missing-error="error.card.info.missing.email"/>
-
-    <field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="true"
-           binding="phone" max-length="20" missing-error="error.card.info.missing.phone"/>
-
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false"
            checked="false"/>
     <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false"
