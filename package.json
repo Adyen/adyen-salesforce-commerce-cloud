@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css"
