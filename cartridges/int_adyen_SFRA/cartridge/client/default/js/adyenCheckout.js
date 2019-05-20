@@ -101,6 +101,12 @@ function getConfigurationSecureFields() {
     });
 };
 
+// function setBrowserData() {
+//     var browserData = ThreedDS2Utils.getBrowserInfo();
+//     $('#browserInfo').val(JSON.stringify(browserData));
+//     console.log(browserData);
+// };
+
 $('.payment-summary .edit-button').on('click', function (e) {
     jQuery.each(oneClickCard, function (i) {
         oneClickCard[i].unmount();
@@ -426,6 +432,7 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
     $('#cardOwner').val(card.paymentData.holderName);
+    //setBrowserData();
 }
 
 module.exports = {

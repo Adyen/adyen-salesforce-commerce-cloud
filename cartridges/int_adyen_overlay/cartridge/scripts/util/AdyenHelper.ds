@@ -97,6 +97,14 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyen3DS2Enabled: function (): Boolean {
+        var returnValue: Boolean = false;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled');
+        }
+        return true;
+    },
+
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled'))) {
@@ -138,7 +146,7 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.1.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.2.1/adyen.js";
         return checkoutUrl;
     },
 
@@ -444,6 +452,29 @@ var __AdyenHelper: Object = {
         }
 
         return {error: true};
+    },
+
+    add3DS2Data: function(jsonObject){
+        jsonObject["additionalData"].allow3DS2 = true;
+        jsonObject["channel"] = "web";
+
+        if (session.forms.billing.paymentMethods) {
+            card = session.forms.billing.paymentMethods.creditCard;
+        }
+        // jsonObject["browserInfo"].screenWidth = 1024;
+        // jsonObject["browserInfo"].screenHeight = 500;
+        // jsonObject["browserInfo"].colorDepth = 24;
+        // jsonObject["browserInfo"].userAgent = "Chrome";
+        // jsonObject["browserInfo"].timeZoneOffset = 0;
+        // jsonObject["browserInfo"].language = "nl-NL";
+        // jsonObject["browserInfo"].javaEnabled = true;
+        // jsonObject["browserInfo"].acceptHeader = "text/html";
+
+        jsonObject["browserInfo"] = card.browserInfo.value;
+        jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"}
+
+        //TODOBAS retrieve browserInfo from Hybris code
+        return jsonObject;
     },
 
     extend: function (obj, src) {

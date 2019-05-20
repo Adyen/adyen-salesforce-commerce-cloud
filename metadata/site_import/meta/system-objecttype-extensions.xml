@@ -264,6 +264,13 @@
 
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+            <attribute-definition attribute-id="Adyen3DS2Enabled">
+                <display-name xml:lang="x-default">3DS2 Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenCseEnabled">
                 <display-name xml:lang="x-default">CSE Enabled</display-name>
                 <type>boolean</type>
