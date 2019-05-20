@@ -1,0 +1,11 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/adyen3DS2.js');
+</isscript>
+<isset name="resultCode3ds2" value="${pdict.resultCode}" scope="page"/>
+<isset name="authentication3ds2" value="${pdict.authentication}" scope="page"/>
+<isscript>
+window.Authentication = ${authentication3ds2};
+window.ResultCode = ${resultCode3ds2};
+</isscript>
+<div id="threeDS2"></div>

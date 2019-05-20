@@ -122,6 +122,15 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     if (handlePaymentResult.redirectObject) {
+        //ThreeDS2
+        if(handlePaymentResult.ThreeDS2) {
+            res.render('adyen3DS2', {
+                resultCode: result.resultCode,
+                authentication: result.authentication,
+                //TODOBAS Verify input to form??
+            });
+            return next();
+        }
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
         if (handlePaymentResult.authorized3d) {
             session.custom.MD = handlePaymentResult.redirectObject.data.MD;

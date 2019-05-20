@@ -13,6 +13,7 @@ $(document).ready(function () { // eslint-disable-line
     processInclude(require('base/checkout/checkout'));
     processInclude(require('./checkout/billing'));
     processInclude(require('./checkout/checkout'));
+    processInclude(require('./threeds2-js-utils'));
 
     $('#selectedPaymentOption').val($('.payment-options .nav-item .active').parent().attr('data-method-id'));
 });

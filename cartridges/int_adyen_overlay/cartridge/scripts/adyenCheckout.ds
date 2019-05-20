@@ -162,6 +162,10 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "lastName": billingAddr.lastName
     };
 
+    if(AdyenHelper.getAdyen3DS2Enabled()){
+        jsonObject = AdyenHelper.add3DS2Data(jsonObject);
+    }
+
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
             var bankAccount = {
@@ -207,6 +211,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 }
 
 function doPaymentCall(args, requestObject){
+    Logger.getLogger("Adyen").error("requestObject = " + JSON.stringify(requestObject));
     var errorMessage = '';
     try {
        var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, requestObject);
