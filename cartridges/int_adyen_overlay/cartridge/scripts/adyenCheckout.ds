@@ -211,7 +211,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 }
 
 function doPaymentCall(args, requestObject){
-    Logger.getLogger("Adyen").error("requestObject = " + JSON.stringify(requestObject));
     var errorMessage = '';
     try {
        var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, requestObject);
