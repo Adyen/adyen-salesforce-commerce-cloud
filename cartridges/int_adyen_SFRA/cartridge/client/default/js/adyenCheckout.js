@@ -1,3 +1,5 @@
+var threeDS2utils = require('./threeds2-js-utils.js');
+
 const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US
     originKey: originKey,
@@ -101,11 +103,10 @@ function getConfigurationSecureFields() {
     });
 };
 
-// function setBrowserData() {
-//     var browserData = ThreedDS2Utils.getBrowserInfo();
-//     $('#browserInfo').val(JSON.stringify(browserData));
-//     console.log(browserData);
-// };
+function setBrowserData() {
+    var browserData = threeDS2utils.getBrowserInfo();
+    $('#browserInfo').val(JSON.stringify(browserData));
+};
 
 $('.payment-summary .edit-button').on('click', function (e) {
     jQuery.each(oneClickCard, function (i) {
@@ -432,7 +433,7 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
     $('#cardOwner').val(card.paymentData.holderName);
-    //setBrowserData();
+    setBrowserData();
 }
 
 module.exports = {

@@ -1,12 +1,5 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<isscript>
-    var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('/js/threeds2-js-utils.js');
-</isscript>
-<script type="text/javascript">
-    var browserData = ThreedDS2Utils.getBrowserInfo();
-    console.log(browserData);
-</script>
+
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off"/>
 <input type="hidden" class="form-control cardNumber" id="cardNumber" ${creditFields.cardNumber.attributes}>
@@ -24,7 +17,7 @@
 <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"
        ${creditFields.adyenEncryptedSecurityCode.attributes}>
 <input type="hidden" class="form-control cardOwner" id="cardOwner" ${creditFields.cardOwner.attributes}>
-<input type="hidden" class="form-control cardOwner" id="browserInfo" ${creditFields.browserInfo.attributes}>
+<input type="hidden" class="form-control browserInfo" id="browserInfo" ${creditFields.browserInfo.attributes}>
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>

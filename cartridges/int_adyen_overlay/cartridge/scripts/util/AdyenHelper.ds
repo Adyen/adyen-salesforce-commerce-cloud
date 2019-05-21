@@ -458,22 +458,17 @@ var __AdyenHelper: Object = {
         jsonObject["additionalData"].allow3DS2 = true;
         jsonObject["channel"] = "web";
 
+        var card;
         if (session.forms.billing.paymentMethods) {
             card = session.forms.billing.paymentMethods.creditCard;
         }
-        // jsonObject["browserInfo"].screenWidth = 1024;
-        // jsonObject["browserInfo"].screenHeight = 500;
-        // jsonObject["browserInfo"].colorDepth = 24;
-        // jsonObject["browserInfo"].userAgent = "Chrome";
-        // jsonObject["browserInfo"].timeZoneOffset = 0;
-        // jsonObject["browserInfo"].language = "nl-NL";
-        // jsonObject["browserInfo"].javaEnabled = true;
-        // jsonObject["browserInfo"].acceptHeader = "text/html";
+        else {
+            card = session.forms.billing.creditCardFields;
+        }
 
         jsonObject["browserInfo"] = card.browserInfo.value;
         jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"}
 
-        //TODOBAS retrieve browserInfo from Hybris code
         return jsonObject;
     },
 
