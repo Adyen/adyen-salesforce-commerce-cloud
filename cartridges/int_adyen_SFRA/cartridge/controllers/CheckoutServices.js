@@ -121,7 +121,20 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         return next();
     }
 
-    if (handlePaymentResult.redirectObject) {
+    if(handlePaymentResult.ThreeDS2){
+        var viewData = {};
+        viewData.resultCode = handlePaymentResult.resultCode;
+        viewData.authentication = handlePaymentResult.authentication;
+        res.setViewData(viewData);
+
+        res.json({
+            error: false,
+            requestData: viewData,
+            continueUrl: URLUtils.url('Adyen-Adyen3DS2').toString()
+        });
+        return next();
+    }
+    else if (handlePaymentResult.redirectObject) {
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
         if (handlePaymentResult.authorized3d) {
             session.custom.MD = handlePaymentResult.redirectObject.data.MD;

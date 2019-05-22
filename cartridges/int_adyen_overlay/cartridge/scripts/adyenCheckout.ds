@@ -261,7 +261,16 @@ function doPaymentCall(args, requestObject){
         var resultCode = args.ResultCode;
         var order = args.Order;
 
-        if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
+        if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
+            Logger.getLogger("Adyen").error("3ds2");
+            Logger.getLogger("Adyen").error("3ds2 response = " + JSON.stringify(responseObj));
+            args.ThreeDS2 = true;
+            args.resultCode = responseObj.resultCode;
+            args.authentication = responseObj.authentication;
+            args.PaymentData = responseObj.paymentData;
+        }
+
+        else if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
             args.Decision = 'ACCEPT';
             args.PaymentStatus = resultCode;
             args.PaymentData = responseObj.paymentData;
@@ -323,6 +332,7 @@ function doPaymentCall(args, requestObject){
             args.AdyenErrorMessage = errorMessage;
             Logger.getLogger('Adyen').info('Payment result: Refused');
         }
+        Logger.getLogger("Adyen").error("args = " + args);
         return args;
     }
     catch (e) {

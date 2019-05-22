@@ -28,6 +28,20 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
     next();
 });
 
+server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
+    // var resultCode = req.querystring.resultCode;
+    // var authentication = req.querystring.authentication;
+        var viewData = res.getViewData();
+     Logger.getLogger("Adyen").error("viewData = " + JSON.stringify(viewData));
+     Logger.getLogger("Adyen").error("request = " + JSON.stringify(req.form.requestData));
+    // Logger.getLogger("Adyen").error("authentication = " + authentication);
+
+    res.render('adyen3ds2', {
+        requestData: JSON.stringify(viewData)
+    });
+    next();
+});
+
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     var paymentInstrument;

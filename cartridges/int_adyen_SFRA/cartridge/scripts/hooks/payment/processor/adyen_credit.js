@@ -79,7 +79,20 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.RedirectObject != '') {
+    if(result.ThreeDS2){
+        Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
+        return {
+            ThreeDS2: result.ThreeDS2,
+            resultCode: result.resultCode,
+            authentication: result.authentication,
+        }
+    }
+
+    else if (result.RedirectObject != '') {
         Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
