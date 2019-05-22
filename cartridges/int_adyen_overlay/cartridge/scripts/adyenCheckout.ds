@@ -106,9 +106,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
 
     jsonObject['returnUrl'] = returnUrl;
-    jsonObject.additionalData = {
-        "executeThreeD": true
-    };
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {

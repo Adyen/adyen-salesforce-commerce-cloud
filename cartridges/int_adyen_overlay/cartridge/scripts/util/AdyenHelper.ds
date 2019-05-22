@@ -97,6 +97,14 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyen3DS2Enabled: function (): Boolean {
+        var returnValue: Boolean = false;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled');
+        }
+        return true;
+    },
+
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled'))) {
@@ -138,7 +146,7 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.1.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.5.0/adyen.js";
         return checkoutUrl;
     },
 
@@ -361,6 +369,10 @@ var __AdyenHelper: Object = {
             'userAgent': request.httpUserAgent
         };
 
+        if(__AdyenHelper.getAdyen3DS2Enabled()){
+            jsonObject = __AdyenHelper.add3DS2Data(jsonObject);
+        }
+
         if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
 
             if (saveCreditCard) {
@@ -444,6 +456,33 @@ var __AdyenHelper: Object = {
         }
 
         return {error: true};
+    },
+
+    add3DS2Data: function(jsonObject){
+        jsonObject["additionalData"] = {
+            allow3DS2: true
+        };
+        jsonObject["channel"] = "web";
+
+        var card;
+        if (session.forms.billing.paymentMethods) {
+            card = session.forms.billing.paymentMethods.creditCard;
+        }
+        else {
+            //different structure in SFRA
+            card = session.forms.billing.creditCardFields;
+        }
+
+        var browserInfo = JSON.parse(card.browserInfo.value);
+        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
+        browserInfo['userAgent'] = request.httpUserAgent;
+        jsonObject["browserInfo"] = browserInfo;
+        var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
+
+        jsonObject['origin'] = origin;
+        jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"};
+
+        return jsonObject;
     },
 
     extend: function (obj, src) {
