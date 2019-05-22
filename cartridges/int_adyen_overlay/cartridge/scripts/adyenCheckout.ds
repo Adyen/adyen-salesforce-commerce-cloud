@@ -106,9 +106,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
 
     jsonObject['returnUrl'] = returnUrl;
-    jsonObject.additionalData = {
-        "executeThreeD": true
-    };
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
@@ -164,10 +161,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         "infix": "",
         "lastName": billingAddr.lastName
     };
-
-    if(AdyenHelper.getAdyen3DS2Enabled()){
-        jsonObject = AdyenHelper.add3DS2Data(jsonObject);
-    }
 
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {

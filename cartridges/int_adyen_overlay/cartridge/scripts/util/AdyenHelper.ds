@@ -146,7 +146,7 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.2.1/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/2.5.0/adyen.js";
         return checkoutUrl;
     },
 
@@ -369,6 +369,10 @@ var __AdyenHelper: Object = {
             'userAgent': request.httpUserAgent
         };
 
+        if(__AdyenHelper.getAdyen3DS2Enabled()){
+            jsonObject = __AdyenHelper.add3DS2Data(jsonObject);
+        }
+
         if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
 
             if (saveCreditCard) {
@@ -455,7 +459,9 @@ var __AdyenHelper: Object = {
     },
 
     add3DS2Data: function(jsonObject){
-        jsonObject["additionalData"].allow3DS2 = true;
+        jsonObject["additionalData"] = {
+            allow3DS2: true
+        };
         jsonObject["channel"] = "web";
 
         var card;
@@ -463,11 +469,18 @@ var __AdyenHelper: Object = {
             card = session.forms.billing.paymentMethods.creditCard;
         }
         else {
+            //different structure in SFRA
             card = session.forms.billing.creditCardFields;
         }
 
-        jsonObject["browserInfo"] = card.browserInfo.value;
-        jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"}
+        var browserInfo = JSON.parse(card.browserInfo.value);
+        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
+        browserInfo['userAgent'] = request.httpUserAgent;
+        jsonObject["browserInfo"] = browserInfo;
+        var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
+
+        jsonObject['origin'] = origin;
+        jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"};
 
         return jsonObject;
     },
