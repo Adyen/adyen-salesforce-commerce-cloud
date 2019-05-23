@@ -332,7 +332,6 @@ function doPaymentCall(args, requestObject){
             args.AdyenErrorMessage = errorMessage;
             Logger.getLogger('Adyen').info('Payment result: Refused');
         }
-        Logger.getLogger("Adyen").error("args = " + args);
         return args;
     }
     catch (e) {

@@ -28,20 +28,6 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
     next();
 });
 
-server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
-    // var resultCode = req.querystring.resultCode;
-    // var authentication = req.querystring.authentication;
-        var viewData = res.getViewData();
-     Logger.getLogger("Adyen").error("viewData = " + JSON.stringify(viewData));
-     Logger.getLogger("Adyen").error("request = " + JSON.stringify(req.form.requestData));
-    // Logger.getLogger("Adyen").error("authentication = " + authentication);
-
-    res.render('adyen3ds2', {
-        requestData: JSON.stringify(viewData)
-    });
-    next();
-});
-
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
@@ -105,6 +91,20 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     Logger.getLogger("Adyen").error("Session variable does not exists");
     res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
     return next();
+});
+
+server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
+    var resultCode = req.querystring.resultCode;
+    var fingerprintToken = req.querystring.fingerprintToken;
+
+    Logger.getLogger("Adyen").error("resultCode = " + JSON.stringify(resultCode));
+    Logger.getLogger("Adyen").error("fingerprintToken = " + JSON.stringify(fingerprintToken));
+
+    res.render('/threeds2/adyen3ds2', {
+        resultCode: resultCode,
+        fingerprintToken: fingerprintToken
+    });
+    next();
 });
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {

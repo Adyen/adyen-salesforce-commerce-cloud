@@ -122,15 +122,14 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     if(handlePaymentResult.ThreeDS2){
-        var viewData = {};
-        viewData.resultCode = handlePaymentResult.resultCode;
-        viewData.authentication = handlePaymentResult.authentication;
-        res.setViewData(viewData);
+        // var viewData = {};
+        // viewData.resultCode = handlePaymentResult.resultCode;
+        // viewData.authentication = handlePaymentResult.authentication;
+        // res.setViewData(viewData);
 
         res.json({
             error: false,
-            requestData: viewData,
-            continueUrl: URLUtils.url('Adyen-Adyen3DS2').toString()
+            continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'fingerprintToken', handlePaymentResult.authentication['threeds2.fingerprintToken']).toString()
         });
         return next();
     }

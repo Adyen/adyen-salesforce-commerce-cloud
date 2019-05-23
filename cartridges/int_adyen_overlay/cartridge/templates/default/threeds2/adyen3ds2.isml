@@ -1,0 +1,20 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('js/threeds2/adyen3ds2.js');
+</isscript>
+
+<isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
+<isset name="fingerprintToken" value="${pdict.fingerprintToken}" scope="page"/>
+<script type="text/javascript" src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.js"></script>
+<script type="text/javascript" src="${URLUtils.staticURL('/threeds2/adyen3ds2.js')}"></script>
+<div id="threeDS2"></div> 
+<div>test123</div>
+
+<script>
+console.log("3ds2 loaded");
+var resultCode = "${pdict.resultCode}";
+console.log(resultCode);
+var fingerprintToken = "${pdict.fingerprintToken}";
+console.log(fingerprintToken);
+
+</script>
