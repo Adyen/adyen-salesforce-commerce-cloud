@@ -15,7 +15,7 @@ var afterpayComponent;
 var klarnaComponent;
 var isValid = false;
 
-getConfigurationSecureFields();
+getConfigurationComponents();
 
 $(document).ready(function () {
     displayPaymentMethods();
@@ -85,9 +85,9 @@ function renderOneClickComponents() {
     });
 };
 
-function getConfigurationSecureFields() {
+function getConfigurationComponents() {
     $.ajax({
-        url: 'Adyen-GetConfigSecuredFields',
+        url: 'Adyen-getConfigurationComponents',
         type: 'get',
         data: {protocol: window.location.protocol},
         success: function (data) {

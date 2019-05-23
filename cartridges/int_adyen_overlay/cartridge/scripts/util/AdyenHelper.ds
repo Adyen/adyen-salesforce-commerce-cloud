@@ -102,7 +102,7 @@ var __AdyenHelper: Object = {
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled');
         }
-        return true;
+        return returnValue;
     },
 
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
@@ -480,7 +480,7 @@ var __AdyenHelper: Object = {
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
 
         jsonObject['origin'] = origin;
-        jsonObject.threeDS2RequestData = {"notificationURL" : "https://test.com"};
+        jsonObject.threeDS2RequestData = {"notificationURL" : ""};
 
         return jsonObject;
     },

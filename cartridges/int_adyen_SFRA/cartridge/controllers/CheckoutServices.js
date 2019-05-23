@@ -121,16 +121,19 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         return next();
     }
 
-    if(handlePaymentResult.ThreeDS2){
-        // var viewData = {};
-        // viewData.resultCode = handlePaymentResult.resultCode;
-        // viewData.authentication = handlePaymentResult.authentication;
-        // res.setViewData(viewData);
+    if(handlePaymentResult.ThreeDS2) {
+        if (handlePaymentResult.resultCode == "IdentifyShopper") {
+            res.json({
+                error: false,
+                continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'fingerprintToken', handlePaymentResult.token).toString()
+            });
+        } else if (handlePaymentResult.resultCode == "ChallengeShopper") {
+            res.json({
+                error: false,
+                continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'challengeToken', handlePaymentResult.token).toString()
+            });
+        }
 
-        res.json({
-            error: false,
-            continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'fingerprintToken', handlePaymentResult.authentication['threeds2.fingerprintToken']).toString()
-        });
         return next();
     }
     else if (handlePaymentResult.redirectObject) {

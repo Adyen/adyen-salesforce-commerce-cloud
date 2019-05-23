@@ -245,10 +245,8 @@ function doPaymentCall(args, requestObject){
             return {error: true};
         }
 
-        // return the AVS result code
-        args.AVSResultCode = (!empty(responseObj.avsResultRaw) ? responseObj.avsResultRaw : '');
 
-        // if the card is enrolled in the 3-D Secure programme the response should contain these 4 fields
+        // if the card is enrolled for 3D Secure, the response contains a redirect object
         if ('redirect' in responseObj) {args.RedirectObject = responseObj.redirect;} // issuerUrl
         args.ResultCode = responseObj.resultCode; // resultCode
 
@@ -262,11 +260,21 @@ function doPaymentCall(args, requestObject){
         var order = args.Order;
 
         if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
-            Logger.getLogger("Adyen").error("3ds2");
-            Logger.getLogger("Adyen").error("3ds2 response = " + JSON.stringify(responseObj));
             args.ThreeDS2 = true;
             args.resultCode = responseObj.resultCode;
-            args.authentication = responseObj.authentication;
+
+            var token;
+            if(responseObj.authentication["threeds2.fingerprintToken"]) {
+                token = responseObj.authentication["threeds2.fingerprintToken"]
+            }
+            else if (responseObj.authentication["threeds2.challengeToken"]){
+                token = responseObj.authentication["threeds2.challengeToken"];
+            }
+            else if(responseObj.authentication['threeds2.challengeResult']){
+                token = responseObj.authentication['threeds2.challengeResult'];
+            }
+
+            args.token = token;
             args.PaymentData = responseObj.paymentData;
         }
 
@@ -278,9 +286,8 @@ function doPaymentCall(args, requestObject){
             if (responseObj.resultCode.indexOf('Authorised') != -1) {
                 order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
                 order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+                Logger.getLogger('Adyen').info('Payment result: Authorised');
             }
-            Logger.getLogger('Adyen').info('Payment result: Authorised');
-            Logger.getLogger('Adyen').info('Decision: ' + args.Decision);
 
             if (args.RedirectObject == '') { // if is not 3DSecure
                 Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);

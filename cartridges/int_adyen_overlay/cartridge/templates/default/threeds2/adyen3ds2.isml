@@ -1,20 +1,121 @@
-<isscript>
-    var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('js/threeds2/adyen3ds2.js');
-</isscript>
-
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="fingerprintToken" value="${pdict.fingerprintToken}" scope="page"/>
-<script type="text/javascript" src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.js"></script>
-<script type="text/javascript" src="${URLUtils.staticURL('/threeds2/adyen3ds2.js')}"></script>
-<div id="threeDS2"></div> 
-<div>test123</div>
+<isset name="challengeToken" value="${pdict.challengeToken}" scope="page"/>
+<isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 
-<script>
-console.log("3ds2 loaded");
-var resultCode = "${pdict.resultCode}";
-console.log(resultCode);
-var fingerprintToken = "${pdict.fingerprintToken}";
-console.log(fingerprintToken);
+<html>
+<head>
+    <script type="text/javascript" src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <link rel="stylesheet"  href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.css"/>
 
-</script>
+    <script type="text/javascript">
+        var resultCode = "${pdict.resultCode}";
+        var fingerprintToken = "${pdict.fingerprintToken}";
+        var challengeToken = "${pdict.challengeToken}";
+
+        function initiateCheckout ( locale, loadingContext, originKey ) {
+            var configuration = {
+                locale: locale,// shopper's locale
+                loadingContext: loadingContext,
+                originKey: originKey
+            };
+            this.checkout = new AdyenCheckout(configuration);
+        }
+
+        var originKey = "";
+        var loadingContext = "";
+
+        function setConfigData(data) {
+            originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
+            loadingContext = data.adyenLoadingContext;
+        };
+
+        function initiateComponents () {
+            getConfigurationComponents();
+            initiateCheckout("en_US", loadingContext, originKey);
+            if (challengeToken != "null") {
+                initiate3DS2ChallengeShopper(challengeToken);
+            } else {
+                if (fingerprintToken) {
+                    initiate3DS2IdentifyShopper(fingerprintToken);
+                }
+            }
+        }
+
+        function getConfigurationComponents() {
+            $.ajax({
+                url: 'Adyen-getConfigurationComponents',
+                type: 'get',
+                data: {protocol: window.location.protocol},
+                success: function (data) {
+                    if (!data.error) {
+                        setConfigData(data);
+                    } else {
+                        $('#errorLoadComponent').text(data.errorMessage);
+                    }
+                }
+            });
+        };
+
+        function initiate3DS2IdentifyShopper (fingerprintToken) {
+            var threeDS2IdentifyShopperNode = document.getElementById('threeDS2');
+            var identifyShopperComponent = this.checkout.create('threeDS2DeviceFingerprint', {
+                fingerprintToken: fingerprintToken,
+                onComplete: function (fingerprintData) {
+                    var fingerprintResult = fingerprintData.data.details["threeds2.fingerprint"];
+
+                    var fingerprintResultField = document.getElementById('fingerprintResult');
+                    fingerprintResultField.value = fingerprintResult;
+                    document.getElementById("3ds2-form").submit();
+
+                }, // Gets triggered whenever the ThreeDS2 component has a result
+
+                onError: function (error) {
+                    alert("Payment Refused with error [" + error.errorCode + "] and reason is " + error.message);
+                } // Gets triggered on error
+            });
+            identifyShopperComponent.mount(threeDS2IdentifyShopperNode);
+        }
+
+        function initiate3DS2ChallengeShopper (challengeToken) {
+            var threeDS2ChallengeShopperNode = document.getElementById('threeDS2');
+            var challengeShopperComponent = this.checkout
+                .create('threeDS2Challenge', {
+                    challengeToken: challengeToken,
+                    onComplete: function (challengeData) {
+                        var challengeResult = challengeData.data.details["threeds2.challengeResult"];
+                        var challengeResultField = document.getElementById('challengeResult');
+                        challengeResultField.value = challengeResult;;
+                        document.getElementById("3ds2-form").submit();
+                    },
+                    onError: function (error) {
+                        alert("Payment Refused with error [" + error.errorCode + "] and reason is " + error.message);
+
+                    }, // Gets triggered on error
+                    size: '05' // Defaults to '01'
+                });
+            challengeShopperComponent.mount(threeDS2ChallengeShopperNode);
+        }
+    </script>
+
+</head>
+<body onload=initiateComponents()>
+<input type="hidden" id="currentLocale" value="${request.locale}"/>
+    <form method="post"
+          id="3ds2-form"
+          action="${authorise3DS2}">
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="threeDS2"></div>
+                <span id="errorLoadComponent"></span>
+                <input type="hidden" name="resultCode" value="${resultCode}"/>
+                <input type="hidden" name="challengeToken" value="${challengeToken}"/>
+                <input type="hidden" name="fingerprintToken" value="${fingerprintToken}"/>
+                <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
+                <input type="hidden" id="challengeResult" name="challengeResult"/>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

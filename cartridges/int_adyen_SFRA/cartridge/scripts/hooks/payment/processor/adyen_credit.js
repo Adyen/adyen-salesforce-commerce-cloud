@@ -10,6 +10,7 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
@@ -85,10 +86,13 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+
         return {
             ThreeDS2: result.ThreeDS2,
             resultCode: result.resultCode,
-            authentication: result.authentication,
+            token: result.token,
         }
     }
 
