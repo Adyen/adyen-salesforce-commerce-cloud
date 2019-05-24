@@ -268,9 +268,6 @@ function doPaymentCall(args, requestObject){
             else if (responseObj.authentication["threeds2.challengeToken"]){
                 token3ds2 = responseObj.authentication["threeds2.challengeToken"];
             }
-            else if(responseObj.authentication['threeds2.challengeResult']){
-                token3ds2 = responseObj.authentication['threeds2.challengeResult'];
-            }
             args.token3ds2 = token3ds2;
             args.PaymentData = responseObj.paymentData;
         }
