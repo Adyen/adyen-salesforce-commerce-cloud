@@ -245,7 +245,6 @@ function doPaymentCall(args, requestObject){
             return {error: true};
         }
 
-
         // if the card is enrolled for 3D Secure, the response contains a redirect object
         if ('redirect' in responseObj) {args.RedirectObject = responseObj.redirect;} // issuerUrl
         args.ResultCode = responseObj.resultCode; // resultCode
@@ -262,19 +261,17 @@ function doPaymentCall(args, requestObject){
         if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
             args.ThreeDS2 = true;
             args.resultCode = responseObj.resultCode;
-
-            var token;
+            var token3ds2;
             if(responseObj.authentication["threeds2.fingerprintToken"]) {
-                token = responseObj.authentication["threeds2.fingerprintToken"]
+                token3ds2 = responseObj.authentication["threeds2.fingerprintToken"]
             }
             else if (responseObj.authentication["threeds2.challengeToken"]){
-                token = responseObj.authentication["threeds2.challengeToken"];
+                token3ds2 = responseObj.authentication["threeds2.challengeToken"];
             }
             else if(responseObj.authentication['threeds2.challengeResult']){
-                token = responseObj.authentication['threeds2.challengeResult'];
+                token3ds2 = responseObj.authentication['threeds2.challengeResult'];
             }
-
-            args.token = token;
+            args.token3ds2 = token3ds2;
             args.PaymentData = responseObj.paymentData;
         }
 

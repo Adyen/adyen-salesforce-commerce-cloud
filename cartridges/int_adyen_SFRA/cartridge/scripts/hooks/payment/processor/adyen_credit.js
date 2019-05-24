@@ -92,7 +92,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         return {
             ThreeDS2: result.ThreeDS2,
             resultCode: result.resultCode,
-            token: result.token,
+            token3ds2: result.token3ds2,
         }
     }
 

@@ -95,23 +95,16 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
 
 server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
     var resultCode = req.querystring.resultCode;
-    var fingerprintToken = req.querystring.fingerprintToken;
-    var challengeToken = req.querystring.challengeToken;
-
-    Logger.getLogger("Adyen").error("resultCode = " + JSON.stringify(resultCode));
-    Logger.getLogger("Adyen").error("fingerprintToken = " + JSON.stringify(fingerprintToken));
-    Logger.getLogger("Adyen").error("challengeToken = " + JSON.stringify(challengeToken));
+    var token3ds2 = req.querystring.token3ds2;
 
     res.render('/threeds2/adyen3ds2', {
         resultCode: resultCode,
-        fingerprintToken: fingerprintToken,
-        challengeToken: challengeToken
+        token3ds2: token3ds2
     });
     return next();
 });
 
 server.post('Authorize3DS2', server.middleware.https, function (req, res, next) {
-    Logger.getLogger("Adyen").error("Authorize3DS2");
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
@@ -121,7 +114,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
             order = OrderMgr.getOrder(session.custom.orderNo);
             paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
         } catch (e) {
-            Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+            Logger.getLogger("Adyen").error("Unable to retrieve order data from session 3DS2.");
             res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
             return next();
         }
@@ -148,7 +141,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
         };
 
         var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-
         if ((result.error || result.resultCode != 'Authorised') && result.resultCode != 'ChallengeShopper') {
             //Payment failed
             Transaction.wrap(function () {
@@ -159,7 +151,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
             return next();
         } else if (result.resultCode == 'ChallengeShopper') {
             //Redirect to ChallengeShopper
-            res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'resultCode', result.resultCode, 'challengeToken', result.authentication['threeds2.challengeToken']));
+            res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'resultCode', result.resultCode, 'token3ds2', result.authentication['threeds2.challengeToken']));
             return next();
         }
 

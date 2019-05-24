@@ -1,6 +1,5 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
-<isset name="fingerprintToken" value="${pdict.fingerprintToken}" scope="page"/>
-<isset name="challengeToken" value="${pdict.challengeToken}" scope="page"/>
+<isset name="token3ds2" value="${pdict.token3ds2}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 
 <html>
@@ -11,8 +10,7 @@
 
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
-        var fingerprintToken = "${pdict.fingerprintToken}";
-        var challengeToken = "${pdict.challengeToken}";
+        var token3ds2 = "${pdict.token3ds2}";
 
         function initiateCheckout ( locale, loadingContext, originKey ) {
             var configuration = {
@@ -34,12 +32,10 @@
         function initiateComponents () {
             getConfigurationComponents();
             initiateCheckout("en_US", loadingContext, originKey);
-            if (challengeToken != "null") {
-                initiate3DS2ChallengeShopper(challengeToken);
-            } else {
-                if (fingerprintToken) {
-                    initiate3DS2IdentifyShopper(fingerprintToken);
-                }
+            if (resultCode == "ChallengeShopper") {
+                initiate3DS2ChallengeShopper(token3ds2);
+            } else if (resultCode == "IdentifyShopper") {
+                initiate3DS2IdentifyShopper(token3ds2);
             }
         }
 
@@ -64,7 +60,6 @@
                 fingerprintToken: fingerprintToken,
                 onComplete: function (fingerprintData) {
                     var fingerprintResult = fingerprintData.data.details["threeds2.fingerprint"];
-
                     var fingerprintResultField = document.getElementById('fingerprintResult');
                     fingerprintResultField.value = fingerprintResult;
                     document.getElementById("3ds2-form").submit();
@@ -86,7 +81,7 @@
                     onComplete: function (challengeData) {
                         var challengeResult = challengeData.data.details["threeds2.challengeResult"];
                         var challengeResultField = document.getElementById('challengeResult');
-                        challengeResultField.value = challengeResult;;
+                        challengeResultField.value = challengeResult;
                         document.getElementById("3ds2-form").submit();
                     },
                     onError: function (error) {
@@ -101,7 +96,6 @@
 
 </head>
 <body onload=initiateComponents()>
-<input type="hidden" id="currentLocale" value="${request.locale}"/>
     <form method="post"
           id="3ds2-form"
           action="${authorise3DS2}">
@@ -110,8 +104,7 @@
                 <div id="threeDS2"></div>
                 <span id="errorLoadComponent"></span>
                 <input type="hidden" name="resultCode" value="${resultCode}"/>
-                <input type="hidden" name="challengeToken" value="${challengeToken}"/>
-                <input type="hidden" name="fingerprintToken" value="${fingerprintToken}"/>
+                <input type="hidden" name="token3ds2" value="${token3ds2}"/>
                 <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
                 <input type="hidden" id="challengeResult" name="challengeResult"/>
             </div>
