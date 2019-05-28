@@ -1,4 +1,4 @@
-var threeDS2utils = require('./threeds2-js-utils.js');
+var threeDS2utils = require('../../../../../int_adyen_overlay/cartridge/js/threeds2-js-utils.js');
 
 const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US

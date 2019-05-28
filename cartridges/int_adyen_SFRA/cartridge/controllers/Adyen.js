@@ -104,6 +104,19 @@ server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
     return next();
 });
 
+server.post('Adyen3DS2post', server.middleware.https, function (req, res, next) {
+    var resultCode = req.body.testdata;
+    var token3ds2 = req.getViewData();
+
+    Logger.getLogger("Adyen").error("post = " + resultCode);
+    Logger.getLogger("Adyen").error("post2 = " + token3ds2);
+    res.render('/threeds2/adyen3ds2', {
+        resultCode: resultCode,
+        token3ds2: token3ds2
+    });
+    return next();
+});
+
 server.post('Authorize3DS2', server.middleware.https, function (req, res, next) {
     var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     var paymentInstrument;

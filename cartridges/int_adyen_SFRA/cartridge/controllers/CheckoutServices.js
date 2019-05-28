@@ -124,7 +124,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     if(handlePaymentResult.ThreeDS2) {
         res.json({
             error: false,
-            continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'token3ds2', handlePaymentResult.token3ds2).toString()
+            testdata: "hoi",
+            continueUrl: URLUtils.url('Adyen-Adyen3DS2post').toString() //, 'resultCode', handlePaymentResult.resultCode, 'token3ds2', handlePaymentResult.token3ds2).toString()
         });
         return next();
     }
