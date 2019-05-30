@@ -1,12 +1,13 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="token3ds2" value="${pdict.token3ds2}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 
 <html>
 <head>
-    <script type="text/javascript" src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.js"></script>
+    <script type="text/javascript" src="${pdict.AdyenHelper.getLoadingContext()}sdk/2.5.0/adyen.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <link rel="stylesheet"  href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.5.0/adyen.css"/>
+    <link rel="stylesheet"  href="${pdict.AdyenHelper.getLoadingContext()}sdk/2.5.0/adyen.css"/>
 
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
