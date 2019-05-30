@@ -87,7 +87,7 @@ function renderOneClickComponents() {
 
 function getConfigurationComponents() {
     $.ajax({
-        url: 'Adyen-getConfigurationComponents',
+        url: 'Adyen-GetConfigurationComponents',
         type: 'get',
         data: {protocol: window.location.protocol},
         success: function (data) {

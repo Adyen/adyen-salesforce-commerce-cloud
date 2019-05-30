@@ -292,7 +292,7 @@ function isMethodTypeBlocked(methodType) {
 /**
  * Get OriginKey for Secured Fields
  */
-server.get('getConfigurationComponents', server.middleware.https, function (req, res, next) {
+server.get('GetConfigurationComponents', server.middleware.https, function (req, res, next) {
     var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
     var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
     var originKey;
