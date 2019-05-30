@@ -2,10 +2,8 @@
 
 <isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<isset name="Threeds2util" value="${require('int_adyen_overlay/cartridge/js/threeds2-js-utils.js')}" scope="PAGE"/>
 <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.1.0/adyen.css"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
- <script type="text/javascript" src="../threeds2-js-utils.js"></script>
 
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
@@ -68,12 +66,9 @@
 	var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
 	var locale = "${request.locale}";
-	var threeDS2utils = "${Threeds2util.getBrowserInfo()}";
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
 
-	var browserInfo = JSON.stringify(threeDS2utils);
-	console.log(browserInfo);
     scriptTag.src = "${AdyenHelper.getCheckoutUrl()}";
     scriptTag.type = "text/javascript";
     document.body.appendChild(scriptTag);

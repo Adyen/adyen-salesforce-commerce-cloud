@@ -194,8 +194,9 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 	    jsonObject['shopperName'] = shopperDetails;
     }
 
-    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
 
+    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
+    Logger.getLogger("Adyen").error("requestObj = " + JSON.stringify(requestObject));
     // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
@@ -258,6 +259,7 @@ function doPaymentCall(args, requestObject){
         var resultCode = args.ResultCode;
         var order = args.Order;
 
+        Logger.getLogger("Adyen").error("responseObj = " + JSON.stringify(responseObj));
         if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
             args.ThreeDS2 = true;
             args.resultCode = responseObj.resultCode;
