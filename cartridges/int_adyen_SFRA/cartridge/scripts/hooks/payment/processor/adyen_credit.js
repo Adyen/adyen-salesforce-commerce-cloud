@@ -10,6 +10,7 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
@@ -79,7 +80,23 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.RedirectObject != '') {
+    if(result.ThreeDS2){
+        Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+
+        return {
+            ThreeDS2: result.ThreeDS2,
+            resultCode: result.resultCode,
+            token3ds2: result.token3ds2,
+        }
+    }
+
+    else if (result.RedirectObject != '') {
         Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
