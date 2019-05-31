@@ -10,7 +10,8 @@
         }
         return number;
     }
-
+    
+    var threeDS2utils = require('../../threeds2-js-utils.js');
     /**
      * @function
      * @description Initializes Adyen Secured Fields  Billing events
@@ -147,6 +148,7 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.paymentData.holderName);
+        setBrowserData();
     }
     
     function clearCardData() {
@@ -157,6 +159,11 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val("");
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val("");
     }
+    
+    function setBrowserData() {
+        var browserData = threeDS2utils.getBrowserInfo();
+        $('##dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(browserData));
+    };
 
     /**
      * @function

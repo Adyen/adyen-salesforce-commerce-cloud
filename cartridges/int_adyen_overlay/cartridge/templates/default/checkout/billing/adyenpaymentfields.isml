@@ -5,7 +5,6 @@
 <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.1.0/adyen.css"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
-
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
 <iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
@@ -58,6 +57,7 @@
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
     <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
+    <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo}" type="hidden"/>
 </div>
 
 
@@ -66,10 +66,9 @@
 	var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
 	var locale = "${request.locale}";
-	
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
-	
+
     scriptTag.src = "${AdyenHelper.getCheckoutUrl()}";
     scriptTag.type = "text/javascript";
     document.body.appendChild(scriptTag);
