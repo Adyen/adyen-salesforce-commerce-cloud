@@ -84,10 +84,7 @@ function Authorize(args) {
         };
     }
     
-    // Checks if 3DS 2 was triggered
     if(result.ThreeDS2){
-    	Logger.getLogger("Adyen").error("THIS IS 3DS2 FLOW, with token: " + JSON.stringify(result.token3ds2));
-    	
         Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
@@ -101,7 +98,7 @@ function Authorize(args) {
             authorized3d: true,
             view : app.getView({
             	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
-            	Basket: order, // is this necessary? TODO
+            	Basket: order,
             	resultCode: result.resultCode,
                 token3ds2: result.token3ds2
             })

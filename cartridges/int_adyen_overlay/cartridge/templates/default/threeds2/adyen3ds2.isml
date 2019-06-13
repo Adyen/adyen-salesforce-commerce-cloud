@@ -46,7 +46,6 @@
                 type: 'get',
                 data: {protocol: window.location.protocol},
                 success: function (data) {
-                	console.log(data);
                     if (!data.error) {
                         setConfigData(data);
                     } else {

@@ -56,7 +56,7 @@ function notify() {
 /**
  * Redirect to Adyen after saving order etc.
  */
-function redirect(order, redirectUrl) { 
+function redirect(order, redirectUrl) {
 	response.redirect(redirectUrl);
 }
 
@@ -330,28 +330,12 @@ function cancelOrRefund() {
 }
 
 
-function redirect3ds2() {	
-	var threedsParams = {
-			resultCode : request.httpParameterMap.get("resultCode").stringValue,
-			token3ds2 : request.httpParameterMap.get("token3ds2").stringValue
-	}
-	
-	// TODO: Decide how to handle params either thru query string params or passed into function
-	Logger.getLogger("Adyen").error("Made it to the redirect3ds2 result: " + JSON.stringify(threedsParams));
-	
+function redirect3ds2() {
 	app.getView({
     	resultCode : request.httpParameterMap.get("resultCode").stringValue,
 		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
         ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
     }).render('/threeds2/adyen3ds2');
-	 
-	
-	// TODO: need to find out how to pass thru the threedsParams
-//    app.getView({
-//    	resultCode : request.httpParameterMap.get("resultCode").stringValue,
-//		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
-//        ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
-//    }).render('/threeds2/adyen3ds2');
 }
 
 /**
@@ -360,7 +344,6 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
-	// this is what triggered after the IdentifyShopper or ChallengeShopper component returns result
 	Transaction.begin();
 	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
@@ -383,9 +366,6 @@ function authorize3ds2() {
 
         var details = {};
         
-        // TODO: Need to find how to get these values
-        // request.httpParameterMap.get("resultCode").stringValue;
-        // request.httpParameterMap.get("fingerprintResult").stringValue;
         if (request.httpParameterMap.get("resultCode").stringValue == "IdentifyShopper" && request.httpParameterMap.get("fingerprintResult").stringValue) {
             details = {
                 "threeds2.fingerprint": request.httpParameterMap.get("fingerprintResult").stringValue
@@ -422,14 +402,7 @@ function authorize3ds2() {
                 PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
             });
             return {};
-        } else if (result.resultCode == 'ChallengeShopper') {
-            //Redirect to ChallengeShopper
-        	//res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'resultCode', result.resultCode, 'token3ds2', result.authentication['threeds2.challengeToken']));
-        	
-        	Logger.getLogger("Adyen").error("Redirecting for challengeShopper: " + result.resultCode);
-        	// app.getController('Adyen').Redirect3DS2(result.resultCode, result.authentication['threeds2.challengeToken']);
-        	// redirect3ds2(result.resultCode, result.authentication['threeds2.challengeToken']);
-        	
+        } else if (result.resultCode == 'ChallengeShopper') {        	
         	app.getView({
             	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
             	resultCode: result.resultCode,
@@ -459,7 +432,6 @@ function authorize3ds2() {
         paymentInstrument.custom.adyenPaymentData = null;
         Transaction.commit();
 
-        // TODO: COHelpers.sendConfirmationEmail(order, req.locale.id);
         OrderModel.submit(order);
         clearForms();
         app.getController('COSummary').ShowConfirmation(order);
@@ -570,28 +542,26 @@ function closeIFrame() {
 }
 
 function getConfigurationComponents() {
-	  var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-	  
-	  
-	    var baseUrl = request.httpParameterMap.get("protocol").stringValue + "//" + Site.getCurrent().getHttpsHostName();
-	    var originKey;
-	    var error = false;
-	    var errorMessage = "";
-	    var loadingContext = "";
-
-	    try {
-	        originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-	        loadingContext = AdyenHelper.getLoadingContext();
-	    } catch (err) {
-	        error = true;
-	        errorMessage = Resource.msg('load.component.error', 'creditCard', null);
-	    }
-	    return {
-	        error: error,
-	        errorMessage: errorMessage,
-	        adyenOriginKey: originKey,
-	        adyenLoadingContext: loadingContext
-	    };
+	var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey'); 
+	var baseUrl = request.httpParameterMap.get("protocol").stringValue + "//" + Site.getCurrent().getHttpsHostName();
+	var originKey;
+	var error = false;
+	var errorMessage = "";
+	var loadingContext = "";
+	
+	try {
+	    originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
+	    loadingContext = AdyenHelper.getLoadingContext();
+	} catch (err) {
+	    error = true;
+	    errorMessage = Resource.msg('load.component.error', 'creditCard', null);
+	}
+	return {
+	    error: error,
+	    errorMessage: errorMessage,
+	    adyenOriginKey: originKey,
+	    adyenLoadingContext: loadingContext
+	};
 }
 
 /**

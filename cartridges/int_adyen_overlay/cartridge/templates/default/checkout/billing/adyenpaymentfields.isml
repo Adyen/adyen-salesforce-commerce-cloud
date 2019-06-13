@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.1.0/adyen.css"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
+
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
 <iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
