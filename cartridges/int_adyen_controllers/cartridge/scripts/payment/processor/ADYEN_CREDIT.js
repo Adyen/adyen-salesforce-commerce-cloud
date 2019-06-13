@@ -96,7 +96,7 @@ function Authorize(args) {
 
         return {
             authorized: true,
-            authorized3ds2: true,
+            authorized3d: true,
             view : app.getView({
             	ContinueURL: URLUtils.https('Adyen-Redirect3DS2'),
             	Basket: order, // is this necessary? TODO

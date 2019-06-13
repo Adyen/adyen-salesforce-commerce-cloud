@@ -403,6 +403,10 @@ function authorize3ds2() {
         }
 
         var details = {};
+        
+        // TODO: Need to find how to get these values
+        // request.httpParameterMap.get("resultCode").stringValue;
+        // request.httpParameterMap.get("fingerprintResult").stringValue;
         if (req.form.resultCode == "IdentifyShopper" && req.form.fingerprintResult) {
             details = {
                 "threeds2.fingerprint": req.form.fingerprintResult
@@ -442,7 +446,7 @@ function authorize3ds2() {
         } else if (result.resultCode == 'ChallengeShopper') {
             //Redirect to ChallengeShopper
         	//res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'resultCode', result.resultCode, 'token3ds2', result.authentication['threeds2.challengeToken']));
-        	app.getController('COSummary').Adyen3DS2(result.resultCode, result.authentication['threeds2.challengeToken']);
+        	app.getController('Adyen').Adyen3DS2(result.resultCode, result.authentication['threeds2.challengeToken']);
         }
 
         //delete paymentData from requests
