@@ -84,6 +84,7 @@ function Authorize(args) {
         };
     }
     
+    // Checks if 3DS 2 was triggered
     if(result.ThreeDS2){
         Transaction.commit();
         Transaction.wrap(function () {
@@ -94,9 +95,14 @@ function Authorize(args) {
         session.custom.paymentMethod = paymentInstrument.paymentMethod;
 
         return {
-            ThreeDS2: result.ThreeDS2,
-            resultCode: result.resultCode,
-            token3ds2: result.token3ds2,
+            authorized: true,
+            authorized3ds2: true,
+            view : app.getView({
+            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2'),
+            	Basket: order, // is this necessary? TODO
+            	resultCode: result.resultCode,
+                token3ds2: result.token3ds2
+            });
         }
     }
 

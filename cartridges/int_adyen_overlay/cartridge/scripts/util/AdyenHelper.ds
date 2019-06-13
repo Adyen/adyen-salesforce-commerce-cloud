@@ -102,7 +102,7 @@ var __AdyenHelper: Object = {
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled');
         }
-        return returnValue;
+        return true;
     },
 
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
