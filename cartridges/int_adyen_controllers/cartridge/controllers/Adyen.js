@@ -330,19 +330,7 @@ function cancelOrRefund() {
 }
 
 
-function redirect3ds2(threedsResultCode, token) {
-	Logger.getLogger("Adyen").error("redirect3ds2 threedsResultCode = " + JSON.stringify(threedsResultCode));
-	Logger.getLogger("Adyen").error("redirect3ds2 token = " + JSON.stringify(token));
-	
-	// SFRA CODE
-//	var resultCode = req.querystring.resultCode;
-//    var token3ds2 = req.querystring.token3ds2;
-//
-//    res.render('/threeds2/adyen3ds2', {
-//        resultCode: resultCode,
-//        token3ds2: token3ds2
-//    });
-	
+function redirect3ds2() {	
 	var threedsParams = {
 			resultCode : request.httpParameterMap.get("resultCode").stringValue,
 			token3ds2 : request.httpParameterMap.get("token3ds2").stringValue
@@ -351,24 +339,9 @@ function redirect3ds2(threedsResultCode, token) {
 	// TODO: Decide how to handle params either thru query string params or passed into function
 	Logger.getLogger("Adyen").error("Made it to the redirect3ds2 result: " + JSON.stringify(threedsParams));
 	
-	if (threedsResultCode != null) {
-		var resultCode = threedsResultCode;
-	} else {
-		var resultCode = request.httpParameterMap.get("resultCode").stringValue;
-	}
-	
-	if (token) {
-		var token3ds2 = token;
-	} else {
-		var token3ds2 = request.httpParameterMap.get("token3ds2").stringValue;
-	}
-	
-	Logger.getLogger("Adyen").error("Made it to the redirect3ds2 result: " + resultCode);
-	Logger.getLogger("Adyen").error("Made it to the redirect3ds2 token: " + token3ds2);
-	
 	app.getView({
-    	resultCode : resultCode,
-		token3ds2 : token3ds2,
+    	resultCode : request.httpParameterMap.get("resultCode").stringValue,
+		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
         ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
     }).render('/threeds2/adyen3ds2');
 	 
@@ -454,15 +427,15 @@ function authorize3ds2() {
         	//res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'resultCode', result.resultCode, 'token3ds2', result.authentication['threeds2.challengeToken']));
         	
         	Logger.getLogger("Adyen").error("Redirecting for challengeShopper: " + result.resultCode);
-        	app.getController('Adyen').Redirect3DS2(result.resultCode, result.authentication['threeds2.challengeToken']);
+        	// app.getController('Adyen').Redirect3DS2(result.resultCode, result.authentication['threeds2.challengeToken']);
         	// redirect3ds2(result.resultCode, result.authentication['threeds2.challengeToken']);
         	
-//        	app.getView({
-//            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
-//            	resultCode: result.resultCode,
-//                token3ds2: result.authentication['threeds2.challengeToken']
-//            }).render('adyenpaymentredirect');
-        	
+        	app.getView({
+            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
+            	resultCode: result.resultCode,
+                token3ds2: result.authentication['threeds2.challengeToken']
+            }).render('adyenpaymentredirect');
+        	return {};
         }
 
         //delete paymentData from requests
