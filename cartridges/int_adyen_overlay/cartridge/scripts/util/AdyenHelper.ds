@@ -102,6 +102,7 @@ var __AdyenHelper: Object = {
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen3DS2Enabled');
         }
+        // TODO: Change this back and load in custom preference
         return true;
     },
 
