@@ -83,6 +83,27 @@ function Authorize(args) {
             PlaceOrderError: (!empty(args) && 'AdyenErrorMessage' in args && !empty(args.AdyenErrorMessage) ? args.AdyenErrorMessage : '')
         };
     }
+    
+    if(result.ThreeDS2){
+        Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+
+        return {
+            authorized: true,
+            authorized3d: true,
+            view : app.getView({
+            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
+            	Basket: order,
+            	resultCode: result.resultCode,
+                token3ds2: result.token3ds2
+            })
+        }
+    }
 
     if(result.RedirectObject != ''){
 	    if(result.RedirectObject.url && result.RedirectObject.data.PaReq && result.RedirectObject.data.MD){

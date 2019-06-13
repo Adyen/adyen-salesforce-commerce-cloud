@@ -16,5 +16,7 @@
 	<form action="${URLUtils.continueURL()}" method="POST" name="RedirectForm" target="_parent">
 		<input type="hidden" name="PaReq" value="${pdict.paRequest}">
 		<input type="hidden" name="MD" value="${pdict.md}">
+		<input type="hidden" name="resultCode" value="${pdict.resultCode}">
+		<input type="hidden" name="token3ds2" value="${pdict.token3ds2}">
 	</form>
 </body>

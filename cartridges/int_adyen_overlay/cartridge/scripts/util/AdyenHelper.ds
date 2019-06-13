@@ -467,16 +467,29 @@ var __AdyenHelper: Object = {
         var card;
         if (session.forms.billing.paymentMethods) {
             card = session.forms.billing.paymentMethods.creditCard;
+            var browserInfo = {};
+            browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
+            browserInfo['userAgent'] = request.httpUserAgent;
+            jsonObject["browserInfo"] = browserInfo;
+            
+            jsonObject["browserInfo"].screenWidth = 1024;
+	        jsonObject["browserInfo"].screenHeight = 500;
+	        jsonObject["browserInfo"].colorDepth = 24;
+	        jsonObject["browserInfo"].userAgent = "Chrome";
+	        jsonObject["browserInfo"].timeZoneOffset = 0;
+	        jsonObject["browserInfo"].language = "nl-NL";
+	        jsonObject["browserInfo"].javaEnabled = true;
+	        jsonObject["browserInfo"].acceptHeader = "text/html";
         }
         else {
             //different structure in SFRA
             card = session.forms.billing.creditCardFields;
+            var browserInfo = JSON.parse(card.browserInfo.value);
+            browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
+            browserInfo['userAgent'] = request.httpUserAgent;
+            jsonObject["browserInfo"] = browserInfo; 
         }
-
-        var browserInfo = JSON.parse(card.browserInfo.value);
-        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
-        browserInfo['userAgent'] = request.httpUserAgent;
-        jsonObject["browserInfo"] = browserInfo;
+        
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
 
         jsonObject['origin'] = origin;
