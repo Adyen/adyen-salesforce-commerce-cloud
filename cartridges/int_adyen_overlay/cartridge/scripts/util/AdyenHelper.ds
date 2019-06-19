@@ -224,6 +224,27 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getRatePayFingerprint: function() {
+        // session.custom.ratePayFingerprint
+        // Adyen RatePay Device Fingerprint Code
+
+
+        // Need to find out how to require this external javascript
+        // <script language="JavaScript">
+        // var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
+        // <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+
+        if (session.custom.ratePayFingerprint) {
+
+            var ratePayID = __AdyenHelper.getRatePayID();
+            var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+            session.custom.ratePayFingerprint = sessionID;
+
+        }
+
+
+    },
+
     isOpenInvoiceMethod: function (paymentMethod) {
         if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1) {
             if (paymentMethod.indexOf("afterpaytouch") == -1) {

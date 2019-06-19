@@ -1,3 +1,5 @@
+// Ramas fix suggestions: file contains logic in both isset/isif/isloop and isscript
+
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 <isinclude template="util/modules"/>
 
