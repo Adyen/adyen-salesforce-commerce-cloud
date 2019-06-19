@@ -17,7 +17,10 @@
             var configuration = {
                 locale: locale,// shopper's locale
                 loadingContext: loadingContext,
-                originKey: originKey
+                originKey: originKey,
+                risk: {
+                    enabled: false
+                }
             };
             this.checkout = new AdyenCheckout(configuration);
         }

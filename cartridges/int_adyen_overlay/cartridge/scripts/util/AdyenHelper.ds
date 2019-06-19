@@ -215,34 +215,18 @@ var __AdyenHelper: Object = {
             return typeof item !== 'undefined';
         });
     },
+
     getRatePayID: function (): String {
 
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
-        return returnValue;
-    },
-
-    getRatePayFingerprint: function() {
-        // session.custom.ratePayFingerprint
-        // Adyen RatePay Device Fingerprint Code
-
-
-        // Need to find out how to require this external javascript
-        // <script language="JavaScript">
-        // var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
-        // <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
-
-        if (session.custom.ratePayFingerprint) {
-
-            var ratePayID = __AdyenHelper.getRatePayID();
+        if (!session.custom.ratePayFingerprint || session.custom.ratePayFingerprint == null) {
             var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
             session.custom.ratePayFingerprint = sessionID;
-
         }
-
-
+        return returnValue;
     },
 
     isOpenInvoiceMethod: function (paymentMethod) {

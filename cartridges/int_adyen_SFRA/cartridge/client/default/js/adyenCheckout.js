@@ -3,7 +3,10 @@ var threeDS2utils = require('./threeds2-js-utils.js');
 const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US
     originKey: originKey,
-    loadingContext: loadingContext
+    loadingContext: loadingContext,
+    risk: {
+        enabled: false
+    }
 };
 
 const checkout = new AdyenCheckout(configuration);

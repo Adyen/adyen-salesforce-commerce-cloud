@@ -3,82 +3,72 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 <isinclude template="util/modules"/>
 
-<isset name="directoryLookup" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('Adyen_directoryLookup')}" scope="page"/>
+<isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>
 <isset name="brandCode" value="" scope="session"/>
 
 <isinputfield formfield="${pdict.CurrentForms.adyPaydata.issuer}" type="hidden"/>
 
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<isif condition="${directoryLookup == true && !empty(pdict.AdyenHppPaymentMethods)}">
-	<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
-	
-	<iscomment>Loop through the returned payment methods after calling /paymentMethods and print them</iscomment>
-	<isif condition="${!empty(methods) && methods.length > 0}">
-	<script type="text/javascript">
-		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
-	</script>
-		<ul id="type">
-			<isloop items="${methods}" var="method" status="loopstate">
-				<li class="form-row row-${method.type}" id="li_${method.type}">
-					<input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
-					<img class="logo" src="${AdyenHelper.getAdyenUrl()}/hpp/img/pm/${method.type}.png" alt=""/>
-					<label class="payment_method_label" for="${method.type}">${method.name}</label>
-					<isscript>
-					    var methodDetails = JSON.stringify(method);
-					</isscript>
-					<isif condition="${AdyenHelper.hasCheckoutComponent(method.type)}">
-						<isinclude template="checkoutComponent"/>
-					<iselse/>
-						<isif condition="${method.details[0].key == 'issuer'}">
-							<select class="issuer" id="${method.type}_issuer">
-								<isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
-									<option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
-								</isloop>
-							</select>
-						</isif>
-						<isif condition="${method.type.substring(0, 3) == 'ach'}">
-							<div id="component_ach" class="checkoutComponent">
-								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}" type="input"/>
-								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountNumber}" type="input"/>
-								<isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
-							</div>
-						</isif>
-					</isif> 
-				</li>
-			</isloop>
-		</ul>
-	</isif>
-<iselse>
-	<span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
+<isset name="methods" value="${pdict.AdyenHppPaymentMethods}" scope="page"/>
+<iscomment>Loop through the returned payment methods after calling /paymentMethods and print them</iscomment>
+<isif condition="${!empty(methods) && methods.length > 0}">
+    <script type="text/javascript">
+        var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
+    </script>
+    <ul id="type">
+        <isloop items="${methods}" var="method" status="loopstate">
+            <li class="form-row row-${method.type}" id="li_${method.type}">
+                <input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
+                <img class="logo" src="${AdyenHelper.getAdyenUrl()}/hpp/img/pm/${method.type}.png" alt=""/>
+                <label class="payment_method_label" for="${method.type}">${method.name}</label>
+                <isscript>
+                    var methodDetails = JSON.stringify(method);
+                </isscript>
+                <isif condition="${AdyenHelper.hasCheckoutComponent(method.type)}">
+                    <isinclude template="checkoutComponent"/>
+                    <iselse/>
+                    <isif condition="${method.details[0].key == 'issuer'}">
+                        <select class="issuer" id="${method.type}_issuer">
+                            <isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
+                                <option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
+                            </isloop>
+                        </select>
+                    </isif>
+                    <isif condition="${method.type.substring(0, 3) == 'ach'}">
+                        <div id="component_ach" class="checkoutComponent">
+                            <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}"
+                                          type="input"/>
+                            <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountNumber}" type="input"/>
+                            <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
+                        </div>
+                    </isif>
+                </isif>
+            </li>
+        </isloop>
+    </ul>
+<iselse/>
+    <span>${Resource.msg('hpp.empty', 'hpp', null)}</span>
 </isif>
 
-<div class="openinvoiceInput">
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.gender}" />
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.dateOfBirth}" />
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.telephoneNumber}" />
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.socialSecurityNumber}" />
-</div>
+    <div class="openinvoiceInput">
+        <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.gender}"/>
+        <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.dateOfBirth}"/>
+        <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.telephoneNumber}"/>
+        <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.socialSecurityNumber}"/>
+    </div>
 
-<iscomment>
-	Adyen RatePay Device Fingerprint Code
-</iscomment>
-<isif condition="${empty(session.custom.ratePayFingerprint)}">
-	<isscript>
-		var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-		var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
-		session.custom.ratePayFingerprint = sessionID;
-	</isscript>
-	<script language="JavaScript">
-		var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
-	</script>
-	<script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
-</isif>
+    <iscomment>
+        Adyen RatePay Device Fingerprint Code
+    </iscomment>
+    <isif condition="${ratePayID}">
+        <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+    </isif>
 
-<iscomment>
-	Adyen Generic Device Fingerprint Code
-</iscomment>
-<script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
-<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}" />
-<script type="text/javascript">
-	dfDo('dwfrm_adyPaydata_adyenFingerprint');
-</script>
+    <iscomment>
+        Adyen Generic Device Fingerprint Code
+    </iscomment>
+    <script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
+    <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}"/>
+    <script type="text/javascript">
+        dfDo('dwfrm_adyPaydata_adyenFingerprint');
+    </script>
