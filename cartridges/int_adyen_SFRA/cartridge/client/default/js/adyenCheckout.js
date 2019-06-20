@@ -3,7 +3,7 @@ var threeDS2utils = require('./threeds2-js-utils.js');
 const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US
     originKey: originKey,
-    loadingContext: loadingContext,
+    environment: loadingContext,
     risk: {
         enabled: false
     }
@@ -37,11 +37,11 @@ function renderCardComponent() {
     card = checkout.create('card', {
         // Mandatory fields
         originKey: originKey,
-        loadingContext: loadingContext, // The environment where we should loads the secured fields from
+        environment: loadingContext, // The environment where we should loads the secured fields from
         type: 'card',
         hasHolderName: true,
         holderNameRequired: true,
-        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
+        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
 
         // Events
         onChange: function (state) {
@@ -49,7 +49,12 @@ function renderCardComponent() {
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
-        } // Called once we detect the card brand
+        }, // Called once we detect the card brand
+        onFieldValid: function (data) {
+            if(data.endDigits){
+                $('#cardNumber').val("**********" + data.endDigits);
+            }
+        }
     });
     card.mount(cardNode);
 };
@@ -61,14 +66,14 @@ function renderOneClickComponents() {
     jQuery.each(componentContainers, function (i, oneClickCardNode) {
         var container = document.getElementById(oneClickCardNode.id);
         var cardId = container.id.split("-")[1];
-        var brandCode = document.getElementById('cardType-' + cardId).innerText;
-
+        var brandCode = document.getElementById('cardType-' + cardId).value;
+        console.log(brandCode);
         oneClickCard[i] = checkout.create('card', {
             //Get selected card, send in payment request
             originKey: originKey,
-            loadingContext: loadingContext, // The environment where we should loads the secured fields from
+            environment: loadingContext, // The environment where we should loads the secured fields from
             // Specific for oneClick cards
-
+            type: brandCode,
             storedDetails: {
                 "card": {
                     "expiryMonth": "",
@@ -77,11 +82,11 @@ function renderOneClickComponents() {
                     "number": ""
                 }
             },
-            details: brandCode.includes('Bancontact') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
+            details: brandCode.includes('bcmc') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
             onChange: function (state) {
                 oneClickValid = state.isValid;
                 if (state.isValid) {
-                    $('#adyenEncryptedSecurityCode').val(state.data.encryptedSecurityCode);
+                    $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
                 }
             } // Gets triggered whenever a user changes input
         }).mount(container);
@@ -343,6 +348,7 @@ $('button[value="submit-payment"]').on('click', function (e) {
                 document.getElementById('saved-payment-security-code-' + uuid).value = "000";
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
+                setBrowserData();
                 return true;
             }
         }
@@ -431,11 +437,11 @@ $('button[value="add-new-payment"]').on('click', function (e) {
 });
 
 function setPaymentData() {
-    $('#adyenEncryptedCardNumber').val(card.paymentData.encryptedCardNumber);
-    $('#adyenEncryptedExpiryMonth').val(card.paymentData.encryptedExpiryMonth);
-    $('#adyenEncryptedExpiryYear').val(card.paymentData.encryptedExpiryYear);
-    $('#adyenEncryptedSecurityCode').val(card.paymentData.encryptedSecurityCode);
-    $('#cardOwner').val(card.paymentData.holderName);
+    $('#adyenEncryptedCardNumber').val(card.state.data.encryptedCardNumber);
+    $('#adyenEncryptedExpiryMonth').val(card.state.data.encryptedExpiryMonth);
+    $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
+    $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
+    $('#cardOwner').val(card.state.data.holderName);
     setBrowserData();
 }
 

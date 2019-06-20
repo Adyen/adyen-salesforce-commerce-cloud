@@ -98,7 +98,7 @@
 		window.Configuration = {
 		        locale: locale,
 		        originKey: originKey,
-	        	loadingContext: loadingContext
+	        	environment: loadingContext
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
@@ -108,7 +108,7 @@
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
-            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
 	        onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;

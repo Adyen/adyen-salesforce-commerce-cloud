@@ -96,7 +96,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var order = args.Order;
     var recurringType = AdyenHelper.getAdyenRecurringType();
     var saveCreditCard = !empty(args.SaveCreditCard) ? args.SaveCreditCard : false;
-    var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
+    var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard, args.PaymentType);
     var customer = order.getCustomer();
     var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
     var customerID = '';
@@ -163,11 +163,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     };
 
     jsonObject['shopperName'] = shopperDetails;
-
-
-    if(AdyenHelper.getAdyen3DS2Enabled() && empty(args.PaymentType)){
-        jsonObject = AdyenHelper.add3DS2Data(jsonObject);
-    }
 
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {

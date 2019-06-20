@@ -5,9 +5,9 @@
 
 <html>
 <head>
-    <script type="text/javascript" src="${pdict.AdyenHelper.getLoadingContext()}sdk/2.5.0/adyen.js"></script>
+    <script type="text/javascript" src="${pdict.AdyenHelper.getLoadingContext()}sdk/3.0.0/adyen.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <link rel="stylesheet"  href="${pdict.AdyenHelper.getLoadingContext()}sdk/2.5.0/adyen.css"/>
+    <link rel="stylesheet"  href="${pdict.AdyenHelper.getLoadingContext()}sdk/3.0.0/adyen.css"/>
 
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
@@ -16,7 +16,7 @@
         function initiateCheckout ( locale, loadingContext, originKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
-                loadingContext: loadingContext,
+                environment: loadingContext,
                 originKey: originKey,
                 risk: {
                     enabled: false
