@@ -67,7 +67,6 @@ function renderOneClickComponents() {
         var container = document.getElementById(oneClickCardNode.id);
         var cardId = container.id.split("-")[1];
         var brandCode = document.getElementById('cardType-' + cardId).value;
-        console.log(brandCode);
         oneClickCard[i] = checkout.create('card', {
             //Get selected card, send in payment request
             originKey: originKey,
