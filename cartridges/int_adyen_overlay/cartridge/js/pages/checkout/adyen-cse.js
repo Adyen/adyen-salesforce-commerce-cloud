@@ -11,7 +11,7 @@
         return number;
     }
     
-    var threeDS2utils = require('../../threeds2-js-utils.js');
+    var threeDS2utils = require('./threeds2-js-utils');
     /**
      * @function
      * @description Initializes Adyen Secured Fields  Billing events
@@ -27,10 +27,11 @@
                 }
                 clearCardData();
                 var oneClickCard = window.AdyenOneClick;
+                setBrowserData();
                 if (isOneClick) {
                     $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val($('#adyenCreditCardList option:selected').attr('id'));
                     $('#dwfrm_billing_paymentMethods_creditCard_type').val($('#adyenCreditCardList option:selected').val());
-                    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(oneClickcard.state.data.encryptedSecurityCode);
+                    $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(oneClickCard.state.data.encryptedSecurityCode);
                 }
                 else {
                     $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val("");
@@ -148,7 +149,6 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.state.data.holderName);
-        setBrowserData();
     }
     
     function clearCardData() {
@@ -162,7 +162,7 @@
     
     function setBrowserData() {
         var browserData = threeDS2utils.getBrowserInfo();
-        $('##dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(browserData));
+        $('#dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(browserData));
     };
 
     /**
