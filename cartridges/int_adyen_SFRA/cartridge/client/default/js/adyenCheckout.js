@@ -3,7 +3,7 @@ var threeDS2utils = require('./threeds2-js-utils.js');
 const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US
     originKey: originKey,
-    environment: loadingContext,
+    environment: environment,
     risk: {
         enabled: false
     }
@@ -25,11 +25,11 @@ $(document).ready(function () {
 });
 
 var originKey = "";
-var loadingContext = "";
+var environment = "";
 
 function setConfigData(data, callback) {
     originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
-    loadingContext = data.adyenLoadingContext;
+    environment = data.adyenEnvironment;
     callback();
 };
 
@@ -37,7 +37,7 @@ function renderCardComponent() {
     card = checkout.create('card', {
         // Mandatory fields
         originKey: originKey,
-        environment: loadingContext, // The environment where we should loads the secured fields from
+        environment: environment, // The environment where we should loads the secured fields from
         type: 'card',
         hasHolderName: true,
         holderNameRequired: true,
@@ -70,7 +70,7 @@ function renderOneClickComponents() {
         oneClickCard[i] = checkout.create('card', {
             //Get selected card, send in payment request
             originKey: originKey,
-            environment: loadingContext, // The environment where we should loads the secured fields from
+            environment: environment, // The environment where we should loads the secured fields from
             // Specific for oneClick cards
             type: brandCode,
             storedDetails: {

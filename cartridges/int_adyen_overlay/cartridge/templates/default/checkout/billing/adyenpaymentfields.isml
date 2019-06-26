@@ -66,6 +66,7 @@
 
 	var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
+	var environment = "${AdyenHelper.getAdyenMode().toLowerCase()}";
 	var locale = "${request.locale}";
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
@@ -82,7 +83,7 @@
                 script.readyState == "complete") {
                 script.onreadystatechange = null;
                 // Init Component
-                initializeCardComponent(originKey, loadingContext, locale);
+                initializeCardComponent(originKey, environment, locale);
             }
         };
     }
@@ -90,15 +91,16 @@
     else {
         scriptTag.onload = function () {
             // Init Component
-            initializeCardComponent(originKey, loadingContext, locale);
+            initializeCardComponent(originKey, environment, locale);
         };
     }
 
-	function initializeCardComponent(originKey, loadingContext, locale) {
+	function initializeCardComponent(originKey, environment, locale) {
+	console.log(environment);
 		window.Configuration = {
 		        locale: locale,
 		        originKey: originKey,
-	        	environment: loadingContext,
+	        	environment: environment,
                 risk: {
                     enabled: false
                 }

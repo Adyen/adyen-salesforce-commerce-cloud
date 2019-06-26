@@ -13,10 +13,10 @@
         var resultCode = "${pdict.resultCode}";
         var token3ds2 = "${pdict.token3ds2}";
 
-        function initiateCheckout ( locale, loadingContext, originKey ) {
+        function initiateCheckout ( locale, environment, originKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
-                environment: loadingContext,
+                environment: environment,
                 originKey: originKey,
                 risk: {
                     enabled: false
@@ -26,16 +26,16 @@
         }
 
         var originKey = "";
-        var loadingContext = "";
+        var environment = "";
 
         function setConfigData(data) {
             originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
-            loadingContext = data.adyenLoadingContext;
+            environment = data.adyenEnvironment;
         };
 
         function initiateComponents () {
             getConfigurationComponents();
-            initiateCheckout("en_US", loadingContext, originKey);
+            initiateCheckout("en_US", environment, originKey);
             if (resultCode == "ChallengeShopper") {
                 initiate3DS2ChallengeShopper(token3ds2);
             } else if (resultCode == "IdentifyShopper") {

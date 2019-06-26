@@ -156,7 +156,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         });
 
     var gender = "UNKNOWN";
-    if(args.adyenForm.gender.value){
+    if(args.adyenForm && args.adyenForm.gender.value){
         switch(args.adyenForm.gender.value){
             case "M":
                 gender = "MALE";

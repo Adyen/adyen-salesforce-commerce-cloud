@@ -299,10 +299,13 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
     var error = false;
     var errorMessage = "";
     var loadingContext = "";
+    var environment = "";
 
     try {
         originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
         loadingContext = adyenHelper.getLoadingContext();
+        environment = adyenHelper.getAdyenMode().toLowerCase();
+
     } catch (err) {
         error = true;
         errorMessage = Resource.msg('load.component.error', 'creditCard', null);
@@ -311,7 +314,8 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
         error: error,
         errorMessage: errorMessage,
         adyenOriginKey: originKey,
-        adyenLoadingContext: loadingContext
+        adyenLoadingContext: loadingContext,
+        adyenEnvironment: environment
     });
     return next();
 });
