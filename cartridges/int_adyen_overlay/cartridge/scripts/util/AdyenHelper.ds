@@ -146,7 +146,7 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/2.5.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/3.0.0/adyen.js";
         return checkoutUrl;
     },
 
@@ -215,20 +215,23 @@ var __AdyenHelper: Object = {
             return typeof item !== 'undefined';
         });
     },
+
     getRatePayID: function (): String {
 
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
+        if (!session.custom.ratePayFingerprint || session.custom.ratePayFingerprint == null) {
+            var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+            session.custom.ratePayFingerprint = sessionID;
+        }
         return returnValue;
     },
 
     isOpenInvoiceMethod: function (paymentMethod) {
         if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1) {
-            if (paymentMethod.indexOf("afterpaytouch") == -1) {
-                return true;
-            }
+            return true;
         }
         return false;
     },
@@ -352,7 +355,7 @@ var __AdyenHelper: Object = {
         return shopperObject;
     },
 
-    createAdyenRequestObject: function (recurringType, order, saveCreditCard) {
+    createAdyenRequestObject: function (recurringType, order, saveCreditCard, paymentType) {
         var jsonObject = {},
             reference = '';
 
@@ -369,7 +372,7 @@ var __AdyenHelper: Object = {
             'userAgent': request.httpUserAgent
         };
 
-        if(__AdyenHelper.getAdyen3DS2Enabled()){
+        if(__AdyenHelper.getAdyen3DS2Enabled() && empty(paymentType)){
             jsonObject = __AdyenHelper.add3DS2Data(jsonObject);
         }
 
@@ -401,7 +404,7 @@ var __AdyenHelper: Object = {
 
         var recurringType = __AdyenHelper.getAdyenRecurringType();
 
-        var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true);
+        var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true, null);
 
         var paymentMethodObject = __AdyenHelper.createCardObjectSF(false, 'account');
         jsonObject['paymentMethod'] = paymentMethodObject;
@@ -531,6 +534,9 @@ var __AdyenHelper: Object = {
                 case 'Bancontact':
                     cardType = 'bcmc';
                     break;
+                case 'JCB':
+                    cardType = 'jcb';
+                    break;
                 default:
                     cardType = cardType.toLowerCase();
                     break;
@@ -566,6 +572,9 @@ var __AdyenHelper: Object = {
                     break;
                 case 'bcmc':
                     cardType = 'Bancontact';
+                    break;
+                case 'jcb':
+                    cardType = 'JCB';
                     break;
                 default:
                     cardType = '';

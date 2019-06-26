@@ -2,7 +2,7 @@
 
 <isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/2.1.0/adyen.css"/>
+<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.0.0/adyen.css"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
 
@@ -98,7 +98,10 @@
 		window.Configuration = {
 		        locale: locale,
 		        originKey: originKey,
-	        	loadingContext: loadingContext
+	        	environment: loadingContext,
+                risk: {
+                    enabled: false
+                }
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
@@ -108,7 +111,7 @@
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
-            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover"],
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
 	        onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;

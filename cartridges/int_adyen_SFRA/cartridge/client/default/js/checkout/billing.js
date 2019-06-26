@@ -16,14 +16,10 @@ function updatePaymentInformation(order) {
                 + order.billing.payment.selectedPaymentInstruments[0].type
                 + '</span>';
 
-            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber != null && order.billing.payment.selectedPaymentInstruments[0].expirationMonth != null) {
+            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber != null) {
                 htmlToAppend += '<div>'
                     + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
-                    + '</div><div><span>'
-                    + order.resources.cardEnding + ' '
-                    + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
-                    + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
-                    + '</span></div>';
+                    + '</div>';
             }
         } else if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen") {
             htmlToAppend += '<div><span>'
