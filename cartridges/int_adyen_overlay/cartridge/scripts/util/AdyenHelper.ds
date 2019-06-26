@@ -352,17 +352,19 @@ var __AdyenHelper: Object = {
             shopperObject['shopperReference'] = customerID;
         }
 
-        if(params.Args.adyenForm.socialSecurityNumber.value){
-            shopperObject['socialSecurityNumber'] = params.Args.adyenForm.socialSecurityNumber.value;
-        }
-        if(params.Args.adyenForm.dateOfBirth.value){
-            shopperObject['dateOfBirth'] = params.Args.adyenForm.dateOfBirth.value;
-        }
-        if(params.Args.adyenForm.telephoneNumber){
-            shopperObject['telephoneNumber'] = params.Args.adyenForm.telephoneNumber.value;
-        }
-        else if(params.Args.Order.getDefaultShipment().getShippingAddress().getPhone()){
-            shopperObject['telephoneNumber']= params.Args.Order.getDefaultShipment().getShippingAddress().getPhone()
+        if(params.Args.adyenForm) {
+            if(params.Args.adyenForm.socialSecurityNumber.value){
+                shopperObject['socialSecurityNumber'] = params.Args.adyenForm.socialSecurityNumber.value;
+            }
+            if(params.Args.adyenForm.dateOfBirth.value){
+                shopperObject['dateOfBirth'] = params.Args.adyenForm.dateOfBirth.value;
+            }
+            if(params.Args.adyenForm.telephoneNumber){
+                shopperObject['telephoneNumber'] = params.Args.adyenForm.telephoneNumber.value;
+            }
+            else if(params.Args.Order.getDefaultShipment().getShippingAddress().getPhone()){
+                shopperObject['telephoneNumber']= params.Args.Order.getDefaultShipment().getShippingAddress().getPhone()
+            }
         }
 
         return shopperObject;
