@@ -56,6 +56,9 @@
     <field formid="adyenEncryptedSecurityCode" label="adyenEncryptedSecurityCode" type="string" mandatory="false"
            binding="adyenEncryptedSecurityCode"/>
 
+    <field formid="browserInfo" label="browserInfo" type="string" mandatory="false"
+           binding="browserInfo"/>
+
     <!--  field  for  credit  card  recurring  payments  /  tokenization  -->
     <field formid="selectedCardID" mandatory="false" type="string"/>
 </form>

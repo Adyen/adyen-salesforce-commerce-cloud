@@ -96,7 +96,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var order = args.Order;
     var recurringType = AdyenHelper.getAdyenRecurringType();
     var saveCreditCard = !empty(args.SaveCreditCard) ? args.SaveCreditCard : false;
-    var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard);
+    var jsonObject = AdyenHelper.createAdyenRequestObject(recurringType, order, saveCreditCard, args.PaymentType);
     var customer = order.getCustomer();
     var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
     var customerID = '';
@@ -106,9 +106,6 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     }
 
     jsonObject['returnUrl'] = returnUrl;
-    jsonObject.additionalData = {
-        "executeThreeD": true
-    };
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.Amount); //args.Amount * 100;
     jsonObject['amount'] = {
@@ -154,16 +151,32 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     var shopperObject = AdyenHelper.createShopperObject({
             Customer: customer,
-            Basket: order
+            Basket: order,
+            Args: args
         });
 
+    var gender = "UNKNOWN";
+    if(args.adyenForm && args.adyenForm.gender.value){
+        switch(args.adyenForm.gender.value){
+            case "M":
+                gender = "MALE";
+                break;
+            case "F":
+                gender = "FEMALE";
+                break;
+            default:
+                gender = "UNKNOWN";
+        }
+    }
     jsonObject['paymentMethod'] = paymentMethodObject;
     var shopperDetails = {
         "firstName": billingAddr.firstName,
-        "gender": "UNKNOWN",
+        "gender": gender,
         "infix": "",
         "lastName": billingAddr.lastName
     };
+
+    jsonObject['shopperName'] = shopperDetails;
 
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
@@ -185,16 +198,9 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         if(args.adyenFingerprint){
             jsonObject["dfValue"] = args.adyenFingerprint
         }
-
-        var personalDetails = AdyenGetOpenInvoiceData.getShopperData(args, shopperDetails);
-        jsonObject['paymentMethod'].personalDetails = personalDetails;
-    }
-	else {
-	    jsonObject['shopperName'] = shopperDetails;
     }
 
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
-
     // assign default values for the script output variables 
     args.RedirectObject = '';
     args.ResultCode = '';
@@ -244,10 +250,7 @@ function doPaymentCall(args, requestObject){
             return {error: true};
         }
 
-        // return the AVS result code
-        args.AVSResultCode = (!empty(responseObj.avsResultRaw) ? responseObj.avsResultRaw : '');
-
-        // if the card is enrolled in the 3-D Secure programme the response should contain these 4 fields
+        // if the card is enrolled for 3D Secure, the response contains a redirect object
         if ('redirect' in responseObj) {args.RedirectObject = responseObj.redirect;} // issuerUrl
         args.ResultCode = responseObj.resultCode; // resultCode
 
@@ -259,8 +262,21 @@ function doPaymentCall(args, requestObject){
 
         var resultCode = args.ResultCode;
         var order = args.Order;
+        if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
+            args.ThreeDS2 = true;
+            args.resultCode = responseObj.resultCode;
+            var token3ds2;
+            if(responseObj.authentication["threeds2.fingerprintToken"]) {
+                token3ds2 = responseObj.authentication["threeds2.fingerprintToken"]
+            }
+            else if (responseObj.authentication["threeds2.challengeToken"]){
+                token3ds2 = responseObj.authentication["threeds2.challengeToken"];
+            }
+            args.token3ds2 = token3ds2;
+            args.PaymentData = responseObj.paymentData;
+        }
 
-        if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
+        else if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
             args.Decision = 'ACCEPT';
             args.PaymentStatus = resultCode;
             args.PaymentData = responseObj.paymentData;
@@ -268,9 +284,8 @@ function doPaymentCall(args, requestObject){
             if (responseObj.resultCode.indexOf('Authorised') != -1) {
                 order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
                 order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+                Logger.getLogger('Adyen').info('Payment result: Authorised');
             }
-            Logger.getLogger('Adyen').info('Payment result: Authorised');
-            Logger.getLogger('Adyen').info('Decision: ' + args.Decision);
 
             if (args.RedirectObject == '') { // if is not 3DSecure
                 Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);

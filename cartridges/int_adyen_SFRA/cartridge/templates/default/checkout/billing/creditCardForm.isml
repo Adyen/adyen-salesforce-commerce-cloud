@@ -17,20 +17,8 @@
 <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"
        ${creditFields.adyenEncryptedSecurityCode.attributes}>
 <input type="hidden" class="form-control cardOwner" id="cardOwner" ${creditFields.cardOwner.attributes}>
+<input type="hidden" class="form-control browserInfo" id="browserInfo" ${creditFields.browserInfo.attributes}>
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
 
-<div class="row">
-    <div class="col">
-        <isif condition="${pdict.customer.registeredUser}">
-            <div class="form-check save-credit-card">
-                <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="${creditFields.saveCardAdyen.htmlName}"
-                           value="true" checked>
-                    ${creditFields.saveCardAdyen.label}
-                </label>
-            </div>
-        </isif>
-    </div>
-</div>

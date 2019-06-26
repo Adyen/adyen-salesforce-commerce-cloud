@@ -52,7 +52,6 @@ function authorize(args) {
     var	adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout'),
 	result;
 
-    Logger.getLogger("Adyen").error("Form = " + session.forms.adyPaydata.dateOfBirth.value);
 	Transaction.wrap(function () {
 		result = adyenCheckout.alternativePaymentMethod({
 			'Order': order,

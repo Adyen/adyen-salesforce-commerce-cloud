@@ -71,7 +71,8 @@ function Authorize(args) {
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
         CreditCardForm: app.getForm('billing.paymentMethods.creditCard'),
-        SaveCreditCard: customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value
+        SaveCreditCard: customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value,
+        adyenForm : session.forms.adyPaydata
     });
 
     if (result.error) {
@@ -82,6 +83,27 @@ function Authorize(args) {
             error: true,
             PlaceOrderError: (!empty(args) && 'AdyenErrorMessage' in args && !empty(args.AdyenErrorMessage) ? args.AdyenErrorMessage : '')
         };
+    }
+    
+    if(result.ThreeDS2){
+        Transaction.commit();
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+        });
+
+        session.custom.orderNo = order.orderNo;
+        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+
+        return {
+            authorized: true,
+            authorized3d: true,
+            view : app.getView({
+            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
+            	Basket: order,
+            	resultCode: result.resultCode,
+                token3ds2: result.token3ds2
+            })
+        }
     }
 
     if(result.RedirectObject != ''){

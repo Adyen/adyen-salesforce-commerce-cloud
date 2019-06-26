@@ -15,7 +15,6 @@ var Transaction = require('dw/system/Transaction');
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
 var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-var Logger = require('dw/system/Logger')
 var OrderModel = app.getModel('Order');
 var Logger = require('dw/system/Logger');
 
@@ -330,10 +329,127 @@ function cancelOrRefund() {
     return {sucess: true};
 }
 
+
+function redirect3ds2() {
+	app.getView({
+    	resultCode : request.httpParameterMap.get("resultCode").stringValue,
+		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
+        ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
+    }).render('/threeds2/adyen3ds2');
+}
+
+/**
+ * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
+ * 
+ * @returns rendering template or error
+ */
+function authorize3ds2() {
+	Transaction.begin();
+	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var paymentInstrument;
+    var order;
+
+    if (session.custom.orderNo && session.custom.paymentMethod) {
+        try {
+            order = OrderMgr.getOrder(session.custom.orderNo);
+            paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+        } catch (e) {
+            Logger.getLogger("Adyen").error("Unable to retrieve order data from session 3DS2.");
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            app.getController('COSummary').Start({
+                PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+            });
+            return {};
+        }
+
+        var details = {};
+        
+        if (request.httpParameterMap.get("resultCode").stringValue == "IdentifyShopper" && request.httpParameterMap.get("fingerprintResult").stringValue) {
+            details = {
+                "threeds2.fingerprint": request.httpParameterMap.get("fingerprintResult").stringValue
+            }
+        } else if (request.httpParameterMap.get("resultCode").stringValue == "ChallengeShopper" && request.httpParameterMap.get("challengeResult").stringValue) {
+            details = {
+                "threeds2.challengeResult": request.httpParameterMap.get("challengeResult").stringValue
+            }
+        }
+        else {
+            Logger.getLogger("Adyen").error("paymentDetails 3DS2 not available");
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            app.getController('COSummary').Start({
+                PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+            });
+            return {};
+        }
+
+        var paymentDetailsRequest = {
+            "paymentData": paymentInstrument.custom.adyenPaymentData,
+            "details": details
+        };
+
+        var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+        if ((result.error || result.resultCode != 'Authorised') && result.resultCode != 'ChallengeShopper') {
+            //Payment failed
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+                paymentInstrument.custom.adyenPaymentData = null;
+            });
+            app.getController('COSummary').Start({
+                PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+            });
+            return {};
+        } else if (result.resultCode == 'ChallengeShopper') {        	
+        	app.getView({
+            	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
+            	resultCode: result.resultCode,
+                token3ds2: result.authentication['threeds2.challengeToken']
+            }).render('adyenpaymentredirect');
+        	return {};
+        }
+
+        //delete paymentData from requests
+        Transaction.wrap(function () {
+            paymentInstrument.custom.adyenPaymentData = null;
+        });
+       
+        if ('pspReference' in result && !empty(result.pspReference)) {
+            paymentInstrument.paymentTransaction.transactionID = result.pspReference;
+            order.custom.Adyen_pspReference = result.pspReference;
+        }
+        if ('resultCode' in result && !empty(result.resultCode)) {
+            paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
+        }
+
+        // Save full response to transaction custom attribute
+        paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
+
+        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+        paymentInstrument.custom.adyenPaymentData = null;
+        Transaction.commit();
+
+        OrderModel.submit(order);
+        clearForms();
+        app.getController('COSummary').ShowConfirmation(order);
+        return {};
+    }
+
+    Logger.getLogger("Adyen").error("Session variables for 3DS2 do not exist");
+    app.getController('COSummary').Start({
+        PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
+    });
+    return {};
+}
+
+
 /**
  * Make second call to 3d verification system to complete authorization 
  * 
- * @returns redering template or error
+ * @returns rendering template or error
  */
 function authorizeWithForm() {
 	var order;
@@ -425,6 +541,29 @@ function closeIFrame() {
     }).render('adyenpaymentredirect');
 }
 
+function getConfigurationComponents() {
+	var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey'); 
+	var baseUrl = request.httpParameterMap.get("protocol").stringValue + "//" + Site.getCurrent().getHttpsHostName();
+	var originKey;
+	var error = false;
+	var errorMessage = "";
+	var loadingContext = "";
+	
+	try {
+	    originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
+	    loadingContext = AdyenHelper.getLoadingContext();
+	} catch (err) {
+	    error = true;
+	    errorMessage = Resource.msg('load.component.error', 'creditCard', null);
+	}
+	return {
+	    error: error,
+	    errorMessage: errorMessage,
+	    adyenOriginKey: originKey,
+	    adyenLoadingContext: loadingContext
+	};
+}
+
 /**
  * Clear system session data 
  */
@@ -453,9 +592,15 @@ function getExternalPlatformVersion(){
 	return EXTERNAL_PLATFORM_VERSION;
 }
 
+exports.Authorize3DS2 = guard.ensure(['https', 'post'], authorize3ds2);
+
+exports.Redirect3DS2 = guard.ensure(['https', 'post'], redirect3ds2);
+
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
 
 exports.CloseIFrame = guard.ensure(['https', 'post'], closeIFrame);
+
+exports.GetConfigurationComponents = guard.ensure(['https', 'get'], getConfigurationComponents);
 
 exports.Notify = guard.ensure(['post'], notify);
 

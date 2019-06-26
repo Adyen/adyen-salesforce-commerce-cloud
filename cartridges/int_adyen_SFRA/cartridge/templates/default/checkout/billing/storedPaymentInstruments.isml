@@ -1,8 +1,9 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-    assets.addCss('/css/adyen-checkout-2.1.0.css');
+    assets.addCss('/css/adyen-checkout-3.0.0.css');
 </isscript>
 <iscontent type="text/html" encoding="off"/>
+<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
     <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}"
          data-uuid="${paymentInstrument.UUID}">
@@ -27,7 +28,8 @@
         </div>
         <div class="saved-payment-information col-6 col-md-9">
             <div class="saved-credit-card-type">
-                <span id="cardType-${paymentInstrument.UUID}">
+                <input type="hidden" id="cardType-${paymentInstrument.UUID}" value="${AdyenHelper.getAdyenCardType(paymentInstrument.creditCardType)}"/>
+                <span id="cardType">
                     ${paymentInstrument.creditCardType}
                 </span>
             </div>
