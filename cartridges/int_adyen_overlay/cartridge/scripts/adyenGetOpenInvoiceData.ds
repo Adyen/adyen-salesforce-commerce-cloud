@@ -35,25 +35,6 @@ importPackage( dw.web );
 //script include
 var AdyenHelper = require ("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
 
-function getShopperData(args, personalDetails){
-	if(args.adyenForm.socialSecurityNumber.value){
-		personalDetails.socialSecurityNumber = args.adyenForm.socialSecurityNumber.value;
-	}
-	if(args.adyenForm.dateOfBirth.value){
-		personalDetails.dateOfBirth = args.adyenForm.dateOfBirth.value;
-	}
-	if(args.adyenForm.gender.value){
-		personalDetails.gender = args.adyenForm.gender.value;
-	}
-	if(args.adyenForm.telephoneNumber){
-		personalDetails.telephoneNumber = args.adyenForm.telephoneNumber.value;
-	}
-	else if(args.Order.getDefaultShipment().getShippingAddress().getPhone()){
-		personalDetails.telephoneNumber = args.Order.getDefaultShipment().getShippingAddress().getPhone()
-	}
-	return personalDetails;
-}
-
 function getLineItems(args) {
 	var order;
 	if(args.Order){
@@ -163,6 +144,5 @@ function getItemAmount(lineItem) {
 }
 
 module.exports = {
-	'getLineItems': getLineItems,
-	'getShopperData': getShopperData
+	'getLineItems': getLineItems
 }

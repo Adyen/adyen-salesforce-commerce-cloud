@@ -183,7 +183,7 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
         idealComponent.mount(idealContainer);
     }
 
-    if (paymentMethod.type.indexOf("klarna") !== -1) {
+    if (paymentMethod.type.indexOf("klarna") !== -1 && paymentMethod.details) {
         var klarnaContainer = document.createElement("div");
         $(klarnaContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
         klarnaComponent = checkout.create('klarna', {
@@ -377,7 +377,7 @@ function checkComponentDetails(selectedMethod) {
             $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
         }
         return idealComponent.componentRef.state.isValid;
-    } else if (selectedMethod.val().indexOf("klarna") > -1) {
+    } else if (selectedMethod.val().indexOf("klarna") > -1 && klarnaComponent) {
         if (klarnaComponent.componentRef.state.isValid) {
             setOpenInvoiceData(klarnaComponent);
             if ($('#ssnValue')) {

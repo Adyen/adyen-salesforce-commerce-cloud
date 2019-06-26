@@ -71,7 +71,8 @@ function Authorize(args) {
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
         CreditCardForm: app.getForm('billing.paymentMethods.creditCard'),
-        SaveCreditCard: customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value
+        SaveCreditCard: customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value,
+        adyenForm : session.forms.adyPaydata
     });
 
     if (result.error) {
