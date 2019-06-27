@@ -16,12 +16,12 @@ function updatePaymentInformation(order) {
                 + order.billing.payment.selectedPaymentInstruments[0].type
                 + '</span>';
 
-            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber != null) {
+            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber) {
                 htmlToAppend += '<div>'
                     + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
                     + '</div>';
             }
-            if(order.billing.payment.selectedPaymentInstruments[0].expirationMonth != null && order.billing.payment.selectedPaymentInstruments[0].expirationYear != null){
+            if(order.billing.payment.selectedPaymentInstruments[0].expirationMonth && order.billing.payment.selectedPaymentInstruments[0].expirationYear){
                 htmlToAppend += '<div><span>'
                 + order.resources.cardEnding + ' '
                 + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
