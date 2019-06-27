@@ -7,4 +7,9 @@
         ${payment.maskedCreditCardNumber}
     </div>
 </isif>
+<isif condition="${payment.expirationMonth && payment.expirationYear}">
+    <div class="credit-card-expiration-date">
+        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
+    </div>
+</isif>
 
