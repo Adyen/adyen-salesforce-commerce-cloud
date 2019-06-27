@@ -343,7 +343,7 @@ $('button[value="submit-payment"]').on('click', function (e) {
             if (!oneClickValid) {
                 return false;
             } else {
-                var selectedCardType = document.getElementById('cardType-' + uuid).innerText;
+                var selectedCardType = document.getElementById('cardType-' + uuid).value;
                 document.getElementById('saved-payment-security-code-' + uuid).value = "000";
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));

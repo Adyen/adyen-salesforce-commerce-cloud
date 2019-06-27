@@ -29,7 +29,7 @@
         <div class="saved-payment-information col-6 col-md-9">
             <div class="saved-credit-card-type">
                 <input type="hidden" id="cardType-${paymentInstrument.UUID}" value="${AdyenHelper.getAdyenCardType(paymentInstrument.creditCardType)}"/>
-                <span id="cardType">
+                <span id="span_cardType">
                     ${paymentInstrument.creditCardType}
                 </span>
             </div>

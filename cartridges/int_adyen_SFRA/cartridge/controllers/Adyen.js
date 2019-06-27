@@ -210,7 +210,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         paymentInstrument.custom.adyenPaymentData = null;
     });
     // Authorised: The payment authorisation was successfully completed.
-    if (result.resultCode == "Authorised" || result.resultCode == 'Pending') {
+    if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');
         var currentLocale = Locale.getLocale(req.locale.id);
