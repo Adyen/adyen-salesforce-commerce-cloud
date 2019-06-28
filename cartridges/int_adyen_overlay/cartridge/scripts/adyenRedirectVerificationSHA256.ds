@@ -293,11 +293,8 @@ function verify (args) {
     msg = "DW2AdyenRedir v " + VERSION + " - Payment info\n================================================================";
     msg += "\nMode : " + Mode;
     msg += "\nRecurring : " + setRecurringType;
-    msg += "\nSessionID : " + args.CurrentSession.sessionID;
     msg += "\nmRef : " + orderNo ;
-    msg += "\nShopper email : " + order.customerEmail + " , ID : " + customerID;
 	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
-	msg += "\nPaydata : " + requestString ;
 	msg += "\nSignature : " + merchantSig ;
 
 	//Log those information just when custom logs debug mode is enabled

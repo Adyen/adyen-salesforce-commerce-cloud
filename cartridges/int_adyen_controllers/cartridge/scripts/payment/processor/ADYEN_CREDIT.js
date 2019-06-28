@@ -121,7 +121,7 @@ function Authorize(args) {
 	            authorized3d: true,
 	            redirectObject: result.RedirectObject,
 	            view: app.getView({
-	                ContinueURL: URLUtils.https('Adyen-CloseIFrame', 'utm_nooverride', '1'),
+	                ContinueURL: URLUtils.https('Adyen-CloseThreeDS', 'utm_nooverride', '1'),
 	                Basket: order,
 	                issuerUrl : result.RedirectObject.url,
 	                paRequest : result.RedirectObject.data.PaReq,

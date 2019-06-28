@@ -526,11 +526,11 @@ function authorizeWithForm() {
 }
 
 /**
- * Close IFrame where was 3d secure form
+  Post the retrieved 3ds data
  * 
  * @returns template
  */
-function closeIFrame() {
+function closeThreeDS() {
 	var adyenResponse = {
 			MD : request.httpParameterMap.get("MD").stringValue,
 			PaRes : request.httpParameterMap.get("PaRes").stringValue
@@ -598,7 +598,7 @@ exports.Redirect3DS2 = guard.ensure(['https', 'post'], redirect3ds2);
 
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
 
-exports.CloseIFrame = guard.ensure(['https', 'post'], closeIFrame);
+exports.CloseThreeDS = guard.ensure(['https', 'post'], closeThreeDS);
 
 exports.GetConfigurationComponents = guard.ensure(['https', 'get'], getConfigurationComponents);
 
