@@ -351,6 +351,10 @@ var __AdyenHelper: Object = {
             shopperObject['shopperReference'] = customerID;
         }
 
+        if(request.getLocale()){
+            shopperObject['shopperLocale'] = request.getLocale();
+        }
+
         if(params.Args.adyenForm) {
             if(params.Args.adyenForm.socialSecurityNumber.value){
                 shopperObject['socialSecurityNumber'] = params.Args.adyenForm.socialSecurityNumber.value;
