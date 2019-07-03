@@ -22,6 +22,7 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
     viewData.adyenEncryptedExpiryMonth = paymentForm.adyenEncryptedExpiryMonth.value;
     viewData.adyenEncryptedExpiryYear = paymentForm.adyenEncryptedExpiryYear.value;
     viewData.adyenEncryptedSecurityCode = paymentForm.adyenEncryptedSecurityCode.value;
+    viewData.browserInfo = paymentForm.browserInfo.value;
     res.setViewData(viewData);
 
     if (paymentForm.valid) {
