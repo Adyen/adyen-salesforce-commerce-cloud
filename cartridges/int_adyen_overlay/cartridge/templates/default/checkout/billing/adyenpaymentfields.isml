@@ -57,8 +57,8 @@
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}">
     <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
-    <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo}" type="hidden"/>
 </div>
 
 

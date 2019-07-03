@@ -174,6 +174,7 @@
         	e.preventDefault();
             if (window.AdyenCard.isValid) {
             	copyCardData(window.AdyenCard);
+                setBrowserData();
             	$('#add-card-submit-hidden').trigger('click');
             }
         });

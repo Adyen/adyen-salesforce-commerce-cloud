@@ -285,8 +285,8 @@ var __AdyenHelper: Object = {
                 }
                 break;
             case 'account':
-                if (session.forms.paymentinstruments) {
-                    card = session.forms.paymentinstruments.creditcards.newcreditcard;
+                if (session.forms.billing.paymentMethods) {
+                    card = session.forms.billing.paymentMethods.creditCard;
                     paymentMethodObject['holderName'] = card.owner.value;
                 } else {
                     // structure for SFRA
@@ -496,8 +496,8 @@ var __AdyenHelper: Object = {
                 }
                 break;
             case 'account':
-                if (session.forms.paymentinstruments) {
-                    card = session.forms.paymentinstruments.creditcards.newcreditcard;
+                if (session.forms.billing.paymentMethods) {
+                    card = session.forms.billing.paymentMethods.creditCard;
                 } else {
                     // structure for SFRA
                     card = session.forms.creditCard;
