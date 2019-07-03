@@ -101,6 +101,10 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
     var customerID = '';
 
+    if(AdyenHelper.getAdyen3DS2Enabled() && empty(args.PaymentType)){
+        jsonObject = AdyenHelper.add3DS2Data(jsonObject, 'billing');
+    }
+
     if (!empty(profile) && !empty(profile.getCustomerNo())) {
         customerID = profile.getCustomerNo();
     }
