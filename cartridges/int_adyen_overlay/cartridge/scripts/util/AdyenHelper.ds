@@ -390,39 +390,25 @@ var __AdyenHelper: Object = {
 
     createAddressObjects: function (order, jsonObject) {
         var shippingAddress = order.defaultShipment.shippingAddress;
-        var houseNumberShip;
-        if (shippingAddress.address2) {
-            houseNumberShip = shippingAddress.address2;
-        }
-        else {
-            houseNumberShip = "N/A";
-        }
         jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
 
         jsonObject.deliveryAddress = {
-            "city": shippingAddress.city,
-            "country": shippingAddress.countryCode.value.toUpperCase(),
-            "houseNumberOrName": houseNumberShip,
-            "postalCode": shippingAddress.postalCode,
-            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : 'NA'),
-            "street": shippingAddress.address1
+            "city": (!empty(shippingAddress.city) ? shippingAddress.city : "N/A"),
+            "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
+            "houseNumberOrName": (!empty(shippingAddress.address2) ? shippingAddress.address2 : ""),
+            "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
+            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : ""),
+            "street": (!empty(shippingAddress.address1) ? shippingAddress.address1 : "N/A")
         };
 
         var billingAddress = order.getBillingAddress();
-        var houseNumberBill;
-        if (billingAddress.address2) {
-            houseNumberBill = billingAddress.address2;
-        }
-        else {
-            houseNumberBill = "N/A";
-        }
         jsonObject.billingAddress = {
-            "city": billingAddress.city,
-            "country": billingAddress.countryCode.value.toUpperCase(),
-            "houseNumberOrName": houseNumberBill,
-            "postalCode": billingAddress.postalCode,
-            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : 'NA'),
-            "street": billingAddress.address1
+            "city": (!empty(billingAddress.city) ? billingAddress.city : "N/A"),
+            "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
+            "houseNumberOrName": (!empty(billingAddress.address2) ? billingAddress.address2 : ""),
+            "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
+            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : ""),
+            "street": (!empty(billingAddress.address1) ? billingAddress.address1 : "N/A")
         };
 
         return jsonObject;
