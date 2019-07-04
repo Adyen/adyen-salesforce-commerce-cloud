@@ -64,7 +64,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     var result = adyenCheckout.creditCard({
         Order: order,
-        Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
@@ -80,6 +79,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
+    //Trigger 3DS2.0 flow
     if(result.ThreeDS2){
         Transaction.commit();
         Transaction.wrap(function () {
@@ -96,6 +96,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         }
     }
 
+    //Trigger 3DS flow
     else if (result.RedirectObject != '') {
         Transaction.commit();
         Transaction.wrap(function () {

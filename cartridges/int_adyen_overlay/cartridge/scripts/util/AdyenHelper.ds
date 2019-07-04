@@ -313,48 +313,8 @@ var __AdyenHelper: Object = {
 
     createShopperObject: function (params) {
         var shopperObject = {};
-        var customer = !empty(params) && 'Customer' in params && !empty(params.Customer) ? params.Customer : null;
-        var basket = !empty(params) && 'Basket' in params && !empty(params.Basket) ? params.Basket : null;
-        if (empty(customer) && !empty(basket)) {
-            customer = basket.getCustomer();
-        }
-        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
 
-        var customerEmail = '';
-        if (!empty(basket) && !empty(basket.customerEmail)) {
-            customerEmail = basket.customerEmail;
-        }
-        if (empty(customerEmail) && !empty(profile) && !empty(profile.getEmail())) {
-            customerEmail = profile.getEmail();
-        }
-
-        var customerID = '';
-        if (!empty(profile) && !empty(profile.getCustomerNo())) {
-            customerID = profile.getCustomerNo();
-        } else {
-            if (!empty(basket.getCustomerNo())) {
-                customerID = basket.getCustomerNo();
-            }
-        }
-
-        var shopperIP = !empty(request) && !empty(request.getHttpRemoteAddress()) ? request.getHttpRemoteAddress() : '';
-
-        if (!empty(shopperIP)) {
-            shopperObject['shopperIP'] = shopperIP;
-        }
-
-        if (!empty(customerEmail)) {
-            shopperObject['shopperEmail'] = customerEmail;
-        }
-
-        if (!empty(customerID)) {
-            shopperObject['shopperReference'] = customerID;
-        }
-
-        if(request.getLocale()){
-            shopperObject['shopperLocale'] = request.getLocale();
-        }
-
+        var gender = "UNKNOWN";
         if(params.Args && params.Args.adyenForm) {
             if(params.Args.adyenForm.socialSecurityNumber.value){
                 shopperObject['socialSecurityNumber'] = params.Args.adyenForm.socialSecurityNumber.value;
@@ -362,18 +322,99 @@ var __AdyenHelper: Object = {
             if(params.Args.adyenForm.dateOfBirth.value){
                 shopperObject['dateOfBirth'] = params.Args.adyenForm.dateOfBirth.value;
             }
+            if(params.Args.adyenForm.gender.value){
+                switch(params.Args.adyenForm.gender.value){
+                    case "M":
+                        gender = "MALE";
+                        break;
+                    case "F":
+                        gender = "FEMALE";
+                        break;
+                    default:
+                        gender = "UNKNOWN";
+                }
+            }
             if(params.Args.adyenForm.telephoneNumber.value){
                 shopperObject['telephoneNumber'] = params.Args.adyenForm.telephoneNumber.value;
             }
             else if(params.Args.Order.defaultShipment.shippingAddress.phone){
                 shopperObject['telephoneNumber']= params.Args.Order.defaultShipment.shippingAddress.phone
             }
+
+        }
+
+        var customer = !empty(params) && 'Customer' in params && !empty(params.Customer) ? params.Customer : null;
+        var order = !empty(params) && 'Order' in params && !empty(params.Order) ? params.Order : null;
+        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
+
+        if(order) {
+            if (customer) {
+                customer = order.getCustomer();
+            }
+            if (order.customerEmail) {
+                shopperObject['shopperEmail'] = order.customerEmail;
+            }
+            if (empty(order.customerEmail) && profile && profile.getEmail()) {
+                shopperObject['shopperEmail'] = profile.getEmail();
+            }
+
+            var shopperDetails = {
+                "firstName": order.getBillingAddress().firstName,
+                "gender": gender,
+                "infix": "",
+                "lastName": order.getBillingAddress().lastName
+            };
+
+            shopperObject['shopperName'] = shopperDetails;
+        }
+
+        if (profile && profile.getCustomerNo()) {
+            shopperObject['shopperReference'] = profile.getCustomerNo();
+        } else {
+            if (order && order.getCustomerNo()) {
+                shopperObject['shopperReference'] = order.getCustomerNo();
+            }
+        }
+
+        var shopperIP = !empty(request) && !empty(request.getHttpRemoteAddress()) ? request.getHttpRemoteAddress() : null;
+        if (shopperIP) {
+            shopperObject['shopperIP'] = shopperIP;
+        }
+
+        if(request.getLocale()){
+            shopperObject['shopperLocale'] = request.getLocale();
         }
 
         return shopperObject;
     },
 
-    createAdyenRequestObject: function (recurringType, order, saveCreditCard, paymentType) {
+    createAddressObjects: function (order, jsonObject) {
+        var shippingAddress = order.defaultShipment.shippingAddress;
+        jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
+
+        jsonObject.deliveryAddress = {
+            "city": (!empty(shippingAddress.city) ? shippingAddress.city : "N/A"),
+            "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
+            "houseNumberOrName": (!empty(shippingAddress.address2) ? shippingAddress.address2 : ""),
+            "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
+            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : ""),
+            "street": (!empty(shippingAddress.address1) ? shippingAddress.address1 : "N/A")
+        };
+
+        var billingAddress = order.getBillingAddress();
+        jsonObject.billingAddress = {
+            "city": (!empty(billingAddress.city) ? billingAddress.city : "N/A"),
+            "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
+            "houseNumberOrName": (!empty(billingAddress.address2) ? billingAddress.address2 : ""),
+            "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
+            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : ""),
+            "street": (!empty(billingAddress.address1) ? billingAddress.address1 : "N/A")
+        };
+
+        return jsonObject;
+    },
+
+    createAdyenRequestObject: function (order, saveCreditCard) {
         var jsonObject = {},
             reference = '';
 
@@ -390,6 +431,10 @@ var __AdyenHelper: Object = {
             'userAgent': request.httpUserAgent
         };
 
+        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
+
+        //Set recurring type
+        var recurringType = __AdyenHelper.getAdyenRecurringType();
         if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
 
             if (saveCreditCard) {
@@ -407,8 +452,6 @@ var __AdyenHelper: Object = {
             }
         }
 
-        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
-
         return jsonObject;
     },
 
@@ -416,19 +459,19 @@ var __AdyenHelper: Object = {
         var tokenID = '',
             pspReference = '';
         var formType = 'account';
-        var recurringType = __AdyenHelper.getAdyenRecurringType();
 
-        var jsonObject = __AdyenHelper.createAdyenRequestObject(recurringType, null, true, null);
+        var jsonObject = __AdyenHelper.createAdyenRequestObject(null, true);
 
         if(__AdyenHelper.getAdyen3DS2Enabled()){
             jsonObject = __AdyenHelper.add3DS2Data(jsonObject, formType);
         }
 
+        //Create credit card and enable OneClick
         var paymentMethodObject = __AdyenHelper.createCardObjectSF(false, formType);
         jsonObject['paymentMethod'] = paymentMethodObject;
-
-        jsonObject['enableOneClick'] = true;
         jsonObject['paymentMethod'].storeDetails = true;
+        jsonObject['enableOneClick'] = true;
+
 
         var shopperObject = __AdyenHelper.createShopperObject({
             Customer: params.Customer
@@ -440,9 +483,12 @@ var __AdyenHelper: Object = {
         };
 
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
-        var CreateRecurringPayment = require('int_adyen_overlay/cartridge/scripts/adyenCreateRecurringPayment.ds');
-        var createRecurringPaymentResult = CreateRecurringPayment.createRecurringPayment({RequestObject: requestObject});
 
+        //Send payment request to /payments endpoints
+        var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout.ds');
+        var createRecurringPaymentResult = adyenCheckout.doPaymentCall({}, requestObject);
+
+        //Check the result of the initial recurring payment
         if (createRecurringPaymentResult === PIPELET_ERROR || createRecurringPaymentResult.Decision == 'ERROR') {
             return {
                 error: true

@@ -66,7 +66,6 @@ function Authorize(args) {
     Transaction.begin();
     var result = adyenCheckout.creditCard({
         Order: order,
-        Amount: paymentInstrument.paymentTransaction.amount,
         CurrentSession: session,
         CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
