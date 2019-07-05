@@ -29,7 +29,7 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
 });
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
 
@@ -68,7 +68,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
             var fraudDetectionStatus = {status: 'success'};
 
             // Places the order
-            var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
             if (placeOrderResult.error) {
                 Transaction.wrap(function () {
                     OrderMgr.failOrder(order);
@@ -105,7 +105,7 @@ server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
 });
 
 server.post('Authorize3DS2', server.middleware.https, function (req, res, next) {
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
 
@@ -164,7 +164,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
         var fraudDetectionStatus = {status: 'success'};
 
         // Places the order
-        var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
+        var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
         if (placeOrderResult.error) {
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order);
@@ -199,16 +199,23 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
     var payLoad = req.querystring.payload;
 
     //redirect to payment/details
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var requestObject = {};
     requestObject['details'] = {};
     requestObject.details['payload'] = payLoad;
     var result = adyenCheckout.doPaymentDetailsCall(requestObject);
     var order = OrderMgr.getOrder(result.merchantReference);
-    var paymentInstrument = order.getPaymentInstrument();
-    Transaction.wrap(function () {
-        paymentInstrument.custom.adyenPaymentData = null;
-    });
+
+    var paymentInstruments = order.getPaymentInstruments("Adyen");
+    var adyenPaymentInstrument;
+    var instrumentsIter = paymentInstruments.iterator();
+    while (instrumentsIter.hasNext()) {
+        adyenPaymentInstrument = instrumentsIter.next();
+        Transaction.wrap(function () {
+            adyenPaymentInstrument.custom.adyenPaymentData = null;
+        });
+    }
+
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
         var OrderModel = require('*/cartridge/models/order');
@@ -324,13 +331,13 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, function (req, res, next) {
-    var checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
+    var checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
     var status = checkAuth.check(req);
     if (!status) {
         res.render('/adyen/error');
         return {};
     }
-    var handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
+    var handleNotify = require('*/cartridge/scripts/handleNotify');
     Transaction.begin();
     var success = handleNotify.notify(req.form);
 

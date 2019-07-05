@@ -7,10 +7,10 @@ var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
-    require('int_adyen_overlay/cartridge/scripts/UpdateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
+    require('*/cartridge/scripts/UpdateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
     next();
 });
 
@@ -71,7 +71,7 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
         );
         var tokenToDelete = AdyenHelper.getCardToken(payment.UUID, customer);
         if (!empty(tokenToDelete)) {
-            var result = require('int_adyen_overlay/cartridge/scripts/adyenDeleteRecurringPayment').deleteRecurringPayment({
+            var result = require('*/cartridge/scripts/adyenDeleteRecurringPayment').deleteRecurringPayment({
                 Customer: customer,
                 RecurringDetailReference: tokenToDelete
             });

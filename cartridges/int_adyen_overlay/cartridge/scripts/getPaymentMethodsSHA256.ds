@@ -15,7 +15,7 @@ importPackage(dw.util);
 importPackage( dw.svc );
 
 //script include
-var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
+var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 

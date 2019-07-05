@@ -166,7 +166,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     // Places the order
-    var placeOrderResult = adyenHelpers.placeOrder(order, fraudDetectionStatus);
+    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
         res.json({
             error: true,

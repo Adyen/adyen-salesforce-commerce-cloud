@@ -74,7 +74,6 @@ function capture( order : Order ) : Number
 	
 	try {
 		// Send a request
-		// TODO: fix this to new implementation
 		var params="action=" + "Payment.capture" +
 			"&modificationRequest.reference=" + encodeURIComponent(orderNo) +
 			"&modificationRequest.merchantAccount=" + encodeURIComponent(merchantAccount) +
