@@ -14,7 +14,7 @@ var Logger = require('dw/system/Logger');
 var Transaction = require('dw/system/Transaction');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 function execute(args) {
     var result = verify(args);

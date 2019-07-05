@@ -48,7 +48,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
 
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     Transaction.begin();
 
     var result = adyenCheckout.alternativePaymentMethod({

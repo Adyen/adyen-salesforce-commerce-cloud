@@ -125,44 +125,7 @@ function validatePayment(req, currentBasket) {
     return result;
 }
 
-/**
- * Attempts to place the order
- * @param {dw.order.Order} order - The order object to be placed
- * @returns {Object} an error object
- */
-function placeOrder(order, fraudDetectionStatus) {
-    var result = {error: false, order: order, order_created: false};
-
-    try {
-        if (order.paymentInstrument.paymentMethod == 'Adyen') {
-            result.order_created = true;
-        } else {
-            Transaction.begin();
-            var placeOrderStatus = OrderMgr.placeOrder(order);
-            if (placeOrderStatus === Status.ERROR) {
-                throw new Error();
-            }
-            if (fraudDetectionStatus.status === 'flag') {
-                order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
-            } else {
-                order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-            }
-
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
-            Transaction.commit();
-        }
-    } catch
-        (e) {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
-        });
-        result.error = true;
-    }
-    return result;
-}
-
 module.exports = {
     handlePayments: handlePayments,
-    placeOrder: placeOrder,
     validatePayment: validatePayment
 };

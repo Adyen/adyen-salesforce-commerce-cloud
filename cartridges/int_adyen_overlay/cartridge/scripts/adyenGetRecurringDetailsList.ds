@@ -11,7 +11,7 @@ var HashMap = require('dw/util/HashMap');
 var Logger = require('dw/system/Logger');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var THIS_SCRIPT = 'int_adyen_overlay/scripts/adyenGetRecurringDetailsList.ds';
 
 function execute(args) {

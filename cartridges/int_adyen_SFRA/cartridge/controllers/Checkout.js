@@ -11,7 +11,7 @@ server.prepend('Begin',
     csrfProtection.generateToken,
     function (req, res, next) {
         if (req.currentCustomer.raw.isAuthenticated()) {
-            require('int_adyen_overlay/cartridge/scripts/UpdateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
+            require('*/cartridge/scripts/UpdateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
         }
         next();
     });

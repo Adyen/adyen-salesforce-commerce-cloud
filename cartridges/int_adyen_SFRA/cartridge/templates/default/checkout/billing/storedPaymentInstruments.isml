@@ -3,7 +3,7 @@
     assets.addCss('/css/adyen-checkout-3.0.0.css');
 </isscript>
 <iscontent type="text/html" encoding="off"/>
-<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
     <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}"
          data-uuid="${paymentInstrument.UUID}">

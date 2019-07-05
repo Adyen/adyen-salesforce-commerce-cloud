@@ -9,7 +9,7 @@ var collections = require('*/cartridge/scripts/util/collections');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
@@ -56,7 +56,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var Transaction = require('dw/system/Transaction');
     var order = OrderMgr.getOrder(orderNumber);
     var creditCardForm = server.forms.getForm('billing').creditCardFields;
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });

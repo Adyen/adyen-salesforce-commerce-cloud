@@ -485,7 +485,7 @@ var __AdyenHelper: Object = {
         var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
 
         //Send payment request to /payments endpoints
-        var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout.ds');
+        var adyenCheckout = require('*/cartridge/scripts/adyenCheckout.ds');
         var createRecurringPaymentResult = adyenCheckout.doPaymentCall({}, requestObject);
 
         //Check the result of the initial recurring payment
@@ -497,7 +497,7 @@ var __AdyenHelper: Object = {
 
         if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('PspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.PspReference)) {
             pspReference = createRecurringPaymentResult.PspReference;
-            var GetRecurringDetailsList = require('int_adyen_overlay/cartridge/scripts/adyenGetRecurringDetailsList.ds');
+            var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
             var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
                 Customer: params.Customer
             });
