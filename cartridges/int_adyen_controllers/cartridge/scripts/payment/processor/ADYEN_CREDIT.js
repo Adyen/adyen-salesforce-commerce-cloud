@@ -11,13 +11,13 @@ var Logger = require('dw/system/Logger');
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
 var Cart = require(Resource.msg('script.models.cartmodel', 'require', null));
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 /**
  * Creates a Adyen payment instrument for the given basket
  */
 function Handle(args) {
     var cart = Cart.get(args.Basket);
-    var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
     var adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI');
     var result;
 

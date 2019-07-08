@@ -72,24 +72,37 @@ function showConfirmation() {
 	requestObject.details['payload'] = payLoad;
 	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
 	var orderNumber = result.merchantReference;
+    var order = OrderMgr.getOrder(orderNumber);
 
-	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending') {
+    var paymentInstruments = order.getPaymentInstruments("Adyen");
+    var adyenPaymentInstrument;
+    var instrumentsIter = paymentInstruments.iterator();
+    while (instrumentsIter.hasNext()) {
+        adyenPaymentInstrument = instrumentsIter.next();
+        Transaction.wrap(function () {
+            adyenPaymentInstrument.custom.adyenPaymentData = null;
+        });
+    }
+
+	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+        Transaction.wrap(function () {
+            AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+        });
 		orderConfirm(orderNumber);
-	} else {
-		var OrderMgr = require('dw/order/OrderMgr');
-		var order = OrderMgr.getOrder(orderNumber);
-		// fail order
-		Transaction.wrap(function () {
-			OrderMgr.failOrder(order);
-		});
-		Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
-		// should be assingned by previous calls or not
-		var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
-
-		app.getController('COSummary').Start({
-			PlaceOrderError: errorStatus
-		});
 	}
+	else {
+        // fail order
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order);
+        });
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+        // should be assingned by previous calls or not
+        var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+
+        app.getController('COSummary').Start({
+            PlaceOrderError: errorStatus
+        });
+    }
 
 	return {};
 }
