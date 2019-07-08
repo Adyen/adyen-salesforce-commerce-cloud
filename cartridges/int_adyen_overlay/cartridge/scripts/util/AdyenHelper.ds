@@ -650,10 +650,7 @@ var __AdyenHelper: Object = {
     },
 
     savePaymentDetails: function (paymentInstrument, order, result) {
-        dwsystem.Logger.getLogger("Adyen").error("result = " + JSON.stringify(result));
-        dwsystem.Logger.getLogger("Adyen").error("result1 = " + JSON.stringify(result.pspReference));
         if ('pspReference' in result && !empty(result.pspReference)) {
-            dwsystem.Logger.getLogger("Adyen").error("result2 = " + JSON.stringify(result.pspReference));
             paymentInstrument.paymentTransaction.transactionID = result.pspReference;
             order.custom.Adyen_pspReference = result.pspReference;
         }
