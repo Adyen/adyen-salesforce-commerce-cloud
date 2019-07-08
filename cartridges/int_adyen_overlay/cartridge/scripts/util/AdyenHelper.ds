@@ -495,8 +495,8 @@ var __AdyenHelper: Object = {
             };
         }
 
-        if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('PspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.PspReference)) {
-            pspReference = createRecurringPaymentResult.PspReference;
+        if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('pspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.pspReference)) {
+            pspReference = createRecurringPaymentResult.pspReference;
             var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
             var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
                 Customer: params.Customer
