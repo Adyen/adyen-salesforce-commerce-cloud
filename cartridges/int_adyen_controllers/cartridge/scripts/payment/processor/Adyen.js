@@ -65,7 +65,7 @@ function authorize(args) {
 			'adyenForm' : session.forms.adyPaydata
 		});
 	});
-	
+
 	 if (result.error) {
 	        var errors = [];
 	        errors.push(result.args.AdyenErrorMessage);
@@ -74,7 +74,7 @@ function authorize(args) {
 	        };
 	    }
 
-	    if (result.ResultCode == 'RedirectShopper') {
+	    if (result.resultCode == 'RedirectShopper') {
 	        return {
 	            authorized: true,
 	            order: order,
@@ -82,7 +82,7 @@ function authorize(args) {
 	            redirectObject : result.RedirectObject
 	        };
 	    }
-	    else if(result.ResultCode == 'Authorised' || result.ResultCode == 'Received'){
+	    else if(result.resultCode == 'Authorised' || result.resultCode == 'Received'){
 	        return { authorized: true, error: false };
 	    }
 	    else {

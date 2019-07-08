@@ -11,13 +11,13 @@ var Logger = require('dw/system/Logger');
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
 var Cart = require(Resource.msg('script.models.cartmodel', 'require', null));
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
 
 /**
  * Creates a Adyen payment instrument for the given basket
  */
 function Handle(args) {
     var cart = Cart.get(args.Basket);
-    var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
     var adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI');
     var result;
 
@@ -143,25 +143,7 @@ function Authorize(args) {
         };
     }
 
-    order.custom.Adyen_eventCode = 'AUTHORISATION';
-    if ('PspReference' in result && !empty(result.PspReference)) {
-        paymentInstrument.paymentTransaction.transactionID = result.PspReference;
-        order.custom.Adyen_pspReference = result.PspReference;
-    }
-
-    if ('AuthorizationCode' in result && !empty(result.AuthorizationCode)) {
-        paymentInstrument.paymentTransaction.custom.authCode = result.AuthorizationCode;
-    }
-
-    if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-        order.custom.Adyen_value = result.AdyenAmount;
-    }
-
-    if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
-        order.custom.Adyen_paymentMethod = result.AdyenCardType;
-    }
-    // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
 
     Transaction.commit();
 

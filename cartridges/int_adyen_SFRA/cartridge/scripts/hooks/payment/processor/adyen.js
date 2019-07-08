@@ -69,7 +69,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.ResultCode == 'RedirectShopper') {
+    if (result.resultCode == 'RedirectShopper') {
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
@@ -80,7 +80,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument: paymentInstrument,
             redirectObject: result.RedirectObject
         };
-    } else if (result.ResultCode == 'Authorised' || result.ResultCode == 'Received') {
+    } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received') {
         return {authorized: true, error: false};
     } else {
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));

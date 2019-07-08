@@ -495,8 +495,8 @@ var __AdyenHelper: Object = {
             };
         }
 
-        if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('PspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.PspReference)) {
-            pspReference = createRecurringPaymentResult.PspReference;
+        if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('pspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.pspReference)) {
+            pspReference = createRecurringPaymentResult.pspReference;
             var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
             var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
                 Customer: params.Customer
@@ -647,6 +647,29 @@ var __AdyenHelper: Object = {
         } else {
             throw new Error('cardType argument is not passed to getSFCCCardType function');
         }
+    },
+
+    savePaymentDetails: function (paymentInstrument, order, result) {
+        if ('pspReference' in result && !empty(result.pspReference)) {
+            paymentInstrument.paymentTransaction.transactionID = result.pspReference;
+            order.custom.Adyen_pspReference = result.pspReference;
+        }
+
+        if ('resultCode' in result && !empty(result.resultCode)) {
+            paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
+        }
+
+        if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
+            order.custom.Adyen_value = result.AdyenAmount;
+        }
+
+        if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
+            order.custom.Adyen_paymentMethod = result.AdyenCardType;
+        }
+        // Save full response to transaction custom attribute
+        paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
+
+        return true;
     },
 
     saveAuthResponseAttributes: function (transaction: dw.order.PaymentTransaction, map: dw.web.HttpParameterMap) {

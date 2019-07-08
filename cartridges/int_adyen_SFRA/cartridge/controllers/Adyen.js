@@ -9,7 +9,7 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
-var adyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -78,9 +78,9 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
             }
 
             Transaction.begin();
+            AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
             order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-            paymentInstrument.paymentTransaction.transactionID = result.pspReference;
             Transaction.commit();
             COHelpers.sendConfirmationEmail(order, req.locale.id);
             clearForms();
@@ -174,9 +174,9 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
         }
 
         Transaction.begin();
+        AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
         order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-        paymentInstrument.paymentTransaction.transactionID = result.pspReference;
         Transaction.commit();
         COHelpers.sendConfirmationEmail(order, req.locale.id);
         clearForms();
@@ -226,6 +226,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         //Save orderModel to custom object during session
         Transaction.wrap(function () {
             order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
+            AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
         });
 
         clearForms();
@@ -273,7 +274,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         });
     })
 
-    var adyenURL = adyenHelper.getAdyenUrl() + "hpp/img/pm/";
+    var adyenURL = AdyenHelper.getAdyenUrl() + "hpp/img/pm/";
 
     res.json({
         AdyenHppPaymentMethods: paymentMethods,
@@ -310,8 +311,8 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
 
     try {
         originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-        loadingContext = adyenHelper.getLoadingContext();
-        environment = adyenHelper.getAdyenMode().toLowerCase();
+        loadingContext = AdyenHelper.getLoadingContext();
+        environment = AdyenHelper.getAdyenMode().toLowerCase();
 
     } catch (err) {
         error = true;

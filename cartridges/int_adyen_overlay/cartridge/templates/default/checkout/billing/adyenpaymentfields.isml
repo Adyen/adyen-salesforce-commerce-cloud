@@ -96,7 +96,6 @@
     }
 
 	function initializeCardComponent(originKey, environment, locale) {
-	console.log(environment);
 		window.Configuration = {
 		        locale: locale,
 		        originKey: originKey,

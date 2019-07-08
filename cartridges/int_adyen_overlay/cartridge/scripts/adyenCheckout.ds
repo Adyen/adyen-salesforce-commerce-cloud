@@ -194,14 +194,13 @@ function doPaymentCall(args, requestObject){
         }
 
         // if the card is enrolled for 3D Secure, the response contains a redirect object
-        if ('redirect' in responseObj) {args.RedirectObject = responseObj.redirect;} // issuerUrl
-        args.ResultCode = responseObj.resultCode; // resultCode
-
-        args.PspReference = ('pspReference' in responseObj && !empty(responseObj.pspReference) ? responseObj.pspReference : '');
+        args.RedirectObject = ('redirect' in responseObj && !empty(responseObj.redirect) ? responseObj.redirect : '');
+        args.resultCode = responseObj.resultCode; // resultCode
+        args.pspReference = ('pspReference' in responseObj && !empty(responseObj.pspReference) ? responseObj.pspReference : '');
         args.PaymentStatus = resultObj.errorText;
         args.AdyenAmount = requestObject["amount"].value;
         args.Decision = 'ERROR';
-        var resultCode = args.ResultCode;
+        var resultCode = args.resultCode;
 
         //Check the response object from /payment call
         if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
