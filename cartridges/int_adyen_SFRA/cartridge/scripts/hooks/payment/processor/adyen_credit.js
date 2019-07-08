@@ -122,28 +122,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    order.custom.Adyen_eventCode = 'AUTHORISATION';
-    if ('PspReference' in result && !empty(result.PspReference)) {
-        paymentInstrument.paymentTransaction.transactionID = result.PspReference;
-        order.custom.Adyen_pspReference = result.PspReference;
-    }
-
-    if ('AuthorizationCode' in result && !empty(result.AuthorizationCode)) {
-        paymentInstrument.paymentTransaction.custom.authCode = result.AuthorizationCode;
-    }
-
-    if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-        order.custom.Adyen_value = result.AdyenAmount;
-    }
-
-    if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
-        order.custom.Adyen_paymentMethod = result.AdyenCardType;
-    }
-    // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
-    paymentInstrument.paymentTransaction.transactionID = result.PspReference;
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
     Transaction.commit();
 
     return {authorized: true, error: false};
