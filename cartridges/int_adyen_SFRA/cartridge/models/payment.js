@@ -14,10 +14,17 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
         var results = {
             paymentMethod: paymentInstrument.paymentMethod,
             amount: paymentInstrument.paymentTransaction.amount.value
-
         };
-        results.selectedAdyenPM = !empty(paymentInstrument.custom.adyenPaymentMethod) ? paymentInstrument.custom.adyenPaymentMethod : null;
-        results.selectedIssuerName = !empty(paymentInstrument.custom.adyenIssuerName) ? paymentInstrument.custom.adyenIssuerName : null;
+
+        if (paymentInstrument.custom.adyenPaymentMethod) {
+            results.selectedAdyenPM = paymentInstrument.custom.adyenPaymentMethod;
+        }
+        if (paymentInstrument.custom.adyenIssuerName) {
+            results.selectedIssuerName = paymentInstrument.custom.adyenIssuerName;
+        }
+        if (paymentInstrument.custom.adyenAdditionalPaymentData) {
+            results.adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
+        }
 
         if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
             results.lastFour = paymentInstrument.creditCardNumberLastDigits;

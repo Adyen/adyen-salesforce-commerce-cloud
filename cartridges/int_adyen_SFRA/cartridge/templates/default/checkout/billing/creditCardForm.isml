@@ -1,121 +1,24 @@
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
+<input type="hidden" id="currentLocale" value="${request.locale}"/>
+<iscontent type="text/html" encoding="off"/>
+<input type="hidden" class="form-control cardNumber" id="cardNumber" ${creditFields.cardNumber.attributes}>
+<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
-<!--- Hidden input for credit card type --->
-<input type="hidden" class="form-control" id="cardType"
-       name="${creditFields.cardType.htmlName}"
-       value="">
+<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"
+       ${creditFields.selectedCardID.attributes}>
 
-<script src="${pdict.AdyenHelper.getCSEJsUrl()}" type="text/javascript"></script>
+<input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber"
+       ${creditFields.adyenEncryptedCardNumber.attributes}>
+<input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth"
+       ${creditFields.adyenEncryptedExpiryMonth.attributes}>
+<input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear"
+       ${creditFields.adyenEncryptedExpiryYear.attributes}>
+<input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"
+       ${creditFields.adyenEncryptedSecurityCode.attributes}>
+<input type="hidden" class="form-control cardOwner" id="cardOwner" ${creditFields.cardOwner.attributes}>
+<input type="hidden" class="form-control browserInfo" id="browserInfo" ${creditFields.browserInfo.attributes}>
 
-<iscontent type="text/html" encoding="off" />
-<input type="hidden" class="form-control adyenEncryptedData" id="adyenEncryptedData" ${creditFields.adyenEncryptedData.attributes} >
+<span id="errorLoadComponent"></span>
+<div id="card"></div>
 
-<input type="hidden" value="${pdict.AdyenHelper.getAdyenCseDateField()}" data-encrypted-name="generationtime" id="adyen_generationtime"/>
-
-<input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"  ${creditFields.selectedCardID.attributes} >
-
-<div class="row">
-    <div class="col-12">
-        <div class="form-group
-            required">
-            <label class="form-control-label" for="holderName">${Resource.msg('field.credit.card.holderName','creditCard',null)}</label>
-            <input type="text" class="form-control holderName" id="holderName"
-
-                   data-encrypted-name="holderName">
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="form-group
-            <isif condition=${creditFields.cardNumber.mandatory === true}>required</isif>
-            ${creditFields.cardNumber.htmlName}">
-            <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
-            <div class="card-number-wrapper">
-                <input type="text" class="form-control cardNumber" autocomplete="cc-number" data-encrypted-name="number" value="" id="cardNumber" ${creditFields.cardNumber.attributes}>
-                <div class="invalid-feedback"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-6">
-        <div class="form-group
-            <isif condition=${creditFields.expirationMonth.mandatory === true}>required</isif>
-            ${creditFields.expirationMonth.htmlName}">
-            <label class="form-control-label" for="expirationMonth">${Resource.msg('field.credit.card.expiration.month','creditCard',null)}</label>
-            <select class="form-control expirationMonth custom-select" id="expirationMonth" ${creditFields.expirationMonth.attributes}
-                    autocomplete="cc-exp-month" data-encrypted-name="expiryMonth">
-                <isloop items=${creditFields.expirationMonth.options} var="month">
-                    <option id="${month.id}" value="${month.htmlValue}"
-                    <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
-                            && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
-                            && month.id == pdict.order.billing.payment.selectedPaymentInstruments[0].expirationMonth}">
-                        selected
-                    </isif> >
-                    ${month.label}
-                    </option>
-                </isloop>
-            </select>
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="form-group
-            <isif condition=${creditFields.expirationYear.mandatory === true}>required</isif>
-            ${creditFields.expirationYear.htmlName}">
-            <label class="form-control-label" for="expirationYear">${Resource.msg('field.credit.card.expiration.year','creditCard',null)}</label>
-            <select class="form-control expirationYear custom-select" id="expirationYear"
-                    data-encrypted-name="expiryYear" ${creditFields.expirationYear.attributes} autocomplete="cc-exp-year">
-                <option value="${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].htmlValue}">${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].label}</option>
-                <isloop items=${pdict.expirationYears} var="year">
-                    <option id="${year.toFixed(0)}" value="${year.toFixed(0)}"
-                    <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
-                            && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
-                            && year == pdict.order.billing.payment.selectedPaymentInstruments[0].expirationYear}">
-                        selected
-                    </isif> >
-                    <isprint value="${year}" formatter="####" /></option>
-                </isloop>
-            </select>
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-6">
-        <div class="form-group
-            <isif condition=${creditFields.securityCode.mandatory === true}>required</isif>
-            ${creditFields.securityCode.htmlName}">
-            <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.security.code','creditCard',null)}
-                </div>
-            </span>
-
-            <input type="text" class="form-control securityCode" id="securityCode"
-                   data-encrypted-name="cvc" >
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
-<span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
-
-<div class="row">
-    <div class="col">
-        <isif condition="${pdict.customer.registeredUser}">
-            <div class="form-check save-credit-card">
-                <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="${creditFields.saveCardAdyen.htmlName}" value="true" checked>
-                    ${creditFields.saveCardAdyen.label}
-                </label>
-            </div>
-        </isif>
-    </div>
-</div>

@@ -37,6 +37,8 @@ function execute( args : PipelineDictionary ) : Number
 }
 function handle( customObj : CustomObject  ) : Object
 {
+	var OrderMgr = require('dw/order/OrderMgr');
+	var Transaction = require('dw/system/Transaction');
 	var paymentSuccess : Boolean = false;
 	var refusedHpp : Boolean = false;
 	var pending : Boolean = false;
@@ -154,7 +156,15 @@ function handle( customObj : CustomObject  ) : Object
 				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 				order.setExportStatus(Order.EXPORT_STATUS_READY);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
-				break;	
+				break;
+			case "OFFER_CLOSED" :
+				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+				Transaction.wrap(function () {
+					OrderMgr.failOrder(order);
+				});
+				Logger.getLogger("Adyen", "adyen").info ("Offer closed for order {0} and updated to status NOT PAID.", order.orderNo);
+				break;
 			case "PENDING" :
 				pending = true;
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was in pending status.",order.orderNo);

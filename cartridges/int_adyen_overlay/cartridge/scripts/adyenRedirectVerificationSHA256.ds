@@ -11,9 +11,10 @@
 * @input issuerId : String
 * @input dob : String
 * @input gender : String
+* @input telephoneNumber : String
 * @input houseNumber : String
 * @input houseExtension : String
-* @input personalNumber : String
+* @input socialSecurityNumber : String
 *
 * @output merchantSig : String;
 * @output Amount100 : String;
@@ -176,13 +177,13 @@ function verify (args) {
 	}
 
 	//Open Invoice specific section
-	//requires Gender and Date Of Birth (DOB) from Open Invoice form on the Billing Page and Phone Number from Billing Form
+	//requires Gender, Date Of Birth (DOB) and if exits Phone Number from Open Invoice form on the Billing Page otherwise the Phone Number from Billing Form
 	if(!empty(args.brandCode) && Site.getCurrent().getCustomPreferenceValue("Adyen_Open_Invoice_Whitelist").indexOf(args.brandCode) > -1) {
 		
 		var billingAddr = order.getBillingAddress();	
 		adyenRequest.put("shopper.firstName", order.getBillingAddress().getFirstName() );
-		adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );
-		adyenRequest.put("shopper.telephoneNumber", order.getDefaultShipment().getShippingAddress().getPhone() );
+		adyenRequest.put("shopper.lastName", order.getBillingAddress().getLastName() );		
+		adyenRequest.put("shopper.telephoneNumber", (!empty(args.telephoneNumber)) ? args.telephoneNumber : order.getDefaultShipment().getShippingAddress().getPhone());
 		adyenRequest.put("shopperType", '1' );
 		adyenRequest.put("shopper.gender", (!empty(args.gender)) ? args.gender : 'UNKNOWN');
 
@@ -193,8 +194,8 @@ function verify (args) {
 			adyenRequest.put("shopper.dateOfBirthYear", dob[2] );
 		}
 
-		if( !empty(args.personalNumber)) {
-			adyenRequest.put("shopper.socialSecurityNumber", args.personalNumber );
+		if( !empty(args.socialSecurityNumber)) {
+			adyenRequest.put("shopper.socialSecurityNumber", args.socialSecurityNumber );
 		}
 
 		//open invoice line items
@@ -292,11 +293,8 @@ function verify (args) {
     msg = "DW2AdyenRedir v " + VERSION + " - Payment info\n================================================================";
     msg += "\nMode : " + Mode;
     msg += "\nRecurring : " + setRecurringType;
-    msg += "\nSessionID : " + args.CurrentSession.sessionID;
     msg += "\nmRef : " + orderNo ;
-    msg += "\nShopper email : " + order.customerEmail + " , ID : " + customerID;
 	msg += "\nAmount : " + args.Amount100 ;//+ " , " + args.Amount.currencyCode;
-	msg += "\nPaydata : " + requestString ;
 	msg += "\nSignature : " + merchantSig ;
 
 	//Log those information just when custom logs debug mode is enabled

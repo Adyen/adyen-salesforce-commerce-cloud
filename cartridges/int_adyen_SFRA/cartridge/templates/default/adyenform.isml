@@ -7,10 +7,12 @@
         </form>
         <script language="javascript">
             var loaded = false;
-            function load(){
+
+            function load() {
                 document.getElementById('3dform').submit();
                 loaded = true;
             }
+
             load();
         </script>
     </div>

@@ -39,7 +39,7 @@
 
         <isif condition="${pdict.order.shipping.length > 1}">
             <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
-            <isloop items="${shippingModel.productLineItems.items}" var="lineItem" status="loopSate">
+            <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
                 <p>
                     ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
                     <br/>
@@ -47,13 +47,13 @@
                     <isif condition="${lineItem.productType === 'bundle'}">
                         <isloop items="${lineItem.bundledProductLineItems}" var="bundledLineItem">
                             ${Resource.msg('label.order.bundled.item.name', 'confirmation', null)}: ${bundledLineItem.productName}
+                            <br/>
+                            <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
+                                ${attribute.displayName}: ${attribute.displayValue}
                                 <br/>
-                                <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
-                                    ${attribute.displayName}: ${attribute.displayValue}
-                                    <br/>
-                                </isloop>
+                            </isloop>
                         </isloop>
-                    <iselse/>
+                        <iselse/>
                         <isloop items="${lineItem.variationAttributes}" var="attribute">
                             ${attribute.displayName}: ${attribute.displayValue}
                             <br/>
@@ -93,22 +93,10 @@
         <div>
             <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
                 <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
-                    <div>
-                        <span>${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
-                            ${payment.type}</span>
-                    </div>
-                    <div>
-                        ${payment.maskedCreditCardNumber}
-                    </div>
-                    <div>
-                        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
-                    </div>
+                    <isinclude template="checkout/billing/paymentOptions/creditCardSummary"/>
                 </isif>
                 <isif condition="${payment.paymentMethod === 'Adyen'}">
-                    <div>${payment.selectedAdyenPM}</div>
-                    <isif condition="${payment.selectedIssuerName != null}">
-                        <div>${payment.selectedIssuerName}</div>
-                    </isif>
+                    <isinclude template="checkout/confirmation/adyenConfirmationDetails"/>
                 </isif>
             </isloop>
         </div>
@@ -123,7 +111,7 @@
     <br/>
     <isif condition="${pdict.order.shipping.length === 1}">
         <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
-        <isloop items="${pdict.order.items.items}" var="lineItem" status="loopSate">
+        <isloop items="${pdict.order.items.items}" var="lineItem">
             <p>
                 ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
                 <br/>
@@ -131,13 +119,13 @@
                 <isif condition="${lineItem.productType === 'bundle'}">
                     <isloop items="${lineItem.bundledProductLineItems}" var="bundledLineItem">
                         ${Resource.msg('label.order.bundled.item.name', 'confirmation', null)}: ${bundledLineItem.productName}
+                        <br/>
+                        <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
+                            ${attribute.displayName}: ${attribute.displayValue}
                             <br/>
-                            <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
-                                ${attribute.displayName}: ${attribute.displayValue}
-                                <br/>
-                            </isloop>
+                        </isloop>
                     </isloop>
-                <iselse/>
+                    <iselse/>
                     <isloop items="${lineItem.variationAttributes}" var="attribute">
                         ${attribute.displayName}: ${attribute.displayValue}
                         <br/>
@@ -145,8 +133,8 @@
                 </isif>
 
                 <isif condition="${lineItem.bonusProductLineItemUUID === 'bonus'}">
-                    <isloop items="${lineItem.bonusProducts}" var="bonusProduct" status="loopstate">
-                        <isif condition="${loopstate.first}">
+                    <isloop items="${lineItem.bonusProducts}" var="bonusProduct" status="loopState">
+                        <isif condition="${loopState.first}">
                             <br/>
                             ${Resource.msg('text.lineitem.bonus.msg','cart',null)}
                         </isif>
@@ -163,9 +151,9 @@
 
                         <!--- quantity --->
                         ${Resource.msg('field.selectquantity','cart',null)}
-                         - <isprint value="${bonusProduct.quantity}" formatter="##" />
+                        - <isprint value="${bonusProduct.quantity}" formatter="##" />
                         <br/>
-                        <isif condition="${loopstate.last}">
+                        <isif condition="${loopState.last}">
                             <br/>
                         </isif>
                     </isloop>

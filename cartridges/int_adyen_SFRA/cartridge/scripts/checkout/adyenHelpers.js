@@ -15,53 +15,57 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
  * @returns {Object} an error object
  */
 function handlePayments(order, orderNumber) {
-  var result = {};
-  if (order.totalNetPrice !== 0.00) {
-    var paymentInstruments = order.paymentInstruments;
+    var result = {};
+    if (order.totalNetPrice !== 0.00) {
+        var paymentInstruments = order.paymentInstruments;
 
-    if (paymentInstruments.length === 0) {
-      Transaction.wrap(function () { OrderMgr.failOrder(order); });
-      result.error = true;
-    }
-    if (!result.error) {
-      for (var i = 0; i < paymentInstruments.length; i++) {
-        var paymentInstrument = paymentInstruments[i];
-        var paymentProcessor = PaymentMgr
-          .getPaymentMethod(paymentInstrument.paymentMethod)
-          .paymentProcessor;
-        var authorizationResult;
-        if (paymentProcessor === null) {
-          Transaction.begin();
-          paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
-          Transaction.commit();
-        } else {
-          if (HookMgr.hasHook('app.payment.processor.'
-                        + paymentProcessor.ID.toLowerCase())) {
-            authorizationResult = HookMgr.callHook(
-              'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
-              'Authorize',
-              orderNumber,
-              paymentInstrument,
-              paymentProcessor
-            );
-          } else {
-            authorizationResult = HookMgr.callHook(
-              'app.payment.processor.default',
-              'Authorize'
-            );
-          }
-          result = authorizationResult;
-          if (authorizationResult.error) {
-            Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        if (paymentInstruments.length === 0) {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
             result.error = true;
-            break;
-          }
         }
-      }
+        if (!result.error) {
+            for (var i = 0; i < paymentInstruments.length; i++) {
+                var paymentInstrument = paymentInstruments[i];
+                var paymentProcessor = PaymentMgr
+                    .getPaymentMethod(paymentInstrument.paymentMethod)
+                    .paymentProcessor;
+                var authorizationResult;
+                if (paymentProcessor === null) {
+                    Transaction.begin();
+                    paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
+                    Transaction.commit();
+                } else {
+                    if (HookMgr.hasHook('app.payment.processor.'
+                        + paymentProcessor.ID.toLowerCase())) {
+                        authorizationResult = HookMgr.callHook(
+                            'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
+                            'Authorize',
+                            orderNumber,
+                            paymentInstrument,
+                            paymentProcessor
+                        );
+                    } else {
+                        authorizationResult = HookMgr.callHook(
+                            'app.payment.processor.default',
+                            'Authorize'
+                        );
+                    }
+                    result = authorizationResult;
+                    if (authorizationResult.error) {
+                        Transaction.wrap(function () {
+                            OrderMgr.failOrder(order);
+                        });
+                        result.error = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
-  }
 
-  return result;
+    return result;
 }
 
 /**
@@ -71,95 +75,57 @@ function handlePayments(order, orderNumber) {
  * @returns {Object} an object that has error information
  */
 function validatePayment(req, currentBasket) {
-  var applicablePaymentCards;
-  var applicablePaymentMethods;
-  var creditCardPaymentMethod = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD);
-  var paymentAmount = currentBasket.totalGrossPrice.value;
-  var countryCode = req.geolocation.countryCode;
-  var currentCustomer = req.currentCustomer.raw;
-  var paymentInstruments = currentBasket.paymentInstruments;
-  var result = {};
+    var applicablePaymentCards;
+    var applicablePaymentMethods;
+    var creditCardPaymentMethod = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD);
+    var paymentAmount = currentBasket.totalGrossPrice.value;
+    var countryCode = req.geolocation.countryCode;
+    var currentCustomer = req.currentCustomer.raw;
+    var paymentInstruments = currentBasket.paymentInstruments;
+    var result = {};
 
-  applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
-    currentCustomer,
-    countryCode,
-    paymentAmount
-  );
-  applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
-    currentCustomer,
-    countryCode,
-    paymentAmount
-  );
+    applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
+        currentCustomer,
+        countryCode,
+        paymentAmount
+    );
+    applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
+        currentCustomer,
+        countryCode,
+        paymentAmount
+    );
 
-  var invalid = true;
+    var invalid = true;
 
-  for (var i = 0; i < paymentInstruments.length; i++) {
-    var paymentInstrument = paymentInstruments[i];
-    if (PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstrument.paymentMethod)) {
-      invalid = false;
-    }
-
-    var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
-    if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
-      if (PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstrument.paymentMethod)) {
-        var card = PaymentMgr.getPaymentCard(paymentInstrument.creditCardType);
-        // Checks whether payment card is still applicable or if there is a credit card token set.
-        if ((card && applicablePaymentCards.contains(card)) || paymentInstrument.getCreditCardToken()) {
-          invalid = false;
+    for (var i = 0; i < paymentInstruments.length; i++) {
+        var paymentInstrument = paymentInstruments[i];
+        if (PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstrument.paymentMethod)) {
+            invalid = false;
         }
-      } else {
-        invalid = false;
-      }
-    }
 
-    if (invalid) {
-      break; // there is an invalid payment instrument
-    }
-  }
-
-  result.error = invalid;
-  return result;
-}
-
-/**
- * Attempts to place the order
- * @param {dw.order.Order} order - The order object to be placed
- * @returns {Object} an error object
- */
-function placeOrder(order, fraudDetectionStatus) {
-    var result = {error: false, order: order, order_created: false};
-
-    try {
-        if (order.paymentInstrument.paymentMethod == 'Adyen') {
-            result.order_created = true;
-        } else {
-            Transaction.begin();
-            var placeOrderStatus = OrderMgr.placeOrder(order);
-            if (placeOrderStatus === Status.ERROR) {
-                throw new Error();
-            }
-            if (fraudDetectionStatus.status === 'flag') {
-                order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
+        if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
+            if (PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstrument.paymentMethod)) {
+                var card = PaymentMgr.getPaymentCard(paymentInstrument.creditCardType);
+                // Checks whether payment card is still applicable or if there is a credit card token set.
+                if ((card && applicablePaymentCards.contains(card)) || paymentInstrument.getCreditCardToken()) {
+                    invalid = false;
+                }
             } else {
-                order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+                invalid = false;
             }
+        }
 
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
-            Transaction.commit();
+        if (invalid) {
+            break; // there is an invalid payment instrument
         }
     }
-    catch
-        (e) {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
-        });
-        result.error = true;
-    }
+
+    result.error = invalid;
     return result;
 }
 
 module.exports = {
-  handlePayments: handlePayments,
-  placeOrder: placeOrder,
-  validatePayment: validatePayment
+    handlePayments: handlePayments,
+    validatePayment: validatePayment
 };

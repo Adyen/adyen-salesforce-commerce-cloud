@@ -1,94 +1,124 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
 
-<div class="form-row ">
-	<label for="dwfrm_billing_paymentMethods_creditCard_selectedCardID"><span></span></label>
-	<div class="field-wrapper">
-		<input class=" " type="hidden"
-			id="dwfrm_billing_paymentMethods_creditCard_selectedCardID"
-			name="dwfrm_billing_paymentMethods_creditCard_selectedCardID"
-			value="">
-	</div>
-	<div class="form-caption"></div>
-</div>
-<div class="form-row  required" aria-required="true">
-	<label for="dwfrm_billing_paymentMethods_creditCard_owner"><span
-		class="required-indicator">• </span><span>${Resource.msg('creditcard.ownerlabel', 'forms', null)}</span></label>
-	<div class="field-wrapper">
-		<input class="input-text  required" type="text" id="creditCard_owner"
-			value="" aria-required="true" aria-invalid="true"
-			aria-describedby="dwfrm_billing_paymentMethods_creditCard_owner-error">
-	</div>
-	<div class="form-caption"></div>
-</div>
-<div class="form-row  required" aria-required="true">
-	<label for="creditCard_number"><span class="required-indicator">•
-	</span><span>Number</span></label>
-	<div class="field-wrapper">
-		<input class="input-text  required" type="text" id="creditCard_number"
-			value="" aria-required="true">
-	</div>
-	<div class="form-caption">Example: 4111111111111111</div>
+<isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
+<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
+<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.0.0/adyen.css"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
+
+
+<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
+<iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
+<isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
+
+    <div class="form-row">
+        <label class="label">${Resource.msg('billing.selectcreditcard','checkout',null)}</label>
+        <div class="field-wrapper">
+
+            <isif condition="${AdyenCseEnabled}">
+                <select id="adyenCreditCardList" class="input-select">
+                    <iselse/>
+                    <select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="creditCardList" class="input-select">
+            </isif>
+            <option value="" selected="selected">${Resource.msg('billing.creditcardlistselect','checkout',null)}</option>
+            <isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+                <option id="${creditCardInstr.UUID}" value="${creditCardInstr.custom.adyenCreditCardType}">(<isprint value="${creditCardInstr.creditCardType}"/>) <isprint value="${creditCardInstr.maskedCreditCardNumber}"/> - ${Resource.msg('billing.creditcardlistexp','checkout',null)} <isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />.<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" /></option>
+            </isloop>
+            </select>
+        </div>
+    </div>
+
+    <div id="selectedCard" class="creditCard security-code-input" style="display:none">
+        <div id="oneClickCard"></div>
+    </div>
+
+    <iscomment>
+        <isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+            <a href="${URLUtils.https('COBilling-UpdateCreditCardSelection', 'creditCardUUID', creditCardInstr.UUID)}">
+                (<isprint value="${creditCardInstr.creditCardType}"/>)
+                <isprint value="${creditCardInstr.maskedCreditCardNumber}"/>
+                - ${Resource.msg('billing.creditcardlistexp','checkout',null)}
+                <isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />
+                .<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" />
+            </a>
+        </isloop>
+    </iscomment>
+</isif>
+
+<div id="newCard">
+    <div id="card" class="creditCard"></div>
+    <isif condition="${pdict.CurrentCustomer.authenticated}">
+        <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+    </isif>
+    
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}">
+    <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
 </div>
 
-<div class="form-row required" aria-required="true">
-	<label> <span class="required-indicator">•</span> <span>Expiration
-			Date:</span>
-	</label>
-	<div class="form-row month required" aria-required="true">
-		<label for="creditCard_expiration_month"><span
-			class="required-indicator">• </span><span>${Resource.msg('resource.month', 'forms', null)}</span></label>
-		<div class="field-wrapper">
-			<select class="input-select  required"
-				id="creditCard_expiration_month" minlength="0"
-				maxlength="2147483647" aria-required="true">
-				<option class="select-option" value="1">${Resource.msg('month.january', 'forms', null)}</option>
-				<option class="select-option" value="2">${Resource.msg('month.february', 'forms', null)}</option>
-				<option class="select-option" value="3">${Resource.msg('month.march', 'forms', null)}</option>
-				<option class="select-option" value="4">${Resource.msg('month.april', 'forms', null)}</option>
-				<option class="select-option" value="5">${Resource.msg('month.may', 'forms', null)}</option>
-				<option class="select-option" value="6">${Resource.msg('month.june', 'forms', null)}</option>
-				<option class="select-option" value="7">${Resource.msg('month.july', 'forms', null)}</option>
-				<option class="select-option" value="8">${Resource.msg('month.august', 'forms', null)}</option>
-				<option class="select-option" value="9">${Resource.msg('month.september', 'forms', null)}</option>
-				<option class="select-option" value="10">${Resource.msg('month.october', 'forms', null)}</option>
-				<option class="select-option" value="11">${Resource.msg('month.november', 'forms', null)}</option>
-				<option class="select-option" value="12">${Resource.msg('month.december', 'forms', null)}</option></select>
-		</div>
-		<div class="form-caption"></div>
-	</div>
 
-	<div class="form-row year required" aria-required="true">
-		<label for="creditCard_expiration_year"><span
-			class="required-indicator">• </span><span>${Resource.msg('resource.year', 'forms', null)}</span></label>
-		<div class="field-wrapper">
-			<select class="input-select  required"
-				id="creditCard_expiration_year" minlength="0" maxlength="2147483647"
-				aria-required="true">
-				
-				<isscript>
-					var date = new Date();
-					var currentYear = date.getFullYear();
-					var years = [];
-					
-					for (i = 0; i < 6; i++) {
-						years.push(Number(currentYear + i).toFixed(0));
-					}
-				 </isscript>
-				<isloop iterator="${years}" alias="year">
-					<option class="select-option" value="${year}">${year}</option>
-				</isloop> 				
-			</select>
-		</div>
-		<div class="form-caption"></div>
-	</div>
-</div>
+<script type="text/javascript">
 
-<div class="form-row cvn required" aria-required="true">
-	<label for="creditCard_cvn"><span class="required-indicator">•
-	</span><span>${Resource.msg('creditcard.cvnlabel', 'forms', null)}</span></label>
-	<div class="field-wrapper">
-		<input class="input-text  required" type="text" id="creditCard_cvn"
-			value="" aria-required="true">
-	</div>
-	<div class="form-caption"></div>
-</div>
+	var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+	var loadingContext = "${AdyenHelper.getLoadingContext()}";
+	var environment = "${AdyenHelper.getAdyenMode().toLowerCase()}";
+	var locale = "${request.locale}";
+	// Init Adyen checkout component js file
+	var scriptTag = document.createElement('script');
+
+    scriptTag.src = "${AdyenHelper.getCheckoutUrl()}";
+    scriptTag.type = "text/javascript";
+    document.body.appendChild(scriptTag);
+	
+	// Wait for it to load
+	// Working for older browsers
+    if (scriptTag.readyState) {
+        scriptTag.onreadystatechange = function () {
+            if (script.readyState == "loaded" ||
+                script.readyState == "complete") {
+                script.onreadystatechange = null;
+                // Init Component
+                initializeCardComponent(originKey, environment, locale);
+            }
+        };
+    }
+    // Working for new browsers
+    else {
+        scriptTag.onload = function () {
+            // Init Component
+            initializeCardComponent(originKey, environment, locale);
+        };
+    }
+
+	function initializeCardComponent(originKey, environment, locale) {
+		window.Configuration = {
+		        locale: locale,
+		        originKey: originKey,
+	        	environment: environment,
+                risk: {
+                    enabled: false
+                }
+		};
+
+		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
+		
+		window.CardValid = false;
+		window.AdyenCard = AdyenCheckoutObject.create('card', {
+	       	type: 'card',
+	        hasHolderName: true,
+            holderNameRequired: true,
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
+	        onChange: function(state) {
+	        	// checks whether card was valid then was changed to be invalid
+	        	window.CardValid = state.isValid;
+	        }
+	    });
+	    
+	    window.AdyenCard.mount(document.getElementById('card'));
+    };
+</script>

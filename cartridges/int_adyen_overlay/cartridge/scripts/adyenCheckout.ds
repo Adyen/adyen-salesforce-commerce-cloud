@@ -1,0 +1,345 @@
+/**
+* Passes on credit card details to Adyen using the Adyen PAL adapter
+* Receives a response and sets the order status accordingly
+* created on 23dec2014
+*
+* @input Order : dw.order.Order
+* @input Amount : dw.value.Money The amount to authorize
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input CurrentSession : dw.system.Session
+* @input CurrentRequest : dw.system.Request
+* @input CreditCardForm : dw.web.Form
+* @input SaveCreditCard : Boolean
+*
+* @output Decision : String
+* @output PaymentStatus : String
+* @output AuthorizationCode :  String
+* @output AuthorizationAmount : String
+* @output PaRequest : String
+* @output PspReference : String
+* @output MD : String
+* @output ResultCode : String
+* @output IssuerUrl : String
+* @output AVSResultCode : String
+* @output AdyenErrorMessage : String
+* @output AdyenAmount : String
+* @output AdyenCardType : String
+*
+*/
+
+/* API Includes */
+var Logger = require('dw/system/Logger');
+var URLUtils = require('dw/web/URLUtils');
+
+/* Script Modules */
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenGetOpenInvoiceData = require('int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
+
+function execute(args) {
+    return PIPELET_NEXT;  
+}
+
+function alternativePaymentMethod(args){
+    var paymentMethodObject = {
+        "type" : args.PaymentType
+    };
+   if(args.adyenForm.issuer.value !== null){
+        paymentMethodObject['issuer'] = args.adyenForm.issuer.value;
+    }
+
+   var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+   return createPaymentRequest(args, paymentMethodObject, returnUrl); 
+}
+
+function creditCard(args) {
+    try {
+        var order = args.Order;
+        if (order == null) {
+            Logger.getLogger('Adyen').error('No order present.');
+            return {error: true};
+        }
+        var paymentInstrument = args.PaymentInstrument;
+        var saveCreditCard = args.SaveCreditCard;
+        var customer = order.getCustomer();
+        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
+        var customerID = '';
+        if (!empty(profile) && !empty(profile.getCustomerNo())) {
+            customerID = profile.getCustomerNo();
+        }
+
+        var recurringType = AdyenHelper.getAdyenRecurringType();
+        var isOneClick = false;
+        if (paymentInstrument.getCreditCardToken()) {
+            isOneClick = true;
+        }
+        var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick, 'billing');
+
+        if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+            if (!empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
+                paymentMethodObject['recurringDetailReference'] = paymentInstrument.getCreditCardToken();
+            }
+            else if (!empty(recurringType) && saveCreditCard) {
+                paymentMethodObject['storeDetails'] = true;
+            }
+        }
+        var returnUrl = URLUtils.https('Adyen-OrderConfirm').toString();
+        return createPaymentRequest(args, paymentMethodObject, returnUrl);
+
+    }
+    catch(e){
+        Logger.getLogger("Adyen").error('error processing creditCard. Error message: ' + e.message + " more details: "+ e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
+        return {error: true};
+    }
+}
+
+function createPaymentRequest(args, paymentMethodObject, returnUrl) {
+    var order = args.Order;
+    var saveCreditCard = !empty(args.SaveCreditCard) ? args.SaveCreditCard : false;
+
+    //Create general request object
+    var jsonObject = AdyenHelper.createAdyenRequestObject(order, saveCreditCard);
+
+    //Get 3DS2 data
+    if(AdyenHelper.getAdyen3DS2Enabled() && empty(args.PaymentType)){
+        jsonObject = AdyenHelper.add3DS2Data(jsonObject, 'billing');
+    }
+
+    //Different returnUrl for APM's and credit cards
+    jsonObject['returnUrl'] = returnUrl;
+
+    var myAmount = AdyenHelper.getCurrencyValueForApi(args.PaymentInstrument.paymentTransaction.amount); //args.Amount * 100;
+    jsonObject['amount'] = {
+        'currency': args.PaymentInstrument.paymentTransaction.amount.currencyCode,
+        'value': myAmount
+    };
+
+    //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
+    if(order){
+        jsonObject = AdyenHelper.createAddressObjects(order, jsonObject);
+    }
+
+    //Create shopper data fields
+    var shopperObject = AdyenHelper.createShopperObject({
+            Customer: customer,
+            Order: order,
+            Args: args
+        });
+
+    //Set payment method object
+    jsonObject['paymentMethod'] = paymentMethodObject;
+
+    //Set additional data for ACH
+    if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
+        if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
+            var bankAccount = {
+                "countryCode" : shippingAddr.countryCode.value.toUpperCase(),
+                "ownerName" : args.adyenForm.bankAccountOwnerName.value,
+                "bankAccountNumber" : args.adyenForm.bankAccountNumber.value,
+                "bankLocationId" : args.adyenForm.bankLocationId.value
+            }
+            jsonObject["bankAccount"] = bankAccount;
+        }
+    }
+
+    //Set open invoice data
+	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
+        jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
+        if(args.ratePayFingerprint){
+            jsonObject["dfValue"] = args.ratePayFingerprint;
+        }
+        if(args.adyenFingerprint){
+            jsonObject["dfValue"] = args.adyenFingerprint
+        }
+    }
+
+    var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
+
+    // make API call
+    return doPaymentCall(args, requestObject);
+}
+
+function doPaymentCall(args, requestObject){
+    var errorMessage = '';
+    try {
+       var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, requestObject);
+        if (callResult.isOk() == false){
+            Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            args.AdyenErrorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
+            return {
+                error: true,
+                args: args
+            };
+        }
+        var resultObject = callResult.object;
+        var resultObj = {
+            statusCode: resultObject.getStatusCode(),
+            statusMessage: resultObject.getStatusMessage(),
+            text: resultObject.getText(),
+            errorText: resultObject.getErrorText(),
+            timeout: resultObject.getTimeout()
+        }
+
+        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+        if (resultText == null) {
+            return {error: true};
+        }
+
+        // build the response object
+        var responseObj;
+        try {
+            responseObj = JSON.parse(resultText);
+        } catch (ex) {
+            Logger.error('error parsing response object ' + ex.message);
+            return {error: true};
+        }
+
+        // if the card is enrolled for 3D Secure, the response contains a redirect object
+        args.RedirectObject = ('redirect' in responseObj && !empty(responseObj.redirect) ? responseObj.redirect : '');
+        args.resultCode = responseObj.resultCode; // resultCode
+        args.pspReference = ('pspReference' in responseObj && !empty(responseObj.pspReference) ? responseObj.pspReference : '');
+        args.PaymentStatus = resultObj.errorText;
+        args.AdyenAmount = requestObject["amount"].value;
+        args.Decision = 'ERROR';
+        var resultCode = args.resultCode;
+
+        //Check the response object from /payment call
+        if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
+            args.ThreeDS2 = true;
+            args.resultCode = responseObj.resultCode;
+            var token3ds2;
+            if(responseObj.authentication["threeds2.fingerprintToken"]) {
+                token3ds2 = responseObj.authentication["threeds2.fingerprintToken"]
+            }
+            else if (responseObj.authentication["threeds2.challengeToken"]){
+                token3ds2 = responseObj.authentication["threeds2.challengeToken"];
+            }
+            args.token3ds2 = token3ds2;
+            args.PaymentData = responseObj.paymentData;
+        }
+
+        else if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
+            args.Decision = 'ACCEPT';
+            args.PaymentStatus = resultCode;
+            args.PaymentData = responseObj.paymentData;
+            // if 3D Secure is used, the statuses will be updated later
+            if (args.Order && responseObj.resultCode.indexOf('Authorised') != -1) {
+                args.Order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+                args.Order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+                Logger.getLogger('Adyen').info('Payment result: Authorised');
+            }
+
+            if (args.RedirectObject == '') { // if is not 3DSecure
+                Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);
+            }
+        }
+        else if(responseObj.resultCode.indexOf('Received') != -1) {
+            args.Decision = 'PENDING';
+            args.PaymentStatus = resultCode;
+            if(responseObj.additionalData['bankTransfer.owner']){
+                var bankTransferData = [{"key":"bankTransfer.description","value":"bankTransfer.description"}];
+                for (var data in responseObj.additionalData){
+                    if(data.indexOf('bankTransfer.') != -1) {
+                        bankTransferData.push({
+                            key: data,
+                            value: responseObj.additionalData[data]
+                        })
+                    }
+                }
+                args.PaymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(bankTransferData);
+            }
+
+            if(responseObj.additionalData['comprafacil.entity']){
+                var multiBancoData = [{"key":"comprafacil.description","value":"comprafacil.description"}];
+                for (var data in responseObj.additionalData){
+                    if(data.indexOf('comprafacil.') != -1) {
+                        multiBancoData.push({
+                            key: data,
+                            value: responseObj.additionalData[data]
+                        })
+                    }
+                }
+                args.PaymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(multiBancoData);
+            }
+
+            args.Order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
+            args.Order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+        }
+        else  {
+            args.PaymentStatus = 'Refused';
+            args.Decision = 'REFUSED';
+
+            if(args.Order){
+                args.Order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
+                args.Order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+            }
+
+            errorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
+            if ('refusalReason' in responseObj && !empty(responseObj.refusalReason)) {
+                errorMessage += ' (' + responseObj.refusalReason + ')';
+            }
+            args.AdyenErrorMessage = errorMessage;
+            Logger.getLogger('Adyen').info('Payment result: Refused');
+        }
+        return args;
+    }
+    catch (e) {
+        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
+        return {error: true};
+    }
+}
+
+function doPaymentDetailsCall(requestObject){
+    var callResult = executeCall(AdyenHelper.SERVICE.PAYMENTDETAILS, requestObject);
+    if (callResult.isOk() == false){
+        Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+        return {
+            error: true
+        };
+    }
+    var resultObject = callResult.object;
+    var resultObj = {
+        statusCode: resultObject.getStatusCode(),
+        statusMessage: resultObject.getStatusMessage(),
+        text: resultObject.getText(),
+        errorText: resultObject.getErrorText(),
+        timeout: resultObject.getTimeout()
+    }
+
+    var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+    if (resultText == null) {
+        return {error: true};
+    }
+
+    // build the response object
+    var responseObj;
+    try {
+        responseObj = JSON.parse(resultText);
+    } catch (ex) {
+        Logger.error('error parsing response object ' + ex.message);
+        return {error: true};
+    }
+
+    return responseObj;
+}
+
+function executeCall(serviceType, requestObject){
+    var service = AdyenHelper.getService(serviceType);
+    if (service == null) {
+        return {error: true};
+    }
+    var apiKey = AdyenHelper.getAdyenApiKey();
+    service.addHeader('Content-type','application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-KEY', apiKey);
+    var callResult = service.call(JSON.stringify(requestObject));
+    return callResult;
+
+}
+
+module.exports = {
+    'execute': execute,
+    'creditCard': creditCard,
+    'alternativePaymentMethod': alternativePaymentMethod,
+    'doPaymentCall' : doPaymentCall,
+    'doPaymentDetailsCall': doPaymentDetailsCall
+}

@@ -3,7 +3,7 @@
 /* API Includes */
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Transaction = require('dw/system/Transaction');
-
+var Logger = require('dw/system/Logger');
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 
@@ -41,12 +41,56 @@ function authorize(args) {
     var paymentInstrument = args.PaymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
 
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(orderNo);
+    
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.transactionID = orderNo;
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
+    
+    var	adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout'),
+	result;
 
-    return {authorized: true};
+	Transaction.wrap(function () {
+		result = adyenCheckout.alternativePaymentMethod({
+			'Order': order,
+			'Amount': order.paymentInstrument.paymentTransaction.amount,
+			'OrderNo': order.orderNo,
+			'CurrentSession' : session,
+			'CurrentUser' : customer,
+			'PaymentInstrument' : order.paymentInstrument,
+			'PaymentType': session.custom.brandCode,
+			'ratePayFingerprint' : session.custom.ratePayFingerprint,
+			'adyenForm' : session.forms.adyPaydata
+		});
+	});
+
+	 if (result.error) {
+	        var errors = [];
+	        errors.push(result.args.AdyenErrorMessage);
+	        return {
+	            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+	        };
+	    }
+
+	    if (result.resultCode == 'RedirectShopper') {
+	        return {
+	            authorized: true,
+	            order: order,
+	            paymentInstrument: paymentInstrument,
+	            redirectObject : result.RedirectObject
+	        };
+	    }
+	    else if(result.resultCode == 'Authorised' || result.resultCode == 'Received'){
+	        return { authorized: true, error: false };
+	    }
+	    else {
+	        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+	        return {
+	            authorized: false, error: true
+	        };
+	    }
 }
 
 exports.Handle = handle;
