@@ -47,8 +47,8 @@ function updateSavedCards(args) {
                     }
 
 					// Create from existing cards a paymentInstrument
-                    for (var pspRef in paymentsMap) {
-                        var payment = paymentsMap[pspRef];
+                    for (var recurringContract in paymentsMap) {
+                        var payment = paymentsMap.get(recurringContract);
 
                         var expMonth,
                             expYear,
