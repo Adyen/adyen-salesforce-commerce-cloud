@@ -91,7 +91,7 @@ function getRecurringDetailsList(args) {
             paymentDetails = responseObj.details;
             for (var i=0; i<paymentDetails.length; i++) {
                 var details = 'RecurringDetail' in paymentDetails[i] ? paymentDetails[i].RecurringDetail : null;
-                if (!empty(details) && ('firstPspReference' in details) && !empty(details.firstPspReference)) {
+                if (!empty(details)) {
                     var paymentObj = {};
                     paymentObj['recurringDetailReference'] = 'recurringDetailReference' in details && !empty(details.recurringDetailReference) ? details.recurringDetailReference : '';
                     paymentObj['cardExpiryMonth'] = ('card' in details) && ('expiryMonth' in details.card) && !empty(details.card.expiryMonth) ? details.card.expiryMonth : '';
@@ -100,7 +100,7 @@ function getRecurringDetailsList(args) {
                     paymentObj['cardType'] = 'variant' in details && !empty(details.variant) ? details.variant : '';
                     paymentObj['cardHolder'] = ('card' in details) && ('holderName' in details.card) && !empty(details.card.holderName) ? details.card.holderName : '';
 
-                    paymentsMap.put(details.firstPspReference, paymentObj);
+                    paymentsMap.put(i, paymentObj);
                 }
 
             }
