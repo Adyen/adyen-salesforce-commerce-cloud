@@ -288,7 +288,6 @@ function filterOutOpenInvoiceComponentDetails(details) {
         if (detail.key == "personalDetails") {
             var detailObject = detail.details.map(function (childDetail) {
                 if (childDetail.key == 'dateOfBirth' ||
-                    childDetail.key == 'telephoneNumber' ||
                     childDetail.key == 'gender') {
                     return childDetail;
                 }
