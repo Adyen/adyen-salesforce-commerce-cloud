@@ -296,7 +296,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
 function isMethodTypeBlocked(methodType) {
     if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
         (methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
-        methodType == "scheme") {
+        methodType == "scheme" || methodType == "cup" || methodType == "applepay") {
         return true;
     } else {
         return false;
