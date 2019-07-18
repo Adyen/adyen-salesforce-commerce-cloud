@@ -85,6 +85,18 @@ function showConfirmation() {
     }
 
 	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+        if(result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            Logger.getLogger("Adyen").error("Did not complete Alipay transaction, result: " + JSON.stringify(result));
+            var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+
+            app.getController('COSummary').Start({
+                PlaceOrderError: errorStatus
+            });
+            return {};
+        }
         Transaction.wrap(function () {
             AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
         });
