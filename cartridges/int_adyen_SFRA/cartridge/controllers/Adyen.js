@@ -189,7 +189,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
     return next();
 });
 
-
 server.get('Redirect', server.middleware.https, function (req, res, next) {
     res.redirect(req.querystring.redirectUrl);
     return next();
@@ -218,6 +217,14 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
     // Authorised: The payment authorisation was successfully completed.
     if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+        if(result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1){
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order);
+            });
+            Logger.getLogger("Adyen").error("Did not complete Alipay transaction, result: " + JSON.stringify(result));
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+            return next();
+        }
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');
         var currentLocale = Locale.getLocale(req.locale.id);
@@ -257,22 +264,21 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
     }
     var paymentMethods;
+    var descriptions = [];
     try {
         paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
+        paymentMethods = paymentMethods.filter(function (method) {
+            return !isMethodTypeBlocked(method.type);
+        });
+        paymentMethods.forEach(function (method) {
+            descriptions.push({
+                brandCode: method.type,
+                description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
+            });
+        })
     } catch (err) {
         paymentMethods = [];
     }
-
-    paymentMethods = paymentMethods.filter(function (method) {
-        return !isMethodTypeBlocked(method.type);
-    });
-    var descriptions = [];
-    paymentMethods.forEach(function (method) {
-        descriptions.push({
-            brandCode: method.type,
-            description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
-        });
-    })
 
     var adyenURL = AdyenHelper.getAdyenUrl() + "hpp/img/pm/";
 
