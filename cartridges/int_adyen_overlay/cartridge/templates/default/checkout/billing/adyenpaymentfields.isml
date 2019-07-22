@@ -112,7 +112,7 @@
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
-            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
 	        onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;

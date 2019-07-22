@@ -41,7 +41,7 @@ function renderCardComponent() {
         type: 'card',
         hasHolderName: true,
         holderNameRequired: true,
-        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
+        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
 
         // Events
         onChange: function (state) {

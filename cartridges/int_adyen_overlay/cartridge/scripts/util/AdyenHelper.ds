@@ -599,6 +599,9 @@ var __AdyenHelper: Object = {
                 case 'JCB':
                     cardType = 'jcb';
                     break;
+                case 'CUP':
+                    cardType = 'cup';
+                    break;
                 default:
                     cardType = cardType.toLowerCase();
                     break;
@@ -637,6 +640,9 @@ var __AdyenHelper: Object = {
                     break;
                 case 'jcb':
                     cardType = 'JCB';
+                    break;
+                case 'cup':
+                    cardType = 'CUP';
                     break;
                 default:
                     cardType = '';
