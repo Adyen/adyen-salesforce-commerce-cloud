@@ -270,11 +270,11 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         paymentMethods = paymentMethods.filter(function (method) {
             return !isMethodTypeBlocked(method.type);
         });
-        paymentMethods.forEach(function (method) {
-            descriptions.push({
+        descriptions = paymentMethods.map(function (method) {
+            return {
                 brandCode: method.type,
                 description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
-            });
+            };
         })
     } catch (err) {
         paymentMethods = [];
