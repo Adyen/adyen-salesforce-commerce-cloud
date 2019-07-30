@@ -63,23 +63,21 @@ Scenario('Credit card success', (I) => {
 
     I.fillField('#card .adyen-checkout__card__holderName input', cardSuccess.holderName);
 
-    I.switchTo('.adyen-checkout__card__cardNumber__input iframe');
-    I.waitForElement('#encryptedCardNumber');
-    I.fillField('#encryptedCardNumber', cardSuccess.cardNumber);
-    I.wait(5);
-
+    I.switchTo('//*[@id="card"]/div/div[2]/div[2]/div[1]/label/span[2]/span/iframe');
+    I.seeElementInDOM('//*[@id="encryptedCardNumber"]');
+    I.fillField('//*[@id="encryptedCardNumber"]', cardSuccess.cardNumber);
     I.switchTo();
 
     // I.waitForElement('.adyen-checkout__card__exp-date__input');
-    I.switchTo('//*[@id="encryptedExpiryDate"]');
-    I.waitForElement('#encryptedExpiryDate');
-    I.fillField('#encryptedExpiryDate', cardSuccess.expiryDate);
+    I.switchTo('//*[@id="card"]/div/div[2]/div[2]/div[2]/div[1]/label/span[2]/span/iframe');
+    I.seeElementInDOM('//*[@id="encryptedExpiryDate"]');
+    I.fillField('//*[@id="encryptedExpiryDate"]', cardSuccess.expiryDate);
+    I.switchTo();
 
-    I.waitForElement('.adyen-checkout__card__exp-cvc');
-    I.switchTo('.adyen-checkout__card__exp-cvc .adyen-checkout__card__cvc__input iframe');
-    I.wait(5);
-    I.waitForElement('#encryptedSecurityCode');
-    I.fillField('#encryptedSecurityCode', cardSuccess.cvc);
+    I.switchTo('//*[@id="card"]/div/div[2]/div[2]/div[2]/div[2]/label/span[2]/span/iframe');
+    I.seeElementInDOM('//*[@id="encryptedSecurityCode"]');
+    I.fillField('//*[@id="encryptedSecurityCode"]', cardSuccess.cvc);
+    I.switchTo();
     // within({frame: "#card-cvc-iframe"}, () => {
     //     I.wait(5);
     //     I.waitForVisible('#encryptedSecurityCode');
