@@ -3,7 +3,7 @@ exports.config = {
   output: './output',
   helpers: {
     TestCafe: {
-      url: 'https://adyen02-tech-prtnr-eu04-dw.demandware.net',
+      url: 'https://www.yourstorefront.com',
       show: true,
     }
   },
