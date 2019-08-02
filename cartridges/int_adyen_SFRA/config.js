@@ -1,7 +1,19 @@
+const cvcFail = '123';
+const cvcSuccess = '737';
+const expiryDate = '1020';
+const mastercard = '5100290029002909';
+const mastercard3D = '5454545454545454';
+const holdernameSuccess = 'Mastercard Success';
+const holdernameFail = 'Mastercard Fail';
+const username = "username";
+const password = "password";
+const passwordFail = "passwordFail";
+
 module.exports = {
 
   Storefront: {
-    url: 'https://www.yourstorefront.com'
+    url: 'https://www.yourstorefront.com',
+    login: '/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login'
   },
 
   Guest: {
@@ -18,44 +30,44 @@ module.exports = {
   },
 
   cardSuccess: {
-    holderName: "Mastercard Success",
-    cardNumber: '5100290029002909',
-    expiryDate: '1020',
-    cvc: '737'
+    holderName: holdernameSuccess,
+    cardNumber: mastercard,
+    expiryDate: expiryDate,
+    cvc: cvcSuccess
   },
 
   cardSuccess3D: {
-    holderName: "Mastercard Success",
-    cardNumber: '5454545454545454',
-    expiryDate: '1020',
-    cvc: '737'
+    holderName: holdernameSuccess,
+    cardNumber: mastercard3D,
+    expiryDate: expiryDate,
+    cvc: cvcSuccess
   },
 
   cardFail: {
-    holderName: "Mastercard Fail",
-    cardNumber: '5100290029002909',
-    expiryDate: '1020',
-    cvc: '123'
+    holderName: holdernameFail,
+    cardNumber: mastercard,
+    expiryDate: expiryDate,
+    cvc: cvcFail
   },
 
   cardFail3D: {
-    holderName: "Mastercard Fail",
-    cardNumber: '5454545454545454',
-    expiryDate: '1020',
-    cvc: '123'
+    holderName: holdernameFail,
+    cardNumber: mastercard3D,
+    expiryDate: expiryDate,
+    cvc: cvcFail
   },
 
   threeds2DetailsSuccess: {
-    password: 'password'
+    password: password
   },
 
   threeds2DetailsFail: {
-    password: 'password111'
+    password: passwordFail
   },
 
   userAccount : {
-    username: "username",
-    password: "password"
+    username: username,
+    password: password
   }
 
 }

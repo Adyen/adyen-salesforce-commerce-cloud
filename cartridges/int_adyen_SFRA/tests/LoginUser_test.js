@@ -4,7 +4,7 @@ var config = require('../config');
 Scenario('Logged in Credit card success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.newCardPayment();
     I.setCardDetails(config.cardSuccess);
@@ -16,7 +16,7 @@ Scenario('Logged in Credit card success', (I) => {
 Scenario('Logged in Credit card 3d success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.newCardPayment();
     I.setCardDetails(config.cardSuccess3D);
@@ -30,7 +30,7 @@ Scenario('Logged in Credit card 3d success', (I) => {
 Scenario('Logged in Credit card failed', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.newCardPayment();
     I.setCardDetails(config.cardFail);
@@ -42,7 +42,7 @@ Scenario('Logged in Credit card failed', (I) => {
 Scenario('Logged in Credit card 3d failed', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.newCardPayment();
     I.setCardDetails(config.cardFail3D);
@@ -55,7 +55,7 @@ Scenario('Logged in Credit card 3d failed', (I) => {
 Scenario('Logged in Credit card Oneclick success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.setOneclickCVC(config.cardSuccess);
     I.submitPayment();
@@ -66,7 +66,7 @@ Scenario('Logged in Credit card Oneclick success', (I) => {
 Scenario('Logged in Credit card Oneclick fail', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.setOneclickCVC(config.cardFail);
     I.submitPayment();
@@ -77,7 +77,7 @@ Scenario('Logged in Credit card Oneclick fail', (I) => {
 Scenario('iDeal success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.selectIdealPayment();
     I.selectIssuerSuccess();
@@ -91,7 +91,7 @@ Scenario('iDeal success', (I) => {
 Scenario('iDeal fail', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutLoggedIn(config.userAccount);
     I.selectIdealPayment();
     I.selectIssuerPending();

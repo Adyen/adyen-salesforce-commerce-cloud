@@ -4,7 +4,7 @@ var config = require('../config');
 Scenario('Guest Credit card success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.setCardDetails(config.cardSuccess);
     I.submitPayment();
@@ -15,7 +15,7 @@ Scenario('Guest Credit card success', (I) => {
 Scenario('Guest Credit card 3d success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.setCardDetails(config.cardSuccess3D);
     I.submitPayment();
@@ -29,7 +29,7 @@ Scenario('Guest Credit card 3d success', (I) => {
 Scenario('Guest Credit card failed', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.setCardDetails(config.cardFail);
     I.submitPayment();
@@ -41,7 +41,7 @@ Scenario('Guest Credit card failed', (I) => {
 Scenario('Guest Credit card 3d failed', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.setCardDetails(config.cardFail3D);
     I.submitPayment();
@@ -54,7 +54,7 @@ Scenario('Guest Credit card 3d failed', (I) => {
 Scenario('iDeal success', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.selectIdealPayment();
     I.selectIssuerSuccess();
@@ -68,7 +68,7 @@ Scenario('iDeal success', (I) => {
 Scenario('iDeal fail', (I) => {
     I.amOnPage(config.Storefront.url);
     I.addProductToCart();
-    I.amOnPage('/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login');
+    I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
     I.selectIdealPayment();
     I.selectIssuerPending();
