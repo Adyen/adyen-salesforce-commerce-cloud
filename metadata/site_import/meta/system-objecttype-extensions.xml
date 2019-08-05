@@ -408,7 +408,7 @@
             <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
-                <type>string</type>
+                <type>password</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
@@ -435,7 +435,7 @@
              <attribute-definition attribute-id="Adyen_API_Key">
                 <display-name xml:lang="x-default">X-API-KEY of Web service</display-name>
                 <description xml:lang="x-default">X-API-KEY of Web service</description>
-                <type>string</type>
+                <type>password</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
@@ -450,22 +450,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-             <attribute-definition attribute-id="Adyen_live_prefix">
-                <display-name xml:lang="x-default">Live prefix</display-name>
-                <description xml:lang="x-default">Live prefix</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
                 <display-name xml:lang="x-default">Adyen Account Settings</display-name>
                 <attribute attribute-id="Adyen_merchantCode"/>
-                <attribute attribute-id="Adyen_Mode"/>            
+                <attribute attribute-id="Adyen_Mode"/>    
+                <attribute attribute-id="Adyen_API_Key"/>        
                 <attribute attribute-id="Adyen_Debug"/>
+                <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
                 <attribute attribute-id="Adyen_recurringType"/>
                 <attribute attribute-id="AdyenGuestRecurringEnabled"/>
@@ -473,9 +466,7 @@
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_POIID"/>
-                <attribute attribute-id="Adyen_API_Key"/>
                 <attribute attribute-id="Adyen_multi_terminals"/>
-                <attribute attribute-id="Adyen_live_prefix"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
