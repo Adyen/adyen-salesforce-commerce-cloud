@@ -53,8 +53,10 @@ function getRecurringDetailsList(args) {
             return PIPELET_ERROR;
         }
 
+        var apiKey = AdyenHelper.getAdyenApiKey();
         service.addHeader('Content-type', 'application/json');
         service.addHeader('charset', 'UTF-8');
+        service.addHeader('X-API-KEY', apiKey);
         callResult = service.call(JSON.stringify(requestObject));
 
         if (callResult.isOk() == false) {

@@ -396,7 +396,7 @@ var __AdyenHelper: Object = {
             "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
             "houseNumberOrName": (!empty(shippingAddress.address2) ? shippingAddress.address2 : ""),
             "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
-            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : ""),
+            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : "N/A"),
             "street": (!empty(shippingAddress.address1) ? shippingAddress.address1 : "N/A")
         };
 
@@ -406,7 +406,7 @@ var __AdyenHelper: Object = {
             "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
             "houseNumberOrName": (!empty(billingAddress.address2) ? billingAddress.address2 : ""),
             "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
-            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : ""),
+            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : "N/A"),
             "street": (!empty(billingAddress.address1) ? billingAddress.address1 : "N/A")
         };
 

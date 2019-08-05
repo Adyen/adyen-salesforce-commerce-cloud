@@ -21,4 +21,5 @@
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
+<span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 

@@ -150,6 +150,7 @@ function resetPaymentMethod() {
     $('#bankAccountNumber').val("");
     $('#bankLocationId').val("");
     $('.additionalFields').hide();
+    $('#invalidCardDetails').hide();
 };
 
 function getPaymentMethods(paymentMethods) {
@@ -330,10 +331,12 @@ $('button[value="submit-payment"]').on('click', function (e) {
         //new card payment
         if ($('.payment-information').data('is-new-payment')) {
             if (!isValid) {
+                $('#invalidCardDetails').show();
                 return false;
             } else {
                 $('#selectedCardID').val('');
                 setPaymentData();
+                $('#invalidCardDetails').hide();
             }
         }
         //oneclick payment
