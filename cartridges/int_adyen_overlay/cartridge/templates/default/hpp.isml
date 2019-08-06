@@ -55,18 +55,26 @@
         <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.socialSecurityNumber}"/>
     </div>
 
-    <iscomment>
-        Adyen RatePay Device Fingerprint Code
-    </iscomment>
-    <isif condition="${ratePayID}">
-        <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
-    </isif>
-
-    <iscomment>
-        Adyen Generic Device Fingerprint Code
-    </iscomment>
-    <script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
-    <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}"/>
-    <script type="text/javascript">
-        dfDo('dwfrm_adyPaydata_adyenFingerprint');
+<iscomment>
+    Adyen RatePay Device Fingerprint Code
+</iscomment>
+<isif condition="${empty(session.custom.ratePayFingerprint)}">
+    <isscript>
+        var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
+        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+        session.custom.ratePayFingerprint = sessionID;
+    </isscript>
+    <script language="JavaScript">
+        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
     </script>
+    <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+</isif>
+
+<iscomment>
+    Adyen Generic Device Fingerprint Code
+</iscomment>
+<script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
+<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}" />
+<script type="text/javascript">
+    dfDo('dwfrm_adyPaydata_adyenFingerprint');
+</script>

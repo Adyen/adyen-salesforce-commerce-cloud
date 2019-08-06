@@ -131,7 +131,7 @@
     		  
     		  return klarnaComponent.componentRef.state.isValid;
     		break;
-    	  case "afterpay":
+    	  case "afterpay_default":
     		  if (afterpayComponent.componentRef.state.isValid) {
     			  parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);
     		  }
@@ -167,7 +167,7 @@
 
     /**
      * @function
-     * @description Initializes Adyen CSE My Account events
+     * @description Initializes Adyen Checkout My Account events
      */
     function initializeAccountEvents() {
         $('#add-card-submit').on('click', function (e) {

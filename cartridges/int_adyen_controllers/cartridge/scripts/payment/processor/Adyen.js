@@ -62,6 +62,7 @@ function authorize(args) {
 			'PaymentInstrument' : order.paymentInstrument,
 			'PaymentType': session.custom.brandCode,
 			'ratePayFingerprint' : session.custom.ratePayFingerprint,
+			'adyenFingerprint': session.forms.adyPaydata.adyenFingerprint.value,
 			'adyenForm' : session.forms.adyPaydata
 		});
 	});
