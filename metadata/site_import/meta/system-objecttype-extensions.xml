@@ -84,6 +84,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+             <attribute-definition attribute-id="adyenAction">
+                <display-name xml:lang="x-default">adyenAction</display-name>
+                <description xml:lang="x-default">Action data from payment response</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenPaymentData">
                 <display-name xml:lang="x-default">adyenPaymentData</display-name>
                 <description xml:lang="x-default">Adyen PaymentData 3D Secure</description>

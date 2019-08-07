@@ -193,7 +193,6 @@ function doPaymentCall(args, requestObject){
             return {error: true};
         }
 
-        Logger.getLogger("Adyen").error("response = " + JSON.stringify(responseObj));
         // if the card is enrolled for 3D Secure, the response contains a redirect object
         args.RedirectObject = ('redirect' in responseObj && !empty(responseObj.redirect) ? responseObj.redirect : '');
         args.resultCode = responseObj.resultCode; // resultCode
@@ -233,6 +232,24 @@ function doPaymentCall(args, requestObject){
                 Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);
             }
         }
+        else if(responseObj.resultCode.indexOf('PresentToShopper') != -1) {
+            args.PaymentStatus = resultCode;
+            if (responseObj.action) {
+                args.PaymentInstrument.custom.adyenAction = JSON.stringify(responseObj.action);
+            }
+
+            if(responseObj.outputDetails){
+                var outputDetailsData = [];
+                for (var data in responseObj.outputDetails) {
+                    outputDetailsData.push({
+                        key: data,
+                        value: responseObj.outputDetails[data]
+                    })
+                }
+                args.PaymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(outputDetailsData);
+            }
+        }
+
         else if(responseObj.resultCode.indexOf('Received') != -1) {
             args.Decision = 'PENDING';
             args.PaymentStatus = resultCode;
