@@ -125,18 +125,16 @@ $('.payment-summary .edit-button').on('click', function (e) {
 
 function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
-    if ($('#directoryLookup').val() == 'true') {
-        getPaymentMethods(function (data) {
-            jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
-                addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
-            });
-
-            $('input[type=radio][name=brandCode]').change(function () {
-                resetPaymentMethod();
-                $('#component_' + $(this).val()).show();
-            });
+    getPaymentMethods(function (data) {
+        jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
+            addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
         });
-    }
+
+        $('input[type=radio][name=brandCode]').change(function () {
+            resetPaymentMethod();
+            $('#component_' + $(this).val()).show();
+        });
+    });
 };
 
 function resetPaymentMethod() {
@@ -425,10 +423,8 @@ function setOpenInvoiceData(component) {
 }
 
 function adyenPaymentMethodSelected(selectedMethod) {
-    if ($('#directoryLookup').val() == 'true') {
-        if (!selectedMethod) {
-            return false;
-        }
+    if (!selectedMethod) {
+        return false;
     }
     return true;
 }
