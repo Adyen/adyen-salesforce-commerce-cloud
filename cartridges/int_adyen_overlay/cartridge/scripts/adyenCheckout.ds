@@ -193,6 +193,7 @@ function doPaymentCall(args, requestObject){
             return {error: true};
         }
 
+        Logger.getLogger("Adyen").error("response = " + JSON.stringify(responseObj));
         // if the card is enrolled for 3D Secure, the response contains a redirect object
         args.RedirectObject = ('redirect' in responseObj && !empty(responseObj.redirect) ? responseObj.redirect : '');
         args.resultCode = responseObj.resultCode; // resultCode

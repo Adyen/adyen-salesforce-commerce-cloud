@@ -2,7 +2,7 @@
 
 <isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.0.0/adyen.css"/>
+<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.1.0/adyen.css"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
 

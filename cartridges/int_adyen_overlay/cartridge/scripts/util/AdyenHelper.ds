@@ -145,7 +145,7 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/3.0.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/3.1.0/adyen.js";
         return checkoutUrl;
     },
 
