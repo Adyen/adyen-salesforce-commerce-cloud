@@ -1,4 +1,5 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off"/>
