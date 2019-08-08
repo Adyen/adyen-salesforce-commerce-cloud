@@ -109,7 +109,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(args.PaymentInstrument.paymentTransaction.amount); //args.Amount * 100;
     jsonObject['amount'] = {
-        'currency': args.PaymentInstrument.paymentTransaction.amount.currencyCode,
+        'currency': "IDR", //args.PaymentInstrument.paymentTransaction.amount.currencyCode,
         'value': myAmount
     };
 
