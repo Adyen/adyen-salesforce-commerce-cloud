@@ -203,7 +203,7 @@ function doPaymentCall(args, requestObject){
         var resultCode = args.resultCode;
 
         //Check the response object from /payment call
-        if (responseObj.resultCode.indexOf('IdentifyShopper') != -1 || (responseObj.resultCode.indexOf('ChallengeShopper') != -1) ) {
+        if (responseObj.resultCode == "IdentifyShopper" || responseObj.resultCode == "ChallengeShopper") {
             args.ThreeDS2 = true;
             args.resultCode = responseObj.resultCode;
             var token3ds2;
@@ -217,12 +217,12 @@ function doPaymentCall(args, requestObject){
             args.PaymentData = responseObj.paymentData;
         }
 
-        else if (responseObj.resultCode.indexOf('Authorised') != -1 || (responseObj.resultCode.indexOf('RedirectShopper') != -1) ) {
+        else if (responseObj.resultCode == "Authorised" || responseObj.resultCode == "RedirectShopper") {
             args.Decision = 'ACCEPT';
             args.PaymentStatus = resultCode;
             args.PaymentData = responseObj.paymentData;
             // if 3D Secure is used, the statuses will be updated later
-            if (args.Order && responseObj.resultCode.indexOf('Authorised') != -1) {
+            if (args.Order && responseObj.resultCode == "Authorised") {
                 args.Order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
                 args.Order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
                 Logger.getLogger('Adyen').info('Payment result: Authorised');
@@ -232,7 +232,7 @@ function doPaymentCall(args, requestObject){
                 Logger.getLogger('Adyen').debug('Adyen: ' + resultObj.statusCode + ' Error => ' + resultObj.statusMessage + ' | ' + resultObj.errorText);
             }
         }
-        else if(responseObj.resultCode.indexOf('PresentToShopper') != -1) {
+        else if(responseObj.resultCode == "PresentToShopper") {
             args.PaymentStatus = resultCode;
             if (responseObj.action) {
                 args.PaymentInstrument.custom.adyenAction = JSON.stringify(responseObj.action);
@@ -250,7 +250,7 @@ function doPaymentCall(args, requestObject){
             }
         }
 
-        else if(responseObj.resultCode.indexOf('Received') != -1) {
+        else if(responseObj.resultCode == "Received") {
             args.Decision = 'PENDING';
             args.PaymentStatus = resultCode;
             if(responseObj.additionalData['bankTransfer.owner']){
