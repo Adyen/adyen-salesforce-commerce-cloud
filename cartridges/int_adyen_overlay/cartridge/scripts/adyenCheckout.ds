@@ -128,6 +128,10 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     //Set payment method object
     jsonObject['paymentMethod'] = paymentMethodObject;
 
+    if(args.adyenFingerprint){
+        jsonObject["deviceFingerprint"] = args.adyenFingerprint
+    }
+
     //Set additional data for ACH
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
@@ -145,10 +149,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
         if(args.PaymentType.indexOf('ratepay') != -1 && args.ratePayFingerprint){
-            jsonObject["dfValue"] = args.ratePayFingerprint;
-        }
-        else if(args.adyenFingerprint){
-            jsonObject["dfValue"] = args.adyenFingerprint
+            jsonObject["deviceFingerprint"] = args.ratePayFingerprint;
         }
     }
 

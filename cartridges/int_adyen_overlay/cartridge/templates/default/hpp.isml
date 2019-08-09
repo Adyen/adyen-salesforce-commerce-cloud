@@ -34,19 +34,28 @@
                     </isif>
                     <isif condition="${method.type.substring(0, 3) == 'ach'}">
                         <div id="component_ach" class="checkoutComponent">
-                            <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}"
-                                          type="input"/>
+                            <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountOwnerName}" type="input"/>
                             <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankAccountNumber}" type="input"/>
                             <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
                         </div>
                     </isif>
                     <isif condition="${method.type == 'ratepay'}">
                         <div id="component_ratepay" class="checkoutComponent">
-                            <select class="gender" id="ratepay_gender">
-                                <option label="Male" value="M"/>
-                                <option label="Female" value="F"/>
-                            </select>
-                            <input type="date" id="ratepay_dob">
+                            <div class="form-row">
+                                <div class="field-wrapper">
+                                    <span>${Resource.msg('checkout.gender', 'checkout', null)}:</span>
+                                    <select class="input-text gender" id="ratepay_gender">
+                                        <option label="Male" value="M"/>
+                                        <option label="Female" value="F"/>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field-wrapper">
+                                    <span>${Resource.msg('checkout.dateOfBirth', 'checkout', null)}:</span>
+                                    <input class="input-text" type="date" id="ratepay_dob">
+                                </div>
+                            </div>
                         </div>
                     </isif>
                 </isif>

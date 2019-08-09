@@ -2,7 +2,8 @@
 <iscontent compact="true"/>
 <iscontent type="text/html" encoding="off"/>
 <isset name="adyenPaymentFields" value="${pdict.forms.billingForm.adyenPaymentFields}" scope="page"/>
-<isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
 <input id="adyenPaymentMethod" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
@@ -31,16 +32,15 @@
         session.custom.ratePayFingerprint = sessionID;
     </isscript>
     <script language="JavaScript">
-        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
+        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'}
     </script>
     <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
 </isif>
-
 <iscomment>
     Adyen Generic Device Fingerprint Code
 </iscomment>
 <script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
-<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.adyenFingerprint}" />
+<input id="adyenFingerprint" type="hidden" ${adyenPaymentFields.adyenFingerprint.attributes} />
 <script type="text/javascript">
-    dfDo('dwfrm_adyPaydata_adyenFingerprint');
+    dfDo('adyenFingerprint');
 </script>
