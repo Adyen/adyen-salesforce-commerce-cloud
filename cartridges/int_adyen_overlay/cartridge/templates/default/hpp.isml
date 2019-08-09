@@ -40,6 +40,15 @@
                             <isinputfield formfield="${pdict.CurrentForms.adyPaydata.bankLocationId}" type="input"/>
                         </div>
                     </isif>
+                    <isif condition="${method.type == 'ratepay'}">
+                        <div id="component_ratepay" class="checkoutComponent">
+                            <select class="gender" id="ratepay_gender">
+                                <option label="Male" value="M"/>
+                                <option label="Female" value="F"/>
+                            </select>
+                            <input type="date" id="ratepay_dob">
+                        </div>
+                    </isif>
                 </isif>
             </li>
         </isloop>

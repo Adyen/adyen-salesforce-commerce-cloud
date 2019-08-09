@@ -137,6 +137,10 @@
     		  }
     		  return afterpayComponent.componentRef.state.isValid;
       	    break;
+          case "ratepay":
+            $('#dwfrm_adyPaydata_dateOfBirth').val($("#ratepay_dob").val());
+            $('#dwfrm_adyPaydata_gender').val($("#ratepay_gender").val());
+            return true;
     	  default:
     	    return true;
     	} 	
