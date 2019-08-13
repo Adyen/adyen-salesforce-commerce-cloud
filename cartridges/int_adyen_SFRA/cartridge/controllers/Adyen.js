@@ -378,6 +378,7 @@ function clearCustomSessionFields() {
     session.custom.issuer = null;
     session.custom.adyenPaymentMethod = null;
     session.custom.adyenIssuerName = null;
+    session.custom.ratePayFingerprint = null;
 }
 
 function getExternalPlatformVersion() {

@@ -269,15 +269,4 @@
 	    if (SitePreferences.ADYEN_CSE_ENABLED) {
 	    	adyenCse.initBilling();
 	    }
-
-	    var currentDate = new Date();
-	    var currentYear = currentDate.getFullYear();
-	    var initYear = currentYear - 100;
-	    $('.openinvoiceInput input[name$="_dob"]').datepicker({
-	        showOn: 'focus',
-	        yearRange: initYear + ':' + currentYear,
-	        changeYear: true
-
-	    });
-
 	};
