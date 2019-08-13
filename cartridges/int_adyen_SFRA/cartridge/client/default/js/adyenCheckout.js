@@ -125,18 +125,16 @@ $('.payment-summary .edit-button').on('click', function (e) {
 
 function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
-    if ($('#directoryLookup').val() == 'true') {
-        getPaymentMethods(function (data) {
-            jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
-                addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
-            });
-
-            $('input[type=radio][name=brandCode]').change(function () {
-                resetPaymentMethod();
-                $('#component_' + $(this).val()).show();
-            });
+    getPaymentMethods(function (data) {
+        jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
+            addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
         });
-    }
+
+        $('input[type=radio][name=brandCode]').change(function () {
+            resetPaymentMethod();
+            $('#component_' + $(this).val()).show();
+        });
+    });
 };
 
 function resetPaymentMethod() {
@@ -226,6 +224,40 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
         });
         li.append(afterpayContainer);
         afterpayComponent.mount(afterpayContainer);
+    }
+    ;
+
+    if (paymentMethod.type == 'ratepay') {
+        var ratepayContainer = document.createElement("div");
+        $(ratepayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+
+        var genderLabel = document.createElement("span");
+        $(genderLabel).text("Gender").attr('class', 'adyen-checkout__label');
+        var genderInput = document.createElement("select");
+        $(genderInput).attr('id', 'genderInput').attr('class', 'adyen-checkout__input');
+
+        //Create array of options to be added
+        var genders = {'M': 'Male','F': 'Female'};
+
+        for (var key in genders) {
+            var option = document.createElement("option");
+            option.value = key;
+            option.text = genders[key];
+            genderInput.appendChild(option);
+        }
+
+        var dateOfBirthLabel = document.createElement("span");
+        $(dateOfBirthLabel).text("Date of birth").attr('class', 'adyen-checkout__label');
+        var dateOfBirthInput = document.createElement("input");
+        $(dateOfBirthInput).attr('id', 'dateOfBirthInput').attr('class', 'adyen-checkout__input').attr('type', 'date');
+
+
+        ratepayContainer.append(genderLabel);
+        ratepayContainer.append(genderInput);
+        ratepayContainer.append(dateOfBirthLabel);
+        ratepayContainer.append(dateOfBirthInput);
+
+        li.append(ratepayContainer);
     }
     ;
 
@@ -393,6 +425,15 @@ function checkComponentDetails(selectedMethod) {
         }
         return afterpayComponent.componentRef.state.isValid;
     }
+    else if (selectedMethod.val() == 'ratepay') {
+        if ($('#genderInput').val() && $('#dateOfBirthInput').val()) {
+            $('#gender').val($('#genderInput').val());
+            $('#dateOfBirth').val($('#dateOfBirthInput').val());
+            return true;
+        }
+
+        return false;
+    }
     //if issuer is selected
     else if (selectedMethod.closest('li').find('.additionalFields #issuerList').val()) {
         $('#selectedIssuer').val(selectedMethod.closest('li').find('.additionalFields #issuerList').val());
@@ -425,10 +466,8 @@ function setOpenInvoiceData(component) {
 }
 
 function adyenPaymentMethodSelected(selectedMethod) {
-    if ($('#directoryLookup').val() == 'true') {
-        if (!selectedMethod) {
-            return false;
-        }
+    if (!selectedMethod) {
+        return false;
     }
     return true;
 }

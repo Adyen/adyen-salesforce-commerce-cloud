@@ -128,6 +128,10 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     //Set payment method object
     jsonObject['paymentMethod'] = paymentMethodObject;
 
+    if(args.adyenFingerprint){
+        jsonObject["deviceFingerprint"] = args.adyenFingerprint
+    }
+
     //Set additional data for ACH
     if(!empty(args.PaymentType) && args.PaymentType.toString().substring(0, 3) == "ach") {
         if (!empty(args.adyenForm.bankAccountOwnerName.value)) {
@@ -144,11 +148,8 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     //Set open invoice data
 	if(!empty(args.PaymentType) && AdyenHelper.isOpenInvoiceMethod(args.PaymentType.toString())) {
         jsonObject["lineItems"] = AdyenGetOpenInvoiceData.getLineItems(args);
-        if(args.ratePayFingerprint){
-            jsonObject["dfValue"] = args.ratePayFingerprint;
-        }
-        if(args.adyenFingerprint){
-            jsonObject["dfValue"] = args.adyenFingerprint
+        if(args.PaymentType.indexOf('ratepay') != -1 && args.ratePayFingerprint){
+            jsonObject["deviceFingerprint"] = args.ratePayFingerprint;
         }
     }
 
@@ -163,7 +164,7 @@ function doPaymentCall(args, requestObject){
     try {
        var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, requestObject);
         if (callResult.isOk() == false){
-            Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            Logger.getLogger("Adyen").error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
             args.AdyenErrorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
             return {
                 error: true,
@@ -189,7 +190,7 @@ function doPaymentCall(args, requestObject){
         try {
             responseObj = JSON.parse(resultText);
         } catch (ex) {
-            Logger.error('error parsing response object ' + ex.message);
+            Logger.getLogger("Adyen").error('error parsing response object ' + ex.message);
             return {error: true};
         }
 
@@ -309,7 +310,7 @@ function doPaymentCall(args, requestObject){
 function doPaymentDetailsCall(requestObject){
     var callResult = executeCall(AdyenHelper.SERVICE.PAYMENTDETAILS, requestObject);
     if (callResult.isOk() == false){
-        Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+        Logger.getLogger("Adyen").error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
         return {
             error: true
         };
@@ -333,7 +334,7 @@ function doPaymentDetailsCall(requestObject){
     try {
         responseObj = JSON.parse(resultText);
     } catch (ex) {
-        Logger.error('error parsing response object ' + ex.message);
+        Logger.getLogger("Adyen").error('error parsing response object ' + ex.message);
         return {error: true};
     }
 

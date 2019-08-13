@@ -138,20 +138,18 @@ function orderConfirm(orderNo){
  * Make a request to Adyen to get payment methods based on countryCode. Called from COBilling-Start
  */
 function getPaymentMethods(cart) {
-    if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
-    	var Locale = require('dw/util/Locale');
-        var countryCode = Locale.getLocale(request.getLocale()).country;       
-        var currentBasket = BasketMgr.getCurrentBasket();
-        if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
-            countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value.toUpperCase();
-        }
-        var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
-        var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
-        return paymentMethods.filter(function (method) { 
-        	return !isMethodTypeBlocked(method.type); 
-        });
+    var Locale = require('dw/util/Locale');
+    var countryCode = Locale.getLocale(request.getLocale()).country;
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value.toUpperCase();
     }
-    
+    var getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
+    var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
+    return paymentMethods.filter(function (method) {
+        return !isMethodTypeBlocked(method.type);
+    });
+
     return {};
 }
 
@@ -174,11 +172,10 @@ function isMethodTypeBlocked(methodType)
  * Make a request to Adyen to get payment methods based on countryCode. Meant for AJAX storefront requests
  */
 function getPaymentMethodsJSON() {
-	var cart = app.getModel('Cart').get();
-    if (Site.getCurrent().getCustomPreferenceValue("Adyen_directoryLookup")) {
-    	var	getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/getPaymentMethodsSHA256');
-    	var json = JSON.stringify(getPaymentMethods.getMethods(cart.object, request.httpParameterMap.country.getStringValue()));
-    }
+    var cart = app.getModel('Cart').get();
+    var getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/getPaymentMethodsSHA256');
+    var json = JSON.stringify(getPaymentMethods.getMethods(cart.object, request.httpParameterMap.country.getStringValue()));
+
     app.getView({
         hppJson: json || {}
     }).render('hppjson');

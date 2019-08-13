@@ -131,12 +131,16 @@
     		  
     		  return klarnaComponent.componentRef.state.isValid;
     		break;
-    	  case "afterpay":
+    	  case "afterpay_default":
     		  if (afterpayComponent.componentRef.state.isValid) {
     			  parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);
     		  }
     		  return afterpayComponent.componentRef.state.isValid;
       	    break;
+          case "ratepay":
+            $('#dwfrm_adyPaydata_dateOfBirth').val($("#ratepay_dob").val());
+            $('#dwfrm_adyPaydata_gender').val($("#ratepay_gender").val());
+            return true;
     	  default:
     	    return true;
     	} 	
@@ -167,7 +171,7 @@
 
     /**
      * @function
-     * @description Initializes Adyen CSE My Account events
+     * @description Initializes Adyen Checkout My Account events
      */
     function initializeAccountEvents() {
         $('#add-card-submit').on('click', function (e) {
