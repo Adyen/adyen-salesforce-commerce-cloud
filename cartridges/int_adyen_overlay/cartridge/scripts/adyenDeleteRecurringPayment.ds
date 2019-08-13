@@ -9,7 +9,7 @@
 var Logger = require('dw/system/Logger');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('8/cartridge/scripts/util/AdyenHelper');
 var THIS_SCRIPT = 'int_adyen_overlay/scripts/adyenDeleteRecurringPayment.ds';
 
 function execute(args) {

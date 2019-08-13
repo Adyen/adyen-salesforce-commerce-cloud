@@ -10,7 +10,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
-    require('*/cartridge/scripts/UpdateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
+    require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
     next();
 });
 

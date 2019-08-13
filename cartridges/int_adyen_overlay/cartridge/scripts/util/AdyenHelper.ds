@@ -51,7 +51,10 @@ var __AdyenHelper: Object = {
                     return client;
                 }
             });
-            dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
+            // dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
+            dwsystem.Logger.getLogger("Adyen", "adyen").debug("test2");
+            dwsystem.Logger.getLogger("Adyen", "adyen").debug(filterLogMessage("test"));
+
         } catch (e) {
             var ex = e;
             dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", service);
