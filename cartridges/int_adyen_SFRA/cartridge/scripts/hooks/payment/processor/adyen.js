@@ -80,7 +80,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument: paymentInstrument,
             redirectObject: result.RedirectObject
         };
-    } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received') {
+    } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
         return {authorized: true, error: false};
     } else {
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
