@@ -51,9 +51,7 @@ var __AdyenHelper: Object = {
                     return client;
                 }
             });
-            // dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
-            dwsystem.Logger.getLogger("Adyen", "adyen").debug("test2");
-            dwsystem.Logger.getLogger("Adyen", "adyen").debug(filterLogMessage("test"));
+            dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
 
         } catch (e) {
             var ex = e;
