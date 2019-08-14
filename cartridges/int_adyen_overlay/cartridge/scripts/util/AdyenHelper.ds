@@ -49,6 +49,9 @@ var __AdyenHelper: Object = {
                 },
                 parseResponse: function (svc: HTTPService, client: HTTPClient) {
                     return client;
+                },
+                filterLogMessage: function (msg: String){
+                    return msg;
                 }
             });
             dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
