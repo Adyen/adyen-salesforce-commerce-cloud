@@ -14,7 +14,7 @@ var Transaction = require('dw/system/Transaction');
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var OrderModel = app.getModel('Order');
 var Logger = require('dw/system/Logger');
 
@@ -29,7 +29,7 @@ const EXTERNAL_PLATFORM_VERSION = "SiteGenesis";
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 function notify() {
-    var	checkAuth = require('int_adyen_overlay/cartridge/scripts/checkNotificationAuth');
+    var	checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
 	
     var status = checkAuth.check(request);
     if (!status) {
@@ -37,7 +37,7 @@ function notify() {
     	return {};
 	}
 
-	var	handleNotify = require('int_adyen_overlay/cartridge/scripts/handleNotify');
+	var	handleNotify = require('*/cartridge/scripts/handleNotify');
 
 	Transaction.begin();
 	var success = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
@@ -65,7 +65,7 @@ function redirect(order, redirectUrl) {
 function showConfirmation() {
 	var payLoad = request.httpParameterMap.payload.value;
 	//redirect to payment/details
-	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 	var requestObject = {};
 	requestObject['details'] = {};
 	requestObject.details['payload'] = payLoad;
@@ -168,6 +168,7 @@ function isMethodTypeBlocked(methodType)
 }
 
 /**
+
  * Get configured terminals  
  */
 function getTerminals() {
@@ -190,7 +191,7 @@ function redirect3ds2() {
  */
 function authorize3ds2() {
 	Transaction.begin();
-	var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
 
@@ -318,7 +319,7 @@ function authorizeWithForm() {
 
         clearCustomSessionFields();
         Transaction.begin();
-        var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+        var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
         var jsonRequest = {
             "paymentData": paymentInstrument.custom.adyenPaymentData,
             "details": {
