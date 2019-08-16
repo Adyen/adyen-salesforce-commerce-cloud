@@ -7,6 +7,7 @@
     "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
   },
   "scripts": {
+    "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay",
