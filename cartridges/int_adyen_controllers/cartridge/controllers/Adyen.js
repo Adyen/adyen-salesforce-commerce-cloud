@@ -50,7 +50,6 @@ function notify() {
 		Transaction.rollback();
 	}
 
-
 }
 
 /**
@@ -169,187 +168,13 @@ function isMethodTypeBlocked(methodType)
 }
 
 /**
- * Make a request to Adyen to get payment methods based on countryCode. Meant for AJAX storefront requests
- */
-function getPaymentMethodsJSON() {
-    var cart = app.getModel('Cart').get();
-    var getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/getPaymentMethodsSHA256');
-    var json = JSON.stringify(getPaymentMethods.getMethods(cart.object, request.httpParameterMap.country.getStringValue()));
-    app.getView({
-        hppJson: json || {}
-    }).render('hppjson');
-}
 
-/**
  * Get configured terminals  
  */
 function getTerminals() {
 	var terminals = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
    	return terminals;
 }
-
-/**
- * Get orderdata for the Afterpay Payment method
- */
-function afterpay() {
-	var	readOpenInvoiceRequest = require('*/cartridge/scripts/readOpenInvoiceRequest');
-   	var invoice = readOpenInvoiceRequest.getInvoiceParams(request.httpParameterMap);
-   	var order = OrderMgr.getOrder(invoice.penInvoiceReference);
-   	// show error if data mismach
-   	if ((order.getBillingAddress().getPostalCode() !=  request.httpParameterMap.pc.toString())
-   	 || (order.getBillingAddress().getPhone() !=  request.httpParameterMap.pn.toString())
-   	 || (order.getCustomerNo() != request.httpParameterMap.cn.toString())
-   	 || (order.getCustomerEmail() != request.httpParameterMap.ce.toString())
-   	 || (invoice.openInvoiceAmount != Math.round(order.totalGrossPrice * 100)))
-   	{
-   		app.getView().render('afterpayerror');
-   		return {};
-   	}
-   	
-   	var	buildOpenInvoiceResponse = require('*/cartridge/scripts/buildOpenInvoiceResponse');
-   	var invoiceResponse = buildOpenInvoiceResponse.getInvoiceResponse(order);
-   	app.getView({OpenInvoiceResponse:invoiceResponse}).render('afterpay');
-}
-
-
-/**
- * Handle Refused payments
- */
-function refusedPayment(order) {
-    if (request.httpParameterMap.authResult.value == 'REFUSED') {
-		var	adyenHppRefusedPayment = require('*/cartridge/scripts/adyenHppRefusedPayment.ds');
-		Transaction.wrap(function () {
-			adyenHppRefusedPayment.handle(request.httpParameterMap, order);
-		});
-    	
-	}
-	return '';
-}
-
-
-/**
- * Handle payments Cancelled on Adyen HPP
- */
-function cancelledPayment(order) {
-    if (request.httpParameterMap.authResult.value == 'CANCELLED') {
-		var	adyenHppCancelledPayment = require('*/cartridge/scripts/adyenHppCancelledPayment');
-		Transaction.wrap(function () {
-			adyenHppCancelledPayment.handle(request.httpParameterMap, order);
-		});
-	}
-	return '';
-}
-
-
-/**
- * Handle payments Pending on Adyen HPP
- */
-function pendingPayment(order) {
-	if (request.httpParameterMap.authResult.value == 'PENDING') {
-		var	adyenHppPendingPayment = require('*/cartridge/scripts/adyenHppPendingPayment');
-		Transaction.wrap(function () {
-			adyenHppPendingPayment.handle(request.httpParameterMap, order);
-		});
-	}
-	return '';
-}
-
-
-/**
- * Call the Adyen API to capture order payment
- */
-function capture(args) {
-	var order = args.Order;
-	var orderNo = args.OrderNo;
-	
-	if (!order) {
-		// Checking order data against values from parameters
-		order = OrderMgr.getOrder(orderNo);
-		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
-			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
-			|| order.getCustomerNo() != session.custom.cn.toString() 
-			|| order.getCustomerEmail() != session.custom.ce.toString()) {
-			return {error: true};
-		}
-	}
-
-	
-	var	adyenCapture = require('*/cartridge/scripts/adyenCapture'), result;
-    Transaction.wrap(function () {
-		result = adyenCapture.capture(order);
-	});
-	
-	if (result === PIPELET_ERROR) {
-		return {error: true};
-	}
-	
-    return {sucess: true};
-}
-
-
-/**
- * Call the Adyen API to cancel order payment
- */
-function cancel() {
-    var order = args.Order;
-	var orderNo = args.OrderNo;
-	
-	if (!order) {
-		// Checking order data against values from parameters
-		order = OrderMgr.getOrder(orderNo);
-		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
-			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
-			|| order.getCustomerNo() != session.custom.cn.toString() 
-			|| order.getCustomerEmail() != session.custom.ce.toString()) {
-			return {error: true};
-		}
-	}
-
-	
-	var	adyenCancel = require('*/cartridge/scripts/adyenCancel'), result;
-    Transaction.wrap(function () {
-		result = adyenCancel.cancel(order);
-	});
-	
-	if (result === PIPELET_ERROR) {
-		return {error: true};
-	}
-	
-    return {sucess: true};
-}
-
-
-/**
- * Call the Adyen API to cancel or refund order payment
- */
-function cancelOrRefund() {
-    var order = args.Order;
-	var orderNo = args.OrderNo;
-	
-	if (!order) {
-		// Checking order data against values from parameters
-		order = OrderMgr.getOrder(orderNo);
-		if (!order || order.getBillingAddress().getPostalCode() !=  session.custom.pc.toString() 
-			|| order.getBillingAddress().getPhone() !=  session.custom.pn.toString() 
-			|| order.getCustomerNo() != session.custom.cn.toString() 
-			|| order.getCustomerEmail() != session.custom.ce.toString()) {
-			return {error: true};
-		}
-	}
-
-	
-	var	adyenCapture = require('*/cartridge/scripts/adyenCapture'), result;
-    Transaction.wrap(function () {
-		result = adyenCapture.capture(order);
-	});
-	
-	if (result === PIPELET_ERROR) {
-		return {error: true};
-	}
-	
-    return {sucess: true};
-}
-
 
 function redirect3ds2() {
 	app.getView({
@@ -627,28 +452,12 @@ exports.Notify = guard.ensure(['post'], notify);
 
 exports.Redirect = redirect;
 
-exports.Afterpay = guard.ensure(['get'], afterpay);
-
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
 
-exports.GetPaymentMethodsJSON = guard.ensure(['get'], getPaymentMethodsJSON);
-
 exports.GetTerminals = getTerminals;
-
-exports.RefusedPayment = refusedPayment;
-
-exports.CancelledPayment = cancelledPayment;
-
-exports.PendingPayment = pendingPayment;
-
-exports.Capture = capture;
-
-exports.Cancel = cancel;
-
-exports.CancelOrRefund = cancelOrRefund;
 
 exports.getExternalPlatformVersion = getExternalPlatformVersion();
