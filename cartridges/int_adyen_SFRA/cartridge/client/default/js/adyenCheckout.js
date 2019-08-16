@@ -301,10 +301,10 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
 
             var issuers = $('<select>').attr('id', 'issuerList');
             jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
-                var issuer = $('<option>')
+                var issuerOption = $('<option>')
                     .attr('label', issuer.name)
                     .attr('value', issuer.id);
-                issuers.append(issuer);
+                issuers.append(issuerOption);
             });
             additionalFields.append(issuers);
             li.append(additionalFields);
