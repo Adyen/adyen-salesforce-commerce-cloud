@@ -7,7 +7,7 @@
 
 
 <isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
-<isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
+<isset name="AdyenSecuredFieldsEnabled" value="${pdict.AdyenHelper.getAdyenSecuredFieldsEnabled()}" scope="page" />
 <iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
 <isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
 
@@ -15,7 +15,7 @@
         <label class="label">${Resource.msg('billing.selectcreditcard','checkout',null)}</label>
         <div class="field-wrapper">
 
-            <isif condition="${AdyenCseEnabled}">
+            <isif condition="${AdyenSecuredFieldsEnabled}">
                 <select id="adyenCreditCardList" class="input-select">
                     <iselse/>
                     <select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="creditCardList" class="input-select">

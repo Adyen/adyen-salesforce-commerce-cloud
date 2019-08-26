@@ -38,7 +38,6 @@ function processNotifications(pdict) {
 		*/
 		
 		order = handlerResult.Order;
-        notify = !handlerResult.SkipNotification;
 		if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
 			// Only CREATED orders can be failed
 			if (order == null || order.status != dw.order.Order.ORDER_STATUS_CREATED || handlerResult.RefusedHpp) {
@@ -57,7 +56,7 @@ function processNotifications(pdict) {
 		}
 		
 		// Submitting an order -> update status and send all required email
-		if(notify){
+		if(handlerResult.SubmitOrder){
             var placeOrderResult = submitOrder(order);
             if (!placeOrderResult.order_created || placeOrderResult.error) {
                 logger.error('Failed to place an order: {0}, during notification process.', order.orderNo);
