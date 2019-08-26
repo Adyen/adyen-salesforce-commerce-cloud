@@ -287,13 +287,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenCseLibraryToken">
-                <display-name xml:lang="x-default">CSE Library token</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
@@ -346,39 +339,6 @@
                         <value>LIVE</value>
                     </value-definition>
                 </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_Open_Invoice_Whitelist">
-                <display-name xml:lang="x-default">Open Invoice White List Methods</display-name>
-                <description xml:lang="x-default">csv formatted string e.g. klarna,ratepay,afterpay_default,afterpay_directdebit</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-               <min-length>0</min-length>
-	         </attribute-definition>
-             <attribute-definition attribute-id="Adyen_PaymentSelection">
-                <display-name xml:lang="x-default">Payment Selection</display-name>
-                <description xml:lang="x-default">Multi-page (multi) or One page (one) payment selection</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">one</display>
-                        <value>one</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">multi</display>
-                        <value>multi</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_directoryLookup">
-                <display-name xml:lang="x-default">Switch to directory lookup</display-name>
-                <description xml:lang="x-default">yes / no</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_merchantCode">
                 <display-name xml:lang="x-default">merchantCode</display-name>

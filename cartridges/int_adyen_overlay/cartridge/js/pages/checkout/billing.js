@@ -7,7 +7,7 @@
 	    formPrepare = require('./formPrepare'),
 	    giftcard = require('../../giftcard'),
 	    util = require('../../util'),
-	    adyenCse = require('../../adyen-cse');
+	    adyenCheckout = require('../../adyen-checkout');
 
 
 	/**
@@ -266,7 +266,7 @@
 	        }
 	    });
 
-	    if (SitePreferences.ADYEN_CSE_ENABLED) {
-	    	adyenCse.initBilling();
+	    if (SitePreferences.ADYEN_SF_ENABLED) {
+			adyenCheckout.initBilling();
 	    }
 	};
