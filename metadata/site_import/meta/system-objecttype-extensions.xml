@@ -387,6 +387,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_donationAccountCode">
+                <display-name xml:lang="x-default">donationAccountCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_recurringType">
                 <display-name xml:lang="x-default">Recurring Type</display-name>
                 <type>enum-of-string</type>

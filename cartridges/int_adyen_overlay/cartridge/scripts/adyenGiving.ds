@@ -1,0 +1,95 @@
+/**
+ * Using the /donate endpoint, you can enable your shoppers to donate to a charity after completing a payment
+ *
+
+ * @input reference : String
+ * @input modificationAmount: Object
+ * @input originalReference: String
+ * @output pspReference: String
+ */
+
+importPackage(dw.system);
+importPackage(dw.order);
+
+//script include
+var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
+var Logger = require('dw/system/Logger');
+
+function execute(args) {
+    var result = donate(args.donationReference, args.donationAmount, args.originalReference);
+    if (result == PIPELET_ERROR) {
+        return PIPELET_ERROR;
+    }
+    return PIPELET_NEXT;
+}
+
+function donate (donationReference, donationAmount, originalReference) {
+    try {
+        var requestObject = {};
+
+        var callResult = null,
+            resultObject = null,
+            service = AdyenHelper.getService(AdyenHelper.SERVICE.ADYENGIVING);
+
+        if (service == null) {
+            return PIPELET_ERROR;
+        }
+        //
+        var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
+        var donationAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_donationAccountCode");
+
+        requestObject['merchantAccount'] = merchantAccount;
+        requestObject['donationAccount'] = donationAccount;
+
+        requestObject['modificationAmount'] = donationAmount;
+        requestObject['reference'] = donationReference;
+        requestObject['originalReference'] = originalReference;
+
+
+        var xapikey = AdyenHelper.getAdyenApiKey();
+        service.addHeader('Content-type', 'application/json');
+        service.addHeader('charset', 'UTF-8');
+        service.addHeader('X-API-key', xapikey);
+        callResult = service.call(JSON.stringify(requestObject));
+
+
+        if (callResult.isOk() == false) {
+            Logger.error(' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            return PIPELET_ERROR;
+        }
+
+        resultObject = ('object' in callResult ? callResult.object : null);
+
+        var resultObj = {
+            statusCode: resultObject.getStatusCode(),
+            statusMessage: resultObject.getStatusMessage(),
+            text: resultObject.getText(),
+            errorText: resultObject.getErrorText(),
+            timeout: resultObject.getTimeout()
+        }
+
+        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+        if (resultText == null) {
+            return PIPELET_ERROR;
+        }
+
+        try {
+            return JSON.parse(resultText);
+        }
+        catch (ex) {
+            Logger.error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
+            return PIPELET_ERROR;
+        }
+    } catch (e) {
+        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
+        return PIPELET_ERROR;
+    }
+
+    return JSON.parse(resultObject.text);
+}
+
+
+module.exports = {
+    'execute': execute,
+    'donate': donate
+}
