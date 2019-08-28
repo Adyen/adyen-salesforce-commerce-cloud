@@ -93,10 +93,10 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
-    getAdyenCseEnabled: function (): Boolean {
+    getAdyenSecuredFieldsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled');
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenSecuredFieldsEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenSecuredFieldsEnabled');
         }
         return returnValue;
     },

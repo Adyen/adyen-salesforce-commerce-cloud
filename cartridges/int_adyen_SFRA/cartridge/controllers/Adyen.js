@@ -283,7 +283,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var adyenURL = AdyenHelper.getAdyenUrl() + "hpp/img/pm/";
 
     res.json({
-        AdyenHppPaymentMethods: paymentMethods,
+        AdyenPaymentMethods: paymentMethods,
         ImagePath: adyenURL,
         AdyenDescriptions: descriptions
     });

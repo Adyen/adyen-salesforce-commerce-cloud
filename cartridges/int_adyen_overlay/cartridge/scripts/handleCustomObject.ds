@@ -11,7 +11,7 @@
 * @input CustomObj : dw.object.CustomObject
 * @output Order			: dw.order.Order	The updated order
 * @output EventCode		: String 			The event code
-* @output SkipNotification	: Boolean 			Skip email notification
+* @output SubmitOrder	: Boolean 			Submit order
 * @output RefusedHpp		: Boolean			Indicates that payment was made with using Adyen method and was refused
 * @output Pending  		: Boolean			Indicates that payment is in pending status
 * @output SkipOrder  		: Boolean			Indicates that we should skip order, order creation date > current date
@@ -27,7 +27,7 @@ function execute( args : PipelineDictionary ) : Number
     var result = handle(args.CustomObj);
 
     args.EventCode = result.EventCode;
-    args.SkipNotification = result.SkipNotification;
+    args.SubmitOrder = result.SubmitOrder;
     args.RefusedHpp = result.RefusedHpp;
     args.Pending = result.Pending;
     args.SkipOrder = result.SkipOrder;
@@ -39,14 +39,13 @@ function handle( customObj : CustomObject  ) : Object
 {
 	var OrderMgr = require('dw/order/OrderMgr');
 	var Transaction = require('dw/system/Transaction');
-	var paymentSuccess : Boolean = false;
 	var refusedHpp : Boolean = false;
 	var pending : Boolean = false;
 	var result = {};
 	result.status = PIPELET_ERROR;
 	
 	result.EventCode = customObj.custom.eventCode;
-	result.SkipNotification = true;
+	result.SubmitOrder = false;
 	result.SkipOrder = false;
 
 	var orderId = customObj.custom.orderId.split("-", 1);	
@@ -68,7 +67,6 @@ function handle( customObj : CustomObject  ) : Object
 	var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
 	var currentDate = new Date();
     var reasonCode = ('reason' in customObj.custom && !empty(customObj.custom.reason) ? customObj.custom.reason.toUpperCase() : null);
-		
 	Logger.getLogger("Adyen", "adyen").debug("Order date {0} , orderCreateDateDelay {1} , currentDate {2}", orderCreateDate , orderCreateDateDelay, currentDate);
 	if(orderCreateDateDelay < currentDate){
 		switch(customObj.custom.eventCode){
@@ -83,13 +81,10 @@ function handle( customObj : CustomObject  ) : Object
                 	}
                 }
 				if(customObj.custom.success == "true"){
-
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
 						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
-						paymentSuccess = true;
 					}
 					else if(order.paymentStatus == Order.PAYMENT_STATUS_PARTPAID){
-						paymentSuccess = true;
 						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
 
 					}
@@ -98,8 +93,7 @@ function handle( customObj : CustomObject  ) : Object
 						order.setExportStatus(Order.EXPORT_STATUS_READY);
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-						paymentSuccess = true;
-                        result.SkipNotification = false;
+                        result.SubmitOrder = true;
 					}  
 				}
 				else{
@@ -109,7 +103,6 @@ function handle( customObj : CustomObject  ) : Object
                         for each (paymentInstrument in paymentInstruments) {
                             if (paymentInstrument.paymentMethod.equals("Adyen") || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
                                 refusedHpp = true;
-                                paymentSuccess = false;
                                 setProcessedCOInfo(customObj);
                                 return result;
                                 break;
@@ -123,7 +116,7 @@ function handle( customObj : CustomObject  ) : Object
                         }
                         setProcessedCOInfo(customObj);
                         return result;
-                    } 
+                    }
 				}
 				break;
 			case "CANCELLATION" :

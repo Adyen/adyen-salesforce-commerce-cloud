@@ -33,7 +33,7 @@ function notify() {
 	
     var status = checkAuth.check(request);
     if (!status) {
-    	app.getView().render('error');
+    	app.getView().render('adyen/error');
     	return {};
 	}
 
