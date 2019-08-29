@@ -111,16 +111,24 @@ var __AdyenHelper: Object = {
 
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled');
+        if (!empty(adyenCurrentSite) && (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') || adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))) {
+            returnValue = true;
         }
         return returnValue;
     },
 
-    getAdyenRecurringType: function (): String {
+    getAdyenRecurringEnabled: function (): String {
         var returnValue: String = "";
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_recurringType')) && !empty(__AdyenHelper.getAdyenRecurringPaymentsEnabled())) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_recurringType').getValue();
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled');
+        }
+        return returnValue;
+    },
+
+    getAdyenOneClickEnabled: function (): String {
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled');
         }
         return returnValue;
     },
@@ -423,7 +431,7 @@ var __AdyenHelper: Object = {
         return jsonObject;
     },
 
-    createAdyenRequestObject: function (order, saveCreditCard) {
+    createAdyenRequestObject: function (order) {
         var jsonObject = {},
             reference = '';
 
@@ -441,25 +449,8 @@ var __AdyenHelper: Object = {
         };
 
         jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
-
-        //Set recurring type
-        var recurringType = __AdyenHelper.getAdyenRecurringType();
-        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
-
-            if (saveCreditCard) {
-                jsonObject['recurring'] = {
-                    'contract': recurringType
-                };
-            } else {
-                // if save credit card hasn't been selected or guest order
-                if (__AdyenHelper.getAdyenGuestRecurringEnabled()) {
-                    jsonObject['recurring'] = {
-                        'contract': 'RECURRING'
-                    };
-                }
-
-            }
-        }
+        jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
+        jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
 
         return jsonObject;
     },

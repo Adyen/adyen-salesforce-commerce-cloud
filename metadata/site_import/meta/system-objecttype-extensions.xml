@@ -295,12 +295,21 @@
                 <min-length>0</min-length>
                 <default-value>oj9GsQ</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenRecurringPaymentsEnabled">
-                <display-name xml:lang="x-default">Adyen Recurring Payments Enabled</display-name>
+            <attribute-definition attribute-id="AdyenRecurringEnabled">
+                <display-name xml:lang="x-default">Store shopper details - Recurring</display-name>
+                <description xml:lang="x-default">Tokenize shopper details for Recurring payments</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenOneClickEnabled">
+                <display-name xml:lang="x-default">Store shopper details - OneClick</display-name>
+                <description xml:lang="x-default">Tokenize shopper details for OneClick payments</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenGuestRecurringEnabled">
                 <display-name xml:lang="x-default">Adyen Guest Recurring Enabled</display-name>
@@ -346,26 +355,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_recurringType">
-                <display-name xml:lang="x-default">Recurring Type</display-name>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">ONECLICK</display>
-                        <value>ONECLICK</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">RECURRING</display>
-                        <value>RECURRING</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">ONECLICK,RECURRING</display>
-                        <value>ONECLICK,RECURRING</value>
-                    </value-definition>
-                </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_skinCode">
                 <display-name xml:lang="x-default">skinCode</display-name>
@@ -429,8 +418,8 @@
                 <attribute attribute-id="Adyen_Debug"/>
                 <attribute attribute-id="AdyenSecuredFieldsEnabled"/>
                 <attribute attribute-id="Adyen3DS2Enabled"/>
-                <attribute attribute-id="AdyenRecurringPaymentsEnabled"/>
-                <attribute attribute-id="Adyen_recurringType"/>
+                <attribute attribute-id="AdyenRecurringEnabled"/>
+                <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenGuestRecurringEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
