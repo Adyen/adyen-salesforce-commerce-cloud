@@ -3,6 +3,7 @@ var config = require('../config');
 
 Scenario('Guest Credit card success', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
@@ -14,6 +15,7 @@ Scenario('Guest Credit card success', (I) => {
 
 Scenario('Guest Credit card 3d success', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
@@ -28,6 +30,7 @@ Scenario('Guest Credit card 3d success', (I) => {
 
 Scenario('Guest Credit card failed', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
@@ -40,6 +43,7 @@ Scenario('Guest Credit card failed', (I) => {
 
 Scenario('Guest Credit card 3d failed', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
@@ -53,6 +57,7 @@ Scenario('Guest Credit card 3d failed', (I) => {
 
 Scenario('iDeal success', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
@@ -67,6 +72,7 @@ Scenario('iDeal success', (I) => {
 
 Scenario('iDeal fail', (I) => {
     I.amOnPage(config.Storefront.url);
+    I.confirmTrackingConsent();
     I.addProductToCart();
     I.amOnPage(config.Storefront.login);
     I.checkoutAsGuest(config.Guest);
