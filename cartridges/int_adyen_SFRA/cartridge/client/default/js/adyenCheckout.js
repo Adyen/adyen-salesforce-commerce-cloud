@@ -56,7 +56,7 @@ function renderCardComponent() {
         }, // Called once we detect the card brand
         onFieldValid: function (data) {
             if(data.endDigits){
-                maskedCardNumber = "**********" + data.endDigits;
+                maskedCardNumber = "*".repeat(12) + data.endDigits;
             }
         }
     });
