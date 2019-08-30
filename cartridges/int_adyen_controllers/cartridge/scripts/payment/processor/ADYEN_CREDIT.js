@@ -30,7 +30,6 @@ function Handle(args) {
     }
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
-    var cardType = creditCardForm.get('type').value();
 
     // create payment instrument
     Transaction.wrap(function () {
@@ -38,8 +37,8 @@ function Handle(args) {
         var paymentInstrument = cart.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
 
         paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
-        paymentInstrument.creditCardType = cardType;
-
+        paymentInstrument.creditCardType = creditCardForm.get('type').value();
+        paymentInstrument.creditCardNumber = creditCardForm.get('number').value();
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
