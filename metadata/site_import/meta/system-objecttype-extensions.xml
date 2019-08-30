@@ -311,14 +311,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenGuestRecurringEnabled">
-                <display-name xml:lang="x-default">Adyen Guest Recurring Enabled</display-name>
-                <description xml:lang="x-default">Tokenize guest payments as recurring. Set Generate Customer Number for Guest Orders in the Order Preferences section to Yes.</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Debug">
                 <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
                 <description xml:lang="x-default">yes / no</description>
@@ -420,7 +412,6 @@
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
-                <attribute attribute-id="AdyenGuestRecurringEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>

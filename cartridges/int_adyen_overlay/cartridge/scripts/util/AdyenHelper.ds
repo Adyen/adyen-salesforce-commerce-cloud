@@ -133,14 +133,6 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
-    getAdyenGuestRecurringEnabled: function (): Boolean {
-        var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGuestRecurringEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGuestRecurringEnabled');
-        }
-        return returnValue;
-    },
-
     getAdyenPOIID: function (): String {
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
