@@ -59,7 +59,6 @@ function creditCard(args) {
             return {error: true};
         }
         var paymentInstrument = args.PaymentInstrument;
-        var saveCreditCard = args.SaveCreditCard;
         var customer = order.getCustomer();
         var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
         var customerID = '';
@@ -67,20 +66,17 @@ function creditCard(args) {
             customerID = profile.getCustomerNo();
         }
 
-        var recurringType = AdyenHelper.getAdyenRecurringType();
         var isOneClick = false;
         if (paymentInstrument.getCreditCardToken()) {
             isOneClick = true;
         }
         var paymentMethodObject = AdyenHelper.createCardObjectSF(isOneClick, 'billing');
 
-        if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
-            if (!empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
-                paymentMethodObject['recurringDetailReference'] = paymentInstrument.getCreditCardToken();
-            }
-            else if (!empty(recurringType) && saveCreditCard) {
-                paymentMethodObject['storeDetails'] = true;
-            }
+        if (!empty(paymentInstrument.getCreditCardToken()) && !empty(customerID)) {
+            paymentMethodObject['recurringDetailReference'] = paymentInstrument.getCreditCardToken();
+        }
+        else if (args.SaveCreditCard) {
+            paymentMethodObject['storeDetails'] = true;
         }
         var returnUrl = URLUtils.https('Adyen-OrderConfirm').toString();
         return createPaymentRequest(args, paymentMethodObject, returnUrl);
@@ -94,10 +90,9 @@ function creditCard(args) {
 
 function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     var order = args.Order;
-    var saveCreditCard = !empty(args.SaveCreditCard) ? args.SaveCreditCard : false;
 
     //Create general request object
-    var jsonObject = AdyenHelper.createAdyenRequestObject(order, saveCreditCard);
+    var jsonObject = AdyenHelper.createAdyenRequestObject(order);
 
     //Get 3DS2 data
     if(AdyenHelper.getAdyen3DS2Enabled() && empty(args.PaymentType)){

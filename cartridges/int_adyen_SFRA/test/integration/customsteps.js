@@ -3,8 +3,11 @@
 
 module.exports = function() {
     return actor({
-        addProductToCart: function () {
+        confirmTrackingConsent: function(){
             this.click('.affirm');
+        },
+
+        addProductToCart: function () {
             this.click('.home-main-categories .category-tile');
             this.click('.product .image-container a');
             this.selectOption('Select Size', '8');
@@ -53,6 +56,10 @@ module.exports = function() {
             this.switchTo('#card .adyen-checkout__card__cvc__input iframe');
             this.fillField('#encryptedSecurityCode', card.cvc);
             this.switchTo();
+        },
+
+        setStoreDetails: function() {
+            this.checkOption('#card .adyen-checkout__store-details input');
         },
 
         setOneclickCVC: function(card) {

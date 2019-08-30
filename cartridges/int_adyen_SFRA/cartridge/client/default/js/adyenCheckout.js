@@ -17,6 +17,7 @@ var idealComponent;
 var afterpayComponent;
 var klarnaComponent;
 var isValid = false;
+var storeDetails;
 
 getConfigurationComponents();
 
@@ -42,10 +43,12 @@ function renderCardComponent() {
         hasHolderName: true,
         holderNameRequired: true,
         groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
+        enableStoreDetails: showStoreDetails,
 
         // Events
         onChange: function (state) {
             isValid = state.isValid;
+            storeDetails = state.data.storePaymentMethod;
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
@@ -482,6 +485,8 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
     $('#cardOwner').val(card.state.data.holderName);
+    $('#saveCardAdyen').val(storeDetails || false);
+
     setBrowserData();
 }
 

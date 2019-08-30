@@ -45,7 +45,7 @@
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false"
            checked="false"/>
     <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false"
-           checked="true"/>
+           checked="false"/>
 
     <field formid="adyenEncryptedCardNumber" label="adyenEncryptedCardNumber" type="string" mandatory="false"
            binding="adyenEncryptedCardNumber"/>

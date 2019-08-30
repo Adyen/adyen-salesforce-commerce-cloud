@@ -47,10 +47,7 @@
 
 <div id="newCard">
     <div id="card" class="creditCard"></div>
-    <isif condition="${pdict.CurrentCustomer.authenticated}">
-        <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
-    </isif>
-    
+
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}">
@@ -58,6 +55,7 @@
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard.htmlName}">
     <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
 </div>
 
@@ -106,16 +104,18 @@
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
-		
+
 		window.CardValid = false;
 		window.AdyenCard = AdyenCheckoutObject.create('card', {
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
             groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
-	        onChange: function(state) {
+            enableStoreDetails: ${pdict.CurrentCustomer.authenticated},
+            onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;
+                window.storeDetails = state.data.storePaymentMethod;
 	        }
 	    });
 	    

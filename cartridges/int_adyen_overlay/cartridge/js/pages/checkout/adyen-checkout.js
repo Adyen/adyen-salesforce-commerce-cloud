@@ -153,6 +153,12 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.state.data.holderName);
+        if(window.storeDetails){
+            $('#dwfrm_billing_paymentMethods_creditCard_saveCard').val(window.storeDetails);
+        }
+        else {
+            $('#dwfrm_billing_paymentMethods_creditCard_saveCard').val(false);
+        }
     }
     
     function clearCardData() {
