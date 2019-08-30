@@ -485,12 +485,7 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
     $('#cardOwner').val(card.state.data.holderName);
-    if(storeDetails){
-        $('#saveCardAdyen').val(storeDetails);
-    }
-    else {
-        $('#saveCardAdyen').val(false);
-    }
+    $('#saveCardAdyen').val(storeDetails || false);
 
     setBrowserData();
 }
