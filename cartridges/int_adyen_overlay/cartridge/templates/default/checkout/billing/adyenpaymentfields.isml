@@ -67,6 +67,7 @@
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
 	var environment = "${AdyenHelper.getAdyenMode().toLowerCase()}";
 	var locale = "${request.locale}";
+	var MASKED_CC_PREFIX = '************';
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
 
@@ -120,7 +121,7 @@
 	        },
             onFieldValid: function (data) {
                 if(data.endDigits){
-                    $('#dwfrm_billing_paymentMethods_creditCard_number').val("*".repeat(12) + data.endDigits);
+                    $('#dwfrm_billing_paymentMethods_creditCard_number').val(MASKED_CC_PREFIX + data.endDigits);
                 }
             }
 	    });

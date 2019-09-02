@@ -19,6 +19,7 @@ var klarnaComponent;
 var isValid = false;
 var storeDetails;
 var maskedCardNumber;
+var MASKED_CC_PREFIX = '************';
 
 getConfigurationComponents();
 
@@ -56,7 +57,7 @@ function renderCardComponent() {
         }, // Called once we detect the card brand
         onFieldValid: function (data) {
             if(data.endDigits){
-                maskedCardNumber = "*".repeat(12) + data.endDigits;
+                maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
             }
         }
     });
