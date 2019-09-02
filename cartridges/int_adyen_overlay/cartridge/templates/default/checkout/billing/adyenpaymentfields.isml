@@ -67,7 +67,7 @@
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
 	var environment = "${AdyenHelper.getAdyenMode().toLowerCase()}";
 	var locale = "${request.locale}";
-	var MASKED_CC_PREFIX = '************';
+	const MASKED_CC_PREFIX = '************';
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
 

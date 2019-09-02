@@ -19,7 +19,7 @@ var klarnaComponent;
 var isValid = false;
 var storeDetails;
 var maskedCardNumber;
-var MASKED_CC_PREFIX = '************';
+const MASKED_CC_PREFIX = '************';
 
 getConfigurationComponents();
 
