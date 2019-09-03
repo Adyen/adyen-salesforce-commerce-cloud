@@ -18,6 +18,8 @@ var afterpayComponent;
 var klarnaComponent;
 var isValid = false;
 var storeDetails;
+var maskedCardNumber;
+const MASKED_CC_PREFIX = '************';
 
 getConfigurationComponents();
 
@@ -55,7 +57,7 @@ function renderCardComponent() {
         }, // Called once we detect the card brand
         onFieldValid: function (data) {
             if(data.endDigits){
-                $('#cardNumber').val("**********" + data.endDigits);
+                maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
             }
         }
     });
@@ -485,6 +487,7 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
     $('#cardOwner').val(card.state.data.holderName);
+    $('#cardNumber').val(maskedCardNumber || "");
     $('#saveCardAdyen').val(storeDetails || false);
 
     setBrowserData();
