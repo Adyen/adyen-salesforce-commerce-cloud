@@ -5,8 +5,9 @@ server.extend(module.superModule);
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+var collections = require('*/cartridge/scripts/util/collections');
 
-server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
+server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var OrderMgr = require('dw/order/OrderMgr');
     var Resource = require('dw/web/Resource');
@@ -14,6 +15,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var URLUtils = require('dw/web/URLUtils');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
     var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+    var isAdyen = false;
 
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
@@ -27,6 +29,23 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         return next();
     }
 
+    collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
+        if(paymentInstrument.paymentMethod == "Adyen" || paymentInstrument.paymentMethod == paymentInstrument.METHOD_CREDIT_CARD){
+            isAdyen = true;
+        }
+    });
+
+    if (!isAdyen) {
+        return next();
+    }
+
+    var viewData = res.getViewData();
+    if (viewData && viewData.csrfError) {
+        res.json();
+        this.emit('route:Complete', req, res);
+        return;
+    }
+
     if (req.session.privacyCache.get('fraudDetectionStatus')) {
         res.json({
             error: true,
@@ -34,8 +53,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket, require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
@@ -44,7 +63,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: true,
             errorMessage: validationOrderStatus.message
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
     // Check to make sure there is a shipping address
     if (currentBasket.defaultShipment.shippingAddress === null) {
@@ -56,7 +76,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             },
             errorMessage: Resource.msg('error.no.shipping.address', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Check to make sure billing address exists
@@ -69,7 +90,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             },
             errorMessage: Resource.msg('error.no.billing.address', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Calculate the basket
@@ -88,7 +110,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             },
             errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Re-calculate the payments.
@@ -98,7 +121,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Creates a new order.
@@ -108,7 +132,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Handles payment authorization
@@ -118,7 +143,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     if(handlePaymentResult.ThreeDS2) {
@@ -126,7 +152,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: false,
             continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'token3ds2', handlePaymentResult.token3ds2).toString()
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
     else if (handlePaymentResult.redirectObject) {
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
@@ -136,13 +163,15 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
                 error: false,
                 continueUrl: URLUtils.url('Adyen-Adyen3D', 'IssuerURL', handlePaymentResult.redirectObject.url, 'PaRequest', handlePaymentResult.redirectObject.data.PaReq, 'MD', handlePaymentResult.redirectObject.data.MD).toString()
             });
-            return next();
+            this.emit('route:Complete', req, res);
+            return;
         } else {
             res.json({
                 error: false,
                 continueUrl: URLUtils.url('Adyen-Redirect', 'redirectUrl', handlePaymentResult.redirectObject.url).toString()
             });
-            return next();
+            this.emit('route:Complete', req, res);
+            return;
         }
     }
 
@@ -162,7 +191,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
 
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     // Places the order
@@ -172,7 +202,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-        return next();
+        this.emit('route:Complete', req, res);
+        return;
     }
 
     COHelpers.sendConfirmationEmail(order, req.locale.id);
@@ -186,7 +217,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         orderToken: order.orderToken,
         continueUrl: URLUtils.url('Order-Confirm').toString()
     });
-    return next();
+    this.emit('route:Complete', req, res);
 });
 
 module.exports = server.exports();
