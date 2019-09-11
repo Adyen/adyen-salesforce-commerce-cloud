@@ -172,6 +172,11 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyenHash: function(value, salt){
+        //TODOBAS hash value + salt
+        return "testSignature"; //value + salt;
+    },
+
     hasCheckoutComponent: function (paymentMethod) {
         if (paymentMethod.indexOf("ideal") > -1 ||
             paymentMethod.indexOf("klarna") > -1 ||

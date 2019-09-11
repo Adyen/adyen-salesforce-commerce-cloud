@@ -190,7 +190,33 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 });
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
-    res.redirect(req.querystring.redirectUrl);
+    var signature = req.querystring.signature;
+    var order = OrderMgr.getOrder(session.custom.orderNo);
+    if(order){
+        var paymentInstruments = order.getPaymentInstruments("Adyen");
+        var adyenPaymentInstrument;
+        var paymentData;
+        var instrumentsIter = paymentInstruments.iterator();
+        while (instrumentsIter.hasNext()) {
+            adyenPaymentInstrument = instrumentsIter.next();
+            paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
+        }
+        var currentSignature = AdyenHelper.getAdyenHash(req.querystring.redirectUrl, paymentData);
+
+        if(signature == currentSignature) {
+            res.redirect(req.querystring.redirectUrl);
+            return next();
+        }
+
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order);
+        });
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+    }
+    else {
+        //TODOBAS failure page (impossible to failOrder)
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+    }
     return next();
 });
 
