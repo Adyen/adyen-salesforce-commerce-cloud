@@ -192,7 +192,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
     var signature = req.querystring.signature;
     var order = OrderMgr.getOrder(session.custom.orderNo);
-    if(order){
+    if(order && signature){
         var paymentInstruments = order.getPaymentInstruments("Adyen");
         var adyenPaymentInstrument;
         var paymentData;
@@ -214,7 +214,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
         res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
     }
     else {
-        //TODOBAS failure page (impossible to failOrder)
+        Logger.getLogger("Adyen").error("Redirect signature is not correct");
         res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
     }
     return next();

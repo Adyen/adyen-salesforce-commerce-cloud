@@ -173,8 +173,9 @@ var __AdyenHelper: Object = {
     },
 
     getAdyenHash: function(value, salt){
-        //TODOBAS hash value + salt
-        return "testSignature"; //value + salt;
+        var data = value + salt;
+        var signature = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digest(data);
+        return signature;
     },
 
     hasCheckoutComponent: function (paymentMethod) {
