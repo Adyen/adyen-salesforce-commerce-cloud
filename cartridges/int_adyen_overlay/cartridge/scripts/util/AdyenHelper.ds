@@ -172,6 +172,12 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyenHash: function(value, salt){
+        var data = value + salt;
+        var signature = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digest(data);
+        return signature;
+    },
+
     hasCheckoutComponent: function (paymentMethod) {
         if (paymentMethod.indexOf("ideal") > -1 ||
             paymentMethod.indexOf("klarna") > -1 ||

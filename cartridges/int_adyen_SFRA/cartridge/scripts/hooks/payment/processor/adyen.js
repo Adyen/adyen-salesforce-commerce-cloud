@@ -8,6 +8,7 @@ var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 function Handle(basket, paymentInformation) {
     Transaction.wrap(function () {
@@ -74,11 +75,15 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
+        session.custom.orderNo = order.orderNo;
+        var signature = AdyenHelper.getAdyenHash(result.RedirectObject.url, result.PaymentData);
+
         return {
             authorized: true,
-            order: order,
+            orderNo: orderNumber,
             paymentInstrument: paymentInstrument,
-            redirectObject: result.RedirectObject
+            redirectObject: result.RedirectObject,
+            signature: signature
         };
     } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
         return {authorized: true, error: false};
