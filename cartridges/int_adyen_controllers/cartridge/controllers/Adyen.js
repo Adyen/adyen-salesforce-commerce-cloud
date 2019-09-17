@@ -143,7 +143,7 @@ function getPaymentMethods(cart) {
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value.toUpperCase();
     }
-    var getPaymentMethods = require('int_adyen_overlay/cartridge/scripts/adyenGetPaymentMethods');
+    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
     var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
     return paymentMethods.filter(function (method) {
         return !isMethodTypeBlocked(method.type);
@@ -195,10 +195,10 @@ function authorize3ds2() {
     var paymentInstrument;
     var order;
 
-    if (session.custom.orderNo && session.custom.paymentMethod) {
+    if (session.privacy.orderNo && session.privacy.paymentMethod) {
         try {
-            order = OrderMgr.getOrder(session.custom.orderNo);
-            paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+            order = OrderMgr.getOrder(session.privacy.orderNo);
+            paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
         } catch (e) {
             Logger.getLogger("Adyen").error("Unable to retrieve order data from session 3DS2.");
             Transaction.wrap(function () {
@@ -300,12 +300,12 @@ function authorize3ds2() {
 function authorizeWithForm() {
 	var order;
 	var paymentInstrument;
-	var	adyenResponse = session.custom.adyenResponse;
+	var	adyenResponse = session.privacy.adyenResponse;
 
-    if(session.custom.orderNo && session.custom.paymentMethod) {
+    if(session.privacy.orderNo && session.privacy.paymentMethod) {
         try {
-            order = OrderMgr.getOrder(session.custom.orderNo);
-            paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+            order = OrderMgr.getOrder(session.privacy.orderNo);
+            paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
         } catch (e) {
             Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
             Transaction.wrap(function () {
@@ -381,7 +381,7 @@ function closeThreeDS() {
 			MD : request.httpParameterMap.get("MD").stringValue,
 			PaRes : request.httpParameterMap.get("PaRes").stringValue
 	}
-	session.custom.adyenResponse = adyenResponse;
+	session.privacy.adyenResponse = adyenResponse;
     app.getView({
         ContinueURL: URLUtils.https('Adyen-AuthorizeWithForm')
     }).render('adyenpaymentredirect');
@@ -427,11 +427,11 @@ function clearForms() {
  */
 function clearCustomSessionFields() {
 	// Clears all fields used in the 3d secure payment.
-    session.custom.adyenResponse = null;
-    session.custom.paymentMethod = null;
-    session.custom.orderNo = null;
-    session.custom.adyenBrandCode = null;
-    session.custom.adyenIssuerID = null;
+    session.privacy.adyenResponse = null;
+    session.privacy.paymentMethod = null;
+    session.privacy.orderNo = null;
+    session.privacy.adyenBrandCode = null;
+    session.privacy.adyenIssuerID = null;
 }
 
 function getExternalPlatformVersion(){

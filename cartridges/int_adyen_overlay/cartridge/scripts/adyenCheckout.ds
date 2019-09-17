@@ -32,8 +32,8 @@ var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
-var AdyenGetOpenInvoiceData = require('int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 
 function execute(args) {
     return PIPELET_NEXT;  

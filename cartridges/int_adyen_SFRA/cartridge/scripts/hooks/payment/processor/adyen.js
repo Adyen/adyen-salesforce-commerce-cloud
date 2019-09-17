@@ -19,9 +19,9 @@ function Handle(basket, paymentInformation) {
         var paymentInstrument = basket.createPaymentInstrument(
             'Adyen', basket.totalGrossPrice
         );
-        paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
-        if (session.custom.adyenIssuerName) {
-            paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+        paymentInstrument.custom.adyenPaymentMethod = session.privacy.adyenPaymentMethod;
+        if (session.privacy.adyenIssuerName) {
+            paymentInstrument.custom.adyenIssuerName = session.privacy.adyenIssuerName;
         }
 
     });
@@ -56,8 +56,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
         PaymentInstrument: paymentInstrument,
-        PaymentType: session.custom.paymentType,
-        ratePayFingerprint: session.custom.ratePayFingerprint,
+        PaymentType: session.privacy.paymentType,
+        ratePayFingerprint: session.privacy.ratePayFingerprint,
         adyenFingerprint: session.forms.adyPaydata.adyenFingerprint.value,
         adyenForm: adyenPaymentForm
 
@@ -75,7 +75,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
-        session.custom.orderNo = order.orderNo;
+        session.privacy.orderNo = order.orderNo;
         var signature = AdyenHelper.getAdyenHash(result.RedirectObject.url, result.PaymentData);
 
         return {

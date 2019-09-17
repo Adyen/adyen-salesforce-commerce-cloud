@@ -236,9 +236,9 @@ var __AdyenHelper: Object = {
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
-        if (!session.custom.ratePayFingerprint || session.custom.ratePayFingerprint == null) {
+        if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint == null) {
             var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
-            session.custom.ratePayFingerprint = sessionID;
+            session.privacy.ratePayFingerprint = sessionID;
         }
         return returnValue;
     },

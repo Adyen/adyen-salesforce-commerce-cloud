@@ -9,7 +9,7 @@
 var Logger = require('dw/system/Logger');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 function execute(args) {
     var result = getOriginKey(args);

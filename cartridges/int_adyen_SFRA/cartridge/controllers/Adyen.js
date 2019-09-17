@@ -33,17 +33,17 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
     var paymentInstrument;
     var order;
 
-    if (session.custom.orderNo && session.custom.paymentMethod) {
+    if (session.privacy.orderNo && session.privacy.paymentMethod) {
         try {
-            order = OrderMgr.getOrder(session.custom.orderNo);
-            paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+            order = OrderMgr.getOrder(session.privacy.orderNo);
+            paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
         } catch (e) {
             Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
             res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
             return next();
         }
 
-        if (session.custom.MD == req.form.MD) {
+        if (session.privacy.MD == req.form.MD) {
             var jsonRequest = {
                 "paymentData": paymentInstrument.custom.adyenPaymentData,
                 "details": {
@@ -108,17 +108,18 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
-
-    if (session.custom.orderNo && session.custom.paymentMethod) {
+    Logger.getLogger("Adyen").error("Authorize3DS2");
+    if (session.privacy.orderNo && session.privacy.paymentMethod) {
         try {
-            order = OrderMgr.getOrder(session.custom.orderNo);
-            paymentInstrument = order.getPaymentInstruments(session.custom.paymentMethod)[0];
+            order = OrderMgr.getOrder(session.privacy.orderNo);
+            paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
         } catch (e) {
             Logger.getLogger("Adyen").error("Unable to retrieve order data from session 3DS2.");
             res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
             return next();
         }
 
+        Logger.getLogger("Adyen").error("resultCode = " + req.form.resultCode);
         var details = {};
         if (req.form.resultCode == "IdentifyShopper" && req.form.fingerprintResult) {
             details = {
@@ -139,8 +140,10 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
             "paymentData": paymentInstrument.custom.adyenPaymentData,
             "details": details
         };
+        Logger.getLogger("Adyen").error("paymentDetailsRequest = " + JSON.stringify(paymentDetailsRequest));
 
         var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+        Logger.getLogger("Adyen").error("result = " + JSON.stringify(result));
         if ((result.error || result.resultCode != 'Authorised') && result.resultCode != 'ChallengeShopper') {
             //Payment failed
             Transaction.wrap(function () {
@@ -165,6 +168,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 
         // Places the order
         var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+        Logger.getLogger("Adyen").error("placeOrderResult = " + placeOrderResult);
         if (placeOrderResult.error) {
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order);
@@ -191,7 +195,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
     var signature = req.querystring.signature;
-    var order = OrderMgr.getOrder(session.custom.orderNo);
+    var order = OrderMgr.getOrder(session.privacy.orderNo);
     if(order && signature){
         var paymentInstruments = order.getPaymentInstruments("Adyen");
         var adyenPaymentInstrument;
@@ -398,13 +402,13 @@ function clearForms() {
  */
 function clearCustomSessionFields() {
     // Clears all fields used in the 3d secure payment.
-    session.custom.paymentMethod = null;
-    session.custom.orderNo = null;
-    session.custom.brandCode = null;
-    session.custom.issuer = null;
-    session.custom.adyenPaymentMethod = null;
-    session.custom.adyenIssuerName = null;
-    session.custom.ratePayFingerprint = null;
+    session.privacy.paymentMethod = null;
+    session.privacy.orderNo = null;
+    session.privacy.brandCode = null;
+    session.privacy.issuer = null;
+    session.privacy.adyenPaymentMethod = null;
+    session.privacy.adyenIssuerName = null;
+    session.privacy.ratePayFingerprint = null;
 }
 
 function getExternalPlatformVersion() {
