@@ -195,6 +195,8 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
         var paymentInstruments = order.getPaymentInstruments("Adyen");
         var adyenPaymentInstrument;
         var paymentData;
+
+        //looping through all Adyen payment methods, however, this only can be one.
         var instrumentsIter = paymentInstruments.iterator();
         while (instrumentsIter.hasNext()) {
             adyenPaymentInstrument = instrumentsIter.next();
