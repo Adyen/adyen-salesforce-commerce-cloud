@@ -108,7 +108,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
-    Logger.getLogger("Adyen").error("Authorize3DS2");
     if (session.privacy.orderNo && session.privacy.paymentMethod) {
         try {
             order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -119,7 +118,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
             return next();
         }
 
-        Logger.getLogger("Adyen").error("resultCode = " + req.form.resultCode);
         var details = {};
         if (req.form.resultCode == "IdentifyShopper" && req.form.fingerprintResult) {
             details = {
@@ -140,10 +138,8 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
             "paymentData": paymentInstrument.custom.adyenPaymentData,
             "details": details
         };
-        Logger.getLogger("Adyen").error("paymentDetailsRequest = " + JSON.stringify(paymentDetailsRequest));
 
         var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-        Logger.getLogger("Adyen").error("result = " + JSON.stringify(result));
         if ((result.error || result.resultCode != 'Authorised') && result.resultCode != 'ChallengeShopper') {
             //Payment failed
             Transaction.wrap(function () {
@@ -168,7 +164,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 
         // Places the order
         var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-        Logger.getLogger("Adyen").error("placeOrderResult = " + placeOrderResult);
         if (placeOrderResult.error) {
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order);
