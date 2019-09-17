@@ -11,8 +11,8 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
  * Creates a Adyen payment instrument for the given basket
  */
 function handle(args) {
-	var	adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI'),
-	adyenPaymentInstrument = require('int_adyen_overlay/cartridge/scripts/createAdyenPaymentInstrument'),
+	var	adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI'),
+	adyenPaymentInstrument = require('*/cartridge/scripts/createAdyenPaymentInstrument'),
 	result;
 	
     Transaction.wrap(function () {
@@ -49,7 +49,7 @@ function authorize(args) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     
-    var	adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout'),
+    var	adyenCheckout = require('*/cartridge/scripts/adyenCheckout'),
 	result;
 
 	Transaction.wrap(function () {
@@ -60,8 +60,8 @@ function authorize(args) {
 			'CurrentSession' : session,
 			'CurrentUser' : customer,
 			'PaymentInstrument' : order.paymentInstrument,
-			'PaymentType': session.custom.brandCode,
-			'ratePayFingerprint' : session.custom.ratePayFingerprint,
+			'PaymentType': session.privacy.brandCode,
+			'ratePayFingerprint' : session.privacy.ratePayFingerprint,
 			'adyenFingerprint': session.forms.adyPaydata.adyenFingerprint.value,
 			'adyenForm' : session.forms.adyPaydata
 		});

@@ -21,7 +21,7 @@ function execute(pdict) {
  * ProcessNotifications - search for custom objects that need to be processed and handle them to place or fail order
  */
 function processNotifications(pdict) {
-	var	objectsHandler = require('int_adyen_overlay/cartridge/scripts/handleCustomObject');
+	var	objectsHandler = require('*/cartridge/scripts/handleCustomObject');
 	var searchQuery = CustomObjectMgr.queryCustomObjects("adyenNotification", "custom.updateStatus = 'PROCESS'", null);
 	logger.info("Process notifications start with count {0}", searchQuery.count);
 
@@ -73,7 +73,7 @@ function processNotifications(pdict) {
  * cleanNotifications
  */
 function clearNotifications(pdict) {
-	var	deleteCustomObjects = require('int_adyen_overlay/cartridge/scripts/deleteCustomObjects');
+	var	deleteCustomObjects = require('*/cartridge/scripts/deleteCustomObjects');
 	var searchQuery = CustomObjectMgr.queryCustomObjects("adyenNotification", "custom.processedStatus = 'SUCCESS'", null);
 	logger.info("Removing Processed Custom Objects start with count {0}", searchQuery.count);
 

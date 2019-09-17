@@ -1,12 +1,12 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
 
-<isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
-<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
+<isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
 
-<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="AdyenSecuredFieldsEnabled" value="${pdict.AdyenHelper.getAdyenSecuredFieldsEnabled()}" scope="page" />
 <iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
 <isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">

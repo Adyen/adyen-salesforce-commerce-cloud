@@ -19,16 +19,16 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value
     };
 
-    session.custom.paymentType = req.form.brandCode;
+    session.privacy.paymentType = req.form.brandCode;
     if (typeof req.form.adyenPaymentMethod !== "undefined") {
-        session.custom.adyenPaymentMethod = req.form.adyenPaymentMethod;
+        session.privacy.adyenPaymentMethod = req.form.adyenPaymentMethod;
     } else {
-        session.custom.adyenPaymentMethod = null;
+        session.privacy.adyenPaymentMethod = null;
     }
     if (typeof req.form.adyenIssuerName !== "undefined") {
-        session.custom.adyenIssuerName = req.form.adyenIssuerName;
+        session.privacy.adyenIssuerName = req.form.adyenIssuerName;
     } else {
-        session.custom.adyenIssuerName = null;
+        session.privacy.adyenIssuerName = null;
     }
 
     return {

@@ -69,6 +69,7 @@ module.exports = function() {
         },
 
         set3dDetails: function (threeds2Details) {
+            this.wait(5);
             this.switchTo('.adyen-checkout__threeds2__challenge iframe');
             this.fillField('input[name="answer"]', threeds2Details.password);
             this.click('input[type="submit"]');

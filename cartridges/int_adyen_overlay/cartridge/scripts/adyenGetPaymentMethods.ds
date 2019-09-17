@@ -12,7 +12,7 @@ importPackage(dw.system);
 importPackage(dw.order);
 
 //script include
-var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/AdyenHelper");
+var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 var Logger = require('dw/system/Logger');
 
 function execute(args) {

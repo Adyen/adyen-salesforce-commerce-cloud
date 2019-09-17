@@ -25,11 +25,11 @@
 <iscomment>
     Adyen RatePay Device Fingerprint Code
 </iscomment>
-<isif condition="${empty(session.custom.ratePayFingerprint)}">
+<isif condition="${empty(session.privacy.ratePayFingerprint)}">
     <isscript>
         var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
         var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
-        session.custom.ratePayFingerprint = sessionID;
+        session.privacy.ratePayFingerprint = sessionID;
     </isscript>
     <script language="JavaScript">
         var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'}
