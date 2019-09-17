@@ -296,16 +296,16 @@
                 <default-value>oj9GsQ</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenRecurringEnabled">
-                <display-name xml:lang="x-default">Store shopper details - Recurring</display-name>
-                <description xml:lang="x-default">Tokenize shopper details for Recurring payments</description>
+                <display-name xml:lang="x-default">Store shopper details: recurring</display-name>
+                <description xml:lang="x-default">Tokenize shopper details for recurring payments</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
-                <display-name xml:lang="x-default">Store shopper details - OneClick</display-name>
-                <description xml:lang="x-default">Tokenize shopper details for OneClick payments</description>
+                <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
+                <description xml:lang="x-default">Tokenize shopper details for one-click payments</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -317,14 +317,6 @@
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_HMACkey">
-                <display-name xml:lang="x-default">HMACkey</display-name>
-                <description xml:lang="x-default">Key used to calculate a signature</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_Mode">
                 <display-name xml:lang="x-default">Test/Production Mode</display-name>
@@ -342,14 +334,7 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_merchantCode">
-                <display-name xml:lang="x-default">merchantCode</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_skinCode">
-                <display-name xml:lang="x-default">skinCode</display-name>
+                <display-name xml:lang="x-default">Merchant account</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
