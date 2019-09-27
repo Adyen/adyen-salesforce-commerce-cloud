@@ -8,6 +8,7 @@
     <field formid="telephoneNumber" label="telephoneNumber" type="string" mandatory="false"/>
     <field formid="gender" label="Gender" type="string" mandatory="false"/>
     <field formid="socialSecurityNumber" label="Social Security Number" type="string" mandatory="false"/>
+    <field formid="adyenFingerprint" label="Fingerprint" type="string" mandatory="false"/>
 
     <!--ACH details-->
     <field formid="bankAccountOwnerName" type="string" mandatory="false"/>

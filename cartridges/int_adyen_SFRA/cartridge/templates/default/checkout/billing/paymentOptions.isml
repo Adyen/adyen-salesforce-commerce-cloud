@@ -1,7 +1,6 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addCss('/css/adyenCss.css');
-    assets.addCss('/css/adyen-checkout-3.0.0.css');
 </isscript>
 <iscontent type="text/html" encoding="off"/>
 <div class="form-nav billing-nav payment-information"

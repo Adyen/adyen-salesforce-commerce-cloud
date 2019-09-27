@@ -1,13 +1,13 @@
 <!--- TEMPLATENAME: adyenpaymentfields.isml --->
 
-<isset name="AdyenGetOriginKey" value="${require('int_adyen_overlay/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
-<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
-<link rel="stylesheet" type="text/css" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.0.0/adyen.css"/>
+<isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="PAGE"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="PAGE"/>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" /> 
 
 
-<isset name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
-<isset name="AdyenCseEnabled" value="${pdict.AdyenHelper.getAdyenCseEnabled()}" scope="page" />
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenSecuredFieldsEnabled" value="${pdict.AdyenHelper.getAdyenSecuredFieldsEnabled()}" scope="page" />
 <iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
 <isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
 
@@ -15,7 +15,7 @@
         <label class="label">${Resource.msg('billing.selectcreditcard','checkout',null)}</label>
         <div class="field-wrapper">
 
-            <isif condition="${AdyenCseEnabled}">
+            <isif condition="${AdyenSecuredFieldsEnabled}">
                 <select id="adyenCreditCardList" class="input-select">
                     <iselse/>
                     <select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="creditCardList" class="input-select">
@@ -47,17 +47,16 @@
 
 <div id="newCard">
     <div id="card" class="creditCard"></div>
-    <isif condition="${pdict.CurrentCustomer.authenticated}">
-        <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
-    </isif>
-    
+
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.number.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.number.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedCardNumber.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryMonth.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedExpiryYear.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.adyenEncryptedSecurityCode.htmlName}">
     <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.browserInfo.htmlName}">
+    <input type="hidden" id="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard.htmlName}" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard.htmlName}">
     <isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.selectedCardID}" type="hidden"/>
 </div>
 
@@ -68,6 +67,7 @@
 	var loadingContext = "${AdyenHelper.getLoadingContext()}";
 	var environment = "${AdyenHelper.getAdyenMode().toLowerCase()}";
 	var locale = "${request.locale}";
+	const MASKED_CC_PREFIX = '************';
 	// Init Adyen checkout component js file
 	var scriptTag = document.createElement('script');
 
@@ -106,17 +106,24 @@
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
-		
+
 		window.CardValid = false;
 		window.AdyenCard = AdyenCheckoutObject.create('card', {
 	       	type: 'card',
 	        hasHolderName: true,
             holderNameRequired: true,
-            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
-	        onChange: function(state) {
+            groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
+            enableStoreDetails: ${pdict.CurrentCustomer.authenticated},
+            onChange: function(state) {
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;
-	        }
+                window.storeDetails = state.data.storePaymentMethod;
+	        },
+            onFieldValid: function (data) {
+                if(data.endDigits){
+                    $('#dwfrm_billing_paymentMethods_creditCard_number').val(MASKED_CC_PREFIX + data.endDigits);
+                }
+            }
 	    });
 	    
 	    window.AdyenCard.mount(document.getElementById('card'));

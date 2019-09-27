@@ -86,8 +86,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
-        session.custom.orderNo = order.orderNo;
-        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+        session.privacy.orderNo = order.orderNo;
+        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
         return {
             ThreeDS2: result.ThreeDS2,
@@ -103,8 +103,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
-        session.custom.orderNo = order.orderNo;
-        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+        session.privacy.orderNo = order.orderNo;
+        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
         return {
             authorized: true,
             authorized3d: true,

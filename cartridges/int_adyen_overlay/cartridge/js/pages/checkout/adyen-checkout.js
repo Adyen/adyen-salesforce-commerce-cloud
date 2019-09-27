@@ -131,12 +131,16 @@
     		  
     		  return klarnaComponent.componentRef.state.isValid;
     		break;
-    	  case "afterpay":
+    	  case "afterpay_default":
     		  if (afterpayComponent.componentRef.state.isValid) {
     			  parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);
     		  }
     		  return afterpayComponent.componentRef.state.isValid;
       	    break;
+          case "ratepay":
+            $('#dwfrm_adyPaydata_dateOfBirth').val($("#ratepay_dob").val());
+            $('#dwfrm_adyPaydata_gender').val($("#ratepay_gender").val());
+            return true;
     	  default:
     	    return true;
     	} 	
@@ -149,6 +153,12 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val(card.state.data.holderName);
+        if(window.storeDetails){
+            $('#dwfrm_billing_paymentMethods_creditCard_saveCard').val(window.storeDetails);
+        }
+        else {
+            $('#dwfrm_billing_paymentMethods_creditCard_saveCard').val(false);
+        }
     }
     
     function clearCardData() {
@@ -167,7 +177,7 @@
 
     /**
      * @function
-     * @description Initializes Adyen CSE My Account events
+     * @description Initializes Adyen Checkout My Account events
      */
     function initializeAccountEvents() {
         $('#add-card-submit').on('click', function (e) {

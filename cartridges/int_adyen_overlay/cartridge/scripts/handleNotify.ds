@@ -44,7 +44,7 @@ function notify (notificationData) {
         var msg : String = createLogMessage(notificationData);
         Logger.getLogger("Adyen").debug(msg);
         var calObj: Calendar = new Calendar();
-        var keyValue: String = notificationData.merchantReference + "-" + StringUtils.formatCalendar(calObj, "yyyyMMddhhmmss");
+        var keyValue: String = notificationData.merchantReference + "-" + StringUtils.formatCalendar(calObj, "yyyyMMddhhmmssSSS");
         var customObj: CustomObject = CustomObjectMgr.createCustomObject("adyenNotification", keyValue);
         for (var field in notificationData) {
             try {

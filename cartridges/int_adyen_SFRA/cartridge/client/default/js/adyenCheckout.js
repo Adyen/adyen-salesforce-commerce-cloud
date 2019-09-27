@@ -17,6 +17,9 @@ var idealComponent;
 var afterpayComponent;
 var klarnaComponent;
 var isValid = false;
+var storeDetails;
+var maskedCardNumber;
+const MASKED_CC_PREFIX = '************';
 
 getConfigurationComponents();
 
@@ -41,18 +44,20 @@ function renderCardComponent() {
         type: 'card',
         hasHolderName: true,
         holderNameRequired: true,
-        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb"],
+        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
+        enableStoreDetails: showStoreDetails,
 
         // Events
         onChange: function (state) {
             isValid = state.isValid;
+            storeDetails = state.data.storePaymentMethod;
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
         }, // Called once we detect the card brand
         onFieldValid: function (data) {
             if(data.endDigits){
-                $('#cardNumber').val("**********" + data.endDigits);
+                maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
             }
         }
     });
@@ -125,18 +130,16 @@ $('.payment-summary .edit-button').on('click', function (e) {
 
 function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
-    if ($('#directoryLookup').val() == 'true') {
-        getPaymentMethods(function (data) {
-            jQuery.each(data.AdyenHppPaymentMethods, function (i, method) {
-                addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
-            });
-
-            $('input[type=radio][name=brandCode]').change(function () {
-                resetPaymentMethod();
-                $('#component_' + $(this).val()).show();
-            });
+    getPaymentMethods(function (data) {
+        jQuery.each(data.AdyenPaymentMethods, function (i, method) {
+            addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
         });
-    }
+
+        $('input[type=radio][name=brandCode]').change(function () {
+            resetPaymentMethod();
+            $('#component_' + $(this).val()).show();
+        });
+    });
 };
 
 function resetPaymentMethod() {
@@ -150,6 +153,7 @@ function resetPaymentMethod() {
     $('#bankAccountNumber').val("");
     $('#bankLocationId').val("");
     $('.additionalFields').hide();
+    $('#invalidCardDetails').hide();
 };
 
 function getPaymentMethods(paymentMethods) {
@@ -228,6 +232,40 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
     }
     ;
 
+    if (paymentMethod.type == 'ratepay') {
+        var ratepayContainer = document.createElement("div");
+        $(ratepayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+
+        var genderLabel = document.createElement("span");
+        $(genderLabel).text("Gender").attr('class', 'adyen-checkout__label');
+        var genderInput = document.createElement("select");
+        $(genderInput).attr('id', 'genderInput').attr('class', 'adyen-checkout__input');
+
+        //Create array of options to be added
+        var genders = {'M': 'Male','F': 'Female'};
+
+        for (var key in genders) {
+            var option = document.createElement("option");
+            option.value = key;
+            option.text = genders[key];
+            genderInput.appendChild(option);
+        }
+
+        var dateOfBirthLabel = document.createElement("span");
+        $(dateOfBirthLabel).text("Date of birth").attr('class', 'adyen-checkout__label');
+        var dateOfBirthInput = document.createElement("input");
+        $(dateOfBirthInput).attr('id', 'dateOfBirthInput').attr('class', 'adyen-checkout__input').attr('type', 'date');
+
+
+        ratepayContainer.append(genderLabel);
+        ratepayContainer.append(genderInput);
+        ratepayContainer.append(dateOfBirthLabel);
+        ratepayContainer.append(dateOfBirthInput);
+
+        li.append(ratepayContainer);
+    }
+    ;
+
     if (paymentMethod.type.substring(0, 3) == "ach") {
         var achContainer = document.createElement("div");
         $(achContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
@@ -268,10 +306,10 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
 
             var issuers = $('<select>').attr('id', 'issuerList');
             jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
-                var issuer = $('<option>')
+                var issuerOption = $('<option>')
                     .attr('label', issuer.name)
                     .attr('value', issuer.id);
-                issuers.append(issuer);
+                issuers.append(issuerOption);
             });
             additionalFields.append(issuers);
             li.append(additionalFields);
@@ -288,7 +326,6 @@ function filterOutOpenInvoiceComponentDetails(details) {
         if (detail.key == "personalDetails") {
             var detailObject = detail.details.map(function (childDetail) {
                 if (childDetail.key == 'dateOfBirth' ||
-                    childDetail.key == 'telephoneNumber' ||
                     childDetail.key == 'gender') {
                     return childDetail;
                 }
@@ -331,10 +368,12 @@ $('button[value="submit-payment"]').on('click', function (e) {
         //new card payment
         if ($('.payment-information').data('is-new-payment')) {
             if (!isValid) {
+                $('#invalidCardDetails').show();
                 return false;
             } else {
                 $('#selectedCardID').val('');
                 setPaymentData();
+                $('#invalidCardDetails').hide();
             }
         }
         //oneclick payment
@@ -391,6 +430,15 @@ function checkComponentDetails(selectedMethod) {
         }
         return afterpayComponent.componentRef.state.isValid;
     }
+    else if (selectedMethod.val() == 'ratepay') {
+        if ($('#genderInput').val() && $('#dateOfBirthInput').val()) {
+            $('#gender').val($('#genderInput').val());
+            $('#dateOfBirth').val($('#dateOfBirthInput').val());
+            return true;
+        }
+
+        return false;
+    }
     //if issuer is selected
     else if (selectedMethod.closest('li').find('.additionalFields #issuerList').val()) {
         $('#selectedIssuer').val(selectedMethod.closest('li').find('.additionalFields #issuerList').val());
@@ -423,10 +471,8 @@ function setOpenInvoiceData(component) {
 }
 
 function adyenPaymentMethodSelected(selectedMethod) {
-    if ($('#directoryLookup').val() == 'true') {
-        if (!selectedMethod) {
-            return false;
-        }
+    if (!selectedMethod) {
+        return false;
     }
     return true;
 }
@@ -441,6 +487,9 @@ function setPaymentData() {
     $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
     $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
     $('#cardOwner').val(card.state.data.holderName);
+    $('#cardNumber').val(maskedCardNumber || "");
+    $('#saveCardAdyen').val(storeDetails || false);
+
     setBrowserData();
 }
 

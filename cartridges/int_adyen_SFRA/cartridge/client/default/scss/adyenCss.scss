@@ -1,15 +1,15 @@
 .paymentMethod {
   list-style-type: none;
-  margin: 10px 0 10px 0;
+  margin: 0.5em 0 0.5em 0;
 }
 
 .paymentMethod_img {
-  margin: 0 5px 0 5px;
+  margin: 0 0.25em 0 0.25em;
 }
 
 .additionalFields {
   display: inline-block;
-  margin: 0 0 0 10px;
+  margin: 0 0 0 0.5em;
   width: 100%;
 }
 
@@ -23,8 +23,15 @@
 
 .security-code-input .adyen-checkout__field {
   margin: 0 !important;
+  width: 100%;
 }
 
 .security-code-input .adyen-checkout__card__exp-cvc .adyen-checkout__field:first-child {
   display: none;
+}
+
+#paymentMethodsUl {
+  width: 80%;
+  padding-inline-start: 0;
+  margin: auto;
 }

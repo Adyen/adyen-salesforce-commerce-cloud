@@ -11,14 +11,14 @@ var Logger = require('dw/system/Logger');
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
 var Cart = require(Resource.msg('script.models.cartmodel', 'require', null));
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 /**
  * Creates a Adyen payment instrument for the given basket
  */
 function Handle(args) {
     var cart = Cart.get(args.Basket);
-    var adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI');
+    var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
     var result;
 
     Transaction.wrap(function () {
@@ -30,7 +30,6 @@ function Handle(args) {
     }
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);
-    var cardType = creditCardForm.get('type').value();
 
     // create payment instrument
     Transaction.wrap(function () {
@@ -38,8 +37,8 @@ function Handle(args) {
         var paymentInstrument = cart.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
 
         paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
-        paymentInstrument.creditCardType = cardType;
-
+        paymentInstrument.creditCardType = creditCardForm.get('type').value();
+        paymentInstrument.creditCardNumber = creditCardForm.get('number').value();
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardToken(tokenID);
         }
@@ -61,7 +60,7 @@ function Authorize(args) {
     });
 
     // ScriptFile adyenCheckout.ds
-    var adyenCheckout = require('int_adyen_overlay/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
     Transaction.begin();
     var result = adyenCheckout.creditCard({
@@ -90,8 +89,8 @@ function Authorize(args) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
-        session.custom.orderNo = order.orderNo;
-        session.custom.paymentMethod = paymentInstrument.paymentMethod;
+        session.privacy.orderNo = order.orderNo;
+        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
         return {
             authorized: true,
@@ -113,8 +112,8 @@ function Authorize(args) {
 	            	paymentInstrument.custom.adyenPaymentData = result.PaymentData;
 	            });
 	        }
-            session.custom.orderNo = order.orderNo;
-            session.custom.paymentMethod = paymentInstrument.paymentMethod;
+            session.privacy.orderNo = order.orderNo;
+            session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 	        return {
 	            authorized: true,
 	            authorized3d: true,

@@ -8,6 +8,7 @@ var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
+var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 function Handle(basket, paymentInformation) {
     Transaction.wrap(function () {
@@ -18,9 +19,9 @@ function Handle(basket, paymentInformation) {
         var paymentInstrument = basket.createPaymentInstrument(
             'Adyen', basket.totalGrossPrice
         );
-        paymentInstrument.custom.adyenPaymentMethod = session.custom.adyenPaymentMethod;
-        if (session.custom.adyenIssuerName) {
-            paymentInstrument.custom.adyenIssuerName = session.custom.adyenIssuerName;
+        paymentInstrument.custom.adyenPaymentMethod = session.privacy.adyenPaymentMethod;
+        if (session.privacy.adyenIssuerName) {
+            paymentInstrument.custom.adyenIssuerName = session.privacy.adyenIssuerName;
         }
 
     });
@@ -55,8 +56,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Order: order,
         Amount: paymentInstrument.paymentTransaction.amount,
         PaymentInstrument: paymentInstrument,
-        PaymentType: session.custom.paymentType,
-        ratePayFingerprint: session.custom.ratePayFingerprint,
+        PaymentType: session.privacy.paymentType,
+        ratePayFingerprint: session.privacy.ratePayFingerprint,
         adyenFingerprint: session.forms.adyPaydata.adyenFingerprint.value,
         adyenForm: adyenPaymentForm
 
@@ -74,13 +75,17 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
 
+        session.privacy.orderNo = order.orderNo;
+        var signature = AdyenHelper.getAdyenHash(result.RedirectObject.url, result.PaymentData);
+
         return {
             authorized: true,
-            order: order,
+            orderNo: orderNumber,
             paymentInstrument: paymentInstrument,
-            redirectObject: result.RedirectObject
+            redirectObject: result.RedirectObject,
+            signature: signature
         };
-    } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received') {
+    } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
         return {authorized: true, error: false};
     } else {
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));

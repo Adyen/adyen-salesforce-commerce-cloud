@@ -2,11 +2,14 @@
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addJs('/js/adyenCheckout.js');
     assets.addCss('/css/adyenCss.css');
-    assets.addCss('/css/adyen-checkout-3.0.0.css');
 </isscript>
 <iscontent type="text/html" encoding="off"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script type="text/javascript">
+    var showStoreDetails = false;
+</script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <form
         action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
         class="payment-form"

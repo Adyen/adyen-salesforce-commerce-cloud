@@ -11,8 +11,8 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
  * Creates a Adyen payment instrument for the given basket
  */
 function handle(args) {
-	var adyenRemovePreviousPI = require('int_adyen_overlay/cartridge/scripts/adyenRemovePreviousPI'),
-	adyenPaymentInstrument = require('int_adyen_overlay/cartridge/scripts/createAdyenPOSPaymentInstrument'),
+	var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI'),
+	adyenPaymentInstrument = require('*/cartridge/scripts/createAdyenPOSPaymentInstrument'),
 	result;
 	
     Transaction.wrap(function () {
@@ -36,7 +36,7 @@ function handle(args) {
  * The payment is authorized by using the Adyen_POS processor only and setting the order no as the transaction ID. 
  */
 function authorize(args) { 
-	var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper');
+	var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 	
 	var order = args.Order;
     var orderNo = args.OrderNo;
@@ -49,7 +49,7 @@ function authorize(args) {
     });
 
     // ScriptFile	adyenPosVerification.ds
-    var adyenPosVerification = require('int_adyen_overlay/cartridge/scripts/adyenPosVerification');
+    var adyenPosVerification = require('*/cartridge/scripts/adyenPosVerification');
     Transaction.begin();
     var result = adyenPosVerification.verify({
         Order: order,

@@ -1,6 +1,6 @@
 # Salesforce Commerce Cloud Adyen Cartridge
 
-Adyen provides a LINK cartridge to integrate with Salesforce Commerce Cloud (SFCC). This cartridge enables a SFCC storefront to use the Adyen payment service. This cartridge supports SFRA version 4.0.0 and SiteGenesis JS-Controllers.
+Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://www.adyen.com/partners/salesforce-commerce-cloud). This cartridge enables a SFCC storefront to use the Adyen payment service. This cartridge supports SFRA version 4.x.x and SiteGenesis JS-Controllers.
 
 ## Integration
 The cartridge integrates Secured Fields for all card payments. Local/redirect payment methods are integrated with Checkout API. For Point Of Sale (POS) payments in SiteGenesis, we use Terminal API using Cloud-based communication.
@@ -19,6 +19,10 @@ Apple Pay configuration can be found [here](https://docs.adyen.com/plugins/sales
   
 For further questions regarding the integration to Adyen, contact the [Adyen Support Team](mailto:support@adyen.com) or your Adyen account manager.
 Supply as much information as possible: your merchant account, timestamp, order number, PSP reference, etc.
+
+## Platform
+
+Read more information about the [Adyen platform](https://www.adyen.com/platform).
 
 ## Licence
   

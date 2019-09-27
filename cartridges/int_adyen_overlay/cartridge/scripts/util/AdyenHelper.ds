@@ -30,7 +30,8 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
-    VERSION: "19.1.0",
+    CHECKOUT_COMPONENT_VERSION: "3.1.0",
+    VERSION: "19.2.0",
 
     getService: function (service: String): Object {
         // Create the service config (used for all services)
@@ -48,9 +49,13 @@ var __AdyenHelper: Object = {
                 },
                 parseResponse: function (svc: HTTPService, client: HTTPClient) {
                     return client;
+                },
+                filterLogMessage: function (msg: String){
+                    return msg;
                 }
             });
             dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
+
         } catch (e) {
             var ex = e;
             dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", service);
@@ -88,10 +93,10 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
-    getAdyenCseEnabled: function (): Boolean {
+    getAdyenSecuredFieldsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenCseEnabled');
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenSecuredFieldsEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenSecuredFieldsEnabled');
         }
         return returnValue;
     },
@@ -106,24 +111,24 @@ var __AdyenHelper: Object = {
 
     getAdyenRecurringPaymentsEnabled: function (): Boolean {
         var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringPaymentsEnabled');
+        if (!empty(adyenCurrentSite) && (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') || adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))) {
+            returnValue = true;
         }
         return returnValue;
     },
 
-    getAdyenRecurringType: function (): String {
+    getAdyenRecurringEnabled: function (): String {
         var returnValue: String = "";
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_recurringType')) && !empty(__AdyenHelper.getAdyenRecurringPaymentsEnabled())) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_recurringType').getValue();
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled');
         }
         return returnValue;
     },
 
-    getAdyenGuestRecurringEnabled: function (): Boolean {
-        var returnValue: Boolean = false;
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGuestRecurringEnabled'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGuestRecurringEnabled');
+    getAdyenOneClickEnabled: function (): String {
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled');
         }
         return returnValue;
     },
@@ -145,8 +150,13 @@ var __AdyenHelper: Object = {
     },
 
     getCheckoutUrl: function (): String {
-        var checkoutUrl = this.getLoadingContext() + "sdk/3.0.0/adyen.js";
+        var checkoutUrl = this.getLoadingContext() + "sdk/" + __AdyenHelper.CHECKOUT_COMPONENT_VERSION + "/adyen.js";
         return checkoutUrl;
+    },
+
+    getCheckoutCSS: function (): String {
+        var checkoutCSS = this.getLoadingContext() + "sdk/" + __AdyenHelper.CHECKOUT_COMPONENT_VERSION + "/adyen.css";
+        return checkoutCSS;
     },
 
     getLoadingContext: function (): String {
@@ -160,6 +170,12 @@ var __AdyenHelper: Object = {
                 break;
         }
         return returnValue;
+    },
+
+    getAdyenHash: function(value, salt){
+        var data = value + salt;
+        var signature = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digest(data);
+        return signature;
     },
 
     hasCheckoutComponent: function (paymentMethod) {
@@ -185,7 +201,6 @@ var __AdyenHelper: Object = {
             if (parentDetail.key == "personalDetails") {
                 var detailObject = parentDetail.details.map(function (detail) {
                     if (detail.key == 'dateOfBirth' ||
-                        detail.key == 'telephoneNumber' ||
                         detail.key == 'gender') {
                         return detail;
                     }
@@ -221,9 +236,9 @@ var __AdyenHelper: Object = {
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
-        if (!session.custom.ratePayFingerprint || session.custom.ratePayFingerprint == null) {
+        if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint == null) {
             var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
-            session.custom.ratePayFingerprint = sessionID;
+            session.privacy.ratePayFingerprint = sessionID;
         }
         return returnValue;
     },
@@ -397,7 +412,7 @@ var __AdyenHelper: Object = {
             "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
             "houseNumberOrName": (!empty(shippingAddress.address2) ? shippingAddress.address2 : ""),
             "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
-            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : ""),
+            "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : "N/A"),
             "street": (!empty(shippingAddress.address1) ? shippingAddress.address1 : "N/A")
         };
 
@@ -407,14 +422,14 @@ var __AdyenHelper: Object = {
             "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
             "houseNumberOrName": (!empty(billingAddress.address2) ? billingAddress.address2 : ""),
             "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
-            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : ""),
+            "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : "N/A"),
             "street": (!empty(billingAddress.address1) ? billingAddress.address1 : "N/A")
         };
 
         return jsonObject;
     },
 
-    createAdyenRequestObject: function (order, saveCreditCard) {
+    createAdyenRequestObject: function (order) {
         var jsonObject = {},
             reference = '';
 
@@ -432,25 +447,8 @@ var __AdyenHelper: Object = {
         };
 
         jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
-
-        //Set recurring type
-        var recurringType = __AdyenHelper.getAdyenRecurringType();
-        if (__AdyenHelper.getAdyenRecurringPaymentsEnabled() && !empty(recurringType)) {
-
-            if (saveCreditCard) {
-                jsonObject['recurring'] = {
-                    'contract': recurringType
-                };
-            } else {
-                // if save credit card hasn't been selected or guest order
-                if (__AdyenHelper.getAdyenGuestRecurringEnabled()) {
-                    jsonObject['recurring'] = {
-                        'contract': 'RECURRING'
-                    };
-                }
-
-            }
-        }
+        jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
+        jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
 
         return jsonObject;
     },
@@ -600,6 +598,9 @@ var __AdyenHelper: Object = {
                 case 'JCB':
                     cardType = 'jcb';
                     break;
+                case 'CUP':
+                    cardType = 'cup';
+                    break;
                 default:
                     cardType = cardType.toLowerCase();
                     break;
@@ -638,6 +639,9 @@ var __AdyenHelper: Object = {
                     break;
                 case 'jcb':
                     cardType = 'JCB';
+                    break;
+                case 'cup':
+                    cardType = 'CUP';
                     break;
                 default:
                     cardType = '';
