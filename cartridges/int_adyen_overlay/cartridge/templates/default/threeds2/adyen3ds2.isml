@@ -5,58 +5,31 @@
 
 <html>
 <head>
-    <script type="text/javascript" src="${pdict.AdyenHelper.getLoadingContext()}sdk/3.0.0/adyen.js"></script>
+    <script type="text/javascript" src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <link rel="stylesheet"  href="${pdict.AdyenHelper.getLoadingContext()}sdk/3.0.0/adyen.css"/>
+    <link rel="stylesheet"  href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
         var token3ds2 = "${pdict.token3ds2}";
 
-        function initiateCheckout ( locale, environment, originKey ) {
+        function initiateCheckout () {
             var configuration = {
-                locale: locale,// shopper's locale
-                environment: environment,
-                originKey: originKey,
-                risk: {
-                    enabled: false
-                }
-            };
+                locale: '${pdict.locale}',
+                originKey: '${pdict.originKey}',
+                environment: '${pdict.environment}'
+            }
             this.checkout = new AdyenCheckout(configuration);
         }
 
-        var originKey = "";
-        var environment = "";
-
-        function setConfigData(data) {
-            originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
-            environment = data.adyenEnvironment;
-        };
-
         function initiateComponents () {
-            getConfigurationComponents();
-            initiateCheckout("en_US", environment, originKey);
+            initiateCheckout();
             if (resultCode == "ChallengeShopper") {
                 initiate3DS2ChallengeShopper(token3ds2);
             } else if (resultCode == "IdentifyShopper") {
                 initiate3DS2IdentifyShopper(token3ds2);
             }
         }
-
-        function getConfigurationComponents() {
-            $.ajax({
-                url: 'Adyen-GetConfigurationComponents',
-                type: 'get',
-                data: {protocol: window.location.protocol},
-                success: function (data) {
-                    if (!data.error) {
-                        setConfigData(data);
-                    } else {
-                        $('#errorLoadComponent').text(data.errorMessage);
-                    }
-                }
-            });
-        };
 
         function initiate3DS2IdentifyShopper (fingerprintToken) {
             var threeDS2IdentifyShopperNode = document.getElementById('threeDS2');

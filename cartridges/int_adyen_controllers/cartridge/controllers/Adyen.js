@@ -177,7 +177,15 @@ function getTerminals() {
 }
 
 function redirect3ds2() {
+    var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+    var originKey = adyenGetOriginKey.getOriginKeyFromRequest(request.httpProtocol, request.httpHost);
+    var environment = AdyenHelper.getAdyenMode().toLowerCase();
+    var locale = request.getLocale();
+
 	app.getView({
+        locale: locale,
+        originKey: originKey,
+        environment: environment,
     	resultCode : request.httpParameterMap.get("resultCode").stringValue,
 		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
         ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
