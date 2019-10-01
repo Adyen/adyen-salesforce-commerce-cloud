@@ -94,14 +94,30 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
 });
 
 server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
-    var resultCode = req.querystring.resultCode;
-    var token3ds2 = req.querystring.token3ds2;
+    var protocol = req.https ? "https" : "http";
+    var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
-    res.render('/threeds2/adyen3ds2', {
-        resultCode: resultCode,
-        token3ds2: token3ds2
-    });
+    try {
+        var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
+        var environment = AdyenHelper.getAdyenMode().toLowerCase();
+        var resultCode = req.querystring.resultCode;
+        var token3ds2 = req.querystring.token3ds2;
+        res.render('/threeds2/adyen3ds2', {
+            locale: request.getLocale(),
+            originKey: originKey,
+            environment: environment,
+            resultCode: resultCode,
+            token3ds2: token3ds2
+        });
+
+    } catch (err) {
+        Logger.getLogger("Adyen").error("3DS2 redirect failed with reason: " + err.toString());
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+    }
+
     return next();
+
+
 });
 
 server.post('Authorize3DS2', server.middleware.https, function (req, res, next) {
@@ -339,12 +355,10 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
     var originKey;
     var error = false;
     var errorMessage = "";
-    var loadingContext = "";
     var environment = "";
 
     try {
         originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-        loadingContext = AdyenHelper.getLoadingContext();
         environment = AdyenHelper.getAdyenMode().toLowerCase();
 
     } catch (err) {
@@ -355,7 +369,6 @@ server.get('GetConfigurationComponents', server.middleware.https, function (req,
         error: error,
         errorMessage: errorMessage,
         adyenOriginKey: originKey,
-        adyenLoadingContext: loadingContext,
         adyenEnvironment: environment
     });
     return next();
