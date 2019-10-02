@@ -2,12 +2,21 @@
 <isdecorate template="account/pt_account">
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
+	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}"   scope="pdict"   />
+	<isset  name="Adyen3DS2Enabled"  value="${pdict.AdyenHelper.getAdyen3DS2Enabled()}" scope="page"   />
+
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
 	<div class="paymentslist">
 		<h1>${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
+		<script type="text/javascript">
+			window.showStoreDetails = false;
+		</script>
+		<isif condition="${!Adyen3DS2Enabled}">
 		<a class="section-header-note add-card button" href="${URLUtils.url('PaymentInstruments-Add')}" title="${Resource.msg('account.paymentinstrumentlist.addcard.label','account',null)}">
 			${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}
 		</a>
+		</isif>
+
 		<isif condition="${pdict.PaymentInstruments.size() > 0}">
 			<ul class="payment-list">
 				<isloop items="${pdict.CurrentForms.paymentinstruments.creditcards.storedcards}" var="creditcard" status="loopstate">

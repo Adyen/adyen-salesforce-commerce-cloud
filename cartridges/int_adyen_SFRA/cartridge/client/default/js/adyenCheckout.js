@@ -23,10 +23,6 @@ const MASKED_CC_PREFIX = '************';
 
 getConfigurationComponents();
 
-$(document).ready(function () {
-    displayPaymentMethods();
-});
-
 var originKey = "";
 var environment = "";
 

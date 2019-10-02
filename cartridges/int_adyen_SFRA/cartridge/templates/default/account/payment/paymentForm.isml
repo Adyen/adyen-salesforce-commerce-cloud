@@ -1,57 +1,69 @@
-<!--<isscript>-->
-<!--    var assets = require('*/cartridge/scripts/assets.js');-->
-<!--    assets.addJs('/js/adyenCheckout.js');-->
-<!--    assets.addCss('/css/adyenCss.css');-->
-<!--</isscript>-->
-<!--<iscontent type="text/html" encoding="off"/>-->
-<!--<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>-->
-<!--<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>-->
-<!--<script type="text/javascript">-->
-<!--    var showStoreDetails = false;-->
-<!--</script>-->
-<!--<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>-->
-<!--<form-->
-<!--        action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"-->
-<!--        class="payment-form"-->
-<!--        method="POST"-->
-<!--        name="payment-form" ${pdict.paymentForm.attributes}>-->
-
-<!--    <input type="hidden" id="currentLocale" value="${request.locale}"/>-->
-<!--    <iscontent type="text/html" encoding="off"/>-->
-<!--    <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>-->
-<!--    <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>-->
-
-<!--    <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber"-->
-<!--           ${pdict.paymentForm.adyenEncryptedCardNumber.attributes}>-->
-<!--    <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth"-->
-<!--           ${pdict.paymentForm.adyenEncryptedExpiryMonth.attributes}>-->
-<!--    <input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear"-->
-<!--           ${pdict.paymentForm.adyenEncryptedExpiryYear.attributes}>-->
-<!--    <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"-->
-<!--           ${pdict.paymentForm.adyenEncryptedSecurityCode.attributes}>-->
-<!--    <input type="hidden" class="form-control cardOwner" id="cardOwner"-->
-<!--           ${pdict.paymentForm.cardOwner.attributes}>-->
-<!--    <input type="hidden" class="form-control browserInfo" id="browserInfo" ${pdict.paymentForm.browserInfo.attributes}>-->
-
-<!--    <span id="errorLoadComponent"></span>-->
-<!--    <div id="card"></div>-->
-
-<!--    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>-->
-
-<!--    &lt;!&ndash; Cancel and Save Buttons &ndash;&gt;-->
-<!--    <div class="row">-->
-<!--        <div class="col">-->
-<!--            <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>-->
-<!--        </div>-->
-<!--        <div class="col">-->
-<!--            <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">-->
-<!--                ${Resource.msg('button.save','account',null)}-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--</form>-->
-
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <div>
-    <span>${Resource.msg('myAccount.SaveCard','creditCard',null)}</span>
+    <isif condition="${pdict.AdyenHelper.getAdyen3DS2Enabled()}">
+        <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
+        <br/><br/>
+        <div class="row">
+            <div class="col">
+                <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+            </div>
+            <div class="col"></div>
+        </div>
+        <iselse>
+            <isscript>
+                var assets = require('*/cartridge/scripts/assets.js');
+                assets.addJs('/js/adyenCheckout.js');
+                assets.addCss('/css/adyenCss.css');
+            </isscript>
+            <iscontent type="text/html" encoding="off"/>
+            <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+            <script type="text/javascript">
+                var showStoreDetails = false;
+            </script>
+            <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+            <form
+                    action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+                    class="payment-form"
+                    method="POST"
+                    name="payment-form" ${pdict.paymentForm.attributes}>
+
+                <input type="hidden" id="currentLocale" value="${request.locale}"/>
+                <iscontent type="text/html" encoding="off"/>
+                <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>
+                <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>
+
+                <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber"
+                       ${pdict.paymentForm.adyenEncryptedCardNumber.attributes}>
+                <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth"
+                       ${pdict.paymentForm.adyenEncryptedExpiryMonth.attributes}>
+                <input type="hidden" class="form-control adyenEncryptedExpiryYear" id="adyenEncryptedExpiryYear"
+                       ${pdict.paymentForm.adyenEncryptedExpiryYear.attributes}>
+                <input type="hidden" class="form-control adyenEncryptedSecurityCode" id="adyenEncryptedSecurityCode"
+                       ${pdict.paymentForm.adyenEncryptedSecurityCode.attributes}>
+                <input type="hidden" class="form-control cardOwner" id="cardOwner"
+                       ${pdict.paymentForm.cardOwner.attributes}>
+                <input type="hidden" class="form-control browserInfo" id="browserInfo" ${pdict.paymentForm.browserInfo.attributes}>
+
+                <span id="errorLoadComponent"></span>
+                <div id="card"></div>
+
+                <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
+                <!-- Cancel and Save Buttons -->
+                <div class="row">
+                    <div class="col">
+                        <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+                    </div>
+                    <div class="col">
+                        <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">
+                            ${Resource.msg('button.save','account',null)}
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </iselse>
+    </isif>
 </div>
+
+

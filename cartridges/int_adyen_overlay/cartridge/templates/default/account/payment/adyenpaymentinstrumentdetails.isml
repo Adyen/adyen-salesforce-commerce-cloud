@@ -1,3 +1,10 @@
 <div>
-    <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
+    <isif condition="${pdict.AdyenHelper.getAdyen3DS2Enabled()}">
+        <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
+        <iselse>
+            <isinclude template="checkout/billing/adyenpaymentfields"/>
+            <button id="add-card-submit-hidden" type="hidden" style="display:none" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>
+            <button  id="add-card-submit"  type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>
+        </iselse>
+    </isif>
 </div>
