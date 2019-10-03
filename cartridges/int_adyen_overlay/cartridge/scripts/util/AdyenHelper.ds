@@ -407,23 +407,51 @@ var __AdyenHelper: Object = {
         var shippingAddress = order.defaultShipment.shippingAddress;
         jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
 
+        var shippingStreet = "";
+
+        if (!empty(shippingAddress.address1)) {
+            shippingStreet = shippingAddress.address1;
+
+            if (!empty(shippingAddress.address2)) {
+                shippingStreet += ' ' + shippingAddress.address2;
+            }
+
+        } else {
+            shippingStreet = 'N/A';
+        }
+
         jsonObject.deliveryAddress = {
             "city": (!empty(shippingAddress.city) ? shippingAddress.city : "N/A"),
             "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
-            "houseNumberOrName": (!empty(shippingAddress.address2) ? shippingAddress.address2 : ""),
+            "houseNumberOrName": "",
             "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
             "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : "N/A"),
-            "street": (!empty(shippingAddress.address1) ? shippingAddress.address1 : "N/A")
+            "street": shippingStreet
         };
 
         var billingAddress = order.getBillingAddress();
+
+        var billingStreet = "";
+
+        if (!empty(billingAddress.address1)) {
+            billingStreet = billingAddress.address1;
+
+            if (!empty(billingAddress.address2)) {
+                billingStreet += ' ' + billingAddress.address2;
+            }
+
+        } else {
+            billingStreet = 'N/A';
+        }
+
+
         jsonObject.billingAddress = {
             "city": (!empty(billingAddress.city) ? billingAddress.city : "N/A"),
             "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
-            "houseNumberOrName": (!empty(billingAddress.address2) ? billingAddress.address2 : ""),
+            "houseNumberOrName": "",
             "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
             "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : "N/A"),
-            "street": (!empty(billingAddress.address1) ? billingAddress.address1 : "N/A")
+            "street": billingStreet
         };
 
         return jsonObject;
