@@ -664,7 +664,7 @@ var __AdyenHelper: Object = {
         }
 
         if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-            order.custom.Adyen_value = result.AdyenAmount;
+            order.custom.Adyen_value = result.AdyenAmount.toFixed(0);
         }
 
         if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
