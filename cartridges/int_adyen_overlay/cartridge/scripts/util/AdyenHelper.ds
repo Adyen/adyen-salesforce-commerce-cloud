@@ -408,12 +408,18 @@ var __AdyenHelper: Object = {
         jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
 
         var shippingStreet = "";
+        var shippingHouseNumberOrName = "";
 
         if (!empty(shippingAddress.address1)) {
             shippingStreet = shippingAddress.address1;
 
             if (!empty(shippingAddress.address2)) {
-                shippingStreet += ' ' + shippingAddress.address2;
+
+                if (paymentMethod.indexOf("afterpay_default") > -1) {
+                    shippingHouseNumberOrName = shippingAddress.address2
+                } else {
+                    shippingStreet += ' ' + shippingAddress.address2;
+                }
             }
 
         } else {
@@ -423,7 +429,7 @@ var __AdyenHelper: Object = {
         jsonObject.deliveryAddress = {
             "city": (!empty(shippingAddress.city) ? shippingAddress.city : "N/A"),
             "country": (!empty(shippingAddress.countryCode) ? shippingAddress.countryCode.value.toUpperCase() : "ZZ"),
-            "houseNumberOrName": "",
+            "houseNumberOrName": shippingHouseNumberOrName,
             "postalCode": (!empty(shippingAddress.postalCode) ? shippingAddress.postalCode : ""),
             "stateOrProvince": (!empty(shippingAddress.stateCode) ? shippingAddress.stateCode : "N/A"),
             "street": shippingStreet
@@ -432,12 +438,18 @@ var __AdyenHelper: Object = {
         var billingAddress = order.getBillingAddress();
 
         var billingStreet = "";
+        var billingHouseNumberOrName = "";
 
         if (!empty(billingAddress.address1)) {
             billingStreet = billingAddress.address1;
 
             if (!empty(billingAddress.address2)) {
-                billingStreet += ' ' + billingAddress.address2;
+
+                if (paymentMethod.indexOf("afterpay_default") > -1) {
+                    billingHouseNumberOrName = billingAddress.address2
+                } else {
+                    billingStreet += ' ' + billingAddress.address2;
+                }
             }
 
         } else {
@@ -448,7 +460,7 @@ var __AdyenHelper: Object = {
         jsonObject.billingAddress = {
             "city": (!empty(billingAddress.city) ? billingAddress.city : "N/A"),
             "country": (!empty(billingAddress.countryCode) ? billingAddress.countryCode.value.toUpperCase() : "ZZ"),
-            "houseNumberOrName": "",
+            "houseNumberOrName": billingHouseNumberOrName,
             "postalCode": (!empty(billingAddress.postalCode) ? billingAddress.postalCode : ""),
             "stateOrProvince": (!empty(billingAddress.stateCode) ? billingAddress.stateCode : "N/A"),
             "street": billingStreet
