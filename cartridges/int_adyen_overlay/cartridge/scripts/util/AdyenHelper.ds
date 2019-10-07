@@ -30,7 +30,7 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
-    CHECKOUT_COMPONENT_VERSION: "3.1.0",
+    CHECKOUT_COMPONENT_VERSION: "3.2.0",
     VERSION: "19.2.0",
 
     getService: function (service: String): Object {

@@ -99,10 +99,7 @@
 		window.Configuration = {
 		        locale: locale,
 		        originKey: originKey,
-	        	environment: environment,
-                risk: {
-                    enabled: false
-                }
+	        	environment: environment
 		};
 
 		var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
