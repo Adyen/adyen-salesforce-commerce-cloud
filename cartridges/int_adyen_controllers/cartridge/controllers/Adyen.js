@@ -63,26 +63,38 @@ function redirect(order, redirectUrl) {
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
-	var payLoad = request.httpParameterMap.payload.value;
-	//redirect to payment/details
-	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-	var requestObject = {};
-	requestObject['details'] = {};
-	requestObject.details['payload'] = payLoad;
-	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
-	var orderNumber = result.merchantReference;
+    var orderNumber = session.privacy.orderNo;
     var order = OrderMgr.getOrder(orderNumber);
 
     var paymentInstruments = order.getPaymentInstruments("Adyen");
     var adyenPaymentInstrument;
+    var paymentData;
+
     var instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
         adyenPaymentInstrument = instrumentsIter.next();
-        Transaction.wrap(function () {
-            adyenPaymentInstrument.custom.adyenPaymentData = null;
-        });
+        paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
 
+    //details is either redirectResult or payload
+    var details;
+    if(request.httpParameterMap.redirectResult.value != null){
+        details = { 'redirectResult' : request.httpParameterMap.redirectResult.value };
+    }
+    else if(request.httpParameterMap.payload.value != null){
+        details = { 'payload' : request.httpParameterMap.payload.value };
+    }
+
+	//redirect to payment/details
+	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+	var requestObject = {
+        'details': details,
+        'paymentData' : paymentData
+    }
+	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    Transaction.wrap(function () {
+        adyenPaymentInstrument.custom.adyenPaymentData = null;
+    });
 	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received') {
         if(result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
             Transaction.wrap(function () {
@@ -114,7 +126,6 @@ function showConfirmation() {
             PlaceOrderError: errorStatus
         });
     }
-
 	return {};
 }
 
