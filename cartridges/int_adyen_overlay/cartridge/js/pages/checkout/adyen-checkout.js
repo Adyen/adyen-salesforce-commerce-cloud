@@ -121,16 +121,21 @@
               }	
               return idealComponent.componentRef.state.isValid;
     	    break;
-    	  case "klarna":
-    		  if (klarnaComponent.componentRef.state.isValid) {	
-    			  parseOpenInvoiceComponentData(klarnaComponent.componentRef.state);
-                  if($('#ssnValue')){
-                      $('#dwfrm_adyPaydata_socialSecurityNumber').val($('#ssnValue').val());
-                  }
-    		  }
-    		  
-    		  return klarnaComponent.componentRef.state.isValid;
-    		break;
+            case "klarna":
+                if(klarnaComponent){
+                    if (klarnaComponent.componentRef.state.isValid) {
+                        parseOpenInvoiceComponentData(klarnaComponent.componentRef.state);
+                        if($('#ssnValue')){
+                            $('#dwfrm_adyPaydata_socialSecurityNumber').val($('#ssnValue').val());
+                        }
+                    }
+                    return klarnaComponent.componentRef.state.isValid;
+                }
+                else{
+                    //New Klarna integration is without component
+                    return true;
+                }
+                break;
     	  case "afterpay_default":
     		  if (afterpayComponent.componentRef.state.isValid) {
     			  parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);

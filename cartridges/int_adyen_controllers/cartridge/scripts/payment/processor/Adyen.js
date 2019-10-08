@@ -36,8 +36,8 @@ function handle(args) {
  * The payment is authorized by using the BASIC_CREDIT processor only and setting the order no as the transaction ID. 
  * Customizations may use other processors and custom logic to authorize credit card payment.
  */
-function authorize(args) { 
-    var orderNo = args.OrderNo;
+function authorize(args) {
+    var orderNo = session.privacy.orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
 
@@ -60,7 +60,7 @@ function authorize(args) {
 			'CurrentSession' : session,
 			'CurrentUser' : customer,
 			'PaymentInstrument' : order.paymentInstrument,
-			'PaymentType': session.privacy.brandCode,
+			'PaymentType': session.custom.brandCode,
 			'ratePayFingerprint' : session.privacy.ratePayFingerprint,
 			'adyenFingerprint': session.forms.adyPaydata.adyenFingerprint.value,
 			'adyenForm' : session.forms.adyPaydata
@@ -76,6 +76,11 @@ function authorize(args) {
 	    }
 
 	    if (result.resultCode == 'RedirectShopper') {
+			if(result.PaymentData){
+				Transaction.wrap( function() {
+					paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+				});
+			}
 	        return {
 	            authorized: true,
 	            order: order,

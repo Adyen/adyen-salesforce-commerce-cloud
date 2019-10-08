@@ -71,6 +71,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     }
 
     if (result.resultCode == 'RedirectShopper') {
+        Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
         });
