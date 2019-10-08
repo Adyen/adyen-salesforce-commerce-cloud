@@ -4,9 +4,6 @@ const configuration = {
     locale: $('#currentLocale').val(), // Defaults to en_US
     originKey: originKey,
     environment: environment,
-    risk: {
-        enabled: false
-    }
 };
 
 const checkout = new AdyenCheckout(configuration);

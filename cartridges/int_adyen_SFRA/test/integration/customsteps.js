@@ -10,7 +10,7 @@ module.exports = function() {
         addProductToCart: function () {
             this.click('.home-main-categories .category-tile');
             this.click('.product .image-container a');
-            this.selectOption('Select Size', '8');
+            this.selectOption('Select Size', '10');
             this.click('.add-to-cart');
         },
 
@@ -22,7 +22,7 @@ module.exports = function() {
             this.fillField('#shippingAddressTwodefault', Guest.guestHouseNumber);
             this.selectOption('.shippingCountry', 'Netherlands');
             this.selectOption('.shippingState', 'Non-US/Other');
-            this.wait(2);
+            this.wait(5);
             this.fillField('#shippingAddressCitydefault', Guest.guestCity);
             this.fillField('#shippingZipCodedefault', Guest.guestPostCode);
             this.fillField('#shippingPhoneNumberdefault', Guest.guestPhoneNumber);
@@ -69,7 +69,7 @@ module.exports = function() {
         },
 
         set3dDetails: function (threeds2Details) {
-            this.wait(5);
+            this.wait(15);
             this.switchTo('.adyen-checkout__threeds2__challenge iframe');
             this.fillField('input[name="answer"]', threeds2Details.password);
             this.click('input[type="submit"]');
