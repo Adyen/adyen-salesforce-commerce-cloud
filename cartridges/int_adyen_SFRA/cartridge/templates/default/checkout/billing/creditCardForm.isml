@@ -1,4 +1,6 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<isset name="adyenOriginKey" value="${pdict.AdyenHelper.getOriginKey()}" scope="page"></isset>
+<isset name="adyenMode" value="${pdict.AdyenHelper.getAdyenMode().toLowerCase()}" scope="page"></isset>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off"/>
@@ -23,5 +25,10 @@
 <span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 <script type="text/javascript">
     var showStoreDetails = ${customer.authenticated};
+    window.Configuration = {
+        locale: '${request.locale}',
+        originKey: '${adyenOriginKey}',
+        environment: '${adyenMode}'
+    };
 </script>
 

@@ -367,34 +367,6 @@ function isMethodTypeBlocked(methodType) {
 }
 
 /**
- * Get OriginKey for Secured Fields
- */
-server.get('GetConfigurationComponents', server.middleware.https, function (req, res, next) {
-    var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-    var baseUrl = req.querystring.protocol + "//" + Site.getCurrent().getHttpsHostName();
-    var originKey;
-    var error = false;
-    var errorMessage = "";
-    var environment = "";
-
-    try {
-        originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-        environment = AdyenHelper.getAdyenMode().toLowerCase();
-
-    } catch (err) {
-        error = true;
-        errorMessage = Resource.msg('load.component.error', 'creditCard', null);
-    }
-    res.json({
-        error: error,
-        errorMessage: errorMessage,
-        adyenOriginKey: originKey,
-        adyenEnvironment: environment
-    });
-    return next();
-});
-
-/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, function (req, res, next) {

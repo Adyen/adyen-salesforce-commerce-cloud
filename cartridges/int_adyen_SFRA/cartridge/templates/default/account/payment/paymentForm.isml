@@ -17,8 +17,15 @@
             </isscript>
             <iscontent type="text/html" encoding="off"/>
             <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+            <isset name="adyenOriginKey" value="${pdict.AdyenHelper.getOriginKey()}" scope="page"></isset>
+            <isset name="adyenMode" value="${pdict.AdyenHelper.getAdyenMode().toLowerCase()}" scope="page"></isset>
             <script type="text/javascript">
                 var showStoreDetails = false;
+                window.Configuration = {
+                    locale: '${request.locale}',
+                    originKey: '${adyenOriginKey}',
+                    environment: '${adyenMode}'
+                };
             </script>
             <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
             <form
