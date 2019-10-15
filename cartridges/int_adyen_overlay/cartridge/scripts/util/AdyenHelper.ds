@@ -415,11 +415,13 @@ var __AdyenHelper: Object = {
 
             if (!empty(shippingAddress.address2)) {
 
-                if (paymentMethod.indexOf("afterpay_default") > -1) {
-                    shippingHouseNumberOrName = shippingAddress.address2
-                } else {
+                shippingHouseNumberOrName = shippingAddress.address2;
+
+                if (paymentMethod.indexOf("afterpaytouch") > -1) {
+                    shippingHouseNumberOrName = "";
                     shippingStreet += ' ' + shippingAddress.address2;
                 }
+
             }
 
         } else {
@@ -445,11 +447,13 @@ var __AdyenHelper: Object = {
 
             if (!empty(billingAddress.address2)) {
 
-                if (paymentMethod.indexOf("afterpay_default") > -1) {
-                    billingHouseNumberOrName = billingAddress.address2
-                } else {
+                billingHouseNumberOrName = billingAddress.address2;
+
+                if (paymentMethod.indexOf("afterpaytouch") > -1) {
+                    billingHouseNumberOrName = "";
                     billingStreet += ' ' + billingAddress.address2;
                 }
+
             }
 
         } else {
