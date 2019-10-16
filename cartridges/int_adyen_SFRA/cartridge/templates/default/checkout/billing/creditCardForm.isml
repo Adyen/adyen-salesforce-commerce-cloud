@@ -23,5 +23,10 @@
 <span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 <script type="text/javascript">
     var showStoreDetails = ${customer.authenticated};
+    window.Configuration = {
+        locale: '${request.locale}',
+        originKey: '${pdict.adyen.originKey}',
+        environment: '${pdict.adyen.environment}'
+    };
 </script>
 

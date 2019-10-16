@@ -19,6 +19,11 @@
             <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
             <script type="text/javascript">
                 var showStoreDetails = false;
+                window.Configuration = {
+                    locale: '${request.locale}',
+                    originKey: '${pdict.adyen.originKey}',
+                    environment: '${pdict.adyen.environment}'
+                };
             </script>
             <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
             <form

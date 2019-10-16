@@ -406,29 +406,6 @@ function closeThreeDS() {
     }).render('adyenpaymentredirect');
 }
 
-function getConfigurationComponents() {
-	var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey'); 
-	var baseUrl = request.httpParameterMap.get("protocol").stringValue + "//" + Site.getCurrent().getHttpsHostName();
-	var originKey;
-	var error = false;
-	var errorMessage = "";
-	var loadingContext = "";
-	
-	try {
-	    originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-	    loadingContext = AdyenHelper.getLoadingContext();
-	} catch (err) {
-	    error = true;
-	    errorMessage = Resource.msg('load.component.error', 'creditCard', null);
-	}
-	return {
-	    error: error,
-	    errorMessage: errorMessage,
-	    adyenOriginKey: originKey,
-	    adyenLoadingContext: loadingContext
-	};
-}
-
 /**
  * Clear system session data 
  */
@@ -464,8 +441,6 @@ exports.Redirect3DS2 = guard.ensure(['https', 'post'], redirect3ds2);
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
 
 exports.CloseThreeDS = guard.ensure(['https', 'post'], closeThreeDS);
-
-exports.GetConfigurationComponents = guard.ensure(['https', 'get'], getConfigurationComponents);
 
 exports.Notify = guard.ensure(['post'], notify);
 
