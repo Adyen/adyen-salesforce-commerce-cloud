@@ -1,6 +1,4 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<isset name="adyenOriginKey" value="${pdict.AdyenHelper.getOriginKey()}" scope="page"></isset>
-<isset name="adyenMode" value="${pdict.AdyenHelper.getAdyenMode().toLowerCase()}" scope="page"></isset>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off"/>
@@ -27,8 +25,8 @@
     var showStoreDetails = ${customer.authenticated};
     window.Configuration = {
         locale: '${request.locale}',
-        originKey: '${adyenOriginKey}',
-        environment: '${adyenMode}'
+        originKey: '${pdict.adyen.originKey}',
+        environment: '${pdict.adyen.environment}'
     };
 </script>
 

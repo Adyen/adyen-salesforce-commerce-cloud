@@ -159,12 +159,6 @@ var __AdyenHelper: Object = {
         return checkoutCSS;
     },
 
-    getOriginKey: function (): String {
-        var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey.ds');
-        var originKey = adyenGetOriginKey.getOriginKeyFromRequest(request.httpProtocol, request.httpHost);
-        return originKey;
-    },
-
     getLoadingContext: function (): String {
         var returnValue: String = "";
         switch (__AdyenHelper.getAdyenMode()) {
