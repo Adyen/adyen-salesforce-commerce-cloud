@@ -40,13 +40,16 @@ function notify() {
 	var	handleNotify = require('*/cartridge/scripts/handleNotify');
 
 	Transaction.begin();
-	var success = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
+	var notificationResult = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
 
-	if(success){
+	if(notificationResult.success){
 		Transaction.commit();
 		app.getView().render('notify');
 	}
 	else {
+        app.getView({
+            errorMessage: notificationResult.errorMessage
+        }).render('/notifyError');
 		Transaction.rollback();
 	}
 

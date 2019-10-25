@@ -378,13 +378,16 @@ server.post('Notify', server.middleware.https, function (req, res, next) {
     }
     var handleNotify = require('*/cartridge/scripts/handleNotify');
     Transaction.begin();
-    var success = handleNotify.notify(req.form);
+    var notificationResult = handleNotify.notify(req.form);
 
-    if (success) {
+    if (notificationResult.success) {
         Transaction.commit();
         res.render('/notify');
     } else {
-        res.json({error: "Notification not handled"});
+        res.render('/notifyError', {
+            errorMessage: notificationResult.errorMessage
+        });
+        //res.json({error: "Notification not handled, errorMessage: " + notificationResult.errorMessage});
         Transaction.rollback();
     }
     next();
