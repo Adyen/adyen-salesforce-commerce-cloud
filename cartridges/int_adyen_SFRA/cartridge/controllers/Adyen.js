@@ -387,7 +387,6 @@ server.post('Notify', server.middleware.https, function (req, res, next) {
         res.render('/notifyError', {
             errorMessage: notificationResult.errorMessage
         });
-        //res.json({error: "Notification not handled, errorMessage: " + notificationResult.errorMessage});
         Transaction.rollback();
     }
     next();
