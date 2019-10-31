@@ -40,13 +40,16 @@ function notify() {
 	var	handleNotify = require('*/cartridge/scripts/handleNotify');
 
 	Transaction.begin();
-	var success = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
+	var notificationResult = handleNotify.notifyHttpParameterMap(request.httpParameterMap);
 
-	if(success){
+	if(notificationResult.success){
 		Transaction.commit();
 		app.getView().render('notify');
 	}
 	else {
+        app.getView({
+            errorMessage: notificationResult.errorMessage
+        }).render('/notifyError');
 		Transaction.rollback();
 	}
 
@@ -63,26 +66,38 @@ function redirect(order, redirectUrl) {
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
-	var payLoad = request.httpParameterMap.payload.value;
-	//redirect to payment/details
-	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-	var requestObject = {};
-	requestObject['details'] = {};
-	requestObject.details['payload'] = payLoad;
-	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
-	var orderNumber = result.merchantReference;
+    var orderNumber = session.privacy.orderNo;
     var order = OrderMgr.getOrder(orderNumber);
 
     var paymentInstruments = order.getPaymentInstruments("Adyen");
     var adyenPaymentInstrument;
+    var paymentData;
+
     var instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
         adyenPaymentInstrument = instrumentsIter.next();
-        Transaction.wrap(function () {
-            adyenPaymentInstrument.custom.adyenPaymentData = null;
-        });
+        paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
 
+    //details is either redirectResult or payload
+    var details;
+    if(request.httpParameterMap.redirectResult.value != null){
+        details = { 'redirectResult' : request.httpParameterMap.redirectResult.value };
+    }
+    else if(request.httpParameterMap.payload.value != null){
+        details = { 'payload' : request.httpParameterMap.payload.value };
+    }
+
+	//redirect to payment/details
+	var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+	var requestObject = {
+        'details': details,
+        'paymentData' : paymentData
+    }
+	var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    Transaction.wrap(function () {
+        adyenPaymentInstrument.custom.adyenPaymentData = null;
+    });
 	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received') {
         if(result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
             Transaction.wrap(function () {
@@ -114,7 +129,6 @@ function showConfirmation() {
             PlaceOrderError: errorStatus
         });
     }
-
 	return {};
 }
 
@@ -177,7 +191,15 @@ function getTerminals() {
 }
 
 function redirect3ds2() {
+    var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+    var originKey = adyenGetOriginKey.getOriginKeyFromRequest(request.httpProtocol, request.httpHost);
+    var environment = AdyenHelper.getAdyenMode().toLowerCase();
+    var locale = request.getLocale();
+
 	app.getView({
+        locale: locale,
+        originKey: originKey,
+        environment: environment,
     	resultCode : request.httpParameterMap.get("resultCode").stringValue,
 		token3ds2 : request.httpParameterMap.get("token3ds2").stringValue,
         ContinueURL: URLUtils.https('Adyen-Authorize3DS2')
@@ -387,29 +409,6 @@ function closeThreeDS() {
     }).render('adyenpaymentredirect');
 }
 
-function getConfigurationComponents() {
-	var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey'); 
-	var baseUrl = request.httpParameterMap.get("protocol").stringValue + "//" + Site.getCurrent().getHttpsHostName();
-	var originKey;
-	var error = false;
-	var errorMessage = "";
-	var loadingContext = "";
-	
-	try {
-	    originKey = adyenGetOriginKey.getOriginKey(baseUrl).originKeys;
-	    loadingContext = AdyenHelper.getLoadingContext();
-	} catch (err) {
-	    error = true;
-	    errorMessage = Resource.msg('load.component.error', 'creditCard', null);
-	}
-	return {
-	    error: error,
-	    errorMessage: errorMessage,
-	    adyenOriginKey: originKey,
-	    adyenLoadingContext: loadingContext
-	};
-}
-
 /**
  * Clear system session data 
  */
@@ -445,8 +444,6 @@ exports.Redirect3DS2 = guard.ensure(['https', 'post'], redirect3ds2);
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
 
 exports.CloseThreeDS = guard.ensure(['https', 'post'], closeThreeDS);
-
-exports.GetConfigurationComponents = guard.ensure(['https', 'get'], getConfigurationComponents);
 
 exports.Notify = guard.ensure(['post'], notify);
 

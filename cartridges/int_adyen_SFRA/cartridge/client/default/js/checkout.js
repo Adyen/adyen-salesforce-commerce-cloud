@@ -1,6 +1,7 @@
 'use strict';
 
 var processInclude = require('base/util');
+var adyenCheckout = require('./adyenCheckout');
 
 $(document).ready(function () { // eslint-disable-line
     var name = 'paymentError';
@@ -8,6 +9,7 @@ $(document).ready(function () { // eslint-disable-line
     if (error) {
         $('.error-message').show();
         $('.error-message-text').text(decodeURIComponent(error[1]));
+        adyenCheckout.methods.displayPaymentMethods();
     }
 
     processInclude(require('base/checkout/checkout'));

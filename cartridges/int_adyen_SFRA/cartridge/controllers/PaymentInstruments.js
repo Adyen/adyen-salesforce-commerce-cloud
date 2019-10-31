@@ -6,11 +6,28 @@ server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-
+var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
     require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
+    next();
+});
+
+server.prepend('AddPayment',  csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
+    if(!AdyenHelper.getAdyen3DS2Enabled()){
+        var protocol = req.https ? "https" : "http";
+        var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
+        var environment = AdyenHelper.getAdyenMode().toLowerCase();
+
+        var viewData = res.getViewData();
+        viewData.adyen = {
+            originKey : originKey,
+            environment: environment
+        };
+
+        res.setViewData(viewData);
+    }
     next();
 });
 

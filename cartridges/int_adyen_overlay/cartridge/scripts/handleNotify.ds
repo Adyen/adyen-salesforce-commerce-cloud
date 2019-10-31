@@ -73,11 +73,16 @@ function notify (notificationData) {
                 customObj.custom.updateStatus = "PENDING";
                 Logger.getLogger("Adyen").info ("Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PENDING' status.", notificationData.merchantReference, notificationData.eventCode);
         }
-        return true;
+        return {
+            success: true
+        };
     }
 	catch (e){
         Logger.getLogger("Adyen", "adyen").error("Notification failed: " + JSON.stringify(notificationData) + "\n" + "Error message: " + e.message);
-        return false;
+        return {
+            success: false,
+            errorMessage: e.message
+        };
 	}
 
 }

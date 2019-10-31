@@ -200,6 +200,7 @@ function doPaymentCall(args, requestObject){
 
         //Check the response object from /payment call
         if (responseObj.resultCode == "IdentifyShopper" || responseObj.resultCode == "ChallengeShopper") {
+            args.Decision = 'ACCEPT';
             args.ThreeDS2 = true;
             args.resultCode = responseObj.resultCode;
             var token3ds2;

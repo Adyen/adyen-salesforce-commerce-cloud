@@ -1,15 +1,6 @@
 var threeDS2utils = require('./threeds2-js-utils.js');
 
-const configuration = {
-    locale: $('#currentLocale').val(), // Defaults to en_US
-    originKey: originKey,
-    environment: environment,
-    risk: {
-        enabled: false
-    }
-};
-
-const checkout = new AdyenCheckout(configuration);
+const checkout = new AdyenCheckout(window.Configuration);
 const cardNode = document.getElementById('card');
 var oneClickCard = [];
 var card;
@@ -20,27 +11,14 @@ var isValid = false;
 var storeDetails;
 var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
+var oneClickValid = false;
 
-getConfigurationComponents();
-
-$(document).ready(function () {
-    displayPaymentMethods();
-});
-
-var originKey = "";
-var environment = "";
-
-function setConfigData(data, callback) {
-    originKey = data.adyenOriginKey[Object.keys(data.adyenOriginKey)[0]];
-    environment = data.adyenEnvironment;
-    callback();
-};
+renderCardComponent();
+renderOneClickComponents();
 
 function renderCardComponent() {
     card = checkout.create('card', {
         // Mandatory fields
-        originKey: originKey,
-        environment: environment, // The environment where we should loads the secured fields from
         type: 'card',
         hasHolderName: true,
         holderNameRequired: true,
@@ -64,8 +42,6 @@ function renderCardComponent() {
     card.mount(cardNode);
 };
 
-var oneClickValid = false;
-
 function renderOneClickComponents() {
     var componentContainers = document.getElementsByClassName("cvc-container");
     jQuery.each(componentContainers, function (i, oneClickCardNode) {
@@ -73,9 +49,6 @@ function renderOneClickComponents() {
         var cardId = container.id.split("-")[1];
         var brandCode = document.getElementById('cardType-' + cardId).value;
         oneClickCard[i] = checkout.create('card', {
-            //Get selected card, send in payment request
-            originKey: originKey,
-            environment: environment, // The environment where we should loads the secured fields from
             // Specific for oneClick cards
             type: brandCode,
             storedDetails: {
@@ -94,24 +67,6 @@ function renderOneClickComponents() {
                 }
             } // Gets triggered whenever a user changes input
         }).mount(container);
-    });
-};
-
-function getConfigurationComponents() {
-    $.ajax({
-        url: 'Adyen-GetConfigurationComponents',
-        type: 'get',
-        data: {protocol: window.location.protocol},
-        success: function (data) {
-            if (!data.error) {
-                setConfigData(data, function () {
-                    renderCardComponent();
-                    renderOneClickComponents();
-                });
-            } else {
-                $('#errorLoadComponent').text(data.errorMessage);
-            }
-        }
     });
 };
 

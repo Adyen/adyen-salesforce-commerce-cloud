@@ -2,13 +2,11 @@
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <input type="hidden" id="currentLocale" value="${request.locale}"/>
 <iscontent type="text/html" encoding="off"/>
-<input type="hidden" class="form-control cardNumber" id="cardNumber" ${creditFields.cardNumber.attributes}>
+<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
 <input type="hidden" class="form-control saveCardAdyen" id="saveCardAdyen" ${creditFields.saveCardAdyen.attributes}>
 <input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
-
 <input type="hidden" class="form-control selectedCardID" value="" id="selectedCardID"
        ${creditFields.selectedCardID.attributes}>
-
 <input type="hidden" class="form-control adyenEncryptedCardNumber" id="adyenEncryptedCardNumber"
        ${creditFields.adyenEncryptedCardNumber.attributes}>
 <input type="hidden" class="form-control adyenEncryptedExpiryMonth" id="adyenEncryptedExpiryMonth"
@@ -25,5 +23,10 @@
 <span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 <script type="text/javascript">
     var showStoreDetails = ${customer.authenticated};
+    window.Configuration = {
+        locale: '${request.locale}',
+        originKey: '${pdict.adyen.originKey}',
+        environment: '${pdict.adyen.environment}'
+    };
 </script>
 
