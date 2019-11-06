@@ -53,12 +53,12 @@ function getLineItems(args) {
 			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass == dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
 		) {
 			var lineItemObject = {};
-			var description = LineItemHelper.getDescription(lineItem),
-				id = LineItemHelper.getId(lineItem),
-				quantity = LineItemHelper.getQuantity(lineItem),
-				itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity,
-				vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity,
-				vatPercentage = LineItemHelper.getVatPercentage(lineItem);
+			var description = LineItemHelper.getDescription(lineItem);
+			var	id = LineItemHelper.getId(lineItem);
+			var	quantity = LineItemHelper.getQuantity(lineItem);
+			var	itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
+			var	vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+			var	vatPercentage = LineItemHelper.getVatPercentage(lineItem);
 
 			lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
 			lineItemObject["taxAmount"] = vatAmount.toFixed();
