@@ -178,6 +178,14 @@ var __AdyenHelper: Object = {
         return signature;
     },
 
+    getAdyenBasketFieldsEnabled: function(){
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenBasketFieldsEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenBasketFieldsEnabled');
+        }
+        return returnValue;
+    },
+
     hasCheckoutComponent: function (paymentMethod) {
         if (paymentMethod.indexOf("ideal") > -1 ||
             paymentMethod.indexOf("klarna") > -1 ||
@@ -493,6 +501,7 @@ var __AdyenHelper: Object = {
         jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
         jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
         jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
+        jsonObject['additionalData'] = {};
 
         return jsonObject;
     },
@@ -568,9 +577,7 @@ var __AdyenHelper: Object = {
     },
 
     add3DS2Data: function(jsonObject, formType){
-        jsonObject["additionalData"] = {
-            allow3DS2: true
-        };
+        jsonObject.additionalData["allow3DS2"] = true;
         jsonObject["channel"] = "web";
 
         var card;
