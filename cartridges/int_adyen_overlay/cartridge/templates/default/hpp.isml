@@ -17,7 +17,7 @@
         <isloop items="${methods}" var="method" status="loopstate">
             <li class="form-row row-${method.type}" id="li_${method.type}">
                 <input type="radio" class="input-radio" name="brandCode" value="${method.type}" id="${method.type}"/>
-                <img class="logo" src="${AdyenHelper.getAdyenUrl()}/hpp/img/pm/${method.type}.png" alt=""/>
+                <img class="logo" src="${AdyenHelper.getLoadingContext()}images/logos/medium/${method.type}.png" alt=""/>
                 <label class="payment_method_label" for="${method.type}">${method.name}</label>
                 <isscript>
                     var methodDetails = JSON.stringify(method);
