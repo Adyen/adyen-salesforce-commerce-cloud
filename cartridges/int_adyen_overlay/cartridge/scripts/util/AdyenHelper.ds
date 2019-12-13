@@ -411,7 +411,7 @@ var __AdyenHelper: Object = {
         return shopperObject;
     },
 
-    createAddressObjects: function (order, jsonObject) {
+    createAddressObjects: function (order, paymentMethod, jsonObject) {
         var shippingAddress = order.defaultShipment.shippingAddress;
         jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
 
