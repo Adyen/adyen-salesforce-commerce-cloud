@@ -116,7 +116,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
     if(order){
-        jsonObject = AdyenHelper.createAddressObjects(order, jsonObject);
+        jsonObject = AdyenHelper.createAddressObjects(order, paymentMethodObject.type, jsonObject);
     }
 
     //Create shopper data fields
