@@ -23,6 +23,7 @@
             if ('CREDIT_CARD' == radioVal) {
 
                 if (!window.CardValid) {
+                    window.AdyenCard.showValidation();
                     return false;
                 }
                 clearCardData();

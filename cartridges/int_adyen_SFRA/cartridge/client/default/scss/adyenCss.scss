@@ -30,6 +30,10 @@
   display: none;
 }
 
+.adyen-checkout__input-wrapper .adyen-checkout__dropdown__list {
+  z-index: 10;
+}
+
 #paymentMethodsUl {
   width: 80%;
   padding-inline-start: 0;

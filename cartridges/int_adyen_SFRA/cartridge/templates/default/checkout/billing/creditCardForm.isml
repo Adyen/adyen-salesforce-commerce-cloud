@@ -20,7 +20,6 @@
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
-<span id="invalidCardDetails" class="invalid-feedback" style="display:none">${Resource.msg('creditCard.invalidCardDetails', 'creditCard', null)}</span>
 <script type="text/javascript">
     var showStoreDetails = ${customer.authenticated};
     window.Configuration = {
