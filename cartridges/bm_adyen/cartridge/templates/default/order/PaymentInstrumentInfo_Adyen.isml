@@ -52,7 +52,6 @@
 			</isloop>
 		</isif>
 		<isif condition="${adyenAction != null}">
-			testtt
 			<!--- Payment details for econtext --->
 			<isif condition="${adyenAction.reference}">
 				<tr>
