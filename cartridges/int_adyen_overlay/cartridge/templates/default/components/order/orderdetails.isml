@@ -68,8 +68,8 @@
 					<span class="label">${Resource.msg('global.amount','locale',null)}:</span>
 					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
 					<br/>
-					<isinclude template="adyenOrderDetails" />
 				</div><!-- END: payment-amount -->
+				<isinclude template="adyenOrderDetails" />
 			</isif>
 		</isloop>
 	</div>

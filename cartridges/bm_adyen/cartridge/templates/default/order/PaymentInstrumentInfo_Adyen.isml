@@ -10,6 +10,7 @@
 		var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
 		var amount = order.custom.Adyen_value/100;
 		var adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
+		var adyenAction = JSON.parse(paymentInstrument.custom.adyenAction);
 	}
 </isscript>
 <BR><BR>
@@ -28,7 +29,6 @@
 		<tr><td class='infobox_title'>PSP reference</td><td class='infobox_item'><A target='new' HREF='https://ca-test.adyen.com/ca/ca/payments/searchPayments.shtml?skipList=firstResult&query=${order.custom.Adyen_pspReference}'><isprint value="${order.custom.Adyen_pspReference}"> </A></td></tr>
 		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
 		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
-		<tr></tr>
 		<isif condition="${adyenAdditionalPaymentData != null}">
 			<isloop items="${adyenAdditionalPaymentData}" var="additionalItem" status="loopstate">
 				<isif condition="${additionalItem.key == 'bankTransfer.reference'}">
@@ -49,26 +49,29 @@
 						<td><span class="summary-details">${bankTransferItem.value}</span></td>
 					</tr>
 				</isif>
-
-				<isif condition="${additionalItem.key == 'payCode'}">
-					<tr>
-						<td><span class="summary-section-label">Payment reference:</span></td>
-						<td><span class="summary-details">${additionalItem.value}</span></td>
-					</tr>
-				</isif>
-				<isif condition="${additionalItem.key == 'maskedTelephoneNumber'}">
-					<tr>
-						<td><span class="summary-section-label">Telephone number:</span></td>
-						<td><span class="summary-details">${additionalItem.value}</span><br/></td>
-					</tr>
-				</isif>
-				<isif condition="${additionalItem.key == 'payLimitDateTime'}">
-					<tr>
-						<td><span class="summary-section-label">Expires at:</span></td>
-						<td><span class="summary-details">${additionalItem.value}</span><br/></td>
-					</tr>
-				</isif>
 			</isloop>
+		</isif>
+		<isif condition="${adyenAction != null}">
+			testtt
+			<!--- Payment details for econtext --->
+			<isif condition="${adyenAction.reference}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.reference', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.reference}</span></td>
+				</tr>
+			</isif>
+			<isif condition="${adyenAction.maskedTelephoneNumber}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.maskedTelephoneNumber', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.maskedTelephoneNumber}</span></td>
+				</tr>
+			</isif>
+			<isif condition="${adyenAction.expiresAt}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.expiresAt', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.expiresAt}</span></td>
+				</tr>
+			</isif>
 		</isif>
 	</tbody>
 </table>
