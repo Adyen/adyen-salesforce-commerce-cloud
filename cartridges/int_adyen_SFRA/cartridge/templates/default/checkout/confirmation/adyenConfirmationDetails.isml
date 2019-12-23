@@ -2,23 +2,27 @@
 <isif condition="${payment.selectedIssuerName != null}">
     <div>${payment.selectedIssuerName}</div>
 </isif>
+<isscript>
+    var adyenAction = JSON.parse(payment.adyenAction);
+</isscript>
 <br/>
+<isif condition="${payment.adyenAction}">
+    <!--- Payment details for econtext --->
+    <isif condition="${adyenAction.reference}">
+        <span class="summary-section-label">${Resource.msg('econtext.reference', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.reference}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.maskedTelephoneNumber}">
+        <span class="summary-section-label">${Resource.msg('econtext.maskedTelephoneNumber', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.maskedTelephoneNumber}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.expiresAt}">
+        <span class="summary-section-label">${Resource.msg('econtext.expiresAt', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.expiresAt}</span><br/>
+    </isif>
+</isif>
 <isif condition="${payment.adyenAdditionalPaymentData}">
     <isloop items="${payment.adyenAdditionalPaymentData}" var="additionalItem">
-        <!--- Payment details for econtext --->
-        <isif condition="${additionalItem.key == 'payCode'}">
-            <span class="summary-section-label">${Resource.msg('econtext.payCode', 'checkout', null)}:</span>
-            <span class="summary-details">${additionalItem.value}</span><br/>
-        </isif>
-        <isif condition="${additionalItem.key == 'maskedTelephoneNumber'}">
-            <span class="summary-section-label">${Resource.msg('econtext.maskedTelephoneNumber', 'checkout', null)}:</span>
-            <span class="summary-details">${additionalItem.value}</span><br/>
-        </isif>
-        <isif condition="${additionalItem.key == 'payLimitDateTime'}">
-            <span class="summary-section-label">${Resource.msg('econtext.payLimitDateTime', 'checkout', null)}:</span>
-            <span class="summary-details">${additionalItem.value}</span><br/>
-        </isif>
-
         <!--- Payment details for Banktransfer --->
         <isif condition="${additionalItem.key == 'bankTransfer.description'}">
             <span class="summary-section-label">${Resource.msg('bankTransfer.description', 'checkout', null)}:</span><br/>

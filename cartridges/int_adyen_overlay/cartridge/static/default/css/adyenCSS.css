@@ -82,6 +82,11 @@
 	font-weight: bold;
 }
 
+.adyen-payment-details {
+	max-width: 400px;
+	margin: auto;
+}
+
 /* Custom Adyen */
 
 .payment-method #type {

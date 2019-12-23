@@ -88,7 +88,7 @@ function authorize(args) {
 	            redirectObject : result.RedirectObject
 	        };
 	    }
-	    else if(result.resultCode == 'Authorised' || result.resultCode == 'Received'){
+	    else if(result.resultCode == 'Authorised' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper'){
 	        return { authorized: true, error: false };
 	    }
 	    else {
