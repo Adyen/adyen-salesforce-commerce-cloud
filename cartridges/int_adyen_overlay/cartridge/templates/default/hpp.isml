@@ -22,7 +22,7 @@
                 <isscript>
                     var methodDetails = JSON.stringify(method);
                 </isscript>
-                <isif condition="${AdyenHelper.hasCheckoutComponent(method.type)}">
+                <isif condition="${AdyenHelper.hasCheckoutComponent(method.type) && method.details}">
                     <isinclude template="checkoutComponent"/>
                     <iselse/>
                     <isif condition="${method.details[0].key == 'issuer'}">
