@@ -28,6 +28,7 @@ function renderCardComponent() {
         onChange: function (state) {
             isValid = state.isValid;
             storeDetails = state.data.storePaymentMethod;
+            $('#browserInfo').val(state.data.browserInfo);
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
@@ -47,21 +48,15 @@ function renderOneClickComponents() {
         var container = document.getElementById(oneClickCardNode.id);
         var cardId = container.id.split("-")[1];
         var brandCode = document.getElementById('cardType-' + cardId).value;
-        oneClickCard[i] = checkout.create('card', {
+        oneClickCard[cardId] = checkout.create('card', {
             // Specific for oneClick cards
             type: brandCode,
-            storedDetails: {
-                "card": {
-                    "expiryMonth": "",
-                    "expiryYear": "",
-                    "holderName": "",
-                    "number": ""
-                }
-            },
+            storedPaymentMethodId: cardId,
             details: brandCode.includes('bcmc') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
             onChange: function (state) {
                 oneClickValid = state.isValid;
                 if (state.isValid) {
+                    $('#browserInfo').val(state.data.browserInfo);
                     $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
                 }
             } // Gets triggered whenever a user changes input
@@ -331,7 +326,9 @@ $('button[value="submit-payment"]').on('click', function (e) {
         //oneclick payment
         else {
             var uuid = $('.selected-payment').data('uuid');
-            if (!oneClickValid) {
+            var selectedOneClick = oneClickCard[uuid];
+            if (!selectedOneClick.state.isValid) {
+                selectedOneClick.showValidation();
                 return false;
             } else {
                 var selectedCardType = document.getElementById('cardType-' + uuid).value;
