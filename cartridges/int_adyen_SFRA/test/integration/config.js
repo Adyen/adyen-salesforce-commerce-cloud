@@ -6,14 +6,17 @@ const mastercard3D = '5454545454545454';
 const holdernameSuccess = 'Mastercard Success';
 const holdernameFail = 'Mastercard Fail';
 const username = "username";
-const password = "password";
+const password = "username";
+const password3d = "password";
 const passwordFail = "passwordFail";
 
 module.exports = {
 
   Storefront: {
-    url: 'https://www.yourstorefront.com',
-    login: '/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login'
+    url: 'https://www.yourstorefront.com?lang=en_US',
+    login: '/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login',
+    urlEUR: 'https://www.yourstorefront.com?lang=fr_FR',
+    loginEUR: '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login'
   },
 
   Guest: {
@@ -58,7 +61,7 @@ module.exports = {
   },
 
   threeds2DetailsSuccess: {
-    password: password
+    password: password3d
   },
 
   threeds2DetailsFail: {

@@ -10,22 +10,28 @@ module.exports = function() {
         addProductToCart: function () {
             this.click('.home-main-categories .category-tile');
             this.click('.product .image-container a');
-            this.selectOption('Select Size', '10');
+            this.selectOption('#size-1', '10');
             this.click('.add-to-cart');
         },
 
-        checkoutAsGuest: function (Guest) {
+        checkoutAsGuest: function (Guest, shippingCountry) {
             this.click('.checkout-as-guest');
             this.fillField('#shippingFirstNamedefault', Guest.guestFirstName);
             this.fillField('#shippingLastNamedefault', Guest.guestLastName);
             this.fillField('#shippingAddressOnedefault', Guest.guestStreet);
             this.fillField('#shippingAddressTwodefault', Guest.guestHouseNumber);
-            this.selectOption('.shippingCountry', 'Netherlands');
-            this.selectOption('.shippingState', 'Non-US/Other');
-            this.wait(5);
+            this.selectOption('.shippingCountry', shippingCountry);
             this.fillField('#shippingAddressCitydefault', Guest.guestCity);
             this.fillField('#shippingZipCodedefault', Guest.guestPostCode);
             this.fillField('#shippingPhoneNumberdefault', Guest.guestPhoneNumber);
+        },
+
+        checkoutAsGuestState: function () {
+            this.selectOption('.shippingState', 'Non-US/Other');
+            this.wait(5);
+        },
+
+        checkoutAsGuestSubmit: function (Guest) {
             this.click('.submit-shipping');
             this.fillField('#email', Guest.guestEmail);
         },
@@ -80,6 +86,11 @@ module.exports = function() {
             this.click('input[value="ideal"]');
             this.click('#component_ideal .adyen-checkout__dropdown__button');
 
+        },
+
+        selectMultibanco: function () {
+            this.click('.adyen-option');
+            this.click('input[value="multibanco"]');
         },
 
         selectIssuerSuccess: function () {
