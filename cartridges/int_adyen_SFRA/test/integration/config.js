@@ -5,8 +5,8 @@ const mastercard = '5100290029002909';
 const mastercard3D = '5454545454545454';
 const holdernameSuccess = 'Mastercard Success';
 const holdernameFail = 'Mastercard Fail';
-const username = "username";
-const password = "username";
+const username = "YOUR_USERNAME";
+const password = "YOUR_PASSWORD";
 const password3d = "password";
 const passwordFail = "passwordFail";
 
