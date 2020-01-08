@@ -30,7 +30,7 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
-    CHECKOUT_COMPONENT_VERSION: "3.2.0",
+    CHECKOUT_COMPONENT_VERSION: "3.4.0",
     VERSION: "19.2.1",
 
     getService: function (service: String): Object {
@@ -600,10 +600,7 @@ var __AdyenHelper: Object = {
                 break;
         }
 
-        var browserInfo = JSON.parse(card.browserInfo.value);
-        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
-        browserInfo['userAgent'] = request.httpUserAgent;
-        jsonObject["browserInfo"] = browserInfo;
+        jsonObject["browserInfo"] = JSON.parse(card.browserInfo.value);
 
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
 

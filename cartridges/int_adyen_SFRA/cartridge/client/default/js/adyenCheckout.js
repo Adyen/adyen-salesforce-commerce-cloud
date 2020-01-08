@@ -1,5 +1,3 @@
-var threeDS2utils = require('./threeds2-js-utils.js');
-
 const checkout = new AdyenCheckout(window.Configuration);
 const cardNode = document.getElementById('card');
 var oneClickCard = [];
@@ -28,6 +26,7 @@ function renderCardComponent() {
         onChange: function (state) {
             isValid = state.isValid;
             storeDetails = state.data.storePaymentMethod;
+            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
@@ -47,31 +46,19 @@ function renderOneClickComponents() {
         var container = document.getElementById(oneClickCardNode.id);
         var cardId = container.id.split("-")[1];
         var brandCode = document.getElementById('cardType-' + cardId).value;
-        oneClickCard[i] = checkout.create('card', {
+        oneClickCard[cardId] = checkout.create('card', {
             // Specific for oneClick cards
-            type: brandCode,
-            storedDetails: {
-                "card": {
-                    "expiryMonth": "",
-                    "expiryYear": "",
-                    "holderName": "",
-                    "number": ""
-                }
-            },
-            details: brandCode.includes('bcmc') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
+            brand: brandCode,
+            storedPaymentMethodId: cardId,
             onChange: function (state) {
                 oneClickValid = state.isValid;
                 if (state.isValid) {
+                    $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
                     $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
                 }
             } // Gets triggered whenever a user changes input
         }).mount(container);
     });
-};
-
-function setBrowserData() {
-    var browserData = threeDS2utils.getBrowserInfo();
-    $('#browserInfo').val(JSON.stringify(browserData));
 };
 
 $('.payment-summary .edit-button').on('click', function (e) {
@@ -331,14 +318,15 @@ $('button[value="submit-payment"]').on('click', function (e) {
         //oneclick payment
         else {
             var uuid = $('.selected-payment').data('uuid');
-            if (!oneClickValid) {
+            var selectedOneClick = oneClickCard[uuid];
+            if (!selectedOneClick.state.isValid) {
+                selectedOneClick.showValidation();
                 return false;
             } else {
                 var selectedCardType = document.getElementById('cardType-' + uuid).value;
                 document.getElementById('saved-payment-security-code-' + uuid).value = "000";
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
-                setBrowserData();
                 return true;
             }
         }
@@ -441,8 +429,6 @@ function setPaymentData() {
     $('#cardOwner').val(card.state.data.holderName);
     $('#cardNumber').val(maskedCardNumber || "");
     $('#saveCardAdyen').val(storeDetails || false);
-
-    setBrowserData();
 }
 
 module.exports = {
