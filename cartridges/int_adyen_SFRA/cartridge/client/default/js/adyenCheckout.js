@@ -1,5 +1,3 @@
-var threeDS2utils = require('./threeds2-js-utils.js');
-
 const checkout = new AdyenCheckout(window.Configuration);
 const cardNode = document.getElementById('card');
 var oneClickCard = [];
@@ -28,7 +26,7 @@ function renderCardComponent() {
         onChange: function (state) {
             isValid = state.isValid;
             storeDetails = state.data.storePaymentMethod;
-            $('#browserInfo').val(state.data.browserInfo);
+            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
         }, // Gets triggered whenever a user changes input
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
@@ -50,23 +48,17 @@ function renderOneClickComponents() {
         var brandCode = document.getElementById('cardType-' + cardId).value;
         oneClickCard[cardId] = checkout.create('card', {
             // Specific for oneClick cards
-            type: brandCode,
+            brand: brandCode,
             storedPaymentMethodId: cardId,
-            details: brandCode.includes('bcmc') ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
             onChange: function (state) {
                 oneClickValid = state.isValid;
                 if (state.isValid) {
-                    $('#browserInfo').val(state.data.browserInfo);
+                    $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
                     $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
                 }
             } // Gets triggered whenever a user changes input
         }).mount(container);
     });
-};
-
-function setBrowserData() {
-    var browserData = threeDS2utils.getBrowserInfo();
-    $('#browserInfo').val(JSON.stringify(browserData));
 };
 
 $('.payment-summary .edit-button').on('click', function (e) {
@@ -335,7 +327,6 @@ $('button[value="submit-payment"]').on('click', function (e) {
                 document.getElementById('saved-payment-security-code-' + uuid).value = "000";
                 $('#cardType').val(selectedCardType)
                 $('#selectedCardID').val($('.selected-payment').data('uuid'));
-                setBrowserData();
                 return true;
             }
         }
@@ -438,8 +429,6 @@ function setPaymentData() {
     $('#cardOwner').val(card.state.data.holderName);
     $('#cardNumber').val(maskedCardNumber || "");
     $('#saveCardAdyen').val(storeDetails || false);
-
-    setBrowserData();
 }
 
 module.exports = {

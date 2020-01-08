@@ -600,10 +600,7 @@ var __AdyenHelper: Object = {
                 break;
         }
 
-        var browserInfo = JSON.parse(card.browserInfo.value);
-        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
-        browserInfo['userAgent'] = request.httpUserAgent;
-        jsonObject["browserInfo"] = browserInfo;
+        jsonObject["browserInfo"] = JSON.parse(card.browserInfo.value);
 
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
 
