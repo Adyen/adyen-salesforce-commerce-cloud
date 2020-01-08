@@ -1,8 +1,21 @@
+var config = require('./config');
 
 // in this file you can append custom step methods to 'I' object
-
 module.exports = function() {
     return actor({
+        initiatePayment: function(callback) {
+            this.amOnPage(config.Storefront.url);
+            this.confirmTrackingConsent();
+            this.addProductToCart();
+            this.amOnPage(config.Storefront.login);
+            this.checkoutAsGuest(config.Guest, "Netherlands");
+            this.checkoutAsGuestState();
+            this.checkoutAsGuestSubmit(config.Guest);
+            callback();
+            this.submitPayment();
+            this.placeOrder();
+        },
+
         confirmTrackingConsent: function(){
             this.click('.affirm');
         },
