@@ -610,6 +610,19 @@ var __AdyenHelper: Object = {
         return jsonObject;
     },
 
+    /**
+     * Checks if payment method is blocked
+     */
+    isMethodTypeBlocked : function(methodType) {
+        if (methodType.indexOf('bcmc') !== -1 ||
+            (methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
+            methodType == "scheme" || methodType == "cup" || methodType == "applepay") {
+            return true;
+        } else {
+            return false;
+        }
+    },
+
     extend: function (obj, src) {
         for (var key in src) {
             if (src.hasOwnProperty(key)) obj[key] = src[key];

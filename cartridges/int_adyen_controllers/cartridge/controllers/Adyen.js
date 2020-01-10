@@ -159,25 +159,10 @@ function getPaymentMethods(cart) {
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
     var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
     return paymentMethods.filter(function (method) {
-        return !isMethodTypeBlocked(method.type);
+        return !AdyenHelper.isMethodTypeBlocked(method.type);
     });
 
     return {};
-}
-
-/**
- * Checks if payment method is blocked
- */
-function isMethodTypeBlocked(methodType)
-{
-	if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
-		(methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
-		methodType == "scheme" || methodType == "cup" || methodType == "applepay"
-	) {
-		return true;
-	}
-	
-	return false;
 }
 
 /**
