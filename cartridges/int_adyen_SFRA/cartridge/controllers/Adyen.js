@@ -331,7 +331,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     try {
         paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
         paymentMethods = paymentMethods.filter(function (method) {
-            return !isMethodTypeBlocked(method.type);
+            return !AdyenHelper.isMethodTypeBlocked(method.type);
         });
         descriptions = paymentMethods.map(function (method) {
             return {
@@ -352,19 +352,6 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     });
     return next();
 });
-
-/**
- * Checks if payment method is blocked
- */
-function isMethodTypeBlocked(methodType) {
-    if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
-        (methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
-        methodType == "scheme" || methodType == "cup" || methodType == "applepay") {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
