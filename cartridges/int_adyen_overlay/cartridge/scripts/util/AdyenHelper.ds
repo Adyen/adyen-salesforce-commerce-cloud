@@ -614,13 +614,8 @@ var __AdyenHelper: Object = {
      * Checks if payment method is blocked
      */
     isMethodTypeBlocked : function(methodType) {
-        if (methodType == "bcmc" || methodType == "bcmc_mobile_QR" ||
-            (methodType.indexOf("wechatpay") !== -1 && methodType.indexOf("wechatpayWeb") === -1) ||
-            methodType == "scheme" || methodType == "cup" || methodType == "applepay") {
-            return true;
-        } else {
-            return false;
-        }
+        var blockedMethods = ["bcmc", "bcmc_mobile_QR","scheme", "cup", "applepay", "wechatpay", "wechatpay_pos", "wechatpaySdk", "wechatpayQr"];
+        return (blockedMethods.indexOf(methodType) !== -1);
     },
 
     extend: function (obj, src) {
