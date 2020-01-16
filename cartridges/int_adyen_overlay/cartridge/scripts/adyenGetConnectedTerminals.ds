@@ -1,0 +1,73 @@
+/**
+* Send request to adyen to get connected terminals based on merchant account and storeId
+*
+*/
+
+//script include
+var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+var Logger = require("dw/system/Logger");
+
+function getTerminals() {
+    try {
+        var requestObject = {};
+
+        var callResult = null,
+            resultObject = null,
+            service = AdyenHelper.getService(AdyenHelper.SERVICE.CONNECTEDTERMINALS);
+
+        if (service == null) {
+            return;
+        }
+        //set merchant account & optionally storeId
+        requestObject["merchantAccount"] = AdyenHelper.getAdyenMerchantAccount();
+
+        if(AdyenHelper.getAdyenStoreId() != null){
+            requestObject["store"] = AdyenHelper.getAdyenStoreId()
+        }
+
+        var xapikey = AdyenHelper.getAdyenApiKey();
+        service.addHeader("Content-type", "application/json");
+        service.addHeader("charset", "UTF-8");
+        service.addHeader("X-API-key", xapikey);
+        callResult = service.call(JSON.stringify(requestObject));
+
+        if (callResult.isOk() == false) {
+            Logger.getLogger("Adyen").error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+            return ;
+        }
+
+        resultObject = ("object" in callResult ? callResult.object : null);
+
+        var resultObj = {
+            statusCode: resultObject.getStatusCode(),
+            statusMessage: resultObject.getStatusMessage(),
+            text: resultObject.getText(),
+            errorText: resultObject.getErrorText(),
+            timeout: resultObject.getTimeout()
+        }
+
+        var resultText = ("text" in resultObj && !empty(resultObj.text) ? resultObj.text : null);
+        if (resultText == null) {
+            return ;
+        }
+
+        try {
+            return JSON.parse(resultText);
+        }
+        catch (ex) {
+            Logger.getLogger("Adyen").error("Adyen: error parsing response object " + ex.message);
+            return;
+        }
+
+    } catch (e) {
+        Logger.getLogger("Adyen").fatal("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        return;
+    }
+
+    return JSON.parse(resultObject.text);
+}
+
+
+module.exports = {
+    'getTerminals': getTerminals
+}

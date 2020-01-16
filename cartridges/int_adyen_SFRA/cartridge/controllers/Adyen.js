@@ -320,6 +320,8 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var BasketMgr = require('dw/order/BasketMgr');
     var Resource = require('dw/web/Resource');
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+    var getConnectedTerminals = require('*/cartridge/scripts/adyenGetConnectedTerminals');
+    var PaymentMgr = require('dw/order/PaymentMgr');
     var Locale = require('dw/util/Locale');
     var countryCode = Locale.getLocale(req.locale.id).country;
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -343,12 +345,18 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         paymentMethods = [];
     }
 
+    var connectedTerminals = null;
+    if (PaymentMgr.getPaymentMethod("AdyenPOS").isActive()) {
+        connectedTerminals = getConnectedTerminals.getTerminals();
+    }
+
     var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
 
     res.json({
         AdyenPaymentMethods: paymentMethods,
         ImagePath: adyenURL,
-        AdyenDescriptions: descriptions
+        AdyenDescriptions: descriptions,
+        AdyenConnectedTerminals: connectedTerminals
     });
     return next();
 });

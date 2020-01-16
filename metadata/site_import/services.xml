@@ -50,6 +50,11 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenConnectedTerminals">
+        <url>https://terminal-api-test.adyen.com/connectedTerminals</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     
     <service-profile service-profile-id="Adyen">
         <timeout-millis>30000</timeout-millis>
@@ -118,6 +123,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenOriginKeys</credential-id>
+    </service>
+    <service service-id="AdyenConnectedTerminals">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenConnectedTerminals</credential-id>
     </service>
 </services>
 

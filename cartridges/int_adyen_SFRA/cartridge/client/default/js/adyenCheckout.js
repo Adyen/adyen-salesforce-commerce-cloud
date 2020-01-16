@@ -80,9 +80,25 @@ function displayPaymentMethods() {
             resetPaymentMethod();
             $('#component_' + $(this).val()).show();
         });
+
+        if(data.AdyenConnectedTerminals && data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0){
+            $('#AdyenPosTerminals').empty();
+            addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+        }
     });
 };
 
+function addPosTerminals(terminals) {
+    var dd_terminals = document.createElement("select");
+    for(var i=0; i< terminals.length;i++) {
+        //creates option tag
+        $("<option/>", {
+            value: terminals[i],
+            html: terminals[i]
+        }).appendTo(dd_terminals); //appends to select if parent div has id dropdown
+    }
+    document.getElementById("AdyenPosTerminals").append(dd_terminals);
+}
 function resetPaymentMethod() {
     $('#requiredBrandCode').hide();
     $('#selectedIssuer').val("");
@@ -255,7 +271,6 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
             li.append(additionalFields);
         }
     }
-
     $('#paymentMethodsUl').append(li);
 };
 
