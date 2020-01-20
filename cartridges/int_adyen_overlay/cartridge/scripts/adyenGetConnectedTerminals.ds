@@ -16,6 +16,7 @@ function getTerminals() {
             service = AdyenHelper.getService(AdyenHelper.SERVICE.CONNECTEDTERMINALS);
 
         if (service == null) {
+            Logger.getLogger("Adyen").error("Could not retrieve connected terminals, error creating the service");
             return;
         }
         //set merchant account & optionally storeId
