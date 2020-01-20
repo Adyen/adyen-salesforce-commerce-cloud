@@ -89,13 +89,13 @@ function displayPaymentMethods() {
 };
 
 function addPosTerminals(terminals) {
+    //create dropdown and populate connected terminals
     var dd_terminals = document.createElement("select");
     for(var i=0; i< terminals.length;i++) {
-        //creates option tag
         $("<option/>", {
             value: terminals[i],
             html: terminals[i]
-        }).appendTo(dd_terminals); //appends to select if parent div has id dropdown
+        }).appendTo(dd_terminals);
     }
     document.getElementById("AdyenPosTerminals").append(dd_terminals);
 }
