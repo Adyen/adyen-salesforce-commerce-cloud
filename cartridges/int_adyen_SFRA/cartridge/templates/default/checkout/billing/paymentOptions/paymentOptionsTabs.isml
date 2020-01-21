@@ -6,5 +6,8 @@
     <isif condition="${paymentOption.ID === 'Adyen'}">
         <isinclude template="checkout/billing/paymentOptions/alternativePaymentMethodTab"/>
     </isif>
+    <isif condition="${paymentOption.ID === 'AdyenPOS'}">
+        <isinclude template="checkout/billing/paymentOptions/adyenPosTab"/>
+    </isif>
 </isloop>
 
