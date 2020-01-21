@@ -15,7 +15,7 @@ function getTerminals() {
             resultObject = null,
             service = AdyenHelper.getService(AdyenHelper.SERVICE.CONNECTEDTERMINALS);
 
-        if (service == null) {
+        if (!service) {
             Logger.getLogger("Adyen").error("Could not retrieve connected terminals, error creating the service");
             return;
         }
@@ -37,23 +37,14 @@ function getTerminals() {
             return;
         }
 
-        resultObject = ("object" in callResult ? callResult.object : null);
+        resultObject = callResult.object;
 
-        var resultObj = {
-            statusCode: resultObject.getStatusCode(),
-            statusMessage: resultObject.getStatusMessage(),
-            text: resultObject.getText(),
-            errorText: resultObject.getErrorText(),
-            timeout: resultObject.getTimeout()
-        }
-
-        var resultText = ("text" in resultObj && !empty(resultObj.text) ? resultObj.text : null);
-        if (resultText == null) {
-            Logger.getLogger("Adyen").error("Response is null from connectedTerminals call");
+        if (!resultObject || !resultObject.getText()) {
+            Logger.getLogger("Adyen").error("No correct response from /connectedTerminals call");
             return;
         }
 
-        return JSON.parse(resultText);
+        return JSON.parse(resultObject.getText());
 
     } catch (e) {
         Logger.getLogger("Adyen").fatal("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
