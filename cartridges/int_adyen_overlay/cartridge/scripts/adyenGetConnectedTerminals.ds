@@ -32,8 +32,7 @@ function getTerminals() {
         callResult = service.call(JSON.stringify(requestObject));
 
         if (callResult.isOk() == false) {
-            Logger.getLogger("Adyen").error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
-            return;
+            throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
         }
 
         resultObject = callResult.object;
