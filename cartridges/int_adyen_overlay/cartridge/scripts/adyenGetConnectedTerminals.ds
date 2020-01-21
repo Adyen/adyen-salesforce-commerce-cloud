@@ -16,8 +16,7 @@ function getTerminals() {
             service = AdyenHelper.getService(AdyenHelper.SERVICE.CONNECTEDTERMINALS);
 
         if (!service) {
-            Logger.getLogger("Adyen").error("Could not retrieve connected terminals, error creating the service");
-            return;
+            throw new Error("Could not retrieve connected terminals")
         }
         //set merchant account & optionally storeId
         requestObject["merchantAccount"] = AdyenHelper.getAdyenMerchantAccount();
@@ -40,14 +39,13 @@ function getTerminals() {
         resultObject = callResult.object;
 
         if (!resultObject || !resultObject.getText()) {
-            Logger.getLogger("Adyen").error("No correct response from /connectedTerminals call");
-            return;
+            throw new Error("No correct response from /connectedTerminals call")
         }
 
         return JSON.parse(resultObject.getText());
 
     } catch (e) {
-        Logger.getLogger("Adyen").fatal("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        Logger.getLogger("Adyen").error("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
         return;
     }
 }
