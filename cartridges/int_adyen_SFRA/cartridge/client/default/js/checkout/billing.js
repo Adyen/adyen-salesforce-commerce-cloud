@@ -28,7 +28,7 @@ function updatePaymentInformation(order) {
                 + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
                 + '</span></div>';
             }
-        } else if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen") {
+        } else if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen" || order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "AdyenPOS") {
             htmlToAppend += '<div><span>'
                 + order.billing.payment.selectedPaymentInstruments[0].selectedAdyenPM
                 + '</span></div>';

@@ -36,10 +36,6 @@ var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var RiskDataHelper = require ("*/cartridge/scripts/util/RiskDataHelper");
 var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 
-function execute(args) {
-    return PIPELET_NEXT;  
-}
-
 function alternativePaymentMethod(args){
     var paymentMethodObject = {
         "type" : args.PaymentType
@@ -358,7 +354,6 @@ function executeCall(serviceType, requestObject){
 }
 
 module.exports = {
-    'execute': execute,
     'creditCard': creditCard,
     'alternativePaymentMethod': alternativePaymentMethod,
     'doPaymentCall' : doPaymentCall,

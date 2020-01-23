@@ -30,7 +30,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
-        if(paymentInstrument.paymentMethod == "Adyen" || paymentInstrument.paymentMethod == paymentInstrument.METHOD_CREDIT_CARD){
+        if(paymentInstrument.paymentMethod == "Adyen" || paymentInstrument.paymentMethod == paymentInstrument.METHOD_CREDIT_CARD || paymentInstrument.paymentMethod == "AdyenPOS"){
             isAdyen = true;
         }
     });

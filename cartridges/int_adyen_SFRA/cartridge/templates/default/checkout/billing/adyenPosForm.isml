@@ -2,6 +2,7 @@
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <iscontent type="text/html" encoding="off"/>
 <h3>${Resource.msg('terminal.selectTerminal', 'terminal', null)}</h3>
+<input id="terminalId" type="hidden" ${adyenPaymentFields.terminalId.attributes}/>
 <div id="AdyenPosTerminals">
   <span>${Resource.msg('terminal.noTerminals', 'terminal', null)}</span>
 </div>
