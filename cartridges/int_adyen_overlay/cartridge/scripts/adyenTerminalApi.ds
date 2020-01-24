@@ -52,7 +52,10 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
                             "TransactionID": order.getOrderNo(),
                             "TimeStamp": new Date()
                         },
-                        "SaleReferenceID":"SalesforceCommerceCloudPOS"
+                        "SaleReferenceID":"SalesforceCommerceCloudPOS",
+                        "SaleToAcquirerData":{
+                            "applicationInfo": AdyenHelper.getApplicationInfo()
+                        }
                     },
                     "PaymentTransaction":{
                         "AmountsReq":{

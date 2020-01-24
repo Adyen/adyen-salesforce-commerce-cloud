@@ -811,6 +811,10 @@ var __AdyenHelper: Object = {
                 "name": "adyen-salesforce-commerce-cloud",
                 "version": __AdyenHelper.VERSION
             },
+            "merchantApplication": {
+                "name": "adyen-salesforce-commerce-cloud",
+                "version": __AdyenHelper.VERSION
+            },
             "externalPlatform": {
                 "name": "SalesforceCommerceCloud",
                 "version": externalPlatformVersion

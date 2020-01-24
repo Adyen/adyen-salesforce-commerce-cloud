@@ -356,7 +356,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         AdyenPaymentMethods: paymentMethods,
         ImagePath: adyenURL,
         AdyenDescriptions: descriptions,
-        AdyenConnectedTerminals: connectedTerminals
+        AdyenConnectedTerminals: JSON.parse(connectedTerminals)
     });
     return next();
 });
