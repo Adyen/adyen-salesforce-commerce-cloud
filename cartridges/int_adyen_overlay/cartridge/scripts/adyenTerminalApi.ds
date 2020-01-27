@@ -1,6 +1,7 @@
 //script include
 var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 var Logger = require("dw/system/Logger");
+var StringUtils = require("dw/util/StringUtils");
 
 function getTerminals() {
     try {
@@ -31,9 +32,15 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
         }
 
         var amount = paymentInstrument.paymentTransaction.amount;
+
+        //serviceId should be a unique string
         var date = new Date();
         var dateString = date.getTime().toString();
         var serviceId = dateString.substr(dateString.length - 10);
+
+        var applicationInfoObject = {};
+        applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(false);
+        var applicationInfoBase64 = StringUtils.encodeBase64(JSON.stringify(applicationInfoObject));
 
         terminalRequestObject.request = {
             "SaleToPOIRequest":{
@@ -53,9 +60,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
                             "TimeStamp": new Date()
                         },
                         "SaleReferenceID":"SalesforceCommerceCloudPOS",
-                        "SaleToAcquirerData":{
-                            "applicationInfo": AdyenHelper.getApplicationInfo()
-                        }
+                        "SaleToAcquirerData": applicationInfoBase64
                     },
                     "PaymentTransaction":{
                         "AmountsReq":{

@@ -4,10 +4,10 @@
 
 'use strict';
 
-var server = require('server');
-var collections = require('*/cartridge/scripts/util/collections');
-var Resource = require('dw/web/Resource');
-var Transaction = require('dw/system/Transaction');
+var server = require("server");
+var collections = require("*/cartridge/scripts/util/collections");
+var Resource = require("dw/web/Resource");
+var Transaction = require("dw/system/Transaction");
 
 function Handle(basket, paymentInformation) {
     Transaction.wrap(function () {
@@ -16,7 +16,7 @@ function Handle(basket, paymentInformation) {
         });
 
         var paymentInstrument = basket.createPaymentInstrument(
-            'AdyenPOS', basket.totalGrossPrice
+            "AdyenPOS", basket.totalGrossPrice
         );
         paymentInstrument.custom.adyenPaymentMethod = "POS Terminal";
     });
@@ -53,8 +53,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
     else {
-        if (result["response"].SaleToPOIResponse) {
-            var paymentResponse = result["response"].SaleToPOIResponse.PaymentResponse;
+        var terminalResponse = JSON.parse(result.response);
+        if (terminalResponse.SaleToPOIResponse) {
+            var paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
             if (paymentResponse.Response.Result == "Success") {
                 order.custom.Adyen_eventCode = "AUTHORISATION";
                 var pspReference = "";
