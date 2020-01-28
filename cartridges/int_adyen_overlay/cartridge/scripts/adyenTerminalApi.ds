@@ -129,7 +129,7 @@ function executeCall(serviceType, requestObject){
     if (callResult.isOk() == false) {
         if(requestObject.isPaymentRequest){
             var abortResult = sendAbortRequest(requestObject.serviceId, requestObject.terminalId).response;
-            return { error: true, response: abortResult };
+            return { error: true, response: "abort request = " + abortResult };
         }
         throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
     } 

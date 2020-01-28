@@ -2,11 +2,11 @@
 <isif condition="${payment.selectedIssuerName != null}">
     <div>${payment.selectedIssuerName}</div>
 </isif>
-<isscript>
-    var adyenAction = JSON.parse(payment.adyenAction);
-</isscript>
 <br/>
 <isif condition="${payment.adyenAction}">
+    <isscript>
+        var adyenAction = JSON.parse(payment.adyenAction);
+    </isscript>
     <!--- Payment details for econtext --->
     <isif condition="${adyenAction.reference}">
         <span class="summary-section-label">${Resource.msg('econtext.reference', 'checkout', null)}:</span>
