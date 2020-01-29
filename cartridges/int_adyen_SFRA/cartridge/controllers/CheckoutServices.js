@@ -6,6 +6,7 @@ server.extend(module.superModule);
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var collections = require('*/cartridge/scripts/util/collections');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
@@ -30,7 +31,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
-        if(paymentInstrument.paymentMethod == "Adyen" || paymentInstrument.paymentMethod == paymentInstrument.METHOD_CREDIT_CARD || paymentInstrument.paymentMethod == "AdyenPOS"){
+        if([constants.METHOD_ADYEN, paymentInstrument.METHOD_CREDIT_CARD, constants.METHOD_ADYEN_POS].indexOf(paymentInstrument.paymentMethod) !== -1){
             isAdyen = true;
         }
     });

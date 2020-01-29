@@ -27,8 +27,8 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     try {
         var terminalRequestObject = {};
 
-        if (!order || !terminalId || !paymentInstrument) {
-            throw new Error("Could not retrieve payment data, order = " + JSON.stringify(order) + ", terminalId = " + terminalId + ", paymentInstrument = " + JSON.stringify(paymentInstrument));
+        if (!order || !paymentInstrument) {
+            throw new Error("Could not retrieve payment data, order = " + JSON.stringify(order) + ", paymentInstrument = " + JSON.stringify(paymentInstrument));
         }
 
         var amount = paymentInstrument.paymentTransaction.amount;

@@ -10,6 +10,7 @@ var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -346,7 +347,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     }
 
     var connectedTerminals = null;
-    if (PaymentMgr.getPaymentMethod("AdyenPOS").isActive()) {
+    if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
         connectedTerminals = adyenTerminalApi.getTerminals().response;
     }
 

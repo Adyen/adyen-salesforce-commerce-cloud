@@ -11,31 +11,32 @@ function updatePaymentInformation(order) {
 
     if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
         && order.billing.payment.selectedPaymentInstruments.length > 0) {
-        if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "CREDIT_CARD") {
+        var selectedPaymentInstrument = order.billing.payment.selectedPaymentInstruments[0];
+        if (selectedPaymentInstrument.paymentMethod == "CREDIT_CARD") {
             htmlToAppend += '<span>' + order.resources.cardType + ' '
-                + order.billing.payment.selectedPaymentInstruments[0].type
+                + selectedPaymentInstrument.type
                 + '</span>';
 
-            if (order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber) {
+            if (selectedPaymentInstrument.maskedCreditCardNumber) {
                 htmlToAppend += '<div>'
-                    + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
+                    + selectedPaymentInstrument.maskedCreditCardNumber
                     + '</div>';
             }
-            if(order.billing.payment.selectedPaymentInstruments[0].expirationMonth && order.billing.payment.selectedPaymentInstruments[0].expirationYear){
+            if(selectedPaymentInstrument.expirationMonth && selectedPaymentInstrument.expirationYear){
                 htmlToAppend += '<div><span>'
                 + order.resources.cardEnding + ' '
-                + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
-                + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
+                + selectedPaymentInstrument.expirationMonth
+                + '/' + selectedPaymentInstrument.expirationYear
                 + '</span></div>';
             }
-        } else if (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "Adyen" || order.billing.payment.selectedPaymentInstruments[0].paymentMethod == "AdyenPOS") {
+        } else if (selectedPaymentInstrument.paymentMethod == "Adyen" || selectedPaymentInstrument.paymentMethod == "AdyenPOS") {
             htmlToAppend += '<div><span>'
-                + order.billing.payment.selectedPaymentInstruments[0].selectedAdyenPM
+                + selectedPaymentInstrument.selectedAdyenPM
                 + '</span></div>';
 
-            if (typeof order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName !== "undefined") {
+            if (typeof selectedPaymentInstrument.selectedIssuerName !== "undefined") {
                 htmlToAppend += '<div><span>'
-                    + order.billing.payment.selectedPaymentInstruments[0].selectedIssuerName
+                    + selectedPaymentInstrument.selectedIssuerName
                     + '</span></div>';
             }
         }

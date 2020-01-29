@@ -3,13 +3,13 @@
  */
 
 'use strict';
-
 var server = require("server");
 var collections = require("*/cartridge/scripts/util/collections");
 var Resource = require("dw/web/Resource");
 var Transaction = require("dw/system/Transaction");
 var Order = require('dw/order/Order');
 var Logger = require('dw/system/Logger');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 function Handle(basket, paymentInformation) {
     Transaction.wrap(function () {
@@ -18,7 +18,7 @@ function Handle(basket, paymentInformation) {
         });
 
         var paymentInstrument = basket.createPaymentInstrument(
-            "AdyenPOS", basket.totalGrossPrice
+            constants.METHOD_ADYEN_POS, basket.totalGrossPrice
         );
         paymentInstrument.custom.adyenPaymentMethod = "POS Terminal";
     });
@@ -39,10 +39,15 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var adyenPaymentForm = server.forms.getForm("billing").adyenPaymentFields;
     var OrderMgr = require("dw/order/OrderMgr");
     var order = OrderMgr.getOrder(orderNumber);
+    var terminalId = adyenPaymentForm.terminalId.value;
 
-    var terminalId = null;
-    if(adyenPaymentForm.terminalId.value){
-        terminalId = adyenPaymentForm.terminalId.value;
+    if(!terminalId){
+        Logger.getLogger("Adyen").error("No terminal selected");
+        var errors = [];
+        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
     }
 
     Transaction.begin();
