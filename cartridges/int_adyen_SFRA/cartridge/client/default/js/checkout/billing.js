@@ -1,5 +1,5 @@
 'use strict';
-
+var constants = require("../constants");
 /**
  * Updates the payment information in checkout, based on the supplied order model
  * @param {Object} order - checkout model to use as basis of new truth
@@ -29,12 +29,12 @@ function updatePaymentInformation(order) {
                 + '/' + selectedPaymentInstrument.expirationYear
                 + '</span></div>';
             }
-        } else if (selectedPaymentInstrument.paymentMethod == "Adyen" || selectedPaymentInstrument.paymentMethod == "AdyenPOS") {
+        } else if (selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN || selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN_POS) {
             htmlToAppend += '<div><span>'
                 + selectedPaymentInstrument.selectedAdyenPM
                 + '</span></div>';
 
-            if (typeof selectedPaymentInstrument.selectedIssuerName !== "undefined") {
+            if (!!selectedPaymentInstrument.selectedIssuerName) {
                 htmlToAppend += '<div><span>'
                     + selectedPaymentInstrument.selectedIssuerName
                     + '</span></div>';
