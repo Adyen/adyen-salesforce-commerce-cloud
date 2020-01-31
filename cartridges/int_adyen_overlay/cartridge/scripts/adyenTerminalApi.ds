@@ -1,0 +1,148 @@
+//script include
+var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+var Logger = require("dw/system/Logger");
+var StringUtils = require("dw/util/StringUtils");
+
+function getTerminals() {
+    try {
+        var requestObject = {};
+        var getTerminalRequest = {};
+        getTerminalRequest.merchantAccount = AdyenHelper.getAdyenMerchantAccount();
+
+        //storeId is optional
+        if(AdyenHelper.getAdyenStoreId() != null){
+            getTerminalRequest.store = AdyenHelper.getAdyenStoreId()
+        }
+
+        requestObject.request = getTerminalRequest;
+        return executeCall(AdyenHelper.SERVICE.CONNECTEDTERMINALS, requestObject);
+
+    } catch (e) {
+        Logger.getLogger("Adyen").error("Adyen getTerminals: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        return { error: true };
+    }
+}
+
+function createTerminalPayment(order, paymentInstrument, terminalId) {
+    try {
+        var terminalRequestObject = {};
+
+        if (!order || !paymentInstrument) {
+            throw new Error("Could not retrieve payment data, order = " + JSON.stringify(order) + ", paymentInstrument = " + JSON.stringify(paymentInstrument));
+        }
+
+        var amount = paymentInstrument.paymentTransaction.amount;
+
+        //serviceId should be a unique string
+        var date = new Date();
+        var dateString = date.getTime().toString();
+        var serviceId = dateString.substr(dateString.length - 10);
+
+        var applicationInfoObject = {};
+        applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(false);
+        var applicationInfoBase64 = StringUtils.encodeBase64(JSON.stringify(applicationInfoObject));
+
+        terminalRequestObject.request = {
+            "SaleToPOIRequest":{
+                "MessageHeader":{
+                    "ProtocolVersion":"3.0",
+                    "MessageClass":"Service",
+                    "MessageCategory":"Payment",
+                    "MessageType":"Request",
+                    "ServiceID": serviceId,
+                    "SaleID":"SalesforceCommerceCloud",
+                    "POIID": terminalId
+                },
+                "PaymentRequest":{
+                    "SaleData":{
+                        "SaleTransactionID":{
+                            "TransactionID": order.getOrderNo(),
+                            "TimeStamp": new Date()
+                        },
+                        "SaleReferenceID":"SalesforceCommerceCloudPOS",
+                        "SaleToAcquirerData": applicationInfoBase64
+                    },
+                    "PaymentTransaction":{
+                        "AmountsReq":{
+                            "Currency": amount.currencyCode,
+                            "RequestedAmount": amount.value
+                        }
+                    }
+                }
+            }
+        }
+
+        terminalRequestObject.isPaymentRequest = true;
+        terminalRequestObject.serviceId = serviceId;
+        terminalRequestObject.terminalId = terminalId;
+
+       return executeCall(AdyenHelper.SERVICE.POSPAYMENT, terminalRequestObject);
+    }
+    catch (e) {
+        Logger.getLogger("Adyen").error("Adyen createTerminalPayment: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        return { error: true };
+    }
+
+}
+
+function sendAbortRequest(serviceId, terminalId){
+    var abortRequestObject = {};
+    var newDate = new Date();
+    var newDateString = newDate.getTime().toString();
+    var newServiceId = newDateString.substr(newDateString.length - 10);
+    abortRequestObject.request = {
+        "SaleToPOIRequest" : {
+            "AbortRequest" : {
+                "AbortReason" : "MerchantAbort",
+                "MessageReference" : {
+                    "SaleID" : "SalesforceCommerceCloud",
+                    "ServiceID" : serviceId,
+                    "MessageCategory" : "Payment"
+                }
+            },
+            "MessageHeader" : {
+                "MessageType" : "Request",
+                "MessageCategory" : "Abort",
+                "MessageClass" : "Service",
+                "ServiceID" : newServiceId,
+                "SaleID" : "SalesforceCommerceCloud",
+                "POIID" : terminalId,
+                "ProtocolVersion" : "3.0"
+            }
+        }
+    }
+    return executeCall(AdyenHelper.SERVICE.POSPAYMENT, abortRequestObject);
+}
+
+function executeCall(serviceType, requestObject){
+    var service = AdyenHelper.getService(serviceType);
+    if (!service) {
+        throw new Error("Error creating terminal service " + serviceType);
+    }
+
+    var apiKey = AdyenHelper.getAdyenApiKey();
+    service.addHeader('Content-type','application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-KEY', apiKey);
+    var callResult = service.call(JSON.stringify(requestObject.request));
+
+    if (callResult.isOk() == false) {
+        if(requestObject.isPaymentRequest){
+            var abortResult = sendAbortRequest(requestObject.serviceId, requestObject.terminalId).response;
+            return { error: true, response: "abort request = " + abortResult };
+        }
+        throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+    } 
+
+    var resultObject = callResult.object;
+    if (!resultObject || !resultObject.getText()) {
+        throw new Error("No correct response from " + serviceType + ", result: " +JSON.stringify(resultObject))
+    }
+
+    return { error: false, response: resultObject.getText() };
+}
+
+module.exports = {
+    "getTerminals": getTerminals,
+    "createTerminalPayment" : createTerminalPayment
+}

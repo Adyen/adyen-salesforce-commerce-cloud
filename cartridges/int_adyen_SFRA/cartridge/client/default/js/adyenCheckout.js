@@ -90,14 +90,14 @@ function displayPaymentMethods() {
 
 function addPosTerminals(terminals) {
     //create dropdown and populate connected terminals
-    var dd_terminals = document.createElement("select");
+    var dd_terminals = $("<select>").attr("id", "terminalList");
     for(var i=0; i< terminals.length;i++) {
         $("<option/>", {
             value: terminals[i],
             html: terminals[i]
         }).appendTo(dd_terminals);
     }
-    document.getElementById("AdyenPosTerminals").append(dd_terminals);
+    $('#AdyenPosTerminals').append(dd_terminals);
 }
 function resetPaymentMethod() {
     $('#requiredBrandCode').hide();
@@ -358,8 +358,9 @@ $('button[value="submit-payment"]').on('click', function (e) {
             $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
             return componentState;
         }
+    } else if ($('#selectedPaymentOption').val() == 'AdyenPOS') {
+        $("#terminalId").val($("#terminalList").val());
     }
-
     return true;
 });
 

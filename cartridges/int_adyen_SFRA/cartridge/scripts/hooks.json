@@ -15,6 +15,14 @@
 		{
 			"name": "app.payment.form.processor.adyen",
 			"script": "./hooks/payment/processor/adyen_form_processor"
+		},
+		{
+			"name": "app.payment.processor.adyen_pos",
+			"script": "./hooks/payment/processor/adyen_pos"
+		},
+		{
+			"name": "app.payment.form.processor.adyen_pos",
+			"script": "./hooks/payment/processor/adyen_pos_form_processor"
 		}
 	]
 }

@@ -7,6 +7,9 @@
 	var adyenAction = JSON.parse(paymentInstr.custom.adyenAction);
 </isscript>
 <div class="adyen-payment-details">
+	<isif condition="${paymentInstr.custom.adyenPaymentMethod}">
+		<div>${paymentInstr.custom.adyenPaymentMethod}</div>
+	</isif>
 	<isif condition="${paymentInstr.custom.adyenAction}">
 		<!--- Payment action for Voucher --->
 		<div id="voucherResult"></div>

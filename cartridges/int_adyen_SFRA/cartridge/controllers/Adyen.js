@@ -10,6 +10,7 @@ var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -320,7 +321,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var BasketMgr = require('dw/order/BasketMgr');
     var Resource = require('dw/web/Resource');
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-    var getConnectedTerminals = require('*/cartridge/scripts/adyenGetConnectedTerminals');
+    var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var Locale = require('dw/util/Locale');
     var countryCode = Locale.getLocale(req.locale.id).country;
@@ -346,8 +347,8 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     }
 
     var connectedTerminals = null;
-    if (PaymentMgr.getPaymentMethod("AdyenPOS").isActive()) {
-        connectedTerminals = getConnectedTerminals.getTerminals();
+    if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
+        connectedTerminals = adyenTerminalApi.getTerminals().response;
     }
 
     var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
@@ -356,7 +357,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         AdyenPaymentMethods: paymentMethods,
         ImagePath: adyenURL,
         AdyenDescriptions: descriptions,
-        AdyenConnectedTerminals: connectedTerminals
+        AdyenConnectedTerminals: JSON.parse(connectedTerminals)
     });
     return next();
 });
