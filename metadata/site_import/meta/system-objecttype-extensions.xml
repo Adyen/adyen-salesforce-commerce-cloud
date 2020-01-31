@@ -311,6 +311,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenBasketFieldsEnabled">
+                <display-name xml:lang="x-default">Basket Fields Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Debug">
                 <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
                 <description xml:lang="x-default">yes / no</description>
@@ -397,6 +404,7 @@
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
+                <attribute attribute-id="AdyenBasketFieldsEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>

@@ -33,6 +33,7 @@ var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var RiskDataHelper = require ("*/cartridge/scripts/util/RiskDataHelper");
 var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 
 function execute(args) {
@@ -94,6 +95,11 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     //Create general request object
     var jsonObject = AdyenHelper.createAdyenRequestObject(order);
 
+    //Add Risk data
+    if(AdyenHelper.getAdyenBasketFieldsEnabled()){
+        jsonObject.additionalData = RiskDataHelper.createBasketContentFields(order);
+    }
+
     //Get 3DS2 data
     if(AdyenHelper.getAdyen3DS2Enabled() && empty(args.PaymentType)){
         jsonObject = AdyenHelper.add3DS2Data(jsonObject, 'billing');
@@ -110,7 +116,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
 
     //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
     if(order){
-        jsonObject = AdyenHelper.createAddressObjects(order, jsonObject);
+        jsonObject = AdyenHelper.createAddressObjects(order, paymentMethodObject.type, jsonObject);
     }
 
     //Create shopper data fields

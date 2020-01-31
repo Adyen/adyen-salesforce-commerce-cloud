@@ -115,6 +115,7 @@
 	        	// checks whether card was valid then was changed to be invalid
 	        	window.CardValid = state.isValid;
                 window.storeDetails = state.data.storePaymentMethod;
+                $('#dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(state.data.browserInfo));
 	        },
             onFieldValid: function (data) {
                 if(data.endDigits){

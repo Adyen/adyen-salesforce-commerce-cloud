@@ -10,8 +10,6 @@
         }
         return number;
     }
-    
-    var threeDS2utils = require('./threeds2-js-utils');
     /**
      * @function
      * @description Initializes Adyen Secured Fields  Billing events
@@ -23,11 +21,11 @@
             if ('CREDIT_CARD' == radioVal) {
 
                 if (!window.CardValid) {
+                    window.AdyenCard.showValidation();
                     return false;
                 }
                 clearCardData();
                 var oneClickCard = window.AdyenOneClick;
-                setBrowserData();
                 if (isOneClick) {
                     $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val($('#adyenCreditCardList option:selected').attr('id'));
                     $('#dwfrm_billing_paymentMethods_creditCard_type').val($('#adyenCreditCardList option:selected').val());
@@ -37,30 +35,30 @@
                     $('#dwfrm_billing_paymentMethods_creditCard_selectedCardID').val("");
                     copyCardData(window.AdyenCard);
                 }
-            }	
-            else if (radioVal == "Adyen"){	
-                var selectedMethod = $('[name="brandCode"]:checked').val();	
-                return componentDetailsValid(selectedMethod);	
             }
-                
+            else if (radioVal == "Adyen"){
+                var selectedMethod = $('[name="brandCode"]:checked').val();
+                return componentDetailsValid(selectedMethod);
+            }
+
             e.preventDefault();
             $('.form-data-error').html('');
             $('#billing-submit-hidden').trigger('click');
         });
 
         $('#adyenCreditCardList').on('change', function () {
-        	var selectedCard = $('#adyenCreditCardList').val();
-        	var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
-        	if(window.AdyenOneClick){
-        		window.AdyenOneClick.unmount();
-        	}
-        	initializeOneClick(AdyenCheckoutObject, selectedCard);
-        	window.CardValid = false;
+            var selectedCard = $('#adyenCreditCardList').val();
+            var AdyenCheckoutObject = new AdyenCheckout(window.Configuration);
+            if(window.AdyenOneClick){
+                window.AdyenOneClick.unmount();
+            }
+            initializeOneClick(AdyenCheckoutObject, selectedCard);
+            window.CardValid = false;
             if (selectedCard !== "") {
                 isOneClick = true;
                 $("#selectedCard").slideDown("slow");
                 $("#newCard").slideUp("slow");
-                
+
             }
             else {
                 isOneClick = false;
@@ -69,58 +67,37 @@
             }
         });
     }
-    
+
     function initializeOneClick(AdyenCheckoutObject, selectedCard) {
-    	var hideCVC = false;
-    	if(selectedCard == "bcmc"){
-    		hideCVC = true;
-    	}
-    	
-	    var cardNode = document.getElementById('oneClickCard');
+        var cardNode = document.getElementById('oneClickCard');
         window.AdyenOneClick = AdyenCheckoutObject.create('card', {
             // Mandatory fields
-            type: selectedCard,
-            details: (selectedCard == "bcmc") ? [] : [{"key": "cardDetails.cvc", "type": "cvc"}],
-            oneClick: true, //<--- enable oneClick 'mode'
-            hideCVC: hideCVC,
-            storedDetails: {
-                "card": {
-                    "expiryMonth": "",
-                    "expiryYear": "",
-                    "holderName": "",
-                    "number": ""
-                }
-            },
-            // Events
-            onChange: function(state) {
-                // checks whether card was valid then was changed to be invalid
-            	if(selectedCard == "maestro"){
-            		window.CardValid = true;
-            	}
-            	else {
-            		window.CardValid = state.isValid;
-            	}
+            brand: selectedCard,
+            storedPaymentMethodId: "1",
+            onChange: function (state) {
+                $('#dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(state.data.browserInfo));
+                window.CardValid = state.isValid;
             }
         });
         window.AdyenOneClick.mount(cardNode);
     }
-    
+
     function parseOpenInvoiceComponentData(state) {
-    	$('#dwfrm_adyPaydata_dateOfBirth').val(state.data.personalDetails.dateOfBirth);
-    	$('#dwfrm_adyPaydata_telephoneNumber').val(state.data.personalDetails.telephoneNumber);
-    	$('#dwfrm_adyPaydata_gender').val(state.data.personalDetails.gender);
+        $('#dwfrm_adyPaydata_dateOfBirth').val(state.data.personalDetails.dateOfBirth);
+        $('#dwfrm_adyPaydata_telephoneNumber').val(state.data.personalDetails.telephoneNumber);
+        $('#dwfrm_adyPaydata_gender').val(state.data.personalDetails.gender);
     }
-    
-    //Check the validity of checkout component	
-    function componentDetailsValid(selectedMethod){	
-    	//set data from components	
-    	switch(selectedMethod) {
-    	  case "ideal":
-    		  if (idealComponent.componentRef.state.isValid) {	
-                  $('#dwfrm_adyPaydata_issuer').val(idealComponent.componentRef.state.data.issuer);
-              }	
-              return idealComponent.componentRef.state.isValid;
-    	    break;
+
+    //Check the validity of checkout component
+    function componentDetailsValid(selectedMethod){
+        //set data from components
+        switch(selectedMethod) {
+            case "ideal":
+                if (idealComponent.componentRef.state.isValid) {
+                    $('#dwfrm_adyPaydata_issuer').val(idealComponent.componentRef.state.data.issuer);
+                }
+                return idealComponent.componentRef.state.isValid;
+                break;
             case "klarna":
                 if(klarnaComponent){
                     if (klarnaComponent.componentRef.state.isValid) {
@@ -136,19 +113,19 @@
                     return true;
                 }
                 break;
-    	  case "afterpay_default":
-    		  if (afterpayComponent.componentRef.state.isValid) {
-    			  parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);
-    		  }
-    		  return afterpayComponent.componentRef.state.isValid;
-      	    break;
-          case "ratepay":
-            $('#dwfrm_adyPaydata_dateOfBirth').val($("#ratepay_dob").val());
-            $('#dwfrm_adyPaydata_gender').val($("#ratepay_gender").val());
-            return true;
-    	  default:
-    	    return true;
-    	} 	
+            case "afterpay_default":
+                if (afterpayComponent.componentRef.state.isValid) {
+                    parseOpenInvoiceComponentData(afterpayComponent.componentRef.state);
+                }
+                return afterpayComponent.componentRef.state.isValid;
+                break;
+            case "ratepay":
+                $('#dwfrm_adyPaydata_dateOfBirth').val($("#ratepay_dob").val());
+                $('#dwfrm_adyPaydata_gender').val($("#ratepay_gender").val());
+                return true;
+            default:
+                return true;
+        }
     }
 
     function copyCardData(card) {
@@ -165,7 +142,7 @@
             $('#dwfrm_billing_paymentMethods_creditCard_saveCard').val(false);
         }
     }
-    
+
     function clearCardData() {
         $('#dwfrm_billing_paymentMethods_creditCard_type').val("");
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedCardNumber').val("");
@@ -174,11 +151,6 @@
         $('#dwfrm_billing_paymentMethods_creditCard_adyenEncryptedSecurityCode').val("");
         $('#dwfrm_billing_paymentMethods_creditCard_owner').val("");
     }
-    
-    function setBrowserData() {
-        var browserData = threeDS2utils.getBrowserInfo();
-        $('#dwfrm_billing_paymentMethods_creditCard_browserInfo').val(JSON.stringify(browserData));
-    };
 
     /**
      * @function
@@ -186,15 +158,13 @@
      */
     function initializeAccountEvents() {
         $('#add-card-submit').on('click', function (e) {
-        	e.preventDefault();
+            e.preventDefault();
             if (window.AdyenCard.isValid) {
-            	copyCardData(window.AdyenCard);
-                setBrowserData();
-            	$('#add-card-submit-hidden').trigger('click');
+                copyCardData(window.AdyenCard);
+                $('#add-card-submit-hidden').trigger('click');
             }
         });
     }
-
 
     /**
      * If selectedCard is used do not encrypt the number and holderName field

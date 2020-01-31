@@ -68,7 +68,6 @@ function redirect(order, redirectUrl) {
 function showConfirmation() {
     var orderNumber = session.privacy.orderNo;
     var order = OrderMgr.getOrder(orderNumber);
-
     var paymentInstruments = order.getPaymentInstruments("Adyen");
     var adyenPaymentInstrument;
     var paymentData;
@@ -98,7 +97,7 @@ function showConfirmation() {
     Transaction.wrap(function () {
         adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
-	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+	if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
         if(result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order);
@@ -160,25 +159,10 @@ function getPaymentMethods(cart) {
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
     var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
     return paymentMethods.filter(function (method) {
-        return !isMethodTypeBlocked(method.type);
+        return !AdyenHelper.isMethodTypeBlocked(method.type);
     });
 
     return {};
-}
-
-/**
- * Checks if payment method is blocked
- */
-function isMethodTypeBlocked(methodType)
-{
-	if (methodType.indexOf('bcmc_mobile_QR') !== -1 ||
-		(methodType.indexOf('wechatpay') !== -1 && methodType.indexOf('wechatpayWeb') === -1) ||
-		methodType == "scheme" || methodType == "cup" || methodType == "applepay"
-	) {
-		return true;
-	}
-	
-	return false;
 }
 
 /**

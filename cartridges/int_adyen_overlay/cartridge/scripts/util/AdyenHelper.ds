@@ -30,8 +30,8 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
-    CHECKOUT_COMPONENT_VERSION: "3.2.0",
-    VERSION: "19.2.1",
+    CHECKOUT_COMPONENT_VERSION: "3.4.0",
+    VERSION: "19.2.2",
 
     getService: function (service: String): Object {
         // Create the service config (used for all services)
@@ -178,6 +178,14 @@ var __AdyenHelper: Object = {
         return signature;
     },
 
+    getAdyenBasketFieldsEnabled: function(){
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenBasketFieldsEnabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenBasketFieldsEnabled');
+        }
+        return returnValue;
+    },
+
     hasCheckoutComponent: function (paymentMethod) {
         if (paymentMethod.indexOf("ideal") > -1 ||
             paymentMethod.indexOf("klarna") > -1 ||
@@ -244,7 +252,7 @@ var __AdyenHelper: Object = {
     },
 
     isOpenInvoiceMethod: function (paymentMethod) {
-        if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1) {
+        if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1 || paymentMethod === "zip") {
             return true;
         }
         return false;
@@ -403,7 +411,7 @@ var __AdyenHelper: Object = {
         return shopperObject;
     },
 
-    createAddressObjects: function (order, jsonObject) {
+    createAddressObjects: function (order, paymentMethod, jsonObject) {
         var shippingAddress = order.defaultShipment.shippingAddress;
         jsonObject["countryCode"] = shippingAddress.countryCode.value.toUpperCase();
 
@@ -493,6 +501,7 @@ var __AdyenHelper: Object = {
         jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
         jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
         jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
+        jsonObject['additionalData'] = {};
 
         return jsonObject;
     },
@@ -568,9 +577,7 @@ var __AdyenHelper: Object = {
     },
 
     add3DS2Data: function(jsonObject, formType){
-        jsonObject["additionalData"] = {
-            allow3DS2: true
-        };
+        jsonObject.additionalData["allow3DS2"] = true;
         jsonObject["channel"] = "web";
 
         var card;
@@ -593,10 +600,7 @@ var __AdyenHelper: Object = {
                 break;
         }
 
-        var browserInfo = JSON.parse(card.browserInfo.value);
-        browserInfo['acceptHeader'] = request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding');
-        browserInfo['userAgent'] = request.httpUserAgent;
-        jsonObject["browserInfo"] = browserInfo;
+        jsonObject["browserInfo"] = JSON.parse(card.browserInfo.value);
 
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
 
@@ -604,6 +608,14 @@ var __AdyenHelper: Object = {
         jsonObject.threeDS2RequestData = {"notificationURL" : ""};
 
         return jsonObject;
+    },
+
+    /**
+     * Checks if payment method is blocked
+     */
+    isMethodTypeBlocked : function(methodType) {
+        var blockedMethods = ["bcmc", "bcmc_mobile_QR","scheme", "cup", "applepay", "wechatpay", "wechatpay_pos", "wechatpaySdk", "wechatpayQr"];
+        return (blockedMethods.indexOf(methodType) !== -1);
     },
 
     extend: function (obj, src) {
@@ -708,7 +720,7 @@ var __AdyenHelper: Object = {
         }
 
         if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-            order.custom.Adyen_value = result.AdyenAmount;
+            order.custom.Adyen_value = result.AdyenAmount.toFixed(0);
         }
 
         if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
@@ -741,33 +753,29 @@ var __AdyenHelper: Object = {
     getFractionDigits: function (currencyCode): Number {
         var format;
         switch (currencyCode) {
-            case "JPY":
-            case "IDR":
-            case "KRW":
-            case "BYR":
-            case "VND":
             case "CVE":
             case "DJF":
             case "GNF":
+            case "IDR":
+            case "JPY":
+            case "KMF":
+            case "KRW":
             case "PYG":
             case "RWF":
             case "UGX":
+            case "VND":
             case "VUV":
             case "XAF":
             case "XOF":
             case "XPF":
-            case "GHC":
-            case "KMF":
                 format = 0;
                 break;
-            case "MRO":
-                format = 1;
-                break;
             case "BHD":
+            case "IQD":
             case "JOD":
             case "KWD":
-            case "OMR":
             case "LYD":
+            case "OMR":
             case "TND":
                 format = 3;
                 break;

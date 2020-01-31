@@ -49,6 +49,11 @@
 
 #type {
 	list-style-type: none;
+	line-height: 50px;
+}
+
+#type .form-row {
+	margin: .5rem 0 .5rem;
 }
 
 #ssnValue {
@@ -75,6 +80,11 @@
 
 .summary-label{
 	font-weight: bold;
+}
+
+.adyen-payment-details {
+	max-width: 400px;
+	margin: auto;
 }
 
 /* Custom Adyen */
