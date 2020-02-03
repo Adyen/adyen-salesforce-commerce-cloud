@@ -2,6 +2,8 @@
 var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 var Logger = require("dw/system/Logger");
 var StringUtils = require("dw/util/StringUtils");
+var Transaction = require('dw/system/Transaction');
+var Order = require('dw/order/Order');
 
 function getTerminals() {
     try {
@@ -25,8 +27,8 @@ function getTerminals() {
 
 function createTerminalPayment(order, paymentInstrument, terminalId) {
     try {
+        Transaction.begin();
         var terminalRequestObject = {};
-
         if (!order || !paymentInstrument) {
             throw new Error("Could not retrieve payment data, order = " + JSON.stringify(order) + ", paymentInstrument = " + JSON.stringify(paymentInstrument));
         }
@@ -76,11 +78,39 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
         terminalRequestObject.serviceId = serviceId;
         terminalRequestObject.terminalId = terminalId;
 
-       return executeCall(AdyenHelper.SERVICE.POSPAYMENT, terminalRequestObject);
+        var paymentResult = executeCall(AdyenHelper.SERVICE.POSPAYMENT, terminalRequestObject);
+        if(paymentResult.error){
+            throw new Error("Error in POS payment result: " + JSON.stringify(paymentResult.response));
+        }
+        else {
+            var terminalResponse = JSON.parse(paymentResult.response);
+            if (terminalResponse.SaleToPOIResponse) {
+                var paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
+                if (paymentResponse.Response.Result == "Success") {
+                    order.custom.Adyen_eventCode = "AUTHORISATION";
+                    var pspReference = "";
+                    if (!empty(paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID)) {
+                        pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
+                    } else if (!empty(paymentResponse.POIData.POITransactionID.TransactionID)) {
+                        pspReference = paymentResponse.POIData.POITransactionID.TransactionID.split(".")[1];
+                    }
+                    // Save full response to transaction custom attribute
+                    paymentInstrument.paymentTransaction.transactionID = pspReference;
+                    order.custom.Adyen_pspReference = pspReference;
+                    order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+                    order.setExportStatus(Order.EXPORT_STATUS_READY);
+                    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(paymentResponse);
+                    Transaction.commit();
+                    return { error: false, authorized: true };
+                }
+            }
+
+            throw new Error("No correct response: " + JSON.stringify(paymentResponse.Response));
+        }
     }
     catch (e) {
-        Logger.getLogger("Adyen").error("Adyen createTerminalPayment: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
-        return { error: true };
+        Transaction.rollback();
+        return { error: true, response: e.toString() };
     }
 
 }
@@ -129,14 +159,14 @@ function executeCall(serviceType, requestObject){
     if (callResult.isOk() == false) {
         if(requestObject.isPaymentRequest){
             var abortResult = sendAbortRequest(requestObject.serviceId, requestObject.terminalId).response;
-            return { error: true, response: "abort request = " + abortResult };
+            return { error: true, response: "Request aborted: " + abortResult };
         }
         throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
     } 
 
     var resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
-        throw new Error("No correct response from " + serviceType + ", result: " +JSON.stringify(resultObject))
+        throw new Error("No correct response from " + serviceType + ", result: " + JSON.stringify(resultObject))
     }
 
     return { error: false, response: resultObject.getText() };

@@ -4,41 +4,33 @@
 * @input Basket : dw.order.Basket The basket
 *
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.util );
-importPackage( dw.value );
-importPackage( dw.web );
+importPackage(dw.system);
+importPackage(dw.order);
+importPackage(dw.util);
+importPackage(dw.value);
+importPackage(dw.web);
 
-function execute( args : PipelineDictionary ) : Number
-{
-	return removePaymentInstruments(args.Basket);
-}
-
-function removePaymentInstruments( basket : dw.order.Basket ) : Number
+function removePaymentInstruments(basket)
 {	
-	// verify that we have a basket and a valid credit card form
-	if( basket == null )	
+	// verify that we have a basket
+	if(!basket)
 	{
-		return PIPELET_ERROR;
+		return { error : true };
 	}
 	
-	// get all credit card payment instruments
-	var ccPaymentInstrs : Collection = basket.getPaymentInstruments();
-	var iter : Iterator = ccPaymentInstrs.iterator();
-	var existingPI : OrderPaymentInstrument = null;
+	// get all payment instruments
+	var paymentInstruments = basket.getPaymentInstruments();
+	var iter = paymentInstruments.iterator();
 
 	// remove them
-	while( iter.hasNext() )
+	while(iter.hasNext())
 	{
-		existingPI = iter.next();
-		basket.removePaymentInstrument( existingPI );
+		basket.removePaymentInstrument(iter.next());
 	}
-	
-	return PIPELET_NEXT;
+
+	return { error : false };
 }
 
 module.exports = {
-	'execute': execute,
 	'removePaymentInstruments': removePaymentInstruments
 }

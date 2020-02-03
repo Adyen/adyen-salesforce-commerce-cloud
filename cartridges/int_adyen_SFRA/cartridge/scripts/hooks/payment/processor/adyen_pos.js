@@ -7,7 +7,6 @@ var server = require("server");
 var collections = require("*/cartridge/scripts/util/collections");
 var Resource = require("dw/web/Resource");
 var Transaction = require("dw/system/Transaction");
-var Order = require('dw/order/Order');
 var Logger = require('dw/system/Logger');
 var constants = require("*/cartridge/adyenConstants/constants");
 
@@ -50,7 +49,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    Transaction.begin();
     var result = adyenTerminalApi.createTerminalPayment(order, paymentInstrument, terminalId);
     if (result.error) {
         Logger.getLogger("Adyen").error("POS Authorise error, result: " + result.response);
@@ -61,34 +59,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
     else {
-        var terminalResponse = JSON.parse(result.response);
-        if (terminalResponse.SaleToPOIResponse) {
-            var paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
-            if (paymentResponse.Response.Result == "Success") {
-                order.custom.Adyen_eventCode = "AUTHORISATION";
-                var pspReference = "";
-                if (!empty(paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID)) {
-                    pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
-                } else if (!empty(paymentResponse.POIData.POITransactionID.TransactionID)) {
-                    pspReference = paymentResponse.POIData.POITransactionID.TransactionID.split(".")[1];
-                }
-                // Save full response to transaction custom attribute
-                paymentInstrument.paymentTransaction.transactionID = pspReference;
-                order.custom.Adyen_pspReference = pspReference;
-                order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-                order.setExportStatus(Order.EXPORT_STATUS_READY);
-                paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(paymentResponse);
-                Transaction.commit();
-                return {authorized: true};
-            }
-        }
+        return result;
     }
-    Logger.getLogger("Adyen").error("POS error in response, payment result: " + JSON.stringify(paymentResponse.PaymentResult));
-    Transaction.rollback();
-    return {
-        error: true,
-        PlaceOrderError: ("AdyenErrorMessage" in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : "")
-    };
 }
 
 

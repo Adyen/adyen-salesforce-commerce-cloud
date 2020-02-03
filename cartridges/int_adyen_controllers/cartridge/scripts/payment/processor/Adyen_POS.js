@@ -2,8 +2,10 @@
 
 /* API Includes */
 var PaymentMgr = require('dw/order/PaymentMgr');
-var Transaction = require('dw/system/Transaction');
-
+var Resource = require("dw/web/Resource");
+var Transaction = require("dw/system/Transaction");
+var Logger = require('dw/system/Logger');
+var constants = require("*/cartridge/adyenConstants/constants");
 /* Script Modules */
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 
@@ -11,33 +13,29 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
  * Creates a Adyen payment instrument for the given basket
  */
 function handle(args) {
-	var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI'),
-	adyenPaymentInstrument = require('*/cartridge/scripts/createAdyenPOSPaymentInstrument'),
-	result;
-	
-    Transaction.wrap(function () {
-    	result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
-        if (result === PIPELET_ERROR) {
-    		return {error : true};
-    	}
-        // payment instrument returned on success
-        result = adyenPaymentInstrument.create(args.Basket);
-    });
-    
-    if (result === PIPELET_ERROR) {
-		return {error : true};
-	}
+	var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
-	return {success : true};
+    Transaction.wrap(function () {
+    	var result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
+        if (result.error) {
+    		return result;
+    	}
+
+        var paymentInstrument = args.Basket.createPaymentInstrument(
+            constants.METHOD_ADYEN_POS, args.Basket.totalGrossPrice
+        );
+        paymentInstrument.custom.adyenPaymentMethod = "POS Terminal";
+    });
+
+    return { success: true };
 }
 
 /**
  * Authorizes a payment using a POS terminal. 
  * The payment is authorized by using the Adyen_POS processor only and setting the order no as the transaction ID. 
  */
-function authorize(args) { 
-	var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-	
+function authorize(args) {
+    var adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
 	var order = args.Order;
     var orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
@@ -48,60 +46,19 @@ function authorize(args) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
-    // ScriptFile	adyenPosVerification.ds
-    var adyenPosVerification = require('*/cartridge/scripts/adyenPosVerification');
-    Transaction.begin();
-    var result = adyenPosVerification.verify({
-        Order: order,
-        Amount: paymentInstrument.paymentTransaction.amount,
-        CurrentSession: session,
-        CurrentRequest: request,
-        PaymentInstrument: paymentInstrument,
-        TerminalId: session.forms.adyPaydata.terminalId.value
-    });
-
+    //TODOBAS terminal ID from frontend
+    var terminalId = "";
+    var result = adyenTerminalApi.createTerminalPayment(order, paymentInstrument, terminalId);
     if (result.error) {
-        Transaction.rollback();
-        let args = 'args' in result ? result.args : null;
-
+        Logger.getLogger("Adyen").error("POS Authorise error, result: " + result.response);
+        var errors = [];
+        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
         return {
-            error: true,
-            PlaceOrderError: (!empty(args) && 'AdyenErrorMessage' in args && !empty(args.AdyenErrorMessage) ? args.AdyenErrorMessage : '')
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
-    }
-
-    if(result['Response'].SaleToPOIResponse){
-	    var paymentResponse = result['Response'].SaleToPOIResponse.PaymentResponse;
-	    if (paymentResponse.Response.Result == 'Success') {
-	    	order.custom.Adyen_eventCode = 'AUTHORISATION';
-	    	var pspReference = "";
-	    	if (!empty(paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID)) {
-	        	pspReference = paymentResponse.PaymentResult.PaymentAcquirerData.AcquirerTransactionID.TransactionID;
-	        }
-	    	else if(!empty(paymentResponse.POIData.POITransactionID.TransactionID)){
-	    		pspReference = paymentResponse.POIData.POITransactionID.TransactionID.split(".")[1];
-	    	}
-	    	// Save full response to transaction custom attribute
-	    	paymentInstrument.paymentTransaction.transactionID = pspReference;
-        	order.custom.Adyen_pspReference = pspReference;
-	        paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(paymentResponse); 
-	    	Transaction.commit();
-	    	return {authorized: true};
-	    } 
-	    else {
-	    	Transaction.rollback();
-	        return {
-	            error: true,
-	            PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
-	        };
-	    }
     }
     else {
-    	Transaction.rollback();
-        return {
-            error: true,
-            PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
-        };
+        return result;
     }
 }
 
