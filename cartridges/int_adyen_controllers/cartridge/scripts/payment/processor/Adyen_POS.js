@@ -46,8 +46,19 @@ function authorize(args) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
-    //TODOBAS terminal ID from frontend
-    var terminalId = "";
+    var paymentForm = session.forms.adyPaydata;
+
+    var terminalId = paymentForm.terminalId.value;
+
+    if(!terminalId){
+        Logger.getLogger("Adyen").error("No terminal selected");
+        var errors = [];
+        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
+    }
+
     var result = adyenTerminalApi.createTerminalPayment(order, paymentInstrument, terminalId);
     if (result.error) {
         Logger.getLogger("Adyen").error("POS Authorise error, result: " + result.response);

@@ -17,8 +17,8 @@
     function initializeBillingEvents() {
         var isOneClick = false;
         $('#billing-submit').on('click', function (e) {
-            var radioVal = $('.payment-method-options').find(':checked').val();
-            if ('CREDIT_CARD' == radioVal) {
+            var selectedPaymentType = $('.payment-method-options').find(':checked').val();
+            if (selectedPaymentType == "CREDIT_CARD") {
 
                 if (!window.CardValid) {
                     window.AdyenCard.showValidation();
@@ -36,9 +36,13 @@
                     copyCardData(window.AdyenCard);
                 }
             }
-            else if (radioVal == "Adyen"){
+            else if (selectedPaymentType == "Adyen"){
                 var selectedMethod = $('[name="brandCode"]:checked').val();
                 return componentDetailsValid(selectedMethod);
+            }
+            else if (selectedPaymentType == "AdyenPOS"){
+                $("#dwfrm_adyPaydata_terminalId").val($("#terminalId").val());
+                return true;
             }
 
             e.preventDefault();
