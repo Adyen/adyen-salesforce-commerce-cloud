@@ -21,7 +21,7 @@ function getTerminals() {
 
     } catch (e) {
         Logger.getLogger("Adyen").error("Adyen getTerminals: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
-        return { error: true };
+        return { error: true, response: "{}"};
     }
 }
 

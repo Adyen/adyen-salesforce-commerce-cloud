@@ -6,7 +6,7 @@
 
 <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
 <div class="form-row form-indent">
-<isif condition="${connectedTerminals.uniqueTerminalIds.length > 0}">
+<isif condition="${connectedTerminals.uniqueTerminalIds && connectedTerminals.uniqueTerminalIds.length > 0}">
 	<div class="field-wrapper">
 		<h4>${Resource.msg('terminal.selectTerminal','adyen',null)}</h4>
 		<select class="connectedTerminals" id="terminalId">
