@@ -4,6 +4,7 @@
     var util = require('./util'),
         ajax = require('./ajax');
 
+    var constants = require("./adyenConstants");
     function pad(number) {
         if (number < 10) {
             return '0' + number;
@@ -18,7 +19,7 @@
         var isOneClick = false;
         $('#billing-submit').on('click', function (e) {
             var selectedPaymentType = $('.payment-method-options').find(':checked').val();
-            if (selectedPaymentType == "CREDIT_CARD") {
+            if (selectedPaymentType == constants.METHOD_CREDIT_CARD) {
 
                 if (!window.CardValid) {
                     window.AdyenCard.showValidation();
@@ -36,11 +37,11 @@
                     copyCardData(window.AdyenCard);
                 }
             }
-            else if (selectedPaymentType == "Adyen"){
+            else if (selectedPaymentType == constants.METHOD_ADYEN){
                 var selectedMethod = $('[name="brandCode"]:checked').val();
                 return componentDetailsValid(selectedMethod);
             }
-            else if (selectedPaymentType == "AdyenPOS"){
+            else if (selectedPaymentType == constants.METHOD_ADYEN_POS){
                 $("#dwfrm_adyPaydata_terminalId").val($("#terminalId").val());
                 return true;
             }

@@ -36,7 +36,7 @@ function handle(args) {
  */
 function authorize(args) {
     var adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
-	var order = args.Order;
+    var order = args.Order;
     var orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
@@ -50,7 +50,7 @@ function authorize(args) {
 
     var terminalId = paymentForm.terminalId.value;
 
-    if(!terminalId){
+    if (!terminalId) {
         Logger.getLogger("Adyen").error("No terminal selected");
         var errors = [];
         errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
@@ -68,9 +68,7 @@ function authorize(args) {
             authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
     }
-    else {
-        return result;
-    }
+    return result;
 }
 
 exports.Handle = handle;

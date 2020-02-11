@@ -58,9 +58,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
     }
-    else {
-        return result;
-    }
+    return result;
 }
 
 
