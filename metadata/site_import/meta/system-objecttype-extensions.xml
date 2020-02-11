@@ -374,28 +374,10 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-              <attribute-definition attribute-id="Adyen_POIID">
-                <display-name xml:lang="x-default">Adyen POS unique terminal ID</display-name>
-                <description xml:lang="x-default">Adyen POS unique terminal ID</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
              <attribute-definition attribute-id="Adyen_API_Key">
                 <display-name xml:lang="x-default">X-API-KEY of Web service</display-name>
                 <description xml:lang="x-default">X-API-KEY of Web service</description>
                 <type>password</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_multi_terminals">
-                <display-name xml:lang="x-default">Terminal configuration JSON</display-name>
-                <description xml:lang="x-default">Terminal configuration JSON</description>
-                <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
@@ -418,8 +400,6 @@
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_StoreId"/>
-                <attribute attribute-id="Adyen_POIID"/>
-                <attribute attribute-id="Adyen_multi_terminals"/>
             </attribute-group>
         </group-definitions>
 </type-extension>

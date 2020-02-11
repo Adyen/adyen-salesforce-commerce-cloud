@@ -81,7 +81,7 @@ function displayPaymentMethods() {
             $('#component_' + $(this).val()).show();
         });
 
-        if(data.AdyenConnectedTerminals && data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0){
+        if(data.AdyenConnectedTerminals && data.AdyenConnectedTerminals.uniqueTerminalIds && data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0){
             $('#AdyenPosTerminals').empty();
             addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
         }

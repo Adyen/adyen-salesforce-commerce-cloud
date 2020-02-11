@@ -346,7 +346,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         paymentMethods = [];
     }
 
-    var connectedTerminals = null;
+    var connectedTerminals = {};
     if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
         connectedTerminals = adyenTerminalApi.getTerminals().response;
     }

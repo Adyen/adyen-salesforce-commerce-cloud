@@ -2,68 +2,21 @@
 <isinclude template="util/modules"/>
 
 <isset name="brandCode" value="AdyenPOS" scope="session"/>
+<isset name="connectedTerminals" value="${pdict.AdyenPaymentMethods.adyenConnectedTerminals}" scope="page"/>
 
-
-<iscomment>Dropdown for selection POS terminal per Store</iscomment>
-	<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
-	
-	<div class="form-row">
-		<label class="label">Select Store</label>
-		<div class="field-wrapper">
-			<select id="store_selection" class="input-select valid" onchange="changeStore()">
-				<option value="">Select Store</option>
-			</select>
-		</div>
+<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
+<div class="form-row form-indent">
+<isif condition="${connectedTerminals.uniqueTerminalIds && connectedTerminals.uniqueTerminalIds.length > 0}">
+	<div class="field-wrapper">
+		<h4>${Resource.msg('terminal.selectTerminal','adyen',null)}</h4>
+		<select class="connectedTerminals" id="terminalId">
+			<isloop items="${connectedTerminals.uniqueTerminalIds}" var="uniqueTerminal">
+				<option label="${uniqueTerminal}" value="${uniqueTerminal}"/>
+			</isloop>
+		</select>
 	</div>
-	<div class="form-row">
-		<label class="label">Select Terminal</label>
-		<div class="field-wrapper">
-			<select id="terminal_selection" onchange="changeTerminal()" class="input-select valid" required>
-				<option value="">Select Terminal</option>
-			</select> 
-		</div>
-	</div>
-	<script type="text/javascript">
-		var terminalJSON = JSON.parse("<isprint encoding="jsonvalue" value="${pdict.AdyenPosTerminals}" />");
-		window.onload = function(){ 		
-	    	var dd_stores = document.getElementById('store_selection');
-	    	dd_stores.options.length = 1; 
-	    	var stores = getStores();
-	    	stores.forEach(function(store) {
-	    		dd_stores.options[dd_stores.options.length] = new Option(store, store);
-	    	})
-		};
-		
-		function getStores(){		
-			var uniqueStores = [];
-			for(i = 0; i< terminalJSON.length; i++){    
-			    if(uniqueStores.indexOf(terminalJSON[i].Store) === -1){
-			        uniqueStores.push(terminalJSON[i].Store);        
-			    }        
-			}
-			return uniqueStores;
-		};
-		
-	    function changeStore(){
-	    	var selectedStore = document.getElementById("store_selection").value;
-	    	var storeTerminals = terminalJSON.filter(function(terminal){
-	    		return terminal.Store == selectedStore;
-	    	});
-	    	createTerminalList(storeTerminals);	    	
-	    };
-	    
-	    function createTerminalList(storeTerminals){
-	    var dd_terminals = document.getElementById("terminal_selection");
-	    dd_terminals.options.length = 1;
-	    	storeTerminals.forEach(function(terminal) {
-	    		dd_terminals.options[dd_terminals.options.length] = new Option(terminal.Description, terminal.POIID);
-	    	})
-	    };
-	    
-	    function changeTerminal(){
-	    var selectedTerminal = document.getElementById("terminal_selection").value;
-	     	document.getElementById("dwfrm_adyPaydata_terminalId").value = selectedTerminal;
-	     	document.getElementById("billing-submit").removeAttribute("disabled");
-	    };
-	</script>
-		
+	<iselse>
+		<h4>${Resource.msg('terminal.noTerminals','adyen',null)}</h4>
+	</iselse>
+</isif>
+</div>

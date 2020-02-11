@@ -17,15 +17,15 @@ function handle(args) {
 	
     Transaction.wrap(function () {
     	result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
-        if (result === PIPELET_ERROR) {
-    		return {error : true};
+        if (result.error) {
+    		return result;
     	}
         // payment instrument returned on success
         result = adyenPaymentInstrument.create(args.Basket);
     });
     
-    if (result === PIPELET_ERROR) {
-		return {error : true};
+    if (result.error) {
+		return result;
 	}
 
 	return {success : true};

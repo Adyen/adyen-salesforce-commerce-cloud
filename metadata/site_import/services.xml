@@ -60,6 +60,10 @@
         <timeout-millis>30000</timeout-millis>
         <cb-enabled>false</cb-enabled>
     </service-profile>
+    <service-profile service-profile-id="AdyenPOS">
+        <timeout-millis>100000</timeout-millis>
+        <cb-enabled>false</cb-enabled>
+    </service-profile>
     
     <service service-id="AdyenPayment">
         <service-type>HTTP</service-type>
@@ -112,7 +116,7 @@
         <log-prefix>adyen</log-prefix>
         <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
+        <profile-id>AdyenPOS</profile-id>
         <credential-id>AdyenPosPayment</credential-id>
     </service>
     <service service-id="AdyenOriginKeys">
