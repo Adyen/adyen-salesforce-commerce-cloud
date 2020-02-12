@@ -14,4 +14,7 @@
     <field formid="bankAccountOwnerName" type="string" mandatory="false"/>
     <field formid="bankAccountNumber" type="string" mandatory="false"/>
     <field formid="bankLocationId" type="string" mandatory="false"/>
+
+    <!--POS terminal-->
+    <field formid="terminalId" type="string" mandatory="false" />
 </form>

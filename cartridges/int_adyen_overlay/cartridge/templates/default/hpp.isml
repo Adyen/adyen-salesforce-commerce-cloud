@@ -7,7 +7,7 @@
 <isinputfield formfield="${pdict.CurrentForms.adyPaydata.issuer}" type="hidden"/>
 
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
+<isset name="methods" value="${pdict.AdyenPaymentMethods.adyenPaymentMethods}" scope="page"/>
 <iscomment>Loop through the returned payment methods after calling /paymentMethods and print them</iscomment>
 <isif condition="${!empty(methods) && methods.length > 0}">
     <script type="text/javascript">

@@ -9,6 +9,7 @@ var BasketMgr = require('dw/order/BasketMgr');
 var Site = require('dw/system/Site');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 
 /* Script Modules */
@@ -156,22 +157,23 @@ function getPaymentMethods(cart) {
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value.toUpperCase();
     }
+    var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
+    var PaymentMgr = require('dw/order/PaymentMgr');
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
     var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
-    return paymentMethods.filter(function (method) {
+    var filteredMethods = paymentMethods.filter(function (method) {
         return !AdyenHelper.isMethodTypeBlocked(method.type);
     });
 
-    return {};
-}
+    var connectedTerminals = {};
+    if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
+        connectedTerminals = adyenTerminalApi.getTerminals().response;
+    }
 
-/**
-
- * Get configured terminals  
- */
-function getTerminals() {
-	var terminals = Site.getCurrent().getCustomPreferenceValue("Adyen_multi_terminals");
-   	return terminals;
+    return {
+        adyenPaymentMethods: filteredMethods,
+        adyenConnectedTerminals: JSON.parse(connectedTerminals)
+    };
 }
 
 function redirect3ds2() {
@@ -438,7 +440,5 @@ exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
-
-exports.GetTerminals = getTerminals;
 
 exports.getExternalPlatformVersion = getExternalPlatformVersion();

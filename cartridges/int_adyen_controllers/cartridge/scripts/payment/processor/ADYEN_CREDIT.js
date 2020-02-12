@@ -25,8 +25,8 @@ function Handle(args) {
         result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
     });
 
-    if (result === PIPELET_ERROR) {
-        return {error: true};
+    if (result.error) {
+        return result;
     }
     var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
     var tokenID = AdyenHelper.getCardToken(creditCardForm.get('selectedCardID').value(), customer);

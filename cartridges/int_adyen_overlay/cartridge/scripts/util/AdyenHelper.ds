@@ -18,7 +18,8 @@ var __AdyenHelper: Object = {
         PAYMENTMETHODS: "AdyenPaymentMethods",
         POSPAYMENT: "AdyenPosPayment",
         ORIGINKEYS: "AdyenOriginKeys",
-        CHECKOUTPAYMENTMETHODS: "AdyenCheckoutPaymentMethods"
+        CHECKOUTPAYMENTMETHODS: "AdyenCheckoutPaymentMethods",
+        CONNECTEDTERMINALS: "AdyenConnectedTerminals"
     },
     MODE: {
         TEST: "TEST",
@@ -137,6 +138,14 @@ var __AdyenHelper: Object = {
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_POIID');
+        }
+        return returnValue;
+    },
+
+    getAdyenStoreId: function (): String {
+        var returnValue = null;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_StoreId'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_StoreId');
         }
         return returnValue;
     },
@@ -498,7 +507,7 @@ var __AdyenHelper: Object = {
             'userAgent': request.httpUserAgent
         };
 
-        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo();
+        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo(true);
         jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
         jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
         jsonObject['additionalData'] = {};
@@ -786,10 +795,10 @@ var __AdyenHelper: Object = {
         return format;
     },
 
-    getApplicationInfo: function () {
+    getApplicationInfo: function (isEcom) {
 
         var externalPlatformVersion = "";
-
+        var applicationInfo = {};
         try {
             // AdyenController can be coming either from int_adyen_controllers or int_adyen_SFRA, depending on the cartridge path
             var AdyenController = require('*/cartridge/controllers/Adyen.js');
@@ -797,17 +806,22 @@ var __AdyenHelper: Object = {
         } catch (e) {
         }
 
-        var applicationInfo = {
-            "adyenPaymentSource": {
-                "name": "adyen-salesforce-commerce-cloud",
-                "version": __AdyenHelper.VERSION
-            },
-            "externalPlatform": {
-                "name": "SalesforceCommerceCloud",
-                "version": externalPlatformVersion
-            }
+        applicationInfo.merchantApplication = {
+            "name": "adyen-salesforce-commerce-cloud",
+            "version": __AdyenHelper.VERSION
         };
 
+        applicationInfo.externalPlatform = {
+            "name": "SalesforceCommerceCloud",
+            "version": externalPlatformVersion
+        }
+
+        if(isEcom){
+            applicationInfo.adyenPaymentSource = {
+                "name": "adyen-salesforce-commerce-cloud",
+                "version": __AdyenHelper.VERSION
+            }
+        }
         return applicationInfo;
     }
 }
