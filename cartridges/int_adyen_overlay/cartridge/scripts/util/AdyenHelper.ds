@@ -19,7 +19,8 @@ var __AdyenHelper: Object = {
         POSPAYMENT: "AdyenPosPayment",
         ORIGINKEYS: "AdyenOriginKeys",
         CHECKOUTPAYMENTMETHODS: "AdyenCheckoutPaymentMethods",
-        CONNECTEDTERMINALS: "AdyenConnectedTerminals"
+        CONNECTEDTERMINALS: "AdyenConnectedTerminals",
+        ADYENGIVING: "AdyenGiving"
     },
     MODE: {
         TEST: "TEST",
@@ -77,6 +78,14 @@ var __AdyenHelper: Object = {
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_merchantCode'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_merchantCode');
+        }
+        return returnValue;
+    },
+
+    getAdyenGivingMerchantAccount: function (): String {
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_donationAccountCode'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_donationAccountCode');
         }
         return returnValue;
     },

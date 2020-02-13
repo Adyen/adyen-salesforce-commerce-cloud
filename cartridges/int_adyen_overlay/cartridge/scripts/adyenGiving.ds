@@ -1,0 +1,55 @@
+/**
+ * Send request to adyen to get connected terminals based on merchant account and storeId
+ *
+ */
+
+//script include
+var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+var Logger = require("dw/system/Logger");
+
+function donate (donationReference, donationAmount, originalReference) {
+    try {
+        var requestObject = {};
+
+        var callResult = null,
+            resultObject = null,
+            service = AdyenHelper.getService(AdyenHelper.SERVICE.ADYENGIVING);
+
+        if (!service) {
+            throw new Error("Could not connect to Adyen Giving")
+        }
+
+        requestObject["merchantAccount"] = AdyenHelper.getAdyenMerchantAccount();
+        requestObject["donationAccount"] = AdyenHelper.getAdyenGivingMerchantAccount();
+        requestObject["modificationAmount"] = donationAmount;
+        requestObject["reference"] = donationReference;
+        requestObject["originalReference"] = originalReference;
+
+        var xapikey = AdyenHelper.getAdyenApiKey();
+        service.addHeader("Content-type", "application/json");
+        service.addHeader("charset", "UTF-8");
+        service.addHeader("X-API-key", xapikey);
+        callResult = service.call(JSON.stringify(requestObject));
+
+        if (callResult.isOk() == false) {
+            throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
+        }
+
+        resultObject = callResult.object;
+
+        if (!resultObject || !resultObject.getText()) {
+            throw new Error("No correct response from adyenGiving call")
+        }
+
+        return JSON.parse(resultObject.getText());
+
+    } catch (e) {
+        Logger.getLogger("Adyen").error("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        return;
+    }
+}
+
+
+module.exports = {
+    'donate': donate
+}
