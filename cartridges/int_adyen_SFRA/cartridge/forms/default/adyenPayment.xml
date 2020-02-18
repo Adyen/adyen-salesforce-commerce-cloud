@@ -17,4 +17,7 @@
 
     <!--POS terminal-->
     <field formid="terminalId" type="string" mandatory="false" />
+
+    <!--Generic Component-->
+    <field formid="adyenStateData" type="string" mandatory="false" />
 </form>

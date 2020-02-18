@@ -3,6 +3,7 @@
 var server = require('server');
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var Logger = require('dw/system/Logger');
 
 function getEncryptedData() {
     var paymentForm = server.forms.getForm('billing');
@@ -17,6 +18,9 @@ function getEncryptedData() {
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
+    Logger.getLogger("Adyen").error("viewData = " + JSON.stringify(viewFormData));
+    Logger.getLogger("Adyen").error("paymentForm = " + JSON.stringify(paymentForm));
+    Logger.getLogger("Adyen").error("req = " + JSON.stringify(req));
     var array = require('*/cartridge/scripts/util/array');
     var viewData = viewFormData;
     var creditCardErrors = {};
@@ -37,15 +41,18 @@ function processForm(req, paymentForm, viewFormData) {
         value: paymentForm.paymentMethod.value,
         htmlName: paymentForm.paymentMethod.value
     };
+    Logger.getLogger("Adyen").error("paymentForm.adyenPaymentFields = " + JSON.stringify(paymentForm.adyenPaymentFields));
+    var stateData = JSON.parse(paymentForm.adyenPaymentFields.adyenStateData.value);
+    Logger.getLogger("Adyen").error("stateData = " + JSON.stringify(stateData));
 
-    viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
-    viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
-    viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
-    viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
+    viewData.adyenEncryptedCardNumber = stateData.paymentMethod.encryptedCardNumber.value;
+    viewData.adyenEncryptedExpiryMonth = stateData.paymentMethod.encryptedExpiryMonth.value;
+    viewData.adyenEncryptedExpiryYear = stateData.paymentMethod.encryptedExpiryYear.value;
+    viewData.adyenEncryptedSecurityCode = stateData.paymentMethod.encryptedSecurityCode.value;
 
     viewData.paymentInformation = {
         cardType: {
-            value: paymentForm.creditCardFields.cardType.value
+            value: "visa"
         },
         cardNumber: {
             value: paymentForm.creditCardFields.cardNumber.value
