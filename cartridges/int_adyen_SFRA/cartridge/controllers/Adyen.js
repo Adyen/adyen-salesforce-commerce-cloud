@@ -379,12 +379,12 @@ server.get('GetCheckoutPaymentMethods', server.middleware.https, function (req, 
 
     try {
         res.json({
-            AdyenPaymentMethods: getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString())
+            AdyenPaymentMethods: getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.toString())
         });
         return next();
     }
     catch(e){
-        Logger.getLogger("Adyen").error("Could not retrieve payment methods: " + e.message);
+        Logger.getLogger("Adyen").error("Could not retrieve payment methods: " + e.message + ' in ' + e.fileName + ':' + e.lineNumber);
         return;
     }
 });
