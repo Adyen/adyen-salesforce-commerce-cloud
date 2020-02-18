@@ -367,6 +367,28 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     return next();
 });
 
+server.get('GetCheckoutPaymentMethods', server.middleware.https, function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+    var Locale = require('dw/util/Locale');
+    var countryCode = Locale.getLocale(req.locale.id).country;
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+    }
+
+    try {
+        res.json({
+            AdyenPaymentMethods: getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString())
+        });
+        return next();
+    }
+    catch(e){
+        Logger.getLogger("Adyen").error("Could not retrieve payment methods: " + e.message);
+        return;
+    }
+});
+
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
