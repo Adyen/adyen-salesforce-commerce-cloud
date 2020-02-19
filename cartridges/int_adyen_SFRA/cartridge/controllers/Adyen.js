@@ -374,7 +374,7 @@ server.get('GetCheckoutPaymentMethods', server.middleware.https, function (req, 
     var countryCode = Locale.getLocale(req.locale.id).country;
     var currentBasket = BasketMgr.getCurrentBasket();
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
-        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value;
     }
 
     try {

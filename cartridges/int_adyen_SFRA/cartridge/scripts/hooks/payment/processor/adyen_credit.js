@@ -13,12 +13,12 @@ var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
+    Logger.getLogger("Adyen").error("PaymentInfo = " + JSON.stringify(paymentInformation));
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
-    var creditCardForm = server.forms.getForm('billing');
-    var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
-    var tokenID = AdyenHelper.getCardToken(creditCardForm.creditCardFields.selectedCardID.value, customer);
+    //var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
+    var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
@@ -29,7 +29,7 @@ function Handle(basket, paymentInformation) {
         );
 
         paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-        paymentInstrument.setCreditCardType(cardType);
+        //paymentInstrument.setCreditCardType(cardType);
 
         if (!empty(tokenID)) {
             paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);

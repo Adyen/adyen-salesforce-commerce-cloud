@@ -45,31 +45,37 @@ function processForm(req, paymentForm, viewFormData) {
     var stateData = JSON.parse(paymentForm.adyenPaymentFields.adyenStateData.value);
     Logger.getLogger("Adyen").error("stateData = " + JSON.stringify(stateData));
 
-    viewData.adyenEncryptedCardNumber = stateData.paymentMethod.encryptedCardNumber.value;
-    viewData.adyenEncryptedExpiryMonth = stateData.paymentMethod.encryptedExpiryMonth.value;
-    viewData.adyenEncryptedExpiryYear = stateData.paymentMethod.encryptedExpiryYear.value;
-    viewData.adyenEncryptedSecurityCode = stateData.paymentMethod.encryptedSecurityCode.value;
-
     viewData.paymentInformation = {
-        cardType: {
-            value: "visa"
-        },
-        cardNumber: {
-            value: paymentForm.creditCardFields.cardNumber.value
-        },
-        expirationMonth: {
-            value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
-        },
-        expirationYear: {
-            value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
-        },
-        securityCode: {
-            value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
-        }
-    };
+        stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
+        cardType: "visa",
+        cardNumber: "41111"
+    }
+    // viewData.stateData = paymentForm.adyenPaymentFields.adyenStateData.value;
+    // viewData.adyenEncryptedCardNumber = stateData.paymentMethod.encryptedCardNumber.value;
+    // viewData.adyenEncryptedExpiryMonth = stateData.paymentMethod.encryptedExpiryMonth.value;
+    // viewData.adyenEncryptedExpiryYear = stateData.paymentMethod.encryptedExpiryYear.value;
+    // viewData.adyenEncryptedSecurityCode = stateData.paymentMethod.encryptedSecurityCode.value;
+    //
+    // viewData.paymentInformation = {
+    //     cardType: {
+    //         value: "visa"
+    //     },
+    //     cardNumber: {
+    //         value: paymentForm.creditCardFields.cardNumber.value
+    //     },
+    //     expirationMonth: {
+    //         value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
+    //     },
+    //     expirationYear: {
+    //         value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
+    //     },
+    //     securityCode: {
+    //         value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
+    //     }
+    // };
 
     if (paymentForm.creditCardFields.selectedCardID) {
-        viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
+        viewData.storedPaymentUUID = viewData.paymentInformation.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
     }
 
     viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;
