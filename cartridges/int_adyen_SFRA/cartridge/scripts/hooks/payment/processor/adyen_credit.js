@@ -17,7 +17,7 @@ function Handle(basket, paymentInformation) {
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
-    //var cardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType.value);
+    var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
     var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -28,16 +28,16 @@ function Handle(basket, paymentInformation) {
             PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
         );
 
-        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber.value);
-        //paymentInstrument.setCreditCardType(cardType);
+        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
+        paymentInstrument.setCreditCardType(sfccCardType);
 
-        if (!empty(tokenID)) {
+        if (tokenID) {
             paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
             paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
-            paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
+            // paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
-
+    Logger.getLogger('Adyen').error(JSON.stringify(paymentInstrument));
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }

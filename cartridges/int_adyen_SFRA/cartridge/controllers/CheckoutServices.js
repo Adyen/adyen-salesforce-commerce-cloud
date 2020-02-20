@@ -7,6 +7,7 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var collections = require('*/cartridge/scripts/util/collections');
 var constants = require("*/cartridge/adyenConstants/constants");
+var Logger = require('dw/system/Logger');
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
@@ -41,6 +42,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     var viewData = res.getViewData();
+    Logger.getLogger('Adyen').error(JSON.stringify(viewData));
+
     if (viewData && viewData.csrfError) {
         res.json();
         this.emit('route:Complete', req, res);

@@ -37,13 +37,34 @@ function renderGenericComponent(){
         $('#adyen-webcomponent').append(componentNode);
 
         const myComponent = document.querySelector('adyen-checkout');
-        const logEvent = ({ detail }) => {
-            console.log(detail.state.data);
-            $("#adyenStateData").val(JSON.stringify(detail.state.data));
-        }
-        myComponent.addEventListener('adyenChange', logEvent);
-        myComponent.addEventListener('adyenBrand', logEvent);
+        // const logEvent = ({ detail }) => {
+        //     console.log(detail.state.data);
+        //     $("#adyenStateData").val(JSON.stringify(detail.state.data));
+        // }
+        myComponent.addEventListener('adyenChange', adyenOnChange);
+        myComponent.addEventListener('adyenBrand', adyenOnBrand);
+        myComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
     })
+}
+
+function adyenOnChange(response) {
+    var stateData = response.detail.state.data;
+    $("#adyenStateData").val(JSON.stringify(stateData));
+}
+
+function adyenOnBrand(response) {
+    var brand = response.detail.state.brand;
+    $("#cardType").val(brand);
+}
+
+function adyenOnFieldValid(response) {
+    if(response.detail.state.endDigits){
+        var endDigits = response.detail.state.endDigits;
+        var maskedCardNumber = `${MASKED_CC_PREFIX}${endDigits}`;
+        console.log(maskedCardNumber);
+        $("#cardNumber").val(maskedCardNumber);
+        console.log($("#cardNumber").val());
+    }
 }
 
 function renderOneClickComponents() {

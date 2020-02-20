@@ -8,5 +8,6 @@
 </script>
 <input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
+<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
 <div id="adyen-webcomponent"></div>
