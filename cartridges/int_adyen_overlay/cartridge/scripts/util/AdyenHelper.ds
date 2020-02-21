@@ -304,53 +304,55 @@ var __AdyenHelper: Object = {
         return token;
     },
 
-    createCardObjectSF: function (isOneClick, formType) {
-        var card;
-        var cardType = "scheme";
-        var paymentMethodObject = {};
-        switch (formType) {
-            case 'billing':
-                if (session.forms.billing.paymentMethods) {
-                    card = session.forms.billing.paymentMethods.creditCard;
-                    paymentMethodObject['holderName'] = card.owner.value;
-                    if (card.type.value) {
-                        cardType = card.type.value;
-                    }
-                } else {
-                    // structure for SFRA
-                    card = session.forms.billing.creditCardFields;
-                    if (card.cardType.value && isOneClick) {
-                        cardType = __AdyenHelper.getAdyenCardType(card.cardType.value);
-                    }
-                    paymentMethodObject['holderName'] = card.cardOwner.value;
-                }
-                break;
-            case 'account':
-                if (session.forms.billing.paymentMethods) {
-                    card = session.forms.billing.paymentMethods.creditCard;
-                    paymentMethodObject['holderName'] = card.owner.value;
-                } else {
-                    // structure for SFRA
-                    card = session.forms.creditCard;
-                    paymentMethodObject['holderName'] = card.cardOwner.value;
-                }
-                break;
-        }
+    //TODOBAS delete this function for Generic Component.
 
-        if (card.adyenEncryptedSecurityCode.value) {
-            paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
-        }
-
-        paymentMethodObject['type'] = cardType;
-
-        if (!isOneClick) {
-            paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
-            paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
-            paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
-        }
-
-        return paymentMethodObject;
-    },
+    // createCardObjectSF: function (isOneClick, formType) {
+    //     var card;
+    //     var cardType = "scheme";
+    //     var paymentMethodObject = {};
+    //     switch (formType) {
+    //         case 'billing':
+    //             if (session.forms.billing.paymentMethods) {
+    //                 card = session.forms.billing.paymentMethods.creditCard;
+    //                 paymentMethodObject['holderName'] = card.owner.value;
+    //                 if (card.type.value) {
+    //                     cardType = card.type.value;
+    //                 }
+    //             } else {
+    //                 // structure for SFRA
+    //                 card = session.forms.billing.creditCardFields;
+    //                 if (card.cardType.value && isOneClick) {
+    //                     cardType = __AdyenHelper.getAdyenCardType(card.cardType.value);
+    //                 }
+    //                 paymentMethodObject['holderName'] = card.cardOwner.value;
+    //             }
+    //             break;
+    //         case 'account':
+    //             if (session.forms.billing.paymentMethods) {
+    //                 card = session.forms.billing.paymentMethods.creditCard;
+    //                 paymentMethodObject['holderName'] = card.owner.value;
+    //             } else {
+    //                 // structure for SFRA
+    //                 card = session.forms.creditCard;
+    //                 paymentMethodObject['holderName'] = card.cardOwner.value;
+    //             }
+    //             break;
+    //     }
+    //
+    //     if (card.adyenEncryptedSecurityCode.value) {
+    //         paymentMethodObject['encryptedSecurityCode'] = card.adyenEncryptedSecurityCode.value;
+    //     }
+    //
+    //     paymentMethodObject['type'] = cardType;
+    //
+    //     if (!isOneClick) {
+    //         paymentMethodObject['encryptedCardNumber'] = card.adyenEncryptedCardNumber.value;
+    //         paymentMethodObject['encryptedExpiryMonth'] = card.adyenEncryptedExpiryMonth.value;
+    //         paymentMethodObject['encryptedExpiryYear'] = card.adyenEncryptedExpiryYear.value;
+    //     }
+    //
+    //     return paymentMethodObject;
+    // },
 
     createShopperObject: function (params) {
         var shopperObject = {};
@@ -499,28 +501,23 @@ var __AdyenHelper: Object = {
         return jsonObject;
     },
 
-    createAdyenRequestObject: function (order) {
-        var jsonObject = {},
-            reference = '';
+    createAdyenRequestObject: function (order, paymentInstrument) {
+        var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
+        var reference = "";
         if (order && !empty(order.getOrderNo())) {
             reference = order.getOrderNo();
         } else {
             reference = 'recurringPayment-account';
         }
 
-        jsonObject['merchantAccount'] = __AdyenHelper.getAdyenMerchantAccount();
-        jsonObject['reference'] = reference;
-        jsonObject['browserInfo'] = {
-            'acceptHeader': request.httpHeaders.get('accept') + request.httpHeaders.get('accept-encoding'),
-            'userAgent': request.httpUserAgent
-        };
+        jsonObject.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
+        jsonObject.reference = reference;
 
-        jsonObject['applicationInfo'] = __AdyenHelper.getApplicationInfo(true);
-        jsonObject['enableRecurring'] = __AdyenHelper.getAdyenRecurringEnabled();
-        jsonObject['enableOneClick'] = __AdyenHelper.getAdyenOneClickEnabled();
-        jsonObject['additionalData'] = {};
-
+        jsonObject.applicationInfo = __AdyenHelper.getApplicationInfo(true);
+        jsonObject.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
+        jsonObject.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
+        jsonObject.additionalData = {};
         return jsonObject;
     },
 
@@ -594,34 +591,11 @@ var __AdyenHelper: Object = {
         return {error: true};
     },
 
-    add3DS2Data: function(jsonObject, formType){
+    add3DS2Data: function(jsonObject){
         jsonObject.additionalData["allow3DS2"] = true;
         jsonObject["channel"] = "web";
 
-        var card;
-        switch (formType) {
-            case 'billing':
-                if (session.forms.billing.paymentMethods) {
-                    card = session.forms.billing.paymentMethods.creditCard;
-                } else {
-                    // structure for SFRA
-                    card = session.forms.billing.creditCardFields;
-                }
-                break;
-            case 'account':
-                if (session.forms.billing.paymentMethods) {
-                    card = session.forms.billing.paymentMethods.creditCard;
-                } else {
-                    // structure for SFRA
-                    card = session.forms.creditCard;
-                }
-                break;
-        }
-
-        jsonObject["browserInfo"] = JSON.parse(card.browserInfo.value);
-
         var origin = request.getHttpProtocol() + "://" + request.getHttpHost();
-
         jsonObject['origin'] = origin;
         jsonObject.threeDS2RequestData = {"notificationURL" : ""};
 

@@ -36,14 +36,10 @@ function renderGenericComponent(){
         $('head').append(scripts);
         $('#adyen-webcomponent').append(componentNode);
 
-        const myComponent = document.querySelector('adyen-checkout');
-        // const logEvent = ({ detail }) => {
-        //     console.log(detail.state.data);
-        //     $("#adyenStateData").val(JSON.stringify(detail.state.data));
-        // }
-        myComponent.addEventListener('adyenChange', adyenOnChange);
-        myComponent.addEventListener('adyenBrand', adyenOnBrand);
-        myComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
+        var adyenWebComponent = document.querySelector('adyen-checkout');
+        adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
+        adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
+        adyenWebComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
     })
 }
 
@@ -60,10 +56,8 @@ function adyenOnBrand(response) {
 function adyenOnFieldValid(response) {
     if(response.detail.state.endDigits){
         var endDigits = response.detail.state.endDigits;
-        var maskedCardNumber = `${MASKED_CC_PREFIX}${endDigits}`;
-        console.log(maskedCardNumber);
+        var maskedCardNumber = MASKED_CC_PREFIX + endDigits;
         $("#cardNumber").val(maskedCardNumber);
-        console.log($("#cardNumber").val());
     }
 }
 

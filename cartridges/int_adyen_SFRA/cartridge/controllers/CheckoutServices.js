@@ -42,7 +42,6 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     var viewData = res.getViewData();
-    Logger.getLogger('Adyen').error(JSON.stringify(viewData));
 
     if (viewData && viewData.csrfError) {
         res.json();

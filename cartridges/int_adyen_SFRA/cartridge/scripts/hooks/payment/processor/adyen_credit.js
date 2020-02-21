@@ -10,10 +10,10 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var URLUtils = require('dw/web/URLUtils');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
-    Logger.getLogger("Adyen").error("PaymentInfo = " + JSON.stringify(paymentInformation));
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
@@ -30,6 +30,7 @@ function Handle(basket, paymentInformation) {
 
         paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
         paymentInstrument.setCreditCardType(sfccCardType);
+        paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
         if (tokenID) {
             paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
@@ -37,7 +38,6 @@ function Handle(basket, paymentInformation) {
             // paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
-    Logger.getLogger('Adyen').error(JSON.stringify(paymentInstrument));
     });
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }
@@ -52,23 +52,26 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-    var OrderMgr = require('dw/order/OrderMgr');
     var Transaction = require('dw/system/Transaction');
+    var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
-    var creditCardForm = server.forms.getForm('billing').creditCardFields;
+    if (!order || !paymentInstrument) {
+        Logger.getLogger('Adyen').error('No order or payment instrument present.');
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
+    }
+
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     Transaction.begin();
 
-    var result = adyenCheckout.creditCard({
+    var result = adyenCheckout.createPaymentRequest({
         Order: order,
-        CurrentSession: session,
-        CurrentRequest: request,
         PaymentInstrument: paymentInstrument,
-        CreditCardForm: creditCardForm,
-        SaveCreditCard: creditCardForm.saveCardAdyen.value
+        ReturnUrl: URLUtils.https('Adyen-OrderConfirm').toString()
     });
 
     if (result.error) {
