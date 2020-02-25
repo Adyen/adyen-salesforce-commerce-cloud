@@ -70,7 +70,6 @@ $('.payment-summary .edit-button').on('click', function (e) {
 function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
     getPaymentMethods(function (data) {
-        console.log(data);
         jQuery.each(data.AdyenPaymentMethods, function (i, method) {
             addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
         });
