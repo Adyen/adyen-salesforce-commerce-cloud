@@ -15,12 +15,11 @@ renderOneClickComponents();
 renderGenericComponent();
 
 function renderGenericComponent(){
-    GetCheckoutPaymentMethods(function(data){
-        var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
-
+    getPaymentMethods(function(data){
+        var paymentMethodsResponse = JSON.stringify(data.AdyenCardPaymentMethods);
         var scripts = `
-              <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
+              <script type="module" src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.js"></script>
            `;
 
         var componentNode = ` 
@@ -38,16 +37,6 @@ function renderGenericComponent(){
         $('#adyen-webcomponent').append(componentNode);
     })
 }
-
-function GetCheckoutPaymentMethods(paymentMethods) {
-    $.ajax({
-        url: 'Adyen-GetCheckoutPaymentMethods',
-        type: 'get',
-        success: function (data) {
-            paymentMethods(data);
-        }
-    });
-};
 
 function renderOneClickComponents() {
     var componentContainers = document.getElementsByClassName("cvc-container");
@@ -81,6 +70,7 @@ $('.payment-summary .edit-button').on('click', function (e) {
 function displayPaymentMethods() {
     $('#paymentMethodsUl').empty();
     getPaymentMethods(function (data) {
+        console.log(data);
         jQuery.each(data.AdyenPaymentMethods, function (i, method) {
             addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
         });
