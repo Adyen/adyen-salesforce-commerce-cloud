@@ -334,7 +334,9 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var localPaymentMethodDescriptions = [];
     try {
         response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
-        paymentMethods.cardPaymentMethods = response[0];
+        paymentMethods.cardPaymentMethods = response.filter(function (method) {
+            return method.type == "scheme";
+        })[0];
         paymentMethods.localPaymentMethods = response.filter(function (method) {
             return !AdyenHelper.isMethodTypeBlocked(method.type);
         });
