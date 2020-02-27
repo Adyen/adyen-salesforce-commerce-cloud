@@ -11,7 +11,7 @@
 		<h4>${Resource.msg('terminal.selectTerminal','adyen',null)}</h4>
 		<select class="connectedTerminals" id="terminalId">
 			<isloop items="${connectedTerminals.uniqueTerminalIds}" var="uniqueTerminal">
-				<option label="${uniqueTerminal}" value="${uniqueTerminal}"/>
+				<option label="${uniqueTerminal}" value="${uniqueTerminal}" html="${uniqueTerminal}"/>
 			</isloop>
 		</select>
 	</div>

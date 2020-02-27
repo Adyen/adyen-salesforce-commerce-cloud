@@ -28,7 +28,7 @@
                     <isif condition="${method.details[0].key == 'issuer'}">
                         <select class="issuer" id="${method.type}_issuer">
                             <isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
-                                <option label="${selectedIssuer.name}" value="${selectedIssuer.id}"/>
+                                <option label="${selectedIssuer.name}" value="${selectedIssuer.id}" html="${selectedIssuer.name}"/>
                             </isloop>
                         </select>
                     </isif>
@@ -45,8 +45,8 @@
                                 <div class="field-wrapper">
                                     <span>${Resource.msg('checkout.gender', 'checkout', null)}:</span>
                                     <select class="input-text gender" id="ratepay_gender">
-                                        <option label="Male" value="M"/>
-                                        <option label="Female" value="F"/>
+                                        <option label="Male" value="M">Male</option>
+                                        <option label="Female" value="F">Female</option>
                                     </select>
                                 </div>
                             </div>

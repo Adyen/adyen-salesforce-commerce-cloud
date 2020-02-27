@@ -264,7 +264,8 @@ function addPaymentMethod(paymentMethod, imagePath, description) {
             jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
                 var issuerOption = $('<option>')
                     .attr('label', issuer.name)
-                    .attr('value', issuer.id);
+                    .attr('value', issuer.id)
+                    .html(issuer.name);
                 issuers.append(issuerOption);
             });
             additionalFields.append(issuers);
