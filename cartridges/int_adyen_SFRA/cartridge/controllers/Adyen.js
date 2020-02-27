@@ -329,21 +329,25 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
     }
-    var paymentMethods;
-    var descriptions = [];
+    var response;
+    var paymentMethods = {};
+    var localPaymentMethodDescriptions = [];
     try {
-        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
-        paymentMethods = paymentMethods.filter(function (method) {
+        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
+        paymentMethods.cardPaymentMethods = response.filter(function (method) {
+            return method.type == "scheme";
+        })[0];
+        paymentMethods.localPaymentMethods = response.filter(function (method) {
             return !AdyenHelper.isMethodTypeBlocked(method.type);
         });
-        descriptions = paymentMethods.map(function (method) {
+        localPaymentMethodDescriptions = paymentMethods.localPaymentMethods.map(function (method) {
             return {
                 brandCode: method.type,
                 description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
             };
         })
     } catch (err) {
-        paymentMethods = [];
+        response = [];
     }
 
     var connectedTerminals = {};
@@ -354,10 +358,11 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
 
     res.json({
-        AdyenPaymentMethods: paymentMethods,
+        AdyenPaymentMethods: paymentMethods.localPaymentMethods,
         ImagePath: adyenURL,
-        AdyenDescriptions: descriptions,
-        AdyenConnectedTerminals: JSON.parse(connectedTerminals)
+        AdyenDescriptions: localPaymentMethodDescriptions,
+        AdyenConnectedTerminals: JSON.parse(connectedTerminals),
+        AdyenCardPaymentMethods: paymentMethods.cardPaymentMethods
     });
     return next();
 });

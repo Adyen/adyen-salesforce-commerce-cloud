@@ -11,34 +11,32 @@ var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 
-renderCardComponent();
 renderOneClickComponents();
+renderGenericComponent();
 
-function renderCardComponent() {
-    card = checkout.create('card', {
-        // Mandatory fields
-        type: 'card',
-        hasHolderName: true,
-        holderNameRequired: true,
-        groupTypes: ["bcmc", "maestro", "visa", "mc", "amex", "diners", "discover", "jcb", "cup"],
-        enableStoreDetails: showStoreDetails,
-        // Events
-        onChange: function (state) {
-            isValid = state.isValid;
-            storeDetails = state.data.storePaymentMethod;
-            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-        }, // Gets triggered whenever a user changes input
-        onBrand: function (brandObject) {
-            $('#cardType').val(brandObject.brand);
-        }, // Called once we detect the card brand
-        onFieldValid: function (data) {
-            if(data.endDigits){
-                maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-            }
-        }
-    });
-    card.mount(cardNode);
-};
+function renderGenericComponent(){
+    getPaymentMethods(function(data){
+        var paymentMethodsResponse = JSON.stringify(data.AdyenCardPaymentMethods);
+        var scripts = `
+              <script type="module" src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.js"></script>
+           `;
+
+        var componentNode = ` 
+                         <adyen-checkout
+                                locale="${window.Configuration.locale}"
+                                environment="${window.Configuration.environment}"
+                                origin-key="${window.Configuration.originKey}"
+                                payment-methods='${paymentMethodsResponse}'
+                                >
+                            <adyen-payment-method-card></adyen-payment-method-card>
+                        </adyen-checkout>
+                        `;
+
+        $('head').append(scripts);
+        $('#adyen-webcomponent').append(componentNode);
+    })
+}
 
 function renderOneClickComponents() {
     var componentContainers = document.getElementsByClassName("cvc-container");
