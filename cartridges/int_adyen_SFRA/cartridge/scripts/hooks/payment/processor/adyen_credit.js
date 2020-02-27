@@ -11,7 +11,6 @@ var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var URLUtils = require('dw/web/URLUtils');
-var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
@@ -35,7 +34,6 @@ function Handle(basket, paymentInformation) {
         if (tokenID) {
             paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
             paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value)
-            // paymentInstrument.setCreditCardType(paymentInformation.cardType.value);
             paymentInstrument.setCreditCardToken(tokenID);
         }
     });
@@ -55,19 +53,13 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var Transaction = require('dw/system/Transaction');
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
-    if (!order || !paymentInstrument) {
-        Logger.getLogger('Adyen').error('No order or payment instrument present.');
-        return {
-            authorized: false, fieldErrors: [], serverErrors: errors, error: true
-        };
-    }
 
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
-    Transaction.begin();
 
+    Transaction.begin();
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
         PaymentInstrument: paymentInstrument,

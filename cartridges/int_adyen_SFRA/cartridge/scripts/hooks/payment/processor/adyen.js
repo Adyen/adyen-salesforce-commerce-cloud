@@ -63,7 +63,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
         PaymentInstrument: paymentInstrument,
-        returnUrl: URLUtils.https('Adyen-ShowConfirmation').toString(),
+        ReturnUrl: URLUtils.https('Adyen-ShowConfirmation').toString(),
         ratePayFingerprint: session.privacy.ratePayFingerprint,
         adyenFingerprint: session.forms.adyPaydata.adyenFingerprint.value,
         adyenForm: adyenPaymentForm
