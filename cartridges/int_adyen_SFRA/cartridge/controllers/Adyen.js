@@ -317,23 +317,23 @@ server.get('OrderConfirm', server.middleware.https, function (req, res, next) {
     return next();
 });
 
-server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
-    var BasketMgr = require('dw/order/BasketMgr');
-    var Resource = require('dw/web/Resource');
-    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-    var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
-    var PaymentMgr = require('dw/order/PaymentMgr');
-    var Locale = require('dw/util/Locale');
+server.get("GetPaymentMethods", server.middleware.https, function (req, res, next) {
+    var BasketMgr = require("dw/order/BasketMgr");
+    var Resource = require("dw/web/Resource");
+    var getPaymentMethods = require("*/cartridge/scripts/adyenGetPaymentMethods");
+    var adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
+    var PaymentMgr = require("dw/order/PaymentMgr");
+    var Locale = require("dw/util/Locale");
     var countryCode = Locale.getLocale(req.locale.id).country;
     var currentBasket = BasketMgr.getCurrentBasket();
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
-        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value;
     }
     var response;
     var paymentMethods = {};
     var localPaymentMethodDescriptions = [];
     try {
-        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value.toString()).paymentMethods;
+        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode).paymentMethods;
         paymentMethods.cardPaymentMethods = response.filter(function (method) {
             return method.type == "scheme";
         })[0];
@@ -343,11 +343,13 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         localPaymentMethodDescriptions = paymentMethods.localPaymentMethods.map(function (method) {
             return {
                 brandCode: method.type,
-                description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
+                description: Resource.msg("hpp.description." + method.type, "hpp", "")
             };
         })
     } catch (err) {
+        Logger.getLogger("Adyen").error("Error retrieving Payment Methods. Error message: " + err.message + " more details: "+ err.toString() + " in " + err.fileName + ":" + err.lineNumber);
         response = [];
+        return next();
     }
 
     var connectedTerminals = {};
