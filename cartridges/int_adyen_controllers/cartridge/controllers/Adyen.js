@@ -167,12 +167,15 @@ function getPaymentMethods(cart) {
 
     var connectedTerminals = {};
     if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
-        connectedTerminals = adyenTerminalApi.getTerminals().response;
+        var connectedTerminalsResponse = adyenTerminalApi.getTerminals().response;
+        if(connectedTerminalsResponse){
+            connectedTerminals = JSON.parse(connectedTerminalsResponse);
+        }
     }
 
     return {
         adyenPaymentMethods: filteredMethods,
-        adyenConnectedTerminals: JSON.parse(connectedTerminals)
+        adyenConnectedTerminals: connectedTerminals
     };
 }
 
