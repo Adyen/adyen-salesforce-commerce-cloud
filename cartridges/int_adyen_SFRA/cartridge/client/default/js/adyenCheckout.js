@@ -18,8 +18,8 @@ function renderGenericComponent(){
     getPaymentMethods(function(data){
         var paymentMethodsResponse = JSON.stringify(data.AdyenCardPaymentMethods);
         var scripts = `
-              <script type="module" src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-              <script nomodule src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.js"></script>
+              <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
            `;
 
         var componentNode = ` 
@@ -35,7 +35,31 @@ function renderGenericComponent(){
 
         $('head').append(scripts);
         $('#adyen-webcomponent').append(componentNode);
+
+        var adyenWebComponent = document.querySelector('adyen-checkout');
+        adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
+        adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
+        adyenWebComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
     })
+}
+
+function adyenOnChange(response) {
+    var stateData = response.detail.state.data;
+    $("#adyenStateData").val(JSON.stringify(stateData));
+    isValid = response.detail.state.isValid;
+}
+
+function adyenOnBrand(response) {
+    var brand = response.detail.state.brand;
+    $("#cardType").val(brand);
+}
+
+function adyenOnFieldValid(response) {
+    if(response.detail.state.endDigits){
+        var endDigits = response.detail.state.endDigits;
+        var maskedCardNumber = MASKED_CC_PREFIX + endDigits;
+        $("#cardNumber").val(maskedCardNumber);
+    }
 }
 
 function renderOneClickComponents() {
@@ -317,47 +341,8 @@ function isNordicCountry(country) {
 
 //Submit the payment
 $('button[value="submit-payment"]').on('click', function (e) {
-    if ($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
-        //new card payment
-        if ($('.payment-information').data('is-new-payment')) {
-            if (!isValid) {
-                card.showValidation();
-                return false;
-            } else {
-                $('#selectedCardID').val('');
-                setPaymentData();
-            }
-        }
-        //oneclick payment
-        else {
-            var uuid = $('.selected-payment').data('uuid');
-            var selectedOneClick = oneClickCard[uuid];
-            if (!selectedOneClick.state.isValid) {
-                selectedOneClick.showValidation();
-                return false;
-            } else {
-                var selectedCardType = document.getElementById('cardType-' + uuid).value;
-                document.getElementById('saved-payment-security-code-' + uuid).value = "000";
-                $('#cardType').val(selectedCardType)
-                $('#selectedCardID').val($('.selected-payment').data('uuid'));
-                return true;
-            }
-        }
-    } else if ($('#selectedPaymentOption').val() == 'Adyen') {
-        var selectedMethod = $("input[name='brandCode']:checked");
-        //no payment method selected
-        if (!adyenPaymentMethodSelected(selectedMethod.val())) {
-            $('#requiredBrandCode').show();
-            return false;
-        }
-        //check component details
-        else {
-            var componentState = checkComponentDetails(selectedMethod);
-            $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
-            return componentState;
-        }
-    } else if ($('#selectedPaymentOption').val() == 'AdyenPOS') {
-        $("#terminalId").val($("#terminalList").val());
+    if(!isValid){
+        return false;
     }
     return true;
 });

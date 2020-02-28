@@ -3,6 +3,7 @@
 var server = require('server');
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var Logger = require('dw/system/Logger');
 
 function getEncryptedData() {
     var paymentForm = server.forms.getForm('billing');
@@ -38,31 +39,14 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value
     };
 
-    viewData.adyenEncryptedCardNumber = paymentForm.creditCardFields.adyenEncryptedCardNumber.value;
-    viewData.adyenEncryptedExpiryMonth = paymentForm.creditCardFields.adyenEncryptedExpiryMonth.value;
-    viewData.adyenEncryptedExpiryYear = paymentForm.creditCardFields.adyenEncryptedExpiryYear.value;
-    viewData.adyenEncryptedSecurityCode = paymentForm.creditCardFields.adyenEncryptedSecurityCode.value;
-
     viewData.paymentInformation = {
-        cardType: {
-            value: paymentForm.creditCardFields.cardType.value
-        },
-        cardNumber: {
-            value: paymentForm.creditCardFields.cardNumber.value
-        },
-        expirationMonth: {
-            value: parseInt(paymentForm.creditCardFields.expirationMonth.selectedOption, 10)
-        },
-        expirationYear: {
-            value: parseInt(paymentForm.creditCardFields.expirationYear.value, 10)
-        },
-        securityCode: {
-            value: paymentForm.creditCardFields.adyenEncryptedSecurityCode.value
-        }
+        stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
+        cardType: paymentForm.creditCardFields.cardType.value,
+        cardNumber: paymentForm.creditCardFields.cardNumber.value
     };
 
     if (paymentForm.creditCardFields.selectedCardID) {
-        viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
+        viewData.storedPaymentUUID = viewData.paymentInformation.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
     }
 
     viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;

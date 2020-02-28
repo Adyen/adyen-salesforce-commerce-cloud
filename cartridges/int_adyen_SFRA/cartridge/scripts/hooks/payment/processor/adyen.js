@@ -9,6 +9,7 @@ var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+var URLUtils = require('dw/web/URLUtils');
 
 function Handle(basket, paymentInformation) {
     Transaction.wrap(function () {
@@ -19,9 +20,11 @@ function Handle(basket, paymentInformation) {
         var paymentInstrument = basket.createPaymentInstrument(
             'Adyen', basket.totalGrossPrice
         );
-        paymentInstrument.custom.adyenPaymentMethod = session.privacy.adyenPaymentMethod;
-        if (session.privacy.adyenIssuerName) {
-            paymentInstrument.custom.adyenIssuerName = session.privacy.adyenIssuerName;
+
+        paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+        paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
+        if (paymentInformation.adyenIssuerName) {
+            paymentInstrument.custom.adyenIssuerName = paymentInformation.adyenIssuerName;
         }
 
     });
@@ -44,19 +47,23 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
-    var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
-
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
+    if (!order || !paymentInstrument) {
+        Logger.getLogger('Adyen').error('No order or payment instrument present.');
+        return {
+            authorized: false, fieldErrors: [], serverErrors: errors, error: true
+        };
+    }
+    var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
 
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     Transaction.begin();
 
-    var result = adyenCheckout.alternativePaymentMethod({
+    var result = adyenCheckout.createPaymentRequest({
         Order: order,
-        Amount: paymentInstrument.paymentTransaction.amount,
         PaymentInstrument: paymentInstrument,
-        PaymentType: session.privacy.paymentType,
+        ReturnUrl: URLUtils.https('Adyen-ShowConfirmation').toString(),
         ratePayFingerprint: session.privacy.ratePayFingerprint,
         adyenFingerprint: session.forms.adyPaydata.adyenFingerprint.value,
         adyenForm: adyenPaymentForm

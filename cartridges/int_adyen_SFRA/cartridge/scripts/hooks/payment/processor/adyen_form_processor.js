@@ -2,8 +2,6 @@
 
 var server = require('server');
 
-var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-
 /**
  * Verifies the required information for billing form is provided.
  * @param {Object} req - The request object
@@ -19,16 +17,19 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value
     };
 
-    session.privacy.paymentType = req.form.brandCode;
+    viewData.paymentInformation = {
+        stateData: paymentForm.adyenPaymentFields.adyenStateData.value
+    };
+
     if (typeof req.form.adyenPaymentMethod !== "undefined") {
-        session.privacy.adyenPaymentMethod = req.form.adyenPaymentMethod;
+        viewData.paymentInformation.adyenPaymentMethod = req.form.adyenPaymentMethod;
     } else {
-        session.privacy.adyenPaymentMethod = null;
+        viewData.paymentInformation.adyenPaymentMethod = null;
     }
     if (typeof req.form.adyenIssuerName !== "undefined") {
-        session.privacy.adyenIssuerName = req.form.adyenIssuerName;
+        viewData.paymentInformation.adyenIssuerName = req.form.adyenIssuerName;
     } else {
-        session.privacy.adyenIssuerName = null;
+        viewData.paymentInformation.adyenIssuerName = null;
     }
 
     return {

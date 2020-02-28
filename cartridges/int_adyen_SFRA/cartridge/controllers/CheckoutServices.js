@@ -7,6 +7,7 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var collections = require('*/cartridge/scripts/util/collections');
 var constants = require("*/cartridge/adyenConstants/constants");
+var Logger = require('dw/system/Logger');
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
@@ -41,6 +42,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     var viewData = res.getViewData();
+
     if (viewData && viewData.csrfError) {
         res.json();
         this.emit('route:Complete', req, res);
@@ -166,7 +168,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
             });
             this.emit('route:Complete', req, res);
             return;
-        } else {
+        } else {	
             res.json({
                 error: false,
                 continueUrl: URLUtils.url('Adyen-Redirect', 'redirectUrl', handlePaymentResult.redirectObject.url, 'signature', handlePaymentResult.signature).toString()
