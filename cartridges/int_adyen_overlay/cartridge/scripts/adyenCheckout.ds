@@ -159,7 +159,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
                 Logger.getLogger("Adyen").info("Payment result: Authorised");
             }
 
-            if (args.RedirectObject == "") { // if is not 3DSecure
+            if (paymentResponse.RedirectObject == "") { // if is not 3DSecure
                 Logger.getLogger("Adyen").debug("Adyen: " + resultObject.getStatusCode() + " Error => " + resultObject.getStatusMessage() + " | " + resultObject.getText());
             }
         }

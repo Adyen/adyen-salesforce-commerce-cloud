@@ -18,8 +18,8 @@ function renderGenericComponent(){
     getPaymentMethods(function(data){
         var paymentMethodsResponse = JSON.stringify(data.AdyenCardPaymentMethods);
         var scripts = `
-              <script type="module" src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-              <script nomodule src="https://unpkg.com/generic-component@0.0.21/dist/adyen-checkout/adyen-checkout.js"></script>
+              <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
            `;
 
         var componentNode = ` 
