@@ -46,6 +46,7 @@ function renderGenericComponent(){
 function adyenOnChange(response) {
     var stateData = response.detail.state.data;
     $("#adyenStateData").val(JSON.stringify(stateData));
+    isValid = response.detail.state.isValid;
 }
 
 function adyenOnBrand(response) {
@@ -339,63 +340,11 @@ function isNordicCountry(country) {
 };
 
 //Submit the payment
-    $('button[value="submit-payment"]').on('click', function (e) {
-        // $.ajax({
-        //     url: 'CheckoutServices-SubmitPayment',
-        //     type: 'POST',
-        //     data: { test: 'testDataBasZaid'},
-        //     success: function(response){
-        //         console.log(response);
-        //     },
-        //     error: function(){
-        //         console.log("error");
-        //     }
-        // });
-
+$('button[value="submit-payment"]').on('click', function (e) {
+    if(!isValid){
+        return false;
+    }
     return true;
-    // if ($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
-    //     //new card payment
-    //     if ($('.payment-information').data('is-new-payment')) {
-    //         if (!isValid) {
-    //             card.showValidation();
-    //             return false;
-    //         } else {
-    //             $('#selectedCardID').val('');
-    //             setPaymentData();
-    //         }
-    //     }
-    //     //oneclick payment
-    //     else {
-    //         var uuid = $('.selected-payment').data('uuid');
-    //         var selectedOneClick = oneClickCard[uuid];
-    //         if (!selectedOneClick.state.isValid) {
-    //             selectedOneClick.showValidation();
-    //             return false;
-    //         } else {
-    //             var selectedCardType = document.getElementById('cardType-' + uuid).value;
-    //             document.getElementById('saved-payment-security-code-' + uuid).value = "000";
-    //             $('#cardType').val(selectedCardType)
-    //             $('#selectedCardID').val($('.selected-payment').data('uuid'));
-    //             return true;
-    //         }
-    //     }
-    // } else if ($('#selectedPaymentOption').val() == 'Adyen') {
-    //     var selectedMethod = $("input[name='brandCode']:checked");
-    //     //no payment method selected
-    //     if (!adyenPaymentMethodSelected(selectedMethod.val())) {
-    //         $('#requiredBrandCode').show();
-    //         return false;
-    //     }
-    //     //check component details
-    //     else {
-    //         var componentState = checkComponentDetails(selectedMethod);
-    //         $('#adyenPaymentMethod').val($("input[name='brandCode']:checked").attr('id').substr(3));
-    //         return componentState;
-    //     }
-    // } else if ($('#selectedPaymentOption').val() == 'AdyenPOS') {
-    //     $("#terminalId").val($("#terminalList").val());
-    // }
-    // return true;
 });
 
 function checkComponentDetails(selectedMethod) {
