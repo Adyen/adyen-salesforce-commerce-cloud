@@ -50,11 +50,11 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-    var Transaction = require('dw/system/Transaction');
-    var OrderMgr = require('dw/order/OrderMgr');
+    var Transaction = require("dw/system/Transaction");
+    var OrderMgr = require("dw/order/OrderMgr");
     var order = OrderMgr.getOrder(orderNumber);
 
-    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    var adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     Transaction.wrap(function () {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
@@ -63,12 +63,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
         PaymentInstrument: paymentInstrument,
-        ReturnUrl: URLUtils.https('Adyen-OrderConfirm').toString()
+        ReturnUrl: URLUtils.https("Adyen-OrderConfirm").toString()
     });
 
     if (result.error) {
         var errors = [];
-        errors.push(Resource.msg('error.payment.processor.not.supported', 'checkout', null));
+        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
         return {
             authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
@@ -92,7 +92,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     }
 
     //Trigger 3DS flow
-    else if (result.RedirectObject != '') {
+    else if (result.RedirectObject != "") {
         Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.PaymentData;
@@ -109,11 +109,11 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    if (result.Decision != 'ACCEPT') {
+    if (result.Decision != "ACCEPT") {
         Transaction.rollback();
         return {
             error: true,
-            PlaceOrderError: ('AdyenErrorMessage' in result && !empty(result.AdyenErrorMessage) ? result.AdyenErrorMessage : '')
+            PlaceOrderError: (result.AdyenErrorMessage ? result.AdyenErrorMessage : "")
         };
     }
 

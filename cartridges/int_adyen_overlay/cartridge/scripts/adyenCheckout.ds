@@ -34,6 +34,9 @@ var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var RiskDataHelper = require ("*/cartridge/scripts/util/RiskDataHelper");
 var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
+var Resource = require('dw/web/Resource');
+var Order = require('dw/order/Order');
+
 
 function createPaymentRequest(args) {
     try {
@@ -106,7 +109,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
        var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
         if (callResult.isOk() == false){
             Logger.getLogger("Adyen").error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
-            paymentResponse.AdyenErrorMessage = dw.web.Resource.msg("confirm.error.declined","checkout", null);
+            paymentResponse.AdyenErrorMessage = Resource.msg("confirm.error.declined","checkout", null);
             return {
                 error: true,
                 args: paymentResponse
@@ -129,7 +132,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
 
         // if the card is enrolled for 3D Secure, the response contains a redirect object
         paymentResponse.RedirectObject = responseObject.redirect ? responseObject.redirect : "";
-        paymentResponse.resultCode = responseObject.resultCode; // resultCode
+        paymentResponse.resultCode = responseObject.resultCode;
         paymentResponse.pspReference = responseObject.pspReference ? responseObject.pspReference : "";
         paymentResponse.AdyenAmount = paymentRequest.amount.value;
         paymentResponse.Decision = "ERROR";
@@ -154,8 +157,8 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             paymentResponse.PaymentData = responseObject.paymentData;
             // if 3D Secure is used, the statuses will be updated later
             if (order && paymentResponse.resultCode == "Authorised") {
-                order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-                order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+                order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+                order.setExportStatus(Order.EXPORT_STATUS_READY);
                 Logger.getLogger("Adyen").info("Payment result: Authorised");
             }
 
@@ -208,16 +211,16 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
                 paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(multiBancoData);
             }
 
-            order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
-            order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
         }
         else  {
             paymentResponse.Decision = "REFUSED";
-            order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_NOTPAID);
-            order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
+            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 
-            errorMessage = dw.web.Resource.msg("confirm.error.declined","checkout", null);
-            if ("refusalReason" in responseObject && !empty(responseObject.refusalReason)) {
+            errorMessage = Resource.msg("confirm.error.declined","checkout", null);
+            if (responseObject.refusalReason) {
                 errorMessage += " (" + responseObject.refusalReason + ")";
             }
             paymentResponse.AdyenErrorMessage = errorMessage;
