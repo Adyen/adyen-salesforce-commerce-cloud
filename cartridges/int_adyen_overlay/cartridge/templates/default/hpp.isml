@@ -28,7 +28,7 @@
                     <isif condition="${method.details[0].key == 'issuer'}">
                         <select class="issuer" id="${method.type}_issuer">
                             <isloop items="${method.details[0].items}" var="selectedIssuer" status="loopstate">
-                                <option label="${selectedIssuer.name}" value="${selectedIssuer.id}" html="${selectedIssuer.name}"/>
+                                <option label="${selectedIssuer.name}" value="${selectedIssuer.id}">${selectedIssuer.name}</option>
                             </isloop>
                         </select>
                     </isif>
