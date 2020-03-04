@@ -10,10 +10,19 @@
     "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge /zaid/SFCC/salesforce-commerce-cloud/app_storefront_core && sgmf-scripts --uploadCartridge /zaid/SFCC/salesforce-commerce-cloud/app_storefront_controllers",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
-    "compile:scss": "sgmf-scripts --compile css"
+    "compile:scss": "sgmf-scripts --compile css",
+    "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
+    "build ": "npm run transpile && npm run uploadCartridge",
+    "test": "jest"
+  },
+  "jest": {
+    "setupFiles": [
+      "./setup-jest.js"
+    ]
   },
   "dependencies": {
     "babel-core": "^6.26.3",
@@ -24,6 +33,12 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "jquery": "^3.4.1",
+    "jest": "^25.1.0",
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "chai": "^3.5.0",
     "css-loader": "^1.0.0",
     "eslint": "^5.7.0",
