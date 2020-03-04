@@ -13,11 +13,6 @@ var oneClickValid = false;
 
 renderCardComponent();
 renderOneClickComponents();
-const x = () => {let y = [1,2]; let z = [...y, 2]};
-
-function sum(a, b) {
-    return a + b;
-}
 
 function renderCardComponent() {
     card = checkout.create('card', {
@@ -323,7 +318,7 @@ function isNordicCountry(country) {
     return false;
 };
 
-// Submit the payment
+//Submit the payment
 $('button[value="submit-payment"]').on('click', function (e) {
     if ($('#selectedPaymentOption').val() == 'CREDIT_CARD') {
         //new card payment
@@ -453,5 +448,9 @@ function setPaymentData() {
     $('#saveCardAdyen').val(storeDetails || false);
 }
 
-module.exports = sum;
+module.exports = {
+    methods: {
+        displayPaymentMethods: displayPaymentMethods
+    }
+}
 
