@@ -10,10 +10,15 @@
     "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge /bas/SFCC/salesforce-commerce-cloud/app_storefront_core && sgmf-scripts --uploadCartridge /bas/SFCC/salesforce-commerce-cloud/app_storefront_controllers",
+    "uploadCartridgeSFRA": "sgmf-scripts --uploadCartridge /home/vagrant/workspace/storefront-reference-architecture/cartridges/app_storefront_base",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css"
+  },
+    "engines": {
+    "node": ">=4.0"
   },
   "dependencies": {
     "babel-core": "^6.26.3",
