@@ -16,7 +16,8 @@ renderGenericComponent();
 
 function renderGenericComponent(){
     getPaymentMethods(function(data){
-        var paymentMethodsResponse = JSON.stringify(data.AdyenCardPaymentMethods);
+        var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
+        console.log(data.AdyenPaymentMethods);
         var scripts = `
               <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
               <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
@@ -29,9 +30,16 @@ function renderGenericComponent(){
                                 origin-key="${window.Configuration.originKey}"
                                 payment-methods='${paymentMethodsResponse}'
                                 >
-                            <adyen-payment-method-card></adyen-payment-method-card>
-                        </adyen-checkout>
+<!--                            <adyen-payment-method-card></adyen-payment-method-card>-->
+<!--                            <adyen-payment-method-generic type='ideal'></adyen-payment-method-generic>-->
+<!--                            <adyen-payment-method-generic type='molpay_ebanking_TH' show-pay-button></adyen-payment-method-generic>-->
                         `;
+
+        for(let paymentMethod of data.AdyenPaymentMethods.paymentMethods.slice(1)) {
+            var node = `<adyen-payment-method-generic type='${paymentMethod.type}'></adyen-payment-method-generic>`;
+            componentNode += `\n${node}`;
+        }
+        componentNode += '</adyen-checkout>';
 
         $('head').append(scripts);
         $('#adyen-webcomponent').append(componentNode);
@@ -40,8 +48,24 @@ function renderGenericComponent(){
         adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
         adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
         adyenWebComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
-    })
+
+    });
 }
+
+// $('#paymentMethodsUl').append(node);
+//
+//     var li = $('<li>').addClass('paymentMethod');
+//     li.append($('<input>')
+//         .attr('id', 'rb_' + paymentMethod.name)
+//         .attr('type', 'radio')
+//         .attr('name', 'brandCode')
+//         .attr('value', paymentMethod.type));
+//     li.append($('<img>').addClass('paymentMethod_img').attr('src', data.imagePath + paymentMethod.name + '.png'));
+//     li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.type));
+//     // li.append($('<p>').text(data.AdyenDescriptions[i].description));
+//     // li.append(node);
+//     console.log(li);
+//     $('#paymentMethodsUl').empty();
 
 function adyenOnChange(response) {
     var stateData = response.detail.state.data;
@@ -92,22 +116,22 @@ $('.payment-summary .edit-button').on('click', function (e) {
 });
 
 function displayPaymentMethods() {
-    $('#paymentMethodsUl').empty();
-    getPaymentMethods(function (data) {
-        jQuery.each(data.AdyenPaymentMethods, function (i, method) {
-            addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
-        });
-
-        $('input[type=radio][name=brandCode]').change(function () {
-            resetPaymentMethod();
-            $('#component_' + $(this).val()).show();
-        });
-
-        if(data.AdyenConnectedTerminals && data.AdyenConnectedTerminals.uniqueTerminalIds && data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0){
-            $('#AdyenPosTerminals').empty();
-            addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
-        }
-    });
+    // $('#paymentMethodsUl').empty();
+    // getPaymentMethods(function (data) {
+    //     jQuery.each(data.AdyenPaymentMethods, function (i, method) {
+    //         addPaymentMethod(method, data.ImagePath, data.AdyenDescriptions[i].description);
+    //     });
+    //
+    //     $('input[type=radio][name=brandCode]').change(function () {
+    //         resetPaymentMethod();
+    //         $('#component_' + $(this).val()).show();
+    //     });
+    //
+    //     if(data.AdyenConnectedTerminals && data.AdyenConnectedTerminals.uniqueTerminalIds && data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0){
+    //         $('#AdyenPosTerminals').empty();
+    //         addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+    //     }
+    // });
 };
 
 function addPosTerminals(terminals) {
