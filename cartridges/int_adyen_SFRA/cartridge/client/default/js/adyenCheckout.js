@@ -15,57 +15,73 @@ renderOneClickComponents();
 renderGenericComponent();
 
 function renderGenericComponent(){
-    getPaymentMethods(function(data){
+        getPaymentMethods( function(data){
         var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
-        console.log(data.AdyenPaymentMethods);
+        console.log(data);
         var scripts = `
               <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
               <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
            `;
 
         var componentNode = ` 
-                         <adyen-checkout
+                         <adyen-checkout 
                                 locale="${window.Configuration.locale}"
                                 environment="${window.Configuration.environment}"
                                 origin-key="${window.Configuration.originKey}"
                                 payment-methods='${paymentMethodsResponse}'
-                                >
-<!--                            <adyen-payment-method-card></adyen-payment-method-card>-->
-<!--                            <adyen-payment-method-generic type='ideal'></adyen-payment-method-generic>-->
-<!--                            <adyen-payment-method-generic type='molpay_ebanking_TH' show-pay-button></adyen-payment-method-generic>-->
-                        `;
-
-        for(let paymentMethod of data.AdyenPaymentMethods.paymentMethods.slice(1)) {
-            var node = `<adyen-payment-method-generic type='${paymentMethod.type}'></adyen-payment-method-generic>`;
-            componentNode += `\n${node}`;
-        }
-        componentNode += '</adyen-checkout>';
+                         >
+                            <ul id="paymentMethodsList"></ul>   
+                         </adyen-checkout>`;
 
         $('head').append(scripts);
         $('#adyen-webcomponent').append(componentNode);
-
         var adyenWebComponent = document.querySelector('adyen-checkout');
+        var paymentMethodsUI = document.querySelector('#paymentMethodsList');
+
+        for(var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
+                var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
+                var li = $('<li>').addClass('paymentMethod');
+                li.append($('<input>')
+                    .attr('id', 'rb_' + paymentMethod.name)
+                    .attr('type', 'radio')
+                    .attr('name', 'brandCode')
+                    .attr('value', paymentMethod.type));
+                li.append($('<img>').addClass('paymentMethod_img').attr('src', data.imagePath + paymentMethod.name + '.png'));
+                li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.type));
+                li.append($('<p>').text(data.AdyenDescriptions[i].description));
+
+                console.log(li);
+
+            customElements.whenDefined('adyen-checkout').then(() =>{
+                adyenWebComponent.isAvailable(paymentMethod.type).then(isAvailable => {
+                    var template = document.createElement('template');
+                    var node;
+                    if(isAvailable) {
+                         node = `<adyen-payment-method-${paymentMethod.type}></adyen-payment-method->`;
+                    } else {
+                             const fallback = getFallback(paymentMethod.type);
+                        node = `<adyen-payment-method-generic type=${paymentMethod.type}>${fallback || ''}</adyen-payment-method-generic>`;
+                    }
+                    li.innerHTML = node;
+
+                    // template.innerHTML = node;
+                    // li.append(template.content);
+
+                    console.log(li);
+
+                    paymentMethodsUI.append(li);
+
+                    console.log(paymentMethodsUI);
+                    // adyenWebComponent.append(li);
+                })
+            })
+        }
+
         adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
         adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
         adyenWebComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
-
     });
 }
-
-// $('#paymentMethodsUl').append(node);
-//
-//     var li = $('<li>').addClass('paymentMethod');
-//     li.append($('<input>')
-//         .attr('id', 'rb_' + paymentMethod.name)
-//         .attr('type', 'radio')
-//         .attr('name', 'brandCode')
-//         .attr('value', paymentMethod.type));
-//     li.append($('<img>').addClass('paymentMethod_img').attr('src', data.imagePath + paymentMethod.name + '.png'));
-//     li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.type));
-//     // li.append($('<p>').text(data.AdyenDescriptions[i].description));
-//     // li.append(node);
-//     console.log(li);
-//     $('#paymentMethodsUl').empty();
 
 function adyenOnChange(response) {
     var stateData = response.detail.state.data;
@@ -168,157 +184,157 @@ function getPaymentMethods(paymentMethods) {
     });
 };
 
-function addPaymentMethod(paymentMethod, imagePath, description) {
-    var li = $('<li>').addClass('paymentMethod');
-    li.append($('<input>')
-        .attr('id', 'rb_' + paymentMethod.name)
-        .attr('type', 'radio')
-        .attr('name', 'brandCode')
-        .attr('value', paymentMethod.type));
-    li.append($('<img>').addClass('paymentMethod_img').attr('src', imagePath + paymentMethod.type + '.png'));
-    li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
-    li.append($('<p>').text(description));
-
-    if (paymentMethod.type == "ideal") {
-        var idealContainer = document.createElement("div");
-        $(idealContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-        idealComponent = checkout.create('ideal', {
-            details: paymentMethod.details
-        });
-        li.append(idealContainer);
-        idealComponent.mount(idealContainer);
-    }
-
-    if (paymentMethod.type.indexOf("klarna") !== -1 && paymentMethod.details) {
-        var klarnaContainer = document.createElement("div");
-        $(klarnaContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-        klarnaComponent = checkout.create('klarna', {
-            countryCode: $('#currentLocale').val(),
-            details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
-            visibility: {
-                personalDetails: "editable"
-            }
-        });
-        klarnaComponent.mount(klarnaContainer);
-
-        if (isNordicCountry($('#shippingCountry').val())) {
-            var ssnContainer = document.createElement("div");
-            $(ssnContainer).attr('id', 'ssn_' + paymentMethod.type);
-            var socialSecurityNumberLabel = document.createElement("span");
-            $(socialSecurityNumberLabel).text("Social Security Number").attr('class', 'adyen-checkout__label');
-            var socialSecurityNumber = document.createElement("input");
-            $(socialSecurityNumber).attr('id', 'ssnValue').attr('class', 'adyen-checkout__input').attr('type', 'text'); //.attr('maxlength', ssnLength);
-
-            ssnContainer.append(socialSecurityNumberLabel);
-            ssnContainer.append(socialSecurityNumber);
-            klarnaContainer.append(ssnContainer);
-        }
-
-        li.append(klarnaContainer);
-
-    }
-    ;
-
-    if (paymentMethod.type.indexOf("afterpay_default") !== -1) {
-        var afterpayContainer = document.createElement("div");
-        $(afterpayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-        afterpayComponent = checkout.create('afterpay', {
-            countryCode: $('#currentLocale').val(),
-            details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
-            visibility: {
-                personalDetails: "editable"
-            }
-        });
-        li.append(afterpayContainer);
-        afterpayComponent.mount(afterpayContainer);
-    }
-    ;
-
-    if (paymentMethod.type == 'ratepay') {
-        var ratepayContainer = document.createElement("div");
-        $(ratepayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-
-        var genderLabel = document.createElement("span");
-        $(genderLabel).text("Gender").attr('class', 'adyen-checkout__label');
-        var genderInput = document.createElement("select");
-        $(genderInput).attr('id', 'genderInput').attr('class', 'adyen-checkout__input');
-
-        //Create array of options to be added
-        var genders = {'M': 'Male','F': 'Female'};
-
-        for (var key in genders) {
-            var option = document.createElement("option");
-            option.value = key;
-            option.text = genders[key];
-            genderInput.appendChild(option);
-        }
-
-        var dateOfBirthLabel = document.createElement("span");
-        $(dateOfBirthLabel).text("Date of birth").attr('class', 'adyen-checkout__label');
-        var dateOfBirthInput = document.createElement("input");
-        $(dateOfBirthInput).attr('id', 'dateOfBirthInput').attr('class', 'adyen-checkout__input').attr('type', 'date');
-
-
-        ratepayContainer.append(genderLabel);
-        ratepayContainer.append(genderInput);
-        ratepayContainer.append(dateOfBirthLabel);
-        ratepayContainer.append(dateOfBirthInput);
-
-        li.append(ratepayContainer);
-    }
-    ;
-
-    if (paymentMethod.type.substring(0, 3) == "ach") {
-        var achContainer = document.createElement("div");
-        $(achContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
-
-        var bankAccountOwnerNameLabel = document.createElement("span");
-        $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
-        var bankAccountOwnerName = document.createElement("input");
-        $(bankAccountOwnerName).attr('id', 'bankAccountOwnerNameValue').attr('class', 'adyen-checkout__input').attr('type', 'text');
-
-        var bankAccountNumberLabel = document.createElement("span");
-        $(bankAccountNumberLabel).text("Bank Account Number").attr('class', 'adyen-checkout__label');
-        var bankAccountNumber = document.createElement("input");
-        $(bankAccountNumber).attr('id', 'bankAccountNumberValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 17);
-
-        var bankLocationIdLabel = document.createElement("span");
-        $(bankLocationIdLabel).text("Routing Number").attr('class', 'adyen-checkout__label');
-        var bankLocationId = document.createElement("input");
-        $(bankLocationId).attr('id', 'bankLocationIdValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 9);
-
-
-        achContainer.append(bankAccountOwnerNameLabel);
-        achContainer.append(bankAccountOwnerName);
-
-        achContainer.append(bankAccountNumberLabel);
-        achContainer.append(bankAccountNumber);
-
-        achContainer.append(bankLocationIdLabel);
-        achContainer.append(bankLocationId);
-
-        li.append(achContainer);
-    }
-
-    if (paymentMethod.details) {
-        if (paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer") {
-            var additionalFields = $('<div>').addClass('additionalFields')
-                .attr('id', 'component_' + paymentMethod.type)
-                .attr('style', 'display:none');
-
-            var issuers = $('<select>').attr('id', 'issuerList');
-            jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
-                var issuerOption = $('<option>')
-                    .attr('label', issuer.name)
-                    .attr('value', issuer.id);
-                issuers.append(issuerOption);
-            });
-            additionalFields.append(issuers);
-            li.append(additionalFields);
-        }
-    }
-    $('#paymentMethodsUl').append(li);
-};
+// function addPaymentMethod(paymentMethod, imagePath, description) {
+//     var li = $('<li>').addClass('paymentMethod');
+//     li.append($('<input>')
+//         .attr('id', 'rb_' + paymentMethod.name)
+//         .attr('type', 'radio')
+//         .attr('name', 'brandCode')
+//         .attr('value', paymentMethod.type));
+//     li.append($('<img>').addClass('paymentMethod_img').attr('src', imagePath + paymentMethod.type + '.png'));
+//     li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.name));
+//     li.append($('<p>').text(description));
+//
+//     if (paymentMethod.type == "ideal") {
+//         var idealContainer = document.createElement("div");
+//         $(idealContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+//         idealComponent = checkout.create('ideal', {
+//             details: paymentMethod.details
+//         });
+//         li.append(idealContainer);
+//         idealComponent.mount(idealContainer);
+//     }
+//
+//     if (paymentMethod.type.indexOf("klarna") !== -1 && paymentMethod.details) {
+//         var klarnaContainer = document.createElement("div");
+//         $(klarnaContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+//         klarnaComponent = checkout.create('klarna', {
+//             countryCode: $('#currentLocale').val(),
+//             details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
+//             visibility: {
+//                 personalDetails: "editable"
+//             }
+//         });
+//         klarnaComponent.mount(klarnaContainer);
+//
+//         if (isNordicCountry($('#shippingCountry').val())) {
+//             var ssnContainer = document.createElement("div");
+//             $(ssnContainer).attr('id', 'ssn_' + paymentMethod.type);
+//             var socialSecurityNumberLabel = document.createElement("span");
+//             $(socialSecurityNumberLabel).text("Social Security Number").attr('class', 'adyen-checkout__label');
+//             var socialSecurityNumber = document.createElement("input");
+//             $(socialSecurityNumber).attr('id', 'ssnValue').attr('class', 'adyen-checkout__input').attr('type', 'text'); //.attr('maxlength', ssnLength);
+//
+//             ssnContainer.append(socialSecurityNumberLabel);
+//             ssnContainer.append(socialSecurityNumber);
+//             klarnaContainer.append(ssnContainer);
+//         }
+//
+//         li.append(klarnaContainer);
+//
+//     }
+//     ;
+//
+//     if (paymentMethod.type.indexOf("afterpay_default") !== -1) {
+//         var afterpayContainer = document.createElement("div");
+//         $(afterpayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+//         afterpayComponent = checkout.create('afterpay', {
+//             countryCode: $('#currentLocale').val(),
+//             details: filterOutOpenInvoiceComponentDetails(paymentMethod.details),
+//             visibility: {
+//                 personalDetails: "editable"
+//             }
+//         });
+//         li.append(afterpayContainer);
+//         afterpayComponent.mount(afterpayContainer);
+//     }
+//     ;
+//
+//     if (paymentMethod.type == 'ratepay') {
+//         var ratepayContainer = document.createElement("div");
+//         $(ratepayContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+//
+//         var genderLabel = document.createElement("span");
+//         $(genderLabel).text("Gender").attr('class', 'adyen-checkout__label');
+//         var genderInput = document.createElement("select");
+//         $(genderInput).attr('id', 'genderInput').attr('class', 'adyen-checkout__input');
+//
+//         //Create array of options to be added
+//         var genders = {'M': 'Male','F': 'Female'};
+//
+//         for (var key in genders) {
+//             var option = document.createElement("option");
+//             option.value = key;
+//             option.text = genders[key];
+//             genderInput.appendChild(option);
+//         }
+//
+//         var dateOfBirthLabel = document.createElement("span");
+//         $(dateOfBirthLabel).text("Date of birth").attr('class', 'adyen-checkout__label');
+//         var dateOfBirthInput = document.createElement("input");
+//         $(dateOfBirthInput).attr('id', 'dateOfBirthInput').attr('class', 'adyen-checkout__input').attr('type', 'date');
+//
+//
+//         ratepayContainer.append(genderLabel);
+//         ratepayContainer.append(genderInput);
+//         ratepayContainer.append(dateOfBirthLabel);
+//         ratepayContainer.append(dateOfBirthInput);
+//
+//         li.append(ratepayContainer);
+//     }
+//     ;
+//
+//     if (paymentMethod.type.substring(0, 3) == "ach") {
+//         var achContainer = document.createElement("div");
+//         $(achContainer).addClass('additionalFields').attr('id', 'component_' + paymentMethod.type).attr('style', 'display:none');
+//
+//         var bankAccountOwnerNameLabel = document.createElement("span");
+//         $(bankAccountOwnerNameLabel).text("Bank Account Owner Name").attr('class', 'adyen-checkout__label');
+//         var bankAccountOwnerName = document.createElement("input");
+//         $(bankAccountOwnerName).attr('id', 'bankAccountOwnerNameValue').attr('class', 'adyen-checkout__input').attr('type', 'text');
+//
+//         var bankAccountNumberLabel = document.createElement("span");
+//         $(bankAccountNumberLabel).text("Bank Account Number").attr('class', 'adyen-checkout__label');
+//         var bankAccountNumber = document.createElement("input");
+//         $(bankAccountNumber).attr('id', 'bankAccountNumberValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 17);
+//
+//         var bankLocationIdLabel = document.createElement("span");
+//         $(bankLocationIdLabel).text("Routing Number").attr('class', 'adyen-checkout__label');
+//         var bankLocationId = document.createElement("input");
+//         $(bankLocationId).attr('id', 'bankLocationIdValue').attr('class', 'adyen-checkout__input').attr('type', 'text').attr('maxlength', 9);
+//
+//
+//         achContainer.append(bankAccountOwnerNameLabel);
+//         achContainer.append(bankAccountOwnerName);
+//
+//         achContainer.append(bankAccountNumberLabel);
+//         achContainer.append(bankAccountNumber);
+//
+//         achContainer.append(bankLocationIdLabel);
+//         achContainer.append(bankLocationId);
+//
+//         li.append(achContainer);
+//     }
+//
+//     if (paymentMethod.details) {
+//         if (paymentMethod.details.constructor == Array && paymentMethod.details[0].key == "issuer") {
+//             var additionalFields = $('<div>').addClass('additionalFields')
+//                 .attr('id', 'component_' + paymentMethod.type)
+//                 .attr('style', 'display:none');
+//
+//             var issuers = $('<select>').attr('id', 'issuerList');
+//             jQuery.each(paymentMethod.details[0].items, function (i, issuer) {
+//                 var issuerOption = $('<option>')
+//                     .attr('label', issuer.name)
+//                     .attr('value', issuer.id);
+//                 issuers.append(issuerOption);
+//             });
+//             additionalFields.append(issuers);
+//             li.append(additionalFields);
+//         }
+//     }
+//     $('#paymentMethodsUl').append(li);
+// };
 
 
 //Filter fields for open invoice validation
@@ -452,6 +468,19 @@ function setPaymentData() {
     $('#cardOwner').val(card.state.data.holderName);
     $('#cardNumber').val(maskedCardNumber || "");
     $('#saveCardAdyen').val(storeDetails || false);
+}
+
+function getFallback(paymentMethod) {
+   var ach =  `<div slot="fallback">
+                    <span class="adyen-checkout__label">Bank Account Owner Name</span>
+                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
+                    <span class="adyen-checkout__label">Bank Account Number</span>
+                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17">
+                    <span class="adyen-checkout__label">Routing Number</span>
+                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9">
+                 </div>`;
+   var fallback = {ach: ach};
+   return fallback[paymentMethod];
 }
 
 module.exports = {

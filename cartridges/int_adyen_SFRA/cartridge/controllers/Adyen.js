@@ -330,22 +330,15 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value;
     }
     var response;
-    var paymentMethods = {};
-    var localPaymentMethodDescriptions = [];
+    var paymentMethodDescriptions = [];
     try {
         response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode);
-        // paymentMethods.cardPaymentMethods = response.filter(function (method) {
-        //     return method.type == "scheme";
-        // })[0];
-        // paymentMethods.localPaymentMethods = response.filter(function (method) {
-        //     return !AdyenHelper.isMethodTypeBlocked(method.type);
-        // });
-        // localPaymentMethodDescriptions = paymentMethods.localPaymentMethods.map(function (method) {
-        //     return {
-        //         brandCode: method.type,
-        //         description: Resource.msg("hpp.description." + method.type, "hpp", "")
-        //     };
-        // })
+        paymentMethodDescriptions = response.paymentMethods.map(function (method) {
+            return {
+                brandCode: method.type,
+                description: Resource.msg("hpp.description." + method.type, "hpp", "")
+            };
+        })
     } catch (err) {
         Logger.getLogger("Adyen").error("Error retrieving Payment Methods. Error message: " + err.message + " more details: "+ err.toString() + " in " + err.fileName + ":" + err.lineNumber);
         response = [];
@@ -361,10 +354,9 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
 
     res.json({
         AdyenPaymentMethods: response,
-        // ImagePath: adyenURL,
-        // AdyenDescriptions: localPaymentMethodDescriptions,
-        // AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-        // AdyenCardPaymentMethods: paymentMethods.cardPaymentMethods
+        ImagePath: adyenURL,
+        AdyenDescriptions: paymentMethodDescriptions,
+        AdyenConnectedTerminals: JSON.parse(connectedTerminals),
     });
     return next();
 });
