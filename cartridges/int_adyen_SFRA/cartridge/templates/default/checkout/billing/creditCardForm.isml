@@ -11,3 +11,12 @@
 <input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
 <div id="adyen-webcomponent"></div>
+
+<!--  <adyen-checkout -->
+<!--  locale="${request.locale}" -->
+<!--  environment="${pdict.adyen.environment}" -->
+<!--  origin-key="${pdict.adyen.originKey}" -->
+<!--  payment-methods='$ß{paymentMethodsResponse}' -->
+<!-- > -->
+<!-- <ul id="paymentMethodsList"></ul> -->
+<!-- </adyen-checkout> -->
