@@ -11,6 +11,7 @@
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridgeSFRA": "sgmf-scripts --uploadCartridge /home/vagrant/workspace/storefront-reference-architecture/cartridges/app_storefront_base",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css",
@@ -23,7 +24,11 @@
       "./setup-jest.js"
     ]
   },
+    "engines": {
+    "node": ">=4.0"
+  },
   "dependencies": {
+    "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
     "cleave.js": "^1.0.1",
     "eslint-config-airbnb": "^17.1.0",

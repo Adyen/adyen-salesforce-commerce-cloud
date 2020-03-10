@@ -18,8 +18,8 @@ importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_adyen_overla
 function execute( args : PipelineDictionary ) : Number
 {
 	var result = create(args.Basket);
-	if (result == PIPELET_ERROR){
-		return PIPELET_ERROR;
+	if (result.error){
+		return result;
 	}
 	
 	args.PaymentInstrument = result;
@@ -31,7 +31,7 @@ function create( basket : dw.order.Basket ) : Number
 	// verify that we have a basket and a valid credit card form
 	if( basket == null  )//|| !creditCardForm.valid
 	{
-		return PIPELET_ERROR;
+		return { error: true };
 	}
 	
 	// calculate the amount to be charged for the credit card
@@ -40,7 +40,7 @@ function create( basket : dw.order.Basket ) : Number
 	// create a payment instrument for this credit card
 	var paymentInstr : PaymentInstrument = basket.createPaymentInstrument( "Adyen", amount );
 
-    return paymentInstr;
+    return { paymentInstr: paymentInstr, error: false };
 }
 
 module.exports = {

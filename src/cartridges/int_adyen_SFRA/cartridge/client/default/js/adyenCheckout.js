@@ -373,14 +373,19 @@ function checkComponentDetails(selectedMethod) {
             $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
         }
         return idealComponent.componentRef.state.isValid;
-    } else if (selectedMethod.val().indexOf("klarna") > -1 && klarnaComponent) {
-        if (klarnaComponent.componentRef.state.isValid) {
-            setOpenInvoiceData(klarnaComponent);
-            if ($('#ssnValue')) {
-                $('#socialSecurityNumber').val($('#ssnValue').val());
+    } else if (selectedMethod.val().indexOf("klarna") > -1) {
+        if(klarnaComponent){
+            if (klarnaComponent.componentRef.state.isValid) {
+                setOpenInvoiceData(klarnaComponent);
+                if ($('#ssnValue')) {
+                    $('#socialSecurityNumber').val($('#ssnValue').val());
+                }
             }
+            return klarnaComponent.componentRef.state.isValid;
         }
-        return klarnaComponent.componentRef.state.isValid;
+        else{
+            return true;
+        }
     } else if (selectedMethod.val().indexOf("afterpay_default") > -1) {
         if (afterpayComponent.componentRef.state.isValid) {
             setOpenInvoiceData(afterpayComponent);
