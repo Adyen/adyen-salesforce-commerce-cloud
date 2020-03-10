@@ -10,24 +10,23 @@ var storeDetails;
 var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
+var selectedMethod;
 
 renderOneClickComponents();
 renderGenericComponent();
 
 function displaySelectedMethod(type) {
-    console.log('triggered');
+    selectedMethod = type;
     resetPaymentMethod();
-    console.log(type);
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
 }
 
 function renderGenericComponent() {
     getPaymentMethods(async function (data) {
         var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
-        console.log(data);
         var scripts = `
-              <script type="module" src="https://unpkg.com/generic-component@0.0.25/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-              <script nomodule src="https://unpkg.com/generic-component@0.0.25/dist/adyen-checkout/adyen-checkout.js"></script>
+              <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
            `;
 
         var componentNode = ` 
@@ -47,69 +46,39 @@ function renderGenericComponent() {
 
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-            console.log(paymentMethod);
             var li = document.createElement('li');
             li.classList.add('paymentMethod');
             var liContents = `
-                                  <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}" /> 
+                                  <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"/> 
                                   <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
                                   <label for="rb_${paymentMethod.name}">${paymentMethod.name}</label>
                                   <p>${data.AdyenDescriptions[i].description}</p>
                              `;
             li.innerHTML = liContents;
 
-            // <div class="additionalFields" id="component_${paymentMethod.type}" style="display:none">
+            var template = document.createElement('template');
+            var fallback = getFallback(paymentMethod.type);
+            var node = `<adyen-payment-method type="${paymentMethod.type}">${fallback || ''}</adyen-payment-method>`;
 
-            // var li = $('<li>').addClass('paymentMethod');
-            // li.append($('<input>')
-            //     .attr('id', 'rb_' + paymentMethod.name)
-            //     .attr('type', 'radio')
-            //     .attr('name', 'brandCode')
-            //     .attr('value', paymentMethod.type));
-            // li.append($('<img>').addClass('paymentMethod_img').attr('src', data.imagePath + paymentMethod.name + '.png'));
-            // li.append($('<label>').text(paymentMethod.name).attr('for', 'rb_' + paymentMethod.type));
-            // li.append($('<p>').text(data.AdyenDescriptions[i].description));
+            var container = document.createElement('div');
+            container.classList.add("additionalFields");
+            container.setAttribute("id", `component_${paymentMethod.type}`);
+            container.setAttribute("style", "display:none");
+            container.innerHTML = node;
 
+            li.append(container);
 
-            // -----
-            // <adyen-payment-method type=${pm.type}>
-            //     ${pm.type === 'ach' ? '<h4 slot="fallback">ACH Fallback</h4>' : ''}
-            // </adyen-payment-method>
+            paymentMethodsUI.append(li);
+            var input = document.querySelector(`#rb_${paymentMethod.type}`);
 
-            await customElements.whenDefined('adyen-checkout').then(async () => {
-                await adyenWebComponent.isAvailable(paymentMethod.type).then(isAvailable => {
-                    var template = document.createElement('template');
-                    var node;
-                    console.log(paymentMethod.type);
-                    if (isAvailable) {
-                        node = `<adyen-payment-method-${paymentMethod.type}></adyen-payment-method->`;
-                    } else {
-                        const fallback = getFallback(paymentMethod.type);
-                        node = `<adyen-payment-method-generic type=${paymentMethod.type}>${fallback || ''}</adyen-payment-method-generic>`;
-                    }
-                    // template.innerHTML = node;
-                    var container = document.createElement('div');
-                    container.classList.add("additionalFields");
-                    container.setAttribute("id", `component_${paymentMethod.type}`);
-                    console.log(paymentMethod.type);
-                    container.setAttribute("style", "display:none");
-                    container.innerHTML = node;
-
-                    li.append(container);
-                    // li.append(template.content);
-                    // var x = document.createElement('li');
-                    // x.innerHTML = node;
-                    paymentMethodsUI.append(li);
-                    // adyenWebComponent.append(li);
-                    var input = document.querySelector(`#rb_${paymentMethod.type}`);
-                    input.onchange = function () {
-                        console.log(paymentMethod.type);
-                        displaySelectedMethod(paymentMethod.type)
-                    };
-                });
-            });
-
+            input.onchange = (event) => {
+                displaySelectedMethod(event.target.value);
+            };
         }
+
+        var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
+        firstPaymentMethod.checked = true;
+        displaySelectedMethod(firstPaymentMethod.value);
 
         adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
         adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
@@ -118,6 +87,7 @@ function renderGenericComponent() {
 }
 
 function adyenOnChange(response) {
+    console.log(response.detail.state);
     var stateData = response.detail.state.data;
     $("#adyenStateData").val(JSON.stringify(stateData));
     isValid = response.detail.state.isValid;
@@ -414,11 +384,8 @@ function isNordicCountry(country) {
 };
 
 //Submit the payment
-$('button[value="submit-payment"]').on('click', function (e) {
-    if(!isValid){
-        return false;
-    }
-    return true;
+$('button[value="submit-payment"]').on('click', function () {
+    // console.log(checkComponentDetails(selectedMethod));
 });
 
 function checkComponentDetails(selectedMethod) {
