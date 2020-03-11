@@ -1,4 +1,7 @@
 <iscontent type="text/html" encoding="off"/>
+<script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+<script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
+
 <script>
     window.Configuration = {
         locale: '${request.locale}',
@@ -14,8 +17,7 @@
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
 <input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
-<input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethodName"/>
-
+<input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
 <input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>
 
@@ -29,6 +31,13 @@
 <input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
 
 <div id="adyen-webcomponent"></div>
+<adyen-checkout
+        locale="${request.locale}"
+        environment="${pdict.adyen.environment}"
+        origin-key="${pdict.adyen.originKey}"
+    >
+    <ul id="paymentMethodsList"></ul>
+</adyen-checkout>
 
 <iscomment>
     Adyen RatePay Device Fingerprint Code

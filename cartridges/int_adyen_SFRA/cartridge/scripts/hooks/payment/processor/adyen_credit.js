@@ -25,6 +25,7 @@ function Handle(basket, paymentInformation) {
         });
         var paymentInstrument = currentBasket.createPaymentInstrument("Adyen", currentBasket.totalGrossPrice);
         paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+        paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
 
         if (paymentInformation.isCreditCard) {
             var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
@@ -40,7 +41,6 @@ function Handle(basket, paymentInformation) {
             }
         } else {
             //Local payment data
-            paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
             if (paymentInformation.adyenIssuerName) {
                 paymentInstrument.custom.adyenIssuerName = paymentInformation.adyenIssuerName;
             }

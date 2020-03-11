@@ -17,9 +17,6 @@ renderGenericComponent();
 
 function displaySelectedMethod(type) {
     selectedMethod = type;
-    var adyenPaymentMethodName = document.querySelector("#adyenPaymentMethodName");
-    var paymentMethodLabel = document.querySelector(`#lb_${type}`).innerHTML;
-    adyenPaymentMethodName.setAttribute("value", paymentMethodLabel);
     resetPaymentMethod();
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
 }
@@ -27,35 +24,20 @@ function displaySelectedMethod(type) {
 function renderGenericComponent() {
     getPaymentMethods(async function (data) {
         var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
-        var scripts = `
-              <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
-           `;
 
-        var componentNode = ` 
-                         <adyen-checkout 
-                                locale="${window.Configuration.locale}"
-                                environment="${window.Configuration.environment}"
-                                origin-key="${window.Configuration.originKey}"
-                                payment-methods='${paymentMethodsResponse}'
-                         >
-                            <ul id="paymentMethodsList"></ul>   
-                         </adyen-checkout>`;
-
-        $('head').append(scripts);
-        $('#adyen-webcomponent').append(componentNode);
         var adyenWebComponent = document.querySelector('adyen-checkout');
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
+        adyenWebComponent.paymentMethods = paymentMethodsResponse;
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
             var li = document.createElement('li');
             li.classList.add('paymentMethod');
             var liContents = `
-                                  <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"> 
-                                  <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
-                                  <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
-                                  <p>${data.AdyenDescriptions[i].description}</p>
+                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"> 
+                              <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
+                              <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
+                              <p>${data.AdyenDescriptions[i].description}</p>
                              `;
             li.innerHTML = liContents;
 
@@ -194,7 +176,10 @@ function getPaymentMethods(paymentMethods) {
 
 //Submit the payment
 $('button[value="submit-payment"]').on('click', function () {
-
+    var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
+    var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
+    adyenPaymentMethod.value = paymentMethodLabel;
+    console.log(adyenPaymentMethod);
     return true;
 });
 
