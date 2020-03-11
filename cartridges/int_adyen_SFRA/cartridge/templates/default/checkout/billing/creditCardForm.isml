@@ -6,8 +6,49 @@
         environment: '${pdict.adyen.environment}'
     };
 </script>
+
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
+
 <input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
 <input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
+<input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethodName"/>
+
+<input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
+<input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>
+
+<input id="dateOfBirth" type="hidden" ${adyenPaymentFields.dateOfBirth.attributes}/>
+<input id="telephoneNumber" type="hidden" ${adyenPaymentFields.telephoneNumber.attributes}/>
+<input id="gender" type="hidden" ${adyenPaymentFields.gender.attributes}/>
+<input id="socialSecurityNumber" type="hidden" ${adyenPaymentFields.socialSecurityNumber.attributes}/>
+
+<input id="bankAccountOwnerName" type="hidden" ${adyenPaymentFields.bankAccountOwnerName.attributes}/>
+<input id="bankAccountNumber" type="hidden" ${adyenPaymentFields.bankAccountNumber.attributes}/>
+<input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
+
 <div id="adyen-webcomponent"></div>
+
+<iscomment>
+    Adyen RatePay Device Fingerprint Code
+</iscomment>
+<isif condition="${empty(session.privacy.ratePayFingerprint)}">
+    <isscript>
+        var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
+        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+        session.privacy.ratePayFingerprint = sessionID;
+    </isscript>
+    <script language="JavaScript">
+        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'}
+    </script>
+    <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+</isif>
+<iscomment>
+    Adyen Generic Device Fingerprint Code
+</iscomment>
+<script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
+<input id="adyenFingerprint" type="hidden" ${adyenPaymentFields.adyenFingerprint.attributes} />
+<script type="text/javascript">
+    dfDo('adyenFingerprint');
+</script>

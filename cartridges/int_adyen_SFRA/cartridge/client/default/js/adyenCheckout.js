@@ -12,11 +12,14 @@ const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 var selectedMethod;
 
-renderOneClickComponents();
+// renderOneClickComponents();
 renderGenericComponent();
 
 function displaySelectedMethod(type) {
     selectedMethod = type;
+    var adyenPaymentMethodName = document.querySelector("#adyenPaymentMethodName");
+    var paymentMethodLabel = document.querySelector(`#lb_${type}`).innerHTML;
+    adyenPaymentMethodName.setAttribute("value", paymentMethodLabel);
     resetPaymentMethod();
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
 }
@@ -49,9 +52,9 @@ function renderGenericComponent() {
             var li = document.createElement('li');
             li.classList.add('paymentMethod');
             var liContents = `
-                                  <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"/> 
+                                  <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"> 
                                   <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
-                                  <label for="rb_${paymentMethod.name}">${paymentMethod.name}</label>
+                                  <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
                                   <p>${data.AdyenDescriptions[i].description}</p>
                              `;
             li.innerHTML = liContents;
@@ -106,34 +109,34 @@ function adyenOnFieldValid(response) {
     }
 }
 
-function renderOneClickComponents() {
-    var componentContainers = document.getElementsByClassName("cvc-container");
-    jQuery.each(componentContainers, function (i, oneClickCardNode) {
-        var container = document.getElementById(oneClickCardNode.id);
-        var cardId = container.id.split("-")[1];
-        var brandCode = document.getElementById('cardType-' + cardId).value;
-        oneClickCard[cardId] = checkout.create('card', {
-            // Specific for oneClick cards
-            brand: brandCode,
-            storedPaymentMethodId: cardId,
-            onChange: function (state) {
-                oneClickValid = state.isValid;
-                if (state.isValid) {
-                    $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-                    $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
-                }
-            } // Gets triggered whenever a user changes input
-        }).mount(container);
-    });
-};
+// function renderOneClickComponents() {
+//     var componentContainers = document.getElementsByClassName("cvc-container");
+//     jQuery.each(componentContainers, function (i, oneClickCardNode) {
+//         var container = document.getElementById(oneClickCardNode.id);
+//         var cardId = container.id.split("-")[1];
+//         var brandCode = document.getElementById('cardType-' + cardId).value;
+//         oneClickCard[cardId] = checkout.create('card', {
+//             // Specific for oneClick cards
+//             brand: brandCode,
+//             storedPaymentMethodId: cardId,
+//             onChange: function (state) {
+//                 oneClickValid = state.isValid;
+//                 if (state.isValid) {
+//                     $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+//                     $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
+//                 }
+//             } // Gets triggered whenever a user changes input
+//         }).mount(container);
+//     });
+// };
 
-$('.payment-summary .edit-button').on('click', function (e) {
-    jQuery.each(oneClickCard, function (i) {
-        oneClickCard[i].unmount();
-    });
-    renderOneClickComponents();
-    oneClickValid = false;
-});
+// $('.payment-summary .edit-button').on('click', function (e) {
+//     jQuery.each(oneClickCard, function (i) {
+//         oneClickCard[i].unmount();
+//     });
+//     renderOneClickComponents();
+//     oneClickValid = false;
+// });
 
 function displayPaymentMethods() {
     // $('#paymentMethodsUl').empty();
@@ -165,6 +168,7 @@ function addPosTerminals(terminals) {
     }
     $('#AdyenPosTerminals').append(dd_terminals);
 }
+
 function resetPaymentMethod() {
     $('#requiredBrandCode').hide();
     $('#selectedIssuer').val("");
@@ -187,6 +191,25 @@ function getPaymentMethods(paymentMethods) {
         }
     });
 };
+
+//Submit the payment
+$('button[value="submit-payment"]').on('click', function () {
+
+    return true;
+});
+
+function getFallback(paymentMethod) {
+    var ach =  `<div slot="fallback">
+                    <span class="adyen-checkout__label">Bank Account Owner Name</span>
+                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
+                    <span class="adyen-checkout__label">Bank Account Number</span>
+                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17">
+                    <span class="adyen-checkout__label">Routing Number</span>
+                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9">
+                 </div>`;
+    var fallback = {ach: ach};
+    return fallback[paymentMethod];
+}
 
 // function addPaymentMethod(paymentMethod, imagePath, description) {
 //     var li = $('<li>').addClass('paymentMethod');
@@ -341,148 +364,132 @@ function getPaymentMethods(paymentMethods) {
 // };
 
 
-//Filter fields for open invoice validation
-function filterOutOpenInvoiceComponentDetails(details) {
-    var filteredDetails = details.map(function (detail) {
-        if (detail.key == "personalDetails") {
-            var detailObject = detail.details.map(function (childDetail) {
-                if (childDetail.key == 'dateOfBirth' ||
-                    childDetail.key == 'gender') {
-                    return childDetail;
-                }
-            });
+// //Filter fields for open invoice validation
+// function filterOutOpenInvoiceComponentDetails(details) {
+//     var filteredDetails = details.map(function (detail) {
+//         if (detail.key == "personalDetails") {
+//             var detailObject = detail.details.map(function (childDetail) {
+//                 if (childDetail.key == 'dateOfBirth' ||
+//                     childDetail.key == 'gender') {
+//                     return childDetail;
+//                 }
+//             });
+//
+//             if (!!detailObject) {
+//                 return {
+//                     "key": detail.key,
+//                     "type": detail.type,
+//                     "details": filterUndefinedItemsInArray(detailObject)
+//                 };
+//             }
+//         }
+//     });
+//
+//     return filterUndefinedItemsInArray(filteredDetails);
+// };
+//
+// /**
+//  * Helper function to filter out the undefined items from an array
+//  * @param arr
+//  * @returns {*}
+//  */
+// function filterUndefinedItemsInArray(arr) {
+//     return arr.filter(function (item) {
+//         return typeof item !== 'undefined';
+//     });
+// };
+//
+// function isNordicCountry(country) {
+//     if (country === "SE" || country === "FI" || country === "DK" || country === "NO") {
+//         return true;
+//     }
+//     return false;
+// };
 
-            if (!!detailObject) {
-                return {
-                    "key": detail.key,
-                    "type": detail.type,
-                    "details": filterUndefinedItemsInArray(detailObject)
-                };
-            }
-        }
-    });
+//
+// function checkComponentDetails(selectedMethod) {
+//     //set data from components
+//     if (selectedMethod.val() == "ideal") {
+//         if (idealComponent.componentRef.state.isValid) {
+//             $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
+//             $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
+//         }
+//         return idealComponent.componentRef.state.isValid;
+//     } else if (selectedMethod.val().indexOf("klarna") > -1 && klarnaComponent) {
+//         if (klarnaComponent.componentRef.state.isValid) {
+//             setOpenInvoiceData(klarnaComponent);
+//             if ($('#ssnValue')) {
+//                 $('#socialSecurityNumber').val($('#ssnValue').val());
+//             }
+//         }
+//         return klarnaComponent.componentRef.state.isValid;
+//     } else if (selectedMethod.val().indexOf("afterpay_default") > -1) {
+//         if (afterpayComponent.componentRef.state.isValid) {
+//             setOpenInvoiceData(afterpayComponent);
+//         }
+//         return afterpayComponent.componentRef.state.isValid;
+//     }
+//     else if (selectedMethod.val() == 'ratepay') {
+//         if ($('#genderInput').val() && $('#dateOfBirthInput').val()) {
+//             $('#gender').val($('#genderInput').val());
+//             $('#dateOfBirth').val($('#dateOfBirthInput').val());
+//             return true;
+//         }
+//
+//         return false;
+//     }
+//     //if issuer is selected
+//     else if (selectedMethod.closest('li').find('.additionalFields #issuerList').val()) {
+//         $('#selectedIssuer').val(selectedMethod.closest('li').find('.additionalFields #issuerList').val());
+//         $('#adyenIssuerName').val(selectedMethod.closest('li').find('.additionalFields #issuerList').find('option:selected').attr('label'));
+//     } else if (selectedMethod.val().substring(0, 3) == "ach") {
+//         $('#bankAccountOwnerName').val($('#bankAccountOwnerNameValue').val());
+//         $('#bankAccountNumber').val($('#bankAccountNumberValue').val());
+//         $('#bankLocationId').val($('#bankLocationIdValue').val());
+//
+//         if (!$('#bankLocationIdValue').val() || !$('#bankAccountNumberValue').val() || !$('#bankAccountOwnerNameValue').val()) {
+//             return false;
+//         }
+//     }
+//
+//     return true;
+// }
+//
+// function setOpenInvoiceData(component) {
+//     if(component.componentRef.state.data.personalDetails){
+//         if(component.componentRef.state.data.personalDetails.dateOfBirth){
+//             $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
+//         }
+//         if(component.componentRef.state.data.personalDetails.gender){
+//             $('#gender').val(component.componentRef.state.data.personalDetails.gender);
+//         }
+//         if(component.componentRef.state.data.personalDetails.telephoneNumber){
+//             $('#telephoneNumber').val(component.componentRef.state.data.personalDetails.telephoneNumber);
+//         }
+//     }
+// }
+//
+// function adyenPaymentMethodSelected(selectedMethod) {
+//     if (!selectedMethod) {
+//         return false;
+//     }
+//     return true;
+// }
+//
+// $('button[value="add-new-payment"]').on('click', function (e) {
+//     setPaymentData();
+// });
+//
+// function setPaymentData() {
+//     $('#adyenEncryptedCardNumber').val(card.state.data.encryptedCardNumber);
+//     $('#adyenEncryptedExpiryMonth').val(card.state.data.encryptedExpiryMonth);
+//     $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
+//     $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
+//     $('#cardOwner').val(card.state.data.holderName);
+//     $('#cardNumber').val(maskedCardNumber || "");
+//     $('#saveCardAdyen').val(storeDetails || false);
+// }
 
-    return filterUndefinedItemsInArray(filteredDetails);
-};
-
-/**
- * Helper function to filter out the undefined items from an array
- * @param arr
- * @returns {*}
- */
-function filterUndefinedItemsInArray(arr) {
-    return arr.filter(function (item) {
-        return typeof item !== 'undefined';
-    });
-};
-
-function isNordicCountry(country) {
-    if (country === "SE" || country === "FI" || country === "DK" || country === "NO") {
-        return true;
-    }
-    return false;
-};
-
-//Submit the payment
-$('button[value="submit-payment"]').on('click', function () {
-    // console.log(checkComponentDetails(selectedMethod));
-});
-
-function checkComponentDetails(selectedMethod) {
-    //set data from components
-    if (selectedMethod.val() == "ideal") {
-        if (idealComponent.componentRef.state.isValid) {
-            $('#selectedIssuer').val(idealComponent.componentRef.state.data.issuer);
-            $('#adyenIssuerName').val(idealComponent.componentRef.props.items.find(x => x.id == idealComponent.componentRef.state.data.issuer).name);
-        }
-        return idealComponent.componentRef.state.isValid;
-    } else if (selectedMethod.val().indexOf("klarna") > -1 && klarnaComponent) {
-        if (klarnaComponent.componentRef.state.isValid) {
-            setOpenInvoiceData(klarnaComponent);
-            if ($('#ssnValue')) {
-                $('#socialSecurityNumber').val($('#ssnValue').val());
-            }
-        }
-        return klarnaComponent.componentRef.state.isValid;
-    } else if (selectedMethod.val().indexOf("afterpay_default") > -1) {
-        if (afterpayComponent.componentRef.state.isValid) {
-            setOpenInvoiceData(afterpayComponent);
-        }
-        return afterpayComponent.componentRef.state.isValid;
-    }
-    else if (selectedMethod.val() == 'ratepay') {
-        if ($('#genderInput').val() && $('#dateOfBirthInput').val()) {
-            $('#gender').val($('#genderInput').val());
-            $('#dateOfBirth').val($('#dateOfBirthInput').val());
-            return true;
-        }
-
-        return false;
-    }
-    //if issuer is selected
-    else if (selectedMethod.closest('li').find('.additionalFields #issuerList').val()) {
-        $('#selectedIssuer').val(selectedMethod.closest('li').find('.additionalFields #issuerList').val());
-        $('#adyenIssuerName').val(selectedMethod.closest('li').find('.additionalFields #issuerList').find('option:selected').attr('label'));
-    } else if (selectedMethod.val().substring(0, 3) == "ach") {
-        $('#bankAccountOwnerName').val($('#bankAccountOwnerNameValue').val());
-        $('#bankAccountNumber').val($('#bankAccountNumberValue').val());
-        $('#bankLocationId').val($('#bankLocationIdValue').val());
-
-        if (!$('#bankLocationIdValue').val() || !$('#bankAccountNumberValue').val() || !$('#bankAccountOwnerNameValue').val()) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function setOpenInvoiceData(component) {
-    if(component.componentRef.state.data.personalDetails){
-        if(component.componentRef.state.data.personalDetails.dateOfBirth){
-            $('#dateOfBirth').val(component.componentRef.state.data.personalDetails.dateOfBirth);
-        }
-        if(component.componentRef.state.data.personalDetails.gender){
-            $('#gender').val(component.componentRef.state.data.personalDetails.gender);
-        }
-        if(component.componentRef.state.data.personalDetails.telephoneNumber){
-            $('#telephoneNumber').val(component.componentRef.state.data.personalDetails.telephoneNumber);
-        }
-    }
-}
-
-function adyenPaymentMethodSelected(selectedMethod) {
-    if (!selectedMethod) {
-        return false;
-    }
-    return true;
-}
-
-$('button[value="add-new-payment"]').on('click', function (e) {
-    setPaymentData();
-});
-
-function setPaymentData() {
-    $('#adyenEncryptedCardNumber').val(card.state.data.encryptedCardNumber);
-    $('#adyenEncryptedExpiryMonth').val(card.state.data.encryptedExpiryMonth);
-    $('#adyenEncryptedExpiryYear').val(card.state.data.encryptedExpiryYear);
-    $('#adyenEncryptedSecurityCode').val(card.state.data.encryptedSecurityCode);
-    $('#cardOwner').val(card.state.data.holderName);
-    $('#cardNumber').val(maskedCardNumber || "");
-    $('#saveCardAdyen').val(storeDetails || false);
-}
-
-function getFallback(paymentMethod) {
-   var ach =  `<div slot="fallback">
-                    <span class="adyen-checkout__label">Bank Account Owner Name</span>
-                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
-                    <span class="adyen-checkout__label">Bank Account Number</span>
-                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17">
-                    <span class="adyen-checkout__label">Routing Number</span>
-                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9">
-                 </div>`;
-   var fallback = {ach: ach};
-   return fallback[paymentMethod];
-}
 
 module.exports = {
     methods: {
