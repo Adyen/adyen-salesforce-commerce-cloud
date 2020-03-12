@@ -27,5 +27,14 @@
             <production/>
         </preferences>
     </payment-processor>
+    <payment-processor processor-id="Adyen_Component">
+        <description>Adyen Component payment processor</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
 </payment-processors>
 

@@ -3,7 +3,7 @@
         <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
             <isinclude template="checkout/billing/paymentOptions/creditCardSummary"/>
         </isif>
-        <isif condition="${payment.paymentMethod === 'Adyen' || payment.paymentMethod == 'AdyenPOS'}">
+        <isif condition="${payment.paymentMethod === 'Adyen' || payment.paymentMethod == 'AdyenPOS' || payment.paymentMethod == 'AdyenComponent'} ">
             <isinclude template="checkout/billing/paymentOptions/alternativePaymentMethodSummary"/>
         </isif>
     </isloop>

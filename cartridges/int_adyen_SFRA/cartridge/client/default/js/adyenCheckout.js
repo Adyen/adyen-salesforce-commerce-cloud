@@ -28,7 +28,10 @@ function renderGenericComponent() {
         var adyenWebComponent = document.querySelector('adyen-checkout');
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-        adyenWebComponent.paymentMethods = paymentMethodsResponse;
+        if(adyenWebComponent){
+            adyenWebComponent.paymentMethods = paymentMethodsResponse;
+        }
+
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
             var li = document.createElement('li');

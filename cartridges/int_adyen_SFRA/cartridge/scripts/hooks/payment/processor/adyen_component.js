@@ -11,8 +11,11 @@ var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
+    Logger.getLogger("Adyen").error("paymentInformation = " + JSON.stringify(paymentInformation));
+
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
@@ -20,22 +23,30 @@ function Handle(basket, paymentInformation) {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
         });
-        var paymentInstrument = currentBasket.createPaymentInstrument(
-            PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
-        );
-        var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
-        var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
+        var paymentInstrument = currentBasket.createPaymentInstrument("AdyenComponent", currentBasket.totalGrossPrice);
+        paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+        paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
+
+        if (paymentInformation.isCreditCard) {
+            var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
+            var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
 
             paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
             paymentInstrument.setCreditCardType(sfccCardType);
-            paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
             if (tokenID) {
                 paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
                 paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
                 paymentInstrument.setCreditCardToken(tokenID);
             }
-        });
+        } else {
+            //Local payment data
+            if (paymentInformation.adyenIssuerName) {
+                paymentInstrument.custom.adyenIssuerName = paymentInformation.adyenIssuerName;
+            }
+        }
+    });
+
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }
 
@@ -58,6 +69,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
+    Logger.getLogger("Adyen").error("Authorize");
     Transaction.begin();
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
@@ -65,6 +77,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         ReturnUrl: URLUtils.https("Adyen-OrderConfirm").toString()
     });
 
+    Logger.getLogger("Adyen").error("Authorize result = " + JSON.stringify(result));
     if (result.error) {
         var errors = [];
         errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
@@ -73,55 +86,64 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    //Trigger 3DS2.0 flow
-    if(result.ThreeDS2){
+    //TODO BAS Combine resultcod
+    //Trigger 3DS2 flow
+    if(result.threeDS2){
         Transaction.commit();
         Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+            paymentInstrument.custom.adyenPaymentData = result.paymentData;
         });
 
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
         return {
-            ThreeDS2: result.ThreeDS2,
+            threeDS2: result.threeDS2,
             resultCode: result.resultCode,
             token3ds2: result.token3ds2,
         }
     }
 
-    //Trigger 3DS flow
-    else if (result.RedirectObject != "") {
+    else if (result.resultCode == "RedirectShopper") {
         Transaction.commit();
         Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+            paymentInstrument.custom.adyenPaymentData = result.paymentData;
         });
 
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
+        var signature = null;
+        var authorized3d = false;
+
+        //If the response has MD, then it is a 3DS transaction
+        if(result.redirectObject.data.MD){
+            authorized3d = true;
+        }
+        else {
+            //Signature only needed for redirect methods
+            signature = AdyenHelper.getAdyenHash(result.redirectObject.url, result.paymentData);
+        }
+
         return {
             authorized: true,
-            authorized3d: true,
-            order: order,
+            authorized3d: authorized3d,
+            orderNo: orderNumber,
             paymentInstrument: paymentInstrument,
-            redirectObject: result.RedirectObject
+            redirectObject: result.redirectObject,
+            signature: signature
         };
     }
-
-    if (result.Decision != "ACCEPT") {
-        Transaction.rollback();
+    else if (result.resultCode == "Authorised" || result.resultCode == "Received" || result.resultCode == "PresentToShopper") {
+        AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
+        return { authorized: true, error: false };
+    }
+    else {
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         return {
-            error: true,
-            PlaceOrderError: (result.AdyenErrorMessage ? result.AdyenErrorMessage : "")
+            authorized: false, error: true
         };
     }
-
-    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-    Transaction.commit();
-
-    return {authorized: true, error: false};
 }
-
 
 exports.Handle = Handle;
 exports.Authorize = Authorize;

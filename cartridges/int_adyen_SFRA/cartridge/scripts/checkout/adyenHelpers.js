@@ -7,7 +7,7 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var Status = require('dw/system/Status');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
-
+var Logger = require('dw/system/Logger');
 /**
  * handles the payment authorization for each payment instrument
  * @param {dw.order.Order} order - the order object
@@ -15,6 +15,7 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
  * @returns {Object} an error object
  */
 function handlePayments(order, orderNumber) {
+    Logger.getLogger("Adyen").error("handlePayment");
     var result = {};
     if (order.totalNetPrice !== 0.00) {
         var paymentInstruments = order.paymentInstruments;
@@ -31,7 +32,9 @@ function handlePayments(order, orderNumber) {
                 var paymentProcessor = PaymentMgr
                     .getPaymentMethod(paymentInstrument.paymentMethod)
                     .paymentProcessor;
+                Logger.getLogger("Adyen").error("handlePayment pp = " + paymentProcessor);
                 var authorizationResult;
+
                 if (paymentProcessor === null) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);

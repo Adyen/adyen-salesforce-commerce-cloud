@@ -10,6 +10,8 @@ var constants = require("*/cartridge/adyenConstants/constants");
 var Logger = require('dw/system/Logger');
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
+    Logger.getLogger("Adyen").error("PlaceOrder");
+
     var BasketMgr = require('dw/order/BasketMgr');
     var OrderMgr = require('dw/order/OrderMgr');
     var Resource = require('dw/web/Resource');
@@ -32,7 +34,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
-        if([constants.METHOD_ADYEN, paymentInstrument.METHOD_CREDIT_CARD, constants.METHOD_ADYEN_POS].indexOf(paymentInstrument.paymentMethod) !== -1){
+        if([constants.METHOD_ADYEN, paymentInstrument.METHOD_CREDIT_CARD, constants.METHOD_ADYEN_POS, constants.METHOD_ADYEN_COMPONENT].indexOf(paymentInstrument.paymentMethod) !== -1){
             isAdyen = true;
         }
     });
@@ -102,6 +104,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         basketCalculationHelpers.calculateTotals(currentBasket);
     });
 
+    Logger.getLogger("Adyen").error("before validate");
     // Re-validates existing payment instruments
     var validPayment = adyenHelpers.validatePayment(req, currentBasket);
     if (validPayment.error) {
@@ -116,7 +119,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         this.emit('route:Complete', req, res);
         return;
     }
-
+    Logger.getLogger("Adyen").error("after validate");
     // Re-calculate the payments.
     var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
     if (calculatedPaymentTransactionTotal.error) {
@@ -139,8 +142,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         return;
     }
 
+    Logger.getLogger("Adyen").error("order created");
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
+    Logger.getLogger("Adyen").error("handlePaymentResult = " + JSON.stringify(handlePaymentResult));
     if (handlePaymentResult.error) {
         res.json({
             error: true,
@@ -159,6 +164,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         return;
     }
     else if (handlePaymentResult.redirectObject) {
+        Logger.getLogger("Adyen").error("redirectObject = " + JSON.stringify(handlePaymentResult.redirectObject));
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
         if (handlePaymentResult.authorized3d) {
             session.privacy.MD = handlePaymentResult.redirectObject.data.MD;

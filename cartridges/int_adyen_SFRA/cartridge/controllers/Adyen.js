@@ -209,7 +209,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
     var signature = req.querystring.signature;
     var order = OrderMgr.getOrder(session.privacy.orderNo);
     if(order && signature){
-        var paymentInstruments = order.getPaymentInstruments("Adyen");
+        var paymentInstruments = order.getPaymentInstruments("AdyenComponent");
         var adyenPaymentInstrument;
         var paymentData;
 
@@ -241,7 +241,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
     try {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
-        var paymentInstruments = order.getPaymentInstruments("Adyen");
+        var paymentInstruments = order.getPaymentInstruments("AdyenComponent");
         var adyenPaymentInstrument;
         var paymentData;
 

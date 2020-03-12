@@ -29,7 +29,7 @@ function updatePaymentInformation(order) {
                 + '/' + selectedPaymentInstrument.expirationYear
                 + '</span></div>';
             }
-        } else if (selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN || selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN_POS) {
+        } else if (selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN || selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN_POS || selectedPaymentInstrument.paymentMethod == constants.METHOD_ADYEN_COMPONENT) {
             htmlToAppend += '<div><span>'
                 + selectedPaymentInstrument.selectedAdyenPM
                 + '</span></div>';

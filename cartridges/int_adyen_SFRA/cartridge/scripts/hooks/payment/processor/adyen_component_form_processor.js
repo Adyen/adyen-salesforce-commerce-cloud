@@ -17,7 +17,10 @@ function processForm(req, paymentForm, viewFormData) {
     var viewData = viewFormData;
     var creditCardErrors = {};
 
-    if (!req.form.storedPaymentUUID) {
+    Logger.getLogger("Adyen").error("req form = " + JSON.stringify(req.form));
+
+    var isCreditCard = (req.form.brandCode == "scheme");
+    if (!req.form.storedPaymentUUID && isCreditCard) {
         // verify credit card form data
         creditCardErrors = COHelpers.validateCreditCard(paymentForm);
     }
@@ -35,9 +38,12 @@ function processForm(req, paymentForm, viewFormData) {
     };
 
     viewData.paymentInformation = {
-        stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
+        isCreditCard: isCreditCard,
         cardType: paymentForm.creditCardFields.cardType.value,
-        cardNumber: paymentForm.creditCardFields.cardNumber.value
+        cardNumber: paymentForm.creditCardFields.cardNumber.value,
+        adyenPaymentMethod: req.form.adyenPaymentMethod ? req.form.adyenPaymentMethod : null,
+        adyenIssuerName: req.form.adyenIssuerName ? req.form.adyenIssuerName : null,
+        stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
     };
 
     if (paymentForm.creditCardFields.selectedCardID) {
