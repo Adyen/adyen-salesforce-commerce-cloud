@@ -457,5 +457,5 @@ module.exports = {
     methods: {
         displayPaymentMethods: displayPaymentMethods
     }
-};
+}
 

@@ -11,17 +11,22 @@
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
-    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge /bas/SFCC/salesforce-commerce-cloud/app_storefront_core && sgmf-scripts --uploadCartridge /bas/SFCC/salesforce-commerce-cloud/app_storefront_controllers",
-    "uploadCartridgeSFRA": "sgmf-scripts --uploadCartridge /home/vagrant/workspace/storefront-reference-architecture/cartridges/app_storefront_base",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
-    "compile:scss": "sgmf-scripts --compile css"
+    "compile:scss": "sgmf-scripts --compile css",
+    "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
+    "build": "npm run transpile && npm run uploadCartridge",
+    "test": "jest"
+  },
+  "jest": {
+    "setupFiles": [
+      "./setup-jest.js"
+    ]
   },
     "engines": {
     "node": ">=4.0"
   },
   "dependencies": {
-    "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
     "cleave.js": "^1.0.1",
     "eslint-config-airbnb": "^17.1.0",
@@ -29,6 +34,11 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "jquery": "^3.4.1",
+    "jest": "^25.1.0",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.6",
     "chai": "^3.5.0",
     "css-loader": "^1.0.0",
     "eslint": "^5.7.0",
@@ -53,7 +63,7 @@
     "stylelint": "^7.1.0",
     "stylelint-config-standard": "^12.0.0",
     "stylelint-scss": "^1.3.4",
-    "webpack": "^4.20.2", 
+    "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2"
   }
 }
