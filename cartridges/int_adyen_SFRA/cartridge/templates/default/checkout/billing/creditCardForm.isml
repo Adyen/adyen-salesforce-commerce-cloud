@@ -35,6 +35,7 @@
         locale="${request.locale}"
         environment="${pdict.adyen.environment}"
         origin-key="${pdict.adyen.originKey}"
+        payment-methods-configuration="{}"
     >
     <ul id="paymentMethodsList"></ul>
 </adyen-checkout>

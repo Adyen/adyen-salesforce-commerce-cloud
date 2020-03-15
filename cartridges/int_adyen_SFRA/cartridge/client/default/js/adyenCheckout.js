@@ -11,6 +11,7 @@ var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 var selectedMethod;
+var isValidArr = [];
 
 // renderOneClickComponents();
 renderGenericComponent();
@@ -68,14 +69,17 @@ function renderGenericComponent() {
         adyenWebComponent.addEventListener('adyenChange', adyenOnChange);
         adyenWebComponent.addEventListener('adyenBrand', adyenOnBrand);
         adyenWebComponent.addEventListener('adyenFieldValid', adyenOnFieldValid);
+        // adyenWebComponent.addEventListener('adyenValid', adyenOnPaymentMethodValid);
     });
 }
 
 function adyenOnChange(response) {
-    console.log(response.detail.state);
+    console.log('on change!');
     var stateData = response.detail.state.data;
-    $("#adyenStateData").val(JSON.stringify(stateData));
+    var type = stateData.paymentMethod.type;
     isValid = response.detail.state.isValid;
+    $("#adyenStateData").val(JSON.stringify(stateData));
+    isValidArr[type] = isValid;
 }
 
 function adyenOnBrand(response) {
@@ -90,6 +94,12 @@ function adyenOnFieldValid(response) {
         $("#cardNumber").val(maskedCardNumber);
     }
 }
+
+// function adyenOnPaymentMethodValid(response) {
+//     var type = response.detail.state.data.paymentMethod.type;
+//     var isValid = response.detail.component.state.isValid;
+//     isValidArr[type] = isValid;
+// }
 
 // function renderOneClickComponents() {
 //     var componentContainers = document.getElementsByClassName("cvc-container");
@@ -179,9 +189,53 @@ $('button[value="submit-payment"]').on('click', function () {
     var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
     var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
     adyenPaymentMethod.value = paymentMethodLabel;
-    console.log(adyenPaymentMethod);
-    return true;
+
+    validateCustomComponents();
+
+    if(!isValidArr[selectedMethod] === true)
+        showValidation();
+
+    return !!isValidArr[selectedMethod];
 });
+
+function showValidation() {
+    var node = document.querySelector(`adyen-payment-method[type=${selectedMethod}]`);
+    var inputs;
+    if(selectedMethod === 'ach')
+        inputs = node.querySelectorAll('div[slot="fallback"] > *');
+    else
+        inputs = node.querySelectorAll('.adyen-checkout__input-wrapper a');
+    inputs = Object.values(inputs).filter(function(input) {
+        return !(input.value && input.value.length > 0);
+
+    });
+    console.log(inputs);
+    for(var input of inputs) {
+        input.classList.add('adyen-checkout__input--error');
+    }
+}
+// <span class="adyen-checkout__error-text">Invalid Card</span>
+
+function validateCustomComponents() {
+    if(selectedMethod === 'ach') {
+        var bankAccountOwnerNameValue = document.querySelector('#bankAccountOwnerNameValue');
+        var bankAccountNumberValue = document.querySelector('#bankAccountNumberValue');
+        var bankLocationIdValue = document.querySelector('#bankLocationIdValue');
+
+        if(!bankAccountOwnerNameValue.value || !bankAccountNumberValue.value || !bankLocationIdValue.value)
+            isValidArr[selectedMethod] = false;
+        else
+            isValidArr[selectedMethod] = true;
+
+        var bankAccountOwnerName = document.querySelector('#bankAccountOwnerName');
+        var bankAccountNumber = document.querySelector('#bankAccountNumber');
+        var bankLocationId = document.querySelector('#bankLocationId');
+
+        bankAccountOwnerName.setAttribute("value", bankAccountOwnerNameValue.value);
+        bankAccountNumber.setAttribute("value", bankAccountNumberValue.value);
+        bankLocationId.setAttribute("value", bankLocationIdValue.value);
+    }
+}
 
 function getFallback(paymentMethod) {
     var ach =  `<div slot="fallback">
