@@ -1,6 +1,8 @@
 <iscontent type="text/html" encoding="off"/>
-<script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-<script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
+<!-- <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script> -->
+<!-- <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script> -->
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
 <script>
     window.Configuration = {
@@ -30,15 +32,18 @@
 <input id="bankAccountNumber" type="hidden" ${adyenPaymentFields.bankAccountNumber.attributes}/>
 <input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
 
-<div id="adyen-webcomponent"></div>
-<adyen-checkout
-        locale="${request.locale}"
-        environment="${pdict.adyen.environment}"
-        origin-key="${pdict.adyen.originKey}"
-        payment-methods-configuration="{}"
-    >
+<!-- <div id="adyen-webcomponent"></div> -->
+<!-- <adyen-checkout -->
+<!--         locale="${request.locale}" -->
+<!--         environment="${pdict.adyen.environment}" -->
+<!--         origin-key="${pdict.adyen.originKey}" -->
+<!--         payment-methods-configuration="{}" -->
+<!--     > -->
+<!--     <ul id="paymentMethodsList"></ul> -->
+<!-- </adyen-checkout> -->
+
     <ul id="paymentMethodsList"></ul>
-</adyen-checkout>
+
 
 <iscomment>
     Adyen RatePay Device Fingerprint Code
@@ -61,4 +66,15 @@
 <input id="adyenFingerprint" type="hidden" ${adyenPaymentFields.adyenFingerprint.attributes} />
 <script type="text/javascript">
     dfDo('adyenFingerprint');
+</script>
+
+<span id="errorLoadComponent"></span>
+<div id="card"></div>
+<script type="text/javascript">
+    var showStoreDetails = ${customer.authenticated};
+    window.Configuration = {
+        locale: '${request.locale}',
+        originKey: '${pdict.adyen.originKey}',
+        environment: '${pdict.adyen.environment}'
+    };
 </script>
