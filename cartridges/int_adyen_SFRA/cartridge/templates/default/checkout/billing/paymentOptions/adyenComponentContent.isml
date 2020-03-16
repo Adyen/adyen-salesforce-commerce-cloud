@@ -1,5 +1,5 @@
 <!--- Generic Component--->
-<div class="tab-pane adyen-component-content" id="adyen-component-content" role="tabpanel">
+<div class="tab-pane active adyen-component-content" id="adyen-component-content" role="tabpanel">
     <fieldset class="payment-form-fields">
         <input type="hidden" class="form-control"
                name="${pdict.forms.billingForm.paymentMethod.htmlName}"

@@ -29,7 +29,6 @@
 <input id="bankAccountNumber" type="hidden" ${adyenPaymentFields.bankAccountNumber.attributes}/>
 <input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
 
-<div>testCheckoutForm</div>
 <div id="adyen-webcomponent"></div>
 <adyen-checkout
         locale="${request.locale}"

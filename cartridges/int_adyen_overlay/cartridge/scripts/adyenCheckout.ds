@@ -56,7 +56,6 @@ function createPaymentRequest(args) {
             paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
         }
 
-        //Different returnUrl for APM's and credit cards
         paymentRequest.returnUrl = args.ReturnUrl;
 
         var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount); //args.Amount * 100;
@@ -132,7 +131,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
 
         Logger.getLogger("Adyen").error("responseObject = " + JSON.stringify(responseObject));
 
-        // if the card is enrolled for 3D Secure, the response contains a redirect object
+        paymentResponse.fullResponse = responseObject;
         paymentResponse.redirectObject = responseObject.redirect ? responseObject.redirect : "";
         paymentResponse.resultCode = responseObject.resultCode;
         paymentResponse.pspReference = responseObject.pspReference ? responseObject.pspReference : "";
@@ -169,6 +168,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             }
         }
         else if(paymentResponse.resultCode == "PresentToShopper") {
+            paymentResponse.decision = "ACCEPT";
             if (responseObject.action) {
                 paymentInstrument.custom.adyenAction = JSON.stringify(responseObject.action);
             }

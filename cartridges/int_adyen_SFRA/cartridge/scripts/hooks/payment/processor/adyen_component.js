@@ -10,12 +10,10 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-var URLUtils = require('dw/web/URLUtils');
 var Logger = require('dw/system/Logger');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 function Handle(basket, paymentInformation) {
-    Logger.getLogger("Adyen").error("paymentInformation = " + JSON.stringify(paymentInformation));
-
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];
@@ -23,7 +21,7 @@ function Handle(basket, paymentInformation) {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
         });
-        var paymentInstrument = currentBasket.createPaymentInstrument("AdyenComponent", currentBasket.totalGrossPrice);
+        var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
         paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
         paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
 
@@ -69,15 +67,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 
-    Logger.getLogger("Adyen").error("Authorize");
     Transaction.begin();
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
-        PaymentInstrument: paymentInstrument,
-        ReturnUrl: URLUtils.https("Adyen-OrderConfirm").toString()
+        PaymentInstrument: paymentInstrument
     });
 
-    Logger.getLogger("Adyen").error("Authorize result = " + JSON.stringify(result));
     if (result.error) {
         var errors = [];
         errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
@@ -86,9 +81,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    //TODO BAS Combine resultcod
     //Trigger 3DS2 flow
-    if(result.threeDS2){
+    if(result.threeDS2 || result.resultCode == "RedirectShopper"){
         Transaction.commit();
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = result.paymentData;
@@ -97,26 +91,19 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
-        return {
-            threeDS2: result.threeDS2,
-            resultCode: result.resultCode,
-            token3ds2: result.token3ds2,
+        if(result.threeDS2){
+            return {
+                threeDS2: result.threeDS2,
+                resultCode: result.resultCode,
+                token3ds2: result.token3ds2
+            }
         }
-    }
 
-    else if (result.resultCode == "RedirectShopper") {
-        Transaction.commit();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.paymentData;
-        });
-
-        session.privacy.orderNo = order.orderNo;
-        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
         var signature = null;
         var authorized3d = false;
 
         //If the response has MD, then it is a 3DS transaction
-        if(result.redirectObject.data.MD){
+        if(result.redirectObject && result.redirectObject.data && result.redirectObject.data.MD){
             authorized3d = true;
         }
         else {
@@ -133,16 +120,16 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             signature: signature
         };
     }
-    else if (result.resultCode == "Authorised" || result.resultCode == "Received" || result.resultCode == "PresentToShopper") {
-        AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-        return { authorized: true, error: false };
-    }
-    else {
+
+    else if(result.decision != "ACCEPT"){
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
-        return {
-            authorized: false, error: true
-        };
+        Transaction.rollback();
+        return { error: true };
     }
+
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
+    return { authorized: true, error: false };
+
 }
 
 exports.Handle = Handle;
