@@ -1,4 +1,3 @@
-<!--- TEMPLATENAME: alternativePaymentMethodSummary.isml --->
 <iscontent compact="true"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>

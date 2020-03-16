@@ -15,7 +15,6 @@ var Logger = require('dw/system/Logger');
  * @returns {Object} an error object
  */
 function handlePayments(order, orderNumber) {
-    Logger.getLogger("Adyen").error("handlePayment");
     var result = {};
     if (order.totalNetPrice !== 0.00) {
         var paymentInstruments = order.paymentInstruments;
@@ -32,7 +31,6 @@ function handlePayments(order, orderNumber) {
                 var paymentProcessor = PaymentMgr
                     .getPaymentMethod(paymentInstrument.paymentMethod)
                     .paymentProcessor;
-                Logger.getLogger("Adyen").error("handlePayment pp = " + paymentProcessor);
                 var authorizationResult;
 
                 if (paymentProcessor === null) {

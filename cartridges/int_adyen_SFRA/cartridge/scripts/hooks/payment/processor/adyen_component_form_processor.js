@@ -16,9 +16,6 @@ function processForm(req, paymentForm, viewFormData) {
     var array = require('*/cartridge/scripts/util/array');
     var viewData = viewFormData;
     var creditCardErrors = {};
-
-    Logger.getLogger("Adyen").error("req form = " + JSON.stringify(req.form));
-
     var isCreditCard = (req.form.brandCode == "scheme");
     if (!req.form.storedPaymentUUID && isCreditCard) {
         // verify credit card form data
