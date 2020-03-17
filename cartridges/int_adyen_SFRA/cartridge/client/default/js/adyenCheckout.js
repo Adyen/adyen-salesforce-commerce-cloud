@@ -24,7 +24,6 @@ function displaySelectedMethod(type) {
 
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
-        console.log('render!');
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
 
