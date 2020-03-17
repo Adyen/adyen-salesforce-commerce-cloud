@@ -56,9 +56,6 @@ function createPaymentRequest(args) {
             paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
         }
 
-        //Different returnUrl for APM's and credit cards
-        paymentRequest.returnUrl = args.ReturnUrl;
-
         var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount); //args.Amount * 100;
         paymentRequest.amount = {
             'currency': paymentInstrument.paymentTransaction.amount.currencyCode,
@@ -109,7 +106,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
        var callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
         if (callResult.isOk() == false){
             Logger.getLogger("Adyen").error("Adyen: Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
-            paymentResponse.AdyenErrorMessage = Resource.msg("confirm.error.declined","checkout", null);
+            paymentResponse.adyenErrorMessage = Resource.msg("confirm.error.declined","checkout", null);
             return {
                 error: true,
                 args: paymentResponse
@@ -130,17 +127,19 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             return { error: true };
         }
 
-        // if the card is enrolled for 3D Secure, the response contains a redirect object
-        paymentResponse.RedirectObject = responseObject.redirect ? responseObject.redirect : "";
+        Logger.getLogger("Adyen").error("responseObject = " + JSON.stringify(responseObject));
+
+        paymentResponse.fullResponse = responseObject;
+        paymentResponse.redirectObject = responseObject.redirect ? responseObject.redirect : "";
         paymentResponse.resultCode = responseObject.resultCode;
         paymentResponse.pspReference = responseObject.pspReference ? responseObject.pspReference : "";
-        paymentResponse.AdyenAmount = paymentRequest.amount.value;
-        paymentResponse.Decision = "ERROR";
+        paymentResponse.adyenAmount = paymentRequest.amount.value;
+        paymentResponse.decision = "ERROR";
 
         //Check the response object from /payment call
         if (paymentResponse.resultCode == "IdentifyShopper" || paymentResponse.resultCode == "ChallengeShopper") {
-            paymentResponse.Decision = "ACCEPT";
-            paymentResponse.ThreeDS2 = true;
+            paymentResponse.decision = "ACCEPT";
+            paymentResponse.threeDS2 = true;
             var token3ds2;
             if(responseObject.authentication["threeds2.fingerprintToken"]) {
                 token3ds2 = responseObject.authentication["threeds2.fingerprintToken"]
@@ -149,12 +148,12 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
                 token3ds2 = responseObject.authentication["threeds2.challengeToken"];
             }
             paymentResponse.token3ds2 = token3ds2;
-            paymentResponse.PaymentData = responseObject.paymentData;
+            paymentResponse.paymentData = responseObject.paymentData;
         }
 
         else if (paymentResponse.resultCode == "Authorised" || paymentResponse.resultCode == "RedirectShopper") {
-            paymentResponse.Decision = "ACCEPT";
-            paymentResponse.PaymentData = responseObject.paymentData;
+            paymentResponse.decision = "ACCEPT";
+            paymentResponse.paymentData = responseObject.paymentData;
             // if 3D Secure is used, the statuses will be updated later
             if (order && paymentResponse.resultCode == "Authorised") {
                 order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
@@ -167,6 +166,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             }
         }
         else if(paymentResponse.resultCode == "PresentToShopper") {
+            paymentResponse.decision = "ACCEPT";
             if (responseObject.action) {
                 paymentInstrument.custom.adyenAction = JSON.stringify(responseObject.action);
             }
@@ -184,7 +184,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
         }
 
         else if(paymentResponse.resultCode == "Received") {
-            paymentResponse.Decision = "ACCEPT";
+            paymentResponse.decision = "ACCEPT";
             if(responseObject.additionalData["bankTransfer.owner"]){
                 var bankTransferData = [{"key":"bankTransfer.description","value":"bankTransfer.description"}];
                 for (var data in responseObject.additionalData){
@@ -215,7 +215,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
         }
         else  {
-            paymentResponse.Decision = "REFUSED";
+            paymentResponse.decision = "REFUSED";
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 
@@ -223,7 +223,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             if (responseObject.refusalReason) {
                 errorMessage += " (" + responseObject.refusalReason + ")";
             }
-            paymentResponse.AdyenErrorMessage = errorMessage;
+            paymentResponse.adyenErrorMessage = errorMessage;
             Logger.getLogger("Adyen").info("Payment result: Refused");
         }
         return paymentResponse;

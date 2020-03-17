@@ -7,7 +7,7 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var Status = require('dw/system/Status');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
-
+var Logger = require('dw/system/Logger');
 /**
  * handles the payment authorization for each payment instrument
  * @param {dw.order.Order} order - the order object
@@ -32,6 +32,7 @@ function handlePayments(order, orderNumber) {
                     .getPaymentMethod(paymentInstrument.paymentMethod)
                     .paymentProcessor;
                 var authorizationResult;
+
                 if (paymentProcessor === null) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);

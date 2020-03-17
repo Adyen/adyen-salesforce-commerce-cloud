@@ -24,6 +24,7 @@ function displaySelectedMethod(type) {
 
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
+        $("#paymentMethodsList").empty();
         var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
 
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
@@ -580,7 +581,7 @@ function getFallback(paymentMethod) {
 
 module.exports = {
     methods: {
-        displayPaymentMethods: displayPaymentMethods
+        renderGenericComponent: renderGenericComponent
     }
 };
 
