@@ -28,7 +28,10 @@ function renderGenericComponent() {
         var adyenWebComponent = document.querySelector('adyen-checkout');
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-        adyenWebComponent.paymentMethods = paymentMethodsResponse;
+        if(adyenWebComponent){
+            adyenWebComponent.paymentMethods = paymentMethodsResponse;
+        }
+        $("#paymentMethodsList").empty();
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
             var li = document.createElement('li');
@@ -72,7 +75,6 @@ function renderGenericComponent() {
 }
 
 function adyenOnChange(response) {
-    console.log(response.detail.state);
     var stateData = response.detail.state.data;
     $("#adyenStateData").val(JSON.stringify(stateData));
     isValid = response.detail.state.isValid;
@@ -179,7 +181,6 @@ $('button[value="submit-payment"]').on('click', function () {
     var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
     var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
     adyenPaymentMethod.value = paymentMethodLabel;
-    console.log(adyenPaymentMethod);
     return true;
 });
 
@@ -478,7 +479,7 @@ function getFallback(paymentMethod) {
 
 module.exports = {
     methods: {
-        displayPaymentMethods: displayPaymentMethods
+        renderGenericComponent: renderGenericComponent
     }
 };
 

@@ -5,6 +5,7 @@ var dwsvc = require("dw/svc");
 var dwnet = require("dw/net");
 var dwsystem = require("dw/system");
 var dwutil = require("dw/util");
+var URLUtils = require('dw/web/URLUtils');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 var __AdyenHelper: Object = {
 
@@ -444,7 +445,7 @@ var __AdyenHelper: Object = {
 
         jsonObject.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
         jsonObject.reference = reference;
-
+        jsonObject.returnUrl = URLUtils.https("Adyen-ShowConfirmation").toString();
         jsonObject.applicationInfo = __AdyenHelper.getApplicationInfo(true);
         jsonObject.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
         jsonObject.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
@@ -486,13 +487,13 @@ var __AdyenHelper: Object = {
         var createRecurringPaymentResult = adyenCheckout.doPaymentCall({}, requestObject);
 
         //Check the result of the initial recurring payment
-        if (createRecurringPaymentResult === PIPELET_ERROR || createRecurringPaymentResult.Decision == 'ERROR') {
+        if (createRecurringPaymentResult === PIPELET_ERROR || createRecurringPaymentResult.decision == 'ERROR') {
             return {
                 error: true
             };
         }
 
-        if (createRecurringPaymentResult.Decision == 'ACCEPT' && ('pspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.pspReference)) {
+        if (createRecurringPaymentResult.decision == 'ACCEPT' && ('pspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.pspReference)) {
             pspReference = createRecurringPaymentResult.pspReference;
             var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
             var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
@@ -642,8 +643,8 @@ var __AdyenHelper: Object = {
             paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
         }
 
-        if ('AdyenAmount' in result && !empty(result.AdyenAmount)) {
-            order.custom.Adyen_value = result.AdyenAmount.toFixed(0);
+        if ('adyenAmount' in result && !empty(result.adyenAmount)) {
+            order.custom.Adyen_value = result.adyenAmount.toFixed(0);
         }
 
         if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
