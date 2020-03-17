@@ -14,8 +14,6 @@ var URLUtils = require('dw/web/URLUtils');
 var Logger = require('dw/system/Logger');
 
 function Handle(basket, paymentInformation) {
-    Logger.getLogger("Adyen").error("paymentInformation = " + JSON.stringify(paymentInformation));
-
     var currentBasket = basket;
     var cardErrors = {};
     var serverErrors = [];

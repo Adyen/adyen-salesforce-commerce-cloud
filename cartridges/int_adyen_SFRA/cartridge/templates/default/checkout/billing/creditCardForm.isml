@@ -1,6 +1,4 @@
 <iscontent type="text/html" encoding="off"/>
-<!-- <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script> -->
-<!-- <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script> -->
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
@@ -10,6 +8,7 @@
         originKey: '${pdict.adyen.originKey}',
         environment: '${pdict.adyen.environment}'
     };
+    var showStoreDetails = ${customer.authenticated};
 </script>
 
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
@@ -32,18 +31,7 @@
 <input id="bankAccountNumber" type="hidden" ${adyenPaymentFields.bankAccountNumber.attributes}/>
 <input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
 
-<!-- <div id="adyen-webcomponent"></div> -->
-<!-- <adyen-checkout -->
-<!--         locale="${request.locale}" -->
-<!--         environment="${pdict.adyen.environment}" -->
-<!--         origin-key="${pdict.adyen.originKey}" -->
-<!--         payment-methods-configuration="{}" -->
-<!--     > -->
-<!--     <ul id="paymentMethodsList"></ul> -->
-<!-- </adyen-checkout> -->
-
-    <ul id="paymentMethodsList"></ul>
-
+<ul id="paymentMethodsList"></ul>
 
 <iscomment>
     Adyen RatePay Device Fingerprint Code
@@ -70,11 +58,3 @@
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
-<script type="text/javascript">
-    var showStoreDetails = ${customer.authenticated};
-    window.Configuration = {
-        locale: '${request.locale}',
-        originKey: '${pdict.adyen.originKey}',
-        environment: '${pdict.adyen.environment}'
-    };
-</script>
