@@ -283,24 +283,6 @@ function validateComponents() {
             $('#dateOfBirth').val($('#dateOfBirthInput').val());
         }
     }
-    // if(selectedMethod === 'ach') {
-    //     var bankAccountOwnerNameValue = document.querySelector('#bankAccountOwnerNameValue');
-    //     var bankAccountNumberValue = document.querySelector('#bankAccountNumberValue');
-    //     var bankLocationIdValue = document.querySelector('#bankLocationIdValue');
-    //
-    //     if(!bankAccountOwnerNameValue.value || !bankAccountNumberValue.value || !bankLocationIdValue.value)
-    //         componentArr[selectedMethod].isValid = false;
-    //     else
-    //         componentArr[selectedMethod].isValid = true;
-    //
-    //     var bankAccountOwnerName = document.querySelector('#bankAccountOwnerName');
-    //     var bankAccountNumber = document.querySelector('#bankAccountNumber');
-    //     var bankLocationId = document.querySelector('#bankLocationId');
-    //
-    //     bankAccountOwnerName.setAttribute("value", bankAccountOwnerNameValue.value);
-    //     bankAccountNumber.setAttribute("value", bankAccountNumberValue.value);
-    //     bankLocationId.setAttribute("value", bankLocationIdValue.value);
-    // }
 }
 
 function getFallback(paymentMethod) {
