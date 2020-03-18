@@ -227,10 +227,15 @@ function validateCustomInputField(input) {
 }
 
 function validateComponents() {
-    var inputs = document.querySelectorAll('#component_ach > input');
-    for(input of inputs)
-        input.onchange = function() { validateCustomInputField(this)};
-    document.querySelector("#dateOfBirthInput").onchange = function() { validateCustomInputField(this)};
+    if(document.querySelector("#component_ach")) {
+        var inputs = document.querySelectorAll('#component_ach > input');
+        for (input of inputs)
+            input.onchange = function () {
+                validateCustomInputField(this)
+            };
+    }
+    if(document.querySelector("#dateOfBirthInput"))
+        document.querySelector("#dateOfBirthInput").onchange = function() { validateCustomInputField(this)};
 
     var stateData;
     if(componentArr[selectedMethod] && componentArr[selectedMethod].stateData)
@@ -239,13 +244,16 @@ function validateComponents() {
         stateData = {paymentMethod: {type: selectedMethod}};
 
     if(selectedMethod === "ach") {
-        stateData.bankAccountOwnerName = document.querySelector("#bankAccountOwnerNameValue").value;
-        stateData.bankAccountNumber = document.querySelector("#bankAccountNumberValue").value;
-        stateData.bankLocationId = document.querySelector("#bankLocationIdValue").value;
+        var bankAccount = {
+            ownerName: document.querySelector("#bankAccountOwnerNameValue").value,
+            bankAccountNumber: document.querySelector("#bankAccountNumberValue").value,
+            bankLocationId: document.querySelector("#bankLocationIdValue").value
+        };
+        stateData.paymentMethod = {...stateData.paymentMethod, bankAccount: bankAccount};
     } else if(selectedMethod === "ratepay") {
         if (document.querySelector("#genderInput").value && document.querySelector("#dateOfBirthInput").value) {
-            stateData.gender = document.querySelector("#genderInput").value;
-            stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
+            stateData.paymentMethod.gender = document.querySelector("#genderInput").value;
+            stateData.paymentMethod.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
         }
     }
     document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
