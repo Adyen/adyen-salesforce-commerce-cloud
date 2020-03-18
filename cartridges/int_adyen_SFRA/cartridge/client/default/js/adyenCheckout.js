@@ -25,7 +25,6 @@ function displaySelectedMethod(type) {
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
         document.querySelector("#paymentMethodsList").innerHTML = "";
-        var paymentMethodsResponse = JSON.stringify(data.AdyenPaymentMethods);
 
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
@@ -231,7 +230,7 @@ function validateCustomInputField(input) {
 function validateComponents() {
     if(document.querySelector("#component_ach")) {
         var inputs = document.querySelectorAll('#component_ach > input');
-        for (input of inputs)
+        for (var input of inputs)
             input.onchange = function () {
                 validateCustomInputField(this)
             };
