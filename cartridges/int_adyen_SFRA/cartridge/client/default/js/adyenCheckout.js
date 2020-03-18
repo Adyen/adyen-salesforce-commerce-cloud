@@ -49,32 +49,34 @@ function renderGenericComponent() {
                 var template = document.createElement("template");
                 template.innerHTML = fallback;
                 container.append(template.content);
-            } else if(paymentMethod.type === "paysafecard") {}
-             else {
-                var node = checkout.create(paymentMethod.type, {
-                    details: paymentMethod.details,
-                    enableStoreDetails: showStoreDetails,
-                    onChange: function (state) {
-                    isValid = state.isValid;
-                    storeDetails = state.data.storePaymentMethod;
-                    var type = state.data.paymentMethod.type;
-                        $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-                    componentArr[type].isValid = isValid;
-                    componentArr[type].stateData = state.data;
-                    }, // Gets triggered whenever a user changes input
-                onBrand: function (brandObject) {
-                    $('#cardType').val(brandObject.brand);
-                }, // Called once we detect the card brand
-                onFieldValid: function (data) {
-                    if(data.endDigits){
-                        maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-                        $("#cardNumber").val(maskedCardNumber);
-                    }
-                    }
-                });
+            } else {
+                 try {
+                     var node = checkout.create(paymentMethod.type, {
+                         details: paymentMethod.details,
+                         enableStoreDetails: showStoreDetails,
+                         onChange: function (state) {
+                             isValid = state.isValid;
+                             storeDetails = state.data.storePaymentMethod;
+                             var type = state.data.paymentMethod.type;
+                             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+                             componentArr[type].isValid = isValid;
+                             componentArr[type].stateData = state.data;
+                         }, // Gets triggered whenever a user changes input
+                         onBrand: function (brandObject) {
+                             $('#cardType').val(brandObject.brand);
+                         }, // Called once we detect the card brand
+                         onFieldValid: function (data) {
+                             if(data.endDigits){
+                                 maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
+                                 $("#cardNumber").val(maskedCardNumber);
+                             }
+                         }
+                     });
 
-                node.mount(container);
-                componentArr[paymentMethod.type] = node;
+                     node.mount(container);
+                     componentArr[paymentMethod.type] = node;
+                 }
+                 catch (e) {}
             }
 
             container.classList.add("additionalFields");
@@ -271,8 +273,8 @@ function getFallback(paymentMethod) {
 
     var ratepay =  `<span class="adyen-checkout__label">Gender</span>
                     <select id="genderInput" class="adyen-checkout__input">
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
                     </select>
                     <span class="adyen-checkout__label">Date of birth</span>
                     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
