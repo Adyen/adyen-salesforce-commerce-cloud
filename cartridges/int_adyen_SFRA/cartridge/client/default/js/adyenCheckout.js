@@ -45,75 +45,12 @@ function renderGenericComponent() {
 
             var container = document.createElement("div");
 
-            if(paymentMethod.type === "ach") {
-                var bankAccountOwnerNameLabel = document.createElement("span");
-                bankAccountOwnerNameLabel.innerText = "Bank Account Owner Name";
-                bankAccountOwnerNameLabel.classList.add("adyen-checkout__label");
-                var bankAccountOwnerName = document.createElement("input");
-                bankAccountOwnerName.classList.add("adyen-checkout__input");
-                bankAccountOwnerName.setAttribute("id", "bankAccountOwnerNameValue");
-                bankAccountOwnerName.setAttribute("type", "text");
-                bankAccountOwnerName.onchange = function() { validateCustomInputField(this)};
-
-                var bankAccountNumberLabel = document.createElement("span");
-                bankAccountNumberLabel.innerText = "Bank Account Number";
-                bankAccountNumberLabel.classList.add("adyen-checkout__label");
-                var bankAccountNumber = document.createElement("input");
-                bankAccountNumber.classList.add("adyen-checkout__input");
-                bankAccountNumber.setAttribute("id", "bankAccountNumberValue");
-                bankAccountNumber.setAttribute("type", "text");
-                bankAccountNumber.setAttribute("maxlength", "17");
-                bankAccountNumber.onchange = function() { validateCustomInputField(this)};
-
-                var bankLocationIdLabel = document.createElement("span");
-                bankLocationIdLabel.innerText = "Routing Number";
-                bankLocationIdLabel.classList.add("adyen-checkout__label");
-                var bankLocationId = document.createElement("input");
-                bankLocationId.classList.add("adyen-checkout__input");
-                bankLocationId.setAttribute("id", "bankLocationIdValue");
-                bankLocationId.setAttribute("type", "text");
-                bankLocationId.setAttribute("maxlength", "9");
-                bankLocationId.onchange = function() { validateCustomInputField(this)};
-
-                container.append(bankAccountOwnerNameLabel);
-                container.append(bankAccountOwnerName);
-                container.append(bankAccountNumberLabel);
-                container.append(bankAccountNumber);
-                container.append(bankLocationIdLabel);
-                container.append(bankLocationId);
-
-            } else if(paymentMethod.type === "ratepay") {
-                var genderLabel = document.createElement("span");
-                genderLabel.innerText = "Gender";
-                genderLabel.classList.add("adyen-checkout__label");
-                var genderInput = document.createElement("select");
-                genderInput.setAttribute("id", "genderInput");
-                genderInput.classList.add("adyen-checkout__input");
-
-                //Create array of options to be added
-                var genders = {'M': 'Male', 'F': 'Female'};
-
-                for (var key in genders) {
-                    var option = document.createElement("option");
-                    option.value = key;
-                    option.text = genders[key];
-                    genderInput.appendChild(option);
-                }
-
-                var dateOfBirthLabel = document.createElement("span");
-                dateOfBirthLabel.innerText = "Date of birth";
-                dateOfBirthLabel.classList.add("adyen-checkout__label");
-                var dateOfBirthInput = document.createElement("input");
-                dateOfBirthInput.setAttribute("id", "dateOfBirthInput");
-                dateOfBirthInput.classList.add("adyen-checkout__input");
-                dateOfBirthInput.setAttribute("type", "date");
-
-                container.append(genderLabel);
-                container.append(genderInput);
-                container.append(dateOfBirthLabel);
-                container.append(dateOfBirthInput);
-            } else if(paymentMethod.type === "paysafecard") {
-            } else {
+            if(fallback) {
+                var template = document.createElement("template");
+                template.innerHTML = fallback;
+                container.append(template.content);
+            } else if(paymentMethod.type === "paysafecard") {}
+             else {
                 var node = checkout.create(paymentMethod.type, {
                     details: paymentMethod.details,
                     enableStoreDetails: showStoreDetails,
@@ -259,7 +196,7 @@ function showValidation() {
         componentArr[selectedMethod].showValidation();
         return false;
     }
-    else if(selectedMethod === 'ach'){
+    else if(selectedMethod === "ach"){
         var inputs = document.querySelectorAll('#component_ach > input');
         inputs = Object.values(inputs).filter(function(input) {
             return !(input.value && input.value.length > 0);
@@ -270,7 +207,15 @@ function showValidation() {
         if(inputs.length > 0)
             return false;
         return true;
+    } else if(selectedMethod === "ratepay") {
+        var input = document.querySelector("#dateOfBirthInput");
+        if (!(input.value && input.value.length > 0)) {
+            input.classList.add('adyen-checkout__input--error');
+            return false;
+        }
+        return true;
     }
+    return true;
 }
 
 function validateCustomInputField(input) {
@@ -282,38 +227,49 @@ function validateCustomInputField(input) {
 }
 
 function validateComponents() {
+    var inputs = document.querySelectorAll('#component_ach > input');
+    for(input of inputs)
+        input.onchange = function() { validateCustomInputField(this)};
+    document.querySelector("#dateOfBirthInput").onchange = function() { validateCustomInputField(this)};
+
     var stateData;
     if(componentArr[selectedMethod] && componentArr[selectedMethod].stateData)
         stateData = componentArr[selectedMethod].stateData;
     else
         stateData = {paymentMethod: {type: selectedMethod}};
-    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 
     if(selectedMethod === "ach") {
-        document.querySelector("#bankAccountOwnerName").value =
-            document.querySelector("#bankAccountOwnerNameValue").value;
-        document.querySelector("#bankAccountNumber").value =
-            document.querySelector("#bankAccountNumberValue").value;
-        document.querySelector("#bankLocationId").value =
-            document.querySelector("#bankLocationIdValue").value;
+        stateData.bankAccountOwnerName = document.querySelector("#bankAccountOwnerNameValue").value;
+        stateData.bankAccountNumber = document.querySelector("#bankAccountNumberValue").value;
+        stateData.bankLocationId = document.querySelector("#bankLocationIdValue").value;
     } else if(selectedMethod === "ratepay") {
         if (document.querySelector("#genderInput").value && document.querySelector("#dateOfBirthInput").value) {
-            document.querySelector("#gender").value = document.querySelector("#genderInput").value;
-            document.querySelector("#dateOfBirth").value = document.querySelector("#dateOfBirthInput").value;
+            stateData.gender = document.querySelector("#genderInput").value;
+            stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
         }
     }
+    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }
 
 function getFallback(paymentMethod) {
-    var ach =  `<div slot="fallback">
+    var ach =  `<div id="component_ach">
                     <span class="adyen-checkout__label">Bank Account Owner Name</span>
-                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
+                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">   
                     <span class="adyen-checkout__label">Bank Account Number</span>
-                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17">
+                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17" >
                     <span class="adyen-checkout__label">Routing Number</span>
-                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9">
+                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9" >
                  </div>`;
-    var fallback = {ach: ach};
+
+    var ratepay =  `<span class="adyen-checkout__label">Gender</span>
+                    <select id="genderInput" class="adyen-checkout__input">
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
+                    </select>
+                    <span class="adyen-checkout__label">Date of birth</span>
+                    <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
+
+    var fallback = {ach: ach, ratepay: ratepay};
     return fallback[paymentMethod];
 }
 
