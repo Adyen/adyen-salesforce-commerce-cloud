@@ -1,16 +1,18 @@
 <iscontent type="text/html" encoding="off"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
-<isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
-<script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
-<script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
 <script>
     window.Configuration = {
         locale: '${request.locale}',
         originKey: '${pdict.adyen.originKey}',
         environment: '${pdict.adyen.environment}'
     };
+    var showStoreDetails = ${customer.authenticated};
 </script>
+
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
 <input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
@@ -20,23 +22,7 @@
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
 <input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>
 
-<input id="dateOfBirth" type="hidden" ${adyenPaymentFields.dateOfBirth.attributes}/>
-<input id="telephoneNumber" type="hidden" ${adyenPaymentFields.telephoneNumber.attributes}/>
-<input id="gender" type="hidden" ${adyenPaymentFields.gender.attributes}/>
-<input id="socialSecurityNumber" type="hidden" ${adyenPaymentFields.socialSecurityNumber.attributes}/>
-
-<input id="bankAccountOwnerName" type="hidden" ${adyenPaymentFields.bankAccountOwnerName.attributes}/>
-<input id="bankAccountNumber" type="hidden" ${adyenPaymentFields.bankAccountNumber.attributes}/>
-<input id="bankLocationId" type="hidden" ${adyenPaymentFields.bankLocationId.attributes}/>
-
-<div id="adyen-webcomponent"></div>
-<adyen-checkout
-        locale="${request.locale}"
-        environment="${pdict.adyen.environment}"
-        origin-key="${pdict.adyen.originKey}"
-    >
-    <ul id="paymentMethodsList"></ul>
-</adyen-checkout>
+<ul id="paymentMethodsList"></ul>
 
 <iscomment>
     Adyen RatePay Device Fingerprint Code
@@ -60,3 +46,6 @@
 <script type="text/javascript">
     dfDo('adyenFingerprint');
 </script>
+
+<span id="errorLoadComponent"></span>
+<div id="card"></div>
