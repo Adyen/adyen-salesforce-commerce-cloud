@@ -29,14 +29,14 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
             results.adyenAction = paymentInstrument.custom.adyenAction;
         }
 
-        if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
-            results.lastFour = paymentInstrument.creditCardNumberLastDigits;
-            results.owner = paymentInstrument.creditCardHolder;
-            results.expirationYear = paymentInstrument.creditCardExpirationYear;
-            results.type = paymentInstrument.creditCardType;
-            results.maskedCreditCardNumber = paymentInstrument.maskedCreditCardNumber;
-            results.expirationMonth = paymentInstrument.creditCardExpirationMonth;
-        } else if (paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE') {
+        results.lastFour = paymentInstrument.creditCardNumberLastDigits ? paymentInstrument.creditCardNumberLastDigits : null;
+        results.owner = paymentInstrument.creditCardHolder ? paymentInstrument.creditCardHolder : null;
+        results.expirationYear = paymentInstrument.creditCardExpirationYear ? paymentInstrument.creditCardExpirationYear : null;
+        results.type = paymentInstrument.creditCardType ? paymentInstrument.creditCardType : null;
+        results.maskedCreditCardNumber = paymentInstrument.maskedCreditCardNumber ? paymentInstrument.maskedCreditCardNumber : null;
+        results.expirationMonth = paymentInstrument.creditCardExpirationMonth ? paymentInstrument.creditCardExpirationMonth : null;
+
+        if (paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE') {
             results.giftCertificateCode = paymentInstrument.giftCertificateCode;
             results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
         }

@@ -17,7 +17,7 @@ module.exports = {
                     data.options
                 );
             });
-            adyenCheckout.methods.displayPaymentMethods();
+            adyenCheckout.methods.renderGenericComponent();
             billingHelpers.methods.updateBillingInformation(
                 data.order,
                 data.customer,

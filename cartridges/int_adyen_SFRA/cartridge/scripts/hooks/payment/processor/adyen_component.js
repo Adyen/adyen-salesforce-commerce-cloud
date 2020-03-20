@@ -10,7 +10,8 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 function Handle(basket, paymentInformation) {
     var currentBasket = basket;
@@ -20,22 +21,30 @@ function Handle(basket, paymentInformation) {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
             currentBasket.removePaymentInstrument(item);
         });
-        var paymentInstrument = currentBasket.createPaymentInstrument(
-            PaymentInstrument.METHOD_CREDIT_CARD, currentBasket.totalGrossPrice
-        );
-        var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
-        var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
+        var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
+        paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+        paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
+
+        if (paymentInformation.isCreditCard) {
+            var sfccCardType = AdyenHelper.getSFCCCardType(paymentInformation.cardType);
+            var tokenID = AdyenHelper.getCardToken(paymentInformation.storedPaymentUUID, customer);
 
             paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
             paymentInstrument.setCreditCardType(sfccCardType);
-            paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
             if (tokenID) {
                 paymentInstrument.setCreditCardExpirationMonth(paymentInformation.expirationMonth.value);
                 paymentInstrument.setCreditCardExpirationYear(paymentInformation.expirationYear.value);
                 paymentInstrument.setCreditCardToken(tokenID);
             }
-        });
+        } else {
+            //Local payment data
+            if (paymentInformation.adyenIssuerName) {
+                paymentInstrument.custom.adyenIssuerName = paymentInformation.adyenIssuerName;
+            }
+        }
+    });
+
     return {fieldErrors: cardErrors, serverErrors: serverErrors, error: false};
 }
 
@@ -61,8 +70,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     Transaction.begin();
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
-        PaymentInstrument: paymentInstrument,
-        ReturnUrl: URLUtils.https("Adyen-OrderConfirm").toString()
+        PaymentInstrument: paymentInstrument
     });
 
     if (result.error) {
@@ -73,55 +81,56 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    //Trigger 3DS2.0 flow
-    if(result.ThreeDS2){
+    //Trigger 3DS2 flow
+    if(result.threeDS2 || result.resultCode == "RedirectShopper"){
         Transaction.commit();
         Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
+            paymentInstrument.custom.adyenPaymentData = result.paymentData;
         });
 
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
-        return {
-            ThreeDS2: result.ThreeDS2,
-            resultCode: result.resultCode,
-            token3ds2: result.token3ds2,
+        if(result.threeDS2){
+            return {
+                threeDS2: result.threeDS2,
+                resultCode: result.resultCode,
+                token3ds2: result.token3ds2
+            }
         }
-    }
 
-    //Trigger 3DS flow
-    else if (result.RedirectObject != "") {
-        Transaction.commit();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
-        });
+        var signature = null;
+        var authorized3d = false;
 
-        session.privacy.orderNo = order.orderNo;
-        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
+        //If the response has MD, then it is a 3DS transaction
+        if(result.redirectObject && result.redirectObject.data && result.redirectObject.data.MD){
+            authorized3d = true;
+        }
+        else {
+            //Signature only needed for redirect methods
+            signature = AdyenHelper.getAdyenHash(result.redirectObject.url, result.paymentData);
+        }
+
         return {
             authorized: true,
-            authorized3d: true,
-            order: order,
+            authorized3d: authorized3d,
+            orderNo: orderNumber,
             paymentInstrument: paymentInstrument,
-            redirectObject: result.RedirectObject
+            redirectObject: result.redirectObject,
+            signature: signature
         };
     }
 
-    if (result.Decision != "ACCEPT") {
+    else if(result.decision != "ACCEPT"){
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         Transaction.rollback();
-        return {
-            error: true,
-            PlaceOrderError: (result.AdyenErrorMessage ? result.AdyenErrorMessage : "")
-        };
+        return { error: true };
     }
 
-    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-    Transaction.commit();
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
+    return { authorized: true, error: false };
 
-    return {authorized: true, error: false};
 }
-
 
 exports.Handle = Handle;
 exports.Authorize = Authorize;

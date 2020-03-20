@@ -53,6 +53,7 @@ server.post('AuthorizeWithForm', server.middleware.https, function (req, res, ne
                 }
             };
             var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+
             Transaction.wrap(function () {
                 paymentInstrument.custom.adyenPaymentData = null;
             });
@@ -157,6 +158,7 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
         };
 
         var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+
         if ((result.error || result.resultCode != 'Authorised') && result.resultCode != 'ChallengeShopper') {
             //Payment failed
             Transaction.wrap(function () {
@@ -209,7 +211,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
     var signature = req.querystring.signature;
     var order = OrderMgr.getOrder(session.privacy.orderNo);
     if(order && signature){
-        var paymentInstruments = order.getPaymentInstruments("Adyen");
+        var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
         var adyenPaymentInstrument;
         var paymentData;
 
@@ -241,7 +243,7 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
     try {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
-        var paymentInstruments = order.getPaymentInstruments("Adyen");
+        var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
         var adyenPaymentInstrument;
         var paymentData;
 
@@ -271,6 +273,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         Transaction.wrap(function () {
             adyenPaymentInstrument.custom.adyenPaymentData = null;
         });
+
         // Authorised: The payment authorisation was successfully completed.
         if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
             if (result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
@@ -281,6 +284,20 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
                 res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
                 return next();
             }
+
+            //custom fraudDetection
+            var fraudDetectionStatus = {status: 'success'};
+
+            // Places the order
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+            if (placeOrderResult.error) {
+                Transaction.wrap(function () {
+                    OrderMgr.failOrder(order);
+                });
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
+
             var OrderModel = require('*/cartridge/models/order');
             var Locale = require('dw/util/Locale');
             var currentLocale = Locale.getLocale(req.locale.id);
@@ -312,11 +329,6 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 
 });
 
-server.get('OrderConfirm', server.middleware.https, function (req, res, next) {
-    res.redirect(URLUtils.url('Order-Confirm', 'ID', req.querystring.ID, 'token', req.querystring.token).toString());
-    return next();
-});
-
 server.get("GetPaymentMethods", server.middleware.https, function (req, res, next) {
     var BasketMgr = require("dw/order/BasketMgr");
     var Resource = require("dw/web/Resource");
@@ -330,17 +342,10 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
         countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode().value;
     }
     var response;
-    var paymentMethods = {};
-    var localPaymentMethodDescriptions = [];
+    var paymentMethodDescriptions = [];
     try {
-        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode).paymentMethods;
-        paymentMethods.cardPaymentMethods = response.filter(function (method) {
-            return method.type == "scheme";
-        })[0];
-        paymentMethods.localPaymentMethods = response.filter(function (method) {
-            return !AdyenHelper.isMethodTypeBlocked(method.type);
-        });
-        localPaymentMethodDescriptions = paymentMethods.localPaymentMethods.map(function (method) {
+        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode);
+        paymentMethodDescriptions = response.paymentMethods.map(function (method) {
             return {
                 brandCode: method.type,
                 description: Resource.msg("hpp.description." + method.type, "hpp", "")
@@ -360,11 +365,10 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
 
     res.json({
-        AdyenPaymentMethods: paymentMethods.localPaymentMethods,
+        AdyenPaymentMethods: response,
         ImagePath: adyenURL,
-        AdyenDescriptions: localPaymentMethodDescriptions,
+        AdyenDescriptions: paymentMethodDescriptions,
         AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-        AdyenCardPaymentMethods: paymentMethods.cardPaymentMethods
     });
     return next();
 });
