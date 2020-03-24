@@ -32,7 +32,7 @@
     </isif>
     <isif condition="${adyenAction.downloadUrl}">
         <span class="summary-section-label">${Resource.msg('action.downloadUrl', 'checkout', null)}:</span>
-        <span class="summary-details">${adyenAction.downloadUrl}</span><br/>
+        <a href="${adyenAction.downloadUrl}" target="_blank" class="summary-details">${Resource.msg('action.downloadLink', 'checkout', null)}</a><br/>
     </isif>
     <isif condition="${adyenAction.entity}">
         <span class="summary-section-label">${Resource.msg('action.entity', 'checkout', null)}:</span>

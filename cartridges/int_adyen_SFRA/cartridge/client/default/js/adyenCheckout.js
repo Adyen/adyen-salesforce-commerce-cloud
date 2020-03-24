@@ -1,12 +1,51 @@
-const checkout = new AdyenCheckout(window.Configuration);
+var checkoutConfiguration = window.Configuration;
+var isValid = false;
+var storeDetails;
+
+checkoutConfiguration.paymentMethodsConfiguration =
+    {
+        card: {
+            enableStoreDetails: showStoreDetails,
+            onBrand: function (brandObject) {
+                $('#cardType').val(brandObject.brand);
+            },
+            onFieldValid: function (data) {
+                if(data.endDigits){
+                    maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
+                    $("#cardNumber").val(maskedCardNumber);
+                }
+            },
+            onChange: function (state) {
+                storeDetails = state.data.storePaymentMethod;
+                isValid = state.isValid;
+                var type = state.data.paymentMethod.type;
+                $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+                componentArr[type].isValid = isValid;
+                componentArr[type].stateData = state.data;
+            }
+        },
+        boletobancario: {
+            personalDetailsRequired: true, // turn personalDetails section on/off
+            billingAddressRequired: false, // turn billingAddress section on/off
+            showEmailAddress: false, // allow shopper to specify their email address
+
+            // Optionally prefill some fields, here all fields are filled:
+            data: {
+                socialSecurityNumber: '56861752509',
+                firstName: 'José',
+                lastName: 'Silva',
+            }
+        },
+    };
+const checkout = new AdyenCheckout(checkoutConfiguration);
+
+
 const cardNode = document.getElementById('card');
 var oneClickCard = [];
 var card;
 var idealComponent;
 var afterpayComponent;
 var klarnaComponent;
-var isValid = false;
-var storeDetails;
 var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
@@ -51,27 +90,14 @@ function renderGenericComponent() {
             } else {
                  try {
                      var node = checkout.create(paymentMethod.type, {
-                         details: paymentMethod.details,
-                         enableStoreDetails: showStoreDetails,
                          onChange: function (state) {
                              isValid = state.isValid;
-                             storeDetails = state.data.storePaymentMethod;
                              var type = state.data.paymentMethod.type;
                              $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
                              componentArr[type].isValid = isValid;
                              componentArr[type].stateData = state.data;
-                         }, // Gets triggered whenever a user changes input
-                         onBrand: function (brandObject) {
-                             $('#cardType').val(brandObject.brand);
-                         }, // Called once we detect the card brand
-                         onFieldValid: function (data) {
-                             if(data.endDigits){
-                                 maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-                                 $("#cardNumber").val(maskedCardNumber);
-                             }
                          }
                      });
-
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
