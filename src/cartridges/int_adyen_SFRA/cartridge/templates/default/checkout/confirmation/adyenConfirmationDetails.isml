@@ -7,20 +7,30 @@
     <isscript>
         var adyenAction = JSON.parse(payment.adyenAction);
     </isscript>
-    <!--- Payment details for econtext --->
+    <!--- Payment details --->
     <isif condition="${adyenAction.reference}">
-        <span class="summary-section-label">${Resource.msg('econtext.reference', 'checkout', null)}:</span>
+        <span class="summary-section-label">${Resource.msg('action.reference', 'checkout', null)}:</span>
         <span class="summary-details">${adyenAction.reference}</span><br/>
     </isif>
     <isif condition="${adyenAction.maskedTelephoneNumber}">
-        <span class="summary-section-label">${Resource.msg('econtext.maskedTelephoneNumber', 'checkout', null)}:</span>
+        <span class="summary-section-label">${Resource.msg('action.maskedTelephoneNumber', 'checkout', null)}:</span>
         <span class="summary-details">${adyenAction.maskedTelephoneNumber}</span><br/>
     </isif>
     <isif condition="${adyenAction.expiresAt}">
-        <span class="summary-section-label">${Resource.msg('econtext.expiresAt', 'checkout', null)}:</span>
+        <span class="summary-section-label">${Resource.msg('action.expiresAt', 'checkout', null)}:</span>
         <span class="summary-details">${adyenAction.expiresAt}</span><br/>
     </isif>
+    <isif condition="${adyenAction.downloadUrl}">
+        <span class="summary-section-label">${Resource.msg('action.downloadUrl', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.downloadUrl}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.entity}">
+        <span class="summary-section-label">${Resource.msg('action.entity', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.entity}</span><br/>
+    </isif>
 </isif>
+
+<!-- For API version 49 or lower -->
 <isif condition="${payment.adyenAdditionalPaymentData}">
     <isloop items="${payment.adyenAdditionalPaymentData}" var="additionalItem">
         <!--- Payment details for Banktransfer --->
