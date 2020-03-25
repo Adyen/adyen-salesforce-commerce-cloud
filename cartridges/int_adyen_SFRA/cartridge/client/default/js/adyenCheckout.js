@@ -1,4 +1,3 @@
-const checkout = new AdyenCheckout(window.Configuration);
 const cardNode = document.getElementById('card');
 var oneClickCard = [];
 var card;
@@ -24,6 +23,7 @@ function displaySelectedMethod(type) {
 
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
+        const checkout = new AdyenCheckout(window.Configuration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
 
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
@@ -33,7 +33,7 @@ function renderGenericComponent() {
             var li = document.createElement('li');
             li.classList.add('paymentMethod');
             var liContents = `
-                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"> 
+                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}">
                               <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
                               <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
                               <p>${data.AdyenDescriptions[i].description}</p>
@@ -48,8 +48,10 @@ function renderGenericComponent() {
                 var template = document.createElement("template");
                 template.innerHTML = fallback;
                 container.append(template.content);
-            } else {
-                 try {
+            }
+            else {
+                try {
+                    console.log(paymentMethod.type);
                      var node = checkout.create(paymentMethod.type, {
                          details: paymentMethod.details,
                          enableStoreDetails: showStoreDetails,
@@ -75,7 +77,9 @@ function renderGenericComponent() {
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
-                 catch (e) {}
+                 catch (e) {
+                    console.error(e);
+                }
             }
 
             container.classList.add("additionalFields");
