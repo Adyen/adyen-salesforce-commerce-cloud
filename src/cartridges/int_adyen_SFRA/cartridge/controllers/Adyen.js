@@ -281,6 +281,20 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
                 res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
                 return next();
             }
+
+            //custom fraudDetection
+            var fraudDetectionStatus = {status: 'success'};
+
+            // Places the order
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+            if (placeOrderResult.error) {
+                Transaction.wrap(function () {
+                    OrderMgr.failOrder(order);
+                });
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
+
             var OrderModel = require('*/cartridge/models/order');
             var Locale = require('dw/util/Locale');
             var currentLocale = Locale.getLocale(req.locale.id);
