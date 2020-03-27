@@ -83,10 +83,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
     //Trigger 3DS2 flow
     if(result.threeDS2 || result.resultCode == "RedirectShopper"){
+        paymentInstrument.custom.adyenPaymentData = result.paymentData;
         Transaction.commit();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.paymentData;
-        });
 
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
@@ -128,6 +126,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     }
 
     AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
+    Transaction.commit();
     return { authorized: true, error: false };
 
 }

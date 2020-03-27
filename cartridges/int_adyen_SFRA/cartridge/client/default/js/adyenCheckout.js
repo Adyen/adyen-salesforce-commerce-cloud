@@ -1,19 +1,26 @@
-const cardNode = document.getElementById('card');
+var isValid = false;
+var storeDetails;
+var cardNode = document.getElementById('card');
 var oneClickCard = [];
 var card;
 var idealComponent;
 var afterpayComponent;
 var klarnaComponent;
-var isValid = false;
-var storeDetails;
 var maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
 
-var installments = JSON.parse(window.installments);
 var checkoutConfiguration = window.Configuration;
+var installments = JSON.parse(window.installments);
+
+checkoutConfiguration.onChange = function(state, component){
+    isValid = state.isValid;
+    var type = state.data.paymentMethod.type;
+    componentArr[type].isValid = isValid;
+    componentArr[type].stateData = state.data;
+};
 
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
@@ -41,6 +48,13 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         personalDetailsRequired: true, // turn personalDetails section on/off
         billingAddressRequired: false, // turn billingAddress section on/off
         showEmailAddress: false, // allow shopper to specify their email address
+
+        // Optionally prefill some fields, here all fields are filled:
+        data: {
+            socialSecurityNumber: '56861752509',
+            firstName: document.getElementById("shippingFirstNamedefault").value,
+            lastName: document.getElementById("shippingLastNamedefault").value
+        }
     }
 };
 // renderOneClickComponents();
@@ -54,6 +68,7 @@ function displaySelectedMethod(type) {
 
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
+        checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
         if(data.amount)
             checkoutConfiguration.amount = data.amount;
         if(data.countryCode)
@@ -61,9 +76,7 @@ function renderGenericComponent() {
         console.log(checkoutConfiguration);
         var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
-
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
-
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
             var li = document.createElement('li');
@@ -77,19 +90,14 @@ function renderGenericComponent() {
             li.innerHTML = liContents;
 
             var fallback = getFallback(paymentMethod.type);
-
             var container = document.createElement("div");
-
             if(fallback) {
                 var template = document.createElement("template");
                 template.innerHTML = fallback;
                 container.append(template.content);
-            }
-            else {
-                try {
-                    console.log(paymentMethod.type);
+            } else {
+                 try {
                      var node = checkout.create(paymentMethod.type);
-
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
@@ -299,7 +307,6 @@ function getFallback(paymentMethod) {
                     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
 
     var paysafecard = ' ';
-
     var fallback = {ach: ach, ratepay: ratepay, paysafecard: paysafecard};
     return fallback[paymentMethod];
 }

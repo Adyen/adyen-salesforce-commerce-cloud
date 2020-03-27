@@ -127,8 +127,6 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
             return { error: true };
         }
 
-        Logger.getLogger("Adyen").error("responseObject = " + JSON.stringify(responseObject));
-
         paymentResponse.fullResponse = responseObject;
         paymentResponse.redirectObject = responseObject.redirect ? responseObject.redirect : "";
         paymentResponse.resultCode = responseObject.resultCode;
