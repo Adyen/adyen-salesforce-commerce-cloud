@@ -180,7 +180,6 @@ var __AdyenHelper: Object = {
     getCheckoutUrl: function (): String {
         var checkoutUrl = this.getLoadingContext() + "sdk/" + __AdyenHelper.CHECKOUT_COMPONENT_VERSION + "/adyen.js";
         return checkoutUrl;
-        return '';
     },
 
     getCheckoutCSS: function (): String {

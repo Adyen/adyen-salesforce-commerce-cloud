@@ -313,7 +313,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenCreditCardInstallments">
                 <display-name xml:lang="x-default">Credit Card Installments</display-name>
-                <description xml:lang="x-default">If installments are required please create the configuration value using this link: https://adyen.github.io/adyen-oracle-commerce-cloud</description>
+                <description xml:lang="x-default">If installments are required please create the configuration value using this link: https://adyen.github.io/adyen-salesforce-commerce-cloud</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

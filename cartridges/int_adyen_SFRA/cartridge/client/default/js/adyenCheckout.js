@@ -13,7 +13,7 @@ var selectedMethod;
 var componentArr = [];
 
 var checkoutConfiguration = window.Configuration;
-var installments = JSON.parse(window.installments);
+var installments = window.installments.length > 0 ? JSON.parse(window.installments) : null;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
@@ -24,7 +24,6 @@ checkoutConfiguration.onChange = function(state, component){
 
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
-        installments: installments,
         enableStoreDetails: showStoreDetails,
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
@@ -57,6 +56,9 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         }
     }
 };
+if(installments)
+    checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
+
 // renderOneClickComponents();
 renderGenericComponent();
 
