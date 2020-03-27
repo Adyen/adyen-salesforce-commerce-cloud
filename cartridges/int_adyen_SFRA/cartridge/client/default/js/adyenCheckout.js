@@ -73,7 +73,6 @@ function renderGenericComponent() {
             checkoutConfiguration.amount = data.amount;
         if(data.countryCode)
             checkoutConfiguration.countryCode = data.countryCode;
-        console.log(checkoutConfiguration);
         var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
