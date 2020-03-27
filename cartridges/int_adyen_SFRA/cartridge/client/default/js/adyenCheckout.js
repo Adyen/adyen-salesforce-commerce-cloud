@@ -12,6 +12,37 @@ var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
 
+var installments = JSON.parse(window.installments);
+var checkoutConfiguration = window.Configuration;
+
+checkoutConfiguration.paymentMethodsConfiguration = {
+    card: {
+        installments: installments,
+        enableStoreDetails: showStoreDetails,
+        onBrand: function (brandObject) {
+            $('#cardType').val(brandObject.brand);
+        },
+        onFieldValid: function (data) {
+            if (data.endDigits) {
+                maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
+                $("#cardNumber").val(maskedCardNumber);
+            }
+        },
+        onChange: function (state) {
+            storeDetails = state.data.storePaymentMethod;
+            isValid = state.isValid;
+            var type = state.data.paymentMethod.type;
+            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+            componentArr[type].isValid = isValid;
+            componentArr[type].stateData = state.data;
+        }
+    },
+    boletobancario: {
+        personalDetailsRequired: true, // turn personalDetails section on/off
+        billingAddressRequired: false, // turn billingAddress section on/off
+        showEmailAddress: false, // allow shopper to specify their email address
+    }
+};
 // renderOneClickComponents();
 renderGenericComponent();
 
@@ -23,7 +54,12 @@ function displaySelectedMethod(type) {
 
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
-        const checkout = new AdyenCheckout(window.Configuration);
+        if(data.amount)
+            checkoutConfiguration.amount = data.amount;
+        if(data.countryCode)
+            checkoutConfiguration.countryCode = data.countryCode;
+        console.log(checkoutConfiguration);
+        var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
 
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
@@ -52,27 +88,7 @@ function renderGenericComponent() {
             else {
                 try {
                     console.log(paymentMethod.type);
-                     var node = checkout.create(paymentMethod.type, {
-                         details: paymentMethod.details,
-                         enableStoreDetails: showStoreDetails,
-                         onChange: function (state) {
-                             isValid = state.isValid;
-                             storeDetails = state.data.storePaymentMethod;
-                             var type = state.data.paymentMethod.type;
-                             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-                             componentArr[type].isValid = isValid;
-                             componentArr[type].stateData = state.data;
-                         }, // Gets triggered whenever a user changes input
-                         onBrand: function (brandObject) {
-                             $('#cardType').val(brandObject.brand);
-                         }, // Called once we detect the card brand
-                         onFieldValid: function (data) {
-                             if(data.endDigits){
-                                 maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-                                 $("#cardNumber").val(maskedCardNumber);
-                             }
-                         }
-                     });
+                     var node = checkout.create(paymentMethod.type);
 
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
@@ -282,7 +298,9 @@ function getFallback(paymentMethod) {
                     <span class="adyen-checkout__label">Date of birth</span>
                     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
 
-    var fallback = {ach: ach, ratepay: ratepay};
+    var paysafecard = ' ';
+
+    var fallback = {ach: ach, ratepay: ratepay, paysafecard: paysafecard};
     return fallback[paymentMethod];
 }
 

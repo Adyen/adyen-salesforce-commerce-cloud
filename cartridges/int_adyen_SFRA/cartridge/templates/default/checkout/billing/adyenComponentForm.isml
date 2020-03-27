@@ -2,6 +2,7 @@
 <!-- <script defer type="text/javascript" src="./bundle.js"></script> -->
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
+
 <isscript>
      var assets = require('*/cartridge/scripts/assets.js');
      assets.addJs('/js/bundle.js');
@@ -12,6 +13,7 @@
         originKey: '${pdict.adyen.originKey}',
         environment: '${pdict.adyen.environment}'
     };
+    window.installments = '${pdict.adyen.installments}';
     var showStoreDetails = ${customer.authenticated};
 </script>
 

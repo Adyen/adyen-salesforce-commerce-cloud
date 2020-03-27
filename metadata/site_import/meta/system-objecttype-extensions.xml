@@ -112,7 +112,7 @@
             </attribute-group>
         </group-definitions>
     </type-extension>
-    
+
     <type-extension type-id="CustomerPaymentInstrument">
             <custom-attribute-definitions>
                 <attribute-definition attribute-id="adyenCreditCardType">
@@ -311,6 +311,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenCreditCardInstallments">
+                <display-name xml:lang="x-default">Credit Card Installments</display-name>
+                <description xml:lang="x-default">If installments are required please create the configuration value using this link: https://adyen.github.io/adyen-oracle-commerce-cloud</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenBasketFieldsEnabled">
                 <display-name xml:lang="x-default">Basket Fields Enabled</display-name>
                 <type>boolean</type>
@@ -395,13 +402,14 @@
             <attribute-group group-id="Adyen">
                 <display-name xml:lang="x-default">Adyen Account Settings</display-name>
                 <attribute attribute-id="Adyen_merchantCode"/>
-                <attribute attribute-id="Adyen_Mode"/>    
-                <attribute attribute-id="Adyen_API_Key"/>        
+                <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_API_Key"/>
                 <attribute attribute-id="Adyen_Debug"/>
                 <attribute attribute-id="AdyenSecuredFieldsEnabled"/>
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
+                <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
