@@ -336,6 +336,7 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     var adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
     var PaymentMgr = require("dw/order/PaymentMgr");
     var Locale = require("dw/util/Locale");
+
     var countryCode = Locale.getLocale(req.locale.id).country;
     var currentBasket = BasketMgr.getCurrentBasket();
     if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
@@ -363,13 +364,20 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     }
 
     var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
-
-    res.json({
+    var jsonResponse = {
         AdyenPaymentMethods: response,
         ImagePath: adyenURL,
         AdyenDescriptions: paymentMethodDescriptions,
-        AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-    });
+        AdyenConnectedTerminals: JSON.parse(connectedTerminals)
+    };
+    if(AdyenHelper.getCreditCardInstallments()) {
+        var paymentAmount = currentBasket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()) : 1000;
+        var currency = currentBasket.getTotalGrossPrice().currencyCode;
+        jsonResponse.amount = {value: paymentAmount, currency: currency};
+        jsonResponse.countryCode = countryCode;
+    }
+
+    res.json(jsonResponse);
     return next();
 });
 

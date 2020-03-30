@@ -11,6 +11,7 @@
         originKey: '${pdict.adyen.originKey}',
         environment: '${pdict.adyen.environment}'
     };
+    window.installments = '${pdict.adyen.installments}';
     var showStoreDetails = ${customer.authenticated};
 </script>
 

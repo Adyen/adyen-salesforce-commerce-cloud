@@ -1,6 +1,18 @@
-var checkoutConfiguration = window.Configuration;
 var isValid = false;
 var storeDetails;
+var cardNode = document.getElementById('card');
+var oneClickCard = [];
+var card;
+var idealComponent;
+var afterpayComponent;
+var klarnaComponent;
+var maskedCardNumber;
+var MASKED_CC_PREFIX = '************';
+var oneClickValid = false;
+var selectedMethod;
+var componentArr = [];
+
+var checkoutConfiguration = window.Configuration;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
@@ -43,18 +55,13 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         }
     }
 };
-
-const cardNode = document.getElementById('card');
-var oneClickCard = [];
-var card;
-var idealComponent;
-var afterpayComponent;
-var klarnaComponent;
-var maskedCardNumber;
-const MASKED_CC_PREFIX = '************';
-var oneClickValid = false;
-var selectedMethod;
-var componentArr = [];
+if(window.installments) {
+    try {
+        var installments = JSON.parse(window.installments);
+        checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
+    }
+    catch (e) {}
+}
 
 // renderOneClickComponents();
 renderGenericComponent();
@@ -68,6 +75,12 @@ function displaySelectedMethod(type) {
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
         checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
+        if(data.amount) {
+            checkoutConfiguration.amount = data.amount;
+        }
+        if(data.countryCode) {
+            checkoutConfiguration.countryCode = data.countryCode;
+        }
         var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
@@ -76,7 +89,7 @@ function renderGenericComponent() {
             var li = document.createElement('li');
             li.classList.add('paymentMethod');
             var liContents = `
-                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}"> 
+                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}">
                               <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
                               <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
                               <p>${data.AdyenDescriptions[i].description}</p>
