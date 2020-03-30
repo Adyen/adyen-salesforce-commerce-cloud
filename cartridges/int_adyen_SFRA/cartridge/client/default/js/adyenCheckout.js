@@ -56,8 +56,11 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     }
 };
 if(window.installments) {
-    var installments = JSON.parse(window.installments);
-    checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
+    try {
+        var installments = JSON.parse(window.installments);
+        checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
+    }
+    catch (e) {}
 }
 
 // renderOneClickComponents();
