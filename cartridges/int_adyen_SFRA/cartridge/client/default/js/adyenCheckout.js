@@ -7,13 +7,12 @@ var idealComponent;
 var afterpayComponent;
 var klarnaComponent;
 var maskedCardNumber;
-const MASKED_CC_PREFIX = '************';
+var MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
 
 var checkoutConfiguration = window.Configuration;
-var installments = window.installments.length > 0 ? JSON.parse(window.installments) : null;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
@@ -56,8 +55,10 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         }
     }
 };
-if(installments)
+if(window.installments) {
+    var installments = JSON.parse(window.installments);
     checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
+}
 
 // renderOneClickComponents();
 renderGenericComponent();
@@ -71,10 +72,12 @@ function displaySelectedMethod(type) {
 function renderGenericComponent() {
     getPaymentMethods( function (data) {
         checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-        if(data.amount)
+        if(data.amount) {
             checkoutConfiguration.amount = data.amount;
-        if(data.countryCode)
+        }
+        if(data.countryCode) {
             checkoutConfiguration.countryCode = data.countryCode;
+        }
         var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
@@ -102,9 +105,7 @@ function renderGenericComponent() {
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
-                 catch (e) {
-                    console.error(e);
-                }
+                 catch (e) {}
             }
 
             container.classList.add("additionalFields");
@@ -307,8 +308,7 @@ function getFallback(paymentMethod) {
                     <span class="adyen-checkout__label">Date of birth</span>
                     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
 
-    var paysafecard = ' ';
-    var fallback = {ach: ach, ratepay: ratepay, paysafecard: paysafecard};
+    var fallback = {ach: ach, ratepay: ratepay};
     return fallback[paymentMethod];
 }
 
