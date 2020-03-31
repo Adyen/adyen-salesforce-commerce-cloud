@@ -10,20 +10,21 @@
 
 importPackage(dw.system);
 importPackage(dw.order);
+importPackage(dw.customer);
 
 //script include
 var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 var Logger = require('dw/system/Logger');
 
 function execute(args) {
-    var result = getMethods(args.Basket, args.CountryCode);
+    var result = getMethods(args.Basket, args.Customer,args.CountryCode);
     if (result == PIPELET_ERROR) {
         return PIPELET_ERROR;
     }
     return PIPELET_NEXT;
 }
 
-function getMethods (basket : dw.order.Basket, CountryCode) {
+function getMethods (basket : dw.order.Basket, customer: dw.order.Customer ,CountryCode) {
     try {
         var requestObject = {};
 
@@ -34,7 +35,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
         if (service == null) {
             return PIPELET_ERROR;
         }
-        //
+
         var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
         var paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
 
@@ -44,11 +45,21 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
             currency: currencyCode,
             value: paymentAmount
         };
-        
+
         if (CountryCode) {
         	requestObject['countryCode'] = CountryCode;
         }
-        	
+
+        //check logged in shopper for oneClick
+        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
+        var customerID = '';
+        if (!empty(profile) && !empty(profile.getCustomerNo())) {
+            customerID = profile.getCustomerNo();
+        }
+        if(customerID.length > 0) {
+            requestObject['shopperReference'] = customerID;
+        }
+
         var xapikey = AdyenHelper.getAdyenApiKey();
         service.addHeader('Content-type', 'application/json');
         service.addHeader('charset', 'UTF-8');

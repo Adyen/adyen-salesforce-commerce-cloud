@@ -6,6 +6,7 @@ var Transaction = require('dw/system/Transaction');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
+var CustomerMgr = require('dw/customer/CustomerMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
@@ -344,8 +345,12 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     }
     var response;
     var paymentMethodDescriptions = [];
+    var customer;
     try {
-        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode);
+        if(req.currentCustomer.profile) {
+            customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
+        }
+        response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), customer ? customer : null, countryCode);
         paymentMethodDescriptions = response.paymentMethods.map(function (method) {
             return {
                 brandCode: method.type,
