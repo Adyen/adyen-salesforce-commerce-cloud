@@ -14,27 +14,19 @@ var constants = require("*/cartridge/adyenConstants/constants");
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 
-function execute(args) {
-    var result = updateSavedCards(args);
-    if (result == PIPELET_ERROR) {
-        return PIPELET_ERROR;
-    }
-    return PIPELET_NEXT;
-}
-
 function updateSavedCards(args) {
     try {
         var customer = args.CurrentCustomer,
             paymentsMap = new HashMap(),
             recurringPaymentsEnabled = AdyenHelper.getAdyenRecurringPaymentsEnabled();
 
-        if (empty(customer) || empty(customer.getProfile()) || empty(customer.getProfile().getWallet())) {
-            return PIPELET_ERROR;
+        if(!(customer && customer.getProfile() && customer.getProfile().getWallet())){
+            //TODO BAS Check return compatible
+            return { error : true };
         }
 
-        if (customer && customer.getProfile() && customer.getProfile().getWallet() && recurringPaymentsEnabled) {
+        if (recurringPaymentsEnabled) {
             paymentsMap = args.PaymentsMap ? args.PaymentsMap : getRecurringDetails(customer);
-
             //To make it compatible with upgrade from older version, first delete payment instruments with METHOD_CREDIT_CARD
             var savedCreditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
             var savedCreditCardsComponent = customer.getProfile().getWallet().getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
@@ -53,8 +45,7 @@ function updateSavedCards(args) {
 
                 // Create from existing cards a paymentInstrument
                 for (var oneClickPaymentMethod in paymentsMap) {
-                    var payment = paymentsMap.get(oneClickPaymentMethod);
-
+                    var payment = paymentsMap[oneClickPaymentMethod];
                     var expiryMonth = payment.storedDetails.card.expiryMonth ? payment.storedDetails.card.expiryMonth : "";
                     var expiryYear = payment.storedDetails.card.expiryYear ? payment.storedDetails.card.expiryYear : "";
                     var holderName = payment.storedDetails.card.holderName ? payment.storedDetails.card.holderName : "";
@@ -77,13 +68,14 @@ function updateSavedCards(args) {
 
             });
             // delete expired cards
-            // TODO investigate whether this is necessary
+            // TODO BAS investigate whether this is necessary
             //deleteExpiredCards(customer);
+            return { error : false };
         }
     }
      catch (ex) {
         Logger.error(ex.toString() + ' in ' + ex.fileName + ':' + ex.lineNumber);
-        return PIPELET_ERROR;
+        return { error : true };
     }
 }
 
@@ -102,20 +94,23 @@ function deleteExpiredCards(customer) {
 
 function getRecurringDetails(customer) {
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-    var oneClickPaymentMethods = getPaymentMethods.getMethods({}, "NL").oneClickPaymentMethods;
+    var oneClickPaymentMethods = getPaymentMethods.getMethods(null, customer, "").oneClickPaymentMethods;
+    Logger.getLogger("Adyen").error("oneClickPaymentMethods = " + JSON.stringify(oneClickPaymentMethods));
+
     // var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
     // var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
     //     Customer: customer
     // });
 
-    if (getRecurringDetailsListResult === PIPELET_ERROR) {
-        return null;
-    }
+    //TODO BAS check return error
+    // if (getRecurringDetailsListResult === PIPELET_ERROR) {
+    //     return null;
+    // }
 
-    return !empty(getRecurringDetailsListResult) && ('RecurringPayments' in getRecurringDetailsListResult) ? getRecurringDetailsListResult.RecurringPayments : null;
+    return oneClickPaymentMethods ? oneClickPaymentMethods : null;
+    // return !empty(getRecurringDetailsListResult) && ('RecurringPayments' in getRecurringDetailsListResult) ? getRecurringDetailsListResult.RecurringPayments : null;
 }
 
 module.exports = {
-    'execute': execute,
     'updateSavedCards': updateSavedCards
 }

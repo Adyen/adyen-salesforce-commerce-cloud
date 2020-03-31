@@ -296,7 +296,8 @@ var __AdyenHelper: Object = {
 
     // Get saved card token of customer saved card based on matched cardUUID
     getCardToken: function (cardUUID, CustomerObj) {
-        var token = '';
+        //TODO BAS loop through AdyenComponent PI's
+        var token = "";
         if (!empty(CustomerObj) && CustomerObj.authenticated && !empty(cardUUID)) {
             var wallet = CustomerObj.getProfile().getWallet();
             var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);

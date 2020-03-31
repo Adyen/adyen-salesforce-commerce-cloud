@@ -37,9 +37,21 @@ function getMethods (basket : dw.order.Basket, customer: dw.order.Customer ,Coun
         }
 
         var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
-        var paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
 
-        var currencyCode = basket.currencyCode;
+        var paymentAmount;
+        var currencyCode;
+
+        //paymentMethods call through checkout
+        if(basket){
+            paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
+            currencyCode = basket.currencyCode;
+        }
+        //paymentMethods call through My Account TODO BAS get currency
+        else {
+            paymentAmount = 1000;
+            currencyCode = "EUR";
+        }
+
         requestObject['merchantAccount'] = merchantAccount;
         requestObject['amount'] = {
             currency: currencyCode,

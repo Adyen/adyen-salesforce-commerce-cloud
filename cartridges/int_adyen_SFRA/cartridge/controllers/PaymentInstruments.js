@@ -10,6 +10,8 @@ var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var Logger = require('dw/system/Logger');
 var constants = require("*/cartridge/adyenConstants/constants");
+var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+var Resource = require('dw/web/Resource');
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
     require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
@@ -36,39 +38,21 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
     var URLUtils = require('dw/web/URLUtils');
     var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 
-    var viewData = res.getViewData();
-    Logger.getLogger("Adyen").error("save payment viewData = " + JSON.stringify(viewData));
     var paymentForm = server.forms.getForm('creditCard');
-    var paymentInstrument;
     Logger.getLogger("Adyen").error("save .adyenStateData.value = " + JSON.stringify(paymentForm.adyenStateData.value));
-    viewData.adyenStateData = paymentForm.adyenStateData.value;
-    res.setViewData(viewData);
 
     var customer = CustomerMgr.getCustomerByCustomerNumber(
         req.currentCustomer.profile.customerNo
     );
+
+    var paymentInstrument;
     var wallet = customer.getProfile().getWallet();
     Transaction.wrap(function () {
         paymentInstrument = wallet.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
         paymentInstrument.custom.adyenPaymentData = paymentForm.adyenStateData.value;
     });
 
-    //Zero auth does not have an order, hence the null value
-    var zeroAuthRequest = AdyenHelper.createAdyenRequestObject(null, paymentInstrument);
-
-    if(AdyenHelper.getAdyen3DS2Enabled()){
-        zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
-    }
-
-    zeroAuthRequest["amount"] = {
-        "currency": session.currency.currencyCode,
-        "value": 0
-    };
-
-    //Send payment request to /payments endpoints
-    var adyenCheckout = require("*/cartridge/scripts/adyenCheckout.ds");
-    var zeroAuthResult = adyenCheckout.doPaymentCall(null, paymentInstrument, zeroAuthRequest);
-
+    var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, paymentInstrument);
     if(zeroAuthResult.error || zeroAuthResult.resultCode !== "Authorised"){
         res.json({
             success: false,
@@ -79,6 +63,7 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
 
     //TODO BAS
     // Update saved cards with /paymentMethods call
+    require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
 
     // Send account edited email
     accountHelpers.sendAccountEditedEmail(customer.profile);

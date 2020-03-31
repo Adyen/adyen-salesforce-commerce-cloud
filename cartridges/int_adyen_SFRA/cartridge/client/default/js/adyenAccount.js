@@ -2,6 +2,7 @@ var checkoutConfiguration = window.Configuration;
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
         enableStoreDetails: showStoreDetails,
+        hasHolderName: true,
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);
         },
@@ -14,7 +15,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         onChange: function (state) {
             storeDetails = state.data.storePaymentMethod;
             isValid = state.isValid;
-            stateData = state.data;
+            componentState = state;
         }
     }
 }
@@ -24,7 +25,7 @@ var cardNode = document.getElementById("card");
 var maskedCardNumber;
 var isValid = false;
 var storeDetails;
-var stateData;
+var componentState;
 var MASKED_CC_PREFIX = "************";
 
 (function () {
@@ -34,5 +35,13 @@ var MASKED_CC_PREFIX = "************";
 
 
 $('button[value="add-new-payment"]').on('click', function (e) {
-    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
+    //TODO BAS validation
+    if(componentState.isValid){
+        document.querySelector("#adyenStateData").value = JSON.stringify(componentState.data);
+        return true;
+    }
+    else {
+        componentState.showValidation;
+        return false;
+    }
 });
