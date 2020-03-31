@@ -9,6 +9,7 @@ var HashMap = require('dw/util/HashMap');
 var Logger = require('dw/system/Logger');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Transaction = require('dw/system/Transaction');
+var constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
@@ -31,77 +32,56 @@ function updateSavedCards(args) {
             return PIPELET_ERROR;
         }
 
-        // retrieve recurring payments from Adyen
-        if (recurringPaymentsEnabled) {
-            paymentsMap = ('PaymentsMap' in args) ? args.PaymentsMap : getRecurringDetails(customer);
-            if (paymentsMap != null && !paymentsMap.isEmpty() && paymentsMap.getLength() > 0) {
-                // delete all existing cards and replace with cards in Adyen
-                var creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+        if (customer && customer.getProfile() && customer.getProfile().getWallet() && recurringPaymentsEnabled) {
+            paymentsMap = args.PaymentsMap ? args.PaymentsMap : getRecurringDetails(customer);
 
-                Transaction.wrap(function () {
-                	
-                		// remove all current PaymentIntstuments
-                    for (var i = 0; i < creditCards.length; i++) {
-                        var creditCard = creditCards[i];
-                        customer.getProfile().getWallet().removePaymentInstrument(creditCard);
+            //To make it compatible with upgrade from older version, first delete payment instruments with METHOD_CREDIT_CARD
+            var savedCreditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+            var savedCreditCardsComponent = customer.getProfile().getWallet().getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+
+            Transaction.wrap(function () {
+                // remove all current METHOD_CREDIT_CARD PaymentInstruments
+                for (var i = 0; i < savedCreditCards.length; i++) {
+                    var creditCard = savedCreditCards[i];
+                    customer.getProfile().getWallet().removePaymentInstrument(creditCard);
+                }
+                // remove all current METHOD_ADYEN_COMPONENT PaymentInstruments
+                for (var i = 0; i < savedCreditCardsComponent.length; i++) {
+                    var creditCard = savedCreditCardsComponent[i];
+                    customer.getProfile().getWallet().removePaymentInstrument(creditCard);
+                }
+
+                // Create from existing cards a paymentInstrument
+                for (var oneClickPaymentMethod in paymentsMap) {
+                    var payment = paymentsMap.get(oneClickPaymentMethod);
+
+                    var expiryMonth = payment.storedDetails.card.expiryMonth ? payment.storedDetails.card.expiryMonth : "";
+                    var expiryYear = payment.storedDetails.card.expiryYear ? payment.storedDetails.card.expiryYear : "";
+                    var holderName = payment.storedDetails.card.holderName ? payment.storedDetails.card.holderName : "";
+                    var lastFour = payment.storedDetails.card.number ? payment.storedDetails.card.number : "";
+                    var number = lastFour ? new Array(12 + 1).join('*') + lastFour : "";
+                    var token = payment.recurringDetailReference;
+                    var cardType = payment.type ? AdyenHelper.getSFCCCardType(payment.type) : "";
+
+                    // if we have everything we need, create a new payment instrument
+                    if (expiryMonth && expiryYear && number && token && cardType && holderName) {
+                        var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
+                        newCreditCard.setCreditCardExpirationMonth(Number(expiryMonth));
+                        newCreditCard.setCreditCardExpirationYear(Number(expiryYear));
+                        newCreditCard.setCreditCardType(cardType);
+                        newCreditCard.setCreditCardHolder(holderName);
+                        newCreditCard.setCreditCardNumber(number);
+                        newCreditCard.setCreditCardToken(token);
                     }
+                }
 
-					// Create from existing cards a paymentInstrument
-                    for (var recurringContract in paymentsMap) {
-                        var payment = paymentsMap.get(recurringContract);
-
-                        var expMonth,
-                            expYear,
-                            ccNum,
-                            token,
-                            ccType,
-                            ccHolder,
-                            adyenCardType;
-
-                        // card expiration
-                        expMonth = 'cardExpiryMonth' in payment && !empty(payment.cardExpiryMonth) ? payment.cardExpiryMonth : '';
-                        expYear = 'cardExpiryYear' in payment && !empty(payment.cardExpiryYear) ? payment.cardExpiryYear : '';
-
-                        // credit card number
-                        if ('cardLastFour' in payment && !empty(payment.cardLastFour)) {
-                            // inserts 12 asterisks + last 4
-                            ccNum = new Array(12 + 1).join('*') + payment.cardLastFour;
-                        }
-
-                        // token
-                        token = 'recurringDetailReference' in payment && !empty(payment.recurringDetailReference) ? payment.recurringDetailReference : '';
-
-                        // card type
-                        if ('cardType' in payment && !empty(payment.cardType)) {
-                            adyenCardType = payment.cardType;
-                            ccType = AdyenHelper.getSFCCCardType(adyenCardType);
-                        }
-
-                        // card holder
-                        ccHolder = 'cardHolder' in payment && !empty(payment.cardHolder) ? payment.cardHolder : '';
-
-                        // if we have everything we need, create a new payment instrument
-                        if (!empty(expMonth) && !empty(expYear) && !empty(ccNum) && !empty(token) && !empty(ccType) && !empty(ccHolder)) {
-                            var newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
-
-							// custom throws error
-                            newCreditCard.custom.adyenCreditCardType = adyenCardType;
-                            newCreditCard.setCreditCardExpirationMonth(Number(expMonth));
-                            newCreditCard.setCreditCardExpirationYear(Number(expYear));
-                            newCreditCard.setCreditCardType(ccType);
-                            newCreditCard.setCreditCardHolder(ccHolder);
-                            newCreditCard.setCreditCardNumber(ccNum);
-                            newCreditCard.setCreditCardToken(token);
-                        }
-                    }
-                });
-            }
+            });
+            // delete expired cards
+            // TODO investigate whether this is necessary
+            //deleteExpiredCards(customer);
         }
-
-        // delete expired cards
-        deleteExpiredCards(customer);
-
-    } catch (ex) {
+    }
+     catch (ex) {
         Logger.error(ex.toString() + ' in ' + ex.fileName + ':' + ex.lineNumber);
         return PIPELET_ERROR;
     }
@@ -121,10 +101,12 @@ function deleteExpiredCards(customer) {
 }
 
 function getRecurringDetails(customer) {
-    var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
-    var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
-        Customer: customer
-    });
+    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+    var oneClickPaymentMethods = getPaymentMethods.getMethods({}, "NL").oneClickPaymentMethods;
+    // var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
+    // var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
+    //     Customer: customer
+    // });
 
     if (getRecurringDetailsListResult === PIPELET_ERROR) {
         return null;

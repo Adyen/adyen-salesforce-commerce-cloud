@@ -12,8 +12,6 @@ server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfPr
         if (req.currentCustomer.raw.isAuthenticated()) {
             require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
         }
-
-        Logger.getLogger("Adyen").error("BeginCheckout");
         var protocol = req.https ? "https" : "http";
         var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
         var environment = AdyenHelper.getAdyenMode().toLowerCase();
@@ -25,7 +23,6 @@ server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfPr
             environment: environment,
             installments: installments
         };
-        Logger.getLogger("Adyen").error("EndBeginCheckout");
         res.setViewData(viewData);
         next();
     });

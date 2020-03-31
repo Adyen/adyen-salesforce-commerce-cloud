@@ -123,14 +123,24 @@
                     <externally-managed-flag>false</externally-managed-flag>
                     <min-length>0</min-length>
                 </attribute-definition>
+                <attribute-definition attribute-id="adyenPaymentData">
+                    <display-name xml:lang="x-default">adyenPaymentData</display-name>
+                    <description xml:lang="x-default">adyenPaymentData</description>
+                    <type>text</type>
+                    <mandatory-flag>false</mandatory-flag>
+                    <externally-managed-flag>false</externally-managed-flag>
+                    <min-length>0</min-length>
+                    <field-length>0</field-length>
+                </attribute-definition>
             </custom-attribute-definitions>
             <group-definitions>
                 <attribute-group group-id="AdyenPayment">
                     <display-name xml:lang="x-default">AdyenPayment</display-name>
                     <attribute attribute-id="adyenCreditCardType"/>
+                    <attribute attribute-id="adyenPaymentData"/>
                 </attribute-group>
             </group-definitions>
-        </type-extension>
+    </type-extension>
 
     <type-extension type-id="PaymentTransaction">
         <system-attribute-definitions>

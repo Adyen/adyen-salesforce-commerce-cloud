@@ -17,20 +17,16 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
 });
 
 server.prepend('AddPayment',  csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
-    Logger.getLogger("Adyen").error("AddPayment start");
-    if(!AdyenHelper.getAdyen3DS2Enabled()){
-        var protocol = req.https ? "https" : "http";
-        var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
-        var environment = AdyenHelper.getAdyenMode().toLowerCase();
+    var protocol = req.https ? "https" : "http";
+    var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
+    var environment = AdyenHelper.getAdyenMode().toLowerCase();
+    var viewData = res.getViewData();
+    viewData.adyen = {
+        originKey: originKey,
+        environment: environment
+    };
 
-        var viewData = res.getViewData();
-        viewData.adyen = {
-            originKey : originKey,
-            environment: environment
-        };
-
-        res.setViewData(viewData);
-    }
+    res.setViewData(viewData);
     next();
 });
 
