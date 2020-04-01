@@ -11,7 +11,6 @@ var MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
-
 var checkoutConfiguration = window.Configuration;
 
 checkoutConfiguration.onChange = function(state, component){
@@ -37,6 +36,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
             storeDetails = state.data.storePaymentMethod;
             isValid = state.isValid;
             var type = state.data.paymentMethod.type;
+            console.log(state);
             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
             componentArr[type].isValid = isValid;
             componentArr[type].stateData = state.data;
@@ -84,6 +84,49 @@ function renderGenericComponent() {
         var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
+
+
+        // if(data.AdyenPaymentMethods.storedPaymentMethods) {
+        //     var li = document.createElement('li');
+        //     li.classList.add('paymentMethod');
+        //     var liContents = `
+        //                       <input name="brandCode" type="radio" value="storedPaymentMethods" id="rb_storedPaymentMethods">
+        //                       <img class="paymentMethod_img" src="${data.ImagePath}scheme.png" ></img>
+        //                       <label id="lb_storedPaymentMethods" for="rb_storedPaymentMethods">Stored Payment Methods</label>
+        //                      `;
+        //     li.innerHTML = liContents;
+        //     var storedPaymentMethodscontainer = document.createElement("div");
+        //
+        //     for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
+        //         var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
+        //
+        //         var container = document.createElement("div");
+        //         var label = `${paymentMethod.name} ${paymentMethod.lastFour}`;
+        //         container.append(label);
+        //         try {
+        //             var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
+        //             node.mount(container);
+        //             var id = `storedPaymentMethods${paymentMethod.id}`;
+        //             console.log(id);
+        //             componentArr[id] = node;
+        //         }
+        //         catch (e) {console.log(e)}
+        //
+        //         storedPaymentMethodscontainer.append(container);
+        //     }
+        //     storedPaymentMethodscontainer.classList.add("additionalFields");
+        //     storedPaymentMethodscontainer.setAttribute("id", `component_storedPaymentMethods`);
+        //     storedPaymentMethodscontainer.setAttribute("style", "display:none");
+        //     li.append(storedPaymentMethodscontainer);
+        //     paymentMethodsUI.append(li);
+        //     var input = document.querySelector(`#rb_storedPaymentMethods`);
+        //
+        //     input.onchange = (event) => {
+        //         displaySelectedMethod(event.target.value);
+        //     };
+        // }
+
+
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
             var li = document.createElement('li');
@@ -108,7 +151,7 @@ function renderGenericComponent() {
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
-                 catch (e) {}
+                 catch (e) {console.log(e)}
             }
 
             container.classList.add("additionalFields");
@@ -131,26 +174,27 @@ function renderGenericComponent() {
     });
 }
 
-// function renderOneClickComponents() {
-//     var componentContainers = document.getElementsByClassName("cvc-container");
-//     jQuery.each(componentContainers, function (i, oneClickCardNode) {
-//         var container = document.getElementById(oneClickCardNode.id);
-//         var cardId = container.id.split("-")[1];
-//         var brandCode = document.getElementById('cardType-' + cardId).value;
-//         oneClickCard[cardId] = checkout.create('card', {
-//             // Specific for oneClick cards
-//             brand: brandCode,
-//             storedPaymentMethodId: cardId,
-//             onChange: function (state) {
-//                 oneClickValid = state.isValid;
-//                 if (state.isValid) {
-//                     $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-//                     $('#adyenEncryptedSecurityCode').val(state.data.paymentMethod.encryptedSecurityCode);
-//                 }
-//             } // Gets triggered whenever a user changes input
-//         }).mount(container);
-//     });
-// };
+function renderOneClickComponents(storedPaymentMethods, checkout) {
+    // for (var i = 0; i < storedPaymentMethods.length; i++) {
+    //     var storedPaymentMethod = storedPaymentMethods[i];
+    //     var div = document.createElement('div');
+    //
+    //     var container = document.createElement("div");
+    //     try {
+    //         var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[0]);
+    //         node.mount(container);
+    //         // componentArr[paymentMethod.type] = node;
+    //     }
+    //     catch (e) {console.error(e)}
+    //
+    //     // container.classList.add("additionalFields");
+    //     // container.setAttribute("id", `component_visa`);
+    //     // container.setAttribute("style", "display:none");
+    //
+    //     div.append(container);
+    // }
+    // return div;
+};
 
 // $('.payment-summary .edit-button').on('click', function (e) {
 //     jQuery.each(oneClickCard, function (i) {
@@ -226,7 +270,12 @@ $('button[value="submit-payment"]').on('click', function () {
 });
 
 function showValidation() {
+    console.log('entered validation //');
+    console.log(selectedMethod);
+    console.log(componentArr[selectedMethod]);
+    console.log(componentArr[selectedMethod].isValid);
     if(componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
+        console.log('inside if statement //');
         componentArr[selectedMethod].showValidation();
         return false;
     }
@@ -249,6 +298,7 @@ function showValidation() {
         }
         return true;
     }
+    console.log('after false is returned');
     return true;
 }
 
