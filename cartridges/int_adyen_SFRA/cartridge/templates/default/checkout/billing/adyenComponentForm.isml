@@ -1,4 +1,5 @@
 <iscontent type="text/html" encoding="off"/>
+<!--<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>-->
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
 <isscript>

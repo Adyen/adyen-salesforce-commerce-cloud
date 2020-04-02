@@ -67,6 +67,7 @@ if(window.installments) {
 renderGenericComponent();
 
 function displaySelectedMethod(type) {
+    console.log(type);
     selectedMethod = type;
     resetPaymentMethod();
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
@@ -90,7 +91,7 @@ function renderGenericComponent() {
         //     var li = document.createElement('li');
         //     li.classList.add('paymentMethod');
         //     var liContents = `
-        //                       <input name="brandCode" type="radio" value="storedPaymentMethods" id="rb_storedPaymentMethods">
+        //                       <input name="brandCode" type="radio" value="${paymentMethod.type}${paymentMethod.id}" id="rb_storedPaymentMethods">
         //                       <img class="paymentMethod_img" src="${data.ImagePath}scheme.png" ></img>
         //                       <label id="lb_storedPaymentMethods" for="rb_storedPaymentMethods">Stored Payment Methods</label>
         //                      `;
@@ -107,7 +108,6 @@ function renderGenericComponent() {
         //             var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
         //             node.mount(container);
         //             var id = `storedPaymentMethods${paymentMethod.id}`;
-        //             console.log(id);
         //             componentArr[id] = node;
         //         }
         //         catch (e) {console.log(e)}
@@ -125,6 +125,45 @@ function renderGenericComponent() {
         //         displaySelectedMethod(event.target.value);
         //     };
         // }
+
+
+
+        for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
+            var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
+            var li = document.createElement('li');
+            li.classList.add('paymentMethod');
+            var liContents = `
+                              <input name="brandCode" type="radio" value="storedCard${paymentMethod.id}" id="rb_storedCard${paymentMethod.id}">
+                              <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.brand}.png" ></img>
+                              <label id="lb_storedCard${paymentMethod.id}" for="rb_storedCard${paymentMethod.id}">${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}</label>
+                             `;
+            li.innerHTML = liContents;
+
+            var container = document.createElement("div");
+                try {
+                    var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
+                    node.mount(container);
+                    componentArr[`storedCard${paymentMethod.id}`] = node;
+                }
+                catch (e) {console.log(e)}
+
+            container.classList.add("additionalFields");
+            container.setAttribute("id", `component_storedCard${paymentMethod.id}`);
+            container.setAttribute("style", "display:none");
+
+            li.append(container);
+
+            paymentMethodsUI.append(li);
+            var input = document.querySelector(`#rb_storedCard${paymentMethod.id}`);
+
+            input.onchange = (event) => {
+                displaySelectedMethod(event.target.value);
+            };
+        }
+
+
+
+
 
 
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
@@ -150,6 +189,27 @@ function renderGenericComponent() {
                      var node = checkout.create(paymentMethod.type);
                      node.mount(container);
                      componentArr[paymentMethod.type] = node;
+
+                     // if(paymentMethod.type === "scheme" && data.AdyenPaymentMethods.storedPaymentMethods) {
+                     //     var storedPaymentMethodscontainer = document.createElement("div");
+                     //
+                     //     for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
+                     //         var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
+                     //
+                     //         var containerLocal = document.createElement("div");
+                     //         var label = `${paymentMethod.name} ${paymentMethod.lastFour}`;
+                     //         containerLocal.append(label);
+                     //         try {
+                     //             var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
+                     //             node.mount(containerLocal);
+                     //             componentArr[`${paymentMethod.type}${paymentMethod.id}`] = node;
+                     //         }
+                     //         catch (e) {console.log(e)}
+                     //
+                     //         container.append(containerLocal);
+                     //     }
+                     // }
+
                  }
                  catch (e) {console.log(e)}
             }
@@ -270,12 +330,18 @@ $('button[value="submit-payment"]').on('click', function () {
 });
 
 function showValidation() {
-    console.log('entered validation //');
-    console.log(selectedMethod);
-    console.log(componentArr[selectedMethod]);
-    console.log(componentArr[selectedMethod].isValid);
     if(componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-        console.log('inside if statement //');
+        if(selectedMethod === 'scheme') {
+            for(var [key, value] of Object.entries(componentArr)) {
+                var method = key;
+                if(method.includes("scheme")) {
+                    if(componentArr[method].isValid)
+                        return true;
+                    else
+                        componentArr[method].showValidation();
+                }
+            }
+        }
         componentArr[selectedMethod].showValidation();
         return false;
     }
@@ -324,7 +390,15 @@ function validateComponents() {
     var stateData;
     if(componentArr[selectedMethod] && componentArr[selectedMethod].stateData)
         stateData = componentArr[selectedMethod].stateData;
-    else
+    else if(selectedMethod === 'scheme') {
+        for(var [key, value] of Object.entries(componentArr)) {
+            var method = key;
+            if(method.includes("scheme")) {
+                if(componentArr[method].stateData)
+                    stateData = componentArr[method].stateData;
+            }
+        }
+    } else
         stateData = {paymentMethod: {type: selectedMethod}};
 
     if(selectedMethod === "ach") {
