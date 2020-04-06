@@ -1,121 +1,84 @@
 /**
-* Send request to adyen to get payment methods based on country code
-* A signature is calculated based on the configured HMAC code
+* Send request to adyen to get payment methods based on country code and currency
 *
 
 * @input Basket : dw.order.Basket
-* @input CountryCode : String
-* @output PaymentMethods : Object
+* @input countryCode : String
+* @output customer : Customer
 */
-
-importPackage(dw.system);
-importPackage(dw.order);
-importPackage(dw.customer);
 
 //script include
 var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
-var Logger = require('dw/system/Logger');
+var Logger = require("dw/system/Logger");
 
-function execute(args) {
-    var result = getMethods(args.Basket, args.Customer,args.CountryCode);
-    if (result == PIPELET_ERROR) {
-        return PIPELET_ERROR;
-    }
-    return PIPELET_NEXT;
-}
-
-function getMethods (basket : dw.order.Basket, customer: dw.order.Customer ,CountryCode) {
+function getMethods (basket, customer, countryCode) {
     try {
-        var requestObject = {};
-
-        var callResult = null,
-            resultObject = null,
-            service = AdyenHelper.getService(AdyenHelper.SERVICE.CHECKOUTPAYMENTMETHODS);
-
-        if (service == null) {
-            return PIPELET_ERROR;
+        var service = AdyenHelper.getService(AdyenHelper.SERVICE.CHECKOUTPAYMENTMETHODS);
+        if (!service) {
+            throw new Error("Could not do /paymentMethods call")
         }
-
-        var merchantAccount = Site.getCurrent().getCustomPreferenceValue("Adyen_merchantCode");
 
         var paymentAmount;
         var currencyCode;
 
-        //paymentMethods call through checkout
+        //paymentMethods call from checkout
         if(basket){
             paymentAmount = basket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : 1000;
             currencyCode = basket.currencyCode;
         }
-        //paymentMethods call through My Account TODO BAS get currency
+        //paymentMethods call from My Account
         else {
             paymentAmount = 1000;
-            currencyCode = "EUR";
+            currencyCode = session.currency.currencyCode;
         }
 
-        requestObject['merchantAccount'] = merchantAccount;
-        requestObject['amount'] = {
-            currency: currencyCode,
-            value: paymentAmount
+        var paymentMethodsRequest = {
+            merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+            amount: {
+                currency: currencyCode,
+                value: paymentAmount
+            }
         };
 
-        if (CountryCode) {
-        	requestObject['countryCode'] = CountryCode;
+        if (countryCode) {
+            paymentMethodsRequest.countryCode = countryCode;
         }
 
         //check logged in shopper for oneClick
-        var profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null;
-        var customerID = '';
-        if (!empty(profile) && !empty(profile.getCustomerNo())) {
+        var profile = customer && customer.registered && customer.getProfile() ? customer.getProfile() : null;
+        var customerID = null;
+        if (profile && profile.getCustomerNo()) {
             customerID = profile.getCustomerNo();
         }
-        if(customerID.length > 0) {
-            requestObject['shopperReference'] = customerID;
+        if(customerID) {
+            paymentMethodsRequest.shopperReference = customerID;
         }
 
         var xapikey = AdyenHelper.getAdyenApiKey();
-        service.addHeader('Content-type', 'application/json');
-        service.addHeader('charset', 'UTF-8');
-        service.addHeader('X-API-key', xapikey);
-        callResult = service.call(JSON.stringify(requestObject));
+        service.addHeader("Content-type", "application/json");
+        service.addHeader("charset", "UTF-8");
+        service.addHeader("X-API-key", xapikey);
 
-
-        if (callResult.isOk() == false) {
-            Logger.error(' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
-            return PIPELET_ERROR;
+        var callResult = service.call(JSON.stringify(paymentMethodsRequest));
+        if (!callResult.isOk()) {
+            throw new Error("/paymentMethods call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
         }
 
-        resultObject = ('object' in callResult ? callResult.object : null);
-
-        var resultObj = {
-            statusCode: resultObject.getStatusCode(),
-            statusMessage: resultObject.getStatusMessage(),
-            text: resultObject.getText(),
-            errorText: resultObject.getErrorText(),
-            timeout: resultObject.getTimeout()
+        var resultObject = callResult.object;
+        if (!resultObject || !resultObject.getText()) {
+            throw new Error("No correct response from /paymentMethods call")
         }
 
-        var resultText = ('text' in resultObj && !empty(resultObj.text) ? resultObj.text : null);
-        if (resultText == null) {
-            return PIPELET_ERROR;
-        }
+        return JSON.parse(resultObject.getText());
 
-        try {
-            return JSON.parse(resultText);
-        }
-        catch (ex) {
-            Logger.error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
-            return PIPELET_ERROR;
-        }
     } catch (e) {
-        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
-        return PIPELET_ERROR;
+        Logger.getLogger("Adyen").fatal("Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber);
+        return;
     }
 
-    return JSON.parse(resultObject.text);
 }
 
 
 module.exports = {
-    'execute': execute,
-    'getMethods': getMethods
+    "getMethods": getMethods
 }

@@ -7,7 +7,6 @@ var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-var Transaction = require('dw/system/Transaction');
 var adyenCheckout = require("*/cartridge/scripts/adyenCheckout.ds");
 
 function zeroAuthPayment(customer, paymentInstrument) {
@@ -22,7 +21,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
             "value": 0
         };
 
-        zeroAuthRequest["paymentMethod"].storeDetails = true;
+        zeroAuthRequest.storePaymentMethod = true;
         zeroAuthRequest.enableOneClick = true;
         zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
         zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();

@@ -27,21 +27,20 @@ var isValid = false;
 var storeDetails;
 var componentState;
 var MASKED_CC_PREFIX = "************";
+var card;
 
 (function () {
-    var card = checkout.create("card");
-    card.mount(cardNode);
+    card = checkout.create("card").mount(cardNode);
 })();
 
 
 $('button[value="add-new-payment"]').on('click', function (e) {
-    //TODO BAS validation
-    if(componentState.isValid){
+    if(isValid){
         document.querySelector("#adyenStateData").value = JSON.stringify(componentState.data);
         return true;
     }
     else {
-        componentState.showValidation;
+        card.showValidation();
         return false;
     }
 });
