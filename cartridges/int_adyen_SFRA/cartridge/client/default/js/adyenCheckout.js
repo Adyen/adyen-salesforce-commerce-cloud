@@ -1,11 +1,8 @@
+
 var isValid = false;
 var storeDetails;
-var cardNode = document.getElementById('card');
 var oneClickCard = [];
 var card;
-var idealComponent;
-var afterpayComponent;
-var klarnaComponent;
 var maskedCardNumber;
 var MASKED_CC_PREFIX = '************';
 var oneClickValid = false;
@@ -32,14 +29,17 @@ checkoutConfiguration.paymentMethodsConfiguration = {
                 $("#cardNumber").val(maskedCardNumber);
             }
         },
-        onChange: function (state) {
+        onChange: function (state, component) {
             storeDetails = state.data.storePaymentMethod;
             isValid = state.isValid;
             var type = state.data.paymentMethod.type;
-            console.log(state);
-            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-            componentArr[type].isValid = isValid;
-            componentArr[type].stateData = state.data;
+            var componentName = component._node.id.replace('component_', '');
+            componentName = componentName.replace('storedPaymentMethods', '');
+            if(componentName === selectedMethod) {
+                $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+                componentArr[selectedMethod].isValid = isValid;
+                componentArr[selectedMethod].stateData = state.data;
+            }
         }
     },
     boletobancario: {
@@ -63,11 +63,9 @@ if(window.installments) {
     catch (e) {}
 }
 
-// renderOneClickComponents();
-renderGenericComponent();
+// renderGenericComponent();
 
 function displaySelectedMethod(type) {
-    console.log(type);
     selectedMethod = type;
     resetPaymentMethod();
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
@@ -86,84 +84,40 @@ function renderGenericComponent() {
         document.querySelector("#paymentMethodsList").innerHTML = "";
         var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-
-        // if(data.AdyenPaymentMethods.storedPaymentMethods) {
-        //     var li = document.createElement('li');
-        //     li.classList.add('paymentMethod');
-        //     var liContents = `
-        //                       <input name="brandCode" type="radio" value="${paymentMethod.type}${paymentMethod.id}" id="rb_storedPaymentMethods">
-        //                       <img class="paymentMethod_img" src="${data.ImagePath}scheme.png" ></img>
-        //                       <label id="lb_storedPaymentMethods" for="rb_storedPaymentMethods">Stored Payment Methods</label>
-        //                      `;
-        //     li.innerHTML = liContents;
-        //     var storedPaymentMethodscontainer = document.createElement("div");
-        //
-        //     for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
-        //         var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
-        //
-        //         var container = document.createElement("div");
-        //         var label = `${paymentMethod.name} ${paymentMethod.lastFour}`;
-        //         container.append(label);
-        //         try {
-        //             var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
-        //             node.mount(container);
-        //             var id = `storedPaymentMethods${paymentMethod.id}`;
-        //             componentArr[id] = node;
-        //         }
-        //         catch (e) {console.log(e)}
-        //
-        //         storedPaymentMethodscontainer.append(container);
-        //     }
-        //     storedPaymentMethodscontainer.classList.add("additionalFields");
-        //     storedPaymentMethodscontainer.setAttribute("id", `component_storedPaymentMethods`);
-        //     storedPaymentMethodscontainer.setAttribute("style", "display:none");
-        //     li.append(storedPaymentMethodscontainer);
-        //     paymentMethodsUI.append(li);
-        //     var input = document.querySelector(`#rb_storedPaymentMethods`);
-        //
-        //     input.onchange = (event) => {
-        //         displaySelectedMethod(event.target.value);
-        //     };
-        // }
-
-
-
-        for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
-            var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
-            var li = document.createElement('li');
-            li.classList.add('paymentMethod');
-            var liContents = `
+        if(data.AdyenPaymentMethods.storedPaymentMethods) {
+            for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
+                var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
+                var li = document.createElement('li');
+                li.classList.add('paymentMethod');
+                var liContents = `
                               <input name="brandCode" type="radio" value="storedCard${paymentMethod.id}" id="rb_storedCard${paymentMethod.id}">
                               <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.brand}.png" ></img>
                               <label id="lb_storedCard${paymentMethod.id}" for="rb_storedCard${paymentMethod.id}">${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}</label>
                              `;
-            li.innerHTML = liContents;
+                li.innerHTML = liContents;
 
-            var container = document.createElement("div");
+                var container = document.createElement("div");
                 try {
-                    var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
-                    node.mount(container);
+                    var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]).mount(container);
                     componentArr[`storedCard${paymentMethod.id}`] = node;
+                } catch (e) {
+                    // console.error(e)
                 }
-                catch (e) {console.log(e)}
 
-            container.classList.add("additionalFields");
-            container.setAttribute("id", `component_storedCard${paymentMethod.id}`);
-            container.setAttribute("style", "display:none");
+                container.classList.add("additionalFields");
+                container.setAttribute("id", `component_storedCard${paymentMethod.id}`);
+                container.setAttribute("style", "display:none");
 
-            li.append(container);
+                li.append(container);
 
-            paymentMethodsUI.append(li);
-            var input = document.querySelector(`#rb_storedCard${paymentMethod.id}`);
+                paymentMethodsUI.append(li);
+                var input = document.querySelector(`#rb_storedCard${paymentMethod.id}`);
 
-            input.onchange = (event) => {
-                displaySelectedMethod(event.target.value);
-            };
+                input.onchange = (event) => {
+                    displaySelectedMethod(event.target.value);
+                };
+            }
         }
-
-
-
-
 
 
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
@@ -186,32 +140,12 @@ function renderGenericComponent() {
                 container.append(template.content);
             } else {
                  try {
-                     var node = checkout.create(paymentMethod.type);
-                     node.mount(container);
+                     var node = checkout.create(paymentMethod.type).mount(container);
                      componentArr[paymentMethod.type] = node;
-
-                     // if(paymentMethod.type === "scheme" && data.AdyenPaymentMethods.storedPaymentMethods) {
-                     //     var storedPaymentMethodscontainer = document.createElement("div");
-                     //
-                     //     for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
-                     //         var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
-                     //
-                     //         var containerLocal = document.createElement("div");
-                     //         var label = `${paymentMethod.name} ${paymentMethod.lastFour}`;
-                     //         containerLocal.append(label);
-                     //         try {
-                     //             var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]);
-                     //             node.mount(containerLocal);
-                     //             componentArr[`${paymentMethod.type}${paymentMethod.id}`] = node;
-                     //         }
-                     //         catch (e) {console.log(e)}
-                     //
-                     //         container.append(containerLocal);
-                     //     }
-                     // }
-
                  }
-                 catch (e) {console.log(e)}
+                 catch (e) {
+                     // console.error(e)
+                 }
             }
 
             container.classList.add("additionalFields");
@@ -233,28 +167,6 @@ function renderGenericComponent() {
         displaySelectedMethod(firstPaymentMethod.value);
     });
 }
-
-function renderOneClickComponents(storedPaymentMethods, checkout) {
-    // for (var i = 0; i < storedPaymentMethods.length; i++) {
-    //     var storedPaymentMethod = storedPaymentMethods[i];
-    //     var div = document.createElement('div');
-    //
-    //     var container = document.createElement("div");
-    //     try {
-    //         var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[0]);
-    //         node.mount(container);
-    //         // componentArr[paymentMethod.type] = node;
-    //     }
-    //     catch (e) {console.error(e)}
-    //
-    //     // container.classList.add("additionalFields");
-    //     // container.setAttribute("id", `component_visa`);
-    //     // container.setAttribute("style", "display:none");
-    //
-    //     div.append(container);
-    // }
-    // return div;
-};
 
 // $('.payment-summary .edit-button').on('click', function (e) {
 //     jQuery.each(oneClickCard, function (i) {
@@ -331,17 +243,6 @@ $('button[value="submit-payment"]').on('click', function () {
 
 function showValidation() {
     if(componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-        if(selectedMethod === 'scheme') {
-            for(var [key, value] of Object.entries(componentArr)) {
-                var method = key;
-                if(method.includes("scheme")) {
-                    if(componentArr[method].isValid)
-                        return true;
-                    else
-                        componentArr[method].showValidation();
-                }
-            }
-        }
         componentArr[selectedMethod].showValidation();
         return false;
     }
@@ -364,7 +265,6 @@ function showValidation() {
         }
         return true;
     }
-    console.log('after false is returned');
     return true;
 }
 
@@ -388,17 +288,10 @@ function validateComponents() {
         document.querySelector("#dateOfBirthInput").onchange = function() { validateCustomInputField(this)};
 
     var stateData;
-    if(componentArr[selectedMethod] && componentArr[selectedMethod].stateData)
+    if(componentArr[selectedMethod] && componentArr[selectedMethod].stateData) {
         stateData = componentArr[selectedMethod].stateData;
-    else if(selectedMethod === 'scheme') {
-        for(var [key, value] of Object.entries(componentArr)) {
-            var method = key;
-            if(method.includes("scheme")) {
-                if(componentArr[method].stateData)
-                    stateData = componentArr[method].stateData;
-            }
-        }
-    } else
+    }
+     else
         stateData = {paymentMethod: {type: selectedMethod}};
 
     if(selectedMethod === "ach") {
@@ -420,7 +313,7 @@ function validateComponents() {
 function getFallback(paymentMethod) {
     var ach =  `<div id="component_ach">
                     <span class="adyen-checkout__label">Bank Account Owner Name</span>
-                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">   
+                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
                     <span class="adyen-checkout__label">Bank Account Number</span>
                     <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17" >
                     <span class="adyen-checkout__label">Routing Number</span>
@@ -724,4 +617,3 @@ module.exports = {
         renderGenericComponent: renderGenericComponent
     }
 };
-

@@ -4,6 +4,8 @@ var summaryHelpers = require('base/checkout/summary');
 var billing = require('./billing');
 var adyenCheckout = require('../adyenCheckout');
 
+// console.log($.fn.checkout);
+
 module.exports = {
     updateCheckoutView: function () {
         $('body').on('checkout:updateCheckoutView', function (e, data) {
@@ -17,7 +19,10 @@ module.exports = {
                     data.options
                 );
             });
-            adyenCheckout.methods.renderGenericComponent();
+            console.log('updating checkout view');
+            var currentStage = location.search.substring(location.search.indexOf("=")+1);
+            if(currentStage !== "payment")
+                adyenCheckout.methods.renderGenericComponent();
             billingHelpers.methods.updateBillingInformation(
                 data.order,
                 data.customer,
