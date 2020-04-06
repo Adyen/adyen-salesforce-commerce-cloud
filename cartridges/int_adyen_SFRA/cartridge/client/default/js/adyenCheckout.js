@@ -581,8 +581,8 @@ function getFallback(paymentMethod) {
 // }
 //
 // $('button[value="add-new-payment"]').on('click', function (e) {
-// //     setPaymentData();
-// // });
+//     setPaymentData();
+// });
 //
 // function setPaymentData() {
 //     $('#adyenEncryptedCardNumber').val(card.state.data.encryptedCardNumber);

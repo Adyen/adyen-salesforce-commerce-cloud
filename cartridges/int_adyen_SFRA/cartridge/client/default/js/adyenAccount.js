@@ -1,7 +1,7 @@
 var checkoutConfiguration = window.Configuration;
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
-        enableStoreDetails: showStoreDetails,
+        enableStoreDetails: false,
         hasHolderName: true,
         onBrand: function (brandObject) {
             $('#cardType').val(brandObject.brand);

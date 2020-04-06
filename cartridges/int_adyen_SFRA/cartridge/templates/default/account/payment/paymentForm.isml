@@ -8,7 +8,6 @@
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">
-            var showStoreDetails = false;
             window.Configuration = {
                 locale: '${request.locale}',
                 originKey: '${pdict.adyen.originKey}',
@@ -21,7 +20,6 @@
                 method="POST"
                 name="payment-form" ${pdict.paymentForm.attributes}>
 
-            <input type="hidden" id="currentLocale" value="${request.locale}"/>
             <iscontent type="text/html" encoding="off"/>
             <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>
             <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>

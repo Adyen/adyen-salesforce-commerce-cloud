@@ -3,7 +3,6 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-var Logger = require('dw/system/Logger');
 
 var server = require('server');
 server.extend(module.superModule);
@@ -12,6 +11,7 @@ server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfPr
         if (req.currentCustomer.raw.isAuthenticated()) {
             require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
         }
+
         var protocol = req.https ? "https" : "http";
         var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
         var environment = AdyenHelper.getAdyenMode().toLowerCase();
@@ -23,6 +23,7 @@ server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfPr
             environment: environment,
             installments: installments
         };
+
         res.setViewData(viewData);
         next();
     });
