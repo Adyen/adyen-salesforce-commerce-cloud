@@ -24,7 +24,7 @@ function updateSavedCards(args) {
 
         if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
             var oneClickPaymentMethods = getOneClickPaymentMethods(customer);
-            //To make it compatible with upgrade from older version, first delete payment instruments with METHOD_CREDIT_CARD
+            //To make it compatible with upgrade from older versions (<= 19.2.2), first delete payment instruments with METHOD_CREDIT_CARD
             var savedCreditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
             var savedCreditCardsComponent = customer.getProfile().getWallet().getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
 

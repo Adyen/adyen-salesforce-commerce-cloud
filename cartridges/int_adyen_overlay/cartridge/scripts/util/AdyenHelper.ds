@@ -68,7 +68,7 @@ var __AdyenHelper: Object = {
         return adyenService;
     },
 
-    getAdyenMode: function (): String {
+    getAdyenEnvironment: function (): String {
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode').value;
@@ -94,7 +94,7 @@ var __AdyenHelper: Object = {
 
     getAdyenUrl: function (): String {
         var returnValue: String = "";
-        switch (__AdyenHelper.getAdyenMode()) {
+        switch (__AdyenHelper.getAdyenEnvironment()) {
             case __AdyenHelper.MODE.TEST:
                 returnValue = __AdyenHelper.ADYEN_TEST_URL;
                 break;
@@ -189,7 +189,7 @@ var __AdyenHelper: Object = {
 
     getLoadingContext: function (): String {
         var returnValue: String = "";
-        switch (__AdyenHelper.getAdyenMode()) {
+        switch (__AdyenHelper.getAdyenEnvironment()) {
             case __AdyenHelper.MODE.TEST:
                 returnValue = __AdyenHelper.LOADING_CONTEXT_TEST;
                 break;

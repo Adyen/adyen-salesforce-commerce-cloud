@@ -1,3 +1,9 @@
+var cardNode = document.getElementById("card");
+var maskedCardNumber;
+var isValid = false;
+var storeDetails;
+var componentState;
+var MASKED_CC_PREFIX = "************";
 var checkoutConfiguration = window.Configuration;
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
@@ -21,18 +27,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
 }
 
 var checkout = new AdyenCheckout(checkoutConfiguration);
-var cardNode = document.getElementById("card");
-var maskedCardNumber;
-var isValid = false;
-var storeDetails;
-var componentState;
-var MASKED_CC_PREFIX = "************";
-var card;
-
-(function () {
-    card = checkout.create("card").mount(cardNode);
-})();
-
+var card = checkout.create("card").mount(cardNode);
 
 $('button[value="add-new-payment"]').on('click', function (e) {
     if(isValid){

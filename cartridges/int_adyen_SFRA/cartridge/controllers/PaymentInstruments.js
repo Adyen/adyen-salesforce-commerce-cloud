@@ -20,7 +20,7 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
 server.prepend('AddPayment',  csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
     var protocol = req.https ? "https" : "http";
     var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
-    var environment = AdyenHelper.getAdyenMode().toLowerCase();
+    var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     var viewData = res.getViewData();
     viewData.adyen = {
         originKey: originKey,
