@@ -68,7 +68,7 @@ var __AdyenHelper: Object = {
         return adyenService;
     },
 
-    getAdyenMode: function (): String {
+    getAdyenEnvironment: function (): String {
         var returnValue: String = "";
         if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode'))) {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_Mode').value;
@@ -94,7 +94,7 @@ var __AdyenHelper: Object = {
 
     getAdyenUrl: function (): String {
         var returnValue: String = "";
-        switch (__AdyenHelper.getAdyenMode()) {
+        switch (__AdyenHelper.getAdyenEnvironment()) {
             case __AdyenHelper.MODE.TEST:
                 returnValue = __AdyenHelper.ADYEN_TEST_URL;
                 break;
@@ -189,7 +189,7 @@ var __AdyenHelper: Object = {
 
     getLoadingContext: function (): String {
         var returnValue: String = "";
-        switch (__AdyenHelper.getAdyenMode()) {
+        switch (__AdyenHelper.getAdyenEnvironment()) {
             case __AdyenHelper.MODE.TEST:
                 returnValue = __AdyenHelper.LOADING_CONTEXT_TEST;
                 break;
@@ -295,17 +295,17 @@ var __AdyenHelper: Object = {
     },
 
     // Get saved card token of customer saved card based on matched cardUUID
-    getCardToken: function (cardUUID, CustomerObj) {
-        var token = '';
-        if (!empty(CustomerObj) && CustomerObj.authenticated && !empty(cardUUID)) {
-            var wallet = CustomerObj.getProfile().getWallet();
-            var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+    getCardToken: function (cardUUID, customer) {
+        var token = "";
+        if (customer && customer.authenticated && cardUUID) {
+            var wallet = customer.getProfile().getWallet();
+            var paymentInstruments = wallet.getPaymentInstruments();
             var creditCardInstrument;
             var instrumentsIter = paymentInstruments.iterator();
             while (instrumentsIter.hasNext()) {
                 creditCardInstrument = instrumentsIter.next();
                 //find token ID exists for matching payment card
-                if (creditCardInstrument.UUID.equals(cardUUID) && !empty(creditCardInstrument.getCreditCardToken())) {
+                if (creditCardInstrument.UUID.equals(cardUUID) && creditCardInstrument.getCreditCardToken()) {
                     token = creditCardInstrument.getCreditCardToken();
                     break;
                 }
@@ -460,76 +460,6 @@ var __AdyenHelper: Object = {
         jsonObject.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
         jsonObject.additionalData = {};
         return jsonObject;
-    },
-
-    createRecurringPaymentAccount: function (params) {
-        var tokenID = '',
-            pspReference = '';
-        var formType = 'account';
-
-        var jsonObject = __AdyenHelper.createAdyenRequestObject(null, true);
-
-        if(__AdyenHelper.getAdyen3DS2Enabled()){
-            jsonObject = __AdyenHelper.add3DS2Data(jsonObject, formType);
-        }
-
-        //Create credit card and enable OneClick
-        var paymentMethodObject = __AdyenHelper.createCardObjectSF(false, formType);
-        jsonObject['paymentMethod'] = paymentMethodObject;
-        jsonObject['paymentMethod'].storeDetails = true;
-        jsonObject['enableOneClick'] = true;
-
-
-        var shopperObject = __AdyenHelper.createShopperObject({
-            Customer: params.Customer
-        });
-
-        jsonObject['amount'] = {
-            'currency': session.currency.currencyCode,
-            'value': 0
-        };
-
-        var requestObject = __AdyenHelper.extend(jsonObject, shopperObject);
-
-        //Send payment request to /payments endpoints
-        var adyenCheckout = require('*/cartridge/scripts/adyenCheckout.ds');
-        var createRecurringPaymentResult = adyenCheckout.doPaymentCall({}, requestObject);
-
-        //Check the result of the initial recurring payment
-        if (createRecurringPaymentResult === PIPELET_ERROR || createRecurringPaymentResult.decision == 'ERROR') {
-            return {
-                error: true
-            };
-        }
-
-        if (createRecurringPaymentResult.decision == 'ACCEPT' && ('pspReference' in createRecurringPaymentResult) && !empty(createRecurringPaymentResult.pspReference)) {
-            pspReference = createRecurringPaymentResult.pspReference;
-            var GetRecurringDetailsList = require('*/cartridge/scripts/adyenGetRecurringDetailsList.ds');
-            var getRecurringDetailsListResult = GetRecurringDetailsList.getRecurringDetailsList({
-                Customer: params.Customer
-            });
-
-            if (getRecurringDetailsListResult === PIPELET_ERROR) {
-                return {
-                    error: true
-                };
-            }
-
-            var paymentsMap = getRecurringDetailsListResult.RecurringPayments;
-            if (paymentsMap != null && !paymentsMap.isEmpty() && paymentsMap.containsKey(pspReference)) {
-                var details = !empty(paymentsMap.get(pspReference)) ? paymentsMap.get(pspReference) : null;
-                tokenID = !empty(details) && ('recurringDetailReference' in details) && !empty(details.recurringDetailReference) ? details.recurringDetailReference : '';
-            }
-
-            return {
-                ok: true,
-                PspReference: pspReference,
-                PaymentsMap: paymentsMap,
-                TokenID: tokenID
-            };
-        }
-
-        return {error: true};
     },
 
     add3DS2Data: function(jsonObject){

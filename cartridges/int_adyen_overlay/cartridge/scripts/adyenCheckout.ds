@@ -58,8 +58,8 @@ function createPaymentRequest(args) {
 
         var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount); //args.Amount * 100;
         paymentRequest.amount = {
-            'currency': paymentInstrument.paymentTransaction.amount.currencyCode,
-            'value': myAmount
+            "currency": paymentInstrument.paymentTransaction.amount.currencyCode,
+            "value": myAmount
         };
 
         var paymentMethodType = paymentRequest.paymentMethod.type;
@@ -115,7 +115,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
 
         var resultObject = callResult.object;
         if (!resultObject || !resultObject.getText()) {
-            throw new Error("No correct response from " + serviceType + ", result: " + JSON.stringify(resultObject))
+            throw new Error("No correct response from " + AdyenHelper.SERVICE.PAYMENT + ", result: " + JSON.stringify(resultObject))
         }
 
         // build the response object
@@ -125,6 +125,11 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
         } catch (ex) {
             Logger.getLogger("Adyen").error("error parsing response object " + ex.message);
             return { error: true };
+        }
+
+        //There is no order for zero auth transactions. Return response directly to PaymentInstruments-SavePayment
+        if(!order){
+            return responseObject;
         }
 
         paymentResponse.fullResponse = responseObject;

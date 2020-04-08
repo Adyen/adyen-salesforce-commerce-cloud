@@ -47,17 +47,8 @@
     <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false"
            checked="false"/>
 
-    <field formid="adyenEncryptedCardNumber" label="adyenEncryptedCardNumber" type="string" mandatory="false"
-           binding="adyenEncryptedCardNumber"/>
-    <field formid="adyenEncryptedExpiryMonth" label="adyenEncryptedExpiryMonth" type="string" mandatory="false"
-           binding="adyenEncryptedExpiryMonth"/>
-    <field formid="adyenEncryptedExpiryYear" label="adyenEncryptedExpiryYear" type="string" mandatory="false"
-           binding="adyenEncryptedExpiryYear"/>
-    <field formid="adyenEncryptedSecurityCode" label="adyenEncryptedSecurityCode" type="string" mandatory="false"
-           binding="adyenEncryptedSecurityCode"/>
-
-    <field formid="browserInfo" label="browserInfo" type="string" mandatory="false"
-           binding="browserInfo"/>
+    <field formid="adyenStateData" label="adyenStateData" type="string" mandatory="false"
+           binding="adyenStateData"/>
 
     <!--  field  for  credit  card  recurring  payments  /  tokenization  -->
     <field formid="selectedCardID" mandatory="false" type="string"/>
