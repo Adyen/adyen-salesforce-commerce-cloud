@@ -9,7 +9,6 @@ var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
 var checkoutConfiguration = window.Configuration;
-// var checkout;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
