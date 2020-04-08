@@ -102,7 +102,7 @@ server.get('Adyen3DS2', server.middleware.https, function (req, res, next) {
 
     try {
         var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
-        var environment = AdyenHelper.getAdyenMode().toLowerCase();
+        var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
         var resultCode = req.querystring.resultCode;
         var token3ds2 = req.querystring.token3ds2;
         res.render('/threeds2/adyen3ds2', {

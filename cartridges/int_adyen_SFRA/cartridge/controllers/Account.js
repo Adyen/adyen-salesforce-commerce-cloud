@@ -6,13 +6,13 @@ server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 
-server.append(
+server.prepend(
     'Show',
     server.middleware.https,
     userLoggedIn.validateLoggedIn,
     consentTracking.consent,
     function (req, res, next) {
-        require('*/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
+        require("*/cartridge/scripts/updateSavedCards").updateSavedCards({CurrentCustomer: req.currentCustomer.raw});
         next();
     }
 );
