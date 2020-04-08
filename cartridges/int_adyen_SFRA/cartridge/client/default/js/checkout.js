@@ -12,8 +12,7 @@ $(document).ready(function () { // eslint-disable-line
             $('.error-message').show();
             $('.error-message-text').text(decodeURIComponent(error[1]));
         }
-        console.log('document ready');
-        // adyenCheckout.methods.renderGenericComponent();
+        adyenCheckout.methods.renderGenericComponent();
     }
 
     processInclude(require('base/checkout/checkout'));

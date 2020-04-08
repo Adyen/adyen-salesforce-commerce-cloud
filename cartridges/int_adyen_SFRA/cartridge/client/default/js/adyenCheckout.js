@@ -100,9 +100,7 @@ function renderGenericComponent() {
                 try {
                     var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]).mount(container);
                     componentArr[`storedCard${paymentMethod.id}`] = node;
-                } catch (e) {
-                    // console.error(e)
-                }
+                } catch (e) {}
 
                 container.classList.add("additionalFields");
                 container.setAttribute("id", `component_storedCard${paymentMethod.id}`);
@@ -143,9 +141,7 @@ function renderGenericComponent() {
                      var node = checkout.create(paymentMethod.type).mount(container);
                      componentArr[paymentMethod.type] = node;
                  }
-                 catch (e) {
-                     // console.error(e)
-                 }
+                 catch (e) {}
             }
 
             container.classList.add("additionalFields");
