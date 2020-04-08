@@ -9,6 +9,7 @@ var oneClickValid = false;
 var selectedMethod;
 var componentArr = [];
 var checkoutConfiguration = window.Configuration;
+// var checkout;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
@@ -33,6 +34,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
             storeDetails = state.data.storePaymentMethod;
             isValid = state.isValid;
             var type = state.data.paymentMethod.type;
+            // Todo: fix onChange issues so we can get rid of componentName
             var componentName = component._node.id.replace('component_', '');
             componentName = componentName.replace('storedPaymentMethods', '');
             if(componentName === selectedMethod) {
@@ -63,8 +65,6 @@ if(window.installments) {
     catch (e) {}
 }
 
-// renderGenericComponent();
-
 function displaySelectedMethod(type) {
     selectedMethod = type;
     resetPaymentMethod();
@@ -80,88 +80,74 @@ function renderGenericComponent() {
         if(data.countryCode) {
             checkoutConfiguration.countryCode = data.countryCode;
         }
-        var checkout = new AdyenCheckout(checkoutConfiguration);
         document.querySelector("#paymentMethodsList").innerHTML = "";
-        var paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
         if(data.AdyenPaymentMethods.storedPaymentMethods) {
-            for (var i = 0; i < data.AdyenPaymentMethods.storedPaymentMethods.length; i++) {
-                var paymentMethod = data.AdyenPaymentMethods.storedPaymentMethods[i];
-                var li = document.createElement('li');
-                li.classList.add('paymentMethod');
-                var liContents = `
-                              <input name="brandCode" type="radio" value="storedCard${paymentMethod.id}" id="rb_storedCard${paymentMethod.id}">
-                              <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.brand}.png" ></img>
-                              <label id="lb_storedCard${paymentMethod.id}" for="rb_storedCard${paymentMethod.id}">${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}</label>
-                             `;
-                li.innerHTML = liContents;
-
-                var container = document.createElement("div");
-                try {
-                    var node = checkout.create("card", checkout.paymentMethodsResponse.storedPaymentMethods[i]).mount(container);
-                    componentArr[`storedCard${paymentMethod.id}`] = node;
-                } catch (e) {}
-
-                container.classList.add("additionalFields");
-                container.setAttribute("id", `component_storedCard${paymentMethod.id}`);
-                container.setAttribute("style", "display:none");
-
-                li.append(container);
-
-                paymentMethodsUI.append(li);
-                var input = document.querySelector(`#rb_storedCard${paymentMethod.id}`);
-
-                input.onchange = (event) => {
-                    displaySelectedMethod(event.target.value);
-                };
+            for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
+                var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
+                if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
+                    renderPaymentMethod(paymentMethod,true, data.ImagePath);
             }
         }
 
-
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-            var li = document.createElement('li');
-            li.classList.add('paymentMethod');
-            var liContents = `
-                              <input name="brandCode" type="radio" value="${paymentMethod.type}" id="rb_${paymentMethod.type}">
-                              <img class="paymentMethod_img" src="${data.ImagePath}${paymentMethod.type}.png" ></img>
-                              <label id="lb_${paymentMethod.type}" for="rb_${paymentMethod.type}">${paymentMethod.name}</label>
-                              <p>${data.AdyenDescriptions[i].description}</p>
-                             `;
-            li.innerHTML = liContents;
-
-            var fallback = getFallback(paymentMethod.type);
-            var container = document.createElement("div");
-            if(fallback) {
-                var template = document.createElement("template");
-                template.innerHTML = fallback;
-                container.append(template.content);
-            } else {
-                 try {
-                     var node = checkout.create(paymentMethod.type).mount(container);
-                     componentArr[paymentMethod.type] = node;
-                 }
-                 catch (e) {}
-            }
-
-            container.classList.add("additionalFields");
-            container.setAttribute("id", `component_${paymentMethod.type}`);
-            container.setAttribute("style", "display:none");
-
-            li.append(container);
-
-            paymentMethodsUI.append(li);
-            var input = document.querySelector(`#rb_${paymentMethod.type}`);
-
-            input.onchange = (event) => {
-                displaySelectedMethod(event.target.value);
-            };
+            renderPaymentMethod(paymentMethod,false, data.ImagePath, data.AdyenDescriptions[i].description);
         }
 
         var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
         firstPaymentMethod.checked = true;
         displaySelectedMethod(firstPaymentMethod.value);
     });
+}
+
+function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, description = null) {
+    var checkout = new AdyenCheckout(checkoutConfiguration);
+    var paymentMethodsUI = document.querySelector('#paymentMethodsList');
+    var li = document.createElement('li');
+    var paymentMethodID = storedPaymentMethodBool? `storedCard${paymentMethod.id}` : paymentMethod.type;
+    var imagePath = storedPaymentMethodBool? `${path}${paymentMethod.brand}.png` : `${path}${paymentMethod.type}.png`;
+    var label = storedPaymentMethodBool? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}` : `${paymentMethod.name}`;
+    var liContents = `
+                              <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
+                              <img class="paymentMethod_img" src="${imagePath}" ></img>
+                              <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}">${label}</label>
+                             `;
+    if(description)
+        liContents += `<p>${description}</p>`;
+    var container = document.createElement("div");
+
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+
+    try {
+        if(storedPaymentMethodBool) {
+            var node = checkout.create("card", paymentMethod).mount(container);
+        } else {
+            var fallback = getFallback(paymentMethod.type);
+            if(fallback) {
+                var template = document.createElement("template");
+                template.innerHTML = fallback;
+                container.append(template.content);
+            } else {
+                var node = checkout.create(paymentMethod.type).mount(container);
+            }
+        }
+        componentArr[paymentMethodID] = node;
+    } catch (e) {}
+
+    container.classList.add("additionalFields");
+    container.setAttribute("id", `component_${paymentMethodID}`);
+    container.setAttribute("style", "display:none");
+
+    li.append(container);
+
+    paymentMethodsUI.append(li);
+    var input = document.querySelector(`#rb_${paymentMethodID}`);
+
+    input.onchange = (event) => {
+        displaySelectedMethod(event.target.value);
+    };
 }
 
 // $('.payment-summary .edit-button').on('click', function (e) {
