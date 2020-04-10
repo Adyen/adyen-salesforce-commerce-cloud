@@ -170,10 +170,13 @@ function getPaymentMethods(cart, customer) {
 
     var connectedTerminals = {};
     if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
-        var connectedTerminalsResponse = adyenTerminalApi.getTerminals().response;
-        if(connectedTerminalsResponse){
-            connectedTerminals = JSON.parse(connectedTerminalsResponse);
-        }
+        try {
+            var connectedTerminalsResponse = adyenTerminalApi.getTerminals().response;
+            if(connectedTerminalsResponse){
+                connectedTerminals = JSON.parse(connectedTerminalsResponse);
+            }
+        } catch (e) {}
+
     }
 
     return {
