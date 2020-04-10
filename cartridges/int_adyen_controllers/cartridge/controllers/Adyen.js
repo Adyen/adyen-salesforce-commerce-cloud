@@ -1,6 +1,5 @@
 'use strict';
 
-/* API Includes */
 var Resource = require('dw/web/Resource');
 var URLUtils = require('dw/web/URLUtils');
 var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
@@ -31,7 +30,7 @@ const EXTERNAL_PLATFORM_VERSION = "SiteGenesis";
  */
 function notify() {
     var	checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
-	
+
     var status = checkAuth.check(request);
     if (!status) {
     	app.getView().render('adyen/error');
@@ -150,7 +149,7 @@ function orderConfirm(orderNo){
 /**
  * Make a request to Adyen to get payment methods based on countryCode. Called from COBilling-Start
  */
-function getPaymentMethods(cart) {
+function getPaymentMethods(cart, customer) {
     var Locale = require('dw/util/Locale');
     var countryCode = Locale.getLocale(request.getLocale()).country;
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -160,19 +159,28 @@ function getPaymentMethods(cart) {
     var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-    var paymentMethods = getPaymentMethods.getMethods(cart.object, countryCode).paymentMethods;
-    var filteredMethods = paymentMethods.filter(function (method) {
-        return !AdyenHelper.isMethodTypeBlocked(method.type);
+    var response = getPaymentMethods.getMethods(cart.object, customer, countryCode);
+    var paymentMethodDescriptions = response.paymentMethods.map(function (method) {
+        return {
+            brandCode: method.type,
+            description: Resource.msg("hpp.description." + method.type, "hpp", "")
+        };
     });
+    var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
 
     var connectedTerminals = {};
     if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
-        connectedTerminals = adyenTerminalApi.getTerminals().response;
+        var connectedTerminalsResponse = adyenTerminalApi.getTerminals().response;
+        if(connectedTerminalsResponse){
+            connectedTerminals = JSON.parse(connectedTerminalsResponse);
+        }
     }
 
     return {
-        adyenPaymentMethods: filteredMethods,
-        adyenConnectedTerminals: JSON.parse(connectedTerminals)
+        adyenPaymentMethods: response,
+        adyenConnectedTerminals: connectedTerminals,
+        ImagePath: adyenURL,
+        AdyenDescriptions: paymentMethodDescriptions
     };
 }
 
@@ -194,7 +202,7 @@ function redirect3ds2() {
 
 /**
  * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
- * 
+ *
  * @returns rendering template or error
  */
 function authorize3ds2() {
@@ -219,7 +227,7 @@ function authorize3ds2() {
         }
 
         var details = {};
-        
+
         if (request.httpParameterMap.get("resultCode").stringValue == "IdentifyShopper" && request.httpParameterMap.get("fingerprintResult").stringValue) {
             details = {
                 "threeds2.fingerprint": request.httpParameterMap.get("fingerprintResult").stringValue
@@ -256,7 +264,7 @@ function authorize3ds2() {
                 PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', '')
             });
             return {};
-        } else if (result.resultCode == 'ChallengeShopper') {        	
+        } else if (result.resultCode == 'ChallengeShopper') {
         	app.getView({
             	ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'utm_nooverride', '1'),
             	resultCode: result.resultCode,
@@ -269,7 +277,7 @@ function authorize3ds2() {
         Transaction.wrap(function () {
             paymentInstrument.custom.adyenPaymentData = null;
         });
-       
+
         if ('pspReference' in result && !empty(result.pspReference)) {
             paymentInstrument.paymentTransaction.transactionID = result.pspReference;
             order.custom.Adyen_pspReference = result.pspReference;
@@ -301,8 +309,8 @@ function authorize3ds2() {
 
 
 /**
- * Make second call to 3d verification system to complete authorization 
- * 
+ * Make second call to 3d verification system to complete authorization
+ *
  * @returns rendering template or error
  */
 function authorizeWithForm() {
@@ -381,7 +389,7 @@ function authorizeWithForm() {
 
 /**
   Post the retrieved 3ds data
- * 
+ *
  * @returns template
  */
 function closeThreeDS() {
@@ -396,19 +404,19 @@ function closeThreeDS() {
 }
 
 /**
- * Clear system session data 
+ * Clear system session data
  */
 function clearForms() {
     // Clears all forms used in the checkout process.
     session.forms.singleshipping.clearFormElement();
     session.forms.multishipping.clearFormElement();
     session.forms.billing.clearFormElement();
-    
+
     clearCustomSessionFields();
 }
 
 /**
- * Clear custom session data 
+ * Clear custom session data
  */
 function clearCustomSessionFields() {
 	// Clears all fields used in the 3d secure payment.

@@ -24,6 +24,9 @@
 	<field formid="bankAccountOwnerName" label="Bank account holdername" type="string" mandatory="false"/>
 	<field formid="bankAccountNumber" label="Bank account number" type="string" mandatory="false"/>
 	<field formid="bankLocationId" label="Routing Number" type="string" mandatory="false"/>
-	
+
 	<action formid="Pay" valid-form="true"/>
+
+	<!--Adyen Component-->
+	<field formid="adyenStateData" type="string" mandatory="true"/>
 </form>
