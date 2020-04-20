@@ -113,7 +113,11 @@ function showConfirmation() {
         Transaction.wrap(function () {
             AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
         });
-		orderConfirm(orderNumber);
+        OrderModel.submit(order);
+        clearForms();
+        app.getController('COSummary').ShowConfirmation(order);
+        return {};
+        // orderConfirm(orderNumber);
 	}
 	else {
         // fail order
@@ -143,7 +147,7 @@ function orderConfirm(orderNo){
 		app.getController('Error').Start();
 		return {};
 	}
-	app.getController('COSummary').ShowConfirmation(order);
+    app.getController('COSummary').ShowConfirmation(order);
 }
 
 /**
