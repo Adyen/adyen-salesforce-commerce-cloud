@@ -18,7 +18,8 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {originKey, loadingContext, environment, locale};
-    // window.installments = '${pdict.adyen.installments}';
+    window.installments = "${AdyenHelper.getCreditCardInstallments()}";
+
     var showStoreDetails = ${customer.authenticated};
 </script>
 

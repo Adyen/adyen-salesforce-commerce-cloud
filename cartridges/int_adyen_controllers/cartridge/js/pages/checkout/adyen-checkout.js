@@ -251,7 +251,7 @@
         var liContents = `
                               <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
                               <img class="paymentMethod_img" src="${imagePath}" ></img>
-                              <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}">${label}</label>
+                              <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}" style="float: none; width: 100%; display: inline; text-align: inherit">${label}</label>
                              `;
         if(description)
             liContents += `<p>${description}</p>`;

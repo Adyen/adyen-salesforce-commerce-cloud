@@ -182,13 +182,21 @@ function getPaymentMethods(cart, customer) {
         } catch (e) {}
 
     }
-
-    return {
+    var jsonResponse = {
         adyenPaymentMethods: response,
         adyenConnectedTerminals: connectedTerminals,
         ImagePath: adyenURL,
         AdyenDescriptions: paymentMethodDescriptions
     };
+
+    if(AdyenHelper.getCreditCardInstallments()) {
+        var paymentAmount = currentBasket.getTotalGrossPrice() ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()) : 1000;
+        var currency = currentBasket.getTotalGrossPrice().currencyCode;
+        jsonResponse.amount = {value: paymentAmount, currency: currency};
+        jsonResponse.countryCode = countryCode;
+    }
+
+    return jsonResponse;
 }
 
 function redirect3ds2() {
