@@ -1,10 +1,30 @@
+<isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
+
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+
+<script>
+    var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+    var loadingContext = "${AdyenHelper.getLoadingContext()}";
+    var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
+    var locale = "${request.locale}";
+    window.Configuration = {originKey, loadingContext, environment, locale};
+</script>
+
 <div>
-    <isif condition="${pdict.AdyenHelper.getAdyen3DS2Enabled()}">
-        <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
-        <iselse>
-            <isinclude template="checkout/billing/adyenpaymentfields"/>
-            <button id="add-card-submit-hidden" type="hidden" style="display:none" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>
-            <button  id="add-card-submit"  type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>
-        </iselse>
-    </isif>
+    <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
+    <div id="newCard"></div>
+<!--    <button id="add-card-submit-hidden" type="hidden" style="display:none" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>-->
+<!--    <button  id="add-card-submit"  type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>-->
+
+    <div class="form-row form-row-button">
+        <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+            ${Resource.msg('global.apply', 'locale', null)}
+        </button>
+        <button class="cancel cancel-button simple" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.cancel.htmlName}" value="${Resource.msg('global.cancel','locale',null)}">
+            ${Resource.msg('global.cancel', 'locale', null)}
+        </button>
+    </div>
+
 </div>
