@@ -1,9 +1,11 @@
 <iscontent type="text/html" encoding="off"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
 
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('/js/bundle.js');
+<!--    assets.addJs('/js/bundle.js');-->
 </isscript>
 <script>
     window.Configuration = {
@@ -12,6 +14,7 @@
         environment: '${pdict.adyen.environment}'
     };
     window.installments = '${pdict.adyen.installments}';
+    console.log(window.Configuration.originKey);
     var showStoreDetails = ${customer.authenticated};
 </script>
 
