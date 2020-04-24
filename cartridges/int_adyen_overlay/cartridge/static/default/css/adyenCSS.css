@@ -123,3 +123,8 @@
 .adyen-checkout__field {
 	display: table;
 }
+
+.card-error {
+	color: red;
+	display: none;
+}
