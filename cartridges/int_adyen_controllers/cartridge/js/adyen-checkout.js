@@ -115,14 +115,12 @@ function showValidation() {
         }
         if(inputs.length > 0)
             return false;
-        // return true;
     } else if(selectedMethod === "ratepay") {
         var input = document.querySelector("#dateOfBirthInput");
         if (!(input.value && input.value.length > 0)) {
             input.classList.add('adyen-checkout__input--error');
             return false;
         }
-        // return true;
     }
     return true;
 }
