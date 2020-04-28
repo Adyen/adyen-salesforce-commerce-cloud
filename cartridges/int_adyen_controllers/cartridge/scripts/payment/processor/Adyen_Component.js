@@ -74,7 +74,6 @@ function Authorize(args) {
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
         if (result.threeDS2) {
-            Logger.getLogger("Adyen").error("entering three DS2");
             return {
                 authorized3d: true,
                 view: app.getView({
