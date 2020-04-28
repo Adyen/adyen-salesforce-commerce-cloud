@@ -119,9 +119,9 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
 
-    try {
         if(storedPaymentMethodBool) {
             var node = checkout.create("card", paymentMethod).mount(container);
+            componentArr[paymentMethodID] = node;
         } else {
             var fallback = getFallback(paymentMethod.type);
             if(fallback) {
@@ -129,11 +129,15 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
                 template.innerHTML = fallback;
                 container.append(template.content);
             } else {
-                var node = checkout.create(paymentMethod.type).mount(container);
+                setTimeout(function() {
+                    try {
+                        var node = checkout.create(paymentMethod.type).mount(container);
+                        componentArr[paymentMethodID] = node;
+                    }
+                    catch (e) {}
+                }, 0);
             }
         }
-        componentArr[paymentMethodID] = node;
-    } catch (e) {}
 
     container.classList.add("additionalFields");
     container.setAttribute("id", `component_${paymentMethodID}`);
