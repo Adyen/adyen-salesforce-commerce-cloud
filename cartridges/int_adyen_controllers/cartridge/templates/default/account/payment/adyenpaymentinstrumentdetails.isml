@@ -15,8 +15,6 @@
 <div>
     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
     <div id="newCard"></div>
-<!--    <button id="add-card-submit-hidden" type="hidden" style="display:none" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>-->
-<!--    <button  id="add-card-submit"  type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">${Resource.msg('global.apply',   'locale', null)}</button>-->
 
     <div class="form-row form-row-button">
         <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
