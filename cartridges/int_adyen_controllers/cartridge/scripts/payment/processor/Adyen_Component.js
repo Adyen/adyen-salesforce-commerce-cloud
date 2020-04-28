@@ -23,8 +23,6 @@ function Handle(args) {
     var currentBasket = args.Basket;
     var paymentInformation = app.getForm('adyPaydata');
 
-    Logger.getLogger('Adyen').error('payment information is ... ' + JSON.stringify(paymentInformation.object));
-    Logger.getLogger('Adyen').error('adyen state data is ... ' + JSON.stringify(paymentInformation.get("adyenStateData").value()));
     Transaction.wrap(function () {
         var result = adyenRemovePreviousPI.removePaymentInstruments(currentBasket);
         if (result.error) {
@@ -32,7 +30,6 @@ function Handle(args) {
         }
 
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
-            Logger.getLogger('Adyen').error('payment instrument is ... ' + JSON.stringify(paymentInstrument));
             paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
     });
 
@@ -57,7 +54,6 @@ function Authorize(args) {
         Order: order,
         PaymentInstrument: paymentInstrument
     });
-    Logger.getLogger('Adyen').error('result is ... ' + JSON.stringify(result));
 
 
     if (result.error) {

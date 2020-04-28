@@ -117,7 +117,6 @@ function showConfirmation() {
         clearForms();
         app.getController('COSummary').ShowConfirmation(order);
         return {};
-        // orderConfirm(orderNumber);
 	}
 	else {
         // fail order
