@@ -7,6 +7,7 @@ var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
+var collections = require('*/cartridge/scripts/util/collections');
 
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));

@@ -1,6 +1,7 @@
 <iscontent type="text/html" encoding="off"/>
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 
@@ -17,8 +18,9 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {originKey, loadingContext, environment, locale};
-    // window.installments = '${pdict.adyen.installments}';
-    var showStoreDetails = "${customer.authenticated}";
+    window.installments = "${AdyenHelper.getCreditCardInstallments()}";
+
+    var showStoreDetails = ${customer.authenticated};
 </script>
 
 <isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>

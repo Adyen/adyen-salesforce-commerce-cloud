@@ -5,6 +5,10 @@
 			"script": "./payment/processor/ADYEN_CREDIT"
 		},
 		{
+			"name": "app.payment.processor.Adyen_Component",
+			"script": "./payment/processor/Adyen_Component"
+		},
+		{
 			"name": "app.payment.processor.Adyen",
 			"script": "./payment/processor/Adyen"
 		},
