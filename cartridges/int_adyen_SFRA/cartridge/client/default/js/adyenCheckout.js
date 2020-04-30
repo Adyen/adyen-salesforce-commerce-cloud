@@ -16,7 +16,7 @@ checkoutConfiguration.onChange = function(state, component){
     componentArr[type].isValid = isValid;
     componentArr[type].stateData = state.data;
 };
-
+checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
     card: {
         enableStoreDetails: showStoreDetails,
