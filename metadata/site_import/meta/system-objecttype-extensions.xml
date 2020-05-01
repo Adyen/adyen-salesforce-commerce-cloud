@@ -400,8 +400,29 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_donationAccountCode">
-                <display-name xml:lang="x-default">donationAccountCode</display-name>
+            <attribute-definition attribute-id="AdyenGiving_donationAccountCode">
+            <display-name xml:lang="x-default">donationAccountCode</display-name>
+            <type>string</type>
+            <mandatory-flag>false</mandatory-flag>
+            <externally-managed-flag>false</externally-managed-flag>
+            <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_donationAmounts">
+                <display-name xml:lang="x-default">Amounts for donation</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_charityDescription">
+                <display-name xml:lang="x-default">Description of charity</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_charityUrl">
+                <display-name xml:lang="x-default">Website from charity</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -425,6 +446,10 @@
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_StoreId"/>
+                <attribute attribute-id="AdyenGiving_donationAccountCode"/>
+                <attribute attribute-id="AdyenGiving_donationAmounts"/>
+                <attribute attribute-id="AdyenGiving_charityDescription"/>
+                <attribute attribute-id="AdyenGiving_charityUrl"/>
             </attribute-group>
         </group-definitions>
 </type-extension>

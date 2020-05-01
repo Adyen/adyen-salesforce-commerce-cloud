@@ -86,8 +86,8 @@ var __AdyenHelper: Object = {
 
     getAdyenGivingMerchantAccount: function (): String {
         var returnValue: String = "";
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('Adyen_donationAccountCode'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('Adyen_donationAccountCode');
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAccountCode'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAccountCode');
         }
         return returnValue;
     },
@@ -214,6 +214,15 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getDonationAmounts: function(){
+        // TODOBAS create array from comma separated values
+        var returnValue = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGivingDonationAmounts'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGivingDonationAmounts');
+        }
+        return returnValue;
+    },
+
     hasCheckoutComponent: function (paymentMethod) {
         if (paymentMethod.indexOf("ideal") > -1 ||
             paymentMethod.indexOf("klarna") > -1 ||
@@ -284,6 +293,13 @@ var __AdyenHelper: Object = {
             return true;
         }
         return false;
+    },
+
+    isAdyenGivingAvailable: function (paymentMethod) {
+        //if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1 || paymentMethod === "zip") {
+            return true;
+        //}
+        //return false;
     },
 
     isMolpayMethod: function (paymentMethod) {

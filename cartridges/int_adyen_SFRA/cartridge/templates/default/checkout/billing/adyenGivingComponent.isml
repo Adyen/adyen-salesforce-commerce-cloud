@@ -1,0 +1,32 @@
+<iscontent type="text/html" encoding="off"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/adyenGiving.js');
+</isscript>
+<script>
+    window.Configuration = {
+            locale: '${request.locale}',
+            originKey: '${pdict.adyen.originKey}',
+            environment: '${pdict.adyen.environment}'
+    };
+
+    var orderNo = '${pdict.order.orderNumber}';
+    var donationAmounts = '${pdict.adyen.donationAmounts}';
+    var pspReference = '${pdict.adyen.pspReference}';
+</script>
+
+<isif condition="${pdict.AdyenHelper.isAdyenGivingAvailable()}">
+    <div id="adyenGiving" class="card confirm-details">
+        <div class="card-header">
+            <h2 class="card-header-custom">${Resource.msg('title.adyenGiving', 'adyen', null)}</h2>
+        </div>
+        <div class="card-body">
+            <div id="donate-container"></div>
+        </div>
+    </div>
+</isif>
+
+
