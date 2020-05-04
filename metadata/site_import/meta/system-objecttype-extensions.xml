@@ -400,15 +400,31 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenGiving_donationAccountCode">
-            <display-name xml:lang="x-default">donationAccountCode</display-name>
-            <type>string</type>
-            <mandatory-flag>false</mandatory-flag>
-            <externally-managed-flag>false</externally-managed-flag>
-            <min-length>0</min-length>
+            <attribute-definition attribute-id="AdyenGiving_enabled">
+                <display-name xml:lang="x-default">Enable Adyen Giving</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_charityAccount">
+                <display-name xml:lang="x-default">Charity merchant account</display-name>
+                <description xml:lang="x-default">Adyen's merchant account from Charity</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_charityName">
+                <display-name xml:lang="x-default">Charity name</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenGiving_donationAmounts">
                 <display-name xml:lang="x-default">Amounts for donation</display-name>
+                <description xml:lang="x-default">Comma separated values in minor units (e.g. 1000,2000,3000)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -423,6 +439,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenGiving_charityUrl">
                 <display-name xml:lang="x-default">Website from charity</display-name>
+                <description xml:lang="x-default">e.g. https://www.mycharity.com</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -446,7 +463,9 @@
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_StoreId"/>
-                <attribute attribute-id="AdyenGiving_donationAccountCode"/>
+                <attribute attribute-id="AdyenGiving_enabled"/>
+                <attribute attribute-id="AdyenGiving_charityName"/>
+                <attribute attribute-id="AdyenGiving_charityAccount"/>
                 <attribute attribute-id="AdyenGiving_donationAmounts"/>
                 <attribute attribute-id="AdyenGiving_charityDescription"/>
                 <attribute attribute-id="AdyenGiving_charityUrl"/>

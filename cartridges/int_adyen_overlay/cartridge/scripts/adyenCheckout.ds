@@ -139,6 +139,10 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
         paymentResponse.adyenAmount = paymentRequest.amount.value;
         paymentResponse.decision = "ERROR";
 
+        if(responseObject.additionalData) {
+            order.custom.Adyen_paymentMethod = responseObject.additionalData.paymentMethod ? responseObject.additionalData.paymentMethod : null;
+        }
+
         //Check the response object from /payment call
         if (paymentResponse.resultCode == "IdentifyShopper" || paymentResponse.resultCode == "ChallengeShopper") {
             paymentResponse.decision = "ACCEPT";

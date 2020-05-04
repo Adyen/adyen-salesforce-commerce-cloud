@@ -84,14 +84,6 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
-    getAdyenGivingMerchantAccount: function (): String {
-        var returnValue: String = "";
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAccountCode'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAccountCode');
-        }
-        return returnValue;
-    },
-
     getAdyenUrl: function (): String {
         var returnValue: String = "";
         switch (__AdyenHelper.getAdyenEnvironment()) {
@@ -214,13 +206,66 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
-    getDonationAmounts: function(){
-        // TODOBAS create array from comma separated values
-        var returnValue = "";
-        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGivingDonationAmounts'))) {
-            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGivingDonationAmounts');
+    getAdyenGivingEnabled: function(){
+        var returnValue = false;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_enabled'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_enabled');
         }
         return returnValue;
+    },
+
+    getAdyenGivingCharityAccount: function (): String {
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityAccount'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityAccount');
+        }
+        return returnValue;
+    },
+
+     getAdyenGivingCharityName: function (): String {
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityName'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityName');
+        }
+        return returnValue;
+    },
+
+    getAdyenGivingCharityDescription: function(){
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityDescription'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityDescription');
+        }
+        return returnValue;
+    },
+
+    getAdyenGivingCharityWebsite: function(){
+        var returnValue: String = "";
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityUrl'))) {
+            returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_charityUrl');
+        }
+        return returnValue;
+    },
+
+    getDonationAmounts: function(){
+        var returnValue = [];
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAmounts'))) {
+            var configuredValue = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_donationAmounts');
+            var configuredAmountArray = configuredValue.split(",");
+            var amountArray = [];
+            for (var i = 0; i < configuredAmountArray.length; i++) {
+                var amount = parseInt(configuredAmountArray[i]);
+                if(!isNaN(amount)){
+                    amountArray.push(amount);
+                }
+            }
+            returnValue = amountArray;
+        }
+        return returnValue;
+    },
+
+    isAdyenGivingAvailable: function (paymentMethod) {
+        var availablePaymentMethods = ["visa", "mc", "amex", "cup", "jcb", "diners", "discover", "cartebancaire", "bcmc", "ideal", "giropay", "directEbanking", "vipps", "sepadirectdebit", "directdebit_GB"];
+        return (availablePaymentMethods.indexOf(paymentMethod) !== -1);
     },
 
     hasCheckoutComponent: function (paymentMethod) {
@@ -293,13 +338,6 @@ var __AdyenHelper: Object = {
             return true;
         }
         return false;
-    },
-
-    isAdyenGivingAvailable: function (paymentMethod) {
-        //if (paymentMethod.indexOf("afterpay") > -1 || paymentMethod.indexOf("klarna") > -1 || paymentMethod.indexOf("ratepay") > -1 || paymentMethod.indexOf("facilypay") > -1 || paymentMethod === "zip") {
-            return true;
-        //}
-        //return false;
     },
 
     isMolpayMethod: function (paymentMethod) {
@@ -589,22 +627,17 @@ var __AdyenHelper: Object = {
     },
 
     savePaymentDetails: function (paymentInstrument, order, result) {
-        if ('pspReference' in result && !empty(result.pspReference)) {
+        if (result.pspReference) {
             paymentInstrument.paymentTransaction.transactionID = result.pspReference;
             order.custom.Adyen_pspReference = result.pspReference;
         }
-
-        if ('resultCode' in result && !empty(result.resultCode)) {
-            paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
+        if(result.paymentMethod) {
+            order.custom.Adyen_paymentMethod = result.paymentMethod;
         }
 
-        if ('adyenAmount' in result && !empty(result.adyenAmount)) {
-            order.custom.Adyen_value = result.adyenAmount.toFixed(0);
-        }
+        paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : "";
+        order.custom.Adyen_value = result.adyenAmount ? result.adyenAmount.toFixed(0) : "";
 
-        if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
-            order.custom.Adyen_paymentMethod = result.AdyenCardType;
-        }
         // Save full response to transaction custom attribute
         paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
 

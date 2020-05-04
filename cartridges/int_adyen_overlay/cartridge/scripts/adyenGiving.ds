@@ -16,7 +16,7 @@ function donate (donationReference, donationAmount, originalReference) {
 
         var requestObject = {
             merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
-            donationAccount: AdyenHelper.getAdyenGivingMerchantAccount(),
+            donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
             modificationAmount: donationAmount,
             reference: AdyenHelper.getAdyenMerchantAccount() + "-" + donationReference,
             originalReference: originalReference
