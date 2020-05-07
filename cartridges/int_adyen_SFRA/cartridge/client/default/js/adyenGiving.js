@@ -28,9 +28,9 @@ function handleOnCancel(state, component) {
 
 var donationConfig = {
     amounts: JSON.parse(donationAmounts),
-    backgroundUrl: "https://images.wallpaperscraft.com/image/palm_trees_trees_jungle_128374_3636x2364.jpg",  //TODOBAS background URL ?
+    backgroundUrl: adyenGivingBackgroundUrl,
     description: charityDescription,
-    logoUrl: "https://hammerfest.co/wp-content/uploads/2015/12/WWF-logo-1-900x982.png", //TODOBAS logo URL ?
+    logoUrl: adyenGivingLogoUrl,
     name: charityName,
     url: charityWebsite,
     showCancelButton: true,

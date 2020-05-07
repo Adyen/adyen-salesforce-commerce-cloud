@@ -445,6 +445,22 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_backgroundUrl">
+                <display-name xml:lang="x-default">Background image of Adyen Giving component</display-name>
+                <description xml:lang="x-default"></description>
+                <type>image</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenGiving_logoUrl">
+                <display-name xml:lang="x-default">Logo in Adyen Giving component</display-name>
+                <description xml:lang="x-default"></description>
+                <type>image</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
@@ -469,6 +485,8 @@
                 <attribute attribute-id="AdyenGiving_donationAmounts"/>
                 <attribute attribute-id="AdyenGiving_charityDescription"/>
                 <attribute attribute-id="AdyenGiving_charityUrl"/>
+                <attribute attribute-id="AdyenGiving_backgroundUrl"/>
+                <attribute attribute-id="AdyenGiving_logoUrl"/>
             </attribute-group>
         </group-definitions>
 </type-extension>

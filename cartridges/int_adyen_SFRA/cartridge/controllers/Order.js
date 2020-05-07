@@ -20,6 +20,8 @@ server.prepend('Confirm', server.middleware.https, consentTracking.consent, csrf
         var charityName = AdyenHelper.getAdyenGivingCharityName();
         var charityWebsite = AdyenHelper.getAdyenGivingCharityWebsite();
         var charityDescription = AdyenHelper.getAdyenGivingCharityDescription();
+        var adyenGivingBackgroundUrl = AdyenHelper.getAdyenGivingBackgroundUrl();
+        var adyenGivingLogoUrl = AdyenHelper.getAdyenGivingLogoUrl();
 
         var donationAmounts = {
             currency: session.currency.currencyCode,
@@ -35,7 +37,10 @@ server.prepend('Confirm', server.middleware.https, consentTracking.consent, csrf
             donationAmounts: JSON.stringify(donationAmounts),
             charityName: charityName,
             charityDescription: charityDescription,
-            charityWebsite: charityWebsite
+            charityWebsite: charityWebsite,
+            adyenGivingBackgroundUrl: adyenGivingBackgroundUrl,
+            adyenGivingLogoUrl: adyenGivingLogoUrl
+
         };
         res.setViewData(viewData);
     }

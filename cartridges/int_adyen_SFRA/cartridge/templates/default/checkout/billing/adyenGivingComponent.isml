@@ -2,10 +2,10 @@
 <isif condition="${pdict.adyen && pdict.adyen.adyenGivingAvailable}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-    <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/adyenGiving.js');
+        assets.addJs('/js/bundle.js');
     </isscript>
     <script>
         window.Configuration = {
@@ -20,6 +20,8 @@
         var charityName = '${pdict.adyen.charityName}';
         var charityWebsite = '${pdict.adyen.charityWebsite}';
         var charityDescription = '${pdict.adyen.charityDescription}';
+        var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
+        var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">

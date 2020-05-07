@@ -263,6 +263,24 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyenGivingBackgroundUrl: function(){
+        var returnValue;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_backgroundUrl'))) {
+            var media = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_backgroundUrl');
+            returnValue = media.getAbsURL();
+        }
+        return returnValue;
+    },
+
+    getAdyenGivingLogoUrl: function(){
+        var returnValue;
+        if (!empty(adyenCurrentSite) && !empty(adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_logoUrl'))) {
+            var media = adyenCurrentSite.getCustomPreferenceValue('AdyenGiving_logoUrl');
+            returnValue = media.getAbsURL();
+        }
+        return returnValue;
+    },
+
     isAdyenGivingAvailable: function (paymentMethod) {
         var availablePaymentMethods = ["visa", "mc", "amex", "cup", "jcb", "diners", "discover", "cartebancaire", "bcmc", "ideal", "giropay", "directEbanking", "vipps", "sepadirectdebit", "directdebit_GB"];
         return (availablePaymentMethods.indexOf(paymentMethod) !== -1);
