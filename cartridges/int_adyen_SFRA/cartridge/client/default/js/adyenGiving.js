@@ -1,24 +1,25 @@
 var adyenGivingNode = document.getElementById("donate-container");
 
 function handleOnDonate(state, component) {
-    if(state.isValid){
-        var selectedAmount = state.data.amount;
-        var donationData = {
-            amountValue: selectedAmount.value,
-            amountCurrency: selectedAmount.currency,
-            orderNo: orderNo,
-            pspReference: pspReference
-        };
-
-        $.ajax({
-            url: 'Adyen-Donate',
-            type: 'post',
-            data: donationData,
-            success: function () {
-                component.setStatus("success");
-            }
-        });
+    if(!state.isValid) {
+        return;
     }
+    var selectedAmount = state.data.amount;
+    var donationData = {
+        amountValue: selectedAmount.value,
+        amountCurrency: selectedAmount.currency,
+        orderNo: orderNo,
+        pspReference: pspReference
+    };
+
+    $.ajax({
+        url: 'Adyen-Donate',
+        type: 'post',
+        data: donationData,
+        success: function () {
+            component.setStatus("success");
+        }
+    });
 }
 
 function handleOnCancel(state, component) {
@@ -26,8 +27,15 @@ function handleOnCancel(state, component) {
     donation.unmount();
 }
 
+var amounts;
+try {
+    amounts = JSON.parse(donationAmounts);
+} catch (e) {
+    amounts = [];
+}
+
 var donationConfig = {
-    amounts: JSON.parse(donationAmounts),
+    amounts: amounts,
     backgroundUrl: adyenGivingBackgroundUrl,
     description: charityDescription,
     logoUrl: adyenGivingLogoUrl,
