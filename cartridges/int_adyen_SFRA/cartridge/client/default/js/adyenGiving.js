@@ -23,7 +23,9 @@ function handleOnDonate(state, component) {
 }
 
 function handleOnCancel(state, component) {
-    $("#adyenGiving").slideUp();
+    var adyenGiving = document. getElementById("adyenGiving");
+    adyenGiving.style.transition = "all 3s ease-in-out";
+    adyenGiving.style.display = "none";
     donation.unmount();
 }
 
