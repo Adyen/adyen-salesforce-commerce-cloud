@@ -131,8 +131,84 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
             } else {
                 setTimeout(function() {
                     try {
-                        var node = checkout.create(paymentMethod.type).mount(container);
-                        componentArr[paymentMethodID] = node;
+                        if(paymentMethod.type === "paypal") {
+                            var node = checkout.create(paymentMethod.type, {
+                                intent: "capture", // Change this to "authorize" if the payments should not be captured immediately. Contact Support to enable this flow.
+                                    onSubmit: (state, component) => {
+                                        var jsonObj = {
+                                            paymentMethodType: state.data.paymentMethod.type,
+                                            paymentMethodSubtype: state.data.paymentMethod.subtype,
+                                            clientData: state.data.riskData.clientData
+                                        };
+                                        // makePaypalPayment(jsonObj, component)
+
+                                        $.ajax({
+                                            url: 'Adyen-PaymentFromComponent',
+                                            type: 'post',
+                                            data: jsonObj,
+                                            success: function (data) {
+                                                console.log("success paypal !!!");
+                                                console.log(data);
+                                                component.handleAction(data.fullResponse.action)
+                                            }
+                                        })
+                                            .fail(function(x, y) {
+                                                console.log('fail!');
+                                                console.log(x);
+                                                console.log(y);
+                                            })
+
+                                    // Your function calling your server to make the /payments request.
+                                    // makePayment(state.data)
+                                    //     .then(response => {
+                                    //         if (response.action) {
+                                    //             console.log('response action')
+                                    //             // The Component handles the action object from the /payments response.
+                                    //             // component.handleAction(response.action);
+                                    //         } else {
+                                    //             console.log('else of response action')
+                                    //             // Your function to show the final result to the shopper.
+                                    //             // showFinalResult(response);
+                                    //         }
+                                    //     })
+                                    //     .catch(error => {
+                                    //         console.log('wernt to catch');
+                                    //         throw Error(error);
+                                    //     });
+                                },
+                                    onCancel: (data, component) => {
+                                    // Sets your prefered status of the component when a PayPal payment is cancelled. In this example, return to the initial state.
+                                    component.setStatus('ready');
+                                },
+                                    onError: (error, component) => {
+                                    console.log(error);
+                                    // Sets your prefered status of the component when an error occurs. In this example, return to the initial state.
+                                    component.setStatus('ready');
+                                },
+                                    onAdditionalDetails: (state, component) => {
+                                    console.log(state);
+                                    const details = state.data.details;
+                                    // $('button[value="submit-payment"]').click();
+                                        var jsonObj = {billingToken: details.billingToken,
+                                            facilitatorAccessToken: details.facilitatorAccessToken,
+                                            orderID: details.orderID,
+                                            payerID: details.payerID,
+                                            paymentID: details.paymentID,
+                                            paymentData: state.data.paymentData
+                                        };
+                                        console.log(jsonObj);
+                                    // Your function to submit a state.data object to the payments/details endpoint.
+                                    // submitDetails(state.data)
+                                    //     .then(result => {
+                                            // Your function to show the final result to the shopper.
+                                            // showFinalResult(result);
+                                        // })
+                                }
+                            }).mount(container);
+                        }
+                        else
+                            var node = checkout.create(paymentMethod.type).mount(container);
+                                componentArr[paymentMethodID] = node;
                     }
                     catch (e) {}
                 }, 0);
@@ -215,15 +291,35 @@ function getPaymentMethods(paymentMethods) {
     });
 };
 
+function makePaypalPayment(data, component) {
+    $.ajax({
+        url: 'Adyen-PaymentFromComponent',
+        type: 'post',
+        data: data,
+        success: function (data) {
+            console.log("success paypal !!!");
+            console.log(data);
+            component.handleAction(data.action)
+        }
+    })
+        .fail(function(x, y) {
+            console.log('fail!');
+            console.log(x);
+            console.log(y);
+        })
+};
+
 //Submit the payment
 $('button[value="submit-payment"]').on('click', function () {
     var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
     var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
     adyenPaymentMethod.value = paymentMethodLabel;
 
-    validateComponents();
+    // validateComponents();
+    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 
-    return showValidation();
+    // return showValidation();
+    return true;
 });
 
 function showValidation() {

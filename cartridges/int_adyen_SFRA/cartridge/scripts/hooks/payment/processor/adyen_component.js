@@ -23,6 +23,7 @@ function Handle(basket, paymentInformation) {
         });
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
         paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+        Logger.getLogger('Adyen').error(paymentInstrument.custom.adyenPaymentData);
         paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
 
         if (paymentInformation.isCreditCard) {

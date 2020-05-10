@@ -12,6 +12,7 @@ var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var constants = require("*/cartridge/adyenConstants/constants");
+var collections = require('*/cartridge/scripts/util/collections');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -383,6 +384,56 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     }
 
     res.json(jsonResponse);
+    return next();
+});
+
+/**
+ * Make a payment from inside a component (paypal)
+ */
+server.post("PaymentFromComponent", server.middleware.https, function (req, res, next) {
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    var BasketMgr = require("dw/order/BasketMgr");
+
+    Logger.getLogger('Adyen').error(JSON.stringify(req.form));
+
+    // var order;
+    // var paymentInstrument;
+    // if(session.privacy.orderNo && session.privacy.paymentMethod) {
+    //     Logger.getLogger('Adyen').error(JSON.stringify("inside if statement"));
+    //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.paymentMethod));
+    //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.orderNo));
+    //     try {
+    //         order = OrderMgr.getOrder(session.privacy.orderNo);
+    //         paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
+    //         Logger.getLogger('Adyen').error("end of try");
+    //     } catch (e) {
+    //         Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+    //     }
+    // }
+
+    var currentBasket = BasketMgr.getCurrentBasket();
+    Logger.getLogger('Adyen').error(currentBasket);
+    var order = COHelpers.createOrder(currentBasket);
+    Logger.getLogger('Adyen').error(order);
+
+    var paymentInstrument;
+    Transaction.wrap(function () {
+        collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
+        currentBasket.removePaymentInstrument(item);
+    });
+        paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
+        var obj = {paymentMethod: {type: req.form.paymentMethodType, subtype: req.form.paymentMethodSubtype}, riskData: {clientData: req.form.clientData}};
+        paymentInstrument.custom.adyenPaymentData = JSON.stringify(obj);
+        Logger.getLogger('Adyen').error("adyen payment data is ... " + paymentInstrument.custom.adyenPaymentData);
+        paymentInstrument.custom.adyenPaymentMethod = "paypal";
+    });
+
+    var result = adyenCheckout.createPaymentRequest({
+        Order: order,
+        PaymentInstrument: paymentInstrument
+    });
+    Logger.getLogger("Adyen").error("function called successfully, result is ..." + JSON.stringify(result));
+    res.json(result);
     return next();
 });
 

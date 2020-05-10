@@ -7,6 +7,7 @@ var dwsystem = require("dw/system");
 var dwutil = require("dw/util");
 var basketMgr = require("dw/order/BasketMgr");
 var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 var __AdyenHelper: Object = {
 
@@ -444,7 +445,6 @@ var __AdyenHelper: Object = {
 
     createAdyenRequestObject: function (order, paymentInstrument) {
         var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
-
         var reference = "";
         if (order && !empty(order.getOrderNo())) {
             reference = order.getOrderNo();
@@ -459,6 +459,7 @@ var __AdyenHelper: Object = {
         jsonObject.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
         jsonObject.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
         jsonObject.additionalData = {};
+
         return jsonObject;
     },
 

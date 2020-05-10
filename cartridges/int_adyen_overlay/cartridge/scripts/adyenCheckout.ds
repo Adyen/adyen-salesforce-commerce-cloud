@@ -43,8 +43,10 @@ function createPaymentRequest(args) {
         var order = args.Order;
         var paymentInstrument = args.PaymentInstrument;
 
+        Logger.getLogger('Adyen').error("before creating request");
         //Create request object with payment details
         var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
+        Logger.getLogger('Adyen').error("after creating request");
 
         //Add Risk data
         if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
@@ -52,9 +54,9 @@ function createPaymentRequest(args) {
         }
 
         // Get 3DS2 data
-        if (AdyenHelper.getAdyen3DS2Enabled()) {
-            paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
-        }
+        // if (AdyenHelper.getAdyen3DS2Enabled()) {
+        //     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+        // }
 
         var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount); //args.Amount * 100;
         paymentRequest.amount = {
@@ -62,7 +64,8 @@ function createPaymentRequest(args) {
             "value": myAmount
         };
 
-        var paymentMethodType = paymentRequest.paymentMethod.type;
+        var paymentMethodType = paymentRequest.paymentMethod;
+        // var paymentMethodType = "paypal";
         //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 
@@ -83,13 +86,13 @@ function createPaymentRequest(args) {
         }
 
         //Set open invoice data
+        // if (AdyenHelper.isOpenInvoiceMethod("paypal")) {
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
             paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
             if (paymentRequest.paymentMethod.type.indexOf("ratepay") != -1 && args.ratePayFingerprint) {
                 paymentRequest.deviceFingerprint = args.ratePayFingerprint;
             }
         }
-
         // make API call
         return doPaymentCall(order, paymentInstrument, paymentRequest);
     }
@@ -271,8 +274,9 @@ function executeCall(serviceType, requestObject){
     }
     var apiKey = AdyenHelper.getAdyenApiKey();
     service.addHeader("Content-type","application/json");
-    service.addHeader("charset", "UTF-8");
+    // service.addHeader("charset", "UTF-8");
     service.addHeader("X-API-KEY", apiKey);
+    Logger.getLogger("Adyen").error(JSON.stringify(requestObject));
     var callResult = service.call(JSON.stringify(requestObject));
     return callResult;
 
