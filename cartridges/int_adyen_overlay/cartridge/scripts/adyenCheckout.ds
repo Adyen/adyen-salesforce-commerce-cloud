@@ -65,7 +65,6 @@ function createPaymentRequest(args) {
         };
 
         var paymentMethodType = paymentRequest.paymentMethod;
-        // var paymentMethodType = "paypal";
         //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 
@@ -276,7 +275,6 @@ function executeCall(serviceType, requestObject){
     service.addHeader("Content-type","application/json");
     // service.addHeader("charset", "UTF-8");
     service.addHeader("X-API-KEY", apiKey);
-    Logger.getLogger("Adyen").error(JSON.stringify(requestObject));
     var callResult = service.call(JSON.stringify(requestObject));
     return callResult;
 

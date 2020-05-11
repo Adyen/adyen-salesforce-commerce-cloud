@@ -152,11 +152,11 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
                                                 component.handleAction(data.fullResponse.action)
                                             }
                                         })
-                                            .fail(function(x, y) {
-                                                console.log('fail!');
-                                                console.log(x);
-                                                console.log(y);
-                                            })
+                                        .fail(function(x, y) {
+                                            console.log('fail!');
+                                            console.log(x);
+                                            console.log(y);
+                                        })
 
                                     // Your function calling your server to make the /payments request.
                                     // makePayment(state.data)
@@ -179,6 +179,20 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
                                     onCancel: (data, component) => {
                                     // Sets your prefered status of the component when a PayPal payment is cancelled. In this example, return to the initial state.
                                     component.setStatus('ready');
+                                    $.ajax({
+                                        url: 'Adyen-PaymentFromComponent',
+                                        type: 'post',
+                                        data: {cancelPaypal: true},
+                                        success: function (data) {
+                                            console.log("success paypal !!!");
+                                            console.log(data);
+                                        }
+                                    })
+                                    .fail(function(x, y) {
+                                        console.log('fail!');
+                                        console.log(x);
+                                        console.log(y);
+                                    })
                                 },
                                     onError: (error, component) => {
                                     console.log(error);
@@ -188,16 +202,49 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
                                     onAdditionalDetails: (state, component) => {
                                     console.log(state);
                                     const details = state.data.details;
-                                    // $('button[value="submit-payment"]').click();
-                                        var jsonObj = {billingToken: details.billingToken,
-                                            facilitatorAccessToken: details.facilitatorAccessToken,
-                                            orderID: details.orderID,
-                                            payerID: details.payerID,
-                                            paymentID: details.paymentID,
-                                            paymentData: state.data.paymentData
-                                        };
-                                        console.log(jsonObj);
-                                    // Your function to submit a state.data object to the payments/details endpoint.
+                                    document.querySelector("#adyenStateData").value = JSON.stringify(state.data);
+                                    // document.querySelector(".submit-payment").click();
+                                    var jsonObj = {billingToken: details.billingToken,
+                                        facilitatorAccessToken: details.facilitatorAccessToken,
+                                        orderID: details.orderID,
+                                        payerID: details.payerID,
+                                        paymentID: details.paymentID,
+                                        paymentData: state.data.paymentData
+                                    };
+                                    console.log(jsonObj);
+
+                                    $.ajax({
+                                        url: 'Adyen-ShowConfirmation',
+                                        type: 'post',
+                                        data: jsonObj,
+                                        success: function (data) {
+                                            console.log("success 2nd paypal !!!");
+                                            console.log(data);
+                                            // component.handleAction(data.fullResponse.action)
+                                        }
+                                    })
+                                        .fail(function(x, y) {
+                                            console.log('fail!');
+                                            console.log(x);
+                                            console.log(y);
+                                        })
+
+                                    // $.ajax({
+                                    //     url: 'Adyen-test',
+                                    //     type: 'post',
+                                    //     data: jsonObj,
+                                    //     success: function (data) {
+                                    //         console.log("success 2nd paypal !!!");
+                                    //         console.log(data);
+                                    //     }
+                                    // })
+                                    //     .fail(function(x, y) {
+                                    //         console.log('fail!');
+                                    //         console.log(x);
+                                    //         console.log(y);
+                                    //     })
+
+                                        // Your function to submit a state.data object to the payments/details endpoint.
                                     // submitDetails(state.data)
                                     //     .then(result => {
                                             // Your function to show the final result to the shopper.
@@ -316,7 +363,7 @@ $('button[value="submit-payment"]').on('click', function () {
     adyenPaymentMethod.value = paymentMethodLabel;
 
     // validateComponents();
-    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
+    // document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 
     // return showValidation();
     return true;

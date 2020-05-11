@@ -242,27 +242,59 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
     return next();
 });
 
-server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
+server.post('ShowConfirmation', server.middleware.https, function (req, res, next) {
     try {
-        var order = OrderMgr.getOrder(session.privacy.orderNo);
-        var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
-        var adyenPaymentInstrument;
-        var paymentData;
+        if(session.privacy.orderNo && session.privacy.paymentMethod) {
+            try {
+                var order = OrderMgr.getOrder(session.privacy.orderNo);
+                Logger.getLogger('Adyen').error(order);
+                // var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+                var adyenPaymentInstrument;
 
-        //looping through all Adyen payment methods, however, this only can be one.
+                Logger.getLogger('Adyen').error('payment instruments collection: ' + order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT));
+                Logger.getLogger('Adyen').error('payment instruments collection: ' + JSON.stringify(order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)));
+                adyenPaymentInstrument = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
+            } catch (e) {
+                Logger.getLogger("Adyen").error("Unable to retrieve payment instruments data from session.");
+            }
+        }
+        var obj = {details: {billingToken: req.form.billingToken, facilitatorAccessToken: req.form.facilitatorAccessToken,
+                orderID: req.form.orderID, payerID: req.form.payerID, paymentID: req.form.paymentID}, paymentData: req.form.paymentData};
+        var paymentData = obj.paymentData;
+        var details = obj.details;
+        Logger.getLogger('Adyen').error(JSON.stringify(paymentData));
+        Logger.getLogger('Adyen').error(JSON.stringify(details));
+
+                // if(session.privacy.orderNo && session.privacy.paymentMethod) {
+        //     Logger.getLogger('Adyen').error(JSON.stringify("inside if statement"));
+        //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.paymentMethod));
+        //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.orderNo));
+        //     try {
+        //         order = OrderMgr.getOrder(session.privacy.orderNo);
+        //         paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
+        //         Logger.getLogger('Adyen').error("end of try");
+        //     } catch (e) {
+        //         Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+        //     }
+        // }
+        // var adyenPaymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod) ? order.getPaymentInstruments(session.privacy.paymentMethod)[0]: null;
+        // Logger.getLogger('Adyen').error(JSON.stringify('adyen payment instrument is ' + adyenPaymentInstrument));
+
+        // looping through all Adyen payment methods, however, this only can be one.
         var instrumentsIter = paymentInstruments.iterator();
         while (instrumentsIter.hasNext()) {
             adyenPaymentInstrument = instrumentsIter.next();
-            paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
         }
+        Logger.getLogger('Adyen').error(JSON.stringify('adyen payment instrument is : ' + adyenPaymentInstrument));
+
 
         //details is either redirectResult or payload
-        var details;
-        if (req.querystring.redirectResult) {
-            details = {'redirectResult': req.querystring.redirectResult};
-        } else if (req.querystring.payload) {
-            details = {'payload': req.querystring.payload};
-        }
+        // var details;
+        // if (req.querystring.redirectResult) {
+        //     details = {'redirectResult': req.querystring.redirectResult};
+        // } else if (req.querystring.payload) {
+        //     details = {'payload': req.querystring.payload};
+        // }
 
         //redirect to payment/details
         var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
@@ -272,12 +304,14 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
         };
 
         var result = adyenCheckout.doPaymentDetailsCall(requestObject);
-        Transaction.wrap(function () {
-            adyenPaymentInstrument.custom.adyenPaymentData = null;
-        });
+        // Transaction.wrap(function () {
+            // adyenPaymentInstrument.custom.adyenPaymentData = null;
+        // });
+        Logger.getLogger('Adyen').error(JSON.stringify(result));
 
         // Authorised: The payment authorisation was successfully completed.
         if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+            Transaction.commit();
             if (result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
                 Transaction.wrap(function () {
                     OrderMgr.failOrder(order);
@@ -312,6 +346,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             });
 
             clearForms();
+            Logger.getLogger('Adyen').error("redirecting to order confirm");
             res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
             return next();
         } else {
@@ -387,6 +422,20 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     return next();
 });
 
+// var order;
+// var paymentInstrument;
+// if(session.privacy.orderNo && session.privacy.paymentMethod) {
+//     Logger.getLogger('Adyen').error(JSON.stringify("inside if statement"));
+//     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.paymentMethod));
+//     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.orderNo));
+//     try {
+//         order = OrderMgr.getOrder(session.privacy.orderNo);
+//         paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
+//         Logger.getLogger('Adyen').error("end of try");
+//     } catch (e) {
+//         Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
+//     }
+// }
 /**
  * Make a payment from inside a component (paypal)
  */
@@ -394,36 +443,31 @@ server.post("PaymentFromComponent", server.middleware.https, function (req, res,
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var BasketMgr = require("dw/order/BasketMgr");
 
-    Logger.getLogger('Adyen').error(JSON.stringify(req.form));
+    if(req.form.cancelPaypal) {
+        var order = OrderMgr.getOrder(session.privacy.orderNo);
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order);
+        });
+    }
 
-    // var order;
-    // var paymentInstrument;
-    // if(session.privacy.orderNo && session.privacy.paymentMethod) {
-    //     Logger.getLogger('Adyen').error(JSON.stringify("inside if statement"));
-    //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.paymentMethod));
-    //     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.orderNo));
-    //     try {
-    //         order = OrderMgr.getOrder(session.privacy.orderNo);
-    //         paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
-    //         Logger.getLogger('Adyen').error("end of try");
-    //     } catch (e) {
-    //         Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
-    //     }
-    // }
+    Logger.getLogger('Adyen').error(JSON.stringify(req.form));
 
     var currentBasket = BasketMgr.getCurrentBasket();
     Logger.getLogger('Adyen').error(currentBasket);
-    var order = COHelpers.createOrder(currentBasket);
+    var order = COHelpers.createOrder(currentBasket); // use orderMgr.createOrder wrapped with transaction begin. if it fails use transaction rollback
+    session.privacy.orderNo = order.orderNo;
     Logger.getLogger('Adyen').error(order);
 
     var paymentInstrument;
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
+            Logger.getLogger('Adyen').error(JSON.stringify('item is: ' + item));
         currentBasket.removePaymentInstrument(item);
     });
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
         var obj = {paymentMethod: {type: req.form.paymentMethodType, subtype: req.form.paymentMethodSubtype}, riskData: {clientData: req.form.clientData}};
         paymentInstrument.custom.adyenPaymentData = JSON.stringify(obj);
+        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
         Logger.getLogger('Adyen').error("adyen payment data is ... " + paymentInstrument.custom.adyenPaymentData);
         paymentInstrument.custom.adyenPaymentMethod = "paypal";
     });
