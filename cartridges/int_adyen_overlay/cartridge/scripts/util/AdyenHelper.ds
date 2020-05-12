@@ -451,7 +451,7 @@ var __AdyenHelper: Object = {
         } else {
             reference = 'recurringPayment-account';
         }
-
+        Logger.getLogger('Adyen').error(paymentInstrument);
         jsonObject.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
         jsonObject.reference = reference;
         jsonObject.returnUrl = URLUtils.https("Adyen-ShowConfirmation").toString();

@@ -71,33 +71,37 @@ function displaySelectedMethod(type) {
 }
 
 function renderGenericComponent() {
-    getPaymentMethods( function (data) {
-        checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-        if(data.amount) {
-            checkoutConfiguration.amount = data.amount;
-        }
-        if(data.countryCode) {
-            checkoutConfiguration.countryCode = data.countryCode;
-        }
-        document.querySelector("#paymentMethodsList").innerHTML = "";
-
-        if(data.AdyenPaymentMethods.storedPaymentMethods) {
-            for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
-                var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-                if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
-                    renderPaymentMethod(paymentMethod,true, data.ImagePath);
+    console.log('rendering generic component ...');
+    if(document.querySelector('#paymentMethodsList > li')) {
+    } else {
+        getPaymentMethods( function (data) {
+            checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
+            if(data.amount) {
+                checkoutConfiguration.amount = data.amount;
             }
-        }
+            if(data.countryCode) {
+                checkoutConfiguration.countryCode = data.countryCode;
+            }
+            document.querySelector("#paymentMethodsList").innerHTML = "";
 
-        for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
-            var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-            renderPaymentMethod(paymentMethod,false, data.ImagePath, data.AdyenDescriptions[i].description);
-        }
+            if(data.AdyenPaymentMethods.storedPaymentMethods) {
+                for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
+                    var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
+                    if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
+                        renderPaymentMethod(paymentMethod,true, data.ImagePath);
+                }
+            }
 
-        var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
-        firstPaymentMethod.checked = true;
-        displaySelectedMethod(firstPaymentMethod.value);
-    });
+            for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
+                var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
+                renderPaymentMethod(paymentMethod,false, data.ImagePath, data.AdyenDescriptions[i].description);
+            }
+            // $('#paymentMethodsList > li > div').each(function () { console.log(this); });
+            var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
+            firstPaymentMethod.checked = true;
+            displaySelectedMethod(firstPaymentMethod.value);
+        });
+    }
 }
 
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, description = null) {
@@ -220,7 +224,6 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
                                         success: function (data) {
                                             console.log("success 2nd paypal !!!");
                                             console.log(data);
-                                            // component.handleAction(data.fullResponse.action)
                                         }
                                     })
                                         .fail(function(x, y) {
@@ -362,11 +365,11 @@ $('button[value="submit-payment"]').on('click', function () {
     var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
     adyenPaymentMethod.value = paymentMethodLabel;
 
-    // validateComponents();
+    validateComponents();
     // document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 
-    // return showValidation();
-    return true;
+    return showValidation();
+    // return true;
 });
 
 function showValidation() {
