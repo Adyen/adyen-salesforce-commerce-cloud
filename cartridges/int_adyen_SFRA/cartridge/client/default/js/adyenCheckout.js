@@ -54,6 +54,25 @@ checkoutConfiguration.paymentMethodsConfiguration = {
             firstName: document.getElementById("shippingFirstNamedefault").value,
             lastName: document.getElementById("shippingLastNamedefault").value
         }
+    },
+    paypal: {
+        intent: "capture",
+        onSubmit: (state, component) => {
+            makePaypalPayment(state.data, component)
+        },
+        onCancel: (data, component) => {
+            component.setStatus('ready');
+            makePaypalPayment({cancelPaypal: true}, component);
+        },
+        onError: (error, component) => {
+            console.error(error);
+            if(component)
+                component.setStatus('ready');
+        },
+        onAdditionalDetails: (state, component) => {
+            document.querySelector("#additionalDetailsHidden").value = JSON.stringify(state.data);
+            document.querySelector("#showConfirmationForm").submit();
+        }
     }
 };
 if(window.installments) {
@@ -68,6 +87,11 @@ function displaySelectedMethod(type) {
     selectedMethod = type;
     resetPaymentMethod();
     document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
+    console.log(type);
+    if(type === "paypal")
+        document.querySelector("button[value=submit-payment]").disabled = true;
+    else
+        document.querySelector("button[value=submit-payment]").disabled = false;
 }
 
 function renderGenericComponent() {
@@ -135,130 +159,8 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
             } else {
                 setTimeout(function() {
                     try {
-                        if(paymentMethod.type === "paypal") {
-                            var node = checkout.create(paymentMethod.type, {
-                                intent: "capture", // Change this to "authorize" if the payments should not be captured immediately. Contact Support to enable this flow.
-                                    onSubmit: (state, component) => {
-                                        var jsonObj = {
-                                            paymentMethodType: state.data.paymentMethod.type,
-                                            paymentMethodSubtype: state.data.paymentMethod.subtype,
-                                            clientData: state.data.riskData.clientData
-                                        };
-                                        // makePaypalPayment(jsonObj, component)
-
-                                        $.ajax({
-                                            url: 'Adyen-PaymentFromComponent',
-                                            type: 'post',
-                                            data: jsonObj,
-                                            success: function (data) {
-                                                console.log("success paypal !!!");
-                                                console.log(data);
-                                                component.handleAction(data.fullResponse.action)
-                                            }
-                                        })
-                                        .fail(function(x, y) {
-                                            console.log('fail!');
-                                            console.log(x);
-                                            console.log(y);
-                                        })
-
-                                    // Your function calling your server to make the /payments request.
-                                    // makePayment(state.data)
-                                    //     .then(response => {
-                                    //         if (response.action) {
-                                    //             console.log('response action')
-                                    //             // The Component handles the action object from the /payments response.
-                                    //             // component.handleAction(response.action);
-                                    //         } else {
-                                    //             console.log('else of response action')
-                                    //             // Your function to show the final result to the shopper.
-                                    //             // showFinalResult(response);
-                                    //         }
-                                    //     })
-                                    //     .catch(error => {
-                                    //         console.log('wernt to catch');
-                                    //         throw Error(error);
-                                    //     });
-                                },
-                                    onCancel: (data, component) => {
-                                    // Sets your prefered status of the component when a PayPal payment is cancelled. In this example, return to the initial state.
-                                    component.setStatus('ready');
-                                    $.ajax({
-                                        url: 'Adyen-PaymentFromComponent',
-                                        type: 'post',
-                                        data: {cancelPaypal: true},
-                                        success: function (data) {
-                                            console.log("success paypal !!!");
-                                            console.log(data);
-                                        }
-                                    })
-                                    .fail(function(x, y) {
-                                        console.log('fail!');
-                                        console.log(x);
-                                        console.log(y);
-                                    })
-                                },
-                                    onError: (error, component) => {
-                                    console.log(error);
-                                    // Sets your prefered status of the component when an error occurs. In this example, return to the initial state.
-                                    component.setStatus('ready');
-                                },
-                                    onAdditionalDetails: (state, component) => {
-                                    console.log(state);
-                                    const details = state.data.details;
-                                    document.querySelector("#adyenStateData").value = JSON.stringify(state.data);
-                                    // document.querySelector(".submit-payment").click();
-                                    var jsonObj = {billingToken: details.billingToken,
-                                        facilitatorAccessToken: details.facilitatorAccessToken,
-                                        orderID: details.orderID,
-                                        payerID: details.payerID,
-                                        paymentID: details.paymentID,
-                                        paymentData: state.data.paymentData
-                                    };
-                                    console.log(jsonObj);
-
-                                    $.ajax({
-                                        url: 'Adyen-ShowConfirmation',
-                                        type: 'post',
-                                        data: jsonObj,
-                                        success: function (data) {
-                                            console.log("success 2nd paypal !!!");
-                                            console.log(data);
-                                        }
-                                    })
-                                        .fail(function(x, y) {
-                                            console.log('fail!');
-                                            console.log(x);
-                                            console.log(y);
-                                        })
-
-                                    // $.ajax({
-                                    //     url: 'Adyen-test',
-                                    //     type: 'post',
-                                    //     data: jsonObj,
-                                    //     success: function (data) {
-                                    //         console.log("success 2nd paypal !!!");
-                                    //         console.log(data);
-                                    //     }
-                                    // })
-                                    //     .fail(function(x, y) {
-                                    //         console.log('fail!');
-                                    //         console.log(x);
-                                    //         console.log(y);
-                                    //     })
-
-                                        // Your function to submit a state.data object to the payments/details endpoint.
-                                    // submitDetails(state.data)
-                                    //     .then(result => {
-                                            // Your function to show the final result to the shopper.
-                                            // showFinalResult(result);
-                                        // })
-                                }
-                            }).mount(container);
-                        }
-                        else
-                            var node = checkout.create(paymentMethod.type).mount(container);
-                                componentArr[paymentMethodID] = node;
+                        var node = checkout.create(paymentMethod.type).mount(container);
+                        componentArr[paymentMethodID] = node;
                     }
                     catch (e) {}
                 }, 0);
@@ -345,11 +247,12 @@ function makePaypalPayment(data, component) {
     $.ajax({
         url: 'Adyen-PaymentFromComponent',
         type: 'post',
-        data: data,
+        data: {data: JSON.stringify(data)},
         success: function (data) {
             console.log("success paypal !!!");
             console.log(data);
-            component.handleAction(data.action)
+            if(data.fullResponse)
+                component.handleAction(data.fullResponse.action)
         }
     })
         .fail(function(x, y) {
@@ -366,10 +269,7 @@ $('button[value="submit-payment"]').on('click', function () {
     adyenPaymentMethod.value = paymentMethodLabel;
 
     validateComponents();
-    // document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
-
     return showValidation();
-    // return true;
 });
 
 function showValidation() {

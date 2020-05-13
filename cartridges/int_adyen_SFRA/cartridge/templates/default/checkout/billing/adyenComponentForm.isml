@@ -19,6 +19,8 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
 <isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
+<isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
+
 <input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
 <input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
@@ -54,3 +56,9 @@
 
 <span id="errorLoadComponent"></span>
 <div id="card"></div>
+</form>
+<form method="post"
+      id="showConfirmationForm"
+      action="${ShowConfirmationPaymentFromComponent}">
+            <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden"/>
+</form>

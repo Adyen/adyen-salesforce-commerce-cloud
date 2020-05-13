@@ -54,9 +54,9 @@ function createPaymentRequest(args) {
         }
 
         // Get 3DS2 data
-        // if (AdyenHelper.getAdyen3DS2Enabled()) {
-        //     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
-        // }
+        if (AdyenHelper.getAdyen3DS2Enabled()) {
+            paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+        }
 
         var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount); //args.Amount * 100;
         paymentRequest.amount = {
@@ -276,7 +276,7 @@ function executeCall(serviceType, requestObject){
     }
     var apiKey = AdyenHelper.getAdyenApiKey();
     service.addHeader("Content-type","application/json");
-    // service.addHeader("charset", "UTF-8");
+    service.addHeader("charset", "UTF-8");
     service.addHeader("X-API-KEY", apiKey);
     var callResult = service.call(JSON.stringify(requestObject));
     return callResult;

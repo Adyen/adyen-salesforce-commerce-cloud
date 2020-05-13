@@ -244,27 +244,120 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
     return next();
 });
 
-// server.post('ShowConfirmation', server.middleware.https, function (req, res, next) {
-//     Logger.getLogger('Adyen').error('inside show confirmation!');
+server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
+    Logger.getLogger('Adyen').error("inside show confirmation");
+    try {
+        var order = OrderMgr.getOrder(session.privacy.orderNo);
+        var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+        var adyenPaymentInstrument;
+        var paymentData;
+        var details;
+
+        //looping through all Adyen payment methods, however, this only can be one.
+        var instrumentsIter = paymentInstruments.iterator();
+        while (instrumentsIter.hasNext()) {
+            adyenPaymentInstrument = instrumentsIter.next();
+            paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
+        }
+
+        if(req.form.additionalDetailsHidden) { //paypal payment
+            var stateData = JSON.parse(req.form.additionalDetailsHidden);
+            paymentData = stateData.paymentData;
+            details = stateData.details;
+        } else {
+            //details is either redirectResult or payload
+            if (req.querystring.redirectResult) {
+                details = {'redirectResult': req.querystring.redirectResult};
+            } else if (req.querystring.payload) {
+                details = {'payload': req.querystring.payload};
+            }
+        }
+
+        Logger.getLogger('Adyen').error(JSON.stringify(paymentData));
+        Logger.getLogger('Adyen').error(JSON.stringify(details));
+
+        //redirect to payment/details
+        var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+        var requestObject = {
+            'details': details,
+            'paymentData': paymentData
+        };
+
+        var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+        Transaction.wrap(function () {
+            adyenPaymentInstrument.custom.adyenPaymentData = null;
+        });
+
+        // Authorised: The payment authorisation was successfully completed.
+        if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
+            if (result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
+                Transaction.wrap(function () {
+                    OrderMgr.failOrder(order);
+                });
+                Logger.getLogger("Adyen").error("Did not complete Alipay transaction, result: " + JSON.stringify(result));
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+                return next();
+            }
+
+            //custom fraudDetection
+            var fraudDetectionStatus = {status: 'success'};
+
+            // Places the order
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+            if (placeOrderResult.error) {
+                Transaction.wrap(function () {
+                    OrderMgr.failOrder(order);
+                });
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
+
+            var OrderModel = require('*/cartridge/models/order');
+            var Locale = require('dw/util/Locale');
+            var currentLocale = Locale.getLocale(req.locale.id);
+            var orderModel = new OrderModel(order, {countryCode: currentLocale.country});
+
+            //Save orderModel to custom object during session
+            Transaction.wrap(function () {
+                order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
+                AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+            });
+
+            clearForms();
+            Logger.getLogger('Adyen').error('about to redirect');
+            res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+            return next();
+        } else {
+            Transaction.wrap(function () {
+                OrderMgr.failOrder(order, true);
+            });
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+            return next();
+        }
+    }
+    catch (e){
+        Logger.getLogger("Adyen").error("Could not verify /payment/details: " + e.message);
+        res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+        return next();
+    }
+});
+
+// server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, function (req, res, next) {
 //     try {
 //         var order = OrderMgr.getOrder(session.privacy.orderNo);
 //         var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
 //         var adyenPaymentInstrument;
-//         var paymentData;
+//         var stateData = JSON.parse(req.form.additionalDetailsHidden);
+//         Logger.getLogger('Adyen').error(JSON.stringify(stateData));
+//         var paymentData = stateData.paymentData;
+//         var details = stateData.details;
+//         Logger.getLogger('Adyen').error(JSON.stringify(paymentData));
 //
 //         //looping through all Adyen payment methods, however, this only can be one.
 //         var instrumentsIter = paymentInstruments.iterator();
 //         while (instrumentsIter.hasNext()) {
 //             adyenPaymentInstrument = instrumentsIter.next();
 //             paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
-//         }
-//
-//         //details is either redirectResult or payload
-//         var details;
-//         if (req.querystring.redirectResult) {
-//             details = {'redirectResult': req.querystring.redirectResult};
-//         } else if (req.querystring.payload) {
-//             details = {'payload': req.querystring.payload};
 //         }
 //
 //         //redirect to payment/details
@@ -281,15 +374,6 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 //
 //         // Authorised: The payment authorisation was successfully completed.
 //         if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
-//             if (result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
-//                 Transaction.wrap(function () {
-//                     OrderMgr.failOrder(order);
-//                 });
-//                 Logger.getLogger("Adyen").error("Did not complete Alipay transaction, result: " + JSON.stringify(result));
-//                 res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
-//                 return next();
-//             }
-//
 //             //custom fraudDetection
 //             var fraudDetectionStatus = {status: 'success'};
 //
@@ -332,42 +416,21 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 //     }
 // });
 
-server.post('ShowConfirmation', server.middleware.https, function (req, res, next) {
+server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, function (req, res, next) {
     try {
-        if(session.privacy.orderNo && session.privacy.paymentMethod) {
-            try {
-                var order = OrderMgr.getOrder(session.privacy.orderNo);
-                Logger.getLogger('Adyen').error(order);
-                var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
-                var adyenPaymentInstrument;
+        var stateData = JSON.parse(req.form.additionalDetailsHidden);
+        var order = OrderMgr.getOrder(session.privacy.orderNo);
+        var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+        var adyenPaymentInstrument;
 
-                Logger.getLogger('Adyen').error('payment instruments collection: ' + order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT));
-                Logger.getLogger('Adyen').error('payment instruments collection: ' + JSON.stringify(order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)));
-            } catch (e) {
-                Logger.getLogger("Adyen").error("Unable to retrieve payment instruments data from session.");
-            }
-        }
-        var obj = {details: {billingToken: req.form.billingToken, facilitatorAccessToken: req.form.facilitatorAccessToken,
-                orderID: req.form.orderID, payerID: req.form.payerID, paymentID: req.form.paymentID}, paymentData: req.form.paymentData};
-
-        var paymentData = obj.paymentData;
-        var details = obj.details;
-        Logger.getLogger('Adyen').error(JSON.stringify(paymentData));
-        Logger.getLogger('Adyen').error(JSON.stringify(details));
+        var paymentData = stateData.paymentData;
+        var details = stateData.details;
 
         // looping through all Adyen payment methods, however, this only can be one.
         var instrumentsIter = paymentInstruments.iterator();
         while (instrumentsIter.hasNext()) {
             adyenPaymentInstrument = instrumentsIter.next();
         }
-
-        //details is either redirectResult or payload
-        // var details;
-        // if (req.querystring.redirectResult) {
-        //     details = {'redirectResult': req.querystring.redirectResult};
-        // } else if (req.querystring.payload) {
-        //     details = {'payload': req.querystring.payload};
-        // }
 
         //redirect to payment/details
         var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
@@ -384,15 +447,6 @@ server.post('ShowConfirmation', server.middleware.https, function (req, res, nex
 
         // Authorised: The payment authorisation was successfully completed.
         if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
-            if (result.resultCode == "Received" && result.paymentMethod.indexOf("alipay_hk") > -1) {
-                Transaction.wrap(function () {
-                    OrderMgr.failOrder(order);
-                });
-                Logger.getLogger("Adyen").error("Did not complete Alipay transaction, result: " + JSON.stringify(result));
-                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
-                return next();
-            }
-
             //custom fraudDetection
             var fraudDetectionStatus = {status: 'success'};
 
@@ -419,7 +473,7 @@ server.post('ShowConfirmation', server.middleware.https, function (req, res, nex
 
             clearForms();
             Logger.getLogger('Adyen').error("redirecting to order confirm");
-            res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+            res.redirect(URLUtils.https('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
             return next();
         } else {
             Transaction.wrap(function () {
@@ -492,38 +546,22 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     return next();
 });
 
-// var order;
-// var paymentInstrument;
-// if(session.privacy.orderNo && session.privacy.paymentMethod) {
-//     Logger.getLogger('Adyen').error(JSON.stringify("inside if statement"));
-//     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.paymentMethod));
-//     Logger.getLogger('Adyen').error(JSON.stringify(session.privacy.orderNo));
-//     try {
-//         order = OrderMgr.getOrder(session.privacy.orderNo);
-//         paymentInstrument = order.getPaymentInstruments(session.privacy.paymentMethod)[0];
-//         Logger.getLogger('Adyen').error("end of try");
-//     } catch (e) {
-//         Logger.getLogger("Adyen").error("Unable to retrieve order data from session.");
-//     }
-// }
 /**
  * Make a payment from inside a component (paypal)
  */
 server.post("PaymentFromComponent", server.middleware.https, function (req, res, next) {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var BasketMgr = require("dw/order/BasketMgr");
-
     if(req.form.cancelPaypal) {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true);
         });
+        Logger.getLogger('Adyen').error('failed order!');
+        res.json({result: "cancelled"});
         return next();
     }
     var currentBasket = BasketMgr.getCurrentBasket();
-    Logger.getLogger('Adyen').error(currentBasket);
-
-    Logger.getLogger('Adyen').error(JSON.stringify(req.form));
 
     var paymentInstrument;
     Transaction.wrap(function () {
@@ -533,8 +571,7 @@ server.post("PaymentFromComponent", server.middleware.https, function (req, res,
     });
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
 
-        var obj = {paymentMethod: {type: req.form.paymentMethodType, subtype: req.form.paymentMethodSubtype}, riskData: {clientData: req.form.clientData}};
-        paymentInstrument.custom.adyenPaymentData = JSON.stringify(obj);
+        paymentInstrument.custom.adyenPaymentData = req.form.data;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
         Logger.getLogger('Adyen').error("adyen payment data is ... " + paymentInstrument.custom.adyenPaymentData);
         paymentInstrument.custom.adyenPaymentMethod = "paypal";
