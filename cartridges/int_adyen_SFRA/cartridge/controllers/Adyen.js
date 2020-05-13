@@ -32,7 +32,6 @@ server.get('Adyen3D', server.middleware.https, function (req, res, next) {
 });
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {
-    Logger.getLogger('Adyen').error('inside authorizeWithForm');
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     var paymentInstrument;
     var order;
@@ -211,7 +210,6 @@ server.post('Authorize3DS2', server.middleware.https, function (req, res, next) 
 });
 
 server.get('Redirect', server.middleware.https, function (req, res, next) {
-    Logger.getLogger('inside Redirect');
     var signature = req.querystring.signature;
     var order = OrderMgr.getOrder(session.privacy.orderNo);
     if(order && signature){
@@ -245,7 +243,6 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 });
 
 server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
-    Logger.getLogger('Adyen').error("inside show confirmation");
     try {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
         var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
@@ -260,21 +257,12 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
         }
 
-        if(req.form.additionalDetailsHidden) { //paypal payment
-            var stateData = JSON.parse(req.form.additionalDetailsHidden);
-            paymentData = stateData.paymentData;
-            details = stateData.details;
-        } else {
-            //details is either redirectResult or payload
-            if (req.querystring.redirectResult) {
-                details = {'redirectResult': req.querystring.redirectResult};
-            } else if (req.querystring.payload) {
-                details = {'payload': req.querystring.payload};
-            }
+        //details is either redirectResult or payload
+        if (req.querystring.redirectResult) {
+            details = {'redirectResult': req.querystring.redirectResult};
+        } else if (req.querystring.payload) {
+            details = {'payload': req.querystring.payload};
         }
-
-        Logger.getLogger('Adyen').error(JSON.stringify(paymentData));
-        Logger.getLogger('Adyen').error(JSON.stringify(details));
 
         //redirect to payment/details
         var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
@@ -324,7 +312,6 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             });
 
             clearForms();
-            Logger.getLogger('Adyen').error('about to redirect');
             res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
             return next();
         } else {
@@ -369,8 +356,6 @@ server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, fun
         Transaction.wrap(function () {
             adyenPaymentInstrument.custom.adyenPaymentData = null;
         });
-        Logger.getLogger('Adyen').error(JSON.stringify(result));
-
         // Authorised: The payment authorisation was successfully completed.
         if (result.resultCode == "Authorised" || result.resultCode == 'Pending' || result.resultCode == 'Received') {
             //custom fraudDetection
@@ -398,7 +383,6 @@ server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, fun
             });
 
             clearForms();
-            Logger.getLogger('Adyen').error("redirecting to order confirm");
             res.redirect(URLUtils.https('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
             return next();
         } else {
@@ -483,7 +467,6 @@ server.post("PaymentFromComponent", server.middleware.https, function (req, res,
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true);
         });
-        Logger.getLogger('Adyen').error('failed order!');
         res.json({result: "cancelled"});
         return next();
     }
@@ -492,25 +475,21 @@ server.post("PaymentFromComponent", server.middleware.https, function (req, res,
     var paymentInstrument;
     Transaction.wrap(function () {
         collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
-            Logger.getLogger('Adyen').error(JSON.stringify('item is: ' + item));
         currentBasket.removePaymentInstrument(item);
     });
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
 
         paymentInstrument.custom.adyenPaymentData = req.form.data;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-        Logger.getLogger('Adyen').error("adyen payment data is ... " + paymentInstrument.custom.adyenPaymentData);
         paymentInstrument.custom.adyenPaymentMethod = "paypal";
     });
     var order = COHelpers.createOrder(currentBasket);
     session.privacy.orderNo = order.orderNo;
-    Logger.getLogger('Adyen').error(order);
 
     var result = adyenCheckout.createPaymentRequest({
         Order: order,
         PaymentInstrument: paymentInstrument
     });
-    Logger.getLogger("Adyen").error("function called successfully, result is ..." + JSON.stringify(result));
     res.json(result);
     return next();
 });

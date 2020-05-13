@@ -43,10 +43,8 @@ function createPaymentRequest(args) {
         var order = args.Order;
         var paymentInstrument = args.PaymentInstrument;
 
-        Logger.getLogger('Adyen').error("before creating request");
         //Create request object with payment details
         var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
-        Logger.getLogger('Adyen').error("after creating request");
 
         //Add Risk data
         if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
@@ -88,7 +86,6 @@ function createPaymentRequest(args) {
         }
 
         //Set open invoice data
-        // if (AdyenHelper.isOpenInvoiceMethod("paypal")) {
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
             paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
             if (paymentRequest.paymentMethod.type.indexOf("ratepay") != -1 && args.ratePayFingerprint) {

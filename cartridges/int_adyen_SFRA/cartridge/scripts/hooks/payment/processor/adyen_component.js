@@ -23,7 +23,6 @@ function Handle(basket, paymentInformation) {
         });
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
         paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
-        Logger.getLogger('Adyen').error('here it is ' + paymentInstrument.custom.adyenPaymentData);
         paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
 
         if (paymentInformation.isCreditCard) {
@@ -123,7 +122,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Transaction.rollback();
         return { error: true };
     }
-    Logger.getLogger('Adyen').error('about to save');
     AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
     Transaction.commit();
     return { authorized: true, error: false };
