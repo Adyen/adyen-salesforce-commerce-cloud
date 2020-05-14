@@ -66,6 +66,10 @@ function Authorize(args) {
         };
     }
 
+    if(result.pspReference){
+        order.custom.Adyen_pspReference = result.pspReference;
+    }
+
     if(result.threeDS2 || result.resultCode == "RedirectShopper") {
         paymentInstrument.custom.adyenPaymentData = result.paymentData;
         Transaction.commit();
