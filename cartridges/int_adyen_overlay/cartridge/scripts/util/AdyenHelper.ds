@@ -436,7 +436,7 @@ var __AdyenHelper: Object = {
 
     createAdyenRequestObject: function (order, paymentInstrument) {
         var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
-        var filteredJson = __AdyenHelper.validateStateData(jsonObject)
+        var filteredJson = __AdyenHelper.validateStateData(jsonObject);
         var stateData = filteredJson.stateData;
 
         var reference = "";
@@ -671,20 +671,20 @@ var __AdyenHelper: Object = {
     validateStateData: function (stateData) {
         var validFields = ["paymentMethod", "billingAddress", " deliveryAddress", "riskData", "shopperName",
             "dateOfBirth", "telephoneNumber", "shopperEmail", "countryCode", "socialSecurityNumber", "browserInfo",
-            "installments", "storePaymentMethod", "conversionId"]
-        var invalidFields = []
-        var filteredStateData = {}
-        var stateDataKeys = Object.keys(stateData)
+            "installments", "storePaymentMethod", "conversionId"];
+        var invalidFields = [];
+        var filteredStateData = {};
+        var stateDataKeys = Object.keys(stateData);
         for (var i = 0; i < stateDataKeys.length; i++) {
-            var keyName = stateDataKeys[i]
-            var includesInvalidField = validFields.indexOf(keyName) === -1
+            var keyName = stateDataKeys[i];
+            var includesInvalidField = validFields.indexOf(keyName) === -1;
             if (includesInvalidField) {
-                invalidFields.push(keyName)
+                invalidFields.push(keyName);
             } else {
-                filteredStateData[keyName] = stateData[keyName]
+                filteredStateData[keyName] = stateData[keyName];
             }
         }
-        return { stateData: filteredStateData, invalidFields: invalidFields }
+        return { stateData: filteredStateData, invalidFields: invalidFields };
     }
 
 }
