@@ -330,9 +330,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 });
 
 server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, function (req, res, next) {
-    Logger.getLogger('Adyen').error('show Confirmation Payment From Component');
     try {
-        Logger.getLogger('Adyen').error('payment from component');
         var stateData = JSON.parse(req.form.additionalDetailsHidden);
         var order = OrderMgr.getOrder(session.privacy.orderNo);
         var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
