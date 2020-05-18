@@ -12,8 +12,7 @@ var checkoutConfiguration = window.Configuration;
 
 
 $("#dwfrm_billing").submit(function(e) {
-    console.log('preventing');
-    e.preventDefault(); // avoid to execute the actual submit of the form.
+    e.preventDefault();
 
     var form = $(this);
     var url = form.attr('action');
@@ -21,24 +20,18 @@ $("#dwfrm_billing").submit(function(e) {
     $.ajax({
         type: "POST",
         url: url,
-        data: form.serialize(), // serializes the form's elements.
+        data: form.serialize(),
         success: function(data)
         {
-            console.log(data); // show response from the php script.
             if(!data.fieldErrors) {
                 var continueBtn = document.querySelector("#continueBtn");
                 var paypalComponent = document.querySelector("#component_paypal");
                 continueBtn.setAttribute("style", "display:none");
                 paypalComponent.setAttribute("style", "display:block");
             }
-            // if(data.clear)
-            //     document.querySelector(`#component_paypal`).setAttribute('style', 'display:block');
-            // makePaypalPayment(statedatapaypal, componentpaypal);
         }
     });
 });
-var statedatapaypal;
-var componentpaypal;
 
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
@@ -93,15 +86,9 @@ checkoutConfiguration.paymentMethodsConfiguration = {
             adyenPaymentMethod.value = paymentMethodLabel;
             stateData = componentArr[selectedMethod].stateData;
             document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
-            // document.querySelector("button[value=submit-payment]").disabled = false;
-            // $('#dwfrm_billing').trigger('submit');
-            statedatapaypal = state.data;
-            componentpaypal = component;
-            // document.querySelector("button[value=submit-payment]").click();
             makePaypalPayment(state.data, component);
         },
         onCancel: (data, component) => {
-            console.log('cancelling ...');
             component.setStatus('ready');
             makePaypalPayment({cancelPaypal: true}, component);
         },
@@ -111,16 +98,8 @@ checkoutConfiguration.paymentMethodsConfiguration = {
                 component.setStatus('ready');
         },
         onAdditionalDetails: (state, component) => {
-            console.log(state);
             document.querySelector("#additionalDetailsHidden").value = JSON.stringify(state.data);
             document.querySelector("#showConfirmationForm").submit();
-        },
-        onClick: (x, y) => {
-            console.log('zaddd');
-        },
-        onInit: (x, y) => {
-            console.log('innit');
-            console.log(x);
         }
     }
 };
@@ -142,84 +121,35 @@ function displaySelectedMethod(type) {
     }
     else
         document.querySelector(`#continueBtn`).setAttribute('style', 'display:block');
-
-    // } else {
-    //     $('#dwfrm_billing').trigger('submit');
-    // }
-    // if(type === "paypal")
-        // document.querySelector("button[value=submit-payment]").disabled = true;
-    // else
-        // document.querySelector("button[value=submit-payment]").disabled = false;
 }
 
 function renderGenericComponent() {
-    // console.log(componentArr.paypal);
-    // var x = 0;
-    // for(var [key, value] of Object.entries(componentArr)) {
-    //     console.log('unmounting');
-    //     x = 1;
-    //     value.unmount(`component_${key}`);
-    // }
-    // if(x === 1)
-    // setTimeout(function() {
-    //     getPaymentMethods( function (data) {
-    //         checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-    //         if(data.amount) {
-    //             checkoutConfiguration.amount = data.amount;
-    //         }
-    //         if(data.countryCode) {
-    //             checkoutConfiguration.countryCode = data.countryCode;
-    //         }
-    //         document.querySelector("#paymentMethodsList").innerHTML = "";
-    //
-    //         if(data.AdyenPaymentMethods.storedPaymentMethods) {
-    //             for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
-    //                 var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-    //                 if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
-    //                     renderPaymentMethod(paymentMethod,true, data.ImagePath);
-    //             }
-    //         }
-    //
-    //         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
-    //             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-    //             renderPaymentMethod(paymentMethod,false, data.ImagePath, data.AdyenDescriptions[i].description);
-    //         }
-    //         var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
-    //         firstPaymentMethod.checked = true;
-    //         displaySelectedMethod(firstPaymentMethod.value);
-    //     });
-    // }, 2000);
-    // else
-    if(document.querySelector('#paymentMethodsList > li')) {}
-         else {
-            getPaymentMethods(function (data) {
-                checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-                if (data.amount) {
-                    checkoutConfiguration.amount = data.amount;
-                }
-                if (data.countryCode) {
-                    checkoutConfiguration.countryCode = data.countryCode;
-                }
-                document.querySelector("#paymentMethodsList").innerHTML = "";
+    getPaymentMethods(function (data) {
+        checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
+        if (data.amount) {
+            checkoutConfiguration.amount = data.amount;
+        }
+        if (data.countryCode) {
+            checkoutConfiguration.countryCode = data.countryCode;
+        }
+        document.querySelector("#paymentMethodsList").innerHTML = "";
 
-                if (data.AdyenPaymentMethods.storedPaymentMethods) {
-                    for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
-                        var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-                        if (paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
-                            renderPaymentMethod(paymentMethod, true, data.ImagePath);
-                    }
-                }
-
-                for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
-                    var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-                    renderPaymentMethod(paymentMethod, false, data.ImagePath, data.AdyenDescriptions[i].description);
-                }
-                var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
-                firstPaymentMethod.checked = true;
-                displaySelectedMethod(firstPaymentMethod.value);
-            });
+        if (data.AdyenPaymentMethods.storedPaymentMethods) {
+            for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
+                var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
+                if (paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
+                    renderPaymentMethod(paymentMethod, true, data.ImagePath);
+            }
         }
 
+        for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
+            var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
+            renderPaymentMethod(paymentMethod, false, data.ImagePath, data.AdyenDescriptions[i].description);
+        }
+        var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
+        firstPaymentMethod.checked = true;
+        displaySelectedMethod(firstPaymentMethod.value);
+    });
 }
 
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, description = null) {
@@ -253,6 +183,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
             } else {
                 setTimeout(function() {
                     try {
+                        //todo replace temporary continue button with onClick function once available by checkout
                         if(paymentMethod.type === 'paypal') {
                             var continueBtn = document.createElement('button');
                             continueBtn.innerText = "continue";
@@ -353,7 +284,6 @@ function makePaypalPayment(data, component) {
         type: 'post',
         data: {data: JSON.stringify(data)},
         success: function (data) {
-            console.log(data);
             if(data.fullResponse)
                 component.handleAction(data.fullResponse.action)
         }
