@@ -3,8 +3,6 @@
 var server = require('server');
 server.extend(module.superModule);
 
-var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var collections = require('*/cartridge/scripts/util/collections');
