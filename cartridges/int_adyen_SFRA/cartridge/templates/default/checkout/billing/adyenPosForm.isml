@@ -1,8 +1,0 @@
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<iscontent type="text/html" encoding="off"/>
-<input id="terminalId" type="hidden" ${adyenPaymentFields.terminalId.attributes}/>
-<h3>${Resource.msg('terminal.selectTerminal', 'terminal', null)}</h3>
-<div id="AdyenPosTerminals">
-    <span>${Resource.msg('terminal.noTerminals', 'terminal', null)}</span>
-</div>
