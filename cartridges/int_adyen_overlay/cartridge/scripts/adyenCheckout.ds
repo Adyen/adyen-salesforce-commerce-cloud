@@ -62,10 +62,12 @@ function createPaymentRequest(args) {
             "value": myAmount
         };
 
-        if(paymentRequest.paymentMethod.type === "paypal")
+        if(paymentRequest.paymentMethod.type === "paypal") {
             var paymentMethodType = paymentRequest.paymentMethod;  //paypal
-        else
+        }
+        else {
             var paymentMethodType = paymentRequest.paymentMethod.type;
+        }
         //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 
