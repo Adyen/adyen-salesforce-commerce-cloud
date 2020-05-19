@@ -456,6 +456,20 @@ server.get("GetPaymentMethods", server.middleware.https, function (req, res, nex
     return next();
 });
 
+server.post('Donate', server.middleware.https, function (req, res, next) {
+    var adyenGiving = require('*/cartridge/scripts/adyenGiving');
+    var pspReference = req.form.pspReference;
+    var orderNo = req.form.orderNo;
+    var donationAmount = {
+        value: req.form.amountValue,
+        currency: req.form.amountCurrency
+    };
+    var donationResult = adyenGiving.donate(orderNo, donationAmount, pspReference);
+
+    return donationResult.response;
+
+});
+
 /**
  * Make a payment from inside a component (paypal)
  */
