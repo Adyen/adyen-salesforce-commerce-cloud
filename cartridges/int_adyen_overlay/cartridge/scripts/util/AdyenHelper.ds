@@ -436,6 +436,8 @@ var __AdyenHelper: Object = {
 
     createAdyenRequestObject: function (order, paymentInstrument) {
         var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+        var filteredJson = __AdyenHelper.validateStateData(jsonObject);
+        var stateData = filteredJson.stateData;
 
         var reference = "";
         if (order && !empty(order.getOrderNo())) {
@@ -444,14 +446,14 @@ var __AdyenHelper: Object = {
             reference = 'recurringPayment-account';
         }
 
-        jsonObject.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
-        jsonObject.reference = reference;
-        jsonObject.returnUrl = URLUtils.https("Adyen-ShowConfirmation").toString();
-        jsonObject.applicationInfo = __AdyenHelper.getApplicationInfo(true);
-        jsonObject.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
-        jsonObject.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
-        jsonObject.additionalData = {};
-        return jsonObject;
+        stateData.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
+        stateData.reference = reference;
+        stateData.returnUrl = URLUtils.https("Adyen-ShowConfirmation").toString();
+        stateData.applicationInfo = __AdyenHelper.getApplicationInfo(true);
+        stateData.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
+        stateData.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
+        stateData.additionalData = {};
+        return stateData;
     },
 
     add3DS2Data: function(jsonObject){
@@ -664,7 +666,27 @@ var __AdyenHelper: Object = {
             }
         }
         return applicationInfo;
+    },
+
+    validateStateData: function (stateData) {
+        var validFields = ["paymentMethod", "billingAddress", " deliveryAddress", "riskData", "shopperName",
+            "dateOfBirth", "telephoneNumber", "shopperEmail", "countryCode", "socialSecurityNumber", "browserInfo",
+            "installments", "storePaymentMethod", "conversionId"];
+        var invalidFields = [];
+        var filteredStateData = {};
+        var stateDataKeys = Object.keys(stateData);
+        for (var i = 0; i < stateDataKeys.length; i++) {
+            var keyName = stateDataKeys[i];
+            var includesInvalidField = validFields.indexOf(keyName) === -1;
+            if (includesInvalidField) {
+                invalidFields.push(keyName);
+            } else {
+                filteredStateData[keyName] = stateData[keyName];
+            }
+        }
+        return { stateData: filteredStateData, invalidFields: invalidFields };
     }
+
 }
 
 function pad(num) {
