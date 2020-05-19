@@ -23,12 +23,11 @@ $("#dwfrm_billing").submit(function(e) {
         data: form.serialize(),
         success: function(data)
         {
-            if(!data.fieldErrors) {
-                var continueBtn = document.querySelector("#continueBtn");
-                var paypalComponent = document.querySelector("#component_paypal");
-                continueBtn.setAttribute("style", "display:none");
-                paypalComponent.setAttribute("style", "display:block");
-            }
+            if(data.fieldErrors) {
+            return
+        }
+            document.querySelector("#continueBtn").setAttribute("style", "display:none");
+            document.querySelector("#component_paypal").setAttribute("style", "display:block");
         }
     });
 });
