@@ -29,4 +29,6 @@
 
 	<!--Adyen Component-->
 	<field formid="adyenStateData" type="string" mandatory="true"/>
+	<field formid="paypalStateData" type="string" mandatory="true"/>
+
 </form>

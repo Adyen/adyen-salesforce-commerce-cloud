@@ -134,6 +134,46 @@ function showConfirmation() {
 	return {};
 }
 
+function paymentFromComponent(data) {
+    Logger.getLogger('Adyen').error('inside payment from component');
+    Logger.getLogger('Adyen').error(JSON.stringify(data));
+    return {response: 'paypal from component'};
+    // var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    // var BasketMgr = require("dw/order/BasketMgr");
+    // var reqDataObj = JSON.parse(req.form.data);
+    //
+    // if(reqDataObj.cancelPaypal) {
+    //     var order = OrderMgr.getOrder(session.privacy.orderNo);
+    //     Transaction.wrap(function () {
+    //         OrderMgr.failOrder(order, true);
+    //     });
+    //     res.json({result: "cancelled"});
+    //     return next();
+    // }
+    // var currentBasket = BasketMgr.getCurrentBasket();
+    //
+    // var paymentInstrument;
+    // Transaction.wrap(function () {
+    //     collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
+    //         currentBasket.removePaymentInstrument(item);
+    //     });
+    //     paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
+    //
+    //     paymentInstrument.custom.adyenPaymentData = req.form.data;
+    //     session.privacy.paymentMethod = paymentInstrument.paymentMethod;
+    //     paymentInstrument.custom.adyenPaymentMethod = reqDataObj.paymentMethod.type;
+    // });
+    // var order = COHelpers.createOrder(currentBasket);
+    // session.privacy.orderNo = order.orderNo;
+    //
+    // var result = adyenCheckout.createPaymentRequest({
+    //     Order: order,
+    //     PaymentInstrument: paymentInstrument
+    // });
+    // res.json(result);
+    // return next();
+}
+
 /**
  * Separated order confirm for Credit cards and APM's.
  */
@@ -436,6 +476,8 @@ exports.Authorize3DS2 = guard.ensure(['https', 'post'], authorize3ds2);
 exports.Redirect3DS2 = guard.ensure(['https', 'post'], redirect3ds2);
 
 exports.AuthorizeWithForm = guard.ensure(['https', 'post'], authorizeWithForm);
+
+exports.PaymentFromComponent = guard.ensure(['https', 'post'], paymentFromComponent);
 
 exports.Notify = guard.ensure(['post'], notify);
 

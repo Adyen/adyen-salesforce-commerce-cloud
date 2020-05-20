@@ -30,6 +30,8 @@ function Handle(args) {
         }
 
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
+        Logger.getLogger('Adyen').error('adyen state data is ' + JSON.stringify(paymentInformation.get("adyenStateData").value()));
+        Logger.getLogger('Adyen').error('paypal state data is ' + JSON.stringify(paymentInformation.get("paypalStateData").value()));
             paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
     });
 

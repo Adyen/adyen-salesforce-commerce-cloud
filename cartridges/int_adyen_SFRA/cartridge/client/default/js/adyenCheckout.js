@@ -82,6 +82,7 @@ function renderGenericComponent() {
         document.querySelector("#paymentMethodsList").innerHTML = "";
 
         if(data.AdyenPaymentMethods.storedPaymentMethods) {
+            var checkout = new AdyenCheckout(checkoutConfiguration);
             for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
                 var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
                 if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
