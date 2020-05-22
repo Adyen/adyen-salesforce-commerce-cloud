@@ -478,7 +478,7 @@ server.post("PaymentFromComponent", server.middleware.https, function (req, res,
     var BasketMgr = require("dw/order/BasketMgr");
     var reqDataObj = JSON.parse(req.form.data);
 
-    if(reqDataObj.cancelPaypal) {
+    if(reqDataObj.cancelTransaction) {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true);

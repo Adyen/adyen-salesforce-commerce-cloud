@@ -82,11 +82,11 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         onSubmit: (state, component) => {
             assignPaymentMethodValue();
             document.querySelector("#adyenStateData").value = JSON.stringify(componentArr[selectedMethod].stateData);
-            makePaypalPayment(state.data, component);
+            paymentFromComponent(state.data, component);
         },
         onCancel: (data, component) => {
             component.setStatus('ready');
-            makePaypalPayment({cancelPaypal: true}, component);
+            paymentFromComponent({cancelTransaction: true}, component);
         },
         onError: (error, component) => {
             if(component) {
@@ -279,7 +279,7 @@ function getPaymentMethods(paymentMethods) {
     });
 };
 
-function makePaypalPayment(data, component) {
+function paymentFromComponent(data, component) {
     $.ajax({
         url: 'Adyen-PaymentFromComponent',
         type: 'post',
