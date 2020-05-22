@@ -45,13 +45,14 @@ function createPaymentRequest(args) {
 
         //Create request object with payment details
         var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
+            Logger.getLogger("Adyen").error('payment request is ' + JSON.stringify(paymentRequest));
 
-        //Add Risk data
+    //     //Add Risk data
         if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
             paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
         }
 
-        // Get 3DS2 data
+    //     // Get 3DS2 data
         if (AdyenHelper.getAdyen3DS2Enabled()) {
             paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
         }
@@ -62,10 +63,12 @@ function createPaymentRequest(args) {
             "value": myAmount
         };
 
-        var paymentMethodType = paymentRequest.paymentMethod.type;
-        //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
+    //     var paymentMethodType = paymentRequest.paymentMethod.type;
+            var paymentMethodType = paymentRequest.paymentMethod;
+            //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 
+        Logger.getLogger("Adyen").error('payment request is ' + JSON.stringify(paymentRequest));
 
         var adyenForm = null;
         if(args.adyenForm){
@@ -81,6 +84,7 @@ function createPaymentRequest(args) {
         if (args.adyenFingerprint) {
             paymentRequest.deviceFingerprint = args.adyenFingerprint
         }
+        Logger.getLogger("Adyen").error('payment request is ' + JSON.stringify(paymentRequest));
 
         //Set open invoice data
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {

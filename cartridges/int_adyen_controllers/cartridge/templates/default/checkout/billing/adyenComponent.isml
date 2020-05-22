@@ -1,6 +1,8 @@
 <iscontent type="text/html" encoding="off"/>
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
