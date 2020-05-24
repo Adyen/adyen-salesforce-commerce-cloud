@@ -1,4 +1,4 @@
-// var bundle = require('./bundle');
+var bundle = require('./bundle');
 
 var isValid = false;
 var maskedCardNumber;
