@@ -28,10 +28,7 @@ function Handle(args) {
         if (result.error) {
             return result;
         }
-
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
-        Logger.getLogger('Adyen').error('adyen state data is ' + JSON.stringify(paymentInformation.get("adyenStateData").value()));
-        Logger.getLogger('Adyen').error('paypal state data is ' + JSON.stringify(paymentInformation.get("paypalStateData").value()));
             paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
     });
 
@@ -45,6 +42,8 @@ function Authorize(args) {
     var adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     var order = args.Order;
     var paymentInstrument = args.PaymentInstrument;
+    Logger.getLogger("Adyen").error('order is ' + JSON.stringify(order));
+    Logger.getLogger("Adyen").error('payment inst is ' + JSON.stringify(paymentInstrument));
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
 
     Transaction.wrap(function () {

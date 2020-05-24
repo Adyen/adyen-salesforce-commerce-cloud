@@ -546,7 +546,7 @@ exports.Redirect = redirect;
 
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 
-exports.ShowConfirmationPaymentFromComponent = guard.ensure(['https', 'post'], showConfirmationPaymentFromComponent);
+exports.ShowConfirmationPaymentFromComponent = guard.ensure(['https'], showConfirmationPaymentFromComponent);
 
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
