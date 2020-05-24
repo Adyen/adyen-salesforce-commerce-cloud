@@ -6,7 +6,6 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
-var Logger = require('dw/system/Logger');
 var constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
@@ -42,8 +41,6 @@ function Authorize(args) {
     var adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     var order = args.Order;
     var paymentInstrument = args.PaymentInstrument;
-    Logger.getLogger("Adyen").error('order is ' + JSON.stringify(order));
-    Logger.getLogger("Adyen").error('payment inst is ' + JSON.stringify(paymentInstrument));
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
 
     Transaction.wrap(function () {

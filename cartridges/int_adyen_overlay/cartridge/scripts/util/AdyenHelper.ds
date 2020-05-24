@@ -8,7 +8,6 @@ var dwutil = require("dw/util");
 var basketMgr = require("dw/order/BasketMgr");
 var URLUtils = require('dw/web/URLUtils');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
-var Logger = require('dw/system/Logger');
 
 var __AdyenHelper: Object = {
 
@@ -671,7 +670,6 @@ var __AdyenHelper: Object = {
     },
 
     validateStateData: function (stateData) {
-        Logger.getLogger('Adyen').error(stateData);
         var validFields = ["paymentMethod", "billingAddress", " deliveryAddress", "riskData", "shopperName",
             "dateOfBirth", "telephoneNumber", "shopperEmail", "countryCode", "socialSecurityNumber", "browserInfo",
             "installments", "storePaymentMethod", "conversionId"];

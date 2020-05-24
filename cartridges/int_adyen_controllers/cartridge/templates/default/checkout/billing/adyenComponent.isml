@@ -7,8 +7,6 @@
 
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 
-<isset name="paypalData" value="${pdict.paymentFromComponent}" scope="page"/>
-
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 
 <isscript>
