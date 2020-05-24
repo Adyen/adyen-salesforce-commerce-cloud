@@ -1,4 +1,4 @@
-var bundle = require('./bundle');
+// var bundle = require('./bundle');
 
 var isValid = false;
 var maskedCardNumber;
@@ -26,6 +26,7 @@ function initializeBillingEvents() {
     if (window.getPaymentMethodsResponse) {
         paymentMethodsResponse = window.getPaymentMethodsResponse;
         checkoutConfiguration = window.Configuration;
+        console.log(checkoutConfiguration);
         checkoutConfiguration.onChange = function (state, component) {
             isValid = state.isValid;
             var type = state.data.paymentMethod.type;
@@ -63,11 +64,33 @@ function initializeBillingEvents() {
                 personalDetailsRequired: true, // turn personalDetails section on/off
                 billingAddressRequired: false, // turn billingAddress section on/off
                 showEmailAddress: false, // allow shopper to specify their email address
+            },
+            paypal: {
+                intent: "capture",
+                onSubmit: (state, component) => {
+                    assignPaymentMethodValue();
+                    makePaypalPayment(state.data, component);
+                    document.querySelector("#adyenStateData").value = JSON.stringify(state.data);
+                },
+                onCancel: (data, component) => {
+                    component.setStatus('ready');
+                    makePaypalPayment({cancelPaypal: true}, component);
+                },
+                onError: (error, component) => {
+                    if (component) {
+                        component.setStatus('ready');
+                    }
+                },
+                onAdditionalDetails: (state, component) => {
+                    document.querySelector("#paypalStateData").value = JSON.stringify(state.data);
+                    $('#dwfrm_billing').trigger('submit');
+                }
             }
         };
         if(window.installments) {
             try {
                 var installments = JSON.parse(window.installments);
+                console.log(installments);
                 checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
             }
             catch (e) {}
@@ -81,37 +104,46 @@ function initializeBillingEvents() {
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
-    checkoutConfiguration = window.Configuration;
-    checkout = new AdyenCheckout(checkoutConfiguration);
-    var newCard = document.getElementById("newCard");
-    var adyenStateData;
-    var isValid = false;
-    var node = checkout.create("card", {
-        hasHolderName: true,
-        holderNameRequired: true,
-        onChange: function(state) {
-            adyenStateData = state.data;
-            isValid = state.isValid;
+    $('#add-card-submit').on('click', function (e) {
+        e.preventDefault();
+        if (window.AdyenCard.isValid) {
+            copyCardData(window.AdyenCard);
+            $('#add-card-submit-hidden').trigger('click');
         }
-    }).mount(newCard);
-
-    $('#applyBtn').on('click', function (e) {
-        if (!isValid) {
-            //TODOBAS showvalidation
-            node.showValidation();
-            return false;
-        }
-        document.querySelector("#adyenStateData").value = JSON.stringify(adyenStateData);
     });
+}
+
+function assignPaymentMethodValue() {
+    var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
+    adyenPaymentMethod.value = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
 }
 
 function displaySelectedMethod(type) {
     selectedMethod = type;
     resetPaymentMethod();
-    document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
+    if(type !== "paypal") {
+        document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
+        document.querySelector('#billing-submit').disabled = false;
+        if (document.querySelector(`#continueBtn`)) {
+            document.querySelector(`#continueBtn`).setAttribute('style', 'display:none');
+        }
+    }
+    else {
+        document.querySelector('#billing-submit').disabled = true;
+        document.querySelector(`#continueBtn`).setAttribute('style', 'display:block');
+    }
 }
 
 function resetPaymentMethod() {
+    // $('#requiredBrandCode').hide();
+    // $('#selectedIssuer').val("");
+    // $('#adyenIssuerName').val("");
+    // $('#dateOfBirth').val("");
+    // $('#telephoneNumber').val("");
+    // $('#gender').val("");
+    // $('#bankAccountOwnerName').val("");
+    // $('#bankAccountNumber').val("");
+    // $('#bankLocationId').val("");
     $('.additionalFields').hide();
 };
 
@@ -125,17 +157,19 @@ function showValidation() {
         inputs = Object.values(inputs).filter(function(input) {
             return !(input.value && input.value.length > 0);
         });
-        for(var i = 0; i < inputs.length; i++) {
-            inputs[i].classList.add('adyen-checkout__input--error');
+        for(var input of inputs) {
+            input.classList.add('adyen-checkout__input--error');
         }
         if(inputs.length > 0)
             return false;
+        return true;
     } else if(selectedMethod === "ratepay") {
         var input = document.querySelector("#dateOfBirthInput");
         if (!(input.value && input.value.length > 0)) {
             input.classList.add('adyen-checkout__input--error');
             return false;
         }
+        return true;
     }
     return true;
 }
@@ -171,7 +205,6 @@ function validateComponents() {
             stateData.paymentMethod.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
         }
     }
-    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }
 
 function validateCustomInputField(input) {
@@ -234,10 +267,11 @@ function renderGenericComponent() {
 }
 
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
+    // var checkout = new AdyenCheckout(checkoutConfiguration);
     var paymentMethodsUI = document.querySelector('#paymentMethodsList');
     var li = document.createElement('li');
     var paymentMethodID = storedPaymentMethodBool? `storedCard${paymentMethod.id}` : paymentMethod.type;
-    var imagePath = `${path}${storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type}.png`;
+    var imagePath = storedPaymentMethodBool? `${path}${paymentMethod.brand}.png` : `${path}${paymentMethod.type}.png`;
     var label = storedPaymentMethodBool? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}` : `${paymentMethod.name}`;
     var liContents = `
                               <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
@@ -248,21 +282,40 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
 
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
-    try {
-        if(storedPaymentMethodBool) {
-            var node = checkout.create("card", paymentMethod).mount(container);
+
+    if(storedPaymentMethodBool) {
+        setTimeout(function () {
+            try {
+                var node = checkout.create("card", paymentMethod).mount(container);
+                componentArr[paymentMethodID] = node;
+
+            } catch (e) {}
+        }, 0);
+    } else {
+        var fallback = getFallback(paymentMethod.type);
+        if(fallback) {
+            var template = document.createElement("template");
+            template.innerHTML = fallback;
+            container.append(template.content);
         } else {
-            var fallback = getFallback(paymentMethod.type);
-            if(fallback) {
-                var template = document.createElement("template");
-                template.innerHTML = fallback;
-                container.append(template.content);
-            } else {
-                var node = checkout.create(paymentMethod.type).mount(container);
+            if(paymentMethod.type === 'paypal') {
+                var continueBtn = document.createElement('button');
+                continueBtn.innerText = "continue";
+                continueBtn.setAttribute("id", "continueBtn");
+                continueBtn.setAttribute("style", "display:none");
+                continueBtn.onclick = function() {
+                    $('#dwfrm_billing').trigger('submit');
+                };
+                li.append(continueBtn);
             }
+            setTimeout(function () {
+                try {
+                    var node = checkout.create(paymentMethod.type).mount(container);
+                    componentArr[paymentMethodID] = node;
+                } catch (e) {}
+            }, 0);
         }
-        componentArr[paymentMethodID] = node;
-    } catch (e) {}
+    }
 
     container.classList.add("additionalFields");
     container.setAttribute("id", `component_${paymentMethodID}`);
@@ -277,6 +330,44 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
         displaySelectedMethod(event.target.value);
     };
 }
+
+function makePaypalPayment(data, component) {
+    $.ajax({
+        url: 'Adyen-PaymentFromComponent',
+        type: 'post',
+        data: JSON.stringify(data),
+        contentType: "application/; charset=utf-8",
+        success: function (data) {
+            if(data.result && data.result.fullResponse) {
+                component.handleAction(data.result.fullResponse.action)
+            }
+        }
+    })
+        .fail(function(xhr, textStatus) {})
+}
+
+$("#dwfrm_billing").submit(function(e) {
+    if(selectedMethod === "paypal" && !document.querySelector("#paypalStateData").value) {
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            // beforeSend: assignState(),
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                if(data.error) {
+                    return
+                }
+                document.querySelector("#continueBtn").setAttribute("style", "display:none");
+                document.querySelector("#component_paypal").setAttribute("style", "display:block");
+            }
+        });
+
+    }
+});
 
 /**
  * @function
@@ -294,5 +385,3 @@ exports.initAccount = function() {
 exports.renderGenericComponent = function() {
     renderGenericComponent();
 }
-
-
