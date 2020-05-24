@@ -134,6 +134,67 @@ function showConfirmation() {
 	return {};
 }
 
+function showConfirmationPaymentFromComponent() {
+    var paymentInformation = app.getForm('adyPaydata');
+    Logger.getLogger('Adyen').error('value ta3et form ' + paymentInformation.get("paypalStateData").value());
+
+
+    var orderNumber = session.privacy.orderNo;
+    var order = OrderMgr.getOrder(orderNumber);
+    var paymentInstruments = order.getPaymentInstruments("AdyenComponent");
+    var adyenPaymentInstrument;
+    // var paymentData;
+
+    var instrumentsIter = paymentInstruments.iterator();
+    while (instrumentsIter.hasNext()) {
+        adyenPaymentInstrument = instrumentsIter.next();
+        // paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
+    }
+
+    // var details = request.httpParameterMap.getRequestBodyAsString();
+    var passedData = JSON.parse(paymentInformation.get("paypalStateData").value());
+    var details = passedData.details;
+    var paymentData  = passedData.paymentData;
+    Logger.getLogger('Adyen').error(details);
+    Logger.getLogger('Adyen').error('payment data = ' + paymentData);
+
+    //redirect to payment/details
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    var requestObject = {
+        'details': details,
+        'paymentData' : paymentData
+    };
+    var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    Logger.getLogger('Adyen').error('result data = ' + JSON.stringify(result));
+
+    Transaction.wrap(function () {
+        adyenPaymentInstrument.custom.adyenPaymentData = null;
+    });
+    if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
+        Transaction.wrap(function () {
+            AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+        });
+        OrderModel.submit(order);
+        clearForms();
+        app.getController('COSummary').ShowConfirmation(order);
+        return {};
+    }
+    else {
+        // fail order
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order);
+        });
+        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+        // should be assingned by previous calls or not
+        var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+
+        app.getController('COSummary').Start({
+            PlaceOrderError: errorStatus
+        });
+    }
+    return {};
+}
+
 function paymentFromComponent(data) {
     Logger.getLogger('Adyen').error('inside payment from component');
     Logger.getLogger('Adyen').error(JSON.stringify(data));
@@ -484,6 +545,8 @@ exports.Notify = guard.ensure(['post'], notify);
 exports.Redirect = redirect;
 
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
+
+exports.ShowConfirmationPaymentFromComponent = guard.ensure(['https', 'post'], showConfirmationPaymentFromComponent);
 
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
