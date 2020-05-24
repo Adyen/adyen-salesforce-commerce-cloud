@@ -136,12 +136,8 @@ function showConfirmation() {
 
 function paymentFromComponent() {
     var PaymentMgr = require('dw/order/PaymentMgr');
-    var paymentInformation = app.getForm('adyPaydata');
-    Logger.getLogger('Adyen').error('inside test fun');
     if(request.httpParameterMap.getRequestBodyAsString().indexOf('cancelPaypal') > -1) {
-        Logger.getLogger('Adyen').error('cancelling');
         var order = OrderMgr.getOrder(session.privacy.orderNo);
-        Logger.getLogger('Adyen').error(order);
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true);
         });
@@ -151,7 +147,6 @@ function paymentFromComponent() {
     var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
     var currentBasket = BasketMgr.getCurrentBasket();
-    Logger.getLogger('Adyen').error(currentBasket);
     var cart = app.getModel('Cart').get();
     var adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     var paymentInstrument;
@@ -164,18 +159,12 @@ function paymentFromComponent() {
         }
 
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
-        // paymentInstrument.custom.adyenPaymentData = paymentInformation.get("paypalStateData").value();
         paymentInstrument.custom.adyenPaymentData = request.httpParameterMap.getRequestBodyAsString();
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
         paymentInstrument.custom.adyenPaymentMethod = "paypal";
-        var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
         cart.calculate();
     });
-    Logger.getLogger('Adyen').error(currentBasket);
     order = OrderMgr.createOrder(currentBasket);
-
-    Logger.getLogger('Adyen').error(order);
-
     session.privacy.orderNo = order.orderNo;
 
     Transaction.begin();
@@ -183,7 +172,6 @@ function paymentFromComponent() {
         Order: order,
         PaymentInstrument: paymentInstrument
     });
-    Logger.getLogger('Adyen').error('result for paypal is .. ' + JSON.stringify(result));
 
     let responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({result: result});
