@@ -63,7 +63,6 @@ function createPaymentRequest(args) {
         };
 
         var paymentMethodType = paymentRequest.paymentMethod.type;
-    //         var paymentMethodType = paymentRequest.paymentMethod;
             //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 

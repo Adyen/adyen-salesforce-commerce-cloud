@@ -11,11 +11,9 @@
 
 <isscript>
     var getPaymentMethodsResponse = JSON.stringify(methods);
-    var paypalData = JSON.stringify(paypalData);
 </isscript>
 
     <script>
-        window.paypalData = JSON.parse(`${paypalData}`);
         window.getPaymentMethodsResponse = JSON.parse(`${getPaymentMethodsResponse}`);
     var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";

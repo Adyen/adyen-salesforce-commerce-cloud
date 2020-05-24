@@ -26,7 +26,6 @@ function initializeBillingEvents() {
     if (window.getPaymentMethodsResponse) {
         paymentMethodsResponse = window.getPaymentMethodsResponse;
         checkoutConfiguration = window.Configuration;
-        console.log(checkoutConfiguration);
         checkoutConfiguration.onChange = function (state, component) {
             isValid = state.isValid;
             var type = state.data.paymentMethod.type;
@@ -90,7 +89,6 @@ function initializeBillingEvents() {
         if(window.installments) {
             try {
                 var installments = JSON.parse(window.installments);
-                console.log(installments);
                 checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
             }
             catch (e) {}
@@ -135,15 +133,6 @@ function displaySelectedMethod(type) {
 }
 
 function resetPaymentMethod() {
-    // $('#requiredBrandCode').hide();
-    // $('#selectedIssuer').val("");
-    // $('#adyenIssuerName').val("");
-    // $('#dateOfBirth').val("");
-    // $('#telephoneNumber').val("");
-    // $('#gender').val("");
-    // $('#bankAccountOwnerName').val("");
-    // $('#bankAccountNumber').val("");
-    // $('#bankLocationId').val("");
     $('.additionalFields').hide();
 };
 
@@ -157,19 +146,18 @@ function showValidation() {
         inputs = Object.values(inputs).filter(function(input) {
             return !(input.value && input.value.length > 0);
         });
-        for(var input of inputs) {
-            input.classList.add('adyen-checkout__input--error');
+        for(var i = 0; i < inputs.length; i++) {
+            inputs[i].classList.add('adyen-checkout__input--error');
         }
-        if(inputs.length > 0)
+        if(inputs.length > 0) {
             return false;
-        return true;
+        }
     } else if(selectedMethod === "ratepay") {
         var input = document.querySelector("#dateOfBirthInput");
         if (!(input.value && input.value.length > 0)) {
             input.classList.add('adyen-checkout__input--error');
             return false;
         }
-        return true;
     }
     return true;
 }
@@ -267,11 +255,10 @@ function renderGenericComponent() {
 }
 
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
-    // var checkout = new AdyenCheckout(checkoutConfiguration);
     var paymentMethodsUI = document.querySelector('#paymentMethodsList');
     var li = document.createElement('li');
     var paymentMethodID = storedPaymentMethodBool? `storedCard${paymentMethod.id}` : paymentMethod.type;
-    var imagePath = storedPaymentMethodBool? `${path}${paymentMethod.brand}.png` : `${path}${paymentMethod.type}.png`;
+    var imagePath = `${path}${storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type}.png`;
     var label = storedPaymentMethodBool? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}` : `${paymentMethod.name}`;
     var liContents = `
                               <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
@@ -353,7 +340,6 @@ $("#dwfrm_billing").submit(function(e) {
         var url = form.attr('action');
 
         $.ajax({
-            // beforeSend: assignState(),
             type: "POST",
             url: url,
             data: form.serialize(),
