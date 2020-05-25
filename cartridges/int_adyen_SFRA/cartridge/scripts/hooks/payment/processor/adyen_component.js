@@ -72,7 +72,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Order: order,
         PaymentInstrument: paymentInstrument
     });
-
     if (result.error) {
         var errors = [];
         errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
@@ -80,7 +79,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             authorized: false, fieldErrors: [], serverErrors: errors, error: true
         };
     }
-
     //Trigger 3DS2 flow
     if(result.threeDS2 || result.resultCode == "RedirectShopper"){
         paymentInstrument.custom.adyenPaymentData = result.paymentData;
@@ -124,7 +122,6 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         Transaction.rollback();
         return { error: true };
     }
-
     AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
     Transaction.commit();
     return { authorized: true, error: false };

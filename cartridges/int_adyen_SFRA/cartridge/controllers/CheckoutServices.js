@@ -167,7 +167,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
             });
             this.emit('route:Complete', req, res);
             return;
-        } else {	
+        } else {
             res.json({
                 error: false,
                 continueUrl: URLUtils.url('Adyen-Redirect', 'redirectUrl', handlePaymentResult.redirectObject.url, 'signature', handlePaymentResult.signature).toString()

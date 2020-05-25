@@ -87,7 +87,6 @@ function createPaymentRequest(args) {
                 paymentRequest.deviceFingerprint = args.ratePayFingerprint;
             }
         }
-
         // make API call
         return doPaymentCall(order, paymentInstrument, paymentRequest);
     }
