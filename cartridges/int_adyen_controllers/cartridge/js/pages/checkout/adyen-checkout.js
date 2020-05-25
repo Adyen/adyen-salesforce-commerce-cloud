@@ -76,9 +76,7 @@ function initializeBillingEvents() {
                     makePaypalPayment({cancelPaypal: true}, component);
                 },
                 onError: (error, component) => {
-                    if (component) {
-                        component.setStatus('ready');
-                    }
+                    component && component.setStatus('ready');
                 },
                 onAdditionalDetails: (state, component) => {
                     document.querySelector("#paypalStateData").value = JSON.stringify(state.data);
@@ -149,7 +147,7 @@ function showValidation() {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].classList.add('adyen-checkout__input--error');
         }
-        if(inputs.length > 0) {
+        if(inputs.length) {
             return false;
         }
     } else if(selectedMethod === "ratepay") {
