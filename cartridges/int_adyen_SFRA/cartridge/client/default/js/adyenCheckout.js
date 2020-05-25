@@ -10,6 +10,28 @@ var selectedMethod;
 var componentArr = [];
 var checkoutConfiguration = window.Configuration;
 
+
+$("#dwfrm_billing").submit(function(e) {
+    e.preventDefault();
+
+    var form = $(this);
+    var url = form.attr('action');
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: form.serialize(),
+        success: function(data)
+        {
+            if(data.fieldErrors) {
+            return
+        }
+            document.querySelector("#continueBtn").setAttribute("style", "display:none");
+            document.querySelector("#component_paypal").setAttribute("style", "display:block");
+        }
+    });
+});
+
 checkoutConfiguration.onChange = function(state, component){
     isValid = state.isValid;
     var type = state.data.paymentMethod.type;
@@ -54,6 +76,27 @@ checkoutConfiguration.paymentMethodsConfiguration = {
             firstName: document.getElementById("shippingFirstNamedefault").value,
             lastName: document.getElementById("shippingLastNamedefault").value
         }
+    },
+    paypal: {
+        intent: "capture",
+        onSubmit: (state, component) => {
+            assignPaymentMethodValue();
+            document.querySelector("#adyenStateData").value = JSON.stringify(componentArr[selectedMethod].stateData);
+            paymentFromComponent(state.data, component);
+        },
+        onCancel: (data, component) => {
+            component.setStatus('ready');
+            paymentFromComponent({cancelTransaction: true}, component);
+        },
+        onError: (error, component) => {
+            if(component) {
+                component.setStatus('ready');
+            }
+        },
+        onAdditionalDetails: (state, component) => {
+            document.querySelector("#additionalDetailsHidden").value = JSON.stringify(state.data);
+            document.querySelector("#showConfirmationForm").submit();
+        }
     }
 };
 if(window.installments) {
@@ -67,33 +110,43 @@ if(window.installments) {
 function displaySelectedMethod(type) {
     selectedMethod = type;
     resetPaymentMethod();
-    document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
+    if(type !== "paypal") {
+        document.querySelector(`#component_${type}`).setAttribute('style', 'display:block');
+        document.querySelector('button[value="submit-payment"]').disabled = false;
+        if (document.querySelector(`#continueBtn`)) {
+            document.querySelector(`#continueBtn`).setAttribute('style', 'display:none');
+        }
+    }
+    else {
+        document.querySelector('button[value="submit-payment"]').disabled = true;
+        document.querySelector(`#continueBtn`).setAttribute('style', 'display:block');
+    }
 }
 
 function renderGenericComponent() {
-    getPaymentMethods( function (data) {
+    getPaymentMethods(function (data) {
         checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-        if(data.amount) {
+        if (data.amount) {
             checkoutConfiguration.amount = data.amount;
         }
-        if(data.countryCode) {
+        if (data.countryCode) {
             checkoutConfiguration.countryCode = data.countryCode;
         }
         document.querySelector("#paymentMethodsList").innerHTML = "";
 
-        if(data.AdyenPaymentMethods.storedPaymentMethods) {
+        if (data.AdyenPaymentMethods.storedPaymentMethods) {
             for (var i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
                 var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-                if(paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
-                    renderPaymentMethod(paymentMethod,true, data.ImagePath);
+                if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
+                    renderPaymentMethod(paymentMethod, true, data.ImagePath);
+                }
             }
         }
 
         for (var i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
             var paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-            renderPaymentMethod(paymentMethod,false, data.ImagePath, data.AdyenDescriptions[i].description);
+            renderPaymentMethod(paymentMethod, false, data.ImagePath, data.AdyenDescriptions[i].description);
         }
-
         var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
         firstPaymentMethod.checked = true;
         displaySelectedMethod(firstPaymentMethod.value);
@@ -131,6 +184,17 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path, descr
             } else {
                 setTimeout(function() {
                     try {
+                        //todo replace temporary continue button with onClick function once available by checkout
+                        if(paymentMethod.type === 'paypal') {
+                            var continueBtn = document.createElement('button');
+                            continueBtn.innerText = "continue";
+                            continueBtn.setAttribute("id", "continueBtn");
+                            continueBtn.setAttribute("style", "display:none");
+                            continueBtn.onclick = function() {
+                                $('#dwfrm_billing').trigger('submit');
+                            };
+                            li.append(continueBtn);
+                        }
                         var node = checkout.create(paymentMethod.type).mount(container);
                         componentArr[paymentMethodID] = node;
                     }
@@ -215,16 +279,31 @@ function getPaymentMethods(paymentMethods) {
     });
 };
 
+function paymentFromComponent(data, component) {
+    $.ajax({
+        url: 'Adyen-PaymentFromComponent',
+        type: 'post',
+        data: {data: JSON.stringify(data)},
+        success: function (data) {
+            if(data.fullResponse) {
+                component.handleAction(data.fullResponse.action)
+            }
+        }
+    })
+        .fail(function(xhr, textStatus) {})
+}
+
 //Submit the payment
 $('button[value="submit-payment"]').on('click', function () {
-    var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
-    var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
-    adyenPaymentMethod.value = paymentMethodLabel;
-
+    assignPaymentMethodValue();
     validateComponents();
-
     return showValidation();
 });
+
+function assignPaymentMethodValue() {
+    var adyenPaymentMethod = document.querySelector("#adyenPaymentMethodName");
+    adyenPaymentMethod.value = document.querySelector(`#lb_${selectedMethod}`).innerHTML;
+}
 
 function showValidation() {
     if(componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
