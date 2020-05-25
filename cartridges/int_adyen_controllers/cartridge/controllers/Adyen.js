@@ -9,6 +9,7 @@ var Site = require('dw/system/Site');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var constants = require("*/cartridge/adyenConstants/constants");
+var PaymentMgr = require('dw/order/PaymentMgr');
 
 
 /* Script Modules */
@@ -68,7 +69,7 @@ function redirect(order, redirectUrl) {
 function showConfirmation() {
     var orderNumber = session.privacy.orderNo;
     var order = OrderMgr.getOrder(orderNumber);
-    var paymentInstruments = order.getPaymentInstruments("AdyenComponent");
+    var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
     var adyenPaymentInstrument;
     var paymentData;
 
@@ -178,7 +179,7 @@ function showConfirmationPaymentFromComponent() {
     var paymentInformation = app.getForm('adyPaydata');
     var orderNumber = session.privacy.orderNo;
     var order = OrderMgr.getOrder(orderNumber);
-    var paymentInstruments = order.getPaymentInstruments("AdyenComponent");
+    var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
     var adyenPaymentInstrument;
 
     var instrumentsIter = paymentInstruments.iterator();
@@ -197,8 +198,10 @@ function showConfirmationPaymentFromComponent() {
         'paymentData' : paymentData
     };
     var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    var paymentProcessor = PaymentMgr.getPaymentMethod(adyenPaymentInstrument.getPaymentMethod()).getPaymentProcessor();
 
     Transaction.wrap(function () {
+        adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
         adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
     if (result.resultCode == 'Authorised') {

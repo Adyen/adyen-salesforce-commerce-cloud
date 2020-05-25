@@ -123,8 +123,7 @@ function displaySelectedMethod(type) {
         if (document.querySelector(`#continueBtn`)) {
             document.querySelector(`#continueBtn`).setAttribute('style', 'display:none');
         }
-    }
-    else {
+    } else {
         document.querySelector('#billing-submit').disabled = true;
         document.querySelector(`#continueBtn`).setAttribute('style', 'display:block');
     }
