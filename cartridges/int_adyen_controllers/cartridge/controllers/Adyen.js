@@ -118,25 +118,22 @@ function showConfirmation() {
         app.getController('COSummary').ShowConfirmation(order);
         return {};
     }
-    else {
-        // fail order
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
-        });
-        Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
-        // should be assingned by previous calls or not
-        var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+    // fail order
+    Transaction.wrap(function () {
+        OrderMgr.failOrder(order);
+    });
+    Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
+    // should be assingned by previous calls or not
+    var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
 
-        app.getController('COSummary').Start({
-            PlaceOrderError: errorStatus
-        });
-    }
+    app.getController('COSummary').Start({
+        PlaceOrderError: errorStatus
+    });
     return {};
 }
 
 function paymentFromComponent() {
-    var PaymentMgr = require('dw/order/PaymentMgr');
-    if(request.httpParameterMap.getRequestBodyAsString().indexOf('cancelPaypal') > -1) {
+    if(request.httpParameterMap.getRequestBodyAsString().indexOf('cancelTransaction') > -1) {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true);
@@ -157,11 +154,11 @@ function paymentFromComponent() {
         if (result.error) {
             return result;
         }
-
+        var stateDataStr = request.httpParameterMap.getRequestBodyAsString();
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
-        paymentInstrument.custom.adyenPaymentData = request.httpParameterMap.getRequestBodyAsString();
+        paymentInstrument.custom.adyenPaymentData = stateDataStr;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-        paymentInstrument.custom.adyenPaymentMethod = "paypal";
+        paymentInstrument.custom.adyenPaymentMethod = JSON.parse(stateDataStr).paymentMethod.type;
         cart.calculate();
     });
     order = OrderMgr.createOrder(currentBasket);
@@ -204,7 +201,7 @@ function showConfirmationPaymentFromComponent() {
     Transaction.wrap(function () {
         adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
-    if (result.resultCode == 'Authorised' || result.resultCode == 'Pending' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
+    if (result.resultCode == 'Authorised') {
         Transaction.wrap(function () {
             AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
         });
@@ -213,18 +210,16 @@ function showConfirmationPaymentFromComponent() {
         app.getController('COSummary').ShowConfirmation(order);
         return {};
     }
-    else {
-        // fail order
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
-        });
-        // should be assingned by previous calls or not
-        var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
+    // fail order
+    Transaction.wrap(function () {
+        OrderMgr.failOrder(order);
+    });
+    // should be assingned by previous calls or not
+    var errorStatus = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");
 
-        app.getController('COSummary').Start({
-            PlaceOrderError: errorStatus
-        });
-    }
+    app.getController('COSummary').Start({
+        PlaceOrderError: errorStatus
+    });
     return {};
 }
 

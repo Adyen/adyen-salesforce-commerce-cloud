@@ -193,6 +193,7 @@ function validateComponents() {
             stateData.paymentMethod.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
         }
     }
+    document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }
 
 function validateCustomInputField(input) {
