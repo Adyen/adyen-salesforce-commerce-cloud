@@ -13,7 +13,7 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
 function handle(args) {
 	var	adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI'),
 	adyenPaymentInstrument = require('*/cartridge/scripts/createAdyenPaymentInstrument'),
-	result;
+	result, resultPaymentInstrument;
 	
     Transaction.wrap(function () {
     	result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
@@ -21,11 +21,11 @@ function handle(args) {
     		return result;
     	}
         // payment instrument returned on success
-        result = adyenPaymentInstrument.create(args.Basket);
+        resultPaymentInstrument = adyenPaymentInstrument.create(args.Basket);
     });
     
-    if (result.error) {
-		return result;
+    if (resultPaymentInstrument.error) {
+		return { error: true };
 	}
 
 	return {success : true};
