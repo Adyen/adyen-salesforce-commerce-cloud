@@ -61,7 +61,7 @@ var __LineItemHelper  = {
         if (lineItem instanceof dw.order.ProductLineItem || lineItem instanceof dw.order.ShippingLineItem) {
             return AdyenHelper.getCurrencyValueForApi(lineItem.adjustedNetPrice);
         } else if (lineItem instanceof dw.order.PriceAdjustment) {
-            return AdyenHelper.getCurrencyValueForApi(lineItem.basePrice);
+            return AdyenHelper.getCurrencyValueForApi(lineItem.netPrice);
         }
         return null;
 
