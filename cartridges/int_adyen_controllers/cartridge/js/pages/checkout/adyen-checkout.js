@@ -268,38 +268,9 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
 
-    if(storedPaymentMethodBool) {
-        setTimeout(function () {
-            try {
-                var node = checkout.create("card", paymentMethod).mount(container);
-                componentArr[paymentMethodID] = node;
-
-            } catch (e) {}
-        }, 0);
-    } else {
-        var fallback = getFallback(paymentMethod.type);
-        if(fallback) {
-            var template = document.createElement("template");
-            template.innerHTML = fallback;
-            container.append(template.content);
-        } else {
-            if(paymentMethod.type === 'paypal') {
-                var continueBtn = document.createElement('button');
-                continueBtn.innerText = "continue";
-                continueBtn.setAttribute("id", "continueBtn");
-                continueBtn.setAttribute("style", "display:none");
-                continueBtn.onclick = function() {
-                    $('#dwfrm_billing').trigger('submit');
-                };
-                li.append(continueBtn);
-            }
-            setTimeout(function () {
-                try {
-                    var node = checkout.create(paymentMethod.type).mount(container);
-                    componentArr[paymentMethodID] = node;
-                } catch (e) {}
-            }, 0);
-        }
+    renderCheckoutComponent(storedPaymentMethodBool, checkout, paymentMethod, container, paymentMethodID);
+    if(paymentMethod.type === 'paypal') {
+        createPayPalContinueButton(li);
     }
 
     container.classList.add("additionalFields");
@@ -314,6 +285,42 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     input.onchange = (event) => {
         displaySelectedMethod(event.target.value);
     };
+}
+
+function renderCheckoutComponent(storedPaymentMethodBool, checkout, paymentMethod, container, paymentMethodID) {
+    if(storedPaymentMethodBool) {
+        createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
+        return;
+    }
+    var fallback = getFallback(paymentMethod.type);
+    if(fallback) {
+        var template = document.createElement("template");
+        template.innerHTML = fallback;
+        container.append(template.content);
+        return;
+    }
+    createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
+}
+
+function createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID) {
+    console.log('creating');
+    setTimeout(function () {
+        try {
+            var node = checkout.create(paymentMethod.type, paymentMethod).mount(container);
+            componentArr[paymentMethodID] = node;
+        } catch (e) {}
+    }, 0);
+}
+
+function createPayPalContinueButton(li) { //temporary function .. PayPal's onClick to be available June 2nd
+    var continueBtn = document.createElement('button');
+    continueBtn.innerText = "continue";
+    continueBtn.setAttribute("id", "continueBtn");
+    continueBtn.setAttribute("style", "display:none");
+    continueBtn.onclick = function() {
+        $('#dwfrm_billing').trigger('submit');
+    };
+    li.append(continueBtn);
 }
 
 function makePaypalPayment(data, component) {
