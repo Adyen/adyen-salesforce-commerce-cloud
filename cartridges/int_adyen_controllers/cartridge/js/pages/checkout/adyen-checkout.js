@@ -303,7 +303,6 @@ function renderCheckoutComponent(storedPaymentMethodBool, checkout, paymentMetho
 }
 
 function createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID) {
-    console.log('creating');
     setTimeout(function () {
         try {
             var node = checkout.create(paymentMethod.type, paymentMethod).mount(container);
