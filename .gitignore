@@ -1,3 +1,5 @@
 .idea
 .DS_Store
-/cartridges/int_adyen_SFRA/dw.json
+cartridges
+node_modules
+dw.json

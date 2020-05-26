@@ -14,12 +14,14 @@ server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfPr
 
         var protocol = req.https ? "https" : "http";
         var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
-        var environment = AdyenHelper.getAdyenMode().toLowerCase();
+        var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+        var installments = AdyenHelper.getCreditCardInstallments();
 
         var viewData = res.getViewData();
         viewData.adyen = {
             originKey : originKey,
-            environment: environment
+            environment: environment,
+            installments: installments
         };
 
         res.setViewData(viewData);

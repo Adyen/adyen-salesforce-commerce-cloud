@@ -17,7 +17,9 @@ module.exports = {
                     data.options
                 );
             });
-            adyenCheckout.methods.displayPaymentMethods();
+            var currentStage = location.search.substring(location.search.indexOf("=")+1);
+            if(currentStage === "shipping")
+                adyenCheckout.methods.renderGenericComponent();
             billingHelpers.methods.updateBillingInformation(
                 data.order,
                 data.customer,

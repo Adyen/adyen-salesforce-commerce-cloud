@@ -1,0 +1,29 @@
+var app = require('app_storefront_controllers/cartridge/scripts/app');
+var constants = require("*/cartridge/adyenConstants/constants");
+var adyenZeroAuth = require("*/cartridge/scripts/adyenZeroAuth");
+var Transaction = require('dw/system/Transaction');
+
+function create(){
+    var paymentInformation = app.getForm('adyPaydata');
+    var wallet = customer.getProfile().getWallet();
+
+    var paymentInstrument;
+    Transaction.wrap(function () {
+        paymentInstrument = wallet.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
+        paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
+    });
+
+    Transaction.begin();
+    var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, paymentInstrument);
+    if(zeroAuthResult.error || zeroAuthResult.resultCode !== "Authorised"){
+        Transaction.rollback();
+        return false;
+    }
+
+    Transaction.commit();
+    return true;
+}
+
+module.exports = {
+    'create': create
+}

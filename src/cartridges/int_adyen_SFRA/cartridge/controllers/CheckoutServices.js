@@ -31,7 +31,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
-        if([constants.METHOD_ADYEN, paymentInstrument.METHOD_CREDIT_CARD, constants.METHOD_ADYEN_POS].indexOf(paymentInstrument.paymentMethod) !== -1){
+        if([constants.METHOD_ADYEN, paymentInstrument.METHOD_CREDIT_CARD, constants.METHOD_ADYEN_POS, constants.METHOD_ADYEN_COMPONENT].indexOf(paymentInstrument.paymentMethod) !== -1){
             isAdyen = true;
         }
     });
@@ -41,6 +41,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     var viewData = res.getViewData();
+
     if (viewData && viewData.csrfError) {
         res.json();
         this.emit('route:Complete', req, res);
@@ -114,7 +115,6 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         this.emit('route:Complete', req, res);
         return;
     }
-
     // Re-calculate the payments.
     var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
     if (calculatedPaymentTransactionTotal.error) {
@@ -148,7 +148,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
         return;
     }
 
-    if(handlePaymentResult.ThreeDS2) {
+    if(handlePaymentResult.threeDS2) {
         res.json({
             error: false,
             continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'token3ds2', handlePaymentResult.token3ds2).toString()

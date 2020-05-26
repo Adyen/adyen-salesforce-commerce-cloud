@@ -16,9 +16,9 @@ function donate (donationReference, donationAmount, originalReference) {
 
         var requestObject = {
             merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
-            donationAccount: AdyenHelper.getAdyenGivingMerchantAccount(),
+            donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
             modificationAmount: donationAmount,
-            reference: donationReference,
+            reference: AdyenHelper.getAdyenMerchantAccount() + "-" + donationReference,
             originalReference: originalReference
         };
 
@@ -32,7 +32,7 @@ function donate (donationReference, donationAmount, originalReference) {
             throw new Error("Call error code" +  callResult.getError().toString() + " Error => ResponseStatus: " + callResult.getStatus()  + " | ResponseErrorText: " +  callResult.getErrorMessage() + " | ResponseText: " + callResult.getMsg());
         }
 
-        var resultObject = Object.assign({}, callResult.object);
+        var resultObject = callResult.object;
 
         if (!resultObject || !resultObject.getText()) {
             throw new Error("No correct response from adyenGiving call")
@@ -45,7 +45,6 @@ function donate (donationReference, donationAmount, originalReference) {
         return;
     }
 }
-
 
 module.exports = {
     'donate': donate

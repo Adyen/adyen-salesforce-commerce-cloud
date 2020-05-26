@@ -4,8 +4,6 @@ var Transaction = require('dw/system/Transaction');
 var HookMgr = require('dw/system/HookMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var OrderMgr = require('dw/order/OrderMgr');
-var Order = require('dw/order/Order');
-var Status = require('dw/system/Status');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 
 /**
@@ -32,6 +30,7 @@ function handlePayments(order, orderNumber) {
                     .getPaymentMethod(paymentInstrument.paymentMethod)
                     .paymentProcessor;
                 var authorizationResult;
+
                 if (paymentProcessor === null) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);

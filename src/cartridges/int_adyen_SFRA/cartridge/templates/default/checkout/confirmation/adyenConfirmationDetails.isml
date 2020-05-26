@@ -2,6 +2,16 @@
 <isif condition="${payment.selectedIssuerName != null}">
     <div>${payment.selectedIssuerName}</div>
 </isif>
+<isif condition="${payment.maskedCreditCardNumber}">
+    <div class="credit-card-number">
+        ${payment.maskedCreditCardNumber}
+    </div>
+</isif>
+<isif condition="${payment.expirationMonth && payment.expirationYear}">
+    <div class="credit-card-expiration-date">
+        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
+    </div>
+</isif>
 <br/>
 <isif condition="${payment.adyenAction}">
     <isscript>
@@ -22,15 +32,13 @@
     </isif>
     <isif condition="${adyenAction.downloadUrl}">
         <span class="summary-section-label">${Resource.msg('action.downloadUrl', 'checkout', null)}:</span>
-        <span class="summary-details">${adyenAction.downloadUrl}</span><br/>
+        <a href="${adyenAction.downloadUrl}" target="_blank" class="summary-details">${Resource.msg('action.downloadLink', 'checkout', null)}</a><br/>
     </isif>
     <isif condition="${adyenAction.entity}">
         <span class="summary-section-label">${Resource.msg('action.entity', 'checkout', null)}:</span>
         <span class="summary-details">${adyenAction.entity}</span><br/>
     </isif>
 </isif>
-
-<!-- For API version 49 or lower -->
 <isif condition="${payment.adyenAdditionalPaymentData}">
     <isloop items="${payment.adyenAdditionalPaymentData}" var="additionalItem">
         <!--- Payment details for Banktransfer --->
