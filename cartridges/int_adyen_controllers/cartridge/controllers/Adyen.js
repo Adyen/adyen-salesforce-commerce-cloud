@@ -145,7 +145,6 @@ function paymentFromComponent() {
     var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
     var currentBasket = BasketMgr.getCurrentBasket();
-    var cart = app.getModel('Cart').get();
     var adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     var paymentInstrument;
     var order;
