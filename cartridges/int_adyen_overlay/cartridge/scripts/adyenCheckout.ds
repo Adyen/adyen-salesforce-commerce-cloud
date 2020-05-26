@@ -63,9 +63,8 @@ function createPaymentRequest(args) {
         };
 
         var paymentMethodType = paymentRequest.paymentMethod.type;
-        //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
+            //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
-
 
         var adyenForm = null;
         if(args.adyenForm){
@@ -81,7 +80,6 @@ function createPaymentRequest(args) {
         if (args.adyenFingerprint) {
             paymentRequest.deviceFingerprint = args.adyenFingerprint
         }
-
         //Set open invoice data
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
             paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);

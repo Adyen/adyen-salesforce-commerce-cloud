@@ -6,7 +6,6 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
-var Logger = require('dw/system/Logger');
 var constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
@@ -28,7 +27,6 @@ function Handle(args) {
         if (result.error) {
             return result;
         }
-
         var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
             paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
     });

@@ -1,6 +1,8 @@
 <iscontent type="text/html" encoding="off"/>
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
@@ -12,7 +14,7 @@
 </isscript>
 
     <script>
-    window.getPaymentMethodsResponse = JSON.parse(`${getPaymentMethodsResponse}`);
+        window.getPaymentMethodsResponse = JSON.parse(`${getPaymentMethodsResponse}`);
     var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
@@ -26,6 +28,7 @@
 <isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>
 
 <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
+<input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
 <!--<input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>-->
 <!--<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>-->
 <!--<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>-->
