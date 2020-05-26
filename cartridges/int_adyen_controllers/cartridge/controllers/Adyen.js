@@ -159,8 +159,9 @@ function paymentFromComponent() {
         paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
         paymentInstrument.custom.adyenPaymentData = stateDataStr;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-        paymentInstrument.custom.adyenPaymentMethod = JSON.parse(stateDataStr).paymentMethod.type;
-        cart.calculate();
+        try {
+            paymentInstrument.custom.adyenPaymentMethod = JSON.parse(stateDataStr).paymentMethod.type;
+        } catch (e) {}
     });
     order = OrderMgr.createOrder(currentBasket);
     session.privacy.orderNo = order.orderNo;
