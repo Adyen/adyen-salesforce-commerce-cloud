@@ -1,9 +1,5 @@
 'use strict';
-
-var server = require('server');
-
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-var Logger = require('dw/system/Logger');
 
 /**
  * Verifies the required information for billing form is provided.

@@ -4,15 +4,12 @@
 var URLUtils = require('dw/web/URLUtils');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Resource = require('dw/web/Resource');
-var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
 var constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
 var app = require(Resource.msg('scripts.app.js', 'require', null));
-var Cart = require(Resource.msg('script.models.cartmodel', 'require', null));
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-
 var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
 /**
@@ -86,8 +83,6 @@ function Authorize(args) {
             }
         }
 
-        var signature = null;
-
         //If the response has MD, then it is a 3DS transaction
         if (result.redirectObject && result.redirectObject.data && result.redirectObject.data.MD) {
             session.privacy.MD = result.redirectObject.data.MD;
@@ -101,11 +96,8 @@ function Authorize(args) {
                     md: result.redirectObject.data.MD
                 })
             }
-        } else {
-            //Signature only needed for redirect methods
-            signature = AdyenHelper.getAdyenHash(result.redirectObject.url, result.paymentData);
-            //TODO check if signature is needed
         }
+
         return {
             order: order,
             paymentInstrument: paymentInstrument,
@@ -122,7 +114,6 @@ function Authorize(args) {
     }
 
     AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-
     Transaction.commit();
 
     return {authorized: true};

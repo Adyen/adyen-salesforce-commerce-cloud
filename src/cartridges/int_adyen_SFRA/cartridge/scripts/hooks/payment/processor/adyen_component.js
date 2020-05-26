@@ -3,10 +3,7 @@
  */
 
 'use strict';
-
-var server = require('server');
 var collections = require('*/cartridge/scripts/util/collections');
-var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');

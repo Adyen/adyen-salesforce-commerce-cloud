@@ -1,5 +1,4 @@
 'use strict';
-var constants = require("../constants");
 /**
  * Updates the payment information in checkout, based on the supplied order model
  * @param {Object} order - checkout model to use as basis of new truth

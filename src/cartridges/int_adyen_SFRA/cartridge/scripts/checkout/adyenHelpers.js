@@ -4,10 +4,8 @@ var Transaction = require('dw/system/Transaction');
 var HookMgr = require('dw/system/HookMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var OrderMgr = require('dw/order/OrderMgr');
-var Order = require('dw/order/Order');
-var Status = require('dw/system/Status');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
-var Logger = require('dw/system/Logger');
+
 /**
  * handles the payment authorization for each payment instrument
  * @param {dw.order.Order} order - the order object

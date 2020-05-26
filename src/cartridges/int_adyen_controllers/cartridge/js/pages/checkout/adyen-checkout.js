@@ -48,7 +48,6 @@ function initializeBillingEvents() {
                 onChange: function (state, component) {
                     storeDetails = state.data.storePaymentMethod;
                     isValid = state.isValid;
-                    var type = state.data.paymentMethod.type;
                     // Todo: fix onChange issues so we can get rid of componentName
                     var componentName = component._node.id.replace('component_', '');
                     componentName = componentName.replace('storedPaymentMethods', '');

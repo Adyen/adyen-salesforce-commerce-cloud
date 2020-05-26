@@ -1,22 +1,6 @@
 {
 	"hooks": [
 		{
-			"name": "app.payment.processor.adyen_credit",
-			"script": "./hooks/payment/processor/adyen_credit"
-		},
-		{
-			"name": "app.payment.form.processor.adyen_credit",
-			"script": "./hooks/payment/processor/adyen_credit_form_processor"
-		},
-		{
-			"name": "app.payment.processor.adyen",
-			"script": "./hooks/payment/processor/adyen"
-		},
-		{
-			"name": "app.payment.form.processor.adyen",
-			"script": "./hooks/payment/processor/adyen_form_processor"
-		},
-		{
 			"name": "app.payment.processor.adyen_pos",
 			"script": "./hooks/payment/processor/adyen_pos"
 		},
