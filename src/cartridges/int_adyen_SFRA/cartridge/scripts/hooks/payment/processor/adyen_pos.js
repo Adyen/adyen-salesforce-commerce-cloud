@@ -2,65 +2,82 @@
  *
  */
 
-'use strict';
-var server = require("server");
-var collections = require("*/cartridge/scripts/util/collections");
-var Resource = require("dw/web/Resource");
-var Transaction = require("dw/system/Transaction");
-var Logger = require('dw/system/Logger');
-var constants = require("*/cartridge/adyenConstants/constants");
+"use strict";
+const server = require("server");
+const collections = require("*/cartridge/scripts/util/collections");
+const Resource = require("dw/web/Resource");
+const Transaction = require("dw/system/Transaction");
+const Logger = require("dw/system/Logger");
+const constants = require("*/cartridge/adyenConstants/constants");
 
-function Handle(basket, paymentInformation) {
-    Transaction.wrap(function () {
-        collections.forEach(basket.getPaymentInstruments(), function (item) {
-            basket.removePaymentInstrument(item);
-        });
-
-        var paymentInstrument = basket.createPaymentInstrument(
-            constants.METHOD_ADYEN_POS, basket.totalGrossPrice
-        );
-        paymentInstrument.custom.adyenPaymentMethod = "POS Terminal";
+function Handle(basket /*, paymentInformation */) {
+  Transaction.wrap(function () {
+    collections.forEach(basket.getPaymentInstruments(), function (item) {
+      basket.removePaymentInstrument(item);
     });
 
-    return {error: false};
+    const paymentInstrument = basket.createPaymentInstrument(
+      constants.METHOD_ADYEN_POS,
+      basket.totalGrossPrice
+    );
+    paymentInstrument.custom.adyenPaymentMethod = "POS Terminal";
+  });
+
+  return { error: false };
 }
 
 /**
  * Authorize
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-    var adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
-    Transaction.wrap(function () {
-        paymentInstrument.paymentTransaction.transactionID = orderNumber;
-        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-    });
+  let errors;
+  const adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
+  Transaction.wrap(function () {
+    paymentInstrument.paymentTransaction.transactionID = orderNumber;
+    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+  });
 
-    var adyenPaymentForm = server.forms.getForm("billing").adyenPaymentFields;
-    var OrderMgr = require("dw/order/OrderMgr");
-    var order = OrderMgr.getOrder(orderNumber);
-    var terminalId = adyenPaymentForm.terminalId.value;
+  const adyenPaymentForm = server.forms.getForm("billing").adyenPaymentFields;
+  const OrderMgr = require("dw/order/OrderMgr");
+  const order = OrderMgr.getOrder(orderNumber);
+  const terminalId = adyenPaymentForm.terminalId.value;
 
-    if(!terminalId){
-        Logger.getLogger("Adyen").error("No terminal selected");
-        var errors = [];
-        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
-        return {
-            authorized: false, fieldErrors: [], serverErrors: errors, error: true
-        };
-    }
+  if (!terminalId) {
+    Logger.getLogger("Adyen").error("No terminal selected");
+    errors = [];
+    errors.push(
+      Resource.msg("error.payment.processor.not.supported", "checkout", null)
+    );
+    return {
+      authorized: false,
+      fieldErrors: [],
+      serverErrors: errors,
+      error: true,
+    };
+  }
 
-    var result = adyenTerminalApi.createTerminalPayment(order, paymentInstrument, terminalId);
-    if (result.error) {
-        Logger.getLogger("Adyen").error("POS Authorise error, result: " + result.response);
-        var errors = [];
-        errors.push(Resource.msg("error.payment.processor.not.supported", "checkout", null));
-        return {
-            authorized: false, fieldErrors: [], serverErrors: errors, error: true
-        };
-    }
-    return result;
+  const result = adyenTerminalApi.createTerminalPayment(
+    order,
+    paymentInstrument,
+    terminalId
+  );
+  if (result.error) {
+    Logger.getLogger("Adyen").error(
+      "POS Authorise error, result: " + result.response
+    );
+    errors = [];
+    errors.push(
+      Resource.msg("error.payment.processor.not.supported", "checkout", null)
+    );
+    return {
+      authorized: false,
+      fieldErrors: [],
+      serverErrors: errors,
+      error: true,
+    };
+  }
+  return result;
 }
-
 
 exports.Handle = Handle;
 exports.Authorize = Authorize;
