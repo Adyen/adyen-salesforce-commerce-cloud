@@ -39,12 +39,12 @@ checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: showStoreDetails,
     onBrand: function (brandObject) {
-      $("#cardType").val(brandObject.brand);
+      document.querySelector("#cardType").value = brandObject.brand;
     },
     onFieldValid: function (data) {
       if (data.endDigits) {
         maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-        $("#cardNumber").val(maskedCardNumber);
+        document.querySelector("#cardNumber").value = maskedCardNumber;
       }
     },
     onChange: function (state, component) {
@@ -53,7 +53,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
         componentArr[selectedMethod] = state;
       }
     },
