@@ -22,7 +22,7 @@ function Handle(basket, paymentInformation) {
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice
     );
-    paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+    paymentInstrument.custom.adyenPaymentData = paymentInformation.data;
     paymentInstrument.custom.adyenPaymentMethod =
       paymentInformation.adyenPaymentMethod;
 

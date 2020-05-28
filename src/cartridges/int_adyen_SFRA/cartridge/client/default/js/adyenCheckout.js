@@ -75,7 +75,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-        componentArr[selectedMethod].stateData
+        componentArr[selectedMethod].data
       );
       paymentFromComponent(state.data, component);
     },
@@ -357,8 +357,8 @@ function validateComponents() {
     };
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].stateData) {
-    stateData = componentArr[selectedMethod].stateData;
+  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
+    stateData = componentArr[selectedMethod].data;
   } else stateData = { paymentMethod: { type: selectedMethod } };
 
   if (selectedMethod === "ach") {

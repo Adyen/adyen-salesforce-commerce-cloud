@@ -182,8 +182,8 @@ function validateComponents() {
     };
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].stateData) {
-    stateData = componentArr[selectedMethod].stateData;
+  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
+    stateData = componentArr[selectedMethod].data;
   } else stateData = { paymentMethod: { type: selectedMethod } };
 
   if (selectedMethod === "ach") {
