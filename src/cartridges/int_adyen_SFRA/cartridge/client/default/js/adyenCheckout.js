@@ -1,4 +1,3 @@
-let isValid = false;
 // eslint-disable-next-line no-unused-vars
 let storeDetails;
 let maskedCardNumber;
@@ -32,10 +31,8 @@ $("#dwfrm_billing").submit(function (e) {
 });
 
 checkoutConfiguration.onChange = function (state) {
-  isValid = state.isValid;
   const type = state.data.paymentMethod.type;
-  componentArr[type].isValid = isValid;
-  componentArr[type].stateData = state.data;
+  componentArr[type] = state;
 };
 checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
@@ -52,14 +49,12 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
     onChange: function (state, component) {
       storeDetails = state.data.storePaymentMethod;
-      isValid = state.isValid;
       // Todo: fix onChange issues so we can get rid of componentName
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
         $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-        componentArr[selectedMethod].isValid = isValid;
-        componentArr[selectedMethod].stateData = state.data;
+        componentArr[selectedMethod] = state;
       }
     },
   },

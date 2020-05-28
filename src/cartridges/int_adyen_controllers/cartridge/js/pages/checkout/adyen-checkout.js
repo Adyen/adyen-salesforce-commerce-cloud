@@ -1,6 +1,5 @@
 require("./bundle");
 
-let isValid = false;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
@@ -30,10 +29,8 @@ function initializeBillingEvents() {
     paymentMethodsResponse = window.getPaymentMethodsResponse;
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /*, component */) {
-      isValid = state.isValid;
       const type = state.data.paymentMethod.type;
-      componentArr[type].isValid = isValid;
-      componentArr[type].stateData = state.data;
+      componentArr[type] = state;
     };
 
     checkoutConfiguration.paymentMethodsConfiguration = {
@@ -50,14 +47,12 @@ function initializeBillingEvents() {
         },
         onChange: function (state, component) {
           storeDetails = state.data.storePaymentMethod;
-          isValid = state.isValid;
           // Todo: fix onChange issues so we can get rid of componentName
           let componentName = component._node.id.replace("component_", "");
           componentName = componentName.replace("storedPaymentMethods", "");
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-            componentArr[selectedMethod].isValid = isValid;
-            componentArr[selectedMethod].stateData = state.data;
+            componentArr[selectedMethod] = state;
           }
         },
       },
