@@ -1,4 +1,3 @@
-let isValid = false;
 // eslint-disable-next-line no-unused-vars
 let storeDetails;
 let maskedCardNumber;
@@ -32,34 +31,29 @@ $("#dwfrm_billing").submit(function (e) {
 });
 
 checkoutConfiguration.onChange = function (state) {
-  isValid = state.isValid;
   const type = state.data.paymentMethod.type;
-  componentArr[type].isValid = isValid;
-  componentArr[type].stateData = state.data;
+  componentArr[type] = state;
 };
 checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: showStoreDetails,
     onBrand: function (brandObject) {
-      $("#cardType").val(brandObject.brand);
+      document.querySelector("#cardType").value = brandObject.brand;
     },
     onFieldValid: function (data) {
       if (data.endDigits) {
         maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-        $("#cardNumber").val(maskedCardNumber);
+        document.querySelector("#cardNumber").value = maskedCardNumber;
       }
     },
     onChange: function (state, component) {
       storeDetails = state.data.storePaymentMethod;
-      isValid = state.isValid;
       // Todo: fix onChange issues so we can get rid of componentName
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-        componentArr[selectedMethod].isValid = isValid;
-        componentArr[selectedMethod].stateData = state.data;
+        componentArr[selectedMethod] = state;
       }
     },
   },
@@ -80,7 +74,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-        componentArr[selectedMethod].stateData
+        componentArr[selectedMethod].data
       );
       paymentFromComponent(state.data, component);
     },
@@ -362,8 +356,8 @@ function validateComponents() {
     };
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].stateData) {
-    stateData = componentArr[selectedMethod].stateData;
+  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
+    stateData = componentArr[selectedMethod].data;
   } else stateData = { paymentMethod: { type: selectedMethod } };
 
   if (selectedMethod === "ach") {

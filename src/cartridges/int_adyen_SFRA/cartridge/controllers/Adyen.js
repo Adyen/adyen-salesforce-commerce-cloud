@@ -4,11 +4,13 @@ const server = require("server");
 const URLUtils = require("dw/web/URLUtils");
 const Transaction = require("dw/system/Transaction");
 const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
-require("*/cartridge/scripts/checkout/adyenHelpers");
+// eslint-disable-next-line no-unused-vars
+const adyenHelpers = require("*/cartridge/scripts/checkout/adyenHelpers");
 const OrderMgr = require("dw/order/OrderMgr");
 const CustomerMgr = require("dw/customer/CustomerMgr");
 const Resource = require("dw/web/Resource");
-require("dw/system/Site");
+// eslint-disable-next-line no-unused-vars
+const Site = require("dw/system/Site");
 const Logger = require("dw/system/Logger");
 const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 const constants = require("*/cartridge/adyenConstants/constants");

@@ -5,7 +5,8 @@ const URLUtils = require("dw/web/URLUtils");
 // const logger = require("dw/system/Logger").getLogger("Adyen", "adyen");
 const OrderMgr = require("dw/order/OrderMgr");
 const BasketMgr = require("dw/order/BasketMgr");
-require("dw/system/Site");
+// eslint-disable-next-line no-unused-vars
+const Site = require("dw/system/Site");
 const Status = require("dw/system/Status");
 const Transaction = require("dw/system/Transaction");
 const constants = require("*/cartridge/adyenConstants/constants");
