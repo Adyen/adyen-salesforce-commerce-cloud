@@ -226,6 +226,24 @@ function showConfirmationPaymentFromComponent() {
     return {};
 }
 
+function donate() {
+    var adyenGiving = require('*/cartridge/scripts/adyenGiving');
+    var responseUtils = require('*/cartridge/scripts/util/Response');
+    try {
+        var req = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
+    } catch (e) {}
+
+    var pspReference = req.pspReference;
+    var orderNo = req.orderNo;
+    var donationAmount = {
+        value: req.amountValue,
+        currency: req.amountCurrency
+    };
+    var donationResult = adyenGiving.donate(orderNo, donationAmount, pspReference);
+
+    responseUtils.renderJSON({response: donationResult.response});
+}
+
 /**
  * Separated order confirm for Credit cards and APM's.
  */
@@ -544,3 +562,5 @@ exports.GetPaymentMethods = getPaymentMethods;
 exports.getExternalPlatformVersion = getExternalPlatformVersion();
 
 exports.PaymentFromComponent = guard.ensure(['https', 'post'], paymentFromComponent);
+
+exports.Donate = guard.ensure(['https', 'post'], donate);

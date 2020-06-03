@@ -1,4 +1,5 @@
 var bundle = require('./bundle');
+var adyenGiving = require('./adyen-giving');
 
 var isValid = false;
 var maskedCardNumber;
