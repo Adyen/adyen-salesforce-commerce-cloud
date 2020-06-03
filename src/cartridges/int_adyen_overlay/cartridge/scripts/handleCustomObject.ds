@@ -66,57 +66,54 @@ function handle( customObj : CustomObject  ) : Object
 	var orderCreateDate : Date = order.creationDate;
 	var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
 	var currentDate = new Date();
-    var reasonCode = ('reason' in customObj.custom && !empty(customObj.custom.reason) ? customObj.custom.reason.toUpperCase() : null);
+  var reasonCode = ('reason' in customObj.custom && !empty(customObj.custom.reason) ? customObj.custom.reason.toUpperCase() : null);
 	Logger.getLogger("Adyen", "adyen").debug("Order date {0} , orderCreateDateDelay {1} , currentDate {2}", orderCreateDate , orderCreateDateDelay, currentDate);
 	if(orderCreateDateDelay < currentDate){
 		switch(customObj.custom.eventCode){
 			case "AUTHORISATION" :
-                var paymentInstruments : Collection = order.getPaymentInstruments();
-                var paymentInstrument : PaymentInstrument;
-                // Move adyen log request to order paymet transaction
-                for each (let paymentInstrument in paymentInstruments) {
-                    if (paymentInstrument.paymentMethod.equals("Adyen")
-                        || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
-                        paymentInstrument.paymentTransaction.custom.Adyen_log = customObj.custom.Adyen_log;
-                	}
-                }
+				var paymentInstruments : Collection = order.getPaymentInstruments();
+				var paymentInstrument : PaymentInstrument;
+				// Move adyen log request to order paymet transaction
+				for each (let paymentInstrument in paymentInstruments) {
+					if (paymentInstrument.paymentMethod.equals("Adyen")
+					|| PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
+							paymentInstrument.paymentTransaction.custom.Adyen_log = customObj.custom.Adyen_log;
+					}
+				}
 				if(customObj.custom.success == "true"){
 					if(order.paymentStatus == Order.PAYMENT_STATUS_PAID){
 						Logger.getLogger("Adyen", "adyen").info ("Duplicate callback received for order {0}.",order.orderNo);
 					}
 					else if(order.paymentStatus == Order.PAYMENT_STATUS_PARTPAID){
 						Logger.getLogger("Adyen", "adyen").info ("Partial payment received for order {0}.",order.orderNo);
-
-					}
-					else {
+					} else {
 						order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 						order.setExportStatus(Order.EXPORT_STATUS_READY);
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
-                        result.SubmitOrder = true;
+						result.SubmitOrder = true;
 					}  
-				}
-				else{
+				} else {
 					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
 					// Determine if payment was refused and was used Adyen payment method 
 					if (!empty(reasonCode) && (reasonCode == "REFUSED" || reasonCode.indexOf('FAILED') > -1)) {
-                        for each (paymentInstrument in paymentInstruments) {
-                            if (paymentInstrument.paymentMethod.equals("Adyen") || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
-                                refusedHpp = true;
-                                setProcessedCOInfo(customObj);
-                                return result;
-                                break;
-                            }
-                        }
-                    } else {
-                        if (order.status == Order.ORDER_STATUS_FAILED) {
-                            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
-                            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-                            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-                        }
-                        setProcessedCOInfo(customObj);
-                        return result;
-                    }
+						for each (paymentInstrument in paymentInstruments) {
+							if (paymentInstrument.paymentMethod.equals("Adyen") || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
+								refusedHpp = true;
+								setProcessedCOInfo(customObj);
+								return result;
+								break;
+							}
+						}
+					} else {
+						if (order.status == Order.ORDER_STATUS_FAILED) {
+							order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+							order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+							order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+						}
+						setProcessedCOInfo(customObj);
+						return result;
+					}
 				}
 				break;
 			case "CANCELLATION" :
@@ -136,9 +133,11 @@ function handle( customObj : CustomObject  ) : Object
 				break;
 			//CustomAdyen 
 			case "CAPTURE_FAILED" :
-				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-				OrderMgr.cancelOrder(order);
+				if(customObj.custom.success === "true") {
+					order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+					order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+					OrderMgr.cancelOrder(order);
+				}
 				Logger.getLogger("Adyen", "adyen").info ("Capture Failed for order {0}",order.orderNo);
 				break;
 			case "ORDER_OPENED" :
@@ -162,6 +161,16 @@ function handle( customObj : CustomObject  ) : Object
 				pending = true;
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was in pending status.",order.orderNo);
 				break;				
+		  case "CAPTURE":
+				if(customObj.custom.success !== "true" && order.status === Order.ORDER_STATUS_CANCELLED ){
+					order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+					order.setExportStatus(Order.EXPORT_STATUS_READY);
+					order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+					OrderMrg.undoCancelOrder(order);
+					Logger.getLogger("Adyen", "adyen").info ("Undo failed capture, Order {0} updated to status PAID.",order.orderNo);
+				}
+
+				break;
 			default:
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} received unhandled status {1}",order.orderNo,customObj.custom.eventCode);
 		}
