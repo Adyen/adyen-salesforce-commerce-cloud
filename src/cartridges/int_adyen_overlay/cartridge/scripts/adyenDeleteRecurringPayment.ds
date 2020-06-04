@@ -1,71 +1,78 @@
 /**
-* Deletes recurring payment instrument from Adyen
-*
-* @input RecurringDetailReference : String
-* @input Customer : dw.customer.Customer
-*/
+ * Deletes recurring payment instrument from Adyen
+ *
+ * @input RecurringDetailReference : String
+ * @input Customer : dw.customer.Customer
+ */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
+const Logger = require("dw/system/Logger");
 
 /* Script Modules */
-var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
-var THIS_SCRIPT = 'int_adyen_overlay/scripts/adyenDeleteRecurringPayment.ds';
-
-function execute(args) {
-    return deleteRecurringPayment(args);
-}
+const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 
 function deleteRecurringPayment(args) {
-    try {
-        var requestObject = {},
-            customer = !empty(args.Customer) ? args.Customer : null,
-            profile = !empty(customer) && customer.registered && !empty(customer.getProfile()) ? customer.getProfile() : null,
-            customerID = '',
-            recurringDetailReference = !empty(args.RecurringDetailReference) ? args.RecurringDetailReference : null;
-
-        if (!empty(profile) && !empty(profile.getCustomerNo())) {
-            customerID = profile.getCustomerNo();
-        }
-
-        if (empty(customerID) || empty(recurringDetailReference)) {
-            Logger.getLogger('Adyen').error(THIS_SCRIPT + ': No Customer ID or RecurringDetailReference provided');
-            return PIPELET_ERROR;
-        }
-
-        requestObject['merchantAccount'] = AdyenHelper.getAdyenMerchantAccount();
-        requestObject['shopperReference'] = customerID;
-        requestObject['recurringDetailReference'] = recurringDetailReference;
-        requestObject['contract'] = "ONECLICK";
-
-        var callResult = null,
-            service = AdyenHelper.getService(AdyenHelper.SERVICE.RECURRING_DISABLE);
-
-        if (service == null) {
-            return PIPELET_ERROR;
-        }
-
-        var apiKey = AdyenHelper.getAdyenApiKey();
-        service.addHeader('Content-type','application/json');
-        service.addHeader('charset', 'UTF-8');
-        service.addHeader('X-API-KEY', apiKey);
-
-        callResult = service.call(JSON.stringify(requestObject));
-
-        if (callResult.isOk() == false) {
-            Logger.error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
-            return PIPELET_ERROR;
-        }
-
-    } catch (e) {
-        Logger.getLogger('Adyen').fatal('Adyen: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber);
-        return PIPELET_ERROR;
+  try {
+    const service = AdyenHelper.getService(
+      AdyenHelper.SERVICE.RECURRING_DISABLE
+    );
+    if (!service) {
+      throw new Error("Could not do /disable call");
     }
 
-    return PIPELET_NEXT;
+    const customer = args.Customer ? args.Customer : null;
+    const profile =
+      customer && customer.registered && customer.getProfile()
+        ? customer.getProfile()
+        : null;
+    let customerID = null;
+    const recurringDetailReference = args.RecurringDetailReference
+      ? args.RecurringDetailReference
+      : null;
+
+    if (profile && profile.getCustomerNo()) {
+      customerID = profile.getCustomerNo();
+    }
+
+    if (!(customerID && recurringDetailReference)) {
+      throw new Error("No Customer ID or RecurringDetailReference provided");
+    }
+
+    const requestObject = {
+      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      shopperReference: customerID,
+      recurringDetailReference: recurringDetailReference,
+      contract: "ONECLICK",
+    };
+
+    const apiKey = AdyenHelper.getAdyenApiKey();
+    service.addHeader("Content-type", "application/json");
+    service.addHeader("charset", "UTF-8");
+    service.addHeader("X-API-KEY", apiKey);
+
+    const callResult = service.call(JSON.stringify(requestObject));
+
+    if (!callResult.isOk()) {
+      throw new Error(
+        "/disable Call error code" +
+          callResult.getError().toString() +
+          " Error => ResponseStatus: " +
+          callResult.getStatus() +
+          " | ResponseErrorText: " +
+          callResult.getErrorMessage() +
+          " | ResponseText: " +
+          callResult.getMsg()
+      );
+    }
+  } catch (e) {
+    Logger.getLogger("Adyen").fatal(
+      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+    );
+  }
+
+  return;
 }
 
 module.exports = {
-    'execute': execute,
-    'deleteRecurringPayment': deleteRecurringPayment
-}
+  deleteRecurringPayment: deleteRecurringPayment,
+};

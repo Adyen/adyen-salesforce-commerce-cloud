@@ -472,7 +472,7 @@ var __AdyenHelper: Object = {
      * Checks if payment method is blocked
      */
     isMethodTypeBlocked : function(methodType) {
-        var blockedMethods = ["bcmc", "bcmc_mobile_QR","scheme", "cup", "applepay", "wechatpay", "wechatpay_pos", "wechatpaySdk", "wechatpayQr"];
+        var blockedMethods = ["bcmc_mobile_QR", "applepay", "wechatpay", "wechatpay_pos", "wechatpaySdk", "wechatpayQr"];
         return (blockedMethods.indexOf(methodType) !== -1);
     },
 
