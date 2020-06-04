@@ -7,6 +7,7 @@
 	var adyenAction = JSON.parse(paymentInstr.custom.adyenAction);
 </isscript>
 <div class="adyen-payment-details">
+	<isinclude template="checkout/billing/adyenGivingComponent" />
 	<isif condition="${paymentInstr.custom.adyenPaymentMethod}">
 		<div>${paymentInstr.custom.adyenPaymentMethod}</div>
 	</isif>

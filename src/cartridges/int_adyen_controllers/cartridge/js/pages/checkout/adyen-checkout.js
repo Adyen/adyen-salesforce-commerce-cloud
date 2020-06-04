@@ -1,4 +1,5 @@
 require("./bundle");
+require("./adyen-giving");
 
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
