@@ -52,9 +52,6 @@
 <script type="text/javascript">
     dfDo('adyenFingerprint');
 </script>
-
-<span id="errorLoadComponent"></span>
-<div id="card"></div>
 </form>
 <form method="post"
       id="showConfirmationForm"
