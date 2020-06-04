@@ -160,6 +160,18 @@ function renderGenericComponent() {
         data.AdyenDescriptions[i].description
       );
     }
+
+    if (
+      data.AdyenConnectedTerminals &&
+      data.AdyenConnectedTerminals.uniqueTerminalIds &&
+      data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0
+    ) {
+      const posTerminals = document.querySelector("#adyenPosTerminals");
+      while (posTerminals.firstChild) {
+        posTerminals.removeChild(posTerminals.firstChild);
+      }
+      addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+    }
     const firstPaymentMethod = document.querySelector(
       "input[type=radio][name=brandCode]"
     );
@@ -243,18 +255,17 @@ function renderPaymentMethod(
   };
 }
 
-// TODO: Check usage / Remove
 // eslint-disable-next-line no-unused-vars
 function addPosTerminals(terminals) {
-  //create dropdown and populate connected terminals
-  const dd_terminals = $("<select>").attr("id", "terminalList");
-  for (let i = 0; i < terminals.length; i++) {
-    $("<option/>", {
-      value: terminals[i],
-      html: terminals[i],
-    }).appendTo(dd_terminals);
+  const dd_terminals = document.createElement("select");
+  dd_terminals.id = "terminalList";
+  for (const t in terminals) {
+    const option = document.createElement("option");
+    option.value = terminals[t];
+    option.text = terminals[t];
+    dd_terminals.appendChild(option);
   }
-  $("#AdyenPosTerminals").append(dd_terminals);
+  document.querySelector("#adyenPosTerminals").append(dd_terminals);
 }
 
 function resetPaymentMethod() {
@@ -297,6 +308,13 @@ function paymentFromComponent(data, component) {
 
 //Submit the payment
 $('button[value="submit-payment"]').on("click", function () {
+  if (document.querySelector("#selectedPaymentOption").value === "AdyenPOS") {
+    document.querySelector("#terminalId").value = document.querySelector(
+      "#terminalList"
+    ).value;
+    return true;
+  }
+
   assignPaymentMethodValue();
   validateComponents();
   return showValidation();
