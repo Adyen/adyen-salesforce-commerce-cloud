@@ -270,21 +270,28 @@ function showConfirmationPaymentFromComponent() {
 }
 
 function donate() {
-  var adyenGiving = require('*/cartridge/scripts/adyenGiving');
-  var responseUtils = require('*/cartridge/scripts/util/Response');
+  const adyenGiving = require("*/cartridge/scripts/adyenGiving");
+  const responseUtils = require("*/cartridge/scripts/util/Response");
+  let req;
   try {
-      var req = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
-  } catch (e) {}
+    req = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
+  } catch (e) {
+    Logger.getLogger("Adyen").error(e);
+  }
 
-  var pspReference = req.pspReference;
-  var orderNo = req.orderNo;
-  var donationAmount = {
-      value: req.amountValue,
-      currency: req.amountCurrency
+  const pspReference = req.pspReference;
+  const orderNo = req.orderNo;
+  const donationAmount = {
+    value: req.amountValue,
+    currency: req.amountCurrency,
   };
-  var donationResult = adyenGiving.donate(orderNo, donationAmount, pspReference);
+  const donationResult = adyenGiving.donate(
+    orderNo,
+    donationAmount,
+    pspReference
+  );
 
-  responseUtils.renderJSON({response: donationResult.response});
+  responseUtils.renderJSON({ response: donationResult.response });
 }
 
 /**
@@ -671,7 +678,4 @@ exports.PaymentFromComponent = guard.ensure(
   paymentFromComponent
 );
 
-exports.Donate = guard.ensure(
-    ["https", "post"],
-    donate
-);
+exports.Donate = guard.ensure(["https", "post"], donate);
