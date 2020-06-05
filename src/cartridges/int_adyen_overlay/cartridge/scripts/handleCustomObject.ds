@@ -162,7 +162,7 @@ function handle( customObj : CustomObject  ) : Object
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was in pending status.",order.orderNo);
 				break;				
 		  case "CAPTURE":
-				if(customObj.custom.success !== "true" && order.status === Order.ORDER_STATUS_CANCELLED ){
+				if(customObj.custom.success === "true" && order.status === Order.ORDER_STATUS_CANCELLED ){
 					order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 					order.setExportStatus(Order.EXPORT_STATUS_READY);
 					order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
