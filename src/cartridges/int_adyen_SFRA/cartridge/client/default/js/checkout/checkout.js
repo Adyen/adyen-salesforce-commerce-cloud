@@ -20,8 +20,9 @@ module.exports = {
       const currentStage = location.search.substring(
         location.search.indexOf("=") + 1
       );
-      if (currentStage === "shipping")
+      if (currentStage === "shipping") {
         adyenCheckout.methods.renderGenericComponent();
+      }
       billingHelpers.methods.updateBillingInformation(
         data.order,
         data.customer,

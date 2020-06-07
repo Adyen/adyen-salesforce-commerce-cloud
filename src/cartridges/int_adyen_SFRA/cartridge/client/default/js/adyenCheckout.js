@@ -125,7 +125,23 @@ function displaySelectedMethod(type) {
   }
 }
 
-function renderGenericComponent() {
+function unmountComponent() {
+  const promises = [];
+  for (const [key, val] of Object.entries(componentArr)) {
+    try {
+      promises.push(Promise.resolve(val.unmount(`component_${key}`)));
+    } catch (e) {
+      //try/catch block for val.unmount
+    }
+    delete componentArr.key;
+  }
+  return Promise.all(promises);
+}
+
+async function renderGenericComponent() {
+  if (Object.keys(componentArr).length !== 0) {
+    await unmountComponent();
+  }
   getPaymentMethods(function (data) {
     let paymentMethod;
     let i;
