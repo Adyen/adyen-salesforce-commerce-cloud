@@ -55,7 +55,19 @@
     "prettier/prettier": "error",
     "no-var": "error",
     "prefer-const": "warn",
-    "complexity": ["warn", {"max":  2}],
-    "eqeqeq": "error"
+    "complexity": [
+      "warn",
+      {
+        "max": 2
+      }
+    ],
+    "eqeqeq": "error",
+    "max-len": [
+      "warn",
+      {
+        "code": 160,
+        "tabWidth": 2
+      }
+    ]
   }
 }

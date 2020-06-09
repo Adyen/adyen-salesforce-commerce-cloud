@@ -2,7 +2,7 @@ const shippingHelpers = require("base/checkout/shipping");
 const billingHelpers = require("base/checkout/billing");
 const summaryHelpers = require("base/checkout/summary");
 const billing = require("./billing");
-const adyenCheckout = require("../adyenCheckout");
+const adyenCheckout = require("../adyen_checkout");
 
 module.exports = {
   updateCheckoutView: function () {

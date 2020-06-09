@@ -1,7 +1,5 @@
-"use strict";
-
 const processInclude = require("base/util");
-const adyenCheckout = require("./adyenCheckout");
+const adyenCheckout = require("./adyen_checkout");
 
 $(document).ready(function () { // eslint-disable-line
   const name = "paymentError";
