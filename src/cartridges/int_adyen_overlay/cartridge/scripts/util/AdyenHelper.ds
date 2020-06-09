@@ -126,6 +126,10 @@ var __AdyenHelper: Object = {
         return __AdyenHelper.getCustomPreference("AdyenCreditCardInstallments");
     },
 
+    getPaypalMerchantID: function () {
+        return __AdyenHelper.getCustomPreference("Adyen_PaypalMerchantID");
+    },
+
     getAdyenStoreId: function () {
         return __AdyenHelper.getCustomPreference("Adyen_StoreId");
     },

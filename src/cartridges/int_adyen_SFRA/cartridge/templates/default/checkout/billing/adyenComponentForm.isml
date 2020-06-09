@@ -12,6 +12,7 @@
         environment: '${pdict.adyen.environment}'
     };
     window.installments = '${pdict.adyen.installments}';
+    window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
     var showStoreDetails = ${customer.authenticated};
 </script>
 

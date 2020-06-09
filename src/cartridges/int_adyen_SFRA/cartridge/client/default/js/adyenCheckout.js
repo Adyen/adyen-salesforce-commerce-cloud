@@ -5,9 +5,7 @@ const MASKED_CC_PREFIX = "************";
 let selectedMethod;
 const componentArr = [];
 const checkoutConfiguration = window.Configuration;
-let container;
 let formErrorsExist;
-let paypalPromise;
 
 $("#dwfrm_billing").submit(function (e) {
   e.preventDefault();
@@ -23,13 +21,9 @@ $("#dwfrm_billing").submit(function (e) {
     success: function (data) {
       if (data.fieldErrors) {
         formErrorsExist = true;
-        console.log(formErrorsExist);
         return;
-        // return paypalPromise.reject();
       }
       formErrorsExist = false;
-      // document.querySelector("#continueBtn").setAttribute("style", "display:none");
-      // document.querySelector("#component_paypal").setAttribute("style", "display:block");
     },
   });
 });
@@ -75,9 +69,8 @@ checkoutConfiguration.paymentMethodsConfiguration = {
   },
   paypal: {
     intent: "capture",
-    merchantId: "thimopaypaltest@adyen.com",
+    merchantId: window.paypalMerchantID,
     onSubmit: (state, component) => {
-      console.log('onsubmit');
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
         componentArr[selectedMethod].data
@@ -99,13 +92,10 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       );
       document.querySelector("#showConfirmationForm").submit();
     },
-    onClick:async (data, actions) => {
-      console.log('onclick');
+    onClick: async (data, actions) => {
       $("#dwfrm_billing").trigger("submit");
-      console.log(formErrorsExist)
-      if(formErrorsExist)
-        return actions.reject();
-    }
+      if (formErrorsExist) return actions.reject();
+    },
   },
 };
 if (window.installments) {
@@ -121,16 +111,9 @@ function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
   if (type !== "paypal") {
-    // document
-    //   .querySelector(`#component_${type}`)
-    //   .setAttribute("style", "display:block");
     document.querySelector('button[value="submit-payment"]').disabled = false;
-    // if (document.querySelector(`#continueBtn`)) {
-    //   document.querySelector(`#continueBtn`).setAttribute("style", "display:none");
-    // }
   } else {
     document.querySelector('button[value="submit-payment"]').disabled = true;
-    // document.querySelector(`#continueBtn`).setAttribute("style", "display:block");
   }
   document
     .querySelector(`#component_${type}`)
@@ -154,7 +137,7 @@ async function renderGenericComponent() {
   if (Object.keys(componentArr).length !== 0) {
     await unmountComponent();
   }
-  getPaymentMethods( function (data) {
+  getPaymentMethods(function (data) {
     let paymentMethod;
     let i;
     checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
@@ -196,46 +179,6 @@ async function renderGenericComponent() {
   });
 }
 
-function renderContainer() {
-  console.log('rendering container');
-  return Promise.resolve(container = document.createElement("div"));
-}
-
-function rafAsync() {
-  return new Promise(resolve => {
-    requestAnimationFrame(resolve);
-  });
-}
-
-function checkElement(selector) {
-  if (document.querySelector(selector) === null) {
-    console.log('it is null');
-    return rafAsync().then(() => checkElement(selector));
-  } else {
-    console.log('returning true');
-    return Promise.resolve(true);
-  }
-}
-
-function elementReady(selector) {
-  return new Promise((resolve, reject) => {
-    let el = document.querySelector(selector);
-    if (el) {resolve(el);}
-    new MutationObserver((mutationRecords, observer) => {
-      // Query for elements matching the specified selector
-      Array.from(document.querySelectorAll(selector)).forEach((element) => {
-        resolve(element);
-        //Once we have resolved we don't need the observer anymore.
-        observer.disconnect();
-      });
-    })
-        .observe(document.documentElement, {
-          childList: true,
-          subtree: true
-        });
-  });
-}
-
 function renderPaymentMethod(
   paymentMethod,
   storedPaymentMethodBool,
@@ -262,8 +205,6 @@ function renderPaymentMethod(
                              `;
   if (description) liContents += `<p>${description}</p>`;
   const container = document.createElement("div");
-  container.setAttribute("id", `component_${paymentMethodID}`);
-  // container = await renderContainer();
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
 
@@ -277,34 +218,18 @@ function renderPaymentMethod(
       template.innerHTML = fallback;
       container.append(template.content);
     } else {
-      // setTimeout(function () {
-          //todo replace temporary continue button with onClick function once available by checkout
-          // if (paymentMethod.type === "paypal") {
-          //   const continueBtn = document.createElement("button");
-          //   continueBtn.innerText = "continue";
-          //   continueBtn.setAttribute("id", "continueBtn");
-          //   continueBtn.setAttribute("style", "display:none");
-          //   continueBtn.onclick = function () {
-          //     $("#dwfrm_billing").trigger("submit");
-          //   };
-          //   li.append(continueBtn);
-          // }
-          // elementReady(`#component_${paymentMethodID}`)
-              checkElement(`#component_${paymentMethodID}`)
-              .then(elm => {
-                console.log('inside then');
-                try {
-                  const node = checkout.create(paymentMethod.type).mount(container);
-                  componentArr[paymentMethodID] = node;
-                } catch (e) {
-                // TODO: Implement proper error handling
-                }
-              });
-      // }, 0);
+      setTimeout(function () {
+        try {
+          const node = checkout.create(paymentMethod.type).mount(container);
+          componentArr[paymentMethodID] = node;
+        } catch (e) {
+          // TODO: Implement proper error handling
+        }
+      }, 0);
     }
   }
   container.classList.add("additionalFields");
-  // container.setAttribute("id", `component_${paymentMethodID}`);
+  container.setAttribute("id", `component_${paymentMethodID}`);
   container.setAttribute("style", "display:none");
 
   li.append(container);
