@@ -92,7 +92,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       );
       document.querySelector("#showConfirmationForm").submit();
     },
-    onClick: async (data, actions) => {
+    onClick: (data, actions) => {
       $("#dwfrm_billing").trigger("submit");
       if (formErrorsExist) return actions.reject();
     },
