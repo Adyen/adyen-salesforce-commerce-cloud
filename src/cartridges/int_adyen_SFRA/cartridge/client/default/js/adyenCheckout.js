@@ -120,22 +120,27 @@ function displaySelectedMethod(type) {
     .setAttribute("style", "display:block");
 }
 
-function unmountComponent() {
+function unmountComponents() {
   const promises = [];
   for (const [key, val] of Object.entries(componentArr)) {
-    try {
-      promises.push(Promise.resolve(val.unmount(`component_${key}`)));
-    } catch (e) {
-      //try/catch block for val.unmount
-    }
+    promises.push(resolveUnmount(promises, key, val));
     delete componentArr.key;
   }
   return Promise.all(promises);
 }
 
+function resolveUnmount(key, val) {
+  try {
+    return Promise.resolve(val.unmount(`component_${key}`));
+  } catch (e) {
+    // try/catch block for val.unmount
+    return Promise.resolve(false);
+  }
+}
+
 async function renderGenericComponent() {
   if (Object.keys(componentArr).length !== 0) {
-    await unmountComponent();
+    await unmountComponents();
   }
   getPaymentMethods(function (data) {
     let paymentMethod;
