@@ -69,7 +69,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-          componentsObj[selectedMethod].data
+        componentsObj[selectedMethod].data
       );
       paymentFromComponent(state.data, component);
     },
@@ -120,10 +120,10 @@ function displaySelectedMethod(type) {
 
 function unmountComponents() {
   const promises = [];
-  for (const [key, val] of Object.entries(componentsObj)) {
+  Object.entries(componentsObj).map(function ([key, val]) {
     promises.push(resolveUnmount(key, val));
     delete componentsObj[key];
-  }
+  });
   return Promise.all(promises);
 }
 

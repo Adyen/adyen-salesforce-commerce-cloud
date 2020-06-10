@@ -129,10 +129,10 @@ function assignPaymentMethodValue() {
 
 function unmountComponents() {
   const promises = [];
-  for (const [key, val] of Object.entries(componentsObj)) {
+  Object.entries(componentsObj).map(function ([key, val]) {
     promises.push(resolveUnmount(key, val));
     delete componentsObj[key];
-  }
+  });
   return Promise.all(promises);
 }
 
@@ -320,7 +320,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     : paymentMethod.type;
   const imagePath = `${path}${
     storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type
-    }.png`;
+  }.png`;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
