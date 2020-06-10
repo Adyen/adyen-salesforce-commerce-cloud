@@ -68,7 +68,9 @@ function initializeBillingEvents() {
         merchantId: window.paypalMerchantID,
         onClick: (data, actions) => {
           $("#dwfrm_billing").trigger("submit");
-          if (formErrorsExist) return actions.reject();
+          if (formErrorsExist) {
+            return actions.reject();
+          }
         },
         onSubmit: (state, component) => {
           assignPaymentMethodValue();
@@ -183,20 +185,24 @@ function showValidation() {
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
-    for (const input of inputs)
+    for (const input of inputs) {
       input.onchange = function () {
         validateCustomInputField(this);
       };
+    }
   }
-  if (document.querySelector("#dateOfBirthInput"))
+  if (document.querySelector("#dateOfBirthInput")) {
     document.querySelector("#dateOfBirthInput").onchange = function () {
       validateCustomInputField(this);
     };
+  }
 
   let stateData;
   if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
     stateData = componentArr[selectedMethod].data;
-  } else stateData = { paymentMethod: { type: selectedMethod } };
+  } else {
+    stateData = { paymentMethod: { type: selectedMethod } };
+  }
 
   if (selectedMethod === "ach") {
     const bankAccount = {
@@ -226,8 +232,9 @@ function validateComponents() {
 }
 
 function validateCustomInputField(input) {
-  if (input.value === "") input.classList.add("adyen-checkout__input--error");
-  else if (input.value.length > 0) {
+  if (input.value === "") {
+    input.classList.add("adyen-checkout__input--error");
+  } else if (input.value.length > 0) {
     input.classList.remove("adyen-checkout__input--error");
   }
 }
@@ -255,7 +262,7 @@ function getFallback(paymentMethod) {
 }
 
 async function renderGenericComponent() {
-  if (Object.keys(componentArr).length !== 0) {
+  if (Object.keys(componentArr).length) {
     await unmountComponent();
   }
   let paymentMethod;
@@ -279,12 +286,13 @@ async function renderGenericComponent() {
       i++
     ) {
       paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-      if (paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
+      if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
         renderPaymentMethod(
           paymentMethod,
           true,
           paymentMethodsResponse.ImagePath
         );
+      }
     }
   }
 
@@ -307,7 +315,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     : paymentMethod.type;
   const imagePath = `${path}${
     storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type
-  }.png`;
+    }.png`;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
@@ -418,11 +426,7 @@ $("#dwfrm_billing").submit(function (e) {
       data: form.serialize(),
       async: false,
       success: function (data) {
-        if (data.error) {
-          formErrorsExist = true;
-          return;
-        }
-        formErrorsExist = false;
+        formErrorsExist = "error" in data;
       },
     });
   }

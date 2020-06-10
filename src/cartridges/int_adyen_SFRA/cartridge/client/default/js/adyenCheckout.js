@@ -19,11 +19,7 @@ $("#dwfrm_billing").submit(function (e) {
     data: form.serialize(),
     async: false,
     success: function (data) {
-      if (data.fieldErrors) {
-        formErrorsExist = true;
-        return;
-      }
-      formErrorsExist = false;
+      formErrorsExist = "fieldErrors" in data;
     },
   });
 });
@@ -94,7 +90,9 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
     onClick: (data, actions) => {
       $("#dwfrm_billing").trigger("submit");
-      if (formErrorsExist) return actions.reject();
+      if (formErrorsExist) {
+        return actions.reject();
+      }
     },
   },
 };
@@ -208,7 +206,9 @@ function renderPaymentMethod(
                               <img class="paymentMethod_img" src="${imagePath}" ></img>
                               <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}">${label}</label>
                              `;
-  if (description) liContents += `<p>${description}</p>`;
+  if (description) {
+    liContents += `<p>${description}</p>`;
+  }
   const container = document.createElement("div");
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
@@ -326,7 +326,9 @@ function showValidation() {
     for (input of inputs) {
       input.classList.add("adyen-checkout__input--error");
     }
-    if (inputs.length > 0) return false;
+    if (inputs.length > 0) {
+      return false;
+    }
     return true;
   } else if (selectedMethod === "ratepay") {
     input = document.querySelector("#dateOfBirthInput");
@@ -340,8 +342,9 @@ function showValidation() {
 }
 
 function validateCustomInputField(input) {
-  if (input.value === "") input.classList.add("adyen-checkout__input--error");
-  else if (input.value.length > 0) {
+  if (input.value === "") {
+    input.classList.add("adyen-checkout__input--error");
+  } else if (input.value.length > 0) {
     input.classList.remove("adyen-checkout__input--error");
   }
 }
@@ -349,20 +352,24 @@ function validateCustomInputField(input) {
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
-    for (const input of inputs)
+    for (const input of inputs) {
       input.onchange = function () {
         validateCustomInputField(this);
       };
+    }
   }
-  if (document.querySelector("#dateOfBirthInput"))
+  if (document.querySelector("#dateOfBirthInput")) {
     document.querySelector("#dateOfBirthInput").onchange = function () {
       validateCustomInputField(this);
     };
+  }
 
   let stateData;
   if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
     stateData = componentArr[selectedMethod].data;
-  } else stateData = { paymentMethod: { type: selectedMethod } };
+  } else {
+    stateData = { paymentMethod: { type: selectedMethod } };
+  }
 
   if (selectedMethod === "ach") {
     const bankAccount = {
