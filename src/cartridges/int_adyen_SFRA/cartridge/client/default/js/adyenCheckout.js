@@ -3,7 +3,7 @@ let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
-const componentArr = [];
+const componentsObj = {};
 const checkoutConfiguration = window.Configuration;
 let formErrorsExist;
 
@@ -26,7 +26,7 @@ $("#dwfrm_billing").submit(function (e) {
 
 checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
-  componentArr[type] = state;
+  componentsObj[type] = state;
 };
 checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
@@ -47,7 +47,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        componentArr[selectedMethod] = state;
+        componentsObj[selectedMethod] = state;
       }
     },
   },
@@ -69,7 +69,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-        componentArr[selectedMethod].data
+          componentsObj[selectedMethod].data
       );
       paymentFromComponent(state.data, component);
     },
@@ -120,9 +120,9 @@ function displaySelectedMethod(type) {
 
 function unmountComponents() {
   const promises = [];
-  for (const [key, val] of Object.entries(componentArr)) {
-    promises.push(resolveUnmount(promises, key, val));
-    delete componentArr.key;
+  for (const [key, val] of Object.entries(componentsObj)) {
+    promises.push(resolveUnmount(key, val));
+    delete componentsObj.key;
   }
   return Promise.all(promises);
 }
@@ -137,7 +137,7 @@ function resolveUnmount(key, val) {
 }
 
 async function renderGenericComponent() {
-  if (Object.keys(componentArr).length !== 0) {
+  if (Object.keys(componentsObj).length !== 0) {
     await unmountComponents();
   }
   getPaymentMethods(function (data) {
@@ -215,7 +215,7 @@ function renderPaymentMethod(
 
   if (storedPaymentMethodBool) {
     const node = checkout.create("card", paymentMethod).mount(container);
-    componentArr[paymentMethodID] = node;
+    componentsObj[paymentMethodID] = node;
   } else {
     const fallback = getFallback(paymentMethod.type);
     if (fallback) {
@@ -226,7 +226,7 @@ function renderPaymentMethod(
       setTimeout(function () {
         try {
           const node = checkout.create(paymentMethod.type).mount(container);
-          componentArr[paymentMethodID] = node;
+          componentsObj[paymentMethodID] = node;
         } catch (e) {
           // TODO: Implement proper error handling
         }
@@ -315,8 +315,8 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-    componentArr[selectedMethod].showValidation();
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
+    componentsObj[selectedMethod].showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -365,8 +365,8 @@ function validateComponents() {
   }
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
-    stateData = componentArr[selectedMethod].data;
+  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].data) {
+    stateData = componentsObj[selectedMethod].data;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
   }

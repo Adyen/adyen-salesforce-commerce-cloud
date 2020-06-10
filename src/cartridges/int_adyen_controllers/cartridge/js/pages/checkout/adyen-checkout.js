@@ -4,7 +4,7 @@ require("./adyen-giving");
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
-const componentArr = [];
+const componentsObj = {};
 let checkoutConfiguration;
 let paymentMethodsResponse;
 let checkout;
@@ -32,7 +32,7 @@ function initializeBillingEvents() {
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /*, component */) {
       const type = state.data.paymentMethod.type;
-      componentArr[type] = state;
+      componentsObj[type] = state;
     };
 
     checkoutConfiguration.paymentMethodsConfiguration = {
@@ -54,7 +54,7 @@ function initializeBillingEvents() {
           componentName = componentName.replace("storedPaymentMethods", "");
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-            componentArr[selectedMethod] = state;
+            componentsObj[selectedMethod] = state;
           }
         },
       },
@@ -127,17 +127,22 @@ function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
-function unmountComponent() {
+function unmountComponents() {
   const promises = [];
-  for (const [key, val] of Object.entries(componentArr)) {
-    try {
-      promises.push(Promise.resolve(val.unmount(`component_${key}`)));
-    } catch (e) {
-      //try/catch block for val.unmount
-    }
-    delete componentArr.key;
+  for (const [key, val] of Object.entries(componentsObj)) {
+    promises.push(resolveUnmount(key, val));
+    delete componentsObj.key;
   }
   return Promise.all(promises);
+}
+
+function resolveUnmount(key, val) {
+  try {
+    return Promise.resolve(val.unmount(`component_${key}`));
+  } catch (e) {
+    // try/catch block for val.unmount
+    return Promise.resolve(false);
+  }
 }
 
 function displaySelectedMethod(type) {
@@ -158,8 +163,8 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-    componentArr[selectedMethod].showValidation();
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
+    componentsObj[selectedMethod].showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -198,8 +203,8 @@ function validateComponents() {
   }
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
-    stateData = componentArr[selectedMethod].data;
+  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].data) {
+    stateData = componentsObj[selectedMethod].data;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
   }
@@ -262,8 +267,8 @@ function getFallback(paymentMethod) {
 }
 
 async function renderGenericComponent() {
-  if (Object.keys(componentArr).length) {
-    await unmountComponent();
+  if (Object.keys(componentsObj).length) {
+    await unmountComponents();
   }
   let paymentMethod;
   let i;
@@ -388,7 +393,7 @@ function createCheckoutComponent(
       const node = checkout
         .create(paymentMethod.type, paymentMethod)
         .mount(container);
-      componentArr[paymentMethodID] = node;
+      componentsObj[paymentMethodID] = node;
     } catch (e) {
       // TODO: implement proper error handling
     }
@@ -426,7 +431,7 @@ $("#dwfrm_billing").submit(function (e) {
       data: form.serialize(),
       async: false,
       success: function (data) {
-        formErrorsExist = "error" in data;
+        formErrorsExist = "fieldErrors" in data;
       },
     });
   }
