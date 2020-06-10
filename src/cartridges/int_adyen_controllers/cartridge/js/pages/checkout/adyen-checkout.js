@@ -131,7 +131,7 @@ function unmountComponents() {
   const promises = [];
   for (const [key, val] of Object.entries(componentsObj)) {
     promises.push(resolveUnmount(key, val));
-    delete componentsObj.key;
+    delete componentsObj[key];
   }
   return Promise.all(promises);
 }
