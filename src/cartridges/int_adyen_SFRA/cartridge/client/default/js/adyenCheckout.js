@@ -119,10 +119,9 @@ function displaySelectedMethod(type) {
 }
 
 function unmountComponents() {
-  const promises = [];
-  Object.entries(componentsObj).map(function ([key, val]) {
-    promises.push(resolveUnmount(key, val));
+  const promises = Object.entries(componentsObj).map(function ([key, val]) {
     delete componentsObj[key];
+    return resolveUnmount(key, val);
   });
   return Promise.all(promises);
 }
