@@ -4,32 +4,52 @@ var HashMap = require('dw/util/HashMap');
 var Mail = require('dw/net/Mail');
 var Template = require('dw/util/Template');
 var Transaction = require('dw/system/Transaction');
-
+var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var Order = require('dw/order/Order');
 
 function submit(order) {
-    var confirmationEmail = new Mail();
-    var context = new HashMap();
+    try {
+        Transaction.begin();
+        // Places the order if not placed yet
+        if(order.status == Order.ORDER_STATUS_CREATED) {
+            //custom fraudDetection
+            var fraudDetectionStatus = {status: 'success'};
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+            if (placeOrderResult.error) {
+                return placeOrderResult;
+            }
+        }
 
-    var savedOrderModel = order.custom.Adyen_CustomerEmail;
-    var orderObject = {order: JSON.parse(savedOrderModel)};
+        var confirmationEmail = new Mail();
+        var context = new HashMap();
 
-    confirmationEmail.addTo(order.customerEmail);
-    confirmationEmail.setSubject(Resource.msg('subject.order.confirmation.email', 'order', null));
-    confirmationEmail.setFrom(Site.current.getCustomPreferenceValue('customerServiceEmail')
-        || 'no-reply@salesforce.com');
+        var savedOrderModel = order.custom.Adyen_CustomerEmail;
+        var orderObject = {order: JSON.parse(savedOrderModel)};
 
-    Object.keys(orderObject).forEach(function (key) {
-        context.put(key, orderObject[key]);
-    });
+        confirmationEmail.addTo(order.customerEmail);
+        confirmationEmail.setSubject(Resource.msg('subject.order.confirmation.email', 'order', null));
+        confirmationEmail.setFrom(Site.current.getCustomPreferenceValue('customerServiceEmail')
+            || 'no-reply@salesforce.com');
 
-    var template = new Template('checkout/confirmation/confirmationEmail');
-    var content = template.render(context).text;
-    confirmationEmail.setContent(content, 'text/html', 'UTF-8');
-    confirmationEmail.send();
+        Object.keys(orderObject).forEach(function (key) {
+            context.put(key, orderObject[key]);
+        });
 
-    Transaction.wrap(function () {
+        var template = new Template('checkout/confirmation/confirmationEmail');
+        var content = template.render(context).text;
+        confirmationEmail.setContent(content, 'text/html', 'UTF-8');
+        confirmationEmail.send();
         order.custom.Adyen_CustomerEmail = null;
-    });
+        Transaction.commit();
+    } catch(e){
+        Transaction.rollback();
+        return {
+            error: true
+        };
+    }
+    return {
+        order_created: true
+    };
 }
 
 module.exports = {
