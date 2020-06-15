@@ -127,7 +127,7 @@ function initializeAccountEvents() {
     })
     .mount(newCard);
 
-  $("#applyBtn").on("click", function (e) {
+  $("#applyBtn").on("click", function () {
     if (!isValid) {
       //TODOBAS showvalidation
       node.showValidation();
