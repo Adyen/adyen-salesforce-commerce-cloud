@@ -44,6 +44,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_donationAmount">
+                <display-name xml:lang="x-default">Adyen donation amount</display-name>
+                <description xml:lang="x-default">Amount donated via Adyen Giving</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayments">
@@ -52,6 +60,7 @@
                 <attribute attribute-id="Adyen_eventCode"/>
                 <attribute attribute-id="Adyen_paymentMethod"/>
                 <attribute attribute-id="Adyen_value"/>
+                <attribute attribute-id="Adyen_donationAmount"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -424,7 +433,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenGiving_donationAmounts">
                 <display-name xml:lang="x-default">Amounts for donation</display-name>
-                <description xml:lang="x-default">Comma separated values in minor units (e.g. 1000,2000,3000)</description>
+                <description xml:lang="x-default">Comma separated values in minor units (e.g. $10.00 = 1000)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -461,6 +470,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_PaypalMerchantID">
+                <display-name xml:lang="x-default">Your PayPal MerchantID to accept live payments</display-name>
+                <description xml:lang="x-default">https://docs.adyen.com/payment-methods/paypal/web-component#show-paypal-in-your-payment-form</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
@@ -487,6 +504,7 @@
                 <attribute attribute-id="AdyenGiving_charityUrl"/>
                 <attribute attribute-id="AdyenGiving_backgroundUrl"/>
                 <attribute attribute-id="AdyenGiving_logoUrl"/>
+                <attribute attribute-id="Adyen_PaypalMerchantID"/>
             </attribute-group>
         </group-definitions>
 </type-extension>

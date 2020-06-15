@@ -3,8 +3,9 @@ let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
-const componentArr = [];
+const componentsObj = {};
 const checkoutConfiguration = window.Configuration;
+let formErrorsExist;
 
 $("#dwfrm_billing").submit(function (e) {
   e.preventDefault();
@@ -16,23 +17,16 @@ $("#dwfrm_billing").submit(function (e) {
     type: "POST",
     url: url,
     data: form.serialize(),
+    async: false,
     success: function (data) {
-      if (data.fieldErrors) {
-        return;
-      }
-      document
-        .querySelector("#continueBtn")
-        .setAttribute("style", "display:none");
-      document
-        .querySelector("#component_paypal")
-        .setAttribute("style", "display:block");
+      formErrorsExist = "fieldErrors" in data;
     },
   });
 });
 
 checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
-  componentArr[type] = state;
+  componentsObj[type] = state;
 };
 checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
@@ -53,7 +47,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        componentArr[selectedMethod] = state;
+        componentsObj[selectedMethod] = state;
       }
     },
   },
@@ -71,10 +65,11 @@ checkoutConfiguration.paymentMethodsConfiguration = {
   },
   paypal: {
     intent: "capture",
+    merchantId: window.paypalMerchantID,
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-        componentArr[selectedMethod].data
+        componentsObj[selectedMethod].data
       );
       paymentFromComponent(state.data, component);
     },
@@ -93,6 +88,12 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       );
       document.querySelector("#showConfirmationForm").submit();
     },
+    onClick: (data, actions) => {
+      $("#dwfrm_billing").trigger("submit");
+      if (formErrorsExist) {
+        return actions.reject();
+      }
+    },
   },
 };
 if (window.installments) {
@@ -108,20 +109,29 @@ function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
   if (type !== "paypal") {
-    document
-      .querySelector(`#component_${type}`)
-      .setAttribute("style", "display:block");
     document.querySelector('button[value="submit-payment"]').disabled = false;
-    if (document.querySelector(`#continueBtn`)) {
-      document
-        .querySelector(`#continueBtn`)
-        .setAttribute("style", "display:none");
-    }
   } else {
     document.querySelector('button[value="submit-payment"]').disabled = true;
-    document
-      .querySelector(`#continueBtn`)
-      .setAttribute("style", "display:block");
+  }
+  document
+    .querySelector(`#component_${type}`)
+    .setAttribute("style", "display:block");
+}
+
+function unmountComponents() {
+  const promises = Object.entries(componentsObj).map(function ([key, val]) {
+    delete componentsObj[key];
+    return resolveUnmount(key, val);
+  });
+  return Promise.all(promises);
+}
+
+function resolveUnmount(key, val) {
+  try {
+    return Promise.resolve(val.unmount(`component_${key}`));
+  } catch (e) {
+    // try/catch block for val.unmount
+    return Promise.resolve(false);
   }
 }
 
@@ -138,7 +148,10 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
-function renderGenericComponent() {
+async function renderGenericComponent() {
+  if (Object.keys(componentsObj).length !== 0) {
+    await unmountComponents();
+  }
   getPaymentMethods(function (data) {
     let paymentMethod;
     let i;
@@ -201,6 +214,7 @@ function renderPaymentMethod(
 ) {
   const checkout = new AdyenCheckout(checkoutConfiguration);
   const paymentMethodsUI = document.querySelector("#paymentMethodsList");
+
   const li = document.createElement("li");
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
@@ -216,15 +230,16 @@ function renderPaymentMethod(
                               <img class="paymentMethod_img" src="${imagePath}" ></img>
                               <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}">${label}</label>
                              `;
-  if (description) liContents += `<p>${description}</p>`;
+  if (description) {
+    liContents += `<p>${description}</p>`;
+  }
   const container = document.createElement("div");
-
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
 
   if (storedPaymentMethodBool) {
     const node = checkout.create("card", paymentMethod).mount(container);
-    componentArr[paymentMethodID] = node;
+    componentsObj[paymentMethodID] = node;
   } else {
     const fallback = getFallback(paymentMethod.type);
     if (fallback) {
@@ -234,26 +249,14 @@ function renderPaymentMethod(
     } else {
       setTimeout(function () {
         try {
-          //todo replace temporary continue button with onClick function once available by checkout
-          if (paymentMethod.type === "paypal") {
-            const continueBtn = document.createElement("button");
-            continueBtn.innerText = "continue";
-            continueBtn.setAttribute("id", "continueBtn");
-            continueBtn.setAttribute("style", "display:none");
-            continueBtn.onclick = function () {
-              $("#dwfrm_billing").trigger("submit");
-            };
-            li.append(continueBtn);
-          }
           const node = checkout.create(paymentMethod.type).mount(container);
-          componentArr[paymentMethodID] = node;
+          componentsObj[paymentMethodID] = node;
         } catch (e) {
           // TODO: Implement proper error handling
         }
       }, 0);
     }
   }
-
   container.classList.add("additionalFields");
   container.setAttribute("id", `component_${paymentMethodID}`);
   container.setAttribute("style", "display:none");
@@ -342,8 +345,8 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-    componentArr[selectedMethod].showValidation();
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
+    componentsObj[selectedMethod].showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -353,7 +356,9 @@ function showValidation() {
     for (input of inputs) {
       input.classList.add("adyen-checkout__input--error");
     }
-    if (inputs.length > 0) return false;
+    if (inputs.length > 0) {
+      return false;
+    }
     return true;
   } else if (selectedMethod === "ratepay") {
     input = document.querySelector("#dateOfBirthInput");
@@ -367,8 +372,9 @@ function showValidation() {
 }
 
 function validateCustomInputField(input) {
-  if (input.value === "") input.classList.add("adyen-checkout__input--error");
-  else if (input.value.length > 0) {
+  if (input.value === "") {
+    input.classList.add("adyen-checkout__input--error");
+  } else if (input.value.length > 0) {
     input.classList.remove("adyen-checkout__input--error");
   }
 }
@@ -376,20 +382,24 @@ function validateCustomInputField(input) {
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
-    for (const input of inputs)
+    for (const input of inputs) {
       input.onchange = function () {
         validateCustomInputField(this);
       };
+    }
   }
-  if (document.querySelector("#dateOfBirthInput"))
+  if (document.querySelector("#dateOfBirthInput")) {
     document.querySelector("#dateOfBirthInput").onchange = function () {
       validateCustomInputField(this);
     };
+  }
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
-    stateData = componentArr[selectedMethod].data;
-  } else stateData = { paymentMethod: { type: selectedMethod } };
+  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].data) {
+    stateData = componentsObj[selectedMethod].data;
+  } else {
+    stateData = { paymentMethod: { type: selectedMethod } };
+  }
 
   if (selectedMethod === "ach") {
     const bankAccount = {

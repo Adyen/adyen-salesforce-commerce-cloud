@@ -21,6 +21,7 @@
     var locale = "${request.locale}";
     window.Configuration = {originKey, loadingContext, environment, locale};
     window.installments = "${AdyenHelper.getCreditCardInstallments()}";
+    window.paypalMerchantID = "${AdyenHelper.getPaypalMerchantID()}";
 
     var showStoreDetails = ${customer.authenticated};
 </script>

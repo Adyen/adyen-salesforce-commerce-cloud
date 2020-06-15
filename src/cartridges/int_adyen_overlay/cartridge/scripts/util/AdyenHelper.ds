@@ -35,7 +35,7 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_TEST: "https://checkoutshopper-test.adyen.com/checkoutshopper/",
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
-    CHECKOUT_COMPONENT_VERSION: "3.7.0",
+    CHECKOUT_COMPONENT_VERSION: "3.9.0",
     VERSION: "20.0.0",
 
     getService: function (service: String): Object {
@@ -124,6 +124,10 @@ var __AdyenHelper: Object = {
 
     getCreditCardInstallments: function () {
         return __AdyenHelper.getCustomPreference("AdyenCreditCardInstallments");
+    },
+
+    getPaypalMerchantID: function () {
+        return __AdyenHelper.getCustomPreference("Adyen_PaypalMerchantID");
     },
 
     getAdyenStoreId: function () {
