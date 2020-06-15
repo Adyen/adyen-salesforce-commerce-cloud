@@ -219,9 +219,14 @@ function renderPaymentMethod(
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  const imagePath = storedPaymentMethodBool
-    ? `${path}${paymentMethod.brand}.png`
-    : `${path}${paymentMethod.type}.png`;
+  let imagePath;
+  if (paymentMethod.type === "scheme") {
+    imagePath = `${path}card.png`;
+  } else {
+    imagePath = storedPaymentMethodBool
+      ? `${path}${paymentMethod.brand}.png`
+      : `${path}${paymentMethod.type}.png`;
+  }
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
