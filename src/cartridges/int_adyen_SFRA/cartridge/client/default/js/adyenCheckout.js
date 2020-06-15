@@ -3,10 +3,11 @@ let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
-const componentsObj = {};
+let componentsObj = {};
 const checkoutConfiguration = window.Configuration;
 let formErrorsExist;
-var isValid = false;
+let isValid = false;
+let checkout;
 
 $("#dwfrm_billing").submit(function (e) {
   e.preventDefault();
@@ -156,14 +157,13 @@ async function renderGenericComponent() {
     if (data.countryCode) {
       checkoutConfiguration.countryCode = data.countryCode;
     }
+    checkout = new AdyenCheckout(checkoutConfiguration);
+
+
     document.querySelector("#paymentMethodsList").innerHTML = "";
 
     if (data.AdyenPaymentMethods.storedPaymentMethods) {
-      for (
-        i = 0;
-        i < checkout.paymentMethodsResponse.storedPaymentMethods.length;
-        i++
-      ) {
+      for (i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
         paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
         if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
           renderPaymentMethod(paymentMethod, true, data.ImagePath);
@@ -194,7 +194,6 @@ function renderPaymentMethod(
   path,
   description = null
 ) {
-  const checkout = new AdyenCheckout(checkoutConfiguration);
   const paymentMethodsUI = document.querySelector("#paymentMethodsList");
   const li = document.createElement("li");
   const paymentMethodID = storedPaymentMethodBool
@@ -219,8 +218,11 @@ function renderPaymentMethod(
   li.classList.add("paymentMethod");
 
   if (storedPaymentMethodBool) {
-    const node = checkout.create("card", paymentMethod).mount(container);
-    componentsObj[paymentMethodID].node = node;
+    setTimeout(function () {
+      const node = checkout.create("card", paymentMethod).mount(container);
+      if(!componentsObj[paymentMethodID]) componentsObj[paymentMethodID] = {};
+      componentsObj[paymentMethodID].node = node;
+    }, 0);
   } else {
     const fallback = getFallback(paymentMethod.type);
     if (fallback) {
