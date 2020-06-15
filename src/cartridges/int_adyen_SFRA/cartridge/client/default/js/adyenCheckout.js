@@ -125,6 +125,19 @@ function displaySelectedMethod(type) {
   }
 }
 
+function isMethodTypeBlocked(methodType) {
+  const blockedMethods = [
+    "bcmc_mobile_QR",
+    "applepay",
+    "cup",
+    "wechatpay",
+    "wechatpay_pos",
+    "wechatpaySdk",
+    "wechatpayQr",
+  ];
+  return blockedMethods.includes(methodType);
+}
+
 function renderGenericComponent() {
   getPaymentMethods(function (data) {
     let paymentMethod;
@@ -151,15 +164,15 @@ function renderGenericComponent() {
       }
     }
 
-    for (i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
-      paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-      renderPaymentMethod(
-        paymentMethod,
-        false,
-        data.ImagePath,
-        data.AdyenDescriptions[i].description
-      );
-    }
+    data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
+      !isMethodTypeBlocked(pm.type) &&
+        renderPaymentMethod(
+          pm,
+          false,
+          data.ImagePath,
+          data.AdyenDescriptions[i].description
+        );
+    });
 
     if (
       data.AdyenConnectedTerminals &&
