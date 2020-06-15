@@ -30,13 +30,11 @@
 
 <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
 <input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
-<!--<input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>-->
-<!--<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>-->
-<!--<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>-->
+<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
+<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
 <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
-<!--<input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>-->
 
 <ul id="paymentMethodsList"></ul>
 
@@ -63,6 +61,3 @@
 <script type="text/javascript">
     dfDo('dwfrm_adyPaydata_adyenFingerprint');
 </script>
-
-<span id="errorLoadComponent"></span>
-<div id="card"></div>

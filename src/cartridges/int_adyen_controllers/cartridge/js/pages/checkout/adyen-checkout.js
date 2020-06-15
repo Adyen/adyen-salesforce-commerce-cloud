@@ -111,12 +111,31 @@ function initializeBillingEvents() {
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
-  $("#add-card-submit").on("click", function (e) {
-    e.preventDefault();
-    if (window.AdyenCard.isValid) {
-      copyCardData(window.AdyenCard);
-      $("#add-card-submit-hidden").trigger("click");
+  checkoutConfiguration = window.Configuration;
+  checkout = new AdyenCheckout(checkoutConfiguration);
+  const newCard = document.getElementById("newCard");
+  let adyenStateData;
+  let isValid = false;
+  const node = checkout
+    .create("card", {
+      hasHolderName: true,
+      holderNameRequired: true,
+      onChange: function (state) {
+        adyenStateData = state.data;
+        isValid = state.isValid;
+      },
+    })
+    .mount(newCard);
+
+  $("#applyBtn").on("click", function (e) {
+    if (!isValid) {
+      //TODOBAS showvalidation
+      node.showValidation();
+      return false;
     }
+    document.querySelector("#adyenStateData").value = JSON.stringify(
+      adyenStateData
+    );
   });
 }
 
