@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
@@ -30,7 +29,9 @@ checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
   // componentsObj[type] = state;
   isValid = state.isValid;
-  if(!componentsObj[type]) componentsObj[type] = {};
+  if (!componentsObj[type]) {
+    componentsObj[type] = {};
+  }
   componentsObj[type].isValid = isValid;
   componentsObj[type].stateData = state.data;
 };
@@ -49,7 +50,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
     onChange: function (state, component) {
       isValid = state.isValid;
-      storeDetails = state.data.storePaymentMethod;
       // Todo: fix onChange issues so we can get rid of componentName
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
@@ -58,7 +58,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
       }
-    }
+    },
   },
   boletobancario: {
     personalDetailsRequired: true, // turn personalDetails section on/off
@@ -172,11 +172,14 @@ async function renderGenericComponent() {
     }
     checkout = new AdyenCheckout(checkoutConfiguration);
 
-
     document.querySelector("#paymentMethodsList").innerHTML = "";
 
     if (data.AdyenPaymentMethods.storedPaymentMethods) {
-      for (i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
+      for (
+        i = 0;
+        i < checkout.paymentMethodsResponse.storedPaymentMethods.length;
+        i++
+      ) {
         paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
         if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
           renderPaymentMethod(paymentMethod, true, data.ImagePath);
@@ -246,7 +249,9 @@ function renderPaymentMethod(
   if (storedPaymentMethodBool) {
     setTimeout(function () {
       const node = checkout.create("card", paymentMethod).mount(container);
-      if(!componentsObj[paymentMethodID]) componentsObj[paymentMethodID] = {};
+      if (!componentsObj[paymentMethodID]) {
+        componentsObj[paymentMethodID] = {};
+      }
       componentsObj[paymentMethodID].node = node;
     }, 0);
   } else {
@@ -259,7 +264,9 @@ function renderPaymentMethod(
       setTimeout(function () {
         try {
           const node = checkout.create(paymentMethod.type).mount(container);
-          if(!componentsObj[paymentMethodID]) componentsObj[paymentMethodID] = {};
+          if (!componentsObj[paymentMethodID]) {
+            componentsObj[paymentMethodID] = {};
+          }
           componentsObj[paymentMethodID].node = node;
         } catch (e) {
           // TODO: Implement proper error handling
@@ -406,7 +413,10 @@ function validateComponents() {
   }
 
   let stateData;
-  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].stateData) {
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].stateData
+  ) {
     stateData = componentsObj[selectedMethod].stateData;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
