@@ -114,6 +114,36 @@ var __AdyenHelper: Object = {
         return returnValue;
     },
 
+    getAdyenGivingConfig: function (order) {
+        var paymentMethod = order.custom.Adyen_paymentMethod;
+        var adyenGivingAvailable = false;
+        if(__AdyenHelper.getAdyenGivingEnabled() && __AdyenHelper.isAdyenGivingAvailable(paymentMethod)) {
+            adyenGivingAvailable = true;
+            var configuredAmounts = __AdyenHelper.getDonationAmounts();
+            var charityName = __AdyenHelper.getAdyenGivingCharityName();
+            var charityWebsite = __AdyenHelper.getAdyenGivingCharityWebsite();
+            var charityDescription = __AdyenHelper.getAdyenGivingCharityDescription();
+            var adyenGivingBackgroundUrl = __AdyenHelper.getAdyenGivingBackgroundUrl();
+            var adyenGivingLogoUrl = __AdyenHelper.getAdyenGivingLogoUrl();
+
+            var donationAmounts = {
+                currency: session.currency.currencyCode,
+                values: configuredAmounts
+            };
+        }
+        return {
+            adyenGivingAvailable: adyenGivingAvailable,
+            configuredAmounts: configuredAmounts,
+            charityName: charityName,
+            charityWebsite: charityWebsite,
+            charityDescription: charityDescription,
+            adyenGivingBackgroundUrl: adyenGivingBackgroundUrl,
+            adyenGivingLogoUrl: adyenGivingLogoUrl,
+            donationAmounts: JSON.stringify(donationAmounts),
+            pspReference: order.custom.Adyen_pspReference
+        }
+    },
+
     getAdyenRecurringEnabled: function () {
         return __AdyenHelper.getCustomPreference("AdyenRecurringEnabled");
     },

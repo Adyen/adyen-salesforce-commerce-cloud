@@ -20,7 +20,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
     onChange: function (state) {
-      storeDetails = state.data.storePaymentMethod;
       isValid = state.isValid;
       componentState = state;
     },
