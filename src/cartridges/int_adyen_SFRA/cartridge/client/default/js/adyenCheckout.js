@@ -421,12 +421,10 @@ function validateComponents() {
       document.querySelector("#genderInput").value &&
       document.querySelector("#dateOfBirthInput").value
     ) {
-      stateData.paymentMethod.gender = document.querySelector(
-        "#genderInput"
-      ).value;
-      stateData.paymentMethod.dateOfBirth = document.querySelector(
-        "#dateOfBirthInput"
-      ).value;
+      stateData.shopperName = {
+        gender: document.querySelector("#genderInput").value,
+      };
+      stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
     }
   }
   document.querySelector("#adyenStateData").value = JSON.stringify(stateData);

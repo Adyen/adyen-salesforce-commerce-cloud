@@ -313,32 +313,12 @@ var __AdyenHelper: Object = {
 
     createShopperObject: function (args) {
         var gender = "UNKNOWN";
-        if(args.adyenForm) {
-            if(args.adyenForm.socialSecurityNumber.value){
-               args.paymentRequest['socialSecurityNumber'] = args.adyenForm.socialSecurityNumber.value;
-            }
-            if(args.adyenForm.dateOfBirth.value){
-                args.paymentRequest['dateOfBirth'] = args.adyenForm.dateOfBirth.value;
-            }
-            if(args.adyenForm.gender.value){
-                switch(args.adyenForm.gender.value){
-                    case "M":
-                        gender = "MALE";
-                        break;
-                    case "F":
-                        gender = "FEMALE";
-                        break;
-                    default:
-                        gender = "UNKNOWN";
-                }
-            }
-            if(args.adyenForm.telephoneNumber.value){
-                args.paymentRequest['telephoneNumber'] = args.adyenForm.telephoneNumber.value;
-            }
-            else if(args.order.defaultShipment.shippingAddress.phone){
-                args.paymentRequest['telephoneNumber']= args.order.defaultShipment.shippingAddress.phone
-            }
-
+        if(args.paymentRequest.shopperName && args.paymentRequest.shopperName.gender) {
+            gender = args.paymentRequest.shopperName.gender;
+        }
+        
+        if(args.order.getDefaultShipment().getShippingAddress().getPhone()){
+            args.paymentRequest['telephoneNumber']= args.order.getDefaultShipment().getShippingAddress().getPhone();
         }
 
         var customer = args.order.getCustomer();
