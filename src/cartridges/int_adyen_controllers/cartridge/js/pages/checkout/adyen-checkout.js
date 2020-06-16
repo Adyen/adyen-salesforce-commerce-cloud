@@ -15,10 +15,10 @@ let formErrorsExist;
  */
 function initializeBillingEvents() {
   $("#billing-submit").on("click", function () {
-    if (
+    const isAdyenPOS =
       document.querySelector(".payment-method-options :checked").value ===
-      "AdyenPOS"
-    ) {
+      "AdyenPOS";
+    if (isAdyenPOS) {
       document.querySelector(
         "#dwfrm_adyPaydata_terminalId"
       ).value = document.querySelector("#terminalList").value;
@@ -359,14 +359,13 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  let imagePath;
-  if (paymentMethod.type === "scheme" && !storedPaymentMethodBool) {
-    imagePath = `${path}card.png`;
-  } else {
-    imagePath = storedPaymentMethodBool
-      ? `${path}${paymentMethod.brand}.png`
-      : `${path}${paymentMethod.type}.png`;
-  }
+  const isSchemeNotStored =
+    paymentMethod.type === "scheme" && !storedPaymentMethodBool;
+  const paymentMethodImage = storedPaymentMethodBool
+    ? `${path}${paymentMethod.brand}.png`
+    : `${path}${paymentMethod.type}.png`;
+  const cardImage = `${path}card.png`;
+  const imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
