@@ -9,7 +9,7 @@
 <isif condition="${connectedTerminals.uniqueTerminalIds && connectedTerminals.uniqueTerminalIds.length > 0}">
 	<div class="field-wrapper">
 		<h4>${Resource.msg('terminal.selectTerminal','adyen',null)}</h4>
-		<select class="connectedTerminals" id="terminalId">
+		<select class="connectedTerminals" id="terminalList">
 			<isloop items="${connectedTerminals.uniqueTerminalIds}" var="uniqueTerminal">
 				<option label="${uniqueTerminal}" value="${uniqueTerminal}"/>
 			</isloop>

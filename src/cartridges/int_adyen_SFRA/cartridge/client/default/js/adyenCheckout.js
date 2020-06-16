@@ -220,7 +220,7 @@ function renderPaymentMethod(
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
   let imagePath;
-  if (paymentMethod.type === "scheme") {
+  if (paymentMethod.type === "scheme" && !storedPaymentMethodBool) {
     imagePath = `${path}card.png`;
   } else {
     imagePath = storedPaymentMethodBool
