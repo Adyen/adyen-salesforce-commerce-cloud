@@ -27,7 +27,6 @@ $("#dwfrm_billing").submit(function (e) {
 
 checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
-  // componentsObj[type] = state;
   isValid = state.isValid;
   if (!componentsObj[type]) {
     componentsObj[type] = {};
@@ -54,7 +53,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        // componentsObj[selectedMethod] = state;
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
       }
@@ -362,7 +360,6 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  // const component = document.querySelector(`#component_${selectedMethod}`);
   if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
