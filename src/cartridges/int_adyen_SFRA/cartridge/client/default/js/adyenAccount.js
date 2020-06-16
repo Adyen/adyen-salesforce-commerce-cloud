@@ -1,7 +1,6 @@
 const cardNode = document.getElementById("card");
 let maskedCardNumber;
 let isValid = false;
-// eslint-disable-next-line no-unused-vars
 let componentState;
 const MASKED_CC_PREFIX = "************";
 const checkoutConfiguration = window.Configuration;
