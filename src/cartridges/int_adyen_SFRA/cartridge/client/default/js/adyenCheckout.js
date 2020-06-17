@@ -1,11 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
 const componentsObj = {};
 const checkoutConfiguration = window.Configuration;
 let formErrorsExist;
+let isValid = false;
+let checkout;
 
 $("#dwfrm_billing").submit(function (e) {
   e.preventDefault();
@@ -26,7 +27,12 @@ $("#dwfrm_billing").submit(function (e) {
 
 checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
-  componentsObj[type] = state;
+  isValid = state.isValid;
+  if (!componentsObj[type]) {
+    componentsObj[type] = {};
+  }
+  componentsObj[type].isValid = isValid;
+  componentsObj[type].stateData = state.data;
 };
 checkoutConfiguration.showPayButton = false;
 checkoutConfiguration.paymentMethodsConfiguration = {
@@ -42,12 +48,13 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
     onChange: function (state, component) {
-      storeDetails = state.data.storePaymentMethod;
+      isValid = state.isValid;
       // Todo: fix onChange issues so we can get rid of componentName
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        componentsObj[selectedMethod] = state;
+        componentsObj[selectedMethod].isValid = isValid;
+        componentsObj[selectedMethod].stateData = state.data;
       }
     },
   },
@@ -58,7 +65,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
 
     // Optionally prefill some fields, here all fields are filled:
     data: {
-      socialSecurityNumber: "56861752509",
       firstName: document.getElementById("shippingFirstNamedefault").value,
       lastName: document.getElementById("shippingLastNamedefault").value,
     },
@@ -69,7 +75,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
-        componentsObj[selectedMethod].data
+        componentsObj[selectedMethod].stateData
       );
       paymentFromComponent(state.data, component);
     },
@@ -128,7 +134,7 @@ function unmountComponents() {
 
 function resolveUnmount(key, val) {
   try {
-    return Promise.resolve(val.unmount(`component_${key}`));
+    return Promise.resolve(val.node.unmount(`component_${key}`));
   } catch (e) {
     // try/catch block for val.unmount
     return Promise.resolve(false);
@@ -162,6 +168,8 @@ async function renderGenericComponent() {
     if (data.countryCode) {
       checkoutConfiguration.countryCode = data.countryCode;
     }
+    checkout = new AdyenCheckout(checkoutConfiguration);
+
     document.querySelector("#paymentMethodsList").innerHTML = "";
 
     if (data.AdyenPaymentMethods.storedPaymentMethods) {
@@ -212,7 +220,6 @@ function renderPaymentMethod(
   path,
   description = null
 ) {
-  const checkout = new AdyenCheckout(checkoutConfiguration);
   const paymentMethodsUI = document.querySelector("#paymentMethodsList");
 
   const li = document.createElement("li");
@@ -242,8 +249,13 @@ function renderPaymentMethod(
   li.classList.add("paymentMethod");
 
   if (storedPaymentMethodBool) {
-    const node = checkout.create("card", paymentMethod).mount(container);
-    componentsObj[paymentMethodID] = node;
+    setTimeout(function () {
+      const node = checkout.create("card", paymentMethod).mount(container);
+      if (!componentsObj[paymentMethodID]) {
+        componentsObj[paymentMethodID] = {};
+      }
+      componentsObj[paymentMethodID].node = node;
+    }, 0);
   } else {
     const fallback = getFallback(paymentMethod.type);
     if (fallback) {
@@ -254,7 +266,10 @@ function renderPaymentMethod(
       setTimeout(function () {
         try {
           const node = checkout.create(paymentMethod.type).mount(container);
-          componentsObj[paymentMethodID] = node;
+          if (!componentsObj[paymentMethodID]) {
+            componentsObj[paymentMethodID] = {};
+          }
+          componentsObj[paymentMethodID].node = node;
         } catch (e) {
           // TODO: Implement proper error handling
         }
@@ -350,7 +365,7 @@ function assignPaymentMethodValue() {
 function showValidation() {
   let input;
   if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
-    componentsObj[selectedMethod].showValidation();
+    componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -399,8 +414,11 @@ function validateComponents() {
   }
 
   let stateData;
-  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].data) {
-    stateData = componentsObj[selectedMethod].data;
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].stateData
+  ) {
+    stateData = componentsObj[selectedMethod].stateData;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
   }
