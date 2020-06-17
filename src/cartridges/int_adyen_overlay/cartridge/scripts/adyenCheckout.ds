@@ -72,13 +72,13 @@ function createPaymentRequest(args) {
             paymentRequest: paymentRequest
         });
 
-        if (args.adyenFingerprint) {
-            paymentRequest.deviceFingerprint = args.adyenFingerprint
+        if (session.privacy.adyenFingerprint) {
+            paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint
         }
         //Set open invoice data
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
             paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
-            if (paymentRequest.paymentMethod.type.indexOf("ratepay") != -1 && session.privacy.ratePayFingerprint) {
+            if (paymentRequest.paymentMethod.type.includes("ratepay") && session.privacy.ratePayFingerprint) {
                 paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
             }
         }
