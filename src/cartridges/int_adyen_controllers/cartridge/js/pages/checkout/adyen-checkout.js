@@ -489,7 +489,7 @@ $("#dwfrm_billing").submit(function (e) {
       data: form.serialize(),
       async: false,
       success: function (data) {
-        formErrorsExist = "fieldErrors" in data;
+        formErrorsExist = data.fieldErrors;
       },
     });
   }
