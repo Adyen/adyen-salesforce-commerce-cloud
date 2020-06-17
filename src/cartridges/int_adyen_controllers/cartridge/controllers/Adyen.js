@@ -112,7 +112,7 @@ function showConfirmation() {
     ) {
       if (
         result.resultCode === "Received" &&
-        result.paymentMethod.indexOf("alipay_hk") > -1
+        result.paymentMethod.includes("alipay_hk")
       ) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(order);
