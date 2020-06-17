@@ -28,7 +28,10 @@ function handleOnCancel() {
   donation.unmount();
 }
 
-if (document.querySelector(".adyen-payment-details") && window.adyenGivingAvailable) {
+if (
+  document.querySelector(".adyen-payment-details") &&
+  window.adyenGivingAvailable
+) {
   const adyenGivingNode = document.getElementById("donate-container");
 
   let amounts;
