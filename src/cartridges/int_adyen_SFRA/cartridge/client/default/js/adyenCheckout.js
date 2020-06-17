@@ -101,6 +101,22 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
   },
+  afterpay_default: {
+    visibility: {
+      personalDetails: "editable",
+      billingAddress: "hidden",
+      deliveryAddress: "hidden",
+    },
+    data: {
+      personalDetails: {
+        firstName: document.querySelector("#shippingFirstNamedefault").value,
+        lastName: document.querySelector("#shippingLastNamedefault").value,
+        telephoneNumber: document.querySelector("#shippingPhoneNumberdefault")
+          .value,
+        shopperEmail: document.querySelector("#email").value,
+      },
+    },
+  },
 };
 if (window.installments) {
   try {
