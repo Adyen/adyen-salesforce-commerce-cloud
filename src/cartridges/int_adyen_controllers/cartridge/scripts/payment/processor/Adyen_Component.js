@@ -35,9 +35,7 @@ function Handle(args) {
       .value();
     session.privacy.adyenFingerprint = paymentInformation
       .get("adyenFingerprint")
-      .value()
-      ? paymentInformation.get("adyenFingerprint").value()
-      : null;
+      .value();
   });
 
   return { success: true };
