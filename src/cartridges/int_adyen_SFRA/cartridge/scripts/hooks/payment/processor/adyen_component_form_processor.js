@@ -26,9 +26,7 @@ function processForm(req, paymentForm, viewFormData) {
   }
 
   session.privacy.adyenFingerprint = paymentForm.adyenPaymentFields
-    .adyenFingerprint.value
-    ? paymentForm.adyenPaymentFields.adyenFingerprint.value
-    : null;
+    .adyenFingerprint.value;
 
   viewData.paymentMethod = {
     value: paymentForm.paymentMethod.value,
