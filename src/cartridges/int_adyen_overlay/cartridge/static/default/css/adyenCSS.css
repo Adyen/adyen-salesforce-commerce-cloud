@@ -17,6 +17,7 @@
 
 .paymentMethod_img {
 	margin: 0 5px 0 5px;
+	vertical-align: middle;
 }
 
 .additionalFields {

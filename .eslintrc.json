@@ -51,6 +51,7 @@
   "plugins": [
     "prettier"
   ],
+  "ignorePatterns": ["*.ds"],
   "rules": {
     "prettier/prettier": "error",
     "no-var": "error",

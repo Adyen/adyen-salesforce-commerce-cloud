@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-let storeDetails;
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
@@ -28,7 +27,6 @@ $("#dwfrm_billing").submit(function (e) {
 
 checkoutConfiguration.onChange = function (state) {
   const type = state.data.paymentMethod.type;
-  // componentsObj[type] = state;
   isValid = state.isValid;
   if (!componentsObj[type]) {
     componentsObj[type] = {};
@@ -55,7 +53,6 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       let componentName = component._node.id.replace("component_", "");
       componentName = componentName.replace("storedPaymentMethods", "");
       if (componentName === selectedMethod) {
-        // componentsObj[selectedMethod] = state;
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
       }
@@ -144,6 +141,19 @@ function resolveUnmount(key, val) {
   }
 }
 
+function isMethodTypeBlocked(methodType) {
+  const blockedMethods = [
+    "bcmc_mobile_QR",
+    "applepay",
+    "cup",
+    "wechatpay",
+    "wechatpay_pos",
+    "wechatpaySdk",
+    "wechatpayQr",
+  ];
+  return blockedMethods.includes(methodType);
+}
+
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length !== 0) {
     await unmountComponents();
@@ -175,14 +185,26 @@ async function renderGenericComponent() {
       }
     }
 
-    for (i = 0; i < data.AdyenPaymentMethods.paymentMethods.length; i++) {
-      paymentMethod = data.AdyenPaymentMethods.paymentMethods[i];
-      renderPaymentMethod(
-        paymentMethod,
-        false,
-        data.ImagePath,
-        data.AdyenDescriptions[i].description
-      );
+    data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
+      !isMethodTypeBlocked(pm.type) &&
+        renderPaymentMethod(
+          pm,
+          false,
+          data.ImagePath,
+          data.AdyenDescriptions[i].description
+        );
+    });
+
+    if (
+      data.AdyenConnectedTerminals &&
+      data.AdyenConnectedTerminals.uniqueTerminalIds &&
+      data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0
+    ) {
+      const posTerminals = document.querySelector("#adyenPosTerminals");
+      while (posTerminals.firstChild) {
+        posTerminals.removeChild(posTerminals.firstChild);
+      }
+      addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
     }
     const firstPaymentMethod = document.querySelector(
       "input[type=radio][name=brandCode]"
@@ -199,13 +221,18 @@ function renderPaymentMethod(
   description = null
 ) {
   const paymentMethodsUI = document.querySelector("#paymentMethodsList");
+
   const li = document.createElement("li");
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  const imagePath = storedPaymentMethodBool
+  const isSchemeNotStored =
+    paymentMethod.type === "scheme" && !storedPaymentMethodBool;
+  const paymentMethodImage = storedPaymentMethodBool
     ? `${path}${paymentMethod.brand}.png`
     : `${path}${paymentMethod.type}.png`;
+  const cardImage = `${path}card.png`;
+  const imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
@@ -263,18 +290,17 @@ function renderPaymentMethod(
   };
 }
 
-// TODO: Check usage / Remove
 // eslint-disable-next-line no-unused-vars
 function addPosTerminals(terminals) {
-  //create dropdown and populate connected terminals
-  const dd_terminals = $("<select>").attr("id", "terminalList");
-  for (let i = 0; i < terminals.length; i++) {
-    $("<option/>", {
-      value: terminals[i],
-      html: terminals[i],
-    }).appendTo(dd_terminals);
+  const dd_terminals = document.createElement("select");
+  dd_terminals.id = "terminalList";
+  for (const t in terminals) {
+    const option = document.createElement("option");
+    option.value = terminals[t];
+    option.text = terminals[t];
+    dd_terminals.appendChild(option);
   }
-  $("#AdyenPosTerminals").append(dd_terminals);
+  document.querySelector("#adyenPosTerminals").append(dd_terminals);
 }
 
 function resetPaymentMethod() {
@@ -317,6 +343,13 @@ function paymentFromComponent(data, component) {
 
 //Submit the payment
 $('button[value="submit-payment"]').on("click", function () {
+  if (document.querySelector("#selectedPaymentOption").value === "AdyenPOS") {
+    document.querySelector("#terminalId").value = document.querySelector(
+      "#terminalList"
+    ).value;
+    return true;
+  }
+
   assignPaymentMethodValue();
   validateComponents();
   return showValidation();
@@ -331,7 +364,6 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  // const component = document.querySelector(`#component_${selectedMethod}`);
   if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;

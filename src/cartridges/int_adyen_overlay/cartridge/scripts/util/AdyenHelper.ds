@@ -36,7 +36,7 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
     CHECKOUT_COMPONENT_VERSION: "3.9.0",
-    VERSION: "19.2.2",
+    VERSION: "20.0.0",
 
     getService: function (service: String): Object {
         // Create the service config (used for all services)
@@ -500,14 +500,6 @@ var __AdyenHelper: Object = {
         jsonObject.threeDS2RequestData = {"notificationURL" : ""};
 
         return jsonObject;
-    },
-
-    /**
-     * Checks if payment method is blocked
-     */
-    isMethodTypeBlocked : function(methodType) {
-        var blockedMethods = ["bcmc", "bcmc_mobile_QR","scheme", "cup", "applepay", "wechatpay", "wechatpay_pos", "wechatpaySdk", "wechatpayQr"];
-        return (blockedMethods.indexOf(methodType) !== -1);
     },
 
     extend: function (obj, src) {

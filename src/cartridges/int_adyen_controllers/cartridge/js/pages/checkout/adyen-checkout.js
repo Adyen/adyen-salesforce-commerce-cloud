@@ -16,6 +16,15 @@ let isValid;
  */
 function initializeBillingEvents() {
   $("#billing-submit").on("click", function () {
+    const isAdyenPOS =
+      document.querySelector(".payment-method-options :checked").value ===
+      "AdyenPOS";
+    if (isAdyenPOS) {
+      document.querySelector(
+        "#dwfrm_adyPaydata_terminalId"
+      ).value = document.querySelector("#terminalList").value;
+      return true;
+    }
     const adyenPaymentMethod = document.querySelector(
       "#adyenPaymentMethodName"
     );
@@ -40,7 +49,7 @@ function initializeBillingEvents() {
       componentsObj[type].isValid = isValid;
       componentsObj[type].stateData = state.data;
     };
-
+    checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
       card: {
         enableStoreDetails: showStoreDetails,
@@ -118,12 +127,31 @@ function initializeBillingEvents() {
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
-  $("#add-card-submit").on("click", function (e) {
-    e.preventDefault();
-    if (window.AdyenCard.isValid) {
-      copyCardData(window.AdyenCard);
-      $("#add-card-submit-hidden").trigger("click");
+  checkoutConfiguration = window.Configuration;
+  checkout = new AdyenCheckout(checkoutConfiguration);
+  const newCard = document.getElementById("newCard");
+  let adyenStateData;
+  let isValid = false;
+  const node = checkout
+    .create("card", {
+      hasHolderName: true,
+      holderNameRequired: true,
+      onChange: function (state) {
+        adyenStateData = state.data;
+        isValid = state.isValid;
+      },
+    })
+    .mount(newCard);
+
+  $("#applyBtn").on("click", function () {
+    if (!isValid) {
+      //TODOBAS showvalidation
+      node.showValidation();
+      return false;
     }
+    document.querySelector("#adyenStateData").value = JSON.stringify(
+      adyenStateData
+    );
   });
 }
 
@@ -275,6 +303,19 @@ function getFallback(paymentMethod) {
   return fallback[paymentMethod];
 }
 
+function isMethodTypeBlocked(methodType) {
+  const blockedMethods = [
+    "bcmc_mobile_QR",
+    "applepay",
+    "cup",
+    "wechatpay",
+    "wechatpay_pos",
+    "wechatpaySdk",
+    "wechatpayQr",
+  ];
+  return blockedMethods.includes(methodType);
+}
+
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length) {
     await unmountComponents();
@@ -310,10 +351,11 @@ async function renderGenericComponent() {
     }
   }
 
-  for (i = 0; i < paymentMethods.paymentMethods.length; i++) {
-    paymentMethod = paymentMethods.paymentMethods[i];
-    renderPaymentMethod(paymentMethod, false, paymentMethodsResponse.ImagePath);
-  }
+  paymentMethods.paymentMethods.forEach((pm) => {
+    !isMethodTypeBlocked(pm.type) &&
+      renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
+  });
+
   const firstPaymentMethod = document.querySelector(
     "input[type=radio][name=brandCode]"
   );
@@ -327,9 +369,13 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  const imagePath = `${path}${
-    storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type
-  }.png`;
+  const isSchemeNotStored =
+    paymentMethod.type === "scheme" && !storedPaymentMethodBool;
+  const paymentMethodImage = storedPaymentMethodBool
+    ? `${path}${paymentMethod.brand}.png`
+    : `${path}${paymentMethod.type}.png`;
+  const cardImage = `${path}card.png`;
+  const imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
