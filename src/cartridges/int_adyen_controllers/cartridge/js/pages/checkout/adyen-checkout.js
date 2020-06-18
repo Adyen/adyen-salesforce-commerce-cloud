@@ -392,7 +392,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
 
-  renderCheckoutComponent(
+  const node = renderCheckoutComponent(
     storedPaymentMethodBool,
     checkout,
     paymentMethod,
@@ -405,10 +405,12 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   container.setAttribute("style", "display:none");
 
   li.append(container);
-
   paymentMethodsUI.append(li);
-  const input = document.querySelector(`#rb_${paymentMethodID}`);
 
+  if (node) {
+    node.mount(container);
+  }
+  const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
@@ -422,13 +424,12 @@ function renderCheckoutComponent(
   paymentMethodID
 ) {
   if (storedPaymentMethodBool) {
-    createCheckoutComponent(
+    return createCheckoutComponent(
       checkout,
       paymentMethod,
       container,
       paymentMethodID
     );
-    return;
   }
   const fallback = getFallback(paymentMethod.type);
   if (fallback) {
@@ -437,7 +438,12 @@ function renderCheckoutComponent(
     container.append(template.content);
     return;
   }
-  createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
+  return createCheckoutComponent(
+    checkout,
+    paymentMethod,
+    container,
+    paymentMethodID
+  );
 }
 
 function createCheckoutComponent(
@@ -446,19 +452,17 @@ function createCheckoutComponent(
   container,
   paymentMethodID
 ) {
-  setTimeout(function () {
-    try {
-      const node = checkout
-        .create(paymentMethod.type, paymentMethod)
-        .mount(container);
-      if (!componentsObj[paymentMethodID]) {
-        componentsObj[paymentMethodID] = {};
-      }
-      componentsObj[paymentMethodID].node = node;
-    } catch (e) {
-      // TODO: implement proper error handling
+  try {
+    const node = checkout.create(paymentMethod.type, paymentMethod);
+    if (!componentsObj[paymentMethodID]) {
+      componentsObj[paymentMethodID] = {};
     }
-  }, 0);
+    componentsObj[paymentMethodID].node = node;
+    return node;
+  } catch (e) {
+    // TODO: implement proper error handling
+  }
+  return false;
 }
 
 function paymentFromComponent(data, component) {
