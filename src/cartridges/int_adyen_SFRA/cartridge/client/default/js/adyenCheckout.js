@@ -47,7 +47,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         document.querySelector("#cardNumber").value = maskedCardNumber;
       }
     },
-    onChange: function (state, component) {
+    onChange: function (state) {
       isValid = state.isValid;
       const componentName = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
