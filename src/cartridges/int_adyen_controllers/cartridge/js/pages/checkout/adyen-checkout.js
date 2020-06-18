@@ -62,11 +62,12 @@ function initializeBillingEvents() {
             $("#cardNumber").val(maskedCardNumber);
           }
         },
-        onChange: function (state, component) {
+        onChange: function (state) {
           isValid = state.isValid;
           // Todo: fix onChange issues so we can get rid of componentName
-          let componentName = component._node.id.replace("component_", "");
-          componentName = componentName.replace("storedPaymentMethods", "");
+          const componentName = state.data.paymentMethod.storedPaymentMethodId
+            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+            : state.data.paymentMethod.type;
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
             componentsObj[selectedMethod].isValid = isValid;
@@ -80,8 +81,8 @@ function initializeBillingEvents() {
         showEmailAddress: false, // allow shopper to specify their email address
       },
       paypal: {
+        environment: window.Configuration.environment,
         intent: "capture",
-        merchantId: window.paypalMerchantID,
         onClick: (data, actions) => {
           $("#dwfrm_billing").trigger("submit");
           if (formErrorsExist) {
@@ -96,8 +97,8 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
-          component.setStatus("ready");
           paymentFromComponent({ cancelPaypal: true }, component);
+          component.setStatus("ready");
         },
         onError: (error, component) => {
           component && component.setStatus("ready");
@@ -117,6 +118,10 @@ function initializeBillingEvents() {
       } catch (e) {
         // TODO: implement proper error handling
       }
+    }
+    if (window.paypalMerchantID !== "null") {
+      checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
+        window.paypalMerchantID;
     }
     renderGenericComponent();
   }
@@ -463,13 +468,18 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: "application/; charset=utf-8",
     success: function (data) {
-      if (data.result && data.result.fullResponse) {
+      if (
+        data.result &&
+        data.result.fullResponse &&
+        data.result.fullResponse.action
+      ) {
         component.handleAction(data.result.fullResponse.action);
+      } else {
+        component.setStatus("ready");
+        component.reject("Payment Refused");
       }
     },
-  }).fail(function (/* xhr, textStatus */) {
-    // TODO: implement proper error handling
-  });
+  }).fail(function (/* xhr, textStatus */) {});
 }
 
 $("#dwfrm_billing").submit(function (e) {

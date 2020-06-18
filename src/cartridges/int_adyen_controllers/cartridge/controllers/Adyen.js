@@ -161,6 +161,9 @@ function paymentFromComponent() {
       .indexOf("cancelTransaction") > -1
   ) {
     const order = OrderMgr.getOrder(session.privacy.orderNo);
+    Logger.getLogger("Adyen").error(
+      "Shopper cancelled transaction for order " + session.privacy.orderNo
+    );
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
@@ -186,6 +189,10 @@ function paymentFromComponent() {
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice
     );
+    const paymentProcessor = PaymentMgr.getPaymentMethod(
+      paymentInstrument.paymentMethod
+    ).paymentProcessor;
+    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = stateDataStr;
     session.privacy.paymentMethod = paymentInstrument.paymentMethod;
     try {
@@ -205,6 +212,11 @@ function paymentFromComponent() {
     PaymentInstrument: paymentInstrument,
   });
 
+  if (result.resultCode !== "Pending") {
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+  }
   const responseUtils = require("*/cartridge/scripts/util/Response");
   responseUtils.renderJSON({ result: result });
 }
