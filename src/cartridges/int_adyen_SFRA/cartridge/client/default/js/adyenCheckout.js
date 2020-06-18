@@ -363,7 +363,7 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
+  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].isValid === false) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
