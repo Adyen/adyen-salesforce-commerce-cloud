@@ -47,11 +47,11 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         document.querySelector("#cardNumber").value = maskedCardNumber;
       }
     },
-    onChange: function (state, component) {
+    onChange: function (state) {
       isValid = state.isValid;
-      // Todo: fix onChange issues so we can get rid of componentName
-      let componentName = component._node.id.replace("component_", "");
-      componentName = componentName.replace("storedPaymentMethods", "");
+      const componentName = state.data.paymentMethod.storedPaymentMethodId
+        ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+        : state.data.paymentMethod.type;
       if (componentName === selectedMethod) {
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
@@ -220,6 +220,7 @@ function renderPaymentMethod(
   path,
   description = null
 ) {
+  let node;
   const paymentMethodsUI = document.querySelector("#paymentMethodsList");
 
   const li = document.createElement("li");
@@ -249,13 +250,11 @@ function renderPaymentMethod(
   li.classList.add("paymentMethod");
 
   if (storedPaymentMethodBool) {
-    setTimeout(function () {
-      const node = checkout.create("card", paymentMethod).mount(container);
-      if (!componentsObj[paymentMethodID]) {
-        componentsObj[paymentMethodID] = {};
-      }
-      componentsObj[paymentMethodID].node = node;
-    }, 0);
+    node = checkout.create("card", paymentMethod);
+    if (!componentsObj[paymentMethodID]) {
+      componentsObj[paymentMethodID] = {};
+    }
+    componentsObj[paymentMethodID].node = node;
   } else {
     const fallback = getFallback(paymentMethod.type);
     if (fallback) {
@@ -263,17 +262,15 @@ function renderPaymentMethod(
       template.innerHTML = fallback;
       container.append(template.content);
     } else {
-      setTimeout(function () {
-        try {
-          const node = checkout.create(paymentMethod.type).mount(container);
-          if (!componentsObj[paymentMethodID]) {
-            componentsObj[paymentMethodID] = {};
-          }
-          componentsObj[paymentMethodID].node = node;
-        } catch (e) {
-          // TODO: Implement proper error handling
+      try {
+        node = checkout.create(paymentMethod.type);
+        if (!componentsObj[paymentMethodID]) {
+          componentsObj[paymentMethodID] = {};
         }
-      }, 0);
+        componentsObj[paymentMethodID].node = node;
+      } catch (e) {
+        // TODO: Implement proper error handling
+      }
     }
   }
   container.classList.add("additionalFields");
@@ -281,10 +278,12 @@ function renderPaymentMethod(
   container.setAttribute("style", "display:none");
 
   li.append(container);
-
   paymentMethodsUI.append(li);
-  const input = document.querySelector(`#rb_${paymentMethodID}`);
+  if (node) {
+    node.mount(container);
+  }
 
+  const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
