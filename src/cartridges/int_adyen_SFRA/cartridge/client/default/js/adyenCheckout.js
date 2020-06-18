@@ -47,11 +47,11 @@ checkoutConfiguration.paymentMethodsConfiguration = {
         document.querySelector("#cardNumber").value = maskedCardNumber;
       }
     },
-    onChange: function (state, component) {
+    onChange: function (state) {
       isValid = state.isValid;
-      // Todo: fix onChange issues so we can get rid of componentName
-      let componentName = component._node.id.replace("component_", "");
-      componentName = componentName.replace("storedPaymentMethods", "");
+      const componentName = state.data.paymentMethod.storedPaymentMethodId
+        ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+        : state.data.paymentMethod.type;
       if (componentName === selectedMethod) {
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
@@ -70,8 +70,8 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
   paypal: {
+    environment: window.Configuration.environment,
     intent: "capture",
-    merchantId: window.paypalMerchantID,
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector("#adyenStateData").value = JSON.stringify(
@@ -80,8 +80,8 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
-      component.setStatus("ready");
       paymentFromComponent({ cancelTransaction: true }, component);
+      component.setStatus("ready");
     },
     onError: (error, component) => {
       if (component) {
@@ -101,14 +101,33 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
   },
+  afterpay_default: {
+    visibility: {
+      personalDetails: "editable",
+      billingAddress: "hidden",
+      deliveryAddress: "hidden",
+    },
+    data: {
+      personalDetails: {
+        firstName: document.querySelector("#shippingFirstNamedefault").value,
+        lastName: document.querySelector("#shippingLastNamedefault").value,
+        telephoneNumber: document.querySelector("#shippingPhoneNumberdefault")
+          .value,
+        shopperEmail: document.querySelector("#email").value,
+      },
+    },
+  },
 };
 if (window.installments) {
   try {
     const installments = JSON.parse(window.installments);
     checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {
-    // TODO: Implement proper error handling
-  }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+}
+if (window.paypalMerchantID !== "null") {
+  checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
+    window.paypalMerchantID;
 }
 
 function displaySelectedMethod(type) {
@@ -332,13 +351,14 @@ function paymentFromComponent(data, component) {
     type: "post",
     data: { data: JSON.stringify(data) },
     success: function (data) {
-      if (data.fullResponse) {
+      if (data.fullResponse && data.fullResponse.action) {
         component.handleAction(data.fullResponse.action);
+      } else {
+        component.setStatus("ready");
+        component.reject("Payment Refused");
       }
     },
-  }).fail(function (/* xhr, textStatus */) {
-    // TODO: implement proper error handling
-  });
+  }).fail(function () {});
 }
 
 //Submit the payment
