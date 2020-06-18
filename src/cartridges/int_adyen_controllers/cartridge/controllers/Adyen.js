@@ -84,20 +84,10 @@ function showConfirmation() {
       paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
 
-    //details is either redirectResult or payload
-    let details;
-    if (request.httpParameterMap.redirectResult.value !== null) {
-      details = {
-        redirectResult: request.httpParameterMap.redirectResult.value,
-      };
-    } else if (request.httpParameterMap.payload.value !== null) {
-      details = { payload: request.httpParameterMap.payload.value };
-    }
-
     //redirect to payment/details
     const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     const requestObject = {
-      details: details,
+      details: getDetails(),
       paymentData: paymentData,
     };
     const result = adyenCheckout.doPaymentDetailsCall(requestObject);
@@ -105,10 +95,9 @@ function showConfirmation() {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
     if (
-      result.resultCode === "Authorised" ||
-      result.resultCode === "Pending" ||
-      result.resultCode === "Received" ||
-      result.resultCode === "PresentToShopper"
+      ["Authorised", "Pending", "Received", "PresentToShopper"].includes(
+        result.resultCode
+      )
     ) {
       if (
         result.resultCode === "Received" &&
@@ -157,18 +146,21 @@ function showConfirmation() {
     });
   } catch (e) {
     Logger.getLogger("Adyen").error(
-      "Could not verify showConfirmation: " +
-        e.message +
-        " more details: " +
-        e.toString() +
-        " in " +
-        e.fileName +
-        ":" +
-        e.lineNumber
+      `Could not verify showConfirmation: ${
+        e.message
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
   }
 
   return {};
+}
+
+function getDetails() {
+  const { redirectResult, payload } = request.httpParameterMap;
+  return {
+    ...(redirectResult.value && { redirectResult: redirectResult.value }),
+    ...(payload.value && { payload: payload.value }),
+  };
 }
 
 function paymentFromComponent() {
