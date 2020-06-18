@@ -9,6 +9,7 @@ let checkoutConfiguration;
 let paymentMethodsResponse;
 let checkout;
 let formErrorsExist;
+let isValid;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
@@ -41,7 +42,12 @@ function initializeBillingEvents() {
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /*, component */) {
       const type = state.data.paymentMethod.type;
-      componentsObj[type] = state;
+      isValid = state.isValid;
+      if (!componentsObj[type]) {
+        componentsObj[type] = {};
+      }
+      componentsObj[type].isValid = isValid;
+      componentsObj[type].stateData = state.data;
     };
     checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
@@ -57,13 +63,14 @@ function initializeBillingEvents() {
           }
         },
         onChange: function (state, component) {
-          storeDetails = state.data.storePaymentMethod;
+          isValid = state.isValid;
           // Todo: fix onChange issues so we can get rid of componentName
           let componentName = component._node.id.replace("component_", "");
           componentName = componentName.replace("storedPaymentMethods", "");
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-            componentsObj[selectedMethod] = state;
+            componentsObj[selectedMethod].isValid = isValid;
+            componentsObj[selectedMethod].stateData = state.data;
           }
         },
       },
@@ -83,14 +90,14 @@ function initializeBillingEvents() {
         },
         onSubmit: (state, component) => {
           assignPaymentMethodValue();
-          makePaypalPayment(state.data, component);
+          paymentFromComponent(state.data, component);
           document.querySelector("#adyenStateData").value = JSON.stringify(
             state.data
           );
         },
         onCancel: (data, component) => {
           component.setStatus("ready");
-          makePaypalPayment({ cancelPaypal: true }, component);
+          paymentFromComponent({ cancelPaypal: true }, component);
         },
         onError: (error, component) => {
           component && component.setStatus("ready");
@@ -165,7 +172,7 @@ function unmountComponents() {
 
 function resolveUnmount(key, val) {
   try {
-    return Promise.resolve(val.unmount(`component_${key}`));
+    return Promise.resolve(val.node.unmount(`component_${key}`));
   } catch (e) {
     // try/catch block for val.unmount
     return Promise.resolve(false);
@@ -191,7 +198,7 @@ function resetPaymentMethod() {
 
 function showValidation() {
   if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
-    componentsObj[selectedMethod].showValidation();
+    componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -230,8 +237,11 @@ function validateComponents() {
   }
 
   let stateData;
-  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].data) {
-    stateData = componentsObj[selectedMethod].data;
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].stateData
+  ) {
+    stateData = componentsObj[selectedMethod].stateData;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
   }
@@ -436,14 +446,17 @@ function createCheckoutComponent(
       const node = checkout
         .create(paymentMethod.type, paymentMethod)
         .mount(container);
-      componentsObj[paymentMethodID] = node;
+      if (!componentsObj[paymentMethodID]) {
+        componentsObj[paymentMethodID] = {};
+      }
+      componentsObj[paymentMethodID].node = node;
     } catch (e) {
       // TODO: implement proper error handling
     }
   }, 0);
 }
 
-function makePaypalPayment(data, component) {
+function paymentFromComponent(data, component) {
   $.ajax({
     url: "Adyen-PaymentFromComponent",
     type: "post",
@@ -474,7 +487,7 @@ $("#dwfrm_billing").submit(function (e) {
       data: form.serialize(),
       async: false,
       success: function (data) {
-        formErrorsExist = "fieldErrors" in data;
+        formErrorsExist = data.fieldErrors;
       },
     });
   }
