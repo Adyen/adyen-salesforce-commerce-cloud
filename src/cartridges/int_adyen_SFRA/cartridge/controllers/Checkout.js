@@ -30,10 +30,10 @@ server.prepend(
 
     const viewData = res.getViewData();
     viewData.adyen = {
-      originKey,
-      environment,
-      installments,
-      paypalMerchantID,
+      originKey: originKey,
+      environment: environment,
+      installments: installments,
+      paypalMerchantID: paypalMerchantID,
     };
 
     res.setViewData(viewData);

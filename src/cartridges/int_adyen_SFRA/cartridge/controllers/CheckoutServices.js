@@ -162,7 +162,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   if (handlePaymentResult.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      errorMessage: Resource.msg("error.payment.not.valid", "checkout", null),
     });
     this.emit("route:Complete", req, res);
     return;

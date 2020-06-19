@@ -1,5 +1,4 @@
 "use strict";
-
 const Resource = require("dw/web/Resource");
 const URLUtils = require("dw/web/URLUtils");
 // const logger = require("dw/system/Logger").getLogger("Adyen", "adyen");
@@ -95,13 +94,13 @@ function showConfirmation() {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
     if (
-      ["Authorised", "Pending", "Received", "PresentToShopper"].includes(
+      ["Authorised", "Pending", "Received", "PresentToShopper"].indexOf(
         result.resultCode
-      )
+      ) > -1
     ) {
       if (
         result.resultCode === "Received" &&
-        result.paymentMethod.includes("alipay_hk")
+        result.paymentMethod.indexOf("alipay_hk") > -1
       ) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(order);

@@ -105,7 +105,7 @@ server.post("AuthorizeWithForm", server.middleware.https, function (
             "stage",
             "placeOrder",
             "paymentError",
-            Resource.msg("error.technical", "checkout", null)
+            Resource.msg("error.payment.not.valid", "checkout", null)
           )
         );
         return next();
@@ -275,7 +275,7 @@ server.post("Authorize3DS2", server.middleware.https, function (
           "stage",
           "placeOrder",
           "paymentError",
-          Resource.msg("error.technical", "checkout", null)
+          Resource.msg("error.payment.not.valid", "checkout", null)
         )
       );
       return next();
@@ -439,7 +439,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
             "stage",
             "placeOrder",
             "paymentError",
-            Resource.msg("error.technical", "checkout", null)
+            Resource.msg("error.payment.not.valid", "checkout", null)
           )
         );
         return next();
@@ -479,7 +479,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
           "stage",
           "placeOrder",
           "paymentError",
-          Resource.msg("error.technical", "checkout", null)
+          Resource.msg("error.payment.not.valid", "checkout", null)
         )
       );
       return next();
@@ -549,7 +549,7 @@ server.post(
               "stage",
               "placeOrder",
               "paymentError",
-              Resource.msg("error.technical", "checkout", null)
+              Resource.msg("error.payment.not.valid", "checkout", null)
             )
           );
           return next();
@@ -589,7 +589,7 @@ server.post(
             "stage",
             "placeOrder",
             "paymentError",
-            Resource.msg("error.technical", "checkout", null)
+            Resource.msg("error.payment.not.valid", "checkout", null)
           )
         );
         return next();
