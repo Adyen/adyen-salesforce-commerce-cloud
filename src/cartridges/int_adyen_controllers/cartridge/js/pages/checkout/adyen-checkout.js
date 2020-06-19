@@ -64,7 +64,6 @@ function initializeBillingEvents() {
         },
         onChange: function (state) {
           isValid = state.isValid;
-          // Todo: fix onChange issues so we can get rid of componentName
           const componentName = state.data.paymentMethod.storedPaymentMethodId
             ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
             : state.data.paymentMethod.type;
@@ -115,9 +114,7 @@ function initializeBillingEvents() {
       try {
         const installments = JSON.parse(window.installments);
         checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-      } catch (e) {
-        // TODO: implement proper error handling
-      }
+      } catch (e) {} // eslint-disable-line no-empty
     }
     if (window.paypalMerchantID !== "null") {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
@@ -202,7 +199,10 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].isValid === false) {
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].isValid === false
+  ) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
@@ -407,9 +407,8 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.append(container);
   paymentMethodsUI.append(li);
 
-  if (node) {
-    node.mount(container);
-  }
+  node && node.mount(container);
+
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
@@ -459,9 +458,7 @@ function createCheckoutComponent(
     }
     componentsObj[paymentMethodID].node = node;
     return node;
-  } catch (e) {
-    // TODO: implement proper error handling
-  }
+  } catch (e) {} // eslint-disable-line no-empty
   return false;
 }
 

@@ -106,9 +106,7 @@ if (window.installments) {
   try {
     const installments = JSON.parse(window.installments);
     checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {
-    // TODO: Implement proper error handling
-  }
+  } catch (e) {} // eslint-disable-line no-empty
 }
 
 function displaySelectedMethod(type) {
@@ -268,9 +266,7 @@ function renderPaymentMethod(
           componentsObj[paymentMethodID] = {};
         }
         componentsObj[paymentMethodID].node = node;
-      } catch (e) {
-        // TODO: Implement proper error handling
-      }
+      } catch (e) {} // eslint-disable-line no-empty
     }
   }
   container.classList.add("additionalFields");
@@ -279,9 +275,8 @@ function renderPaymentMethod(
 
   li.append(container);
   paymentMethodsUI.append(li);
-  if (node) {
-    node.mount(container);
-  }
+
+  node && node.mount(container);
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
@@ -363,7 +358,10 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (componentsObj[selectedMethod] && componentsObj[selectedMethod].isValid === false) {
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].isValid === false
+  ) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
