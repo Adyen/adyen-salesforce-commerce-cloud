@@ -37,7 +37,7 @@
 <isif condition="${empty(session.privacy.ratePayFingerprint)}">
     <isscript>
         var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_256).digest(session.sessionID);
         session.privacy.ratePayFingerprint = sessionID;
     </isscript>
     <script language="JavaScript">

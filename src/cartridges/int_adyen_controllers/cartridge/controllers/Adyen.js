@@ -1,5 +1,4 @@
 "use strict";
-
 const Resource = require("dw/web/Resource");
 const URLUtils = require("dw/web/URLUtils");
 // const logger = require("dw/system/Logger").getLogger("Adyen", "adyen");
@@ -95,16 +94,16 @@ function showConfirmation() {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
     if (
-      ["Authorised", "Pending", "Received", "PresentToShopper"].includes(
+      ["Authorised", "Pending", "Received", "PresentToShopper"].indexOf(
         result.resultCode
-      )
+      ) > -1
     ) {
       if (
         result.resultCode === "Received" &&
-        result.paymentMethod.includes("alipay_hk")
+        result.paymentMethod.indexOf("alipay_hk") > -1
       ) {
         Transaction.wrap(function () {
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         Logger.getLogger("Adyen").error(
           "Did not complete Alipay transaction, result: " +
@@ -129,7 +128,7 @@ function showConfirmation() {
     }
     // fail order
     Transaction.wrap(function () {
-      OrderMgr.failOrder(order);
+      OrderMgr.failOrder(order, true);
     });
     Logger.getLogger("Adyen").error(
       "Payment failed, result: " + JSON.stringify(result)
@@ -276,7 +275,7 @@ function showConfirmationPaymentFromComponent() {
   }
   // fail order
   Transaction.wrap(function () {
-    OrderMgr.failOrder(order);
+    OrderMgr.failOrder(order, true);
   });
   // should be assingned by previous calls or not
   const errorStatus = new dw.system.Status(
@@ -438,7 +437,7 @@ function authorize3ds2() {
         "Unable to retrieve order data from session 3DS2."
       );
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
         PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
@@ -471,7 +470,7 @@ function authorize3ds2() {
     } else {
       Logger.getLogger("Adyen").error("paymentDetails 3DS2 not available");
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
         PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
@@ -491,7 +490,7 @@ function authorize3ds2() {
     ) {
       //Payment failed
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
         paymentInstrument.custom.adyenPaymentData = null;
       });
       app.getController("COSummary").Start({
@@ -571,7 +570,7 @@ function authorizeWithForm() {
         "Unable to retrieve order data from session."
       );
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
         PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
@@ -598,7 +597,7 @@ function authorizeWithForm() {
         Transaction.rollback();
         Transaction.wrap(function () {
           paymentInstrument.custom.adyenPaymentData = null;
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         app.getController("COSummary").Start({
           PlaceOrderError: new Status(
