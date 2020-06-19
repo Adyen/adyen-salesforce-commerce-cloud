@@ -33,6 +33,9 @@ function Handle(args) {
     paymentInstrument.custom.adyenPaymentData = paymentInformation
       .get("adyenStateData")
       .value();
+    session.privacy.adyenFingerprint = paymentInformation
+      .get("adyenFingerprint")
+      .value();
   });
 
   return { success: true };

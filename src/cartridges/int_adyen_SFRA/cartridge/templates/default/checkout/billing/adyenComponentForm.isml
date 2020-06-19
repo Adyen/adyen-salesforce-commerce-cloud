@@ -12,6 +12,7 @@
         environment: '${pdict.adyen.environment}'
     };
     window.installments = '${pdict.adyen.installments}';
+    window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
     var showStoreDetails = ${customer.authenticated};
 </script>
 
@@ -36,7 +37,7 @@
 <isif condition="${empty(session.privacy.ratePayFingerprint)}">
     <isscript>
         var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_256).digest(session.sessionID);
         session.privacy.ratePayFingerprint = sessionID;
     </isscript>
     <script language="JavaScript">
@@ -52,9 +53,6 @@
 <script type="text/javascript">
     dfDo('adyenFingerprint');
 </script>
-
-<span id="errorLoadComponent"></span>
-<div id="card"></div>
 </form>
 <form method="post"
       id="showConfirmationForm"

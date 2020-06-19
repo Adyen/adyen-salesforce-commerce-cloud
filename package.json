@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "19.2.2",
+  "version": "20.0.0",
   "description": "SFRA cartridge",
   "main": "index.js",
   "paths": {
@@ -49,7 +49,7 @@
     "jest": "^25.1.0",
     "jquery": "^3.4.1",
     "mocha": "^7.2.0",
-    "node-sass": "^4.9.4",
+    "node-sass": "^4.14.1",
     "postcss-loader": "^3.0.0",
     "prettier": "2.0.5",
     "prettier-eslint-cli": "^5.0.0",

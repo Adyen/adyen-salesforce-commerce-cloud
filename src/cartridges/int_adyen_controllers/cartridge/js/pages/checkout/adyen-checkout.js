@@ -4,16 +4,27 @@ require("./adyen-giving");
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
 let selectedMethod;
-const componentArr = [];
+const componentsObj = {};
 let checkoutConfiguration;
 let paymentMethodsResponse;
 let checkout;
+let formErrorsExist;
+let isValid;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
 function initializeBillingEvents() {
   $("#billing-submit").on("click", function () {
+    const isAdyenPOS =
+      document.querySelector(".payment-method-options :checked").value ===
+      "AdyenPOS";
+    if (isAdyenPOS) {
+      document.querySelector(
+        "#dwfrm_adyPaydata_terminalId"
+      ).value = document.querySelector("#terminalList").value;
+      return true;
+    }
     const adyenPaymentMethod = document.querySelector(
       "#adyenPaymentMethodName"
     );
@@ -31,9 +42,14 @@ function initializeBillingEvents() {
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /*, component */) {
       const type = state.data.paymentMethod.type;
-      componentArr[type] = state;
+      isValid = state.isValid;
+      if (!componentsObj[type]) {
+        componentsObj[type] = {};
+      }
+      componentsObj[type].isValid = isValid;
+      componentsObj[type].stateData = state.data;
     };
-
+    checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
       card: {
         enableStoreDetails: showStoreDetails,
@@ -46,14 +62,15 @@ function initializeBillingEvents() {
             $("#cardNumber").val(maskedCardNumber);
           }
         },
-        onChange: function (state, component) {
-          storeDetails = state.data.storePaymentMethod;
-          // Todo: fix onChange issues so we can get rid of componentName
-          let componentName = component._node.id.replace("component_", "");
-          componentName = componentName.replace("storedPaymentMethods", "");
+        onChange: function (state) {
+          isValid = state.isValid;
+          const componentName = state.data.paymentMethod.storedPaymentMethodId
+            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+            : state.data.paymentMethod.type;
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
-            componentArr[selectedMethod] = state;
+            componentsObj[selectedMethod].isValid = isValid;
+            componentsObj[selectedMethod].stateData = state.data;
           }
         },
       },
@@ -63,17 +80,24 @@ function initializeBillingEvents() {
         showEmailAddress: false, // allow shopper to specify their email address
       },
       paypal: {
+        environment: window.Configuration.environment,
         intent: "capture",
+        onClick: (data, actions) => {
+          $("#dwfrm_billing").trigger("submit");
+          if (formErrorsExist) {
+            return actions.reject();
+          }
+        },
         onSubmit: (state, component) => {
           assignPaymentMethodValue();
-          makePaypalPayment(state.data, component);
+          paymentFromComponent(state.data, component);
           document.querySelector("#adyenStateData").value = JSON.stringify(
             state.data
           );
         },
         onCancel: (data, component) => {
+          paymentFromComponent({ cancelPaypal: true }, component);
           component.setStatus("ready");
-          makePaypalPayment({ cancelPaypal: true }, component);
         },
         onError: (error, component) => {
           component && component.setStatus("ready");
@@ -85,14 +109,39 @@ function initializeBillingEvents() {
           $("#dwfrm_billing").trigger("submit");
         },
       },
+      afterpay_default: {
+        visibility: {
+          personalDetails: "editable",
+          billingAddress: "hidden",
+          deliveryAddress: "hidden",
+        },
+        data: {
+          personalDetails: {
+            firstName: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_firstName"
+            ).value,
+            lastName: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_lastName"
+            ).value,
+            telephoneNumber: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_phone"
+            ).value,
+            shopperEmail: document.querySelector(
+              "#dwfrm_billing_billingAddress_email_emailAddress"
+            ).value,
+          },
+        },
+      },
     };
     if (window.installments) {
       try {
         const installments = JSON.parse(window.installments);
         checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-      } catch (e) {
-        // TODO: implement proper error handling
-      }
+      } catch (e) {} // eslint-disable-line no-empty
+    }
+    if (window.paypalMerchantID !== "null") {
+      checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
+        window.paypalMerchantID;
     }
     renderGenericComponent();
   }
@@ -103,12 +152,31 @@ function initializeBillingEvents() {
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
-  $("#add-card-submit").on("click", function (e) {
-    e.preventDefault();
-    if (window.AdyenCard.isValid) {
-      copyCardData(window.AdyenCard);
-      $("#add-card-submit-hidden").trigger("click");
+  checkoutConfiguration = window.Configuration;
+  checkout = new AdyenCheckout(checkoutConfiguration);
+  const newCard = document.getElementById("newCard");
+  let adyenStateData;
+  let isValid = false;
+  const node = checkout
+    .create("card", {
+      hasHolderName: true,
+      holderNameRequired: true,
+      onChange: function (state) {
+        adyenStateData = state.data;
+        isValid = state.isValid;
+      },
+    })
+    .mount(newCard);
+
+  $("#applyBtn").on("click", function () {
+    if (!isValid) {
+      //TODOBAS showvalidation
+      node.showValidation();
+      return false;
     }
+    document.querySelector("#adyenStateData").value = JSON.stringify(
+      adyenStateData
+    );
   });
 }
 
@@ -119,25 +187,34 @@ function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
+function unmountComponents() {
+  const promises = Object.entries(componentsObj).map(function ([key, val]) {
+    delete componentsObj[key];
+    return resolveUnmount(key, val);
+  });
+  return Promise.all(promises);
+}
+
+function resolveUnmount(key, val) {
+  try {
+    return Promise.resolve(val.node.unmount(`component_${key}`));
+  } catch (e) {
+    // try/catch block for val.unmount
+    return Promise.resolve(false);
+  }
+}
+
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
   if (type !== "paypal") {
-    document
-      .querySelector(`#component_${type}`)
-      .setAttribute("style", "display:block");
     document.querySelector("#billing-submit").disabled = false;
-    if (document.querySelector(`#continueBtn`)) {
-      document
-        .querySelector(`#continueBtn`)
-        .setAttribute("style", "display:none");
-    }
   } else {
     document.querySelector("#billing-submit").disabled = true;
-    document
-      .querySelector(`#continueBtn`)
-      .setAttribute("style", "display:block");
   }
+  document
+    .querySelector(`#component_${type}`)
+    .setAttribute("style", "display:block");
 }
 
 function resetPaymentMethod() {
@@ -145,8 +222,11 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (componentArr[selectedMethod] && !componentArr[selectedMethod].isValid) {
-    componentArr[selectedMethod].showValidation();
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].isValid === false
+  ) {
+    componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
     let inputs = document.querySelectorAll("#component_ach > input");
@@ -172,20 +252,27 @@ function showValidation() {
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
-    for (const input of inputs)
+    for (const input of inputs) {
       input.onchange = function () {
         validateCustomInputField(this);
       };
+    }
   }
-  if (document.querySelector("#dateOfBirthInput"))
+  if (document.querySelector("#dateOfBirthInput")) {
     document.querySelector("#dateOfBirthInput").onchange = function () {
       validateCustomInputField(this);
     };
+  }
 
   let stateData;
-  if (componentArr[selectedMethod] && componentArr[selectedMethod].data) {
-    stateData = componentArr[selectedMethod].data;
-  } else stateData = { paymentMethod: { type: selectedMethod } };
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].stateData
+  ) {
+    stateData = componentsObj[selectedMethod].stateData;
+  } else {
+    stateData = { paymentMethod: { type: selectedMethod } };
+  }
 
   if (selectedMethod === "ach") {
     const bankAccount = {
@@ -203,20 +290,19 @@ function validateComponents() {
       document.querySelector("#genderInput").value &&
       document.querySelector("#dateOfBirthInput").value
     ) {
-      stateData.paymentMethod.gender = document.querySelector(
-        "#genderInput"
-      ).value;
-      stateData.paymentMethod.dateOfBirth = document.querySelector(
-        "#dateOfBirthInput"
-      ).value;
+      stateData.shopperName = {
+        gender: document.querySelector("#genderInput").value,
+      };
+      stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
     }
   }
   document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }
 
 function validateCustomInputField(input) {
-  if (input.value === "") input.classList.add("adyen-checkout__input--error");
-  else if (input.value.length > 0) {
+  if (input.value === "") {
+    input.classList.add("adyen-checkout__input--error");
+  } else if (input.value.length > 0) {
     input.classList.remove("adyen-checkout__input--error");
   }
 }
@@ -243,7 +329,23 @@ function getFallback(paymentMethod) {
   return fallback[paymentMethod];
 }
 
-function renderGenericComponent() {
+function isMethodTypeBlocked(methodType) {
+  const blockedMethods = [
+    "bcmc_mobile_QR",
+    "applepay",
+    "cup",
+    "wechatpay",
+    "wechatpay_pos",
+    "wechatpaySdk",
+    "wechatpayQr",
+  ];
+  return blockedMethods.includes(methodType);
+}
+
+async function renderGenericComponent() {
+  if (Object.keys(componentsObj).length) {
+    await unmountComponents();
+  }
   let paymentMethod;
   let i;
   checkoutConfiguration.paymentMethodsResponse =
@@ -265,19 +367,21 @@ function renderGenericComponent() {
       i++
     ) {
       paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-      if (paymentMethod.supportedShopperInteractions.includes("Ecommerce"))
+      if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
         renderPaymentMethod(
           paymentMethod,
           true,
           paymentMethodsResponse.ImagePath
         );
+      }
     }
   }
 
-  for (i = 0; i < paymentMethods.paymentMethods.length; i++) {
-    paymentMethod = paymentMethods.paymentMethods[i];
-    renderPaymentMethod(paymentMethod, false, paymentMethodsResponse.ImagePath);
-  }
+  paymentMethods.paymentMethods.forEach((pm) => {
+    !isMethodTypeBlocked(pm.type) &&
+      renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
+  });
+
   const firstPaymentMethod = document.querySelector(
     "input[type=radio][name=brandCode]"
   );
@@ -291,9 +395,13 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   const paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  const imagePath = `${path}${
-    storedPaymentMethodBool ? paymentMethod.brand : paymentMethod.type
-  }.png`;
+  const isSchemeNotStored =
+    paymentMethod.type === "scheme" && !storedPaymentMethodBool;
+  const paymentMethodImage = storedPaymentMethodBool
+    ? `${path}${paymentMethod.brand}.png`
+    : `${path}${paymentMethod.type}.png`;
+  const cardImage = `${path}card.png`;
+  const imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
   const label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
@@ -307,26 +415,24 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
 
-  renderCheckoutComponent(
+  const node = renderCheckoutComponent(
     storedPaymentMethodBool,
     checkout,
     paymentMethod,
     container,
     paymentMethodID
   );
-  if (paymentMethod.type === "paypal") {
-    createPayPalContinueButton(li);
-  }
 
   container.classList.add("additionalFields");
   container.setAttribute("id", `component_${paymentMethodID}`);
   container.setAttribute("style", "display:none");
 
   li.append(container);
-
   paymentMethodsUI.append(li);
-  const input = document.querySelector(`#rb_${paymentMethodID}`);
 
+  node && node.mount(container);
+
+  const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
@@ -340,13 +446,12 @@ function renderCheckoutComponent(
   paymentMethodID
 ) {
   if (storedPaymentMethodBool) {
-    createCheckoutComponent(
+    return createCheckoutComponent(
       checkout,
       paymentMethod,
       container,
       paymentMethodID
     );
-    return;
   }
   const fallback = getFallback(paymentMethod.type);
   if (fallback) {
@@ -355,7 +460,12 @@ function renderCheckoutComponent(
     container.append(template.content);
     return;
   }
-  createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
+  return createCheckoutComponent(
+    checkout,
+    paymentMethod,
+    container,
+    paymentMethodID
+  );
 }
 
 function createCheckoutComponent(
@@ -364,44 +474,36 @@ function createCheckoutComponent(
   container,
   paymentMethodID
 ) {
-  setTimeout(function () {
-    try {
-      const node = checkout
-        .create(paymentMethod.type, paymentMethod)
-        .mount(container);
-      componentArr[paymentMethodID] = node;
-    } catch (e) {
-      // TODO: implement proper error handling
+  try {
+    const node = checkout.create(paymentMethod.type, paymentMethod);
+    if (!componentsObj[paymentMethodID]) {
+      componentsObj[paymentMethodID] = {};
     }
-  }, 0);
+    componentsObj[paymentMethodID].node = node;
+    return node;
+  } catch (e) {} // eslint-disable-line no-empty
+  return false;
 }
 
-function createPayPalContinueButton(li) {
-  //temporary function .. PayPal's onClick to be available June 2nd
-  const continueBtn = document.createElement("button");
-  continueBtn.innerText = "continue";
-  continueBtn.setAttribute("id", "continueBtn");
-  continueBtn.setAttribute("style", "display:none");
-  continueBtn.onclick = function () {
-    $("#dwfrm_billing").trigger("submit");
-  };
-  li.append(continueBtn);
-}
-
-function makePaypalPayment(data, component) {
+function paymentFromComponent(data, component) {
   $.ajax({
     url: "Adyen-PaymentFromComponent",
     type: "post",
     data: JSON.stringify(data),
     contentType: "application/; charset=utf-8",
     success: function (data) {
-      if (data.result && data.result.fullResponse) {
+      if (
+        data.result &&
+        data.result.fullResponse &&
+        data.result.fullResponse.action
+      ) {
         component.handleAction(data.result.fullResponse.action);
+      } else {
+        component.setStatus("ready");
+        component.reject("Payment Refused");
       }
     },
-  }).fail(function (/* xhr, textStatus */) {
-    // TODO: implement proper error handling
-  });
+  }).fail(function (/* xhr, textStatus */) {});
 }
 
 $("#dwfrm_billing").submit(function (e) {
@@ -417,16 +519,9 @@ $("#dwfrm_billing").submit(function (e) {
       type: "POST",
       url: url,
       data: form.serialize(),
+      async: false,
       success: function (data) {
-        if (data.error) {
-          return;
-        }
-        document
-          .querySelector("#continueBtn")
-          .setAttribute("style", "display:none");
-        document
-          .querySelector("#component_paypal")
-          .setAttribute("style", "display:block");
+        formErrorsExist = data.fieldErrors;
       },
     });
   }

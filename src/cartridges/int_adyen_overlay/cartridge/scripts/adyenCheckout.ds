@@ -66,25 +66,20 @@ function createPaymentRequest(args) {
             //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
         paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
 
-        var adyenForm = null;
-        if(args.adyenForm){
-            adyenForm = args.adyenForm;
-        }
         //Create shopper data fields
         paymentRequest = AdyenHelper.createShopperObject({
             order: order,
-            adyenForm: adyenForm,
             paymentRequest: paymentRequest
         });
 
-        if (args.adyenFingerprint) {
-            paymentRequest.deviceFingerprint = args.adyenFingerprint
+        if (session.privacy.adyenFingerprint) {
+            paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint
         }
         //Set open invoice data
         if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
             paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
-            if (paymentRequest.paymentMethod.type.indexOf("ratepay") != -1 && args.ratePayFingerprint) {
-                paymentRequest.deviceFingerprint = args.ratePayFingerprint;
+            if (paymentRequest.paymentMethod.type.indexOf("ratepay") > -1 && session.privacy.ratePayFingerprint) {
+                paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
             }
         }
         // make API call

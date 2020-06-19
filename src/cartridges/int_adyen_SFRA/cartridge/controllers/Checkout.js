@@ -26,12 +26,14 @@ server.prepend(
     );
     const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const installments = AdyenHelper.getCreditCardInstallments();
+    const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
 
     const viewData = res.getViewData();
     viewData.adyen = {
       originKey: originKey,
       environment: environment,
       installments: installments,
+      paypalMerchantID: paypalMerchantID,
     };
 
     res.setViewData(viewData);

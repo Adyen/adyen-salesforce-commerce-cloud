@@ -21,6 +21,7 @@
     var locale = "${request.locale}";
     window.Configuration = {originKey, loadingContext, environment, locale};
     window.installments = "${AdyenHelper.getCreditCardInstallments()}";
+    window.paypalMerchantID = "${AdyenHelper.getPaypalMerchantID()}";
 
     var showStoreDetails = ${customer.authenticated};
 </script>
@@ -29,13 +30,11 @@
 
 <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
 <input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
-<!--<input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>-->
-<!--<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>-->
-<!--<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>-->
+<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
+<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
 
 <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
-<!--<input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>-->
 
 <ul id="paymentMethodsList"></ul>
 
@@ -45,7 +44,7 @@
 <isif condition="${empty(session.privacy.ratePayFingerprint)}">
     <isscript>
         var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_256).digest(session.sessionID);
         session.privacy.ratePayFingerprint = sessionID;
     </isscript>
     <script language="JavaScript">
@@ -62,6 +61,3 @@
 <script type="text/javascript">
     dfDo('dwfrm_adyPaydata_adyenFingerprint');
 </script>
-
-<span id="errorLoadComponent"></span>
-<div id="card"></div>
