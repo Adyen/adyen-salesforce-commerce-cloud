@@ -19,7 +19,7 @@ function handlePayments(order, orderNumber) {
 
     if (paymentInstruments.length === 0) {
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
       });
       result.error = true;
     }
@@ -57,7 +57,7 @@ function handlePayments(order, orderNumber) {
           result = authorizationResult;
           if (authorizationResult.error) {
             Transaction.wrap(function () {
-              OrderMgr.failOrder(order);
+              OrderMgr.failOrder(order, true);
             });
             result.error = true;
             break;

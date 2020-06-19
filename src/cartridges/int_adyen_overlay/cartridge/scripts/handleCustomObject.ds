@@ -43,15 +43,15 @@ function handle( customObj : CustomObject  ) : Object
 	var pending : Boolean = false;
 	var result = {};
 	result.status = PIPELET_ERROR;
-	
+
 	result.EventCode = customObj.custom.eventCode;
 	result.SubmitOrder = false;
 	result.SkipOrder = false;
 
-	var orderId = customObj.custom.orderId.split("-", 1);	
+	var orderId = customObj.custom.orderId.split("-", 1);
 	var order = OrderMgr.getOrder(orderId[0]);
 	result.Order = order;
-	
+
 	if (order == null) {
 		// check to see if this was a $0.00 auth for recurring payment. if yes, CO can safely be deleted
         if (orderId.indexOf('recurringPayment') > -1) {
@@ -62,7 +62,7 @@ function handle( customObj : CustomObject  ) : Object
         }
 		return result;
 	}
-	
+
 	var orderCreateDate : Date = order.creationDate;
 	var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
 	var currentDate = new Date();
@@ -94,11 +94,11 @@ function handle( customObj : CustomObject  ) : Object
 						order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 						Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PAID.",order.orderNo);
                         result.SubmitOrder = true;
-					}  
+					}
 				}
 				else{
 					Logger.getLogger("Adyen", "adyen").info ("Authorization for order {0} was not successful - no update.",order.orderNo);
-					// Determine if payment was refused and was used Adyen payment method 
+					// Determine if payment was refused and was used Adyen payment method
 					if (!empty(reasonCode) && (reasonCode == "REFUSED" || reasonCode.indexOf('FAILED') > -1)) {
                         for each (paymentInstrument in paymentInstruments) {
                             if (paymentInstrument.paymentMethod.equals("Adyen") || PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor().ID === 'ADYEN_CREDIT') {
@@ -134,7 +134,7 @@ function handle( customObj : CustomObject  ) : Object
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was refunded.",order.orderNo);
 				break;
-			//CustomAdyen 
+			//CustomAdyen
 			case "CAPTURE_FAILED" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
@@ -142,34 +142,34 @@ function handle( customObj : CustomObject  ) : Object
 				Logger.getLogger("Adyen", "adyen").info ("Capture Failed for order {0}",order.orderNo);
 				break;
 			case "ORDER_OPENED" :
-				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);  				
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} updated to status PARTIALLY PAID.",order.orderNo);
 				order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
-				break;	
+				break;
 			case "ORDER_CLOSED" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
 				order.setExportStatus(Order.EXPORT_STATUS_READY);
-				Logger.getLogger("Adyen", "adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);  
+				Logger.getLogger("Adyen", "adyen").info ("Order {0} closed and updated to status PAID.",order.orderNo);
 				break;
 			case "OFFER_CLOSED" :
 				order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
 				order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
 				Transaction.wrap(function () {
-					OrderMgr.failOrder(order);
+					OrderMgr.failOrder(order, false);
 				});
 				Logger.getLogger("Adyen", "adyen").info ("Offer closed for order {0} and updated to status NOT PAID.", order.orderNo);
 				break;
 			case "PENDING" :
 				pending = true;
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} was in pending status.",order.orderNo);
-				break;				
+				break;
 			default:
 				Logger.getLogger("Adyen", "adyen").info ("Order {0} received unhandled status {1}",order.orderNo,customObj.custom.eventCode);
 		}
-		
+
 		// If payment was refused and was used Adyen payment method, the fields are changed when user is redirected back from Adyen HPP
 		if (!refusedHpp) {
 			// Add received information to order
-			
+
 			/*
 				PSP Reference must be persistent.
 				Some modification requests (Capture, Cancel) send identificators of the operations, we mustn't overwrite the original value by the new ones
@@ -177,10 +177,10 @@ function handle( customObj : CustomObject  ) : Object
 			if (empty(order.custom.Adyen_pspReference) && !empty(customObj.custom.pspReference)) {
 				order.custom.Adyen_pspReference = customObj.custom.pspReference;
 			}
-			
+
 			order.custom.Adyen_value = customObj.custom.value;
 			order.custom.Adyen_eventCode = customObj.custom.eventCode;
-			
+
 			// Payment Method must be persistent. When payment is cancelled, Adyen sends an empty string here
 			if (empty(order.custom.Adyen_paymentMethod) && !empty(customObj.custom.paymentMethod)) {
 				order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
@@ -239,8 +239,8 @@ function createDelayOrderDate(orderCreateDate : Date)
 {
 	//AdyenNotificationDelayMinutes
 	var adyenDelayMin : Number = 1;
-	
-	// Variable in milliseconds 
+
+	// Variable in milliseconds
 	var newDate = new Date();
 	newDate.setTime(orderCreateDate.getTime() + (adyenDelayMin * 60 * 1000));
 	return newDate;

@@ -223,7 +223,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   );
   if (fraudDetectionStatus.status === "fail") {
     Transaction.wrap(function () {
-      OrderMgr.failOrder(order);
+      OrderMgr.failOrder(order, true);
     });
 
     // fraud detection failed

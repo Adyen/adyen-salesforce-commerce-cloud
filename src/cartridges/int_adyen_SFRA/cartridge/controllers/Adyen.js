@@ -73,7 +73,7 @@ server.post("AuthorizeWithForm", server.middleware.https, function (
       // if error, return to checkout page
       if (result.error || result.resultCode !== "Authorised") {
         Transaction.wrap(function () {
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         res.redirect(
           URLUtils.url(
@@ -97,7 +97,7 @@ server.post("AuthorizeWithForm", server.middleware.https, function (
       );
       if (placeOrderResult.error) {
         Transaction.wrap(function () {
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         res.redirect(
           URLUtils.url(
@@ -228,7 +228,7 @@ server.post("Authorize3DS2", server.middleware.https, function (
     ) {
       //Payment failed
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
         paymentInstrument.custom.adyenPaymentData = null;
       });
       res.redirect(
@@ -267,7 +267,7 @@ server.post("Authorize3DS2", server.middleware.https, function (
     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
       Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
       });
       res.redirect(
         URLUtils.url(
@@ -338,7 +338,7 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
 
   Logger.getLogger("Adyen").error("Redirect signature is not correct");
   Transaction.wrap(function () {
-    OrderMgr.failOrder(order);
+    OrderMgr.failOrder(order, true);
   });
   res.redirect(
     URLUtils.url(
@@ -403,7 +403,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
         result.paymentMethod.indexOf("alipay_hk") > -1
       ) {
         Transaction.wrap(function () {
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         Logger.getLogger("Adyen").error(
           "Did not complete Alipay transaction, result: " +
@@ -431,7 +431,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
       );
       if (placeOrderResult.error) {
         Transaction.wrap(function () {
-          OrderMgr.failOrder(order);
+          OrderMgr.failOrder(order, true);
         });
         res.redirect(
           URLUtils.url(
@@ -541,7 +541,7 @@ server.post(
         );
         if (placeOrderResult.error) {
           Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
+            OrderMgr.failOrder(order, true);
           });
           res.redirect(
             URLUtils.url(
