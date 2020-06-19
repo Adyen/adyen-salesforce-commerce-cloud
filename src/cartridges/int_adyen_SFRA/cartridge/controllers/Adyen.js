@@ -15,6 +15,7 @@ const Logger = require("dw/system/Logger");
 const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
 const constants = require("*/cartridge/adyenConstants/constants");
 const collections = require("*/cartridge/scripts/util/collections");
+const PaymentMgr = require("dw/order/PaymentMgr");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -717,6 +718,9 @@ server.post("PaymentFromComponent", server.middleware.https, function (
 
   if (reqDataObj.cancelTransaction) {
     order = OrderMgr.getOrder(session.privacy.orderNo);
+    Logger.getLogger("Adyen").error(
+      "Shopper cancelled transaction for order " + session.privacy.orderNo
+    );
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
@@ -734,9 +738,11 @@ server.post("PaymentFromComponent", server.middleware.https, function (
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice
     );
-
+    const paymentProcessor = PaymentMgr.getPaymentMethod(
+      paymentInstrument.paymentMethod
+    ).paymentProcessor;
+    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
-    session.privacy.paymentMethod = paymentInstrument.paymentMethod;
     paymentInstrument.custom.adyenPaymentMethod = reqDataObj.paymentMethod.type;
   });
   order = COHelpers.createOrder(currentBasket);
@@ -746,6 +752,12 @@ server.post("PaymentFromComponent", server.middleware.https, function (
     Order: order,
     PaymentInstrument: paymentInstrument,
   });
+
+  if (result.resultCode !== "Pending") {
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+  }
   res.json(result);
   return next();
 });

@@ -69,89 +69,98 @@ function redirect(order, redirectUrl) {
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
-  const orderNumber = session.privacy.orderNo;
-  const order = OrderMgr.getOrder(orderNumber);
-  const paymentInstruments = order.getPaymentInstruments(
-    constants.METHOD_ADYEN_COMPONENT
-  );
-  let adyenPaymentInstrument;
-  let paymentData;
+  try {
+    const orderNumber = session.privacy.orderNo;
+    const order = OrderMgr.getOrder(orderNumber);
+    const paymentInstruments = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT
+    );
+    let adyenPaymentInstrument;
+    let paymentData;
 
-  const instrumentsIter = paymentInstruments.iterator();
-  while (instrumentsIter.hasNext()) {
-    adyenPaymentInstrument = instrumentsIter.next();
-    paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
-  }
-
-  //details is either redirectResult or payload
-  let details;
-  if (request.httpParameterMap.redirectResult.value !== null) {
-    details = { redirectResult: request.httpParameterMap.redirectResult.value };
-  } else if (request.httpParameterMap.payload.value !== null) {
-    details = { payload: request.httpParameterMap.payload.value };
-  }
-
-  //redirect to payment/details
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
-  const requestObject = {
-    details: details,
-    paymentData: paymentData,
-  };
-  const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-  Transaction.wrap(function () {
-    adyenPaymentInstrument.custom.adyenPaymentData = null;
-  });
-  if (
-    result.resultCode === "Authorised" ||
-    result.resultCode === "Pending" ||
-    result.resultCode === "Received" ||
-    result.resultCode === "PresentToShopper"
-  ) {
-    if (
-      result.resultCode === "Received" &&
-      result.paymentMethod.indexOf("alipay_hk") > -1
-    ) {
-      Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
-      });
-      Logger.getLogger("Adyen").error(
-        "Did not complete Alipay transaction, result: " + JSON.stringify(result)
-      );
-      const errorStatus = new dw.system.Status(
-        dw.system.Status.ERROR,
-        "confirm.error.declined"
-      );
-
-      app.getController("COSummary").Start({
-        PlaceOrderError: errorStatus,
-      });
-      return {};
+    const instrumentsIter = paymentInstruments.iterator();
+    while (instrumentsIter.hasNext()) {
+      adyenPaymentInstrument = instrumentsIter.next();
+      paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
-    Transaction.wrap(function () {
-      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
-    });
-    OrderModel.submit(order);
-    clearForms();
-    app.getController("COSummary").ShowConfirmation(order);
-    return {};
-  }
-  // fail order
-  Transaction.wrap(function () {
-    OrderMgr.failOrder(order);
-  });
-  Logger.getLogger("Adyen").error(
-    "Payment failed, result: " + JSON.stringify(result)
-  );
-  // should be assingned by previous calls or not
-  const errorStatus = new dw.system.Status(
-    dw.system.Status.ERROR,
-    "confirm.error.declined"
-  );
 
-  app.getController("COSummary").Start({
-    PlaceOrderError: errorStatus,
-  });
+    //redirect to payment/details
+    const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+    const requestObject = {
+      details: getDetails(),
+      paymentData: paymentData,
+    };
+    const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    Transaction.wrap(function () {
+      adyenPaymentInstrument.custom.adyenPaymentData = null;
+    });
+    if (
+      ["Authorised", "Pending", "Received", "PresentToShopper"].includes(
+        result.resultCode
+      )
+    ) {
+      if (
+        result.resultCode === "Received" &&
+        result.paymentMethod.includes("alipay_hk")
+      ) {
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order);
+        });
+        Logger.getLogger("Adyen").error(
+          "Did not complete Alipay transaction, result: " +
+            JSON.stringify(result)
+        );
+        const errorStatus = new dw.system.Status(
+          dw.system.Status.ERROR,
+          "confirm.error.declined"
+        );
+
+        app.getController("COSummary").Start({
+          PlaceOrderError: errorStatus,
+        });
+        return {};
+      }
+      Transaction.wrap(function () {
+        AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+      });
+      OrderModel.submit(order);
+      clearForms();
+      return app.getController("COSummary").ShowConfirmation(order);
+    }
+    // fail order
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order);
+    });
+    Logger.getLogger("Adyen").error(
+      "Payment failed, result: " + JSON.stringify(result)
+    );
+
+    // should be assingned by previous calls or not
+    const errorStatus = new dw.system.Status(
+      dw.system.Status.ERROR,
+      "confirm.error.declined"
+    );
+
+    app.getController("COSummary").Start({
+      PlaceOrderError: errorStatus,
+    });
+  } catch (e) {
+    Logger.getLogger("Adyen").error(
+      `Could not verify showConfirmation: ${
+        e.message
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
+    );
+  }
+
   return {};
+}
+
+function getDetails() {
+  const { redirectResult, payload } = request.httpParameterMap;
+  return {
+    ...(redirectResult.value && { redirectResult: redirectResult.value }),
+    ...(payload.value && { payload: payload.value }),
+  };
 }
 
 function paymentFromComponent() {
