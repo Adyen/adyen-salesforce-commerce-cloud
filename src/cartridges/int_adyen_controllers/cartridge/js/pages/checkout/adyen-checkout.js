@@ -62,11 +62,11 @@ function initializeBillingEvents() {
             $("#cardNumber").val(maskedCardNumber);
           }
         },
-        onChange: function (state, component) {
+        onChange: function (state) {
           isValid = state.isValid;
-          // Todo: fix onChange issues so we can get rid of componentName
-          let componentName = component._node.id.replace("component_", "");
-          componentName = componentName.replace("storedPaymentMethods", "");
+          const componentName = state.data.paymentMethod.storedPaymentMethodId
+            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+            : state.data.paymentMethod.type;
           if (componentName === selectedMethod) {
             $("#browserInfo").val(JSON.stringify(state.data.browserInfo));
             componentsObj[selectedMethod].isValid = isValid;
@@ -80,8 +80,8 @@ function initializeBillingEvents() {
         showEmailAddress: false, // allow shopper to specify their email address
       },
       paypal: {
+        environment: window.Configuration.environment,
         intent: "capture",
-        merchantId: window.paypalMerchantID,
         onClick: (data, actions) => {
           $("#dwfrm_billing").trigger("submit");
           if (formErrorsExist) {
@@ -96,8 +96,8 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
-          component.setStatus("ready");
           paymentFromComponent({ cancelPaypal: true }, component);
+          component.setStatus("ready");
         },
         onError: (error, component) => {
           component && component.setStatus("ready");
@@ -137,9 +137,11 @@ function initializeBillingEvents() {
       try {
         const installments = JSON.parse(window.installments);
         checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-      } catch (e) {
-        // TODO: implement proper error handling
-      }
+      } catch (e) {} // eslint-disable-line no-empty
+    }
+    if (window.paypalMerchantID !== "null") {
+      checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
+        window.paypalMerchantID;
     }
     renderGenericComponent();
   }
@@ -220,7 +222,10 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
+  if (
+    componentsObj[selectedMethod] &&
+    componentsObj[selectedMethod].isValid === false
+  ) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
@@ -410,7 +415,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.innerHTML = liContents;
   li.classList.add("paymentMethod");
 
-  renderCheckoutComponent(
+  const node = renderCheckoutComponent(
     storedPaymentMethodBool,
     checkout,
     paymentMethod,
@@ -423,10 +428,11 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   container.setAttribute("style", "display:none");
 
   li.append(container);
-
   paymentMethodsUI.append(li);
-  const input = document.querySelector(`#rb_${paymentMethodID}`);
 
+  node && node.mount(container);
+
+  const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
@@ -440,13 +446,12 @@ function renderCheckoutComponent(
   paymentMethodID
 ) {
   if (storedPaymentMethodBool) {
-    createCheckoutComponent(
+    return createCheckoutComponent(
       checkout,
       paymentMethod,
       container,
       paymentMethodID
     );
-    return;
   }
   const fallback = getFallback(paymentMethod.type);
   if (fallback) {
@@ -455,7 +460,12 @@ function renderCheckoutComponent(
     container.append(template.content);
     return;
   }
-  createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
+  return createCheckoutComponent(
+    checkout,
+    paymentMethod,
+    container,
+    paymentMethodID
+  );
 }
 
 function createCheckoutComponent(
@@ -464,19 +474,15 @@ function createCheckoutComponent(
   container,
   paymentMethodID
 ) {
-  setTimeout(function () {
-    try {
-      const node = checkout
-        .create(paymentMethod.type, paymentMethod)
-        .mount(container);
-      if (!componentsObj[paymentMethodID]) {
-        componentsObj[paymentMethodID] = {};
-      }
-      componentsObj[paymentMethodID].node = node;
-    } catch (e) {
-      // TODO: implement proper error handling
+  try {
+    const node = checkout.create(paymentMethod.type, paymentMethod);
+    if (!componentsObj[paymentMethodID]) {
+      componentsObj[paymentMethodID] = {};
     }
-  }, 0);
+    componentsObj[paymentMethodID].node = node;
+    return node;
+  } catch (e) {} // eslint-disable-line no-empty
+  return false;
 }
 
 function paymentFromComponent(data, component) {
@@ -486,13 +492,18 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: "application/; charset=utf-8",
     success: function (data) {
-      if (data.result && data.result.fullResponse) {
+      if (
+        data.result &&
+        data.result.fullResponse &&
+        data.result.fullResponse.action
+      ) {
         component.handleAction(data.result.fullResponse.action);
+      } else {
+        component.setStatus("ready");
+        component.reject("Payment Refused");
       }
     },
-  }).fail(function (/* xhr, textStatus */) {
-    // TODO: implement proper error handling
-  });
+  }).fail(function (/* xhr, textStatus */) {});
 }
 
 $("#dwfrm_billing").submit(function (e) {
