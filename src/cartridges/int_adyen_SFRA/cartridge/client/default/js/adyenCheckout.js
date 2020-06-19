@@ -122,7 +122,7 @@ if (window.installments) {
   try {
     const installments = JSON.parse(window.installments);
     checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {}     // eslint-disable-next-line no-empty
+  } catch (e) {} // eslint-disable-line no-empty
 }
 if (window.paypalMerchantID !== "null") {
   checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
