@@ -66,6 +66,7 @@ function notify (notificationData) {
             case "ORDER_CLOSED" :
             case "OFFER_CLOSED":
             case "PENDING" :
+            case "CAPTURE":
                 customObj.custom.updateStatus = "PROCESS";
                 Logger.getLogger("Adyen").info ("Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PROCESS' status.", notificationData.merchantReference, notificationData.eventCode);
                 break;
