@@ -98,7 +98,7 @@ function clearNotifications(pdict) {
  * @return {Object} object If order cannot be placed, object.error is set to true. Ortherwise, object.order_created is true, and object.Order is set to the order.
  */
 function submitOrder(order) {
-    var adyenService = require('*/cartridge/scripts/adyenService');
+	var adyenService = require('*/cartridge/scripts/adyenService');
 	return adyenService.submit(order);
 }
 
