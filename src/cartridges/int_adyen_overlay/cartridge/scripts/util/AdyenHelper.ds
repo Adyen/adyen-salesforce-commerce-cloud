@@ -193,7 +193,12 @@ var __AdyenHelper: Object = {
 
     getAdyenHash: function(value, salt){
         var data = value + salt;
-        var signature = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digest(data);
+        var Bytes = require('dw/util/Bytes');
+        var MessageDigest = require('dw/crypto/MessageDigest');
+        var Encoding = require('dw/crypto/Encoding');
+        var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
+        var signature = Encoding.toHex(digestSHA512.digestBytes(new Bytes(data, 'UTF-8')));
+
         return signature;
     },
 

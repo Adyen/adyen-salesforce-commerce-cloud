@@ -124,8 +124,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     } else {
       //Signature only needed for redirect methods
       signature = AdyenHelper.getAdyenHash(
-        result.redirectObject.url,
-        result.paymentData
+        result.redirectObject.url.substr(result.redirectObject.url.length - 25),
+        result.paymentData.substr(1, 25)
       );
     }
 

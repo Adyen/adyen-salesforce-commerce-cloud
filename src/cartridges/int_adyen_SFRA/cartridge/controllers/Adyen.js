@@ -322,8 +322,10 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
       paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
     const currentSignature = AdyenHelper.getAdyenHash(
-      req.querystring.redirectUrl,
-      paymentData
+      req.querystring.redirectUrl.substr(
+        req.querystring.redirectUrl.length - 25
+      ),
+      paymentData.substr(1, 25)
     );
 
     if (signature === currentSignature) {
