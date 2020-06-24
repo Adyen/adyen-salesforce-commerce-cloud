@@ -36,7 +36,7 @@ var __AdyenHelper: Object = {
     LOADING_CONTEXT_LIVE: "https://checkoutshopper-live.adyen.com/checkoutshopper/",
 
     CHECKOUT_COMPONENT_VERSION: "3.9.4",
-    VERSION: "20.0.0",
+    VERSION: "20.1.0",
 
     getService: function (service: String): Object {
         // Create the service config (used for all services)
@@ -585,6 +585,8 @@ var __AdyenHelper: Object = {
         }
         if(result.paymentMethod) {
             order.custom.Adyen_paymentMethod = result.paymentMethod;
+        } else if(result.additionalData && result.additionalData.paymentMethod) {
+            order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
         }
 
         paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : "";
