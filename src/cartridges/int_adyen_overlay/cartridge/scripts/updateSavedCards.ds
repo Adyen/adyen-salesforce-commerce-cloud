@@ -42,7 +42,6 @@ function updateSavedCards(args) {
 
                 // Create from existing cards a paymentInstrument
                 for (var index = 0; index < oneClickPaymentMethods.length; index++) {
-                // for (var pm in oneClickPaymentMethods) {
                     var payment = oneClickPaymentMethods[index];
                     var expiryMonth = payment.expiryMonth ? payment.expiryMonth : "";
                     var expiryYear = payment.expiryYear ? payment.expiryYear : "";
