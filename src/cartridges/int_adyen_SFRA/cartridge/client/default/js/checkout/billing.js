@@ -8,11 +8,7 @@ function updatePaymentInformation(order) {
   const $paymentSummary = $(".payment-details");
   let htmlToAppend = "";
 
-  if (
-    order.billing.payment &&
-    order.billing.payment.selectedPaymentInstruments &&
-    order.billing.payment.selectedPaymentInstruments.length > 0
-  ) {
+  if (order.billing.payment?.selectedPaymentInstruments?.length > 0) {
     const selectedPaymentInstrument =
       order.billing.payment.selectedPaymentInstruments[0];
     if (selectedPaymentInstrument.selectedAdyenPM) {

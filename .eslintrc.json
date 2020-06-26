@@ -2,7 +2,8 @@
   "env": {
     "es6": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": [
     "eslint:recommended",
@@ -42,8 +43,9 @@
     "Urls": "readonly",
     "SitePreferences": "readonly"
   },
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 2018,
+    "ecmaVersion": 2020,
     "ecmaFeatures": {
       "modules": true
     }
@@ -51,7 +53,9 @@
   "plugins": [
     "prettier"
   ],
-  "ignorePatterns": ["*.ds"],
+  "ignorePatterns": [
+    "*.ds"
+  ],
   "rules": {
     "prettier/prettier": "error",
     "no-var": "error",
@@ -59,7 +63,7 @@
     "complexity": [
       "warn",
       {
-        "max": 2
+        "max": 7
       }
     ],
     "eqeqeq": "error",

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 "use strict";
 
 const server = require("server");
