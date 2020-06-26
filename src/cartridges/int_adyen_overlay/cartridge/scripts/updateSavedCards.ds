@@ -41,15 +41,16 @@ function updateSavedCards(args) {
                 }
 
                 // Create from existing cards a paymentInstrument
-                for (var pm in oneClickPaymentMethods) {
-                    var payment = oneClickPaymentMethods[pm];
-                    var expiryMonth = payment.storedDetails.card.expiryMonth ? payment.storedDetails.card.expiryMonth : "";
-                    var expiryYear = payment.storedDetails.card.expiryYear ? payment.storedDetails.card.expiryYear : "";
-                    var holderName = payment.storedDetails.card.holderName ? payment.storedDetails.card.holderName : "";
-                    var lastFour = payment.storedDetails.card.number ? payment.storedDetails.card.number : "";
+                for (var index = 0; index < oneClickPaymentMethods.length; index++) {
+                // for (var pm in oneClickPaymentMethods) {
+                    var payment = oneClickPaymentMethods[index];
+                    var expiryMonth = payment.expiryMonth ? payment.expiryMonth : "";
+                    var expiryYear = payment.expiryYear ? payment.expiryYear : "";
+                    var holderName = payment.holderName ? payment.holderName : "";
+                    var lastFour = payment.lastFour ? payment.lastFour : "";
                     var number = lastFour ? new Array(12 + 1).join('*') + lastFour : "";
-                    var token = payment.recurringDetailReference;
-                    var cardType = payment.type ? AdyenHelper.getSFCCCardType(payment.type) : "";
+                    var token = payment.id;
+                    var cardType = payment.brand ? AdyenHelper.getSFCCCardType(payment.brand) : "";
 
                     // if we have everything we need, create a new payment instrument
                     if (expiryMonth && expiryYear && number && token && cardType && holderName) {
@@ -76,8 +77,14 @@ function updateSavedCards(args) {
 
 function getOneClickPaymentMethods(customer) {
     var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-    var oneClickPaymentMethods = getPaymentMethods.getMethods(null, customer, "").oneClickPaymentMethods;
-    return oneClickPaymentMethods ? oneClickPaymentMethods : null;
+    var storedPaymentMethods = getPaymentMethods.getMethods(null, customer, "").storedPaymentMethods;
+    var oneClickPaymentMethods = [];
+    for (var i = 0; i < storedPaymentMethods.length; i++) {
+        if(storedPaymentMethods[i].supportedShopperInteractions && storedPaymentMethods[i].supportedShopperInteractions.indexOf("Ecommerce") > -1) {
+            oneClickPaymentMethods.push(storedPaymentMethods[i]);
+        }
+    }
+    return oneClickPaymentMethods;
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 <iscontent type="text/html" encoding="off"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-
+<isset name="adyenOneClickEnabled" value="${pdict.AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addJs('/js/bundle.js');
@@ -13,7 +13,7 @@
     };
     window.installments = '${pdict.adyen.installments}';
     window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
-    var showStoreDetails = ${customer.authenticated};
+    var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
