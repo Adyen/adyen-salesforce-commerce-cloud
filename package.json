@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "20.0.0",
+  "version": "20.1.0",
   "description": "SFRA cartridge",
   "main": "index.js",
   "paths": {
@@ -13,7 +13,6 @@
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
-    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge /home/vagrant/workspace/salesforce-commerce-cloud/app_storefront_core && sgmf-scripts --uploadCartridge /home/vagrant/workspace/salesforce-commerce-cloud/app_storefront_controllers",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css",
