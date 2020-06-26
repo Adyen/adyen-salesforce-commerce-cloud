@@ -302,6 +302,10 @@ function renderPaymentMethod(
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
+
+  if(componentsObj[paymentMethodID] && !container.childNodes[0]) {
+    componentsObj[paymentMethodID].isValid = true;
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
