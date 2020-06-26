@@ -385,7 +385,7 @@ function showValidation() {
   let input;
   if (
     componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].isValid === false
+    !componentsObj[selectedMethod].isValid
   ) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
