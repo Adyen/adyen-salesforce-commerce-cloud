@@ -4,7 +4,7 @@
 
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
-
+<isset name="adyenOneClickEnabled" value="${AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
@@ -22,8 +22,7 @@
     window.Configuration = {originKey, loadingContext, environment, locale};
     window.installments = "${AdyenHelper.getCreditCardInstallments()}";
     window.paypalMerchantID = "${AdyenHelper.getPaypalMerchantID()}";
-
-    var showStoreDetails = ${customer.authenticated};
+    var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 
 <isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>

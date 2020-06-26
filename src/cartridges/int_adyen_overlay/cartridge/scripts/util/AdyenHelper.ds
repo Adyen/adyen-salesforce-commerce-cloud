@@ -459,11 +459,9 @@ var __AdyenHelper: Object = {
         var filteredJson = __AdyenHelper.validateStateData(jsonObject);
         var stateData = filteredJson.stateData;
 
-        var reference = "";
-        if (order && !empty(order.getOrderNo())) {
+        var reference = "recurringPayment-account";
+        if (order && order.getOrderNo()) {
             reference = order.getOrderNo();
-        } else {
-            reference = 'recurringPayment-account';
         }
 
         stateData.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
@@ -471,7 +469,6 @@ var __AdyenHelper: Object = {
         stateData.returnUrl = URLUtils.https("Adyen-ShowConfirmation").toString();
         stateData.applicationInfo = __AdyenHelper.getApplicationInfo(true);
         stateData.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
-        stateData.enableOneClick = __AdyenHelper.getAdyenOneClickEnabled();
         stateData.additionalData = {};
         return stateData;
     },

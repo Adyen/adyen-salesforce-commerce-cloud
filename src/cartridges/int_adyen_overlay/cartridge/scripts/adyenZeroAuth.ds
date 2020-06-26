@@ -22,7 +22,6 @@ function zeroAuthPayment(customer, paymentInstrument) {
         };
 
         zeroAuthRequest.storePaymentMethod = true;
-        zeroAuthRequest.enableOneClick = true;
         zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
         zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 
