@@ -222,10 +222,7 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (
-    componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].isValid === false
-  ) {
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
