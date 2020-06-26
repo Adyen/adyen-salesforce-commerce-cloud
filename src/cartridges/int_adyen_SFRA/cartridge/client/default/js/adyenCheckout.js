@@ -303,7 +303,7 @@ function renderPaymentMethod(
     displaySelectedMethod(event.target.value);
   };
 
-  if(componentsObj[paymentMethodID] && !container.childNodes[0]) {
+  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
     componentsObj[paymentMethodID].isValid = true;
   }
 }
@@ -383,10 +383,7 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (
-    componentsObj[selectedMethod] &&
-    !componentsObj[selectedMethod].isValid
-  ) {
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {

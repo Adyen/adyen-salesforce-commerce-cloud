@@ -436,6 +436,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
+
+  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
+    componentsObj[paymentMethodID].isValid = true;
+  }
 }
 
 function renderCheckoutComponent(
