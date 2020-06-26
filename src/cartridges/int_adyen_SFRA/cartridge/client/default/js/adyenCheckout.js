@@ -318,6 +318,10 @@ function renderPaymentMethod(
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
+
+  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
+    componentsObj[paymentMethodID].isValid = true;
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -395,10 +399,7 @@ function assignPaymentMethodValue() {
 
 function showValidation() {
   let input;
-  if (
-    componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].isValid === false
-  ) {
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {

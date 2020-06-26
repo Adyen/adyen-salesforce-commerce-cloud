@@ -245,10 +245,7 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (
-    componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].isValid === false
-  ) {
+  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
@@ -459,6 +456,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
+
+  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
+    componentsObj[paymentMethodID].isValid = true;
+  }
 }
 
 function renderCheckoutComponent(
