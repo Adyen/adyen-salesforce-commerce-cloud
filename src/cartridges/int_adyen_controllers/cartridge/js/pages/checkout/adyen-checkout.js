@@ -222,10 +222,7 @@ function resetPaymentMethod() {
 }
 
 function showValidation() {
-  if (
-    componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].isValid === false
-  ) {
+  if (componentsObj[selectedMethod]?.isValid === false) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   } else if (selectedMethod === "ach") {
@@ -241,7 +238,7 @@ function showValidation() {
     }
   } else if (selectedMethod === "ratepay") {
     const input = document.querySelector("#dateOfBirthInput");
-    if (!(input.value && input.value.length > 0)) {
+    if (!(input.value?.length > 0)) {
       input.classList.add("adyen-checkout__input--error");
       return false;
     }
@@ -250,6 +247,22 @@ function showValidation() {
 }
 
 function validateComponents() {
+  function hasGenderAndDateOfBirth() {
+    return (
+      document.querySelector("#genderInput").value &&
+      document.querySelector("#dateOfBirthInput").value
+    );
+  }
+
+  function setRatePay() {
+    if (hasGenderAndDateOfBirth()) {
+      stateData.shopperName = {
+        gender: document.querySelector("#genderInput").value,
+      };
+      stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
+    }
+  }
+
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
     for (const input of inputs) {
@@ -265,10 +278,7 @@ function validateComponents() {
   }
 
   let stateData;
-  if (
-    componentsObj[selectedMethod] &&
-    componentsObj[selectedMethod].stateData
-  ) {
+  if (componentsObj[selectedMethod]?.stateData) {
     stateData = componentsObj[selectedMethod].stateData;
   } else {
     stateData = { paymentMethod: { type: selectedMethod } };
@@ -286,15 +296,7 @@ function validateComponents() {
       bankAccount: bankAccount,
     };
   } else if (selectedMethod === "ratepay") {
-    if (
-      document.querySelector("#genderInput").value &&
-      document.querySelector("#dateOfBirthInput").value
-    ) {
-      stateData.shopperName = {
-        gender: document.querySelector("#genderInput").value,
-      };
-      stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
-    }
+    setRatePay();
   }
   document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }

@@ -45,6 +45,13 @@ function Handle(args) {
  * Call the  Adyen API to Authorize CC using details entered by shopper.
  */
 function Authorize(args) {
+  function getErrorMessage(obj) {
+    return !empty(obj) &&
+      "AdyenErrorMessage" in obj &&
+      !empty(obj.AdyenErrorMessage)
+      ? obj.AdyenErrorMessage
+      : "";
+  }
   const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
   const order = args.Order;
   const paymentInstrument = args.PaymentInstrument;
@@ -68,12 +75,7 @@ function Authorize(args) {
 
     return {
       error: true,
-      PlaceOrderError:
-        !empty(args) &&
-        "AdyenErrorMessage" in args &&
-        !empty(args.AdyenErrorMessage)
-          ? args.AdyenErrorMessage
-          : "",
+      PlaceOrderError: getErrorMessage(args),
     };
   }
 
@@ -81,7 +83,7 @@ function Authorize(args) {
     order.custom.Adyen_pspReference = result.pspReference;
   }
 
-  if (result.threeDS2 || result.resultCode === "RedirectShopper") {
+  function redirectShopper() {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
 
@@ -104,11 +106,7 @@ function Authorize(args) {
     }
 
     //If the response has MD, then it is a 3DS transaction
-    if (
-      result.redirectObject &&
-      result.redirectObject.data &&
-      result.redirectObject.data.MD
-    ) {
+    if (result.redirectObject?.data?.MD) {
       session.privacy.MD = result.redirectObject.data.MD;
       return {
         authorized3d: true,
@@ -132,15 +130,15 @@ function Authorize(args) {
       redirectObject: result.redirectObject,
     };
   }
+  if (result.threeDS2 || result.resultCode === "RedirectShopper") {
+    redirectShopper();
+  }
 
   if (result.decision !== "ACCEPT") {
     Transaction.rollback();
     return {
       error: true,
-      PlaceOrderError:
-        "AdyenErrorMessage" in result && !empty(result.adyenErrorMessage)
-          ? result.adyenErrorMessage
-          : "",
+      PlaceOrderError: getErrorMessage(result),
     };
   }
 

@@ -13,10 +13,21 @@ function processForm(req, paymentForm, viewFormData) {
   const viewData = viewFormData;
   let creditCardErrors = {};
   const isCreditCard = req.form.brandCode === "scheme";
-  if (!req.form.storedPaymentUUID && isCreditCard) {
-    // verify credit card form data
-    creditCardErrors = COHelpers.validateCreditCard(paymentForm);
+
+  function isAuthenticatedAndRegistered() {
+    return (
+      viewData.storedPaymentUUID &&
+      req.currentCustomer.raw.authenticated &&
+      req.currentCustomer.raw.registered
+    );
   }
+  function setCreditCardErrors() {
+    if (!req.form.storedPaymentUUID && isCreditCard) {
+      // verify credit card form data
+      creditCardErrors = COHelpers.validateCreditCard(paymentForm);
+    }
+  }
+  setCreditCardErrors();
 
   if (Object.keys(creditCardErrors).length) {
     return {
@@ -52,11 +63,7 @@ function processForm(req, paymentForm, viewFormData) {
   viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;
 
   // process payment information
-  if (
-    viewData.storedPaymentUUID &&
-    req.currentCustomer.raw.authenticated &&
-    req.currentCustomer.raw.registered
-  ) {
+  if (isAuthenticatedAndRegistered()) {
     const paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
     const paymentInstrument = array.find(paymentInstruments, function (item) {
       return viewData.storedPaymentUUID === item.UUID;

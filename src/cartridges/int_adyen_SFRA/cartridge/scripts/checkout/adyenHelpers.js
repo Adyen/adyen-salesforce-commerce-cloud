@@ -14,7 +14,8 @@ const PaymentInstrument = require("dw/order/PaymentInstrument");
  */
 function handlePayments(order, orderNumber) {
   let result = {};
-  if (order.totalNetPrice !== 0.0) {
+
+  function setResult() {
     const paymentInstruments = order.paymentInstruments;
 
     if (paymentInstruments.length === 0) {
@@ -66,6 +67,9 @@ function handlePayments(order, orderNumber) {
       }
     }
   }
+  if (order.totalNetPrice !== 0.0) {
+    setResult();
+  }
 
   return result;
 }
@@ -77,8 +81,6 @@ function handlePayments(order, orderNumber) {
  * @returns {Object} an object that has error information
  */
 function validatePayment(req, currentBasket) {
-  let applicablePaymentCards;
-  let applicablePaymentMethods;
   const creditCardPaymentMethod = PaymentMgr.getPaymentMethod(
     PaymentInstrument.METHOD_CREDIT_CARD
   );
@@ -88,12 +90,12 @@ function validatePayment(req, currentBasket) {
   const paymentInstruments = currentBasket.paymentInstruments;
   const result = {};
 
-  applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
+  const applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
     currentCustomer,
     countryCode,
     paymentAmount
   );
-  applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
+  const applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
     currentCustomer,
     countryCode,
     paymentAmount
@@ -101,20 +103,8 @@ function validatePayment(req, currentBasket) {
 
   let invalid = true;
 
-  for (let i = 0; i < paymentInstruments.length; i++) {
-    const paymentInstrument = paymentInstruments[i];
-    if (
-      PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(
-        paymentInstrument.paymentMethod
-      )
-    ) {
-      invalid = false;
-    }
-
-    const paymentMethod = PaymentMgr.getPaymentMethod(
-      paymentInstrument.getPaymentMethod()
-    );
-    if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
+  function setResult(i) {
+    function setCard() {
       if (
         PaymentInstrument.METHOD_CREDIT_CARD.equals(
           paymentInstrument.paymentMethod
@@ -134,6 +124,24 @@ function validatePayment(req, currentBasket) {
         invalid = false;
       }
     }
+    const paymentInstrument = paymentInstruments[i];
+    if (
+      PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(
+        paymentInstrument.paymentMethod
+      )
+    ) {
+      invalid = false;
+    }
+
+    const paymentMethod = PaymentMgr.getPaymentMethod(
+      paymentInstrument.getPaymentMethod()
+    );
+    if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
+      setCard();
+    }
+  }
+  for (let i = 0; i < paymentInstruments.length; i++) {
+    setResult(i);
 
     if (invalid) {
       break; // there is an invalid payment instrument

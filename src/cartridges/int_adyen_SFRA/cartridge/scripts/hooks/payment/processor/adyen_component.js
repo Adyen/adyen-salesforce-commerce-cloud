@@ -95,8 +95,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
       error: true,
     };
   }
-  //Trigger 3DS2 flow
-  if (result.threeDS2 || result.resultCode === "RedirectShopper") {
+
+  function redirectShopper() {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
 
@@ -137,6 +137,10 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
       redirectObject: result.redirectObject,
       signature: signature,
     };
+  }
+  //Trigger 3DS2 flow
+  if (result.threeDS2 || result.resultCode === "RedirectShopper") {
+    redirectShopper();
   } else if (result.decision !== "ACCEPT") {
     Logger.getLogger("Adyen").error(
       "Payment failed, result: " + JSON.stringify(result)

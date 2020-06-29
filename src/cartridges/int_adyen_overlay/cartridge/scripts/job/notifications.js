@@ -33,6 +33,32 @@ function processNotifications(/* pdict */) {
   logger.info("Process notifications start with count {0}", searchQuery.count);
 
   let customObj, handlerResult, order;
+
+  function handleSubmitOrder() {
+    // Submitting an order -> update status and send all required email
+    if (handlerResult.SubmitOrder) {
+      const placeOrderResult = submitOrder(order);
+      handleSubmitError(placeOrderResult);
+    }
+  }
+
+  function handleSubmitError(placeOrderResult) {
+    if (!placeOrderResult.order_created || placeOrderResult.error) {
+      logger.error(
+        "Failed to place an order: {0}, during notification process.",
+        order.orderNo
+      );
+    }
+  }
+
+  function orderIsNotCreated() {
+    return (
+      order === null ||
+      order.status !== dw.order.Order.ORDER_STATUS_CREATED ||
+      handlerResult.RefusedHpp
+    );
+  }
+
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
     Transaction.wrap(function () {
@@ -47,11 +73,7 @@ function processNotifications(/* pdict */) {
     order = handlerResult.Order;
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
-      if (
-        order === null ||
-        order.status !== dw.order.Order.ORDER_STATUS_CREATED ||
-        handlerResult.RefusedHpp
-      ) {
+      if (orderIsNotCreated()) {
         continue;
       }
       // Refused payments which are made with using Adyen payment method are handled when user is redirected back from Adyen HPP.
@@ -66,16 +88,7 @@ function processNotifications(/* pdict */) {
       continue;
     }
 
-    // Submitting an order -> update status and send all required email
-    if (handlerResult.SubmitOrder) {
-      const placeOrderResult = submitOrder(order);
-      if (!placeOrderResult.order_created || placeOrderResult.error) {
-        logger.error(
-          "Failed to place an order: {0}, during notification process.",
-          order.orderNo
-        );
-      }
-    }
+    handleSubmitOrder();
   }
   logger.info(
     "Process notifications finished with count {0}",
