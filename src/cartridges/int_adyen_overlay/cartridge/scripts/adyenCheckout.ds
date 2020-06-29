@@ -160,9 +160,6 @@ function doPaymentCall(order, paymentInstrument, paymentRequest){
                 Logger.getLogger("Adyen").info("Payment result: Authorised");
             }
 
-            if (paymentResponse.RedirectObject == "") { // if is not 3DSecure
-                Logger.getLogger("Adyen").debug("Adyen: " + resultObject.getStatusCode() + " Error => " + resultObject.getStatusMessage() + " | " + resultObject.getText());
-            }
         }
         else if(paymentResponse.resultCode == "PresentToShopper") {
             paymentResponse.decision = "ACCEPT";

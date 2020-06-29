@@ -132,6 +132,29 @@ function initializeBillingEvents() {
           },
         },
       },
+      facilypay_3x: {
+        visibility: {
+          personalDetails: "editable",
+          billingAddress: "hidden",
+          deliveryAddress: "hidden",
+        },
+        data: {
+          personalDetails: {
+            firstName: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_firstName"
+            ).value,
+            lastName: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_lastName"
+            ).value,
+            telephoneNumber: document.querySelector(
+              "#dwfrm_billing_billingAddress_addressFields_phone"
+            ).value,
+            shopperEmail: document.querySelector(
+              "#dwfrm_billing_billingAddress_email_emailAddress"
+            ).value,
+          },
+        },
+      },
     };
     if (window.installments) {
       try {
@@ -438,6 +461,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   input.onchange = (event) => {
     displaySelectedMethod(event.target.value);
   };
+
+  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
+    componentsObj[paymentMethodID].isValid = true;
+  }
 }
 
 function renderCheckoutComponent(

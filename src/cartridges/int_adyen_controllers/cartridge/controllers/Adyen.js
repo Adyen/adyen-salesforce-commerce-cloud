@@ -432,9 +432,11 @@ function authorize3ds2() {
 
   function setOrderAndPaymentInstrument() {
     function isIdentifyShopper() {
-      request.httpParameterMap.get("resultCode").stringValue ===
-        "IdentifyShopper" &&
-        request.httpParameterMap.get("fingerprintResult").stringValue;
+      return (
+        request.httpParameterMap.get("resultCode").stringValue ===
+          "IdentifyShopper" &&
+        request.httpParameterMap.get("fingerprintResult").stringValue
+      );
     }
     try {
       order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -531,27 +533,10 @@ function authorize3ds2() {
     }
     checkResult();
 
-    //delete paymentData from requests
-    Transaction.wrap(function () {
-      paymentInstrument.custom.adyenPaymentData = null;
-    });
-
-    if ("pspReference" in result && !empty(result.pspReference)) {
-      paymentInstrument.paymentTransaction.transactionID = result.pspReference;
-      order.custom.Adyen_pspReference = result.pspReference;
-    }
-    if ("resultCode" in result && !empty(result.resultCode)) {
-      paymentInstrument.paymentTransaction.custom.authCode = result.resultCode;
-    }
-
-    // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
-      result
-    );
-
     order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
     order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
     paymentInstrument.custom.adyenPaymentData = null;
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
     Transaction.commit();
 
     OrderModel.submit(order);
@@ -630,6 +615,7 @@ function authorizeWithForm() {
       order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
       order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
       paymentInstrument.custom.adyenPaymentData = null;
+      AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
       Transaction.commit();
 
       OrderModel.submit(order);
