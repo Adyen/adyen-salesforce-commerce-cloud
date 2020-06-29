@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "20.0.0",
+  "version": "20.1.0",
   "description": "SFRA cartridge",
   "main": "index.js",
   "paths": {
@@ -17,7 +17,7 @@
     "compile:js": "sgmf-scripts --compile js",
     "compile:scss": "sgmf-scripts --compile css",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
-    "build": "npm run transpile && npm run uploadCartridge",
+    "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest"
   },
   "jest": {

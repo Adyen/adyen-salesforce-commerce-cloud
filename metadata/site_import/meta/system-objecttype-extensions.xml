@@ -344,13 +344,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_Debug">
-                <display-name xml:lang="x-default">Enable adyen debug mode</display-name>
-                <description xml:lang="x-default">yes / no</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Mode">
                 <display-name xml:lang="x-default">Test/Production Mode</display-name>
                 <description xml:lang="x-default">Set to live for Production or test for test mode</description>
@@ -485,7 +478,6 @@
                 <attribute attribute-id="Adyen_merchantCode"/>
                 <attribute attribute-id="Adyen_Mode"/>
                 <attribute attribute-id="Adyen_API_Key"/>
-                <attribute attribute-id="Adyen_Debug"/>
                 <attribute attribute-id="AdyenSecuredFieldsEnabled"/>
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringEnabled"/>
@@ -494,6 +486,7 @@
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
+                <attribute attribute-id="Adyen_PaypalMerchantID"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_StoreId"/>
                 <attribute attribute-id="AdyenGiving_enabled"/>
@@ -504,7 +497,6 @@
                 <attribute attribute-id="AdyenGiving_charityUrl"/>
                 <attribute attribute-id="AdyenGiving_backgroundUrl"/>
                 <attribute attribute-id="AdyenGiving_logoUrl"/>
-                <attribute attribute-id="Adyen_PaypalMerchantID"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
