@@ -1,3 +1,5 @@
+const { showValidation } = require("./helpers/showValidation");
+
 // eslint-disable-next-line no-unused-vars
 let maskedCardNumber;
 const MASKED_CC_PREFIX = "************";
@@ -395,34 +397,6 @@ function assignPaymentMethodValue() {
   adyenPaymentMethod.value = document.querySelector(
     `#lb_${selectedMethod}`
   ).innerHTML;
-}
-
-function showValidation() {
-  let input;
-  if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
-    componentsObj[selectedMethod].node.showValidation();
-    return false;
-  } else if (selectedMethod === "ach") {
-    let inputs = document.querySelectorAll("#component_ach > input");
-    inputs = Object.values(inputs).filter(function (input) {
-      return !(input.value && input.value.length > 0);
-    });
-    for (input of inputs) {
-      input.classList.add("adyen-checkout__input--error");
-    }
-    if (inputs.length > 0) {
-      return false;
-    }
-    return true;
-  } else if (selectedMethod === "ratepay") {
-    input = document.querySelector("#dateOfBirthInput");
-    if (!(input.value && input.value.length > 0)) {
-      input.classList.add("adyen-checkout__input--error");
-      return false;
-    }
-    return true;
-  }
-  return true;
 }
 
 function validateCustomInputField(input) {

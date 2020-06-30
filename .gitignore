@@ -1,5 +1,6 @@
 .idea
 .DS_Store
-cartridges
+/cartridges/
 node_modules
 dw.json
+.vscode/
