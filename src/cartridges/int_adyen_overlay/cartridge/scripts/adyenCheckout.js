@@ -205,7 +205,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.decision = "ACCEPT";
       paymentResponse.paymentData = responseObject.paymentData;
       // if 3D Secure is used, the statuses will be updated later
-      if (order && paymentResponse.resultCode === "Authorised") {
+      if (paymentResponse.resultCode === "Authorised") {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
         Logger.getLogger("Adyen").info("Payment result: Authorised");
