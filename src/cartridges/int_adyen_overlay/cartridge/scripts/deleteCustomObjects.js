@@ -1,42 +1,56 @@
 /**
-* Delete custom objects
-*
-* @input orderID : String 
-*/
-importPackage( dw.system );
-importPackage( dw.object );
-importPackage( dw.util );
+ * Delete custom objects
+ *
+ * @input orderID : String
+ */
 
-function execute( args : PipelineDictionary ) : Number {
-	return handle(args.orderID);
+const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+
+function execute(args) {
+  return handle(args.orderID);
 }
 
-function handle( orderID : String ) : Object {
-	var queryString  : String = "custom.orderId LIKE '" + orderID + "*'";
-	var searchQuery : SeekableIterator = CustomObjectMgr.queryCustomObjects("adyenNotification", queryString, null);
-	if (searchQuery.count > 0) {
-		dw.system.Logger.getLogger("Adyen", "adyen").info("Removing related Custom Objects with merchantReference {0} with count {1}", orderID, searchQuery.count);
-	}
-	while (searchQuery.hasNext()) {
-		var co : CustomObject = searchQuery.next();
-		remove(co);
-	}
-	searchQuery.close();
-   return PIPELET_NEXT;
+function handle(orderID) {
+  const queryString = "custom.orderId LIKE '" + orderID + "*'";
+  const searchQuery = CustomObjectMgr.queryCustomObjects(
+    "adyenNotification",
+    queryString,
+    null
+  );
+  if (searchQuery.count > 0) {
+    dw.system.Logger.getLogger("Adyen", "adyen").info(
+      "Removing related Custom Objects with merchantReference {0} with count {1}",
+      orderID,
+      searchQuery.count
+    );
+  }
+  while (searchQuery.hasNext()) {
+    const co = searchQuery.next();
+    remove(co);
+  }
+  searchQuery.close();
+  return PIPELET_NEXT;
 }
 
-function remove ( co ) {
-	dw.system.Logger.getLogger("Adyen", "adyen").info("Remove CO object with merchantReference {0} and pspReferenceNumber  {1}", co.custom.merchantReference, co.custom.pspReference);
-	try {
-		CustomObjectMgr.remove(co);
-	} catch (e) {
-		var ex = e;
-		dw.system.Logger.getLogger("Adyen", "adyen").error("Error occured during delete CO, ID: {0}, erorr message {1}", co.custom.orderId, e.message);
-	}
+function remove(co) {
+  dw.system.Logger.getLogger("Adyen", "adyen").info(
+    "Remove CO object with merchantReference {0} and pspReferenceNumber  {1}",
+    co.custom.merchantReference,
+    co.custom.pspReference
+  );
+  try {
+    CustomObjectMgr.remove(co);
+  } catch (e) {
+    dw.system.Logger.getLogger("Adyen", "adyen").error(
+      "Error occured during delete CO, ID: {0}, erorr message {1}",
+      co.custom.orderId,
+      e.message
+    );
+  }
 }
 
 module.exports = {
-	'execute': execute,
-	'handle': handle,
-	'remove': remove
-}
+  execute: execute,
+  handle: handle,
+  remove: remove,
+};

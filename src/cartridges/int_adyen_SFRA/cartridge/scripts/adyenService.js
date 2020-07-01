@@ -1,37 +1,40 @@
-var Site = require('dw/system/Site');
-var Resource = require('dw/web/Resource');
-var HashMap = require('dw/util/HashMap');
-var Mail = require('dw/net/Mail');
-var Template = require('dw/util/Template');
-var Transaction = require('dw/system/Transaction');
-
+const Site = require("dw/system/Site");
+const Resource = require("dw/web/Resource");
+const HashMap = require("dw/util/HashMap");
+const Mail = require("dw/net/Mail");
+const Template = require("dw/util/Template");
+const Transaction = require("dw/system/Transaction");
 
 function submit(order) {
-    var confirmationEmail = new Mail();
-    var context = new HashMap();
+  const confirmationEmail = new Mail();
+  const context = new HashMap();
 
-    var savedOrderModel = order.custom.Adyen_CustomerEmail;
-    var orderObject = {order: JSON.parse(savedOrderModel)};
+  const savedOrderModel = order.custom.Adyen_CustomerEmail;
+  const orderObject = { order: JSON.parse(savedOrderModel) };
 
-    confirmationEmail.addTo(order.customerEmail);
-    confirmationEmail.setSubject(Resource.msg('subject.order.confirmation.email', 'order', null));
-    confirmationEmail.setFrom(Site.current.getCustomPreferenceValue('customerServiceEmail')
-        || 'no-reply@salesforce.com');
+  confirmationEmail.addTo(order.customerEmail);
+  confirmationEmail.setSubject(
+    Resource.msg("subject.order.confirmation.email", "order", null)
+  );
+  confirmationEmail.setFrom(
+    Site.current.getCustomPreferenceValue("customerServiceEmail") ||
+      "no-reply@salesforce.com"
+  );
 
-    Object.keys(orderObject).forEach(function (key) {
-        context.put(key, orderObject[key]);
-    });
+  Object.keys(orderObject).forEach(function (key) {
+    context.put(key, orderObject[key]);
+  });
 
-    var template = new Template('checkout/confirmation/confirmationEmail');
-    var content = template.render(context).text;
-    confirmationEmail.setContent(content, 'text/html', 'UTF-8');
-    confirmationEmail.send();
+  const template = new Template("checkout/confirmation/confirmationEmail");
+  const content = template.render(context).text;
+  confirmationEmail.setContent(content, "text/html", "UTF-8");
+  confirmationEmail.send();
 
-    Transaction.wrap(function () {
-        order.custom.Adyen_CustomerEmail = null;
-    });
+  Transaction.wrap(function () {
+    order.custom.Adyen_CustomerEmail = null;
+  });
 }
 
 module.exports = {
-    'submit': submit
-}
+  submit: submit,
+};

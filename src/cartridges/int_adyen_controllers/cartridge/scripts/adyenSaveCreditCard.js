@@ -1,29 +1,36 @@
-var app = require('app_storefront_controllers/cartridge/scripts/app');
-var constants = require("*/cartridge/adyenConstants/constants");
-var adyenZeroAuth = require("*/cartridge/scripts/adyenZeroAuth");
-var Transaction = require('dw/system/Transaction');
+const app = require("app_storefront_controllers/cartridge/scripts/app");
+const constants = require("*/cartridge/adyenConstants/constants");
+const adyenZeroAuth = require("*/cartridge/scripts/adyenZeroAuth");
+const Transaction = require("dw/system/Transaction");
 
-function create(){
-    var paymentInformation = app.getForm('adyPaydata');
-    var wallet = customer.getProfile().getWallet();
+function create() {
+  const paymentInformation = app.getForm("adyPaydata");
+  const wallet = customer.getProfile().getWallet();
 
-    var paymentInstrument;
-    Transaction.wrap(function () {
-        paymentInstrument = wallet.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
-        paymentInstrument.custom.adyenPaymentData = paymentInformation.get("adyenStateData").value();
-    });
+  let paymentInstrument;
+  Transaction.wrap(function () {
+    paymentInstrument = wallet.createPaymentInstrument(
+      constants.METHOD_ADYEN_COMPONENT
+    );
+    paymentInstrument.custom.adyenPaymentData = paymentInformation
+      .get("adyenStateData")
+      .value();
+  });
 
-    Transaction.begin();
-    var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, paymentInstrument);
-    if(zeroAuthResult.error || zeroAuthResult.resultCode !== "Authorised"){
-        Transaction.rollback();
-        return false;
-    }
+  Transaction.begin();
+  const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
+    customer,
+    paymentInstrument
+  );
+  if (zeroAuthResult.error || zeroAuthResult.resultCode !== "Authorised") {
+    Transaction.rollback();
+    return false;
+  }
 
-    Transaction.commit();
-    return true;
+  Transaction.commit();
+  return true;
 }
 
 module.exports = {
-    'create': create
-}
+  create: create,
+};

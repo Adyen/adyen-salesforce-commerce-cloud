@@ -1,10 +1,10 @@
-var app = require('app_storefront_controllers/cartridge/scripts/app');
-var OrderModel = app.getModel('Order');
+const app = require("app_storefront_controllers/cartridge/scripts/app");
+const OrderModel = app.getModel("Order");
 
-function submit(order){
-    OrderModel.submit(order);
+function submit(order) {
+  OrderModel.submit(order);
 }
 
 module.exports = {
-    'submit': submit
-}
+  submit: submit,
+};

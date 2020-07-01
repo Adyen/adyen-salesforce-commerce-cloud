@@ -1,31 +1,32 @@
 /**
-*	Script used to authentication notification calls from Adyen
-*
-*   @input CurrentRequest : dw.system.Request
-*   @output Authenticated : Boolean
-*
-*/
-importPackage( dw.system );
-importScript("libs/libAuthenticationUtils.ds");
+ *	Script used to authentication notification calls from Adyen
+ *
+ *   @input CurrentRequest : dw.system.Request
+ *   @output Authenticated : Boolean
+ *
+ */
+const Site = require("dw/system/Site");
+const AuthenticationUtils = require("*/cartridge/scripts/libs/libAuthenticationUtils");
 
-function execute( args : PipelineDictionary ) : Number
-{
-	args.Authenticated = check(args.CurrentRequest);
-	return PIPELET_NEXT;
-}
+function check(request) {
+  const baUser = Site.getCurrent().getCustomPreferenceValue(
+    "Adyen_notification_user"
+  );
+  const baPassword = Site.getCurrent().getCustomPreferenceValue(
+    "Adyen_notification_password"
+  );
+  const baHeader = request.httpHeaders["authorization"];
+  if (!(baUser && baPassword && baHeader)) {
+    return false;
+  }
 
-function check (request) {
-	var baUser : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_user");
-	var baPassword : String = Site.getCurrent().getCustomPreferenceValue("Adyen_notification_password");
-	var baHeader : String = request.httpHeaders["authorization"];
-	if(empty(baUser) || empty(baPassword) || empty(baHeader)){
-		return false;
-	}
-
-	return AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
+  return AuthenticationUtils.checkGivenCredentials(
+    baHeader,
+    baUser,
+    baPassword
+  );
 }
 
 module.exports = {
-	'execute': execute,
-	'check': check
-}
+  check: check,
+};

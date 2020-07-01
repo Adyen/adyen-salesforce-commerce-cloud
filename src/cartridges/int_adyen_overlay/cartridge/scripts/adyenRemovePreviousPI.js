@@ -1,36 +1,28 @@
-/** 
-* Script removing all previous added payment instruments from the provided basket
-*
-* @input Basket : dw.order.Basket The basket
-*
-*/
-importPackage(dw.system);
-importPackage(dw.order);
-importPackage(dw.util);
-importPackage(dw.value);
-importPackage(dw.web);
+/**
+ * Script removing all previous added payment instruments from the provided basket
+ *
+ * @input Basket : dw.order.Basket The basket
+ *
+ */
 
-function removePaymentInstruments(basket)
-{	
-	// verify that we have a basket
-	if(!basket)
-	{
-		return { error : true };
-	}
-	
-	// get all payment instruments
-	var paymentInstruments = basket.getPaymentInstruments();
-	var iter = paymentInstruments.iterator();
+function removePaymentInstruments(basket) {
+  // verify that we have a basket
+  if (!basket) {
+    return { error: true };
+  }
 
-	// remove them
-	while(iter.hasNext())
-	{
-		basket.removePaymentInstrument(iter.next());
-	}
+  // get all payment instruments
+  const paymentInstruments = basket.getPaymentInstruments();
+  const iter = paymentInstruments.iterator();
 
-	return { error : false };
+  // remove them
+  while (iter.hasNext()) {
+    basket.removePaymentInstrument(iter.next());
+  }
+
+  return { error: false };
 }
 
 module.exports = {
-	'removePaymentInstruments': removePaymentInstruments
-}
+  removePaymentInstruments: removePaymentInstruments,
+};
