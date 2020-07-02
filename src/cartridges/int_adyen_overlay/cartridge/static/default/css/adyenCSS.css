@@ -1,5 +1,11 @@
 /*Credit Cards*/
 
+.additionalFields .adyen-checkout__label, .adyen-checkout__label__text {
+    float: none;
+    width: 100%;
+    text-align: left;
+}
+
 .creditCard {
     margin-left: 27%;
 }
