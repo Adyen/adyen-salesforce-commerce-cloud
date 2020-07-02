@@ -45,5 +45,4 @@ const __RiskDataHelper = {
   },
 };
 
-
 module.exports = __RiskDataHelper;
