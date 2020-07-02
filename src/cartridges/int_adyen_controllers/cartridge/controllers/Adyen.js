@@ -221,10 +221,9 @@ function paymentFromComponent() {
   });
 
   if (result.resultCode !== "Pending") {
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
+    OrderMgr.failOrder(order, true);
   }
+  Transaction.commit();
   const responseUtils = require("*/cartridge/scripts/util/Response");
   responseUtils.renderJSON({ result: result });
 }
