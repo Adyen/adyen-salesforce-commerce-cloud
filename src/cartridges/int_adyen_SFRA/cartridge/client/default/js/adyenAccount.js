@@ -4,10 +4,15 @@ let isValid = false;
 let componentState;
 const MASKED_CC_PREFIX = "************";
 const checkoutConfiguration = window.Configuration;
+checkoutConfiguration.amount = {
+  value: 0,
+  currency: "EUR",
+};
 checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
     hasHolderName: true,
+    installments: [],
     onBrand: function (brandObject) {
       $("#cardType").val(brandObject.brand);
     },
