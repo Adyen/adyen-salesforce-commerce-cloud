@@ -370,7 +370,6 @@ async function renderGenericComponent() {
   let i;
   checkoutConfiguration.paymentMethodsResponse =
     paymentMethodsResponse.adyenPaymentMethods;
-  checkout = new AdyenCheckout(checkoutConfiguration);
   const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
@@ -378,6 +377,7 @@ async function renderGenericComponent() {
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
   }
+  checkout = new AdyenCheckout(checkoutConfiguration);
   document.querySelector("#paymentMethodsList").innerHTML = "";
 
   if (paymentMethods.storedPaymentMethods) {
