@@ -208,7 +208,7 @@ function paymentFromComponent() {
         stateDataStr
       ).paymentMethod.type;
     } catch (e) {
-      // TODO: Properly catch error
+      // Error parsing paymentMethod
     }
   });
   order = OrderMgr.createOrder(currentBasket);
@@ -372,7 +372,7 @@ function getPaymentMethods(cart, customer) {
         connectedTerminals = JSON.parse(connectedTerminalsResponse);
       }
     } catch (e) {
-      // TODO: implement proper error handling
+      // Error parsing terminal response
     }
   }
   const jsonResponse = {

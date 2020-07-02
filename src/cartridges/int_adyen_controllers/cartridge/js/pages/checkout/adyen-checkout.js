@@ -193,7 +193,6 @@ function initializeAccountEvents() {
 
   $("#applyBtn").on("click", function () {
     if (!isValid) {
-      //TODOBAS showvalidation
       node.showValidation();
       return false;
     }

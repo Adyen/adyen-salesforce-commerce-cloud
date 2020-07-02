@@ -47,11 +47,14 @@ server.prepend(
   }
 );
 
-server.replace("SavePayment", csrfProtection.validateAjaxRequest, function (
+server.prepend("SavePayment", csrfProtection.validateAjaxRequest, function (
   req,
   res,
   next
 ) {
+  if (!AdyenHelper.getAdyenSecuredFieldsEnabled) {
+    return next();
+  }
   const CustomerMgr = require("dw/customer/CustomerMgr");
   const Transaction = require("dw/system/Transaction");
   const URLUtils = require("dw/web/URLUtils");
@@ -83,7 +86,8 @@ server.replace("SavePayment", csrfProtection.validateAjaxRequest, function (
       success: false,
       error: [Resource.msg("error.card.information.error", "creditCard", null)],
     });
-    return next();
+    this.emit("route:Complete", req, res);
+    return;
   }
   Transaction.commit();
 
@@ -98,7 +102,8 @@ server.replace("SavePayment", csrfProtection.validateAjaxRequest, function (
     success: true,
     redirectUrl: URLUtils.url("PaymentInstruments-List").toString(),
   });
-  return next();
+  this.emit("route:Complete", req, res);
+  return;
 });
 
 server.append("DeletePayment", userLoggedIn.validateLoggedInAjax, function (
