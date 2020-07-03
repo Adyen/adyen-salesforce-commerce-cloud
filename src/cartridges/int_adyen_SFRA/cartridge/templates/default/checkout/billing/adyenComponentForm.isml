@@ -17,7 +17,7 @@
 </script>
 
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
-<isset name="ratePayID" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
+<isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
@@ -35,15 +35,10 @@
     Adyen RatePay Device Fingerprint Code
 </iscomment>
 <isif condition="${empty(session.privacy.ratePayFingerprint)}">
-    <isscript>
-        var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_256).digest(session.sessionID);
-        session.privacy.ratePayFingerprint = sessionID;
-    </isscript>
     <script language="JavaScript">
-        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'}
+        var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'}
     </script>
-    <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+    <script type="text/javascript" src="//d.ratepay.com/${ratePayValues.ratePayID}/di.js"></script>
 </isif>
 <iscomment>
     Adyen Generic Device Fingerprint Code

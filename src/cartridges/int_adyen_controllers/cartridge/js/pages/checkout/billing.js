@@ -110,23 +110,6 @@ function updatePaymentType(selectedPayType, issuerType) {
   formPrepare.validateForm();
 }
 
-// TODO: Check if this is used. Remove if not
-/**
- * @function
- * @description Adyen - Initializes the visibility of HPP fields
- */
-// eslint-disable-next-line no-unused-vars
-function initializeHPPFields() {
-  if ($('[name="brandCode"]:checked').hasClass("openInvoice")) {
-    $(".additionalfield").hide().find("input").val("");
-    $(
-      ".additionalfield." + $(".checkout-billing").find("select.country").val()
-    ).show();
-  } else {
-    $(".additionalfield").hide().find("input").val("");
-  }
-}
-
 /**
  * @function
  * @description loads billing address, Gift Certificates, Coupon and Payment methods

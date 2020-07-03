@@ -303,21 +303,23 @@ var __AdyenHelper = {
   },
 
   getRatePayID: function () {
-    let returnValue = "";
+    const returnValue = {};
     if (
       adyenCurrentSite &&
       adyenCurrentSite.getCustomPreferenceValue("AdyenRatePayID")
     ) {
-      returnValue = adyenCurrentSite.getCustomPreferenceValue("AdyenRatePayID");
+      returnValue.ratePayId = adyenCurrentSite.getCustomPreferenceValue(
+        "AdyenRatePayID"
+      );
     }
     if (
       !session.privacy.ratePayFingerprint ||
       session.privacy.ratePayFingerprint === null
     ) {
-      const sessionID = new dw.crypto.MessageDigest(
+      returnValue.sessionID = new dw.crypto.MessageDigest(
         dw.crypto.MessageDigest.DIGEST_SHA_256
       ).digest(session.sessionID);
-      session.privacy.ratePayFingerprint = sessionID;
+      session.privacy.ratePayFingerprint = returnValue.sessionID;
     }
     return returnValue;
   },
