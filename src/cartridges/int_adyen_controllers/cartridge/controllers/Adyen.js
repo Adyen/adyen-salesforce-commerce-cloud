@@ -208,7 +208,7 @@ function paymentFromComponent() {
         stateDataStr
       ).paymentMethod.type;
     } catch (e) {
-      // TODO: Properly catch error
+      // Error parsing paymentMethod
     }
   });
   order = OrderMgr.createOrder(currentBasket);
@@ -221,10 +221,9 @@ function paymentFromComponent() {
   });
 
   if (result.resultCode !== "Pending") {
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
+    OrderMgr.failOrder(order, true);
   }
+  Transaction.commit();
   const responseUtils = require("*/cartridge/scripts/util/Response");
   responseUtils.renderJSON({ result: result });
 }
@@ -372,7 +371,7 @@ function getPaymentMethods(cart, customer) {
         connectedTerminals = JSON.parse(connectedTerminalsResponse);
       }
     } catch (e) {
-      // TODO: implement proper error handling
+      // Error parsing terminal response
     }
   }
   const jsonResponse = {

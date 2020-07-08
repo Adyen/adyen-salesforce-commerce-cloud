@@ -25,12 +25,12 @@
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 
-<isset name="ratePayID" value="${AdyenHelper.getRatePayID()}" scope="page"/>
+<isset name="ratePayValues" value="${AdyenHelper.getRatePayID()}" scope="page"/>
 
 <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
 <input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
-<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
-<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
+<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.number.htmlName}">
+<input type="hidden" class="form-control" id="cardType" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
 
 <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
@@ -41,15 +41,10 @@
     Adyen RatePay Device Fingerprint Code
 </iscomment>
 <isif condition="${empty(session.privacy.ratePayFingerprint)}">
-    <isscript>
-        var ratePayID = dw.system.Site.getCurrent().getCustomPreferenceValue('AdyenRatePayID');
-        var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_256).digest(session.sessionID);
-        session.privacy.ratePayFingerprint = sessionID;
-    </isscript>
     <script language="JavaScript">
-        var di = {t:'${sessionID}',v:'${ratePayID}',l:'Checkout'};
+        var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'};
     </script>
-    <script type="text/javascript" src="//d.ratepay.com/${ratePayID}/di.js"></script>
+    <script type="text/javascript" src="//d.ratepay.com/${ratePayValues.ratePayID}/di.js"></script>
 </isif>
 
 <iscomment>
