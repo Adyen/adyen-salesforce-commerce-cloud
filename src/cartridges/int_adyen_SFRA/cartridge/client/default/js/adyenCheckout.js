@@ -1,5 +1,6 @@
 import store from "../../../store";
 import { paymentMethodsConfiguration } from "./adyenCheckout/paymentMethodsConfiguration";
+import { showValidation } from "./helpers/showValidation";
 
 const { card } = paymentMethodsConfiguration;
 
@@ -375,34 +376,6 @@ function assignPaymentMethodValue() {
   adyenPaymentMethod.value = document.querySelector(
     `#lb_${store.selectedMethod}`
   ).innerHTML;
-}
-
-function showValidation() {
-  let input;
-  if (store.selectedPayment && !store.selectedPayment.isValid) {
-    store.selectedPayment.node.showValidation();
-    return false;
-  } else if (store.selectedMethod === "ach") {
-    let inputs = document.querySelectorAll("#component_ach > input");
-    inputs = Object.values(inputs).filter(function (input) {
-      return !(input.value && input.value.length > 0);
-    });
-    for (input of inputs) {
-      input.classList.add("adyen-checkout__input--error");
-    }
-    if (inputs.length > 0) {
-      return false;
-    }
-    return true;
-  } else if (store.selectedMethod === "ratepay") {
-    input = document.querySelector("#dateOfBirthInput");
-    if (!(input.value && input.value.length > 0)) {
-      input.classList.add("adyen-checkout__input--error");
-      return false;
-    }
-    return true;
-  }
-  return true;
 }
 
 function validateCustomInputField(input) {
