@@ -1,4 +1,4 @@
-import { action, observable, computed } from "mobx";
+import { observable, computed } from "mobx";
 
 class Store {
   MASKED_CC_PREFIX = "************";
@@ -6,7 +6,7 @@ class Store {
   @observable endDigits;
   @observable selectedMethod;
   @observable componentsObj = {};
-  @observable checkoutConfiguration = window.Configuration;
+  @observable checkoutConfiguration = window.Configuration || {};
   @observable formErrorsExist;
   @observable isValid = false;
 
@@ -14,8 +14,12 @@ class Store {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }
 
-  createCheckout() {
-    this.checkout = new AdyenCheckout(this.checkoutConfiguration);
+  @computed get selectedPayment() {
+    return this.componentsObj[this.selectedMethod];
+  }
+
+  updateSelectedPayment(key, val) {
+    this.selectedPayment[key] = val;
   }
 }
 

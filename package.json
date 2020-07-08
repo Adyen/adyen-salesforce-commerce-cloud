@@ -18,7 +18,8 @@
     "compile:scss": "sgmf-scripts --compile css",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "jest": {
     "setupFiles": [
