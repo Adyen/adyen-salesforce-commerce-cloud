@@ -10,6 +10,7 @@ const Status = require("dw/system/Status");
 const Transaction = require("dw/system/Transaction");
 const constants = require("*/cartridge/adyenConstants/constants");
 const PaymentMgr = require("dw/order/PaymentMgr");
+const CSRFProtection = require("dw/web/CSRFProtection");
 
 /* Script Modules */
 const app = require("app_storefront_controllers/cartridge/scripts/app");
@@ -429,6 +430,13 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
+  if (!CSRFProtection.validateRequest()) {
+    Logger.getLogger("Adyen").error(
+      "CSRF Mismatch for order " + session.privacy.orderNo
+    );
+    response.redirect(URLUtils.httpHome());
+    return;
+  }
   Transaction.begin();
   const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
   let paymentInstrument;
