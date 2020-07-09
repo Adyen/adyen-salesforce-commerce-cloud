@@ -2,7 +2,6 @@
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addCss('/css/adyenCss.css');
 </isscript>
-<iscontent type="text/html" encoding="off"/>
 <div class="form-nav billing-nav payment-information"
      data-payment-method-id=""
      data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"

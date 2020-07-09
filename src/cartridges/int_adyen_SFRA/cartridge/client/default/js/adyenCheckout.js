@@ -145,6 +145,9 @@ if (window.paypalMerchantID !== "null") {
     window.paypalMerchantID;
 }
 
+/**
+ * Changes the "display" attribute of the selected method from hidden to visible
+ */
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
@@ -158,6 +161,9 @@ function displaySelectedMethod(type) {
     .setAttribute("style", "display:block");
 }
 
+/**
+ * To avoid re-rendering components twice, unmounts existing components from payment methods list
+ */
 function unmountComponents() {
   const promises = Object.entries(componentsObj).map(function ([key, val]) {
     delete componentsObj[key];
@@ -175,6 +181,9 @@ function resolveUnmount(key, val) {
   }
 }
 
+/**
+ * checks if payment method is blocked and returns a boolean accordingly
+ */
 function isMethodTypeBlocked(methodType) {
   const blockedMethods = [
     "bcmc_mobile_QR",
@@ -188,6 +197,9 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
+/**
+ * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ */
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length !== 0) {
     await unmountComponents();
@@ -350,6 +362,9 @@ function resetPaymentMethod() {
   $(".additionalFields").hide();
 }
 
+/**
+ * Makes an ajax call to the controller function GetPaymentMethods
+ */
 function getPaymentMethods(paymentMethods) {
   $.ajax({
     url: "Adyen-GetPaymentMethods",
@@ -360,6 +375,9 @@ function getPaymentMethods(paymentMethods) {
   });
 }
 
+/**
+ * Makes an ajax call to the controller function PaymentFromComponent. Used by certain payment methods like paypal
+ */
 function paymentFromComponent(data, component) {
   $.ajax({
     url: "Adyen-PaymentFromComponent",
@@ -433,6 +451,9 @@ function validateCustomInputField(input) {
   }
 }
 
+/**
+ * Assigns stateData value to the hidden stateData input field so it's sent to the backend for processing
+ */
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
@@ -483,6 +504,9 @@ function validateComponents() {
   document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
 }
 
+/**
+ * Contains fallback components for payment methods that don't have an Adyen web component yet
+ */
 function getFallback(paymentMethod) {
   const ach = `<div id="component_ach">
                     <span class="adyen-checkout__label">Bank Account Owner Name</span>

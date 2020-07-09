@@ -21,6 +21,9 @@ const PaymentMgr = require("dw/order/PaymentMgr");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
+/**
+ * Complete a 3DS payment
+ */
 server.get(
   "Adyen3D",
   csrfProtection.generateToken,
@@ -41,6 +44,9 @@ server.get(
   }
 );
 
+/**
+ * Make /payments/details call to 3d verification system to complete authorization
+ */
 server.post(
   "AuthorizeWithForm",
   csrfProtection.generateToken,
@@ -143,6 +149,9 @@ server.post(
   }
 );
 
+/**
+ * Complete a 3DS2 payment
+ */
 server.get(
   "Adyen3DS2",
   consentTracking.consent,
@@ -178,6 +187,11 @@ server.get(
   }
 );
 
+/**
+ * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
+ *
+ * @returns rendering template or error
+ */
 server.post(
   "Authorize3DS2",
   csrfProtection.generateToken,
@@ -324,6 +338,9 @@ server.post(
   }
 );
 
+/**
+ * Redirect to Adyen after saving order etc.
+ */
 server.get("Redirect", server.middleware.https, function (req, res, next) {
   const signature = req.querystring.signature;
   const order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -373,6 +390,9 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
   return next();
 });
 
+/**
+ * Show confirmation after return from Adyen
+ */
 server.get("ShowConfirmation", server.middleware.https, function (
   req,
   res,
@@ -514,6 +534,9 @@ server.get("ShowConfirmation", server.middleware.https, function (
   }
 });
 
+/**
+ * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
+ */
 server.post(
   "ShowConfirmationPaymentFromComponent",
   server.middleware.https,
@@ -625,6 +648,9 @@ server.post(
   }
 );
 
+/**
+ * Make a request to Adyen to get payment methods based on countryCode
+ */
 server.get("GetPaymentMethods", server.middleware.https, function (
   req,
   res,
@@ -707,6 +733,9 @@ server.get("GetPaymentMethods", server.middleware.https, function (
   return next();
 });
 
+/**
+ * Complete a donation through adyenGiving
+ */
 server.post("Donate", server.middleware.https, function (req /*, res, next */) {
   const adyenGiving = require("*/cartridge/scripts/adyenGiving");
   const pspReference = req.form.pspReference;

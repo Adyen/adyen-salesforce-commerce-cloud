@@ -1,4 +1,3 @@
-<iscontent type="text/html" encoding="off"/>
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
 <isif condition="${pdict.AdyenGivingConfig.adyenGivingAvailable}">

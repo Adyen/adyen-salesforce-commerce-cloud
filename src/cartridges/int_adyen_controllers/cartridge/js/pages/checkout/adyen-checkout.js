@@ -209,6 +209,9 @@ function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
+/**
+ * To avoid re-rendering components twice, unmounts existing components from payment methods list
+ */
 function unmountComponents() {
   const promises = Object.entries(componentsObj).map(function ([key, val]) {
     delete componentsObj[key];
@@ -268,6 +271,9 @@ function showValidation() {
   return true;
 }
 
+/**
+ * Assigns stateData value to the hidden stateData input field so it's sent to the backend for processing
+ */
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");
@@ -326,6 +332,9 @@ function validateCustomInputField(input) {
   }
 }
 
+/**
+ * Contains fallback components for payment methods that don't have an Adyen web component yet
+ */
 function getFallback(paymentMethod) {
   const ach = `<div id="component_ach">
                     <span class="adyen-checkout__label">Bank Account Owner Name</span>
@@ -348,6 +357,9 @@ function getFallback(paymentMethod) {
   return fallback[paymentMethod];
 }
 
+/**
+ * checks if payment method is blocked and returns a boolean accordingly
+ */
 function isMethodTypeBlocked(methodType) {
   const blockedMethods = [
     "bcmc_mobile_QR",
@@ -361,6 +373,9 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
+/**
+ * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ */
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length) {
     await unmountComponents();
@@ -508,6 +523,9 @@ function createCheckoutComponent(
   return false;
 }
 
+/**
+ * Makes an ajax call to the controller function PaymentFromComponent. Used by certain payment methods like paypal
+ */
 function paymentFromComponent(data, component) {
   $.ajax({
     url: "Adyen-PaymentFromComponent",

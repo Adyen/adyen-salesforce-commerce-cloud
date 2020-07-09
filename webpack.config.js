@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars,no-redeclare
+/* eslint-disable */
 /* globals cat, cd, cp, echo, exec, exit, find, ls, mkdir, rm, target, test */
 
 "use strict";
