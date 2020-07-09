@@ -162,7 +162,7 @@ function displaySelectedMethod(type) {
 }
 
 /**
- * To avoid re-rendering components twice, unmounting existing components from payment methods list
+ * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
 function unmountComponents() {
   const promises = Object.entries(componentsObj).map(function ([key, val]) {
