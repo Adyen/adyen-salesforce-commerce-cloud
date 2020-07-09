@@ -77,7 +77,6 @@
           id="3ds2-form"
           action="${authorise3DS2}">
         <div class="row">
-            <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
             <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
             <div class="col-sm-6">
                 <div id="threeDS2"></div>
