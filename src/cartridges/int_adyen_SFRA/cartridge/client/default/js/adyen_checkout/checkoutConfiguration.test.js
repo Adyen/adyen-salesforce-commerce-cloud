@@ -1,12 +1,16 @@
 import store from "../../../../store";
-import { paymentMethodsConfiguration } from "./paymentMethodsConfiguration";
-const { card } = paymentMethodsConfiguration;
+import { getCardConfig, getPaypalConfig } from "./checkoutConfiguration";
 
+let card;
+let paypal;
 beforeEach(() => {
+  window.Configuration = { environment: "TEST" };
   store.checkoutConfiguration = {};
+  card = getCardConfig();
+  paypal = getPaypalConfig();
 });
 
-describe("Payment Methods Configuration", () => {
+describe("Checkout Configuration", () => {
   describe("Card", () => {
     it("handles onChange", () => {
       store.selectedMethod = "scheme";
@@ -30,6 +34,21 @@ describe("Payment Methods Configuration", () => {
       card.onBrand({ brand: "visa" });
       const cardType = document.querySelector("#cardType");
       expect(cardType.value).toEqual("visa");
+    });
+  });
+  describe("PayPal", () => {
+    it("handles onSubmit", () => {
+      document.body.innerHTML = `
+        <div id="lb_paypal">PayPal</div>
+        <div id="adyenPaymentMethodName"></div>
+        <div id="adyenStateData"></div>
+      `;
+      store.selectedMethod = "paypal";
+      store.componentsObj = { paypal: { stateData: { foo: "bar" } } };
+      paypal.onSubmit({ data: {} });
+      expect(document.getElementById("adyenStateData").value).toBe(
+        JSON.stringify(store.selectedPayment.stateData)
+      );
     });
   });
 });

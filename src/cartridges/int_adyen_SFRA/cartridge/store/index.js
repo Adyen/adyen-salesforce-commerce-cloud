@@ -18,6 +18,10 @@ class Store {
     return this.componentsObj[this.selectedMethod];
   }
 
+  @computed get selectedPaymentIsValid() {
+    return !!this.selectedPayment?.isValid;
+  }
+
   updateSelectedPayment(key, val) {
     this.selectedPayment[key] = val;
   }
