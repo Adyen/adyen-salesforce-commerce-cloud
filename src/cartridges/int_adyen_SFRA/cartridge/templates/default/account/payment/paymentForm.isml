@@ -20,7 +20,6 @@
                 method="POST"
                 name="payment-form" ${pdict.paymentForm.attributes}>
 
-            <iscontent type="text/html" encoding="off"/>
             <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>
             <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>
 

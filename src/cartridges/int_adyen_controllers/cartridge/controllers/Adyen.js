@@ -162,6 +162,9 @@ function getDetails() {
   };
 }
 
+/**
+ * Make a payment from inside a component (used by paypal)
+ */
 function paymentFromComponent() {
   if (
     request.httpParameterMap
@@ -228,6 +231,9 @@ function paymentFromComponent() {
   responseUtils.renderJSON({ result: result });
 }
 
+/**
+ * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
+ */
 function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm("adyPaydata");
   const orderNumber = session.privacy.orderNo;
@@ -288,6 +294,9 @@ function showConfirmationPaymentFromComponent() {
   return {};
 }
 
+/**
+ * Complete a donation through adyenGiving
+ */
 function donate() {
   const adyenGiving = require("*/cartridge/scripts/adyenGiving");
   const responseUtils = require("*/cartridge/scripts/util/Response");
