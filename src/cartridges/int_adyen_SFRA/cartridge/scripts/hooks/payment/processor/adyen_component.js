@@ -11,8 +11,6 @@ const Logger = require("dw/system/Logger");
 const constants = require("*/cartridge/adyenConstants/constants");
 
 function Handle(basket, paymentInformation) {
-  Logger.getLogger("Adyen").error("PI = " + JSON.stringify(paymentInformation));
-  Logger.getLogger("Adyen").error("PI ct= " + JSON.stringify(paymentInformation.cardType));
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];

@@ -15,7 +15,6 @@
 
         var orderNo = '${pdict.order.orderNumber}';
         var donationAmounts = '${pdict.adyen.donationAmounts}'.replace(/&quot;/g, '\"');
-        var donationAmounts2 = decodeURI('${pdict.adyen.donationAmounts}');
         var pspReference = '${pdict.adyen.pspReference}';
         var charityName = '${pdict.adyen.charityName}';
         var charityWebsite = '${pdict.adyen.charityWebsite}';
@@ -23,15 +22,6 @@
         var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
         var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
 
-        console.log(orderNo);
-        console.log(donationAmounts);
-        console.log(donationAmounts2);
-        console.log(pspReference);
-        console.log(charityName);
-        console.log(charityWebsite);
-        console.log(charityDescription);
-        console.log(adyenGivingBackgroundUrl);
-        console.log(adyenGivingLogoUrl);
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">
