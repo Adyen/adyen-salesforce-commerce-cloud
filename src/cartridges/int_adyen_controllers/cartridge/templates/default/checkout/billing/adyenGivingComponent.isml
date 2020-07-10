@@ -1,7 +1,7 @@
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <isif condition="${pdict.AdyenGivingConfig.adyenGivingAvailable}">
-    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
@@ -13,7 +13,7 @@
         };
         window.adyenGivingAvailable = "${pdict.AdyenGivingConfig.adyenGivingAvailable}";
         window.orderNo = '${pdict.Order.orderNo}';
-        window.donationAmounts = '${pdict.AdyenGivingConfig.donationAmounts}';
+        window.donationAmounts = '${pdict.AdyenGivingConfig.donationAmounts}'.replace(/&quot;/g, '\"');;
         window.pspReference = '${pdict.AdyenGivingConfig.pspReference}';
         window.charityName = '${pdict.AdyenGivingConfig.charityName}';
         window.charityWebsite = '${pdict.AdyenGivingConfig.charityWebsite}';

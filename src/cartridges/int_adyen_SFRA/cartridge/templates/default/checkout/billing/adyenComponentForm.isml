@@ -1,3 +1,4 @@
+<iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <isset name="adyenOneClickEnabled" value="${pdict.AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <isscript>
@@ -15,18 +16,18 @@
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
-<input id="adyenStateData" type="hidden" ${adyenPaymentFields.adyenStateData.attributes}/>
-<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" ${creditFields.cardNumber.attributes}>
-<input type="hidden" class="form-control" id="cardType" ${creditFields.cardType.attributes}>
+<input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+<input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
+<input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
 
 <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
 <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
-<input id="selectedIssuer" type="hidden" ${adyenPaymentFields.issuer.attributes}/>
+<input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
 <ul id="paymentMethodsList"></ul>
 
@@ -43,7 +44,7 @@
     Adyen Generic Device Fingerprint Code
 </iscomment>
 <script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
-<input id="adyenFingerprint" type="hidden" ${adyenPaymentFields.adyenFingerprint.attributes} />
+<input id="adyenFingerprint" type="hidden" name="${adyenPaymentFields.adyenFingerprint.htmlName}"/>
 <script type="text/javascript">
     dfDo('adyenFingerprint');
 </script>

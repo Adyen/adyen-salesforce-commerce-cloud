@@ -1,7 +1,7 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="token3ds2" value="${pdict.token3ds2}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
 <html>
 <head>

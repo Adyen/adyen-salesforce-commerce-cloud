@@ -6,11 +6,13 @@
 const collections = require("*/cartridge/scripts/util/collections");
 const Resource = require("dw/web/Resource");
 const Transaction = require("dw/system/Transaction");
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const Logger = require("dw/system/Logger");
 const constants = require("*/cartridge/adyenConstants/constants");
 
 function Handle(basket, paymentInformation) {
+  Logger.getLogger("Adyen").error("PI = " + JSON.stringify(paymentInformation));
+  Logger.getLogger("Adyen").error("PI ct= " + JSON.stringify(paymentInformation.cardType));
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];

@@ -3,7 +3,7 @@
  */
 
 require("dw/order");
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 const __LineItemHelper = {
   getDescription: function (lineItem) {

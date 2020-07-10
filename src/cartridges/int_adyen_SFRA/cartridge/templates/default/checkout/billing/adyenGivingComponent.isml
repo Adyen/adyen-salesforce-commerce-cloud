@@ -1,5 +1,5 @@
 <isif condition="${pdict.adyen && pdict.adyen.adyenGivingAvailable}">
-    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
@@ -14,13 +14,24 @@
         };
 
         var orderNo = '${pdict.order.orderNumber}';
-        var donationAmounts = '${pdict.adyen.donationAmounts}';
+        var donationAmounts = '${pdict.adyen.donationAmounts}'.replace(/&quot;/g, '\"');
+        var donationAmounts2 = decodeURI('${pdict.adyen.donationAmounts}');
         var pspReference = '${pdict.adyen.pspReference}';
         var charityName = '${pdict.adyen.charityName}';
         var charityWebsite = '${pdict.adyen.charityWebsite}';
         var charityDescription = '${pdict.adyen.charityDescription}';
         var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
         var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
+
+        console.log(orderNo);
+        console.log(donationAmounts);
+        console.log(donationAmounts2);
+        console.log(pspReference);
+        console.log(charityName);
+        console.log(charityWebsite);
+        console.log(charityDescription);
+        console.log(adyenGivingBackgroundUrl);
+        console.log(adyenGivingLogoUrl);
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">

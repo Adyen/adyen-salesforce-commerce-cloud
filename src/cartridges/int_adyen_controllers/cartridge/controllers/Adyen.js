@@ -15,7 +15,7 @@ const CSRFProtection = require("dw/web/CSRFProtection");
 /* Script Modules */
 const app = require("app_storefront_controllers/cartridge/scripts/app");
 const guard = require("app_storefront_controllers/cartridge/scripts/guard");
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const OrderModel = app.getModel("Order");
 const Logger = require("dw/system/Logger");
 

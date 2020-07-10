@@ -138,7 +138,10 @@ if (window.installments) {
   try {
     const installments = JSON.parse(window.installments);
     checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {} // eslint-disable-line no-empty
+  } catch (e) {
+    console.log("installments");
+    console.log(e);
+  } // eslint-disable-line no-empty
 }
 if (window.paypalMerchantID !== "null") {
   checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
@@ -314,7 +317,10 @@ function renderPaymentMethod(
           componentsObj[paymentMethodID] = {};
         }
         componentsObj[paymentMethodID].node = node;
-      } catch (e) {} // eslint-disable-line no-empty
+      } catch (e) {
+        console.log("create Node " + paymentMethod.type);
+        console.log(e);
+      } // eslint-disable-line no-empty
     }
   }
   container.classList.add("additionalFields");
