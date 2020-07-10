@@ -29,15 +29,16 @@ function handleOnCancel(/* state, component */) {
   donation.unmount();
 }
 
-let amounts;
-try {
-  amounts = JSON.parse(donationAmounts);
-} catch (e) {
-  amounts = [];
+function getAmounts() {
+  try {
+    return JSON.parse(donationAmounts);
+  } catch (e) {
+    return [];
+  }
 }
 
 const donationConfig = {
-  amounts: amounts,
+  amounts: getAmounts(),
   backgroundUrl: adyenGivingBackgroundUrl,
   description: charityDescription,
   logoUrl: adyenGivingLogoUrl,

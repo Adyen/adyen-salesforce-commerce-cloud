@@ -1,5 +1,6 @@
 import store from "../../../../store";
 import { assignPaymentMethodValue, paymentFromComponent } from "./index";
+import { onBrand, onFieldValid } from "../commons";
 
 function getComponentName(data) {
   return data.paymentMethod.storedPaymentMethodId
@@ -18,15 +19,8 @@ export function getCardConfig() {
         store.updateSelectedPayment("stateData", state.data);
       }
     },
-    onFieldValid: function (data) {
-      if (data.endDigits) {
-        store.endDigits = data.endDigits;
-        document.querySelector("#cardNumber").value = store.maskedCardNumber;
-      }
-    },
-    onBrand: function (brandObject) {
-      document.querySelector("#cardType").value = brandObject.brand;
-    },
+    onFieldValid,
+    onBrand,
   };
 }
 

@@ -9,6 +9,7 @@ class Store {
   @observable checkoutConfiguration = window.Configuration || {};
   @observable formErrorsExist;
   @observable isValid = false;
+  @observable componentState = {};
 
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;

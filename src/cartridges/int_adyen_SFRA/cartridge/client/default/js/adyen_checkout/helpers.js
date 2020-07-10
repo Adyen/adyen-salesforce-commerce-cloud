@@ -16,7 +16,7 @@ export function paymentFromComponent(data, component) {
     type: "post",
     data: { data: JSON.stringify(data) },
     success: function (data) {
-      if (data.fullResponse && data.fullResponse.action) {
+      if (data.fullResponse?.action) {
         component.handleAction(data.fullResponse.action);
       } else {
         component.setStatus("ready");
