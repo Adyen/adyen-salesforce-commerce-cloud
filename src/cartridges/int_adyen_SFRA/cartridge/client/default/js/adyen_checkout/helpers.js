@@ -7,6 +7,9 @@ export function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
+/**
+ * Makes an ajax call to the controller function PaymentFromComponent. Used by certain payment methods like paypal
+ */
 export function paymentFromComponent(data, component) {
   $.ajax({
     url: "Adyen-PaymentFromComponent",
@@ -36,6 +39,9 @@ export function resetPaymentMethod() {
   $(".additionalFields").hide();
 }
 
+/**
+ * Changes the "display" attribute of the selected method from hidden to visible
+ */
 export function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();

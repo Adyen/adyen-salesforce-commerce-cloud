@@ -58,6 +58,9 @@ function validateCustomInputField(input) {
   }
 }
 
+/**
+ * Assigns stateData value to the hidden stateData input field so it's sent to the backend for processing
+ */
 function validateComponents() {
   if (document.querySelector("#component_ach")) {
     const inputs = document.querySelectorAll("#component_ach > input");

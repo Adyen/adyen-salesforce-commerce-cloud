@@ -13,6 +13,9 @@ function addPosTerminals(terminals) {
   document.querySelector("#adyenPosTerminals").append(dd_terminals);
 }
 
+/**
+ * Makes an ajax call to the controller function GetPaymentMethods
+ */
 function getPaymentMethods(paymentMethods) {
   $.ajax({
     url: "Adyen-GetPaymentMethods",
@@ -23,6 +26,9 @@ function getPaymentMethods(paymentMethods) {
   });
 }
 
+/**
+ * To avoid re-rendering components twice, unmounts existing components from payment methods list
+ */
 function unmountComponents() {
   const promises = Object.entries(store.componentsObj).map(function ([
     key,
@@ -43,6 +49,9 @@ function resolveUnmount(key, val) {
   }
 }
 
+/**
+ * checks if payment method is blocked and returns a boolean accordingly
+ */
 function isMethodTypeBlocked(methodType) {
   const blockedMethods = [
     "bcmc_mobile_QR",
@@ -56,6 +65,9 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
+/**
+ * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ */
 export async function renderGenericComponent() {
   if (Object.keys(store.componentsObj).length !== 0) {
     await unmountComponents();

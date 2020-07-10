@@ -1,6 +1,8 @@
 "use strict";
 
 const server = require("server");
+const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
+const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
 const URLUtils = require("dw/web/URLUtils");
 const Transaction = require("dw/system/Transaction");
 const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
@@ -19,62 +21,217 @@ const PaymentMgr = require("dw/order/PaymentMgr");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
-server.get("Adyen3D", server.middleware.https, function (req, res, next) {
-  const IssuerURL = req.querystring.IssuerURL;
-  const PaRequest = req.querystring.PaRequest;
-  const MD = req.querystring.MD;
-  const TermURL = URLUtils.https("Adyen-AuthorizeWithForm");
+/**
+ * Complete a 3DS payment
+ */
+server.get(
+  "Adyen3D",
+  csrfProtection.generateToken,
+  server.middleware.https,
+  function (req, res, next) {
+    const IssuerURL = req.querystring.IssuerURL;
+    const PaRequest = req.querystring.PaRequest;
+    const MD = req.querystring.MD;
+    const TermURL = URLUtils.https("Adyen-AuthorizeWithForm");
 
-  res.render("adyenform", {
-    issuerUrl: IssuerURL,
-    paRequest: PaRequest,
-    md: MD,
-    ContinueURL: TermURL,
-  });
-  next();
-});
+    res.render("adyenform", {
+      issuerUrl: IssuerURL,
+      paRequest: PaRequest,
+      md: MD,
+      ContinueURL: TermURL,
+    });
+    next();
+  }
+);
 
-server.post("AuthorizeWithForm", server.middleware.https, function (
-  req,
-  res,
-  next
-) {
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
-  let paymentInstrument;
-  let order;
+/**
+ * Make /payments/details call to 3d verification system to complete authorization
+ */
+server.post(
+  "AuthorizeWithForm",
+  csrfProtection.generateToken,
+  server.middleware.https,
+  function (req, res, next) {
+    const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+    let paymentInstrument;
+    let order;
 
-  if (session.privacy.orderNo && session.privacy.paymentMethod) {
+    if (session.privacy.orderNo && session.privacy.paymentMethod) {
+      try {
+        order = OrderMgr.getOrder(session.privacy.orderNo);
+        paymentInstrument = order.getPaymentInstruments(
+          session.privacy.paymentMethod
+        )[0];
+      } catch (e) {
+        Logger.getLogger("Adyen").error(
+          "Unable to retrieve order data from session."
+        );
+        res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
+        return next();
+      }
+
+      if (session.privacy.MD === req.form.MD) {
+        const jsonRequest = {
+          paymentData: paymentInstrument.custom.adyenPaymentData,
+          details: {
+            MD: req.form.MD,
+            PaRes: req.form.PaRes,
+          },
+        };
+        const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+
+        Transaction.wrap(function () {
+          paymentInstrument.custom.adyenPaymentData = null;
+        });
+        // if error, return to checkout page
+        if (result.error || result.resultCode !== "Authorised") {
+          Transaction.wrap(function () {
+            OrderMgr.failOrder(order, true);
+          });
+          res.redirect(
+            URLUtils.url(
+              "Checkout-Begin",
+              "stage",
+              "payment",
+              "paymentError",
+              Resource.msg("error.payment.not.valid", "checkout", null)
+            )
+          );
+          return next();
+        }
+
+        //custom fraudDetection
+        const fraudDetectionStatus = { status: "success" };
+
+        // Places the order
+        const placeOrderResult = COHelpers.placeOrder(
+          order,
+          fraudDetectionStatus
+        );
+        if (placeOrderResult.error) {
+          Transaction.wrap(function () {
+            OrderMgr.failOrder(order, true);
+          });
+          res.redirect(
+            URLUtils.url(
+              "Checkout-Begin",
+              "stage",
+              "placeOrder",
+              "paymentError",
+              Resource.msg("error.payment.not.valid", "checkout", null)
+            )
+          );
+          return next();
+        }
+
+        Transaction.begin();
+        AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
+        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+        Transaction.commit();
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+        clearForms();
+        res.redirect(
+          URLUtils.url(
+            "Order-Confirm",
+            "ID",
+            order.orderNo,
+            "token",
+            order.orderToken
+          ).toString()
+        );
+        return next();
+      }
+    }
+    Logger.getLogger("Adyen").error("Session variable does not exists");
+    res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
+    return next();
+  }
+);
+
+/**
+ * Complete a 3DS2 payment
+ */
+server.get(
+  "Adyen3DS2",
+  consentTracking.consent,
+  csrfProtection.generateToken,
+  server.middleware.https,
+  function (req, res, next) {
+    const protocol = req.https ? "https" : "http";
+    const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
+
     try {
-      order = OrderMgr.getOrder(session.privacy.orderNo);
-      paymentInstrument = order.getPaymentInstruments(
-        session.privacy.paymentMethod
-      )[0];
-    } catch (e) {
+      const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
+        protocol,
+        req.host
+      );
+      const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+      const resultCode = req.querystring.resultCode;
+      const token3ds2 = req.querystring.token3ds2;
+      res.render("/threeds2/adyen3ds2", {
+        locale: request.getLocale(),
+        originKey: originKey,
+        environment: environment,
+        resultCode: resultCode,
+        token3ds2: token3ds2,
+      });
+    } catch (err) {
       Logger.getLogger("Adyen").error(
-        "Unable to retrieve order data from session."
+        "3DS2 redirect failed with reason: " + err.toString()
       );
       res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-      return next();
     }
 
-    if (session.privacy.MD === req.form.MD) {
-      const jsonRequest = {
-        paymentData: paymentInstrument.custom.adyenPaymentData,
-        details: {
-          MD: req.form.MD,
-          PaRes: req.form.PaRes,
-        },
-      };
-      const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+    return next();
+  }
+);
 
-      Transaction.wrap(function () {
-        paymentInstrument.custom.adyenPaymentData = null;
-      });
-      // if error, return to checkout page
-      if (result.error || result.resultCode !== "Authorised") {
-        Transaction.wrap(function () {
-          OrderMgr.failOrder(order, true);
-        });
+/**
+ * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
+ *
+ * @returns rendering template or error
+ */
+server.post(
+  "Authorize3DS2",
+  csrfProtection.generateToken,
+  csrfProtection.validateRequest,
+  server.middleware.https,
+  function (req, res, next) {
+    const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+    let paymentInstrument;
+    let order;
+    if (session.privacy.orderNo && session.privacy.paymentMethod) {
+      try {
+        order = OrderMgr.getOrder(session.privacy.orderNo);
+        paymentInstrument = order.getPaymentInstruments(
+          session.privacy.paymentMethod
+        )[0];
+      } catch (e) {
+        Logger.getLogger("Adyen").error(
+          "Unable to retrieve order data from session 3DS2."
+        );
+        res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
+        return next();
+      }
+
+      let details = {};
+      if (
+        req.form.resultCode === "IdentifyShopper" &&
+        req.form.fingerprintResult
+      ) {
+        details = {
+          "threeds2.fingerprint": req.form.fingerprintResult,
+        };
+      } else if (
+        req.form.resultCode === "ChallengeShopper" &&
+        req.form.challengeResult
+      ) {
+        details = {
+          "threeds2.challengeResult": req.form.challengeResult,
+        };
+      } else {
+        Logger.getLogger("Adyen").error("paymentDetails 3DS2 not available");
         res.redirect(
           URLUtils.url(
             "Checkout-Begin",
@@ -86,6 +243,51 @@ server.post("AuthorizeWithForm", server.middleware.https, function (
         );
         return next();
       }
+
+      const paymentDetailsRequest = {
+        paymentData: paymentInstrument.custom.adyenPaymentData,
+        details: details,
+      };
+
+      const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+
+      if (
+        (result.error || result.resultCode !== "Authorised") &&
+        result.resultCode !== "ChallengeShopper"
+      ) {
+        //Payment failed
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order, true);
+          paymentInstrument.custom.adyenPaymentData = null;
+        });
+        res.redirect(
+          URLUtils.url(
+            "Checkout-Begin",
+            "stage",
+            "payment",
+            "paymentError",
+            Resource.msg("error.payment.not.valid", "checkout", null)
+          )
+        );
+        return next();
+      } else if (result.resultCode === "ChallengeShopper") {
+        //Redirect to ChallengeShopper
+        res.redirect(
+          URLUtils.url(
+            "Adyen-Adyen3DS2",
+            "resultCode",
+            result.resultCode,
+            "token3ds2",
+            result.authentication["threeds2.challengeToken"]
+          )
+        );
+        return next();
+      }
+
+      //delete paymentData from requests
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenPaymentData = null;
+      });
 
       //custom fraudDetection
       const fraudDetectionStatus = { status: "success" };
@@ -129,182 +331,16 @@ server.post("AuthorizeWithForm", server.middleware.https, function (
       );
       return next();
     }
-  }
-  Logger.getLogger("Adyen").error("Session variable does not exists");
-  res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-  return next();
-});
 
-server.get("Adyen3DS2", server.middleware.https, function (req, res, next) {
-  const protocol = req.https ? "https" : "http";
-  const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
-
-  try {
-    const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-      protocol,
-      req.host
-    );
-    const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
-    const resultCode = req.querystring.resultCode;
-    const token3ds2 = req.querystring.token3ds2;
-    res.render("/threeds2/adyen3ds2", {
-      locale: request.getLocale(),
-      originKey: originKey,
-      environment: environment,
-      resultCode: resultCode,
-      token3ds2: token3ds2,
-    });
-  } catch (err) {
-    Logger.getLogger("Adyen").error(
-      "3DS2 redirect failed with reason: " + err.toString()
-    );
+    Logger.getLogger("Adyen").error("Session variables for 3DS2 do not exists");
     res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-  }
-
-  return next();
-});
-
-server.post("Authorize3DS2", server.middleware.https, function (
-  req,
-  res,
-  next
-) {
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
-  let paymentInstrument;
-  let order;
-  if (session.privacy.orderNo && session.privacy.paymentMethod) {
-    try {
-      order = OrderMgr.getOrder(session.privacy.orderNo);
-      paymentInstrument = order.getPaymentInstruments(
-        session.privacy.paymentMethod
-      )[0];
-    } catch (e) {
-      Logger.getLogger("Adyen").error(
-        "Unable to retrieve order data from session 3DS2."
-      );
-      res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-      return next();
-    }
-
-    let details = {};
-    if (
-      req.form.resultCode === "IdentifyShopper" &&
-      req.form.fingerprintResult
-    ) {
-      details = {
-        "threeds2.fingerprint": req.form.fingerprintResult,
-      };
-    } else if (
-      req.form.resultCode === "ChallengeShopper" &&
-      req.form.challengeResult
-    ) {
-      details = {
-        "threeds2.challengeResult": req.form.challengeResult,
-      };
-    } else {
-      Logger.getLogger("Adyen").error("paymentDetails 3DS2 not available");
-      res.redirect(
-        URLUtils.url(
-          "Checkout-Begin",
-          "stage",
-          "payment",
-          "paymentError",
-          Resource.msg("error.payment.not.valid", "checkout", null)
-        )
-      );
-      return next();
-    }
-
-    const paymentDetailsRequest = {
-      paymentData: paymentInstrument.custom.adyenPaymentData,
-      details: details,
-    };
-
-    const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-
-    if (
-      (result.error || result.resultCode !== "Authorised") &&
-      result.resultCode !== "ChallengeShopper"
-    ) {
-      //Payment failed
-      Transaction.wrap(function () {
-        OrderMgr.failOrder(order, true);
-        paymentInstrument.custom.adyenPaymentData = null;
-      });
-      res.redirect(
-        URLUtils.url(
-          "Checkout-Begin",
-          "stage",
-          "payment",
-          "paymentError",
-          Resource.msg("error.payment.not.valid", "checkout", null)
-        )
-      );
-      return next();
-    } else if (result.resultCode === "ChallengeShopper") {
-      //Redirect to ChallengeShopper
-      res.redirect(
-        URLUtils.url(
-          "Adyen-Adyen3DS2",
-          "resultCode",
-          result.resultCode,
-          "token3ds2",
-          result.authentication["threeds2.challengeToken"]
-        )
-      );
-      return next();
-    }
-
-    //delete paymentData from requests
-    Transaction.wrap(function () {
-      paymentInstrument.custom.adyenPaymentData = null;
-    });
-
-    //custom fraudDetection
-    const fraudDetectionStatus = { status: "success" };
-
-    // Places the order
-    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-      Transaction.wrap(function () {
-        OrderMgr.failOrder(order, true);
-      });
-      res.redirect(
-        URLUtils.url(
-          "Checkout-Begin",
-          "stage",
-          "placeOrder",
-          "paymentError",
-          Resource.msg("error.payment.not.valid", "checkout", null)
-        )
-      );
-      return next();
-    }
-
-    Transaction.begin();
-    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-    order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-    order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-    Transaction.commit();
-    COHelpers.sendConfirmationEmail(order, req.locale.id);
-    clearForms();
-    res.redirect(
-      URLUtils.url(
-        "Order-Confirm",
-        "ID",
-        order.orderNo,
-        "token",
-        order.orderToken
-      ).toString()
-    );
     return next();
   }
+);
 
-  Logger.getLogger("Adyen").error("Session variables for 3DS2 do not exists");
-  res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-  return next();
-});
-
+/**
+ * Redirect to Adyen after saving order etc.
+ */
 server.get("Redirect", server.middleware.https, function (req, res, next) {
   const signature = req.querystring.signature;
   const order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -354,6 +390,9 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
   return next();
 });
 
+/**
+ * Show confirmation after return from Adyen
+ */
 server.get("ShowConfirmation", server.middleware.https, function (
   req,
   res,
@@ -495,6 +534,9 @@ server.get("ShowConfirmation", server.middleware.https, function (
   }
 });
 
+/**
+ * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
+ */
 server.post(
   "ShowConfirmationPaymentFromComponent",
   server.middleware.https,
@@ -606,6 +648,9 @@ server.post(
   }
 );
 
+/**
+ * Make a request to Adyen to get payment methods based on countryCode
+ */
 server.get("GetPaymentMethods", server.middleware.https, function (
   req,
   res,
@@ -688,6 +733,9 @@ server.get("GetPaymentMethods", server.middleware.https, function (
   return next();
 });
 
+/**
+ * Complete a donation through adyenGiving
+ */
 server.post("Donate", server.middleware.https, function (req /*, res, next */) {
   const adyenGiving = require("*/cartridge/scripts/adyenGiving");
   const pspReference = req.form.pspReference;

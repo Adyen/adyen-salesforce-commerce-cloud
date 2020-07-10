@@ -10,6 +10,7 @@ const Status = require("dw/system/Status");
 const Transaction = require("dw/system/Transaction");
 const constants = require("*/cartridge/adyenConstants/constants");
 const PaymentMgr = require("dw/order/PaymentMgr");
+const CSRFProtection = require("dw/web/CSRFProtection");
 
 /* Script Modules */
 const app = require("app_storefront_controllers/cartridge/scripts/app");
@@ -162,6 +163,9 @@ function getDetails() {
   };
 }
 
+/**
+ * Make a payment from inside a component (used by paypal)
+ */
 function paymentFromComponent() {
   if (
     request.httpParameterMap
@@ -228,6 +232,9 @@ function paymentFromComponent() {
   responseUtils.renderJSON({ result: result });
 }
 
+/**
+ * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
+ */
 function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm("adyPaydata");
   const orderNumber = session.privacy.orderNo;
@@ -288,6 +295,9 @@ function showConfirmationPaymentFromComponent() {
   return {};
 }
 
+/**
+ * Complete a donation through adyenGiving
+ */
 function donate() {
   const adyenGiving = require("*/cartridge/scripts/adyenGiving");
   const responseUtils = require("*/cartridge/scripts/util/Response");
@@ -420,6 +430,13 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
+  if (!CSRFProtection.validateRequest()) {
+    Logger.getLogger("Adyen").error(
+      "CSRF Mismatch for order " + session.privacy.orderNo
+    );
+    response.redirect(URLUtils.httpHome());
+    return;
+  }
   Transaction.begin();
   const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
   let paymentInstrument;
