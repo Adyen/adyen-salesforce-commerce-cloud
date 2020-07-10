@@ -9,7 +9,7 @@ const constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
 const app = require(Resource.msg("scripts.app.js", "require", null));
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const adyenRemovePreviousPI = require("*/cartridge/scripts/adyenRemovePreviousPI");
 
 /**

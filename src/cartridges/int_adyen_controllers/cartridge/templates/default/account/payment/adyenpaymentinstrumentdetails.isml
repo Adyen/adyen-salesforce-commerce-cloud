@@ -1,5 +1,5 @@
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>

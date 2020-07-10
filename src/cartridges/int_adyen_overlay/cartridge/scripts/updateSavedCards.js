@@ -11,7 +11,7 @@ const Transaction = require("dw/system/Transaction");
 const constants = require("*/cartridge/adyenConstants/constants");
 
 /* Script Modules */
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 function updateSavedCards(args) {
   try {

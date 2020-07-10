@@ -31,8 +31,8 @@
 const Logger = require("dw/system/Logger");
 
 /* Script Modules */
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
-const RiskDataHelper = require("*/cartridge/scripts/util/RiskDataHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+const RiskDataHelper = require("*/cartridge/scripts/util/riskDataHelper");
 const AdyenGetOpenInvoiceData = require("*/cartridge/scripts/adyenGetOpenInvoiceData");
 const Resource = require("dw/web/Resource");
 const Order = require("dw/order/Order");
