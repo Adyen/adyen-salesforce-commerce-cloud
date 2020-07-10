@@ -65,6 +65,52 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
+function renderStoredPaymentMethods(data) {
+  if (data.AdyenPaymentMethods.storedPaymentMethods) {
+    const { storedPaymentMethods } = store.checkout.paymentMethodsResponse;
+    storedPaymentMethods.forEach((pm) => {
+      if (pm.supportedShopperInteractions.includes("Ecommerce")) {
+        renderPaymentMethod(pm, true, data.ImagePath);
+      }
+    });
+  }
+}
+
+function renderPaymentMethods(data) {
+  data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
+    !isMethodTypeBlocked(pm.type) &&
+      renderPaymentMethod(
+        pm,
+        false,
+        data.ImagePath,
+        data.AdyenDescriptions[i].description
+      );
+  });
+}
+
+function renderPosTerminals(data) {
+  const removeChilds = () => {
+    const posTerminals = document.querySelector("#adyenPosTerminals");
+    while (posTerminals.firstChild) {
+      posTerminals.removeChild(posTerminals.firstChild);
+    }
+  };
+
+  if (data.AdyenConnectedTerminals?.uniqueTerminalIds?.length) {
+    removeChilds();
+    addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+  }
+}
+
+function setCheckoutConfiguration(data) {
+  const setField = (key, val) => val && { [key]: val };
+  store.checkoutConfiguration = {
+    ...store.checkoutConfiguration,
+    ...setField("amount", data.amount),
+    ...setField("countryCode", data.countryCode),
+  };
+}
+
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
@@ -73,55 +119,17 @@ export async function renderGenericComponent() {
     await unmountComponents();
   }
   getPaymentMethods(function (data) {
-    let paymentMethod;
-    let i;
     store.checkoutConfiguration.paymentMethodsResponse =
       data.AdyenPaymentMethods;
-    if (data.amount) {
-      store.checkoutConfiguration.amount = data.amount;
-    }
-    if (data.countryCode) {
-      store.checkoutConfiguration.countryCode = data.countryCode;
-    }
+    setCheckoutConfiguration(data);
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
     document.querySelector("#paymentMethodsList").innerHTML = "";
 
-    if (data.AdyenPaymentMethods.storedPaymentMethods) {
-      for (
-        i = 0;
-        i < store.checkout.paymentMethodsResponse.storedPaymentMethods.length;
-        i++
-      ) {
-        paymentMethod =
-          store.checkout.paymentMethodsResponse.storedPaymentMethods[i];
-        if (paymentMethod.supportedShopperInteractions.includes("Ecommerce")) {
-          renderPaymentMethod(paymentMethod, true, data.ImagePath);
-        }
-      }
-    }
+    renderStoredPaymentMethods(data);
+    renderPaymentMethods(data);
+    renderPosTerminals(data);
 
-    data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
-      !isMethodTypeBlocked(pm.type) &&
-        renderPaymentMethod(
-          pm,
-          false,
-          data.ImagePath,
-          data.AdyenDescriptions[i].description
-        );
-    });
-
-    if (
-      data.AdyenConnectedTerminals &&
-      data.AdyenConnectedTerminals.uniqueTerminalIds &&
-      data.AdyenConnectedTerminals.uniqueTerminalIds.length > 0
-    ) {
-      const posTerminals = document.querySelector("#adyenPosTerminals");
-      while (posTerminals.firstChild) {
-        posTerminals.removeChild(posTerminals.firstChild);
-      }
-      addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
-    }
     const firstPaymentMethod = document.querySelector(
       "input[type=radio][name=brandCode]"
     );
