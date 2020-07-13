@@ -65,14 +65,18 @@ function isMethodTypeBlocked(methodType) {
   return blockedMethods.includes(methodType);
 }
 
+function renderStoredPaymentMethod(data) {
+  return (pm) => {
+    if (pm.supportedShopperInteractions.includes("Ecommerce")) {
+      renderPaymentMethod(pm, true, data.ImagePath);
+    }
+  };
+}
+
 function renderStoredPaymentMethods(data) {
   if (data.AdyenPaymentMethods.storedPaymentMethods) {
     const { storedPaymentMethods } = store.checkout.paymentMethodsResponse;
-    storedPaymentMethods.forEach((pm) => {
-      if (pm.supportedShopperInteractions.includes("Ecommerce")) {
-        renderPaymentMethod(pm, true, data.ImagePath);
-      }
-    });
+    storedPaymentMethods.forEach(renderStoredPaymentMethod(data));
   }
 }
 

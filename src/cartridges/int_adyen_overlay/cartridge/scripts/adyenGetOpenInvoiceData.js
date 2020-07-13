@@ -33,7 +33,7 @@ require("dw/net");
 require("dw/web");
 
 //script include
-const LineItemHelper = require("*/cartridge/scripts/util/LineItemHelper");
+const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
 
 function getLineItems(args) {
   let order;

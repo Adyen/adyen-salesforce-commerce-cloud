@@ -14,7 +14,7 @@ const Resource = require("dw/web/Resource");
 // eslint-disable-next-line no-unused-vars
 const Site = require("dw/system/Site");
 const Logger = require("dw/system/Logger");
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const constants = require("*/cartridge/adyenConstants/constants");
 const collections = require("*/cartridge/scripts/util/collections");
 const PaymentMgr = require("dw/order/PaymentMgr");

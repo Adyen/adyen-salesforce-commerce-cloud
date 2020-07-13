@@ -1,4 +1,4 @@
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
@@ -20,10 +20,9 @@
                 method="POST"
                 name="payment-form" ${pdict.paymentForm.attributes}>
 
-            <input type="hidden" class="form-control cardNumber" id="cardNumber" ${pdict.paymentForm.cardNumber.attributes}>
-            <input type="hidden" class="form-control" id="cardType" ${pdict.paymentForm.cardType.attributes}>
-
-            <input id="adyenStateData" type="hidden" ${pdict.paymentForm.adyenStateData.attributes}/>
+            <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
+            <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
+            <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
             <span id="errorLoadComponent"></span>
             <div id="card"></div>
 

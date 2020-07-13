@@ -3,7 +3,7 @@
  */
 
 require("dw/order");
-const LineItemHelper = require("*/cartridge/scripts/util/LineItemHelper");
+const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
 
 const __RiskDataHelper = {
   createBasketContentFields: function (order) {

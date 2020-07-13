@@ -1,5 +1,5 @@
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/AdyenHelper')}" scope="page"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
@@ -12,8 +12,9 @@
     var getPaymentMethodsResponse = JSON.stringify(methods);
 </isscript>
 
-    <script>
-        window.getPaymentMethodsResponse = JSON.parse(`${getPaymentMethodsResponse}`);
+<script>
+    var paymentMethods = `${getPaymentMethodsResponse}`.replace(/&quot;/g, '\"');
+    window.getPaymentMethodsResponse = JSON.parse(paymentMethods);
     var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";

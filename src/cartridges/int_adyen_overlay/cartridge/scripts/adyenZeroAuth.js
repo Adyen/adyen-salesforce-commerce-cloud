@@ -6,7 +6,7 @@
 const Logger = require("dw/system/Logger");
 
 /* Script Modules */
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
 
 function zeroAuthPayment(customer, paymentInstrument) {

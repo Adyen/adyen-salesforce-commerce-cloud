@@ -6,6 +6,12 @@
     text-align: left;
 }
 
+.form-horizontal #newCard label {
+    float: none;
+    width: 100%;
+    text-align: left;
+}
+
 .creditCard {
     margin-left: 27%;
 }

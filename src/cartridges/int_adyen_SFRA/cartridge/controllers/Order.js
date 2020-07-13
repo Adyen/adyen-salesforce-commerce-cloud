@@ -3,7 +3,7 @@ const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
 const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
 const OrderMgr = require("dw/order/OrderMgr");
 const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 const server = require("server");
 server.extend(module.superModule);

@@ -1,5 +1,5 @@
 //script include
-const AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const Logger = require("dw/system/Logger");
 const StringUtils = require("dw/util/StringUtils");
 const Transaction = require("dw/system/Transaction");
