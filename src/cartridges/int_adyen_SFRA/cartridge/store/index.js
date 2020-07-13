@@ -23,6 +23,14 @@ class Store {
     return !!this.selectedPayment?.isValid;
   }
 
+  @computed get stateData() {
+    return (
+      this.selectedPayment?.stateData || {
+        paymentMethod: { type: this.selectedMethod },
+      }
+    );
+  }
+
   updateSelectedPayment(key, val) {
     this.selectedPayment[key] = val;
   }

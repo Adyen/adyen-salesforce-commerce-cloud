@@ -4,6 +4,7 @@ import {
   setCheckoutConfiguration,
   assignPaymentMethodValue,
   showValidation,
+  validateComponents,
 } from "./adyen_checkout";
 
 $("#dwfrm_billing").submit(function (e) {
@@ -50,66 +51,7 @@ $('button[value="submit-payment"]').on("click", function () {
   return showValidation();
 });
 
-function validateCustomInputField(input) {
-  if (input.value === "") {
-    input.classList.add("adyen-checkout__input--error");
-  } else if (input.value.length > 0) {
-    input.classList.remove("adyen-checkout__input--error");
-  }
-}
-
 /**
  * Assigns stateData value to the hidden stateData input field so it's sent to the backend for processing
  */
-function validateComponents() {
-  if (document.querySelector("#component_ach")) {
-    const inputs = document.querySelectorAll("#component_ach > input");
-    for (const input of inputs) {
-      input.onchange = function () {
-        validateCustomInputField(this);
-      };
-    }
-  }
-  if (document.querySelector("#dateOfBirthInput")) {
-    document.querySelector("#dateOfBirthInput").onchange = function () {
-      validateCustomInputField(this);
-    };
-  }
-
-  let stateData;
-  if (store.selectedPayment && store.selectedPayment.stateData) {
-    stateData = store.selectedPayment.stateData;
-  } else {
-    stateData = { paymentMethod: { type: store.selectedMethod } };
-  }
-
-  if (store.selectedMethod === "ach") {
-    const bankAccount = {
-      ownerName: document.querySelector("#bankAccountOwnerNameValue").value,
-      bankAccountNumber: document.querySelector("#bankAccountNumberValue")
-        .value,
-      bankLocationId: document.querySelector("#bankLocationIdValue").value,
-    };
-    stateData.paymentMethod = {
-      ...stateData.paymentMethod,
-      bankAccount: bankAccount,
-    };
-  } else if (store.selectedMethod === "ratepay") {
-    if (
-      document.querySelector("#genderInput").value &&
-      document.querySelector("#dateOfBirthInput").value
-    ) {
-      stateData.shopperName = {
-        gender: document.querySelector("#genderInput").value,
-      };
-      stateData.dateOfBirth = document.querySelector("#dateOfBirthInput").value;
-    }
-  }
-  document.querySelector("#adyenStateData").value = JSON.stringify(stateData);
-}
-
-module.exports = {
-  methods: {
-    renderGenericComponent: renderGenericComponent,
-  },
-};
+export const methods = { renderGenericComponent };

@@ -1,5 +1,5 @@
-import store from "../../../../store";
-import { getCardConfig, getPaypalConfig } from "./checkoutConfiguration";
+import store from "../../../../../store";
+import { getCardConfig, getPaypalConfig } from "../checkoutConfiguration";
 
 let card;
 let paypal;

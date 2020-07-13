@@ -1,5 +1,5 @@
-import { renderGenericComponent } from "./renderGenericComponent";
-import store from "../../../../store";
+import { renderGenericComponent } from "../renderGenericComponent";
+import store from "../../../../../store";
 
 beforeEach(() => {
   window.AdyenCheckout = jest.fn();
