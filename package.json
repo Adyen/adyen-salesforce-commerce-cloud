@@ -31,12 +31,14 @@
   "dependencies": {
     "babel-loader": "^8.0.4",
     "cleave.js": "^1.0.1",
+    "eslint-config-airbnb-base": "^14.2.0",
     "url": "^0.11.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.6",
+    "babel-eslint": "^10.1.0",
     "chai": "^3.5.0",
     "css-loader": "^1.0.0",
     "eslint": "^7.1.0",
