@@ -4,7 +4,7 @@
  *
  */
 
-const StringUtils = require("dw/util/StringUtils");
+const StringUtils = require('dw/util/StringUtils');
 
 /**
  *
@@ -14,13 +14,13 @@ const StringUtils = require("dw/util/StringUtils");
  * @param baPassword The basic Authentication password
  */
 function checkGivenCredentials(baHeader, baUser, baPassword) {
-  const basicPrefix = "Basic";
+  const basicPrefix = 'Basic';
   if (baHeader && baHeader.indexOf(basicPrefix) === 0) {
     // Authorization: Basic base64credentials
     const base64Credentials = baHeader.substring(basicPrefix.length).trim();
     const credentials = StringUtils.decodeBase64(base64Credentials);
     // credentials = username:password
-    const values = credentials.split(":", 2);
+    const values = credentials.split(':', 2);
 
     return values[0] === baUser && values[1] === baPassword;
   }

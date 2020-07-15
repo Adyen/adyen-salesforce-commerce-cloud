@@ -1,28 +1,27 @@
-"use strict";
-const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
-const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
-const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+const server = require('server');
+const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
+const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-const server = require("server");
 server.extend(module.superModule);
 
 server.prepend(
-  "Begin",
+  'Begin',
   server.middleware.https,
   consentTracking.consent,
   csrfProtection.generateToken,
   function (req, res, next) {
     if (req.currentCustomer.raw.isAuthenticated()) {
-      require("*/cartridge/scripts/updateSavedCards").updateSavedCards({
+      require('*/cartridge/scripts/updateSavedCards').updateSavedCards({
         CurrentCustomer: req.currentCustomer.raw,
       });
     }
 
-    const protocol = req.https ? "https" : "http";
+    const protocol = req.https ? 'https' : 'http';
     const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
       protocol,
-      req.host
+      req.host,
     );
     const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const installments = AdyenHelper.getCreditCardInstallments();
@@ -38,7 +37,7 @@ server.prepend(
 
     res.setViewData(viewData);
     next();
-  }
+  },
 );
 
 module.exports = server.exports();

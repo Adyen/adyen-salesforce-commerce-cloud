@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Verifies the required information for billing form is provided.
  * @param {Object} req - The request object
@@ -24,7 +22,7 @@ function processForm(req, paymentForm, viewFormData) {
  * By default no save payment information is supported
  */
 function savePaymentInformation() {
-  return;
+
 }
 
 exports.processForm = processForm;

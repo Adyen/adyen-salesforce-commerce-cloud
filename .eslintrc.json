@@ -1,12 +1,9 @@
 {
-  "env": {
-    "es6": true,
-    "browser": true,
-    "node": true
-  },
+  "root": true,
   "extends": [
     "eslint:recommended",
-    "prettier"
+    "prettier",
+    "airbnb-base"
   ],
   "globals": {
     "$": "readonly",
@@ -40,7 +37,10 @@
     "PIPELET_NEXT": "readonly",
     "PIPELET_ERROR": "readonly",
     "Urls": "readonly",
-    "SitePreferences": "readonly"
+    "SitePreferences": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "location": "readonly"
   },
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -51,18 +51,30 @@
   "plugins": [
     "prettier"
   ],
-  "ignorePatterns": ["*.ds"],
   "rules": {
-    "prettier/prettier": "error",
-    "no-var": "error",
-    "prefer-const": "warn",
-    "complexity": [
-      "warn",
-      {
-        "max": 2
-      }
-    ],
-    "eqeqeq": "error",
-    "curly": "error"
+    "import/no-unresolved": "off",
+    "no-param-reassign": "off",
+    "func-names": "off",
+    "require-jsdoc": "off",
+    "vars-on-top": "off",
+    "global-require": "off",
+    "max-len": "off",
+    "no-use-before-define": "off",
+    "no-shadow": "off",
+    "no-void": "off",
+    "block-scoped-var": "off",
+    "no-return-assign": "off",
+    "no-plusplus": "off",
+    "no-sequences": "off",
+    "no-unused-expressions": "off",
+    "consistent-return": "off",
+    "no-continue": "off",
+    "prefer-destructuring": "off",
+    "no-tabs": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
+    "prefer-arrow-callback": "off",
+    "object-shorthand": "off"
   }
 }
+

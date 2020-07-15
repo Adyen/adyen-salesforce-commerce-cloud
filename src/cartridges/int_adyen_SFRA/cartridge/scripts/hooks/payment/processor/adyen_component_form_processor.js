@@ -1,5 +1,4 @@
-"use strict";
-const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 /**
  * Verifies the required information for billing form is provided.
@@ -9,10 +8,10 @@ const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
-  const array = require("*/cartridge/scripts/util/array");
+  const array = require('*/cartridge/scripts/util/array');
   const viewData = viewFormData;
   let creditCardErrors = {};
-  const isCreditCard = req.form.brandCode === "scheme";
+  const isCreditCard = req.form.brandCode === 'scheme';
   if (!req.form.storedPaymentUUID && isCreditCard) {
     // verify credit card form data
     creditCardErrors = COHelpers.validateCreditCard(paymentForm);
@@ -25,8 +24,7 @@ function processForm(req, paymentForm, viewFormData) {
     };
   }
 
-  session.privacy.adyenFingerprint =
-    paymentForm.adyenPaymentFields.adyenFingerprint.value;
+  session.privacy.adyenFingerprint = paymentForm.adyenPaymentFields.adyenFingerprint.value;
 
   viewData.paymentMethod = {
     value: paymentForm.paymentMethod.value,
@@ -45,34 +43,29 @@ function processForm(req, paymentForm, viewFormData) {
   };
 
   if (paymentForm.creditCardFields.selectedCardID) {
-    viewData.storedPaymentUUID = viewData.paymentInformation.storedPaymentUUID =
-      paymentForm.creditCardFields.selectedCardID.value;
+    viewData.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
+    viewData.paymentInformation.storedPaymentUUID = paymentForm.creditCardFields.selectedCardID.value;
   }
 
   viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;
 
   // process payment information
   if (
-    viewData.storedPaymentUUID &&
-    req.currentCustomer.raw.authenticated &&
-    req.currentCustomer.raw.registered
+    viewData.storedPaymentUUID
+    && req.currentCustomer.raw.authenticated
+    && req.currentCustomer.raw.registered
   ) {
     const paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
     const paymentInstrument = array.find(paymentInstruments, function (item) {
       return viewData.storedPaymentUUID === item.UUID;
     });
 
-    viewData.paymentInformation.cardNumber.value =
-      paymentInstrument.creditCardNumber;
-    viewData.paymentInformation.cardType.value =
-      paymentInstrument.creditCardType;
+    viewData.paymentInformation.cardNumber.value = paymentInstrument.creditCardNumber;
+    viewData.paymentInformation.cardType.value = paymentInstrument.creditCardType;
     viewData.paymentInformation.securityCode.value = req.form.securityCode;
-    viewData.paymentInformation.expirationMonth.value =
-      paymentInstrument.creditCardExpirationMonth;
-    viewData.paymentInformation.expirationYear.value =
-      paymentInstrument.creditCardExpirationYear;
-    viewData.paymentInformation.creditCardToken =
-      paymentInstrument.raw.creditCardToken;
+    viewData.paymentInformation.expirationMonth.value = paymentInstrument.creditCardExpirationMonth;
+    viewData.paymentInformation.expirationYear.value = paymentInstrument.creditCardExpirationYear;
+    viewData.paymentInformation.creditCardToken = paymentInstrument.raw.creditCardToken;
   }
 
   return {
@@ -88,23 +81,23 @@ function processForm(req, paymentForm, viewFormData) {
  * @param {Object} billingData - payment information
  */
 function savePaymentInformation(req, basket, billingData) {
-  const CustomerMgr = require("dw/customer/CustomerMgr");
+  const CustomerMgr = require('dw/customer/CustomerMgr');
 
   if (
-    !billingData.storedPaymentUUID &&
-    req.currentCustomer.raw.authenticated &&
-    req.currentCustomer.raw.registered &&
-    billingData.saveCard &&
-    billingData.paymentMethod.value === "CREDIT_CARD"
+    !billingData.storedPaymentUUID
+    && req.currentCustomer.raw.authenticated
+    && req.currentCustomer.raw.registered
+    && billingData.saveCard
+    && billingData.paymentMethod.value === 'CREDIT_CARD'
   ) {
     const customer = CustomerMgr.getCustomerByCustomerNumber(
-      req.currentCustomer.profile.customerNo
+      req.currentCustomer.profile.customerNo,
     );
 
     const saveCardResult = COHelpers.savePaymentInstrumentToWallet(
       billingData,
       basket,
-      customer
+      customer,
     );
 
     req.currentCustomer.wallet.paymentInstruments.push({
@@ -116,7 +109,7 @@ function savePaymentInformation(req, basket, billingData) {
       UUID: saveCardResult.UUID,
       creditCardNumber: Object.hasOwnProperty.call(
         saveCardResult,
-        "creditCardNumber"
+        'creditCardNumber',
       )
         ? saveCardResult.creditCardNumber
         : null,

@@ -1,6 +1,5 @@
-"use strict";
+const collections = require('*/cartridge/scripts/util/collections');
 
-const collections = require("*/cartridge/scripts/util/collections");
 const base = module.superModule;
 
 /**
@@ -11,7 +10,7 @@ const base = module.superModule;
  */
 function getSelectedPaymentInstruments(selectedPaymentInstruments) {
   return collections.map(selectedPaymentInstruments, function (
-    paymentInstrument
+    paymentInstrument,
   ) {
     const results = {
       paymentMethod: paymentInstrument.paymentMethod,
@@ -26,7 +25,7 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
     }
     if (paymentInstrument.custom.adyenAdditionalPaymentData) {
       results.adyenAdditionalPaymentData = JSON.parse(
-        paymentInstrument.custom.adyenAdditionalPaymentData
+        paymentInstrument.custom.adyenAdditionalPaymentData,
       );
     }
     if (paymentInstrument.custom.adyenAction) {
@@ -52,10 +51,9 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
       ? paymentInstrument.creditCardExpirationMonth
       : null;
 
-    if (paymentInstrument.paymentMethod === "GIFT_CERTIFICATE") {
+    if (paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE') {
       results.giftCertificateCode = paymentInstrument.giftCertificateCode;
-      results.maskedGiftCertificateCode =
-        paymentInstrument.maskedGiftCertificateCode;
+      results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
     }
 
     return results;

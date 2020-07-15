@@ -24,16 +24,16 @@
  * @output sessionValidity : String;
  *
  */
-require("dw/crypto");
-require("dw/system");
-require("dw/order");
-require("dw/util");
-require("dw/value");
-require("dw/net");
-require("dw/web");
+require('dw/crypto');
+require('dw/system');
+require('dw/order');
+require('dw/util');
+require('dw/value');
+require('dw/net');
+require('dw/web');
 
-//script include
-const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
+// script include
+const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems(args) {
   let order;
@@ -47,12 +47,12 @@ function getLineItems(args) {
   const lineItems = [];
   for (const lineItem in order.getAllLineItems()) {
     if (
-      (lineItem instanceof dw.order.ProductLineItem &&
-        !lineItem.bonusProductLineItem) ||
-      lineItem instanceof dw.order.ShippingLineItem ||
-      (lineItem instanceof dw.order.PriceAdjustment &&
-        lineItem.promotion.promotionClass ===
-          dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+      (lineItem instanceof dw.order.ProductLineItem
+        && !lineItem.bonusProductLineItem)
+      || lineItem instanceof dw.order.ShippingLineItem
+      || (lineItem instanceof dw.order.PriceAdjustment
+        && lineItem.promotion.promotionClass
+          === dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
     ) {
       const lineItemObject = {};
       const description = LineItemHelper.getDescription(lineItem);
@@ -62,14 +62,14 @@ function getLineItems(args) {
       const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
       const vatPercentage = LineItemHelper.getVatPercentage(lineItem);
 
-      lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
-      lineItemObject["taxAmount"] = vatAmount.toFixed();
-      lineItemObject["description"] = description;
-      lineItemObject["id"] = id;
-      lineItemObject["quantity"] = quantity;
-      lineItemObject["taxCategory"] = "None";
-      lineItemObject["taxPercentage"] = (
-        new Number(vatPercentage) * 10000
+      lineItemObject.amountExcludingTax = itemAmount.toFixed();
+      lineItemObject.taxAmount = vatAmount.toFixed();
+      lineItemObject.description = description;
+      lineItemObject.id = id;
+      lineItemObject.quantity = quantity;
+      lineItemObject.taxCategory = 'None';
+      lineItemObject.taxPercentage = (
+        new Number(vatPercentage) * 10000 // eslint-disable-line no-new-wrappers
       ).toFixed();
 
       lineItems.push(lineItemObject);

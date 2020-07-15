@@ -3,17 +3,17 @@
  *
  */
 
-//script include
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
-const Logger = require("dw/system/Logger");
-const OrderMgr = require("dw/order/OrderMgr");
-const Transaction = require("dw/system/Transaction");
+// script include
+const Logger = require('dw/system/Logger');
+const OrderMgr = require('dw/order/OrderMgr');
+const Transaction = require('dw/system/Transaction');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function donate(donationReference, donationAmount, originalReference) {
   try {
     const service = AdyenHelper.getService(AdyenHelper.SERVICE.ADYENGIVING);
     if (!service) {
-      throw new Error("Could not connect to Adyen Giving");
+      throw new Error('Could not connect to Adyen Giving');
     }
 
     const requestObject = {
@@ -21,33 +21,33 @@ function donate(donationReference, donationAmount, originalReference) {
       donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
       modificationAmount: donationAmount,
       reference:
-        AdyenHelper.getAdyenMerchantAccount() + "-" + donationReference,
+        `${AdyenHelper.getAdyenMerchantAccount()}-${donationReference}`,
       originalReference: originalReference,
     };
 
     const xapikey = AdyenHelper.getAdyenApiKey();
-    service.addHeader("Content-type", "application/json");
-    service.addHeader("charset", "UTF-8");
-    service.addHeader("X-API-key", xapikey);
+    service.addHeader('Content-type', 'application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-key', xapikey);
     const callResult = service.call(JSON.stringify(requestObject));
 
     if (!callResult.isOk()) {
       throw new Error(
-        "Call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `Call error code${
+          callResult.getError().toString()
+        } Error => ResponseStatus: ${
+          callResult.getStatus()
+        } | ResponseErrorText: ${
+          callResult.getErrorMessage()
+        } | ResponseText: ${
+          callResult.getMsg()}`,
       );
     }
 
     const resultObject = callResult.object;
 
     if (!resultObject || !resultObject.getText()) {
-      throw new Error("No correct response from adyenGiving call");
+      throw new Error('No correct response from adyenGiving call');
     }
 
     Transaction.wrap(function () {
@@ -56,10 +56,9 @@ function donate(donationReference, donationAmount, originalReference) {
     });
     return JSON.parse(resultObject.getText());
   } catch (e) {
-    Logger.getLogger("Adyen").error(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+    Logger.getLogger('Adyen').error(
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
-    return;
   }
 }
 

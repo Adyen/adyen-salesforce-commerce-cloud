@@ -1,5 +1,3 @@
-"use strict";
-
 // const naPhone = /^\(?([2-9][0-8][0-9])\)?[\-\. ]?([2-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$/;
 const regex = {
   phone: {},
@@ -8,8 +6,8 @@ const regex = {
 };
 // global form validator settings
 const settings = {
-  errorClass: "error",
-  errorElement: "span",
+  errorClass: 'error',
+  errorElement: 'span',
   onkeyup: false,
   onfocusout: function (element) {
     if (!this.checkable(element)) {
@@ -24,11 +22,11 @@ const settings = {
  * @param {String} el The input field
  */
 const validatePhone = function (value, el) {
-  const country = $(el).closest("form").find(".country");
+  const country = $(el).closest('form').find('.country');
   if (
-    country.length === 0 ||
-    country.val().length === 0 ||
-    !regex.phone[country.val().toLowerCase()]
+    country.length === 0
+    || country.val().length === 0
+    || !regex.phone[country.val().toLowerCase()]
   ) {
     return true;
   }
@@ -55,27 +53,27 @@ const validateOwner = function (value) {
  * Add phone validation method to jQuery validation plugin.
  * Text fields must have 'phone' css class to be validated as phone
  */
-$.validator.addMethod("phone", validatePhone, Resources.INVALID_PHONE);
+$.validator.addMethod('phone', validatePhone, Resources.INVALID_PHONE);
 
 /**
  * Add CCOwner validation method to jQuery validation plugin.
  * Text fields must have 'owner' css class to be validated as not a credit card
  */
-$.validator.addMethod("owner", validateOwner, Resources.INVALID_OWNER);
+$.validator.addMethod('owner', validateOwner, Resources.INVALID_OWNER);
 
 /**
  * Add gift cert amount validation method to jQuery validation plugin.
  * Text fields must have 'gift-cert-amont' css class to be validated
  */
 $.validator.addMethod(
-  "gift-cert-amount",
+  'gift-cert-amount',
   function (value, el) {
     const isOptional = this.optional(el);
-    const isValid =
-      !isNaN(value) && parseFloat(value) >= 5 && parseFloat(value) <= 5000;
+    // eslint-disable-next-line no-restricted-globals
+    const isValid = !isNaN(value) && parseFloat(value) >= 5 && parseFloat(value) <= 5000;
     return isOptional || isValid;
   },
-  Resources.GIFT_CERT_AMOUNT_INVALID
+  Resources.GIFT_CERT_AMOUNT_INVALID,
 );
 
 /**
@@ -83,14 +81,15 @@ $.validator.addMethod(
  * Text fields must have 'positivenumber' css class to be validated as positivenumber
  */
 $.validator.addMethod(
-  "positivenumber",
+  'positivenumber',
   function (value) {
     if ($.trim(value).length === 0) {
       return true;
     }
+    // eslint-disable-next-line no-restricted-globals
     return !isNaN(value) && Number(value) >= 0;
   },
-  ""
+  '',
 ); // '' should be replaced with error message if needed
 
 $.extend($.validator.messages, {
@@ -117,7 +116,7 @@ const validator = {
   settings: settings,
   init: function () {
     const self = this;
-    $("form:not(.suppress)").each(function () {
+    $('form:not(.suppress)').each(function () {
       $(this).validate(self.settings);
     });
   },

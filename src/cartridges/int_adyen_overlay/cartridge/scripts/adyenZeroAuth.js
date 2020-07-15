@@ -3,17 +3,17 @@
  */
 
 /* API Includes */
-const Logger = require("dw/system/Logger");
+const Logger = require('dw/system/Logger');
 
 /* Script Modules */
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
-const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
     let zeroAuthRequest = AdyenHelper.createAdyenRequestObject(
       null,
-      paymentInstrument
+      paymentInstrument,
     );
 
     if (AdyenHelper.getAdyen3DS2Enabled()) {
@@ -31,18 +31,18 @@ function zeroAuthPayment(customer, paymentInstrument) {
     return adyenCheckout.doPaymentCall(
       null,
       paymentInstrument,
-      zeroAuthRequest
+      zeroAuthRequest,
     );
   } catch (e) {
-    Logger.getLogger("Adyen").error(
-      "error processing zero auth payment. Error message: " +
-        e.message +
-        " more details: " +
-        e.toString() +
-        " in " +
-        e.fileName +
-        ":" +
-        e.lineNumber
+    Logger.getLogger('Adyen').error(
+      `error processing zero auth payment. Error message: ${
+        e.message
+      } more details: ${
+        e.toString()
+      } in ${
+        e.fileName
+      }:${
+        e.lineNumber}`,
     );
     return { error: true };
   }

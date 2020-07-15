@@ -1,12 +1,12 @@
-const cardNode = document.getElementById("card");
+const cardNode = document.getElementById('card');
 let maskedCardNumber;
 let isValid = false;
 let componentState;
-const MASKED_CC_PREFIX = "************";
+const MASKED_CC_PREFIX = '************';
 const checkoutConfiguration = window.Configuration;
 checkoutConfiguration.amount = {
   value: 0,
-  currency: "EUR",
+  currency: 'EUR',
 };
 checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
@@ -14,12 +14,12 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     hasHolderName: true,
     installments: [],
     onBrand: function (brandObject) {
-      $("#cardType").val(brandObject.brand);
+      $('#cardType').val(brandObject.brand);
     },
     onFieldValid: function (data) {
       if (data.endDigits) {
         maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-        $("#cardNumber").val(maskedCardNumber);
+        $('#cardNumber').val(maskedCardNumber);
       }
     },
     onChange: function (state) {
@@ -30,16 +30,15 @@ checkoutConfiguration.paymentMethodsConfiguration = {
 };
 
 const checkout = new AdyenCheckout(checkoutConfiguration);
-const card = checkout.create("card").mount(cardNode);
+const card = checkout.create('card').mount(cardNode);
 
-$('button[value="add-new-payment"]').on("click", function () {
+$('button[value="add-new-payment"]').on('click', function () {
   if (isValid) {
-    document.querySelector("#adyenStateData").value = JSON.stringify(
-      componentState.data
+    document.querySelector('#adyenStateData').value = JSON.stringify(
+      componentState.data,
     );
     return true;
-  } else {
-    card.showValidation();
-    return false;
   }
+  card.showValidation();
+  return false;
 });
