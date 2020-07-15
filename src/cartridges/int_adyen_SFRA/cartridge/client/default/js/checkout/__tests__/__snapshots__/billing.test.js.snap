@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Billing should append html to payment details 1`] = `
+<div
+  class="payment-details"
+>
+  <div>
+    <span>
+      mocked_pm
+    </span>
+  </div>
+  <div>
+    <span>
+      mocked_issuer_name
+    </span>
+  </div>
+  <div>
+    mocked_masked_cc
+  </div>
+  <div>
+    <span>
+      mocked_card_ending mocked_expiration_moth/mocked_expiration_year
+    </span>
+  </div>
+</div>
+`;
