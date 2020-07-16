@@ -5,7 +5,7 @@
         <parameters/>
         <split sequential="false">
             <flow>
-                <context site-id="yourSiteId"/>
+                <context site-id="RefArch"/>
                 <template-ref template-id="template_48"/>
             </flow>
             <flow-template template-id="template_48">

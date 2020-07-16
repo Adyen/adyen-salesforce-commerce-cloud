@@ -1,6 +1,0 @@
-<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true"/>
-<div class="form-data-error error"></div>
-<script type="text/javascript">
-    window.showStoreDetails = ${customer.authenticated};
-</script>
-<isinclude template="checkout/billing/adyenpaymentfields"/>

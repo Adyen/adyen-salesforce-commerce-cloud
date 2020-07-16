@@ -1,0 +1,80 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "airbnb-base"
+  ],
+  "globals": {
+    "$": "readonly",
+    "Resources": "readonly",
+    "order": "readonly",
+    "request": "readonly",
+    "response": "readonly",
+    "session": "readonly",
+    "dw": "readonly",
+    "empty": "readonly",
+    "Feature": "readonly",
+    "Scenario": "readonly",
+    "AdyenCheckout": "readonly",
+    "storeDetails": "writable",
+    "showStoreDetails": "readonly",
+    "checkout": "readonly",
+    "orderNo": "readonly",
+    "pspReference": "readonly",
+    "donationAmounts": "readonly",
+    "adyenGivingBackgroundUrl": "readonly",
+    "charityDescription": "readonly",
+    "adyenGivingLogoUrl": "readonly",
+    "charityName": "readonly",
+    "charityWebsite": "readonly",
+    "customer": "readonly",
+    "actor": "readonly",
+    "locate": "readonly",
+    "describe": "readonly",
+    "it": "readonly",
+    "copyCardData": "readonly",
+    "PIPELET_NEXT": "readonly",
+    "PIPELET_ERROR": "readonly",
+    "Urls": "readonly",
+    "SitePreferences": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "location": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "plugins": [
+    "prettier"
+  ],
+  "rules": {
+    "import/no-unresolved": "off",
+    "no-param-reassign": "off",
+    "func-names": "off",
+    "require-jsdoc": "off",
+    "vars-on-top": "off",
+    "global-require": "off",
+    "max-len": "off",
+    "no-use-before-define": "off",
+    "no-shadow": "off",
+    "no-void": "off",
+    "block-scoped-var": "off",
+    "no-return-assign": "off",
+    "no-plusplus": "off",
+    "no-sequences": "off",
+    "no-unused-expressions": "off",
+    "consistent-return": "off",
+    "no-continue": "off",
+    "prefer-destructuring": "off",
+    "no-tabs": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
+    "prefer-arrow-callback": "off",
+    "object-shorthand": "off"
+  }
+}
+
