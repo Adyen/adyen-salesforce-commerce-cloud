@@ -1,56 +1,47 @@
-"use strict";
+function hasData(...args) {
+  return args.every((arg) => !!arg);
+}
+
+function appendToPaymentSummary(html) {
+  // update payment details
+  const paymentSummary = document.querySelector(".payment-details");
+  paymentSummary.innerHTML += html;
+}
+
+function appendMaskedCC({ maskedCreditCardNumber }) {
+  const innerHTML = `<div>${maskedCreditCardNumber}</div>`;
+  maskedCreditCardNumber && appendToPaymentSummary(innerHTML);
+}
+
+function appendIssuerName({ selectedIssuerName }) {
+  const innerHTML = `<div><span>${selectedIssuerName}</span></div>`;
+  selectedIssuerName && appendToPaymentSummary(innerHTML);
+}
+function appendExpiration({ expirationMonth, expirationYear }, order) {
+  const innerHTML = `<div><span>${order.resources.cardEnding} ${expirationMonth}/${expirationYear}</span></div>`;
+  hasData(expirationMonth, expirationYear) && appendToPaymentSummary(innerHTML);
+}
+
+function appendPaymentMethod({ selectedAdyenPM }) {
+  const innerHTML = `<div><span>${selectedAdyenPM}</span></div>`;
+  selectedAdyenPM && appendToPaymentSummary(innerHTML);
+}
+
 /**
  * Updates the payment information in checkout, based on the supplied order model
  * @param {Object} order - checkout model to use as basis of new truth
  */
-function updatePaymentInformation(order) {
-  // update payment details
-  const $paymentSummary = $(".payment-details");
-  let htmlToAppend = "";
-
-  if (
-    order.billing.payment &&
-    order.billing.payment.selectedPaymentInstruments &&
-    order.billing.payment.selectedPaymentInstruments.length > 0
-  ) {
+export function updatePaymentInformation(order) {
+  if (order.billing.payment.selectedPaymentInstruments?.length) {
     const selectedPaymentInstrument =
       order.billing.payment.selectedPaymentInstruments[0];
-    if (selectedPaymentInstrument.selectedAdyenPM) {
-      htmlToAppend +=
-        "<div><span>" +
-        selectedPaymentInstrument.selectedAdyenPM +
-        "</span></div>";
-    }
-    if (selectedPaymentInstrument.selectedIssuerName) {
-      htmlToAppend +=
-        "<div><span>" +
-        selectedPaymentInstrument.selectedIssuerName +
-        "</span></div>";
-    }
-    if (selectedPaymentInstrument.maskedCreditCardNumber) {
-      htmlToAppend +=
-        "<div>" + selectedPaymentInstrument.maskedCreditCardNumber + "</div>";
-    }
-    if (
-      selectedPaymentInstrument.expirationMonth &&
-      selectedPaymentInstrument.expirationYear
-    ) {
-      htmlToAppend +=
-        "<div><span>" +
-        order.resources.cardEnding +
-        " " +
-        selectedPaymentInstrument.expirationMonth +
-        "/" +
-        selectedPaymentInstrument.expirationYear +
-        "</span></div>";
-    }
-  }
 
-  $paymentSummary.empty().append(htmlToAppend);
+    document.querySelector(".payment-details").innerHTML = "";
+    appendPaymentMethod(selectedPaymentInstrument);
+    appendIssuerName(selectedPaymentInstrument);
+    appendMaskedCC(selectedPaymentInstrument);
+    appendExpiration(selectedPaymentInstrument, order);
+  }
 }
 
-module.exports = {
-  methods: {
-    updatePaymentInformation: updatePaymentInformation,
-  },
-};
+export const methods = { updatePaymentInformation };
