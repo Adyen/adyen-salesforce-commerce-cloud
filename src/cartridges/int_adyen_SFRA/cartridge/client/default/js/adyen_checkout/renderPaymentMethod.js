@@ -84,12 +84,12 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
   return isSchemeNotStored ? cardImage : paymentMethodImage;
 }
 
-function hasChildNodes({ paymentMethodID, container }) {
+function hasNoChildNodes({ paymentMethodID, container }) {
   return store.componentsObj[paymentMethodID] && !container.childNodes[0];
 }
 
 function setValid({ paymentMethodID, container }) {
-  if (hasChildNodes({ paymentMethodID, container })) {
+  if (hasNoChildNodes({ paymentMethodID, container })) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }
