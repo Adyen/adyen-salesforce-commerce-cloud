@@ -1,4 +1,5 @@
-"use strict";
+import { authorizeWithForm } from "./utils/authorizeWithForm";
+import { clearForms } from "./utils/clearForms";
 
 const server = require("server");
 const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
@@ -51,102 +52,7 @@ server.post(
   "AuthorizeWithForm",
   csrfProtection.generateToken,
   server.middleware.https,
-  function (req, res, next) {
-    const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
-    let paymentInstrument;
-    let order;
-
-    if (session.privacy.orderNo && session.privacy.paymentMethod) {
-      try {
-        order = OrderMgr.getOrder(session.privacy.orderNo);
-        paymentInstrument = order.getPaymentInstruments(
-          session.privacy.paymentMethod
-        )[0];
-      } catch (e) {
-        Logger.getLogger("Adyen").error(
-          "Unable to retrieve order data from session."
-        );
-        res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-        return next();
-      }
-
-      if (session.privacy.MD === req.form.MD) {
-        const jsonRequest = {
-          paymentData: paymentInstrument.custom.adyenPaymentData,
-          details: {
-            MD: req.form.MD,
-            PaRes: req.form.PaRes,
-          },
-        };
-        const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
-
-        Transaction.wrap(function () {
-          paymentInstrument.custom.adyenPaymentData = null;
-        });
-        // if error, return to checkout page
-        if (result.error || result.resultCode !== "Authorised") {
-          Transaction.wrap(function () {
-            OrderMgr.failOrder(order, true);
-          });
-          res.redirect(
-            URLUtils.url(
-              "Checkout-Begin",
-              "stage",
-              "payment",
-              "paymentError",
-              Resource.msg("error.payment.not.valid", "checkout", null)
-            )
-          );
-          return next();
-        }
-
-        //custom fraudDetection
-        const fraudDetectionStatus = { status: "success" };
-
-        // Places the order
-        const placeOrderResult = COHelpers.placeOrder(
-          order,
-          fraudDetectionStatus
-        );
-        if (placeOrderResult.error) {
-          Transaction.wrap(function () {
-            OrderMgr.failOrder(order, true);
-          });
-          res.redirect(
-            URLUtils.url(
-              "Checkout-Begin",
-              "stage",
-              "placeOrder",
-              "paymentError",
-              Resource.msg("error.payment.not.valid", "checkout", null)
-            )
-          );
-          return next();
-        }
-
-        Transaction.begin();
-        AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-        order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-        order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-        Transaction.commit();
-        COHelpers.sendConfirmationEmail(order, req.locale.id);
-        clearForms();
-        res.redirect(
-          URLUtils.url(
-            "Order-Confirm",
-            "ID",
-            order.orderNo,
-            "token",
-            order.orderToken
-          ).toString()
-        );
-        return next();
-      }
-    }
-    Logger.getLogger("Adyen").error("Session variable does not exists");
-    res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-    return next();
-  }
+  authorizeWithForm
 );
 
 /**
@@ -837,29 +743,6 @@ server.post("Notify", server.middleware.https, function (req, res, next) {
   }
   next();
 });
-
-/**
- * Clear system session data
- */
-function clearForms() {
-  // Clears all forms used in the checkout process.
-  session.forms.billing.clearFormElement();
-  clearCustomSessionFields();
-}
-
-/**
- * Clear custom session data
- */
-function clearCustomSessionFields() {
-  // Clears all fields used in the 3d secure payment.
-  session.privacy.paymentMethod = null;
-  session.privacy.orderNo = null;
-  session.privacy.brandCode = null;
-  session.privacy.issuer = null;
-  session.privacy.adyenPaymentMethod = null;
-  session.privacy.adyenIssuerName = null;
-  session.privacy.ratePayFingerprint = null;
-}
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
