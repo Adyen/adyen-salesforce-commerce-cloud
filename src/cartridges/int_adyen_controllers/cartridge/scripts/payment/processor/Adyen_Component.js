@@ -1,5 +1,3 @@
-"use strict";
-
 /* API Includes */
 const URLUtils = require("dw/web/URLUtils");
 const PaymentMgr = require("dw/order/PaymentMgr");
@@ -19,7 +17,7 @@ function Handle(args) {
   const currentBasket = args.Basket;
   const paymentInformation = app.getForm("adyPaydata");
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     const result = adyenRemovePreviousPI.removePaymentInstruments(
       currentBasket
     );
@@ -52,7 +50,7 @@ function Authorize(args) {
     paymentInstrument.getPaymentMethod()
   ).getPaymentProcessor();
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
 
@@ -103,7 +101,7 @@ function Authorize(args) {
       };
     }
 
-    //If the response has MD, then it is a 3DS transaction
+    // If the response has MD, then it is a 3DS transaction
     if (
       result.redirectObject &&
       result.redirectObject.data &&
@@ -127,8 +125,8 @@ function Authorize(args) {
     }
 
     return {
-      order: order,
-      paymentInstrument: paymentInstrument,
+      order,
+      paymentInstrument,
       redirectObject: result.redirectObject,
     };
   }

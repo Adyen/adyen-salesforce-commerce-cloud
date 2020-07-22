@@ -28,5 +28,5 @@ function checkGivenCredentials(baHeader, baUser, baPassword) {
 }
 
 module.exports = {
-  checkGivenCredentials: checkGivenCredentials,
+  checkGivenCredentials,
 };

@@ -1,8 +1,8 @@
-"use strict";
-
 const server = require("server");
+
 server.extend(module.superModule);
 
+const Resource = require("dw/web/Resource");
 const userLoggedIn = require("*/cartridge/scripts/middleware/userLoggedIn");
 const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
 const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
@@ -10,13 +10,12 @@ const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
 const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const constants = require("*/cartridge/adyenConstants/constants");
 const adyenZeroAuth = require("*/cartridge/scripts/adyenZeroAuth");
-const Resource = require("dw/web/Resource");
 
 server.prepend(
   "List",
   userLoggedIn.validateLoggedIn,
   consentTracking.consent,
-  function (req, res, next) {
+  (req, res, next) => {
     require("*/cartridge/scripts/updateSavedCards").updateSavedCards({
       CurrentCustomer: req.currentCustomer.raw,
     });
@@ -29,7 +28,7 @@ server.prepend(
   csrfProtection.generateToken,
   consentTracking.consent,
   userLoggedIn.validateLoggedIn,
-  function (req, res, next) {
+  (req, res, next) => {
     const protocol = req.https ? "https" : "http";
     const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
       protocol,
@@ -38,8 +37,8 @@ server.prepend(
     const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const viewData = res.getViewData();
     viewData.adyen = {
-      originKey: originKey,
-      environment: environment,
+      originKey,
+      environment,
     };
 
     res.setViewData(viewData);
@@ -67,7 +66,7 @@ server.prepend("SavePayment", csrfProtection.validateAjaxRequest, function (
 
   let paymentInstrument;
   const wallet = customer.getProfile().getWallet();
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT
     );
@@ -103,33 +102,32 @@ server.prepend("SavePayment", csrfProtection.validateAjaxRequest, function (
     redirectUrl: URLUtils.url("PaymentInstruments-List").toString(),
   });
   this.emit("route:Complete", req, res);
-  return;
 });
 
-server.append("DeletePayment", userLoggedIn.validateLoggedInAjax, function (
-  req,
-  res,
-  next
-) {
-  const CustomerMgr = require("dw/customer/CustomerMgr");
-  const payment = res.getViewData();
+server.append(
+  "DeletePayment",
+  userLoggedIn.validateLoggedInAjax,
+  (req, res, next) => {
+    const CustomerMgr = require("dw/customer/CustomerMgr");
+    const payment = res.getViewData();
 
-  if (payment) {
-    const customer = CustomerMgr.getCustomerByCustomerNumber(
-      req.currentCustomer.profile.customerNo
-    );
-    const tokenToDelete = AdyenHelper.getCardToken(payment.UUID, customer);
-    if (tokenToDelete) {
-      require("*/cartridge/scripts/adyenDeleteRecurringPayment").deleteRecurringPayment(
-        {
-          Customer: customer,
-          RecurringDetailReference: tokenToDelete,
-        }
+    if (payment) {
+      const customer = CustomerMgr.getCustomerByCustomerNumber(
+        req.currentCustomer.profile.customerNo
       );
+      const tokenToDelete = AdyenHelper.getCardToken(payment.UUID, customer);
+      if (tokenToDelete) {
+        require("*/cartridge/scripts/adyenDeleteRecurringPayment").deleteRecurringPayment(
+          {
+            Customer: customer,
+            RecurringDetailReference: tokenToDelete,
+          }
+        );
+      }
     }
-  }
 
-  return next();
-});
+    return next();
+  }
+);
 
 module.exports = server.exports();

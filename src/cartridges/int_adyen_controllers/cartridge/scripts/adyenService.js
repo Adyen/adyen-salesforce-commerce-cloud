@@ -1,4 +1,5 @@
 const app = require("app_storefront_controllers/cartridge/scripts/app");
+
 const OrderModel = app.getModel("Order");
 
 function submit(order) {
@@ -6,5 +7,5 @@ function submit(order) {
 }
 
 module.exports = {
-  submit: submit,
+  submit,
 };

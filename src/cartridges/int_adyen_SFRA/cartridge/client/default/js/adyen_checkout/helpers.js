@@ -15,7 +15,7 @@ export function paymentFromComponent(data, component) {
     url: "Adyen-PaymentFromComponent",
     type: "post",
     data: { data: JSON.stringify(data) },
-    success: function (data) {
+    success(data) {
       if (data.fullResponse?.action) {
         component.handleAction(data.fullResponse.action);
       } else {
@@ -23,7 +23,7 @@ export function paymentFromComponent(data, component) {
         component.reject("Payment Refused");
       }
     },
-  }).fail(function () {});
+  }).fail(() => {});
 }
 
 export function resetPaymentMethod() {

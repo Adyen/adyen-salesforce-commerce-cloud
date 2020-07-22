@@ -5,11 +5,12 @@ const dwsvc = require("dw/svc");
 const dwsystem = require("dw/system");
 const dwutil = require("dw/util");
 const URLUtils = require("dw/web/URLUtils");
+
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
 var __AdyenHelper = {
-  //service constants
+  // service constants
   SERVICE: {
     PAYMENT: "AdyenPayment",
     PAYMENTDETAILS: "AdyenPaymentDetails",
@@ -38,24 +39,23 @@ var __AdyenHelper = {
   CHECKOUT_COMPONENT_VERSION: "3.9.4",
   VERSION: "20.1.0",
 
-  getService: function (service) {
+  getService(service) {
     // Create the service config (used for all services)
     var adyenService = null;
 
     try {
       adyenService = dwsvc.LocalServiceRegistry.createService(service, {
-        createRequest: function (svc, args) {
+        createRequest(svc, args) {
           svc.setRequestMethod("POST");
           if (args) {
             return args;
-          } else {
-            return null;
           }
+          return null;
         },
-        parseResponse: function (svc, client) {
+        parseResponse(svc, client) {
           return client;
         },
-        filterLogMessage: function (msg) {
+        filterLogMessage(msg) {
           return msg;
         },
       });
@@ -68,12 +68,12 @@ var __AdyenHelper = {
         "Can't get service instance with name {0}",
         service
       );
-      //e.message
+      // e.message
     }
     return adyenService;
   },
 
-  getCustomPreference: function (field) {
+  getCustomPreference(field) {
     let customPreference = null;
     if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
       customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
@@ -81,15 +81,15 @@ var __AdyenHelper = {
     return customPreference;
   },
 
-  getAdyenEnvironment: function () {
+  getAdyenEnvironment() {
     return __AdyenHelper.getCustomPreference("Adyen_Mode").value;
   },
 
-  getAdyenMerchantAccount: function () {
+  getAdyenMerchantAccount() {
     return __AdyenHelper.getCustomPreference("Adyen_merchantCode");
   },
 
-  getAdyenUrl: function () {
+  getAdyenUrl() {
     let returnValue = "";
     switch (__AdyenHelper.getAdyenEnvironment()) {
       case __AdyenHelper.MODE.TEST:
@@ -102,15 +102,15 @@ var __AdyenHelper = {
     return returnValue;
   },
 
-  getAdyenSecuredFieldsEnabled: function () {
+  getAdyenSecuredFieldsEnabled() {
     return __AdyenHelper.getCustomPreference("AdyenSecuredFieldsEnabled");
   },
 
-  getAdyen3DS2Enabled: function () {
+  getAdyen3DS2Enabled() {
     return __AdyenHelper.getCustomPreference("Adyen3DS2Enabled");
   },
 
-  getAdyenRecurringPaymentsEnabled: function () {
+  getAdyenRecurringPaymentsEnabled() {
     let returnValue = false;
     if (
       !empty(adyenCurrentSite) &&
@@ -122,7 +122,7 @@ var __AdyenHelper = {
     return returnValue;
   },
 
-  getAdyenGivingConfig: function (order) {
+  getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     let adyenGivingAvailable = false;
     if (
@@ -143,61 +143,55 @@ var __AdyenHelper = {
       };
     }
     return {
-      adyenGivingAvailable: adyenGivingAvailable,
-      configuredAmounts: configuredAmounts,
-      charityName: charityName,
-      charityWebsite: charityWebsite,
-      charityDescription: charityDescription,
-      adyenGivingBackgroundUrl: adyenGivingBackgroundUrl,
-      adyenGivingLogoUrl: adyenGivingLogoUrl,
+      adyenGivingAvailable,
+      configuredAmounts,
+      charityName,
+      charityWebsite,
+      charityDescription,
+      adyenGivingBackgroundUrl,
+      adyenGivingLogoUrl,
       donationAmounts: JSON.stringify(donationAmounts),
       pspReference: order.custom.Adyen_pspReference,
     };
   },
 
-  getAdyenRecurringEnabled: function () {
+  getAdyenRecurringEnabled() {
     return __AdyenHelper.getCustomPreference("AdyenRecurringEnabled");
   },
 
-  getAdyenOneClickEnabled: function () {
+  getAdyenOneClickEnabled() {
     return __AdyenHelper.getCustomPreference("AdyenOneClickEnabled");
   },
 
-  getCreditCardInstallments: function () {
+  getCreditCardInstallments() {
     return __AdyenHelper.getCustomPreference("AdyenCreditCardInstallments");
   },
 
-  getPaypalMerchantID: function () {
+  getPaypalMerchantID() {
     return __AdyenHelper.getCustomPreference("Adyen_PaypalMerchantID");
   },
 
-  getAdyenStoreId: function () {
+  getAdyenStoreId() {
     return __AdyenHelper.getCustomPreference("Adyen_StoreId");
   },
 
-  getAdyenApiKey: function () {
+  getAdyenApiKey() {
     return __AdyenHelper.getCustomPreference("Adyen_API_Key");
   },
 
-  getCheckoutUrl: function () {
-    const checkoutUrl =
-      this.getLoadingContext() +
-      "sdk/" +
-      __AdyenHelper.CHECKOUT_COMPONENT_VERSION +
-      "/adyen.js";
+  getCheckoutUrl() {
+    const checkoutUrl = this.getLoadingContext();
+    `sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
     return checkoutUrl;
   },
 
-  getCheckoutCSS: function () {
-    const checkoutCSS =
-      this.getLoadingContext() +
-      "sdk/" +
-      __AdyenHelper.CHECKOUT_COMPONENT_VERSION +
-      "/adyen.css";
+  getCheckoutCSS() {
+    const checkoutCSS = this.getLoadingContext();
+    `sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
     return checkoutCSS;
   },
 
-  getLoadingContext: function () {
+  getLoadingContext() {
     let returnValue = "";
     switch (__AdyenHelper.getAdyenEnvironment()) {
       case __AdyenHelper.MODE.TEST:
@@ -210,7 +204,7 @@ var __AdyenHelper = {
     return returnValue;
   },
 
-  getAdyenHash: function (value, salt) {
+  getAdyenHash(value, salt) {
     const data = value + salt;
     const Bytes = require("dw/util/Bytes");
     const MessageDigest = require("dw/crypto/MessageDigest");
@@ -223,31 +217,31 @@ var __AdyenHelper = {
     return signature;
   },
 
-  getAdyenBasketFieldsEnabled: function () {
+  getAdyenBasketFieldsEnabled() {
     return __AdyenHelper.getCustomPreference("AdyenBasketFieldsEnabled");
   },
 
-  getAdyenGivingEnabled: function () {
+  getAdyenGivingEnabled() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_enabled");
   },
 
-  getAdyenGivingCharityAccount: function () {
+  getAdyenGivingCharityAccount() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_charityAccount");
   },
 
-  getAdyenGivingCharityName: function () {
+  getAdyenGivingCharityName() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_charityName");
   },
 
-  getAdyenGivingCharityDescription: function () {
+  getAdyenGivingCharityDescription() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_charityDescription");
   },
 
-  getAdyenGivingCharityWebsite: function () {
+  getAdyenGivingCharityWebsite() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_charityUrl");
   },
 
-  getDonationAmounts: function () {
+  getDonationAmounts() {
     let returnValue = [];
     if (
       !empty(adyenCurrentSite) &&
@@ -271,17 +265,17 @@ var __AdyenHelper = {
     return returnValue;
   },
 
-  getAdyenGivingBackgroundUrl: function () {
+  getAdyenGivingBackgroundUrl() {
     return __AdyenHelper
       .getCustomPreference("AdyenGiving_backgroundUrl")
       .getAbsURL();
   },
 
-  getAdyenGivingLogoUrl: function () {
+  getAdyenGivingLogoUrl() {
     return __AdyenHelper.getCustomPreference("AdyenGiving_logoUrl").getAbsURL();
   },
 
-  isAdyenGivingAvailable: function (paymentMethod) {
+  isAdyenGivingAvailable(paymentMethod) {
     const availablePaymentMethods = [
       "visa",
       "mc",
@@ -302,7 +296,7 @@ var __AdyenHelper = {
     return availablePaymentMethods.indexOf(paymentMethod) !== -1;
   },
 
-  getRatePayID: function () {
+  getRatePayID() {
     const returnValue = {};
     if (
       adyenCurrentSite &&
@@ -324,7 +318,7 @@ var __AdyenHelper = {
     return returnValue;
   },
 
-  isOpenInvoiceMethod: function (paymentMethod) {
+  isOpenInvoiceMethod(paymentMethod) {
     if (
       paymentMethod.indexOf("afterpay") > -1 ||
       paymentMethod.indexOf("klarna") > -1 ||
@@ -337,7 +331,7 @@ var __AdyenHelper = {
     return false;
   },
 
-  isMolpayMethod: function (paymentMethod) {
+  isMolpayMethod(paymentMethod) {
     if (paymentMethod.indexOf("molpay") > -1) {
       return true;
     }
@@ -346,7 +340,7 @@ var __AdyenHelper = {
   },
 
   // Get saved card token of customer saved card based on matched cardUUID
-  getCardToken: function (cardUUID, customer) {
+  getCardToken(cardUUID, customer) {
     let token = "";
     if (customer && customer.authenticated && cardUUID) {
       const wallet = customer.getProfile().getWallet();
@@ -355,7 +349,7 @@ var __AdyenHelper = {
       const instrumentsIter = paymentInstruments.iterator();
       while (instrumentsIter.hasNext()) {
         creditCardInstrument = instrumentsIter.next();
-        //find token ID exists for matching payment card
+        // find token ID exists for matching payment card
         if (
           creditCardInstrument.UUID.equals(cardUUID) &&
           creditCardInstrument.getCreditCardToken()
@@ -368,7 +362,7 @@ var __AdyenHelper = {
     return token;
   },
 
-  createShopperObject: function (args) {
+  createShopperObject(args) {
     let gender = "UNKNOWN";
     if (
       args.paymentRequest.shopperName &&
@@ -378,9 +372,10 @@ var __AdyenHelper = {
     }
 
     if (args.order.getDefaultShipment().getShippingAddress().getPhone()) {
-      args.paymentRequest[
-        "telephoneNumber"
-      ] = args.order.getDefaultShipment().getShippingAddress().getPhone();
+      args.paymentRequest.telephoneNumber = args.order
+        .getDefaultShipment()
+        .getShippingAddress()
+        .getPhone();
     }
 
     const customer = args.order.getCustomer();
@@ -390,45 +385,43 @@ var __AdyenHelper = {
         : null;
 
     if (args.order.customerEmail) {
-      args.paymentRequest["shopperEmail"] = args.order.customerEmail;
+      args.paymentRequest.shopperEmail = args.order.customerEmail;
     }
     if (!args.order.customerEmail && profile && profile.getEmail()) {
-      args.paymentRequest["shopperEmail"] = profile.getEmail();
+      args.paymentRequest.shopperEmail = profile.getEmail();
     }
 
     const shopperDetails = {
       firstName: args.order.getBillingAddress().firstName,
-      gender: gender,
+      gender,
       infix: "",
       lastName: args.order.getBillingAddress().lastName,
     };
-    args.paymentRequest["shopperName"] = shopperDetails;
+    args.paymentRequest.shopperName = shopperDetails;
 
     if (profile && profile.getCustomerNo()) {
-      args.paymentRequest["shopperReference"] = profile.getCustomerNo();
+      args.paymentRequest.shopperReference = profile.getCustomerNo();
     } else if (args.order.getCustomerNo()) {
-      args.paymentRequest["shopperReference"] = args.order.getCustomerNo();
+      args.paymentRequest.shopperReference = args.order.getCustomerNo();
     }
 
     const shopperIP = request.getHttpRemoteAddress()
       ? request.getHttpRemoteAddress()
       : null;
     if (shopperIP) {
-      args.paymentRequest["shopperIP"] = shopperIP;
+      args.paymentRequest.shopperIP = shopperIP;
     }
 
     if (request.getLocale()) {
-      args.paymentRequest["shopperLocale"] = request.getLocale();
+      args.paymentRequest.shopperLocale = request.getLocale();
     }
 
     return args.paymentRequest;
   },
 
-  createAddressObjects: function (order, paymentMethod, paymentRequest) {
-    const shippingAddress = order.defaultShipment.shippingAddress;
-    paymentRequest[
-      "countryCode"
-    ] = shippingAddress.countryCode.value.toUpperCase();
+  createAddressObjects(order, paymentMethod, paymentRequest) {
+    const { shippingAddress } = order.defaultShipment;
+    paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
 
     let shippingStreet = "";
     let shippingHouseNumberOrName = "";
@@ -439,7 +432,7 @@ var __AdyenHelper = {
         shippingHouseNumberOrName = shippingAddress.address2;
         if (paymentMethod.indexOf("afterpaytouch") > -1) {
           shippingHouseNumberOrName = "";
-          shippingStreet += " " + shippingAddress.address2;
+          shippingStreet += ` ${shippingAddress.address2}`;
         }
       }
     } else {
@@ -469,7 +462,7 @@ var __AdyenHelper = {
         billingHouseNumberOrName = billingAddress.address2;
         if (paymentMethod.indexOf("afterpaytouch") > -1) {
           billingHouseNumberOrName = "";
-          billingStreet += " " + billingAddress.address2;
+          billingStreet += ` ${billingAddress.address2}`;
         }
       }
     } else {
@@ -492,10 +485,10 @@ var __AdyenHelper = {
     return paymentRequest;
   },
 
-  createAdyenRequestObject: function (order, paymentInstrument) {
+  createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
     const filteredJson = __AdyenHelper.validateStateData(jsonObject);
-    const stateData = filteredJson.stateData;
+    const { stateData } = filteredJson;
 
     let reference = "recurringPayment-account";
     if (order && order.getOrderNo()) {
@@ -511,18 +504,18 @@ var __AdyenHelper = {
     return stateData;
   },
 
-  add3DS2Data: function (jsonObject) {
-    jsonObject.additionalData["allow3DS2"] = true;
-    jsonObject["channel"] = "web";
+  add3DS2Data(jsonObject) {
+    jsonObject.additionalData.allow3DS2 = true;
+    jsonObject.channel = "web";
 
-    const origin = request.getHttpProtocol() + "://" + request.getHttpHost();
-    jsonObject["origin"] = origin;
+    const origin = `${request.getHttpProtocol()}://${request.getHttpHost()}`;
+    jsonObject.origin = origin;
     jsonObject.threeDS2RequestData = { notificationURL: "" };
 
     return jsonObject;
   },
 
-  getAdyenCardType: function (cardType) {
+  getAdyenCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case "Visa":
@@ -567,7 +560,7 @@ var __AdyenHelper = {
     return cardType;
   },
 
-  getSFCCCardType: function (cardType) {
+  getSFCCCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case "visa":
@@ -603,14 +596,13 @@ var __AdyenHelper = {
           break;
       }
       return cardType;
-    } else {
-      throw new Error(
-        "cardType argument is not passed to getSFCCCardType function"
-      );
     }
+    throw new Error(
+      "cardType argument is not passed to getSFCCCardType function"
+    );
   },
 
-  savePaymentDetails: function (paymentInstrument, order, result) {
+  savePaymentDetails(paymentInstrument, order, result) {
     if (result.pspReference) {
       paymentInstrument.paymentTransaction.transactionID = result.pspReference;
       order.custom.Adyen_pspReference = result.pspReference;
@@ -636,7 +628,7 @@ var __AdyenHelper = {
     return true;
   },
 
-  getCurrencyValueForApi: function (amount) {
+  getCurrencyValueForApi(amount) {
     const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
     const digitsNumber = __AdyenHelper.getFractionDigits(
       currencyCode.toString()
@@ -644,7 +636,7 @@ var __AdyenHelper = {
     return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value);
   },
 
-  getFractionDigits: function (currencyCode) {
+  getFractionDigits(currencyCode) {
     let format;
     switch (currencyCode) {
       case "CVE":
@@ -680,7 +672,7 @@ var __AdyenHelper = {
     return format;
   },
 
-  getApplicationInfo: function (isEcom) {
+  getApplicationInfo(isEcom) {
     let externalPlatformVersion = "";
     const applicationInfo = {};
     try {
@@ -710,7 +702,7 @@ var __AdyenHelper = {
     return applicationInfo;
   },
 
-  validateStateData: function (stateData) {
+  validateStateData(stateData) {
     const validFields = [
       "paymentMethod",
       "billingAddress",
@@ -739,7 +731,7 @@ var __AdyenHelper = {
         filteredStateData[keyName] = stateData[keyName];
       }
     }
-    return { stateData: filteredStateData, invalidFields: invalidFields };
+    return { stateData: filteredStateData, invalidFields };
   },
 };
 

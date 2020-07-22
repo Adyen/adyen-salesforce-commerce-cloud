@@ -11,7 +11,7 @@ function getComponentName(data) {
 export function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
-    onChange: function (state) {
+    onChange(state) {
       store.isValid = state.isValid;
       const isSelected = getComponentName(state.data) === store.selectedMethod;
       if (isSelected) {
@@ -61,7 +61,7 @@ export function getPaypalConfig() {
 }
 
 export function handleOnChange(state) {
-  const type = state.data.paymentMethod.type;
+  const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};

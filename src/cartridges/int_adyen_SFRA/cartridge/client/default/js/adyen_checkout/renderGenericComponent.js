@@ -20,7 +20,7 @@ function getPaymentMethods(paymentMethods) {
   $.ajax({
     url: "Adyen-GetPaymentMethods",
     type: "get",
-    success: function (data) {
+    success(data) {
       paymentMethods(data);
     },
   });
@@ -30,10 +30,7 @@ function getPaymentMethods(paymentMethods) {
  * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
 function unmountComponents() {
-  const promises = Object.entries(store.componentsObj).map(function ([
-    key,
-    val,
-  ]) {
+  const promises = Object.entries(store.componentsObj).map(([key, val]) => {
     delete store.componentsObj[key];
     return resolveUnmount(key, val);
   });
@@ -122,7 +119,7 @@ export async function renderGenericComponent() {
   if (Object.keys(store.componentsObj).length !== 0) {
     await unmountComponents();
   }
-  getPaymentMethods(function (data) {
+  getPaymentMethods((data) => {
     store.checkoutConfiguration.paymentMethodsResponse =
       data.AdyenPaymentMethods;
     setCheckoutConfiguration(data);

@@ -1,4 +1,5 @@
 import { methods } from "../billing";
+
 describe("Billing", () => {
   it("should append html to payment details", () => {
     document.body.innerHTML = `

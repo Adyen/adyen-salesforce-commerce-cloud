@@ -1,6 +1,5 @@
-"use strict";
-
 const server = require("server");
+
 server.extend(module.superModule);
 
 const userLoggedIn = require("*/cartridge/scripts/middleware/userLoggedIn");
@@ -11,7 +10,7 @@ server.prepend(
   server.middleware.https,
   userLoggedIn.validateLoggedIn,
   consentTracking.consent,
-  function (req, res, next) {
+  (req, res, next) => {
     require("*/cartridge/scripts/updateSavedCards").updateSavedCards({
       CurrentCustomer: req.currentCustomer.raw,
     });

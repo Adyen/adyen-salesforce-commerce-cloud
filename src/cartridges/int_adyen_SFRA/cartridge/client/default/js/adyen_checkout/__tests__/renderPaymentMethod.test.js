@@ -99,7 +99,7 @@ describe("Render Payment Method", () => {
     const input = document.getElementById("rb_ratepay");
     input.onchange({ target: { value: "ratepay" } });
     expect(
-      document.querySelector(`button[value="submit-payment"]`).disabled
+      document.querySelector('button[value="submit-payment"]').disabled
     ).toBeFalsy();
     expect(store.selectedMethod).toBe("ratepay");
   });
@@ -123,7 +123,7 @@ describe("Render Payment Method", () => {
     const input = document.getElementById("rb_paypal");
     input.onchange({ target: { value: "paypal" } });
     expect(
-      document.querySelector(`button[value="submit-payment"]`).disabled
+      document.querySelector('button[value="submit-payment"]').disabled
     ).toBeTruthy();
     expect(store.selectedMethod).toBe("paypal");
   });

@@ -1,5 +1,3 @@
-"use strict";
-
 /* API Includes */
 const PaymentMgr = require("dw/order/PaymentMgr");
 const Resource = require("dw/web/Resource");
@@ -15,7 +13,7 @@ require("app_storefront_controllers/cartridge/scripts/app");
 function handle(args) {
   const adyenRemovePreviousPI = require("*/cartridge/scripts/adyenRemovePreviousPI");
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     const result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
     if (result.error) {
       return result;
@@ -45,7 +43,7 @@ function authorize(args) {
     paymentInstrument.getPaymentMethod()
   ).getPaymentProcessor();
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.transactionID = orderNo;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -75,7 +73,7 @@ function authorize(args) {
   );
   if (result.error) {
     Logger.getLogger("Adyen").error(
-      "POS Authorise error, result: " + result.response
+      `POS Authorise error, result: ${result.response}`
     );
     errors = [];
     errors.push(

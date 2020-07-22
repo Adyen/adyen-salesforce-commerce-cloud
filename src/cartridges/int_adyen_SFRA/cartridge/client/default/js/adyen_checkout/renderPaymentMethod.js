@@ -20,7 +20,7 @@ function getFallback(paymentMethod) {
     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>
   `;
 
-  const fallback = { ach: ach, ratepay: ratepay };
+  const fallback = { ach, ratepay };
   return fallback[paymentMethod];
 }
 

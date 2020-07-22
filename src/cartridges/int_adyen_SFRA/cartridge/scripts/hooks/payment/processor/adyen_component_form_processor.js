@@ -1,4 +1,3 @@
-"use strict";
 const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
 
 /**
@@ -34,7 +33,7 @@ function processForm(req, paymentForm, viewFormData) {
   };
 
   viewData.paymentInformation = {
-    isCreditCard: isCreditCard,
+    isCreditCard,
     cardType: paymentForm.creditCardFields.cardType.value,
     cardNumber: paymentForm.creditCardFields.cardNumber.value,
     adyenPaymentMethod: req.form.adyenPaymentMethod
@@ -57,10 +56,11 @@ function processForm(req, paymentForm, viewFormData) {
     req.currentCustomer.raw.authenticated &&
     req.currentCustomer.raw.registered
   ) {
-    const paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
-    const paymentInstrument = array.find(paymentInstruments, function (item) {
-      return viewData.storedPaymentUUID === item.UUID;
-    });
+    const { paymentInstruments } = req.currentCustomer.wallet;
+    const paymentInstrument = array.find(
+      paymentInstruments,
+      (item) => viewData.storedPaymentUUID === item.UUID
+    );
 
     viewData.paymentInformation.cardNumber.value =
       paymentInstrument.creditCardNumber;
@@ -77,7 +77,7 @@ function processForm(req, paymentForm, viewFormData) {
 
   return {
     error: false,
-    viewData: viewData,
+    viewData,
   };
 }
 

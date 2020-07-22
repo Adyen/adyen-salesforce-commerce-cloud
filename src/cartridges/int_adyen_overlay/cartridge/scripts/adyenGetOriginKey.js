@@ -22,7 +22,7 @@ function getOriginKey(origin) {
 
     const domain = [];
     domain.push(origin);
-    requestObject["originDomains"] = domain;
+    requestObject.originDomains = domain;
 
     const xapikey = AdyenHelper.getAdyenApiKey();
     service.addHeader("Content-type", "application/json");
@@ -32,14 +32,9 @@ function getOriginKey(origin) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        "/originKeys Call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `/originKeys Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
       );
     }
 
@@ -51,20 +46,19 @@ function getOriginKey(origin) {
     return JSON.parse(resultObject.getText());
   } catch (e) {
     Logger.getLogger("Adyen").fatal(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
-    return;
   }
 }
 
 function getOriginKeyFromRequest(protocol, host) {
-  const origin = protocol + "://" + host;
+  const origin = `${protocol}://${host}`;
   const originKeysResponse = getOriginKey(origin);
 
-  return originKeysResponse["originKeys"][origin];
+  return originKeysResponse.originKeys[origin];
 }
 
 module.exports = {
-  getOriginKey: getOriginKey,
-  getOriginKeyFromRequest: getOriginKeyFromRequest,
+  getOriginKey,
+  getOriginKeyFromRequest,
 };

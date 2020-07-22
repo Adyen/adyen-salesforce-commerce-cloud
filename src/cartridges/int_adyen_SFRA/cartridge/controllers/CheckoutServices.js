@@ -1,6 +1,5 @@
-"use strict";
-
 const server = require("server");
+
 server.extend(module.superModule);
 
 const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
@@ -34,20 +33,21 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     return next();
   }
 
-  collections.forEach(currentBasket.getPaymentInstruments(), function (
-    paymentInstrument
-  ) {
-    if (
-      [
-        constants.METHOD_ADYEN,
-        paymentInstrument.METHOD_CREDIT_CARD,
-        constants.METHOD_ADYEN_POS,
-        constants.METHOD_ADYEN_COMPONENT,
-      ].indexOf(paymentInstrument.paymentMethod) !== -1
-    ) {
-      isAdyen = true;
+  collections.forEach(
+    currentBasket.getPaymentInstruments(),
+    (paymentInstrument) => {
+      if (
+        [
+          constants.METHOD_ADYEN,
+          paymentInstrument.METHOD_CREDIT_CARD,
+          constants.METHOD_ADYEN_POS,
+          constants.METHOD_ADYEN_COMPONENT,
+        ].indexOf(paymentInstrument.paymentMethod) !== -1
+      ) {
+        isAdyen = true;
+      }
     }
-  });
+  );
 
   if (!isAdyen) {
     return next();
@@ -115,7 +115,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   }
 
   // Calculate the basket
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     basketCalculationHelpers.calculateTotals(currentBasket);
   });
 
@@ -181,8 +181,9 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     });
     this.emit("route:Complete", req, res);
     return;
-  } else if (handlePaymentResult.redirectObject) {
-    //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
+  }
+  if (handlePaymentResult.redirectObject) {
+    // If authorized3d, then redirectObject from credit card, hence it is 3D Secure
     if (handlePaymentResult.authorized3d) {
       session.privacy.MD = handlePaymentResult.redirectObject.data.MD;
       res.json({
@@ -199,20 +200,19 @@ server.prepend("PlaceOrder", server.middleware.https, function (
       });
       this.emit("route:Complete", req, res);
       return;
-    } else {
-      res.json({
-        error: false,
-        continueUrl: URLUtils.url(
-          "Adyen-Redirect",
-          "redirectUrl",
-          handlePaymentResult.redirectObject.url,
-          "signature",
-          handlePaymentResult.signature
-        ).toString(),
-      });
-      this.emit("route:Complete", req, res);
-      return;
     }
+    res.json({
+      error: false,
+      continueUrl: URLUtils.url(
+        "Adyen-Redirect",
+        "redirectUrl",
+        handlePaymentResult.redirectObject.url,
+        "signature",
+        handlePaymentResult.signature
+      ).toString(),
+    });
+    this.emit("route:Complete", req, res);
+    return;
   }
 
   const fraudDetectionStatus = hooksHelper(
@@ -222,7 +222,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     require("*/cartridge/scripts/hooks/fraudDetection").fraudDetection
   );
   if (fraudDetectionStatus.status === "fail") {
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
 
