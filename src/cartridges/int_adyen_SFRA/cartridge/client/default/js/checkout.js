@@ -1,11 +1,9 @@
-"use strict";
-
 const processInclude = require("base/util");
 const adyenCheckout = require("./adyenCheckout");
 
 $(document).ready(function () { // eslint-disable-line
   const name = "paymentError";
-  const error = new RegExp("[?&]" + encodeURIComponent(name) + "=([^&]*)").exec(
+  const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
     location.search
   );
   const paymentStage = new RegExp("[?&]stage=payment([^&]*)").exec(

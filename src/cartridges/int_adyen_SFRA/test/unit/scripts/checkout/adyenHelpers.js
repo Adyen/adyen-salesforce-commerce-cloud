@@ -1,10 +1,10 @@
-const assert = require("chai").assert;
+const { assert } = require("chai");
 
 const adyenHelpers = require("../../../mocks/helpers/adyenHelpers");
 
-describe("adyenHelpers", function () {
-  describe("validatePayment", function () {
-    it("should return an invalid payment", function () {
+describe("adyenHelpers", () => {
+  describe("validatePayment", () => {
+    it("should return an invalid payment", () => {
       const req = {
         geolocation: {
           countryCode: "NL",

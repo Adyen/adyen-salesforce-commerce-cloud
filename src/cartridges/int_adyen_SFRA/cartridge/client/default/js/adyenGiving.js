@@ -8,15 +8,15 @@ function handleOnDonate(state, component) {
   const donationData = {
     amountValue: selectedAmount.value,
     amountCurrency: selectedAmount.currency,
-    orderNo: orderNo,
-    pspReference: pspReference,
+    orderNo,
+    pspReference,
   };
 
   $.ajax({
     url: "Adyen-Donate",
     type: "post",
     data: donationData,
-    success: function () {
+    success() {
       component.setStatus("success");
     },
   });

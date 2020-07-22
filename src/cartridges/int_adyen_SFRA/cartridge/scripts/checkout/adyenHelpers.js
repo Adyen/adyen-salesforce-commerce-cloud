@@ -1,5 +1,3 @@
-"use strict";
-
 const Transaction = require("dw/system/Transaction");
 const HookMgr = require("dw/system/HookMgr");
 const PaymentMgr = require("dw/order/PaymentMgr");
@@ -15,10 +13,10 @@ const PaymentInstrument = require("dw/order/PaymentInstrument");
 function handlePayments(order, orderNumber) {
   let result = {};
   if (order.totalNetPrice !== 0.0) {
-    const paymentInstruments = order.paymentInstruments;
+    const { paymentInstruments } = order;
 
     if (paymentInstruments.length === 0) {
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       result.error = true;
@@ -26,9 +24,9 @@ function handlePayments(order, orderNumber) {
     if (!result.error) {
       for (let i = 0; i < paymentInstruments.length; i++) {
         const paymentInstrument = paymentInstruments[i];
-        const paymentProcessor = PaymentMgr.getPaymentMethod(
+        const { paymentProcessor } = PaymentMgr.getPaymentMethod(
           paymentInstrument.paymentMethod
-        ).paymentProcessor;
+        );
         let authorizationResult;
 
         if (paymentProcessor === null) {
@@ -38,11 +36,11 @@ function handlePayments(order, orderNumber) {
         } else {
           if (
             HookMgr.hasHook(
-              "app.payment.processor." + paymentProcessor.ID.toLowerCase()
+              `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`
             )
           ) {
             authorizationResult = HookMgr.callHook(
-              "app.payment.processor." + paymentProcessor.ID.toLowerCase(),
+              `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`,
               "Authorize",
               orderNumber,
               paymentInstrument,
@@ -56,7 +54,7 @@ function handlePayments(order, orderNumber) {
           }
           result = authorizationResult;
           if (authorizationResult.error) {
-            Transaction.wrap(function () {
+            Transaction.wrap(() => {
               OrderMgr.failOrder(order, true);
             });
             result.error = true;
@@ -83,9 +81,9 @@ function validatePayment(req, currentBasket) {
     PaymentInstrument.METHOD_CREDIT_CARD
   );
   const paymentAmount = currentBasket.totalGrossPrice.value;
-  const countryCode = req.geolocation.countryCode;
+  const { countryCode } = req.geolocation;
   const currentCustomer = req.currentCustomer.raw;
-  const paymentInstruments = currentBasket.paymentInstruments;
+  const { paymentInstruments } = currentBasket;
   const result = {};
 
   applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
@@ -145,6 +143,6 @@ function validatePayment(req, currentBasket) {
 }
 
 module.exports = {
-  handlePayments: handlePayments,
-  validatePayment: validatePayment,
+  handlePayments,
+  validatePayment,
 };

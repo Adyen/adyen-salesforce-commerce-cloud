@@ -15,7 +15,7 @@ function check(request) {
   const baPassword = Site.getCurrent().getCustomPreferenceValue(
     "Adyen_notification_password"
   );
-  const baHeader = request.httpHeaders["authorization"];
+  const baHeader = request.httpHeaders.authorization;
   if (!(baUser && baPassword && baHeader)) {
     return false;
   }
@@ -28,5 +28,5 @@ function check(request) {
 }
 
 module.exports = {
-  check: check,
+  check,
 };

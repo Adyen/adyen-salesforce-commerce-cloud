@@ -11,7 +11,7 @@ function execute(args) {
 }
 
 function handle(orderID) {
-  const queryString = "custom.orderId LIKE '" + orderID + "*'";
+  const queryString = `custom.orderId LIKE '${orderID}*'`;
   const searchQuery = CustomObjectMgr.queryCustomObjects(
     "adyenNotification",
     queryString,
@@ -50,7 +50,7 @@ function remove(co) {
 }
 
 module.exports = {
-  execute: execute,
-  handle: handle,
-  remove: remove,
+  execute,
+  handle,
+  remove,
 };

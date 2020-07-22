@@ -133,14 +133,10 @@ function handle(customObj) {
             isAdyen
           ) {
             refusedHpp = true;
-          } else {
-            if (order.status === Order.ORDER_STATUS_FAILED) {
-              order.setConfirmationStatus(
-                Order.CONFIRMATION_STATUS_NOTCONFIRMED
-              );
-              order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-              order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-            }
+          } else if (order.status === Order.ORDER_STATUS_FAILED) {
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
           }
           setProcessedCOInfo(customObj);
           return result;
@@ -170,7 +166,7 @@ function handle(customObj) {
           order.orderNo
         );
         break;
-      //CustomAdyen
+      // CustomAdyen
       case "CAPTURE_FAILED":
         if (customObj.custom.success === "true") {
           order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
@@ -200,7 +196,7 @@ function handle(customObj) {
       case "OFFER_CLOSED":
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, false);
         });
         Logger.getLogger("Adyen", "adyen").info(
@@ -294,33 +290,26 @@ function setProcessedCOInfo(customObj) {
 function createLogMessage(customObj) {
   const VERSION = customObj.custom.version;
   let msg = "";
-  msg =
-    "AdyenNotification v " +
-    VERSION +
-    " - Payment info (Called from : " +
-    customObj.custom.httpRemoteAddress +
-    ")";
-  msg =
-    msg +
-    "\n================================================================\n";
-  //msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
-  msg = msg + "reason : " + customObj.custom.reason;
-  msg = msg + "\neventDate : " + customObj.custom.eventDate;
-  msg = msg + "\nmerchantReference : " + customObj.custom.merchantReference;
-  msg = msg + "\ncurrency : " + customObj.custom.currency;
-  msg = msg + "\npspReference : " + customObj.custom.pspReference;
-  msg = msg + "\nmerchantAccountCode : " + customObj.custom.merchantAccountCode;
-  msg = msg + "\neventCode : " + customObj.custom.eventCode;
-  msg = msg + "\nvalue : " + customObj.custom.value;
-  msg = msg + "\noperations : " + customObj.custom.operations;
-  msg = msg + "\nsuccess : " + customObj.custom.success;
-  msg = msg + "\npaymentMethod : " + customObj.custom.paymentMethod;
-  msg = msg + "\nlive : " + customObj.custom.live;
+  msg = "AdyenNotification v "`${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
+  msg += "\n================================================================\n";
+  // msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
+  msg = `${msg}reason : ${customObj.custom.reason}`;
+  msg = `${msg}\neventDate : ${customObj.custom.eventDate}`;
+  msg = `${msg}\nmerchantReference : ${customObj.custom.merchantReference}`;
+  msg = `${msg}\ncurrency : ${customObj.custom.currency}`;
+  msg = `${msg}\npspReference : ${customObj.custom.pspReference}`;
+  msg = `${msg}\nmerchantAccountCode : ${customObj.custom.merchantAccountCode}`;
+  msg = `${msg}\neventCode : ${customObj.custom.eventCode}`;
+  msg = `${msg}\nvalue : ${customObj.custom.value}`;
+  msg = `${msg}\noperations : ${customObj.custom.operations}`;
+  msg = `${msg}\nsuccess : ${customObj.custom.success}`;
+  msg = `${msg}\npaymentMethod : ${customObj.custom.paymentMethod}`;
+  msg = `${msg}\nlive : ${customObj.custom.live}`;
   return msg;
 }
 
 function createDelayOrderDate(orderCreateDate) {
-  //AdyenNotificationDelayMinutes
+  // AdyenNotificationDelayMinutes
   const adyenDelayMin = 1;
 
   // Variable in milliseconds
@@ -330,6 +319,6 @@ function createDelayOrderDate(orderCreateDate) {
 }
 
 module.exports = {
-  execute: execute,
-  handle: handle,
+  execute,
+  handle,
 };

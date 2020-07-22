@@ -6,44 +6,49 @@ require("dw/order");
 const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 const __LineItemHelper = {
-  getDescription: function (lineItem) {
+  getDescription(lineItem) {
     if (lineItem instanceof dw.order.ShippingLineItem) {
       return lineItem.getID();
-    } else if (lineItem instanceof dw.order.ProductLineItem) {
+    }
+    if (lineItem instanceof dw.order.ProductLineItem) {
       return lineItem.product.name;
-    } else if (lineItem instanceof dw.order.PriceAdjustment) {
+    }
+    if (lineItem instanceof dw.order.PriceAdjustment) {
       return "Discount";
     }
 
     return null;
   },
 
-  getId: function (lineItem) {
+  getId(lineItem) {
     if (
       lineItem instanceof dw.order.ShippingLineItem ||
       lineItem instanceof dw.order.PriceAdjustment
     ) {
       return lineItem.UUID;
-    } else if (lineItem instanceof dw.order.ProductLineItem) {
+    }
+    if (lineItem instanceof dw.order.ProductLineItem) {
       return lineItem.product.ID;
     }
 
     return null;
   },
 
-  getQuantity: function (lineItem) {
+  getQuantity(lineItem) {
     if (lineItem instanceof dw.order.ShippingLineItem) {
       return "1";
-    } else if (lineItem instanceof dw.order.ProductLineItem) {
+    }
+    if (lineItem instanceof dw.order.ProductLineItem) {
       return lineItem.quantityValue.toFixed();
-    } else if (lineItem instanceof dw.order.PriceAdjustment) {
+    }
+    if (lineItem instanceof dw.order.PriceAdjustment) {
       return lineItem.quantity.toFixed();
     }
 
     return null;
   },
 
-  getVatPercentage: function (lineItem) {
+  getVatPercentage(lineItem) {
     let vatPercentage = 0;
     if (__LineItemHelper.getVatAmount(lineItem) !== 0) {
       vatPercentage = lineItem.getTaxRate();
@@ -51,25 +56,27 @@ const __LineItemHelper = {
     return vatPercentage;
   },
 
-  getVatAmount: function (lineItem) {
+  getVatAmount(lineItem) {
     if (
       lineItem instanceof dw.order.ProductLineItem ||
       lineItem instanceof dw.order.ShippingLineItem
     ) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.getAdjustedTax());
-    } else if (lineItem instanceof dw.order.PriceAdjustment) {
+    }
+    if (lineItem instanceof dw.order.PriceAdjustment) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.tax);
     }
     return null;
   },
 
-  getItemAmount: function (lineItem) {
+  getItemAmount(lineItem) {
     if (
       lineItem instanceof dw.order.ProductLineItem ||
       lineItem instanceof dw.order.ShippingLineItem
     ) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.adjustedNetPrice);
-    } else if (lineItem instanceof dw.order.PriceAdjustment) {
+    }
+    if (lineItem instanceof dw.order.PriceAdjustment) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.netPrice);
     }
     return null;

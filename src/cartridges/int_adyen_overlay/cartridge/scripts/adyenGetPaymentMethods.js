@@ -7,9 +7,9 @@
 * @output customer : Customer
 */
 
-//script include
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+// script include
 const Logger = require("dw/system/Logger");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 function getMethods(basket, customer, countryCode) {
   try {
@@ -23,14 +23,14 @@ function getMethods(basket, customer, countryCode) {
     let paymentAmount;
     let currencyCode;
 
-    //paymentMethods call from checkout
+    // paymentMethods call from checkout
     if (basket) {
       paymentAmount = basket.getTotalGrossPrice()
         ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
         : 1000;
       currencyCode = basket.currencyCode;
     }
-    //paymentMethods call from My Account
+    // paymentMethods call from My Account
     else {
       paymentAmount = 1000;
       currencyCode = session.currency.currencyCode;
@@ -48,7 +48,7 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.countryCode = countryCode;
     }
 
-    //check logged in shopper for oneClick
+    // check logged in shopper for oneClick
     const profile =
       customer && customer.registered && customer.getProfile()
         ? customer.getProfile()
@@ -69,14 +69,9 @@ function getMethods(basket, customer, countryCode) {
     const callResult = service.call(JSON.stringify(paymentMethodsRequest));
     if (!callResult.isOk()) {
       throw new Error(
-        "/paymentMethods call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `/paymentMethods call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
       );
     }
 
@@ -88,12 +83,11 @@ function getMethods(basket, customer, countryCode) {
     return JSON.parse(resultObject.getText());
   } catch (e) {
     Logger.getLogger("Adyen").fatal(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
-    return;
   }
 }
 
 module.exports = {
-  getMethods: getMethods,
+  getMethods,
 };

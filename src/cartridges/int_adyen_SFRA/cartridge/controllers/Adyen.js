@@ -1,23 +1,21 @@
-"use strict";
-
 const server = require("server");
-const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
-const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
 const URLUtils = require("dw/web/URLUtils");
 const Transaction = require("dw/system/Transaction");
-const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
 // eslint-disable-next-line no-unused-vars
-const adyenHelpers = require("*/cartridge/scripts/checkout/adyenHelpers");
 const OrderMgr = require("dw/order/OrderMgr");
 const CustomerMgr = require("dw/customer/CustomerMgr");
 const Resource = require("dw/web/Resource");
 // eslint-disable-next-line no-unused-vars
 const Site = require("dw/system/Site");
 const Logger = require("dw/system/Logger");
+const PaymentMgr = require("dw/order/PaymentMgr");
 const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const constants = require("*/cartridge/adyenConstants/constants");
 const collections = require("*/cartridge/scripts/util/collections");
-const PaymentMgr = require("dw/order/PaymentMgr");
+const adyenHelpers = require("*/cartridge/scripts/checkout/adyenHelpers");
+const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
+const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
+const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
@@ -28,10 +26,10 @@ server.get(
   "Adyen3D",
   csrfProtection.generateToken,
   server.middleware.https,
-  function (req, res, next) {
-    const IssuerURL = req.querystring.IssuerURL;
-    const PaRequest = req.querystring.PaRequest;
-    const MD = req.querystring.MD;
+  (req, res, next) => {
+    const { IssuerURL } = req.querystring;
+    const { PaRequest } = req.querystring;
+    const { MD } = req.querystring;
     const TermURL = URLUtils.https("Adyen-AuthorizeWithForm");
 
     res.render("adyenform", {
@@ -51,7 +49,7 @@ server.post(
   "AuthorizeWithForm",
   csrfProtection.generateToken,
   server.middleware.https,
-  function (req, res, next) {
+  (req, res, next) => {
     const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     let paymentInstrument;
     let order;
@@ -80,12 +78,12 @@ server.post(
         };
         const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
 
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           paymentInstrument.custom.adyenPaymentData = null;
         });
         // if error, return to checkout page
         if (result.error || result.resultCode !== "Authorised") {
-          Transaction.wrap(function () {
+          Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });
           res.redirect(
@@ -100,7 +98,7 @@ server.post(
           return next();
         }
 
-        //custom fraudDetection
+        // custom fraudDetection
         const fraudDetectionStatus = { status: "success" };
 
         // Places the order
@@ -109,7 +107,7 @@ server.post(
           fraudDetectionStatus
         );
         if (placeOrderResult.error) {
-          Transaction.wrap(function () {
+          Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });
           res.redirect(
@@ -157,7 +155,7 @@ server.get(
   consentTracking.consent,
   csrfProtection.generateToken,
   server.middleware.https,
-  function (req, res, next) {
+  (req, res, next) => {
     const protocol = req.https ? "https" : "http";
     const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
 
@@ -167,18 +165,18 @@ server.get(
         req.host
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
-      const resultCode = req.querystring.resultCode;
-      const token3ds2 = req.querystring.token3ds2;
+      const { resultCode } = req.querystring;
+      const { token3ds2 } = req.querystring;
       res.render("/threeds2/adyen3ds2", {
         locale: request.getLocale(),
-        originKey: originKey,
-        environment: environment,
-        resultCode: resultCode,
-        token3ds2: token3ds2,
+        originKey,
+        environment,
+        resultCode,
+        token3ds2,
       });
     } catch (err) {
       Logger.getLogger("Adyen").error(
-        "3DS2 redirect failed with reason: " + err.toString()
+        `3DS2 redirect failed with reason: ${err.toString()}`
       );
       res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
     }
@@ -197,7 +195,7 @@ server.post(
   csrfProtection.generateToken,
   csrfProtection.validateRequest,
   server.middleware.https,
-  function (req, res, next) {
+  (req, res, next) => {
     const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     let paymentInstrument;
     let order;
@@ -246,7 +244,7 @@ server.post(
 
       const paymentDetailsRequest = {
         paymentData: paymentInstrument.custom.adyenPaymentData,
-        details: details,
+        details,
       };
 
       const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
@@ -255,8 +253,8 @@ server.post(
         (result.error || result.resultCode !== "Authorised") &&
         result.resultCode !== "ChallengeShopper"
       ) {
-        //Payment failed
-        Transaction.wrap(function () {
+        // Payment failed
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
           paymentInstrument.custom.adyenPaymentData = null;
         });
@@ -270,8 +268,9 @@ server.post(
           )
         );
         return next();
-      } else if (result.resultCode === "ChallengeShopper") {
-        //Redirect to ChallengeShopper
+      }
+      if (result.resultCode === "ChallengeShopper") {
+        // Redirect to ChallengeShopper
         res.redirect(
           URLUtils.url(
             "Adyen-Adyen3DS2",
@@ -284,12 +283,12 @@ server.post(
         return next();
       }
 
-      //delete paymentData from requests
-      Transaction.wrap(function () {
+      // delete paymentData from requests
+      Transaction.wrap(() => {
         paymentInstrument.custom.adyenPaymentData = null;
       });
 
-      //custom fraudDetection
+      // custom fraudDetection
       const fraudDetectionStatus = { status: "success" };
 
       // Places the order
@@ -298,7 +297,7 @@ server.post(
         fraudDetectionStatus
       );
       if (placeOrderResult.error) {
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
         });
         res.redirect(
@@ -341,8 +340,8 @@ server.post(
 /**
  * Redirect to Adyen after saving order etc.
  */
-server.get("Redirect", server.middleware.https, function (req, res, next) {
-  const signature = req.querystring.signature;
+server.get("Redirect", server.middleware.https, (req, res, next) => {
+  const { signature } = req.querystring;
   const order = OrderMgr.getOrder(session.privacy.orderNo);
   if (order && signature) {
     const paymentInstruments = order.getPaymentInstruments(
@@ -351,7 +350,7 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
     let adyenPaymentInstrument;
     let paymentData;
 
-    //looping through all Adyen payment methods, however, this only can be one.
+    // looping through all Adyen payment methods, however, this only can be one.
     const instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
       adyenPaymentInstrument = instrumentsIter.next();
@@ -370,12 +369,12 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
     }
   } else {
     Logger.getLogger("Adyen").error(
-      "No signature or no order with orderNo " + session.privacy.orderNo
+      `No signature or no order with orderNo ${session.privacy.orderNo}`
     );
   }
 
   Logger.getLogger("Adyen").error("Redirect signature is not correct");
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
   res.redirect(
@@ -393,11 +392,7 @@ server.get("Redirect", server.middleware.https, function (req, res, next) {
 /**
  * Show confirmation after return from Adyen
  */
-server.get("ShowConfirmation", server.middleware.https, function (
-  req,
-  res,
-  next
-) {
+server.get("ShowConfirmation", server.middleware.https, (req, res, next) => {
   try {
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     const paymentInstruments = order.getPaymentInstruments(
@@ -407,29 +402,29 @@ server.get("ShowConfirmation", server.middleware.https, function (
     let paymentData;
     let details;
 
-    //looping through all Adyen payment methods, however, this only can be one.
+    // looping through all Adyen payment methods, however, this only can be one.
     const instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
       adyenPaymentInstrument = instrumentsIter.next();
       paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
 
-    //details is either redirectResult or payload
+    // details is either redirectResult or payload
     if (req.querystring.redirectResult) {
       details = { redirectResult: req.querystring.redirectResult };
     } else if (req.querystring.payload) {
       details = { payload: req.querystring.payload };
     }
 
-    //redirect to payment/details
+    // redirect to payment/details
     const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     const requestObject = {
-      details: details,
-      paymentData: paymentData,
+      details,
+      paymentData,
     };
 
     const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
 
@@ -443,12 +438,13 @@ server.get("ShowConfirmation", server.middleware.https, function (
         result.resultCode === "Received" &&
         result.paymentMethod.indexOf("alipay_hk") > -1
       ) {
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
         });
         Logger.getLogger("Adyen").error(
-          "Did not complete Alipay transaction, result: " +
-            JSON.stringify(result)
+          `Did not complete Alipay transaction, result: ${JSON.stringify(
+            result
+          )}`
         );
         res.redirect(
           URLUtils.url(
@@ -462,7 +458,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
         return next();
       }
 
-      //custom fraudDetection
+      // custom fraudDetection
       const fraudDetectionStatus = { status: "success" };
 
       // Places the order
@@ -471,7 +467,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
         fraudDetectionStatus
       );
       if (placeOrderResult.error) {
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
         });
         res.redirect(
@@ -493,8 +489,8 @@ server.get("ShowConfirmation", server.middleware.https, function (
         countryCode: currentLocale.country,
       });
 
-      //Save orderModel to custom object during session
-      Transaction.wrap(function () {
+      // Save orderModel to custom object during session
+      Transaction.wrap(() => {
         order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
         AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
       });
@@ -510,24 +506,23 @@ server.get("ShowConfirmation", server.middleware.https, function (
         ).toString()
       );
       return next();
-    } else {
-      Transaction.wrap(function () {
-        OrderMgr.failOrder(order, true);
-      });
-      res.redirect(
-        URLUtils.url(
-          "Checkout-Begin",
-          "stage",
-          "placeOrder",
-          "paymentError",
-          Resource.msg("error.payment.not.valid", "checkout", null)
-        )
-      );
-      return next();
     }
+    Transaction.wrap(() => {
+      OrderMgr.failOrder(order, true);
+    });
+    res.redirect(
+      URLUtils.url(
+        "Checkout-Begin",
+        "stage",
+        "placeOrder",
+        "paymentError",
+        Resource.msg("error.payment.not.valid", "checkout", null)
+      )
+    );
+    return next();
   } catch (e) {
     Logger.getLogger("Adyen").error(
-      "Could not verify /payment/details: " + e.message
+      `Could not verify /payment/details: ${e.message}`
     );
     res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
     return next();
@@ -540,7 +535,7 @@ server.get("ShowConfirmation", server.middleware.https, function (
 server.post(
   "ShowConfirmationPaymentFromComponent",
   server.middleware.https,
-  function (req, res, next) {
+  (req, res, next) => {
     try {
       const stateData = JSON.parse(req.form.additionalDetailsHidden);
       const order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -549,8 +544,8 @@ server.post(
       );
       let adyenPaymentInstrument;
 
-      const paymentData = stateData.paymentData;
-      const details = stateData.details;
+      const { paymentData } = stateData;
+      const { details } = stateData;
 
       // looping through all Adyen payment methods, however, this only can be one.
       const instrumentsIter = paymentInstruments.iterator();
@@ -558,15 +553,15 @@ server.post(
         adyenPaymentInstrument = instrumentsIter.next();
       }
 
-      //redirect to payment/details
+      // redirect to payment/details
       const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
       const requestObject = {
-        details: details,
-        paymentData: paymentData,
+        details,
+        paymentData,
       };
 
       const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         adyenPaymentInstrument.custom.adyenPaymentData = null;
       });
       // Authorised: The payment authorisation was successfully completed.
@@ -575,7 +570,7 @@ server.post(
         result.resultCode === "Pending" ||
         result.resultCode === "Received"
       ) {
-        //custom fraudDetection
+        // custom fraudDetection
         const fraudDetectionStatus = { status: "success" };
 
         // Places the order
@@ -584,7 +579,7 @@ server.post(
           fraudDetectionStatus
         );
         if (placeOrderResult.error) {
-          Transaction.wrap(function () {
+          Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });
           res.redirect(
@@ -606,8 +601,8 @@ server.post(
           countryCode: currentLocale.country,
         });
 
-        //Save orderModel to custom object during session
-        Transaction.wrap(function () {
+        // Save orderModel to custom object during session
+        Transaction.wrap(() => {
           order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
           AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
         });
@@ -623,24 +618,23 @@ server.post(
           ).toString()
         );
         return next();
-      } else {
-        Transaction.wrap(function () {
-          OrderMgr.failOrder(order, true);
-        });
-        res.redirect(
-          URLUtils.url(
-            "Checkout-Begin",
-            "stage",
-            "placeOrder",
-            "paymentError",
-            Resource.msg("error.payment.not.valid", "checkout", null)
-          )
-        );
-        return next();
       }
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+      res.redirect(
+        URLUtils.url(
+          "Checkout-Begin",
+          "stage",
+          "placeOrder",
+          "paymentError",
+          Resource.msg("error.payment.not.valid", "checkout", null)
+        )
+      );
+      return next();
     } catch (e) {
       Logger.getLogger("Adyen").error(
-        "Could not verify /payment/details: " + e.message
+        `Could not verify /payment/details: ${e.message}`
       );
       res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
       return next();
@@ -651,11 +645,7 @@ server.post(
 /**
  * Make a request to Adyen to get payment methods based on countryCode
  */
-server.get("GetPaymentMethods", server.middleware.https, function (
-  req,
-  res,
-  next
-) {
+server.get("GetPaymentMethods", server.middleware.https, (req, res, next) => {
   const BasketMgr = require("dw/order/BasketMgr");
   const Resource = require("dw/web/Resource");
   const getPaymentMethods = require("*/cartridge/scripts/adyenGetPaymentMethods");
@@ -684,25 +674,18 @@ server.get("GetPaymentMethods", server.middleware.https, function (
     }
     response = getPaymentMethods.getMethods(
       BasketMgr.getCurrentBasket(),
-      customer ? customer : null,
+      customer || null,
       countryCode
     );
-    paymentMethodDescriptions = response.paymentMethods.map(function (method) {
-      return {
-        brandCode: method.type,
-        description: Resource.msg("hpp.description." + method.type, "hpp", ""),
-      };
-    });
+    paymentMethodDescriptions = response.paymentMethods.map((method) => ({
+      brandCode: method.type,
+      description: Resource.msg(`hpp.description.${method.type}`, "hpp", ""),
+    }));
   } catch (err) {
     Logger.getLogger("Adyen").error(
-      "Error retrieving Payment Methods. Error message: " +
-        err.message +
-        " more details: " +
-        err.toString() +
-        " in " +
-        err.fileName +
-        ":" +
-        err.lineNumber
+      `Error retrieving Payment Methods. Error message: ${
+        err.message
+      } more details: ${err.toString()} in ${err.fileName}:${err.lineNumber}`
     );
     response = [];
     return next();
@@ -713,7 +696,7 @@ server.get("GetPaymentMethods", server.middleware.https, function (
     connectedTerminals = adyenTerminalApi.getTerminals().response;
   }
 
-  const adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
+  const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
   const jsonResponse = {
     AdyenPaymentMethods: response,
     ImagePath: adyenURL,
@@ -725,7 +708,7 @@ server.get("GetPaymentMethods", server.middleware.https, function (
       ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
       : 1000;
     const currency = currentBasket.getTotalGrossPrice().currencyCode;
-    jsonResponse.amount = { value: paymentAmount, currency: currency };
+    jsonResponse.amount = { value: paymentAmount, currency };
     jsonResponse.countryCode = countryCode;
   }
 
@@ -736,10 +719,10 @@ server.get("GetPaymentMethods", server.middleware.https, function (
 /**
  * Complete a donation through adyenGiving
  */
-server.post("Donate", server.middleware.https, function (req /*, res, next */) {
+server.post("Donate", server.middleware.https, (req /* , res, next */) => {
   const adyenGiving = require("*/cartridge/scripts/adyenGiving");
-  const pspReference = req.form.pspReference;
-  const orderNo = req.form.orderNo;
+  const { pspReference } = req.form;
+  const { orderNo } = req.form;
   const donationAmount = {
     value: req.form.amountValue,
     currency: req.form.amountCurrency,
@@ -756,66 +739,67 @@ server.post("Donate", server.middleware.https, function (req /*, res, next */) {
 /**
  * Make a payment from inside a component (paypal)
  */
-server.post("PaymentFromComponent", server.middleware.https, function (
-  req,
-  res,
-  next
-) {
-  let order;
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
-  const BasketMgr = require("dw/order/BasketMgr");
-  const reqDataObj = JSON.parse(req.form.data);
+server.post(
+  "PaymentFromComponent",
+  server.middleware.https,
+  (req, res, next) => {
+    let order;
+    const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+    const BasketMgr = require("dw/order/BasketMgr");
+    const reqDataObj = JSON.parse(req.form.data);
 
-  if (reqDataObj.cancelTransaction) {
-    order = OrderMgr.getOrder(session.privacy.orderNo);
-    Logger.getLogger("Adyen").error(
-      "Shopper cancelled transaction for order " + session.privacy.orderNo
-    );
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
+    if (reqDataObj.cancelTransaction) {
+      order = OrderMgr.getOrder(session.privacy.orderNo);
+      Logger.getLogger("Adyen").error(
+        `Shopper cancelled transaction for order ${session.privacy.orderNo}`
+      );
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+      res.json({ result: "cancelled" });
+      return next();
+    }
+    const currentBasket = BasketMgr.getCurrentBasket();
+
+    let paymentInstrument;
+    Transaction.wrap(() => {
+      collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
+        currentBasket.removePaymentInstrument(item);
+      });
+      paymentInstrument = currentBasket.createPaymentInstrument(
+        constants.METHOD_ADYEN_COMPONENT,
+        currentBasket.totalGrossPrice
+      );
+      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+        paymentInstrument.paymentMethod
+      );
+      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.custom.adyenPaymentData = req.form.data;
+      paymentInstrument.custom.adyenPaymentMethod =
+        reqDataObj.paymentMethod.type;
     });
-    res.json({ result: "cancelled" });
+    order = COHelpers.createOrder(currentBasket);
+    session.privacy.orderNo = order.orderNo;
+
+    const result = adyenCheckout.createPaymentRequest({
+      Order: order,
+      PaymentInstrument: paymentInstrument,
+    });
+
+    if (result.resultCode !== "Pending") {
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+    }
+    res.json(result);
     return next();
   }
-  const currentBasket = BasketMgr.getCurrentBasket();
-
-  let paymentInstrument;
-  Transaction.wrap(function () {
-    collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
-      currentBasket.removePaymentInstrument(item);
-    });
-    paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
-      currentBasket.totalGrossPrice
-    );
-    const paymentProcessor = PaymentMgr.getPaymentMethod(
-      paymentInstrument.paymentMethod
-    ).paymentProcessor;
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-    paymentInstrument.custom.adyenPaymentData = req.form.data;
-    paymentInstrument.custom.adyenPaymentMethod = reqDataObj.paymentMethod.type;
-  });
-  order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
-
-  const result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument,
-  });
-
-  if (result.resultCode !== "Pending") {
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
-  }
-  res.json(result);
-  return next();
-});
+);
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
-server.post("Notify", server.middleware.https, function (req, res, next) {
+server.post("Notify", server.middleware.https, (req, res, next) => {
   const checkAuth = require("*/cartridge/scripts/checkNotificationAuth");
   const status = checkAuth.check(req);
   if (!status) {

@@ -12,31 +12,31 @@ function getCurrentBasket() {
         phone: "617-555-1234",
         stateCode: "MA",
 
-        setFirstName: function (firstNameInput) {
+        setFirstName(firstNameInput) {
           this.firstName = firstNameInput;
         },
-        setLastName: function (lastNameInput) {
+        setLastName(lastNameInput) {
           this.lastName = lastNameInput;
         },
-        setAddress1: function (address1Input) {
+        setAddress1(address1Input) {
           this.address1 = address1Input;
         },
-        setAddress2: function (address2Input) {
+        setAddress2(address2Input) {
           this.address2 = address2Input;
         },
-        setCity: function (cityInput) {
+        setCity(cityInput) {
           this.city = cityInput;
         },
-        setPostalCode: function (postalCodeInput) {
+        setPostalCode(postalCodeInput) {
           this.postalCode = postalCodeInput;
         },
-        setStateCode: function (stateCodeInput) {
+        setStateCode(stateCodeInput) {
           this.stateCode = stateCodeInput;
         },
-        setCountryCode: function (countryCodeInput) {
+        setCountryCode(countryCodeInput) {
           this.countryCode.value = countryCodeInput;
         },
-        setPhone: function (phoneInput) {
+        setPhone(phoneInput) {
           this.phone = phoneInput;
         },
       },
@@ -50,5 +50,5 @@ function getCurrentBasket() {
 }
 
 module.exports = {
-  getCurrentBasket: getCurrentBasket,
+  getCurrentBasket,
 };

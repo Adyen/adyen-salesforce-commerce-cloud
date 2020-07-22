@@ -5,10 +5,10 @@ import * as billing from "./billing";
 import * as adyenCheckout from "../adyenCheckout";
 
 export function updateCheckoutView() {
-  $("body").on("checkout:updateCheckoutView", function (e, data) {
+  $("body").on("checkout:updateCheckoutView", (e, data) => {
     shippingHelpers.methods.updateMultiShipInformation(data.order);
     summaryHelpers.updateTotals(data.order.totals);
-    data.order.shipping.forEach(function (shipping) {
+    data.order.shipping.forEach((shipping) => {
       shippingHelpers.methods.updateShippingInformation(
         shipping,
         data.order,

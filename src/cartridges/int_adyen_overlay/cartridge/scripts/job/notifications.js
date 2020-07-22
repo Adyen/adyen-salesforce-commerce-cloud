@@ -32,10 +32,12 @@ function processNotifications(/* pdict */) {
   );
   logger.info("Process notifications start with count {0}", searchQuery.count);
 
-  let customObj, handlerResult, order;
+  let customObj;
+  let handlerResult;
+  let order;
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       handlerResult = objectsHandler.handle(customObj);
     });
 
@@ -56,7 +58,7 @@ function processNotifications(/* pdict */) {
       }
       // Refused payments which are made with using Adyen payment method are handled when user is redirected back from Adyen HPP.
       // Here we shouldn't fail an order and send a notification
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       continue;
@@ -104,7 +106,7 @@ function clearNotifications(/* pdict */) {
   let customObj;
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       deleteCustomObjects.remove(customObj);
     });
   }
@@ -134,7 +136,7 @@ function submitOrder(order) {
 }
 
 module.exports = {
-  execute: execute,
-  processNotifications: processNotifications,
-  clearNotifications: clearNotifications,
+  execute,
+  processNotifications,
+  clearNotifications,
 };

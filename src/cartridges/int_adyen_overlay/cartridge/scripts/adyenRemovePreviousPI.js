@@ -24,5 +24,5 @@ function removePaymentInstruments(basket) {
 }
 
 module.exports = {
-  removePaymentInstruments: removePaymentInstruments,
+  removePaymentInstruments,
 };

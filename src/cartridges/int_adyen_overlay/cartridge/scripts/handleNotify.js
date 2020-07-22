@@ -46,10 +46,8 @@ function notify(notificationData) {
     const msg = createLogMessage(notificationData);
     Logger.getLogger("Adyen").debug(msg);
     const calObj = new Calendar();
-    const keyValue =
-      notificationData.merchantReference +
-      "-" +
-      StringUtils.formatCalendar(calObj, "yyyyMMddhhmmssSSS");
+    const keyValue = notificationData.merchantReference;
+    `-${StringUtils.formatCalendar(calObj, "yyyyMMddhhmmssSSS")}`;
     const customObj = CustomObjectMgr.createCustomObject(
       "adyenNotification",
       keyValue
@@ -58,7 +56,7 @@ function notify(notificationData) {
       try {
         customObj.custom[field] = notificationData[field];
       } catch (e) {
-        /*unknown field*/
+        /* unknown field */
       }
     }
 
@@ -96,11 +94,8 @@ function notify(notificationData) {
     };
   } catch (e) {
     Logger.getLogger("Adyen", "adyen").error(
-      "Notification failed: " +
-        JSON.stringify(notificationData) +
-        "\n" +
-        "Error message: " +
-        e.message
+      `Notification failed: ${JSON.stringify(notificationData)}\n` +
+        `Error message: ${e.message}`
     );
     return {
       success: false,
@@ -112,27 +107,25 @@ function notify(notificationData) {
 function createLogMessage(notificationData) {
   const VERSION = "4d";
   let msg = "";
-  msg = "AdyenNotification v " + VERSION;
-  msg =
-    msg +
-    "\n================================================================\n";
-  msg = msg + "reason : " + notificationData.reason;
-  msg = msg + "\neventDate : " + notificationData.eventDate;
-  msg = msg + "\nmerchantReference : " + notificationData.merchantReference;
-  msg = msg + "\ncurrency : " + notificationData.currency;
-  msg = msg + "\npspReference : " + notificationData.pspReference;
-  msg = msg + "\nmerchantAccountCode : " + notificationData.merchantAccountCode;
-  msg = msg + "\neventCode : " + notificationData.eventCode;
-  msg = msg + "\nvalue : " + notificationData.value;
-  msg = msg + "\noperations : " + notificationData.operations;
-  msg = msg + "\nsuccess : " + notificationData.success;
-  msg = msg + "\npaymentMethod : " + notificationData.paymentMethod;
-  msg = msg + "\nlive : " + notificationData.live;
+  msg = `AdyenNotification v ${VERSION}`;
+  msg += "\n================================================================\n";
+  msg = `${msg}reason : ${notificationData.reason}`;
+  msg = `${msg}\neventDate : ${notificationData.eventDate}`;
+  msg = `${msg}\nmerchantReference : ${notificationData.merchantReference}`;
+  msg = `${msg}\ncurrency : ${notificationData.currency}`;
+  msg = `${msg}\npspReference : ${notificationData.pspReference}`;
+  msg = `${msg}\nmerchantAccountCode : ${notificationData.merchantAccountCode}`;
+  msg = `${msg}\neventCode : ${notificationData.eventCode}`;
+  msg = `${msg}\nvalue : ${notificationData.value}`;
+  msg = `${msg}\noperations : ${notificationData.operations}`;
+  msg = `${msg}\nsuccess : ${notificationData.success}`;
+  msg = `${msg}\npaymentMethod : ${notificationData.paymentMethod}`;
+  msg = `${msg}\nlive : ${notificationData.live}`;
   return msg;
 }
 
 module.exports = {
-  execute: execute,
-  notify: notify,
-  notifyHttpParameterMap: notifyHttpParameterMap,
+  execute,
+  notify,
+  notifyHttpParameterMap,
 };

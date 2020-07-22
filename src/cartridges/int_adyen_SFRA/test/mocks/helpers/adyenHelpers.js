@@ -1,33 +1,31 @@
-"use strict";
-
 const proxyquire = require("proxyquire").noCallThru().noPreserveCache();
 const basketMgr = require("../dw/order/BasketMgr");
 
 const server = {
   forms: {
-    getForm: function (formName) {
+    getForm(formName) {
       return {
-        formName: formName,
-        clear: function () {},
+        formName,
+        clear() {},
       };
     },
   },
 };
 
 const transaction = {
-  wrap: function (callBack) {
+  wrap(callBack) {
     return callBack.call();
   },
-  begin: function () {},
-  commit: function () {},
+  begin() {},
+  commit() {},
 };
 
 const hookMgr = {
-  callHook: function () {},
+  callHook() {},
 };
 
 const resource = {
-  msg: function (param1) {
+  msg(param1) {
     return param1;
   },
 };
@@ -38,13 +36,13 @@ const status = {
 };
 
 const orderMgr = {
-  createOrder: function () {
+  createOrder() {
     return { order: "new order" };
   },
-  placeOrder: function () {
+  placeOrder() {
     return status.OK;
   },
-  failOrder: function () {
+  failOrder() {
     return { order: "failed order" };
   },
 };
@@ -62,7 +60,7 @@ const paymentInstrument = {
 
 function proxyModel() {
   return proxyquire("../../../cartridge/scripts/checkout/adyenHelpers", {
-    server: server,
+    server,
     "dw/order/BasketMgr": basketMgr,
     "dw/util/HashMap": {},
     "dw/system/HookMgr": hookMgr,
@@ -70,7 +68,7 @@ function proxyModel() {
     "dw/order/OrderMgr": orderMgr,
     "dw/order/PaymentInstrument": paymentInstrument,
     "dw/order/PaymentMgr": {
-      getApplicablePaymentMethods: function () {
+      getApplicablePaymentMethods() {
         return [
           {
             ID: "GIFT_CERTIFICATE",
@@ -82,9 +80,9 @@ function proxyModel() {
           },
         ];
       },
-      getPaymentMethod: function () {
+      getPaymentMethod() {
         return {
-          getApplicablePaymentCards: function () {
+          getApplicablePaymentCards() {
             return [
               {
                 cardType: "Visa",
@@ -108,10 +106,10 @@ function proxyModel() {
           },
         };
       },
-      getApplicablePaymentCards: function () {
+      getApplicablePaymentCards() {
         return ["Visa"];
       },
-      getPaymentCard: function () {
+      getPaymentCard() {
         return "Visa";
       },
     },
