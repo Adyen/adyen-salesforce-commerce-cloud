@@ -158,6 +158,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
   },
 
+  getGoogleMerchantID: function () {
+    return adyenHelperObj.getCustomPreference('Adyen_GooglePayMerchantID');
+  },
+
   getAdyenStoreId: function () {
     return adyenHelperObj.getCustomPreference('Adyen_StoreId');
   },

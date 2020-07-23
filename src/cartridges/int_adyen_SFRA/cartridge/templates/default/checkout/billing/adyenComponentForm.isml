@@ -14,6 +14,8 @@
     };
     window.installments = '${pdict.adyen.installments}';
     window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
+    window.googleMerchantID = "${pdict.adyen.googleMerchantID}";
+    window.merchantAccount = "${pdict.adyen.merchantAccount}";
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 

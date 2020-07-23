@@ -7,7 +7,6 @@ const checkoutConfiguration = window.Configuration;
 let formErrorsExist;
 let isValid = false;
 let checkout;
-
 $('#dwfrm_billing').submit(function (e) {
   e.preventDefault();
 
@@ -70,14 +69,13 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
   paywithgoogle: {
-    environment: "TEST", // Change this to PRODUCTION when you're ready to accept live Google Pay payments
+    environment: 'TEST', // Change this to PRODUCTION when you're ready to accept live Google Pay payments
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
       document.querySelector('button[value="submit-payment"]').click();
     },
     configuration: {
-      gatewayMerchantId: "CommerceCloudZaid",  //Your Adyen merchant or company account name
-      merchantName: "test merchant name" // Optional. The name that appears in the payment sheet.
+      gatewayMerchantId: window.merchantAccount,  //Your Adyen merchant or company account name
     },
     showPayButton: true,
     buttonColor: "white", //Optional. Use a white Google Pay button.
@@ -155,6 +153,9 @@ if (window.installments) {
 }
 if (window.paypalMerchantID !== 'null') {
   checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
+}
+if (window.googleMerchantID !== 'null') {
+  checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
 }
 
 /**
