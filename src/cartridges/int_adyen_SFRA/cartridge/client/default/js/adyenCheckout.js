@@ -71,16 +71,9 @@ checkoutConfiguration.paymentMethodsConfiguration = {
   },
   paywithgoogle: {
     environment: "TEST", // Change this to PRODUCTION when you're ready to accept live Google Pay payments
-    amount: {
-      currency: "EUR",
-      value: 1000
-    },
     onSubmit: (state, component) => {
-      console.log(state);
       assignPaymentMethodValue();
-      // $('#dwfrm_billing').trigger('submit');
       document.querySelector('button[value="submit-payment"]').click();
-
     },
     configuration: {
       gatewayMerchantId: "CommerceCloudZaid",  //Your Adyen merchant or company account name
