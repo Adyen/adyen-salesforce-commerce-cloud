@@ -31,24 +31,24 @@
 const Logger = require("dw/system/Logger");
 
 /* Script Modules */
+const Resource = require("dw/web/Resource");
+const Order = require("dw/order/Order");
 const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 const RiskDataHelper = require("*/cartridge/scripts/util/riskDataHelper");
 const AdyenGetOpenInvoiceData = require("*/cartridge/scripts/adyenGetOpenInvoiceData");
-const Resource = require("dw/web/Resource");
-const Order = require("dw/order/Order");
 
 function createPaymentRequest(args) {
   try {
     const order = args.Order;
     const paymentInstrument = args.PaymentInstrument;
 
-    //Create request object with payment details
+    // Create request object with payment details
     let paymentRequest = AdyenHelper.createAdyenRequestObject(
       order,
       paymentInstrument
     );
 
-    //Add Risk data
+    // Add Risk data
     if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
         order
@@ -62,30 +62,30 @@ function createPaymentRequest(args) {
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount
-    ); //args.Amount * 100;
+    ); // args.Amount * 100;
     paymentRequest.amount = {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
       value: myAmount,
     };
 
     const paymentMethodType = paymentRequest.paymentMethod.type;
-    //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
+    // Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
     paymentRequest = AdyenHelper.createAddressObjects(
       order,
       paymentMethodType,
       paymentRequest
     );
 
-    //Create shopper data fields
+    // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
-      order: order,
-      paymentRequest: paymentRequest,
+      order,
+      paymentRequest,
     });
 
     if (session.privacy.adyenFingerprint) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
     }
-    //Set open invoice data
+    // Set open invoice data
     if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
@@ -99,14 +99,9 @@ function createPaymentRequest(args) {
     return doPaymentCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger("Adyen").error(
-      "error processing payment. Error message: " +
-        e.message +
-        " more details: " +
-        e.toString() +
-        " in " +
-        e.fileName +
-        ":" +
-        e.lineNumber
+      `error processing payment. Error message: ${
+        e.message
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
     return { error: true };
   }
@@ -119,14 +114,9 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     const callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
     if (callResult.isOk() === false) {
       Logger.getLogger("Adyen").error(
-        "Adyen: Call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `Adyen: Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
       );
       paymentResponse.adyenErrorMessage = Resource.msg(
         "confirm.error.declined",
@@ -142,10 +132,9 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     const resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
       throw new Error(
-        "No correct response from " +
-          AdyenHelper.SERVICE.PAYMENT +
-          ", result: " +
-          JSON.stringify(resultObject)
+        `No correct response from ${
+          AdyenHelper.SERVICE.PAYMENT
+        }, result: ${JSON.stringify(resultObject)}`
       );
     }
 
@@ -155,12 +144,12 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       responseObject = JSON.parse(resultObject.getText());
     } catch (ex) {
       Logger.getLogger("Adyen").error(
-        "error parsing response object " + ex.message
+        `error parsing response object ${ex.message}`
       );
       return { error: true };
     }
 
-    //There is no order for zero auth transactions. Return response directly to PaymentInstruments-SavePayment
+    // There is no order for zero auth transactions. Return response directly to PaymentInstruments-SavePayment
     if (!order) {
       return responseObject;
     }
@@ -183,7 +172,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
-    //Check the response object from /payment call
+    // Check the response object from /payment call
     if (
       paymentResponse.resultCode === "IdentifyShopper" ||
       paymentResponse.resultCode === "ChallengeShopper"
@@ -278,7 +267,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
 
       errorMessage = Resource.msg("confirm.error.declined", "checkout", null);
       if (responseObject.refusalReason) {
-        errorMessage += " (" + responseObject.refusalReason + ")";
+        errorMessage += ` (${responseObject.refusalReason})`;
       }
       paymentResponse.adyenErrorMessage = errorMessage;
       Logger.getLogger("Adyen").info("Payment result: Refused");
@@ -286,7 +275,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     return paymentResponse;
   } catch (e) {
     Logger.getLogger("Adyen").fatal(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
     return { error: true };
   }
@@ -299,14 +288,9 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
   );
   if (callResult.isOk() === false) {
     Logger.getLogger("Adyen").error(
-      "Adyen: Call error code" +
-        callResult.getError().toString() +
-        " Error => ResponseStatus: " +
-        callResult.getStatus() +
-        " | ResponseErrorText: " +
-        callResult.getErrorMessage() +
-        " | ResponseText: " +
-        callResult.getMsg()
+      `Adyen: Call error code${callResult
+        .getError()
+        .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
     );
     return {
       error: true,
@@ -316,8 +300,9 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
   const resultObject = callResult.object;
   if (!resultObject || !resultObject.getText()) {
     Logger.getLogger("Adyen").error(
-      "Error in /payment/details response, response: " +
-        JSON.stringify(resultObject)
+      `Error in /payment/details response, response: ${JSON.stringify(
+        resultObject
+      )}`
     );
     return { error: true };
   }
@@ -328,7 +313,7 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
     responseObject = JSON.parse(resultObject.getText());
   } catch (ex) {
     Logger.getLogger("Adyen").error(
-      "error parsing response object " + ex.message
+      `error parsing response object ${ex.message}`
     );
     return { error: true };
   }
@@ -350,7 +335,7 @@ function executeCall(serviceType, requestObject) {
 }
 
 module.exports = {
-  createPaymentRequest: createPaymentRequest,
-  doPaymentCall: doPaymentCall,
-  doPaymentDetailsCall: doPaymentDetailsCall,
+  createPaymentRequest,
+  doPaymentCall,
+  doPaymentDetailsCall,
 };

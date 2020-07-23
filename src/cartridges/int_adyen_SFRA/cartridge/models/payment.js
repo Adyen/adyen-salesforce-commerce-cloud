@@ -1,7 +1,6 @@
-"use strict";
-
 const collections = require("*/cartridge/scripts/util/collections");
 const { createSelectedPaymentInstruments } = require("./createPayment");
+
 const base = module.superModule;
 
 /**
@@ -26,7 +25,7 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
  */
 function Payment(currentBasket, currentCustomer, countryCode) {
   base.call(this, currentBasket, currentCustomer, countryCode);
-  const paymentInstruments = currentBasket.paymentInstruments;
+  const { paymentInstruments } = currentBasket;
 
   this.selectedPaymentInstruments = paymentInstruments
     ? getSelectedPaymentInstruments(paymentInstruments)

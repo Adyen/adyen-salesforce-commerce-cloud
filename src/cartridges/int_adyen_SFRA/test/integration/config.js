@@ -34,28 +34,28 @@ module.exports = {
   cardSuccess: {
     holderName: holdernameSuccess,
     cardNumber: mastercard,
-    expiryDate: expiryDate,
+    expiryDate,
     cvc: cvcSuccess,
   },
 
   cardSuccess3D: {
     holderName: holdernameSuccess,
     cardNumber: mastercard3D,
-    expiryDate: expiryDate,
+    expiryDate,
     cvc: cvcSuccess,
   },
 
   cardFail: {
     holderName: holdernameFail,
     cardNumber: mastercard,
-    expiryDate: expiryDate,
+    expiryDate,
     cvc: cvcFail,
   },
 
   cardFail3D: {
     holderName: holdernameFail,
     cardNumber: mastercard3D,
-    expiryDate: expiryDate,
+    expiryDate,
     cvc: cvcFail,
   },
 
@@ -68,7 +68,7 @@ module.exports = {
   },
 
   userAccount: {
-    username: username,
-    password: password,
+    username,
+    password,
   },
 };

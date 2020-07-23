@@ -2,17 +2,16 @@
  *
  */
 
-"use strict";
 const server = require("server");
-const collections = require("*/cartridge/scripts/util/collections");
 const Resource = require("dw/web/Resource");
 const Transaction = require("dw/system/Transaction");
 const Logger = require("dw/system/Logger");
+const collections = require("*/cartridge/scripts/util/collections");
 const constants = require("*/cartridge/adyenConstants/constants");
 
-function Handle(basket /*, paymentInformation */) {
-  Transaction.wrap(function () {
-    collections.forEach(basket.getPaymentInstruments(), function (item) {
+function Handle(basket /* , paymentInformation */) {
+  Transaction.wrap(() => {
+    collections.forEach(basket.getPaymentInstruments(), (item) => {
       basket.removePaymentInstrument(item);
     });
 
@@ -32,7 +31,7 @@ function Handle(basket /*, paymentInformation */) {
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   let errors;
   const adyenTerminalApi = require("*/cartridge/scripts/adyenTerminalApi");
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.transactionID = orderNumber;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -63,7 +62,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   );
   if (result.error) {
     Logger.getLogger("Adyen").error(
-      "POS Authorise error, result: " + result.response
+      `POS Authorise error, result: ${result.response}`
     );
     errors = [];
     errors.push(

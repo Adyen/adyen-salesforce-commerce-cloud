@@ -1,14 +1,14 @@
 const app = require("app_storefront_controllers/cartridge/scripts/app");
+const Transaction = require("dw/system/Transaction");
 const constants = require("*/cartridge/adyenConstants/constants");
 const adyenZeroAuth = require("*/cartridge/scripts/adyenZeroAuth");
-const Transaction = require("dw/system/Transaction");
 
 function create() {
   const paymentInformation = app.getForm("adyPaydata");
   const wallet = customer.getProfile().getWallet();
 
   let paymentInstrument;
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT
     );
@@ -32,5 +32,5 @@ function create() {
 }
 
 module.exports = {
-  create: create,
+  create,
 };

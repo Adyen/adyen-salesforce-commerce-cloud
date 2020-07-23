@@ -32,7 +32,7 @@ require("dw/value");
 require("dw/net");
 require("dw/web");
 
-//script include
+// script include
 const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
 
 function getLineItems(args) {
@@ -62,13 +62,13 @@ function getLineItems(args) {
       const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
       const vatPercentage = LineItemHelper.getVatPercentage(lineItem);
 
-      lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
-      lineItemObject["taxAmount"] = vatAmount.toFixed();
-      lineItemObject["description"] = description;
-      lineItemObject["id"] = id;
-      lineItemObject["quantity"] = quantity;
-      lineItemObject["taxCategory"] = "None";
-      lineItemObject["taxPercentage"] = (
+      lineItemObject.amountExcludingTax = itemAmount.toFixed();
+      lineItemObject.taxAmount = vatAmount.toFixed();
+      lineItemObject.description = description;
+      lineItemObject.id = id;
+      lineItemObject.quantity = quantity;
+      lineItemObject.taxCategory = "None";
+      lineItemObject.taxPercentage = (
         new Number(vatPercentage) * 10000
       ).toFixed();
 
@@ -80,5 +80,5 @@ function getLineItems(args) {
 }
 
 module.exports = {
-  getLineItems: getLineItems,
+  getLineItems,
 };

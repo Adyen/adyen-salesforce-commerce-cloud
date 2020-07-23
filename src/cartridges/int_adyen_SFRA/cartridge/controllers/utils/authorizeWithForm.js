@@ -1,15 +1,14 @@
+import * as Logger from "dw/system/Logger";
+import * as URLUtils from "dw/web/URLUtils";
+import * as OrderMgr from "dw/order/OrderMgr";
+import * as Transaction from "dw/system/Transaction";
+import * as Resource from "dw/web/Resource";
 import { clearForms } from "./clearForms";
-
-const Logger = require("dw/system/Logger");
-const URLUtils = require("dw/web/URLUtils");
-const OrderMgr = require("dw/order/OrderMgr");
-const Transaction = require("dw/system/Transaction");
-const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
-const Resource = require("dw/web/Resource");
+import * as COHelpers from "*/cartridge/scripts/checkout/checkoutHelpers";
+import * as AdyenHelper from "*/cartridge/scripts/util/adyenHelper";
+import * as adyenCheckout from "*/cartridge/scripts/adyenCheckout";
 
 export function authorizeWithForm(req, res, next) {
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
   let paymentInstrument;
   let order;
 
@@ -57,7 +56,7 @@ export function authorizeWithForm(req, res, next) {
         return next();
       }
 
-      //custom fraudDetection
+      // custom fraudDetection
       const fraudDetectionStatus = { status: "success" };
 
       // Places the order

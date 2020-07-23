@@ -21,7 +21,7 @@ function submit(order) {
       "no-reply@salesforce.com"
   );
 
-  Object.keys(orderObject).forEach(function (key) {
+  Object.keys(orderObject).forEach((key) => {
     context.put(key, orderObject[key]);
   });
 
@@ -30,11 +30,11 @@ function submit(order) {
   confirmationEmail.setContent(content, "text/html", "UTF-8");
   confirmationEmail.send();
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     order.custom.Adyen_CustomerEmail = null;
   });
 }
 
 module.exports = {
-  submit: submit,
+  submit,
 };

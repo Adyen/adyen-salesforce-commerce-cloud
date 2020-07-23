@@ -1,4 +1,4 @@
-//Adyen constants
+// Adyen constants
 
 module.exports = {
   METHOD_ADYEN: "Adyen",

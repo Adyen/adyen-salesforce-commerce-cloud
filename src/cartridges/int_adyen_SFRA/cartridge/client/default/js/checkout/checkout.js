@@ -1,38 +1,36 @@
-const shippingHelpers = require("base/checkout/shipping");
-const billingHelpers = require("base/checkout/billing");
-const summaryHelpers = require("base/checkout/summary");
-const billing = require("./billing");
-const adyenCheckout = require("../adyenCheckout");
+import * as shippingHelpers from "base/checkout/shipping";
+import * as billingHelpers from "base/checkout/billing";
+import * as summaryHelpers from "base/checkout/summary";
+import * as billing from "./billing";
+import * as adyenCheckout from "../adyenCheckout";
 
-module.exports = {
-  updateCheckoutView: function () {
-    $("body").on("checkout:updateCheckoutView", function (e, data) {
-      shippingHelpers.methods.updateMultiShipInformation(data.order);
-      summaryHelpers.updateTotals(data.order.totals);
-      data.order.shipping.forEach(function (shipping) {
-        shippingHelpers.methods.updateShippingInformation(
-          shipping,
-          data.order,
-          data.customer,
-          data.options
-        );
-      });
-      const currentStage = location.search.substring(
-        location.search.indexOf("=") + 1
-      );
-      if (currentStage === "shipping") {
-        adyenCheckout.methods.renderGenericComponent();
-      }
-      billingHelpers.methods.updateBillingInformation(
+export function updateCheckoutView() {
+  $("body").on("checkout:updateCheckoutView", (e, data) => {
+    shippingHelpers.methods.updateMultiShipInformation(data.order);
+    summaryHelpers.updateTotals(data.order.totals);
+    data.order.shipping.forEach((shipping) => {
+      shippingHelpers.methods.updateShippingInformation(
+        shipping,
         data.order,
         data.customer,
         data.options
       );
-      billing.methods.updatePaymentInformation(data.order, data.options);
-      summaryHelpers.updateOrderProductSummaryInformation(
-        data.order,
-        data.options
-      );
     });
-  },
-};
+    const currentStage = location.search.substring(
+      location.search.indexOf("=") + 1
+    );
+    if (currentStage === "shipping") {
+      adyenCheckout.methods.renderGenericComponent();
+    }
+    billingHelpers.methods.updateBillingInformation(
+      data.order,
+      data.customer,
+      data.options
+    );
+    billing.methods.updatePaymentInformation(data.order, data.options);
+    summaryHelpers.updateOrderProductSummaryInformation(
+      data.order,
+      data.options
+    );
+  });
+}

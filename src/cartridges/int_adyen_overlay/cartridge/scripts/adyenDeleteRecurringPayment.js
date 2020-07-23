@@ -41,7 +41,7 @@ function deleteRecurringPayment(args) {
     const requestObject = {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       shopperReference: customerID,
-      recurringDetailReference: recurringDetailReference,
+      recurringDetailReference,
       contract: "ONECLICK",
     };
 
@@ -54,25 +54,18 @@ function deleteRecurringPayment(args) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        "/disable Call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `/disable Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
       );
     }
   } catch (e) {
     Logger.getLogger("Adyen").fatal(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
   }
-
-  return;
 }
 
 module.exports = {
-  deleteRecurringPayment: deleteRecurringPayment,
+  deleteRecurringPayment,
 };

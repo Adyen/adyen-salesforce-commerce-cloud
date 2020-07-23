@@ -35,19 +35,14 @@ function zeroAuthPayment(customer, paymentInstrument) {
     );
   } catch (e) {
     Logger.getLogger("Adyen").error(
-      "error processing zero auth payment. Error message: " +
-        e.message +
-        " more details: " +
-        e.toString() +
-        " in " +
-        e.fileName +
-        ":" +
-        e.lineNumber
+      `error processing zero auth payment. Error message: ${
+        e.message
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
     return { error: true };
   }
 }
 
 module.exports = {
-  zeroAuthPayment: zeroAuthPayment,
+  zeroAuthPayment,
 };

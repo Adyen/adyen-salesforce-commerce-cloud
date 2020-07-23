@@ -15,10 +15,10 @@ $("#dwfrm_billing").submit(function (e) {
 
   $.ajax({
     type: "POST",
-    url: url,
+    url,
     data: form.serialize(),
     async: false,
-    success: function (data) {
+    success(data) {
       store.formErrorsExist = "fieldErrors" in data;
     },
   });
@@ -37,8 +37,8 @@ if (window.paypalMerchantID !== "null") {
     window.paypalMerchantID;
 }
 
-//Submit the payment
-$('button[value="submit-payment"]').on("click", function () {
+// Submit the payment
+$('button[value="submit-payment"]').on("click", () => {
   if (document.querySelector("#selectedPaymentOption").value === "AdyenPOS") {
     document.querySelector("#terminalId").value = document.querySelector(
       "#terminalList"

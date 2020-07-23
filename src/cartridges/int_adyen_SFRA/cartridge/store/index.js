@@ -2,13 +2,21 @@ import { observable, computed } from "mobx";
 
 class Store {
   MASKED_CC_PREFIX = "************";
+
   @observable checkout;
+
   @observable endDigits;
+
   @observable selectedMethod;
+
   @observable componentsObj = {};
+
   @observable checkoutConfiguration = window.Configuration || {};
+
   @observable formErrorsExist;
+
   @observable isValid = false;
+
   @observable componentState = {};
 
   @computed get maskedCardNumber() {

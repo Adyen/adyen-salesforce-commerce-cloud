@@ -1,12 +1,22 @@
-const paymentInstrument = {
+const paymentInstrument = () => ({
   custom: {
     adyenPaymentData: "mocked_adyen_payment_data",
   },
-};
+});
+export const getPaymentInstruments = jest.fn(() => [paymentInstrument()]);
 export const getOrder = jest.fn((/* orderNo */) => ({
-  getPaymentInstruments: jest.fn(() => [paymentInstrument]),
+  getPaymentInstruments,
   setPaymentStatus: jest.fn(),
   setExportStatus: jest.fn(),
 }));
 
-export const failOrder = jest.fn((/* orderNo, bool */) => null);
+export const failOrder = jest.fn((orderNo, bool) => ({
+  orderNo,
+  bool,
+}));
+
+export default {
+  getOrder,
+  failOrder,
+  getPaymentInstruments,
+};

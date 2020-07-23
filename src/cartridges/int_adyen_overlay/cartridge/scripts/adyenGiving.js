@@ -3,11 +3,11 @@
  *
  */
 
-//script include
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+// script include
 const Logger = require("dw/system/Logger");
 const OrderMgr = require("dw/order/OrderMgr");
 const Transaction = require("dw/system/Transaction");
+const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
 
 function donate(donationReference, donationAmount, originalReference) {
   try {
@@ -20,9 +20,8 @@ function donate(donationReference, donationAmount, originalReference) {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
       modificationAmount: donationAmount,
-      reference:
-        AdyenHelper.getAdyenMerchantAccount() + "-" + donationReference,
-      originalReference: originalReference,
+      reference: `${AdyenHelper.getAdyenMerchantAccount()}-${donationReference}`,
+      originalReference,
     };
 
     const xapikey = AdyenHelper.getAdyenApiKey();
@@ -33,14 +32,9 @@ function donate(donationReference, donationAmount, originalReference) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        "Call error code" +
-          callResult.getError().toString() +
-          " Error => ResponseStatus: " +
-          callResult.getStatus() +
-          " | ResponseErrorText: " +
-          callResult.getErrorMessage() +
-          " | ResponseText: " +
-          callResult.getMsg()
+        `Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`
       );
     }
 
@@ -50,19 +44,18 @@ function donate(donationReference, donationAmount, originalReference) {
       throw new Error("No correct response from adyenGiving call");
     }
 
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       const order = OrderMgr.getOrder(donationReference);
       order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
     });
     return JSON.parse(resultObject.getText());
   } catch (e) {
     Logger.getLogger("Adyen").error(
-      "Adyen: " + e.toString() + " in " + e.fileName + ":" + e.lineNumber
+      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`
     );
-    return;
   }
 }
 
 module.exports = {
-  donate: donate,
+  donate,
 };

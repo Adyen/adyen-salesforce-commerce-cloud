@@ -1,10 +1,8 @@
-"use strict";
-
-const ajax = require("../../ajax"),
-  formPrepare = require("./formPrepare"),
-  giftcard = require("../../giftcard"),
-  util = require("../../util"),
-  adyenCheckout = require("../../adyen-checkout");
+const ajax = require("../../ajax");
+const formPrepare = require("./formPrepare");
+const giftcard = require("../../giftcard");
+const util = require("../../util");
+const adyenCheckout = require("../../adyen-checkout");
 
 /**
  * @function
@@ -50,8 +48,8 @@ function populateCreditCardForm(cardID) {
     cardID
   );
   ajax.getJson({
-    url: url,
-    callback: function (data) {
+    url,
+    callback(data) {
       if (!data) {
         window.alert(Resources.CC_LOAD_ERROR);
         return false;
@@ -64,7 +62,7 @@ function populateCreditCardForm(cardID) {
 $('input[name="brandCode"]').on("change", function () {
   $("#dwfrm_adyPaydata_issuer").val("");
   $(".checkoutComponent").hide();
-  $("#component_" + $(this).val()).show();
+  $(`#component_${$(this).val()}`).show();
 });
 
 /**
@@ -77,7 +75,7 @@ function updatePaymentMethod(paymentMethodID) {
   $paymentMethods.removeClass("payment-method-expanded");
 
   let $selectedPaymentMethod = $paymentMethods.filter(
-    '[data-method="' + paymentMethodID + '"]'
+    `[data-method="${paymentMethodID}"]`
   );
   if ($selectedPaymentMethod.length === 0) {
     $selectedPaymentMethod = $('[data-method="Custom"]');
@@ -86,7 +84,7 @@ function updatePaymentMethod(paymentMethodID) {
 
   // ensure checkbox of payment method is checked
   $('input[name$="_selectedPaymentMethodID"]').removeAttr("checked");
-  $("input[value=" + paymentMethodID + "]").prop("checked", "checked");
+  $(`input[value=${paymentMethodID}]`).prop("checked", "checked");
 
   formPrepare.validateForm();
 }
@@ -101,11 +99,11 @@ function updatePaymentType(selectedPayType, issuerType) {
     $("#dwfrm_adyPaydata_issuer").val(selectedPayType);
   } else {
     $('input[name="brandCode"]').removeAttr("checked");
-    $("input[value=" + selectedPayType + "]").prop("checked", "checked");
+    $(`input[value=${selectedPayType}]`).prop("checked", "checked");
   }
 
   // if the payment type has hidden fields reveal it
-  $("#component_" + selectedPayType).show();
+  $(`#component_${selectedPayType}`).show();
 
   formPrepare.validateForm();
 }
@@ -133,17 +131,12 @@ exports.init = function () {
   });
 
   // default payment method to 'CREDIT_CARD'
-  updatePaymentMethod(
-    selectedPaymentMethod ? selectedPaymentMethod : "CREDIT_CARD"
-  );
+  updatePaymentMethod(selectedPaymentMethod || "CREDIT_CARD");
   $selectPaymentMethod.on("click", 'input[type="radio"]', function () {
     updatePaymentMethod($(this).val());
     if ($(this).val() === "Adyen" && $payType.length > 0) {
-      //set payment type of Adyen to the first one
-      updatePaymentType(
-        selectedPayType ? selectedPayType : $payType[0].value,
-        false
-      );
+      // set payment type of Adyen to the first one
+      updatePaymentType(selectedPayType || $payType[0].value, false);
     } else {
       $payType.removeAttr("checked");
     }
@@ -157,7 +150,7 @@ exports.init = function () {
     $("#selectedIssuer").val("");
     $issuer.hide();
     $(".checkoutComponent").hide();
-    $("#component_" + $(this).val()).show();
+    $(`#component_${$(this).val()}`).show();
     if ($(this).siblings(".issuer").length > 0) {
       $("#selectedIssuer").val($(this).siblings(".issuer").val());
       $(this).siblings(".issuer").show();
@@ -177,7 +170,7 @@ exports.init = function () {
     $(".error-message").remove();
   });
 
-  $("#check-giftcert").on("click", function (e) {
+  $("#check-giftcert").on("click", (e) => {
     e.preventDefault();
     const $balance = $(".balance");
     if ($giftCertCode.length === 0 || $giftCertCode.val().length === 0) {
@@ -189,7 +182,7 @@ exports.init = function () {
       return;
     }
 
-    giftcard.checkBalance($giftCertCode.val(), function (data) {
+    giftcard.checkBalance($giftCertCode.val(), (data) => {
       if (!data || !data.giftCertificate) {
         $balance
           .html(Resources.GIFT_CERT_INVALID)
@@ -198,16 +191,16 @@ exports.init = function () {
         return;
       }
       $balance
-        .html(Resources.GIFT_CERT_BALANCE + " " + data.giftCertificate.balance)
+        .html(`${Resources.GIFT_CERT_BALANCE} ${data.giftCertificate.balance}`)
         .removeClass("error")
         .addClass("success");
     });
   });
 
-  $addGiftCert.on("click", function (e) {
+  $addGiftCert.on("click", (e) => {
     e.preventDefault();
-    const code = $giftCertCode.val(),
-      $error = $checkoutForm.find(".giftcert-error");
+    const code = $giftCertCode.val();
+    const $error = $checkoutForm.find(".giftcert-error");
     if (code.length === 0) {
       $error.html(Resources.GIFT_CERT_MISSING);
       return;
@@ -217,7 +210,7 @@ exports.init = function () {
       giftCertCode: code,
       format: "ajax",
     });
-    $.getJSON(url, function (data) {
+    $.getJSON(url, (data) => {
       let fail = false;
       let msg = "";
       if (!data) {
@@ -229,17 +222,16 @@ exports.init = function () {
       }
       if (fail) {
         $error.html(msg);
-        return;
       } else {
         window.location.assign(Urls.billing);
       }
     });
   });
 
-  $addCoupon.on("click", function (e) {
+  $addCoupon.on("click", (e) => {
     e.preventDefault();
-    const $error = $checkoutForm.find(".coupon-error"),
-      code = $couponCode.val();
+    const $error = $checkoutForm.find(".coupon-error");
+    const code = $couponCode.val();
     if (code.length === 0) {
       $error.html(Resources.COUPON_CODE_MISSING);
       return;
@@ -249,7 +241,7 @@ exports.init = function () {
       couponCode: code,
       format: "ajax",
     });
-    $.getJSON(url, function (data) {
+    $.getJSON(url, (data) => {
       let fail = false;
       let msg = "";
       if (!data) {
@@ -264,8 +256,8 @@ exports.init = function () {
         return;
       }
 
-      //basket check for displaying the payment section, if the adjusted total of the basket is 0 after applying the coupon
-      //this will force a page refresh to display the coupon message based on a parameter message
+      // basket check for displaying the payment section, if the adjusted total of the basket is 0 after applying the coupon
+      // this will force a page refresh to display the coupon message based on a parameter message
       if (data.success && data.baskettotal === 0) {
         window.location.assign(Urls.billing);
       }
@@ -273,13 +265,13 @@ exports.init = function () {
   });
 
   // trigger events on enter
-  $couponCode.on("keydown", function (e) {
+  $couponCode.on("keydown", (e) => {
     if (e.which === 13) {
       e.preventDefault();
       $addCoupon.click();
     }
   });
-  $giftCertCode.on("keydown", function (e) {
+  $giftCertCode.on("keydown", (e) => {
     if (e.which === 13) {
       e.preventDefault();
       $addGiftCert.click();

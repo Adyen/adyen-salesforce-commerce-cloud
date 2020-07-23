@@ -1,4 +1,3 @@
-"use strict";
 const Resource = require("dw/web/Resource");
 const URLUtils = require("dw/web/URLUtils");
 // const logger = require("dw/system/Logger").getLogger("Adyen", "adyen");
@@ -8,7 +7,6 @@ const BasketMgr = require("dw/order/BasketMgr");
 const Site = require("dw/system/Site");
 const Status = require("dw/system/Status");
 const Transaction = require("dw/system/Transaction");
-const constants = require("*/cartridge/adyenConstants/constants");
 const PaymentMgr = require("dw/order/PaymentMgr");
 const CSRFProtection = require("dw/web/CSRFProtection");
 
@@ -16,8 +14,10 @@ const CSRFProtection = require("dw/web/CSRFProtection");
 const app = require("app_storefront_controllers/cartridge/scripts/app");
 const guard = require("app_storefront_controllers/cartridge/scripts/guard");
 const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+
 const OrderModel = app.getModel("Order");
 const Logger = require("dw/system/Logger");
+const constants = require("*/cartridge/adyenConstants/constants");
 
 const EXTERNAL_PLATFORM_VERSION = "SiteGenesis";
 /**
@@ -84,14 +84,14 @@ function showConfirmation() {
       paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
     }
 
-    //redirect to payment/details
+    // redirect to payment/details
     const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
     const requestObject = {
       details: getDetails(),
-      paymentData: paymentData,
+      paymentData,
     };
     const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
     if (
@@ -103,12 +103,13 @@ function showConfirmation() {
         result.resultCode === "Received" &&
         result.paymentMethod.indexOf("alipay_hk") > -1
       ) {
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
         });
         Logger.getLogger("Adyen").error(
-          "Did not complete Alipay transaction, result: " +
-            JSON.stringify(result)
+          `Did not complete Alipay transaction, result: ${JSON.stringify(
+            result
+          )}`
         );
         const errorStatus = new dw.system.Status(
           dw.system.Status.ERROR,
@@ -120,7 +121,7 @@ function showConfirmation() {
         });
         return {};
       }
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
       });
       OrderModel.submit(order);
@@ -128,11 +129,11 @@ function showConfirmation() {
       return app.getController("COSummary").ShowConfirmation(order);
     }
     // fail order
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
     Logger.getLogger("Adyen").error(
-      "Payment failed, result: " + JSON.stringify(result)
+      `Payment failed, result: ${JSON.stringify(result)}`
     );
 
     // should be assingned by previous calls or not
@@ -174,9 +175,9 @@ function paymentFromComponent() {
   ) {
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     Logger.getLogger("Adyen").error(
-      "Shopper cancelled transaction for order " + session.privacy.orderNo
+      `Shopper cancelled transaction for order ${session.privacy.orderNo}`
     );
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
     return;
@@ -189,7 +190,7 @@ function paymentFromComponent() {
   let paymentInstrument;
   let order;
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     const result = adyenRemovePreviousPI.removePaymentInstruments(
       currentBasket
     );
@@ -201,9 +202,9 @@ function paymentFromComponent() {
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice
     );
-    const paymentProcessor = PaymentMgr.getPaymentMethod(
+    const { paymentProcessor } = PaymentMgr.getPaymentMethod(
       paymentInstrument.paymentMethod
-    ).paymentProcessor;
+    );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = stateDataStr;
     session.privacy.paymentMethod = paymentInstrument.paymentMethod;
@@ -229,7 +230,7 @@ function paymentFromComponent() {
   }
   Transaction.commit();
   const responseUtils = require("*/cartridge/scripts/util/Response");
-  responseUtils.renderJSON({ result: result });
+  responseUtils.renderJSON({ result });
 }
 
 /**
@@ -252,26 +253,26 @@ function showConfirmationPaymentFromComponent() {
   const passedData = JSON.parse(
     paymentInformation.get("paypalStateData").value()
   );
-  const details = passedData.details;
-  const paymentData = passedData.paymentData;
+  const { details } = passedData;
+  const { paymentData } = passedData;
 
-  //redirect to payment/details
+  // redirect to payment/details
   const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
   const requestObject = {
-    details: details,
-    paymentData: paymentData,
+    details,
+    paymentData,
   };
   const result = adyenCheckout.doPaymentDetailsCall(requestObject);
   const paymentProcessor = PaymentMgr.getPaymentMethod(
     adyenPaymentInstrument.getPaymentMethod()
   ).getPaymentProcessor();
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
   if (result.resultCode === "Authorised") {
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
     });
     OrderModel.submit(order);
@@ -280,7 +281,7 @@ function showConfirmationPaymentFromComponent() {
     return {};
   }
   // fail order
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
   // should be assingned by previous calls or not
@@ -308,8 +309,8 @@ function donate() {
     Logger.getLogger("Adyen").error(e);
   }
 
-  const pspReference = req.pspReference;
-  const orderNo = req.orderNo;
+  const { pspReference } = req;
+  const { orderNo } = req;
   const donationAmount = {
     value: req.amountValue,
     currency: req.amountCurrency,
@@ -362,15 +363,11 @@ function getPaymentMethods(cart, customer) {
     customer,
     countryCode
   );
-  const paymentMethodDescriptions = response.paymentMethods.map(function (
-    method
-  ) {
-    return {
-      brandCode: method.type,
-      description: Resource.msg("hpp.description." + method.type, "hpp", ""),
-    };
-  });
-  const adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
+  const paymentMethodDescriptions = response.paymentMethods.map((method) => ({
+    brandCode: method.type,
+    description: Resource.msg(`hpp.description.${method.type}`, "hpp", ""),
+  }));
+  const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
 
   let connectedTerminals = {};
   if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
@@ -396,7 +393,7 @@ function getPaymentMethods(cart, customer) {
       ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
       : 1000;
     const currency = currentBasket.getTotalGrossPrice().currencyCode;
-    jsonResponse.amount = { value: paymentAmount, currency: currency };
+    jsonResponse.amount = { value: paymentAmount, currency };
     jsonResponse.countryCode = countryCode;
   }
 
@@ -414,9 +411,9 @@ function redirect3ds2() {
 
   app
     .getView({
-      locale: locale,
-      originKey: originKey,
-      environment: environment,
+      locale,
+      originKey,
+      environment,
       resultCode: request.httpParameterMap.get("resultCode").stringValue,
       token3ds2: request.httpParameterMap.get("token3ds2").stringValue,
       ContinueURL: URLUtils.https("Adyen-Authorize3DS2"),
@@ -432,7 +429,7 @@ function redirect3ds2() {
 function authorize3ds2() {
   if (!CSRFProtection.validateRequest()) {
     Logger.getLogger("Adyen").error(
-      "CSRF Mismatch for order " + session.privacy.orderNo
+      `CSRF Mismatch for order ${session.privacy.orderNo}`
     );
     response.redirect(URLUtils.httpHome());
     return;
@@ -452,7 +449,7 @@ function authorize3ds2() {
       Logger.getLogger("Adyen").error(
         "Unable to retrieve order data from session 3DS2."
       );
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
@@ -485,7 +482,7 @@ function authorize3ds2() {
       };
     } else {
       Logger.getLogger("Adyen").error("paymentDetails 3DS2 not available");
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
@@ -496,7 +493,7 @@ function authorize3ds2() {
 
     const paymentDetailsRequest = {
       paymentData: paymentInstrument.custom.adyenPaymentData,
-      details: details,
+      details,
     };
 
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
@@ -504,8 +501,8 @@ function authorize3ds2() {
       (result.error || result.resultCode !== "Authorised") &&
       result.resultCode !== "ChallengeShopper"
     ) {
-      //Payment failed
-      Transaction.wrap(function () {
+      // Payment failed
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
         paymentInstrument.custom.adyenPaymentData = null;
       });
@@ -513,7 +510,8 @@ function authorize3ds2() {
         PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
       });
       return {};
-    } else if (result.resultCode === "ChallengeShopper") {
+    }
+    if (result.resultCode === "ChallengeShopper") {
       app
         .getView({
           ContinueURL: URLUtils.https(
@@ -568,7 +566,7 @@ function authorizeWithForm() {
       Logger.getLogger("Adyen").error(
         "Unable to retrieve order data from session."
       );
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       app.getController("COSummary").Start({
@@ -578,15 +576,15 @@ function authorizeWithForm() {
     }
 
     if (session.privacy.MD === MD) {
-      //compare the MD from Adyen's payments response with the one from the issuer
+      // compare the MD from Adyen's payments response with the one from the issuer
       clearCustomSessionFields();
       Transaction.begin();
       const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
       const jsonRequest = {
         paymentData: paymentInstrument.custom.adyenPaymentData,
         details: {
-          MD: MD,
-          PaRes: PaRes,
+          MD,
+          PaRes,
         },
       };
 
@@ -594,7 +592,7 @@ function authorizeWithForm() {
 
       if (result.error || result.resultCode !== "Authorised") {
         Transaction.rollback();
-        Transaction.wrap(function () {
+        Transaction.wrap(() => {
           paymentInstrument.custom.adyenPaymentData = null;
           OrderMgr.failOrder(order, true);
         });
@@ -618,13 +616,12 @@ function authorizeWithForm() {
       clearForms();
       app.getController("COSummary").ShowConfirmation(order);
       return {};
-    } else {
-      Logger.getLogger("Adyen").error("Session variable MD does not exists");
-      app.getController("COSummary").Start({
-        PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
-      });
-      return {};
     }
+    Logger.getLogger("Adyen").error("Session variable MD does not exists");
+    app.getController("COSummary").Start({
+      PlaceOrderError: new Status(Status.ERROR, "confirm.error.declined", ""),
+    });
+    return {};
   }
 }
 

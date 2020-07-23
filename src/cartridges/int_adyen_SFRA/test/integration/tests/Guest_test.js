@@ -2,14 +2,14 @@ Feature("Credit card");
 const config = require("../config");
 
 Scenario("Guest Credit card success", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.setCardDetails(config.cardSuccess);
   });
   I.see("Thank you");
 });
 
 Scenario("Guest Credit card 3d success", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.setCardDetails(config.cardSuccess3D);
   });
   I.set3dDetails(config.threeds2DetailsSuccess);
@@ -18,14 +18,14 @@ Scenario("Guest Credit card 3d success", (I) => {
 });
 
 Scenario("Guest Credit card failed", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.setCardDetails(config.cardFail);
   });
   I.dontSee("Thank you");
 });
 
 Scenario("Guest Credit card 3d failed", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.setCardDetails(config.cardFail3D);
   });
   I.set3dDetails(config.threeds2DetailsFail);
@@ -34,7 +34,7 @@ Scenario("Guest Credit card 3d failed", (I) => {
 });
 
 Scenario("Guest iDeal success", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.selectIdealPayment();
     I.selectIssuerSuccess();
   });
@@ -42,7 +42,7 @@ Scenario("Guest iDeal success", (I) => {
 });
 
 Scenario("Guest iDeal failed", (I) => {
-  I.initiatePayment(function () {
+  I.initiatePayment(() => {
     I.selectIdealPayment();
     I.selectIssuerPending();
   });

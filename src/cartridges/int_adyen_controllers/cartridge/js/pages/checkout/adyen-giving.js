@@ -15,7 +15,7 @@ function handleOnDonate(state, component) {
     type: "post",
     data: JSON.stringify(donationData),
     contentType: "application/; charset=utf-8",
-    success: function () {
+    success() {
       component.setStatus("success");
     },
   });
@@ -42,7 +42,7 @@ if (
   }
 
   const donationConfig = {
-    amounts: amounts,
+    amounts,
     backgroundUrl: window.adyenGivingBackgroundUrl,
     description: window.charityDescription,
     logoUrl: window.adyenGivingLogoUrl,

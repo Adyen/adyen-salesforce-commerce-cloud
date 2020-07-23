@@ -31,7 +31,7 @@ function appendPaymentMethod({ selectedAdyenPM }) {
  * Updates the payment information in checkout, based on the supplied order model
  * @param {Object} order - checkout model to use as basis of new truth
  */
-export function updatePaymentInformation(order) {
+function updatePaymentInformation(order) {
   if (order.billing.payment.selectedPaymentInstruments?.length) {
     const selectedPaymentInstrument =
       order.billing.payment.selectedPaymentInstruments[0];

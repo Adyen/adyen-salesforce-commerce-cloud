@@ -1,5 +1,3 @@
-"use strict";
-
 // const naPhone = /^\(?([2-9][0-8][0-9])\)?[\-\. ]?([2-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$/;
 const regex = {
   phone: {},
@@ -11,7 +9,7 @@ const settings = {
   errorClass: "error",
   errorElement: "span",
   onkeyup: false,
-  onfocusout: function (element) {
+  onfocusout(element) {
     if (!this.checkable(element)) {
       this.element(element);
     }
@@ -84,7 +82,7 @@ $.validator.addMethod(
  */
 $.validator.addMethod(
   "positivenumber",
-  function (value) {
+  (value) => {
     if ($.trim(value).length === 0) {
       return true;
     }
@@ -113,15 +111,15 @@ $.extend($.validator.messages, {
 });
 
 const validator = {
-  regex: regex,
-  settings: settings,
-  init: function () {
+  regex,
+  settings,
+  init() {
     const self = this;
     $("form:not(.suppress)").each(function () {
       $(this).validate(self.settings);
     });
   },
-  initForm: function (f) {
+  initForm(f) {
     $(f).validate(this.settings);
   },
 };

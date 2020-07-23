@@ -1,4 +1,5 @@
-import { updatePaymentInformation } from "../billing";
+import { methods } from "../billing";
+
 describe("Billing", () => {
   it("should append html to payment details", () => {
     document.body.innerHTML = `
@@ -26,7 +27,7 @@ describe("Billing", () => {
         },
       },
     };
-    updatePaymentInformation(order);
+    methods.updatePaymentInformation(order);
     expect(document.querySelector(".payment-details")).toMatchSnapshot();
   });
 });
