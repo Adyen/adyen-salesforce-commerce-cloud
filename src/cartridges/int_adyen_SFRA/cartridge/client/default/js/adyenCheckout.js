@@ -69,6 +69,26 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       lastName: document.getElementById('shippingLastNamedefault').value,
     },
   },
+  paywithgoogle: {
+    environment: "TEST", // Change this to PRODUCTION when you're ready to accept live Google Pay payments
+    amount: {
+      currency: "EUR",
+      value: 1000
+    },
+    onSubmit: (state, component) => {
+      console.log(state);
+      assignPaymentMethodValue();
+      // $('#dwfrm_billing').trigger('submit');
+      document.querySelector('button[value="submit-payment"]').click();
+
+    },
+    configuration: {
+      gatewayMerchantId: "CommerceCloudZaid",  //Your Adyen merchant or company account name
+      merchantName: "test merchant name" // Optional. The name that appears in the payment sheet.
+    },
+    showPayButton: true,
+    buttonColor: "white", //Optional. Use a white Google Pay button.
+  },
   paypal: {
     environment: window.Configuration.environment,
     intent: 'capture',
@@ -322,7 +342,18 @@ function renderPaymentMethod(
   li.append(container);
   paymentMethodsUI.append(li);
 
-  node && node.mount(container);
+  if(paymentMethod.type !== 'paywithgoogle') {
+    node && node.mount(container);
+  } else {
+    node
+        .isAvailable()
+        .then(() => {
+          node.mount(container);
+        })
+        .catch(e => {
+          console.error('google pay not available');
+        });
+  }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
