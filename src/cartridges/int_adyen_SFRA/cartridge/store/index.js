@@ -1,7 +1,7 @@
-import { observable, computed } from "mobx";
+import { observable, computed } from 'mobx';
 
 class Store {
-  MASKED_CC_PREFIX = "************";
+  MASKED_CC_PREFIX = '************';
 
   @observable checkout;
 

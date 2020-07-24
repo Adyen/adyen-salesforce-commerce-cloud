@@ -4,7 +4,7 @@ function hasData(...args) {
 
 function appendToPaymentSummary(html) {
   // update payment details
-  const paymentSummary = document.querySelector(".payment-details");
+  const paymentSummary = document.querySelector('.payment-details');
   paymentSummary.innerHTML += html;
 }
 
@@ -36,7 +36,7 @@ function updatePaymentInformation(order) {
     const selectedPaymentInstrument =
       order.billing.payment.selectedPaymentInstruments[0];
 
-    document.querySelector(".payment-details").innerHTML = "";
+    document.querySelector('.payment-details').innerHTML = '';
     appendPaymentMethod(selectedPaymentInstrument);
     appendIssuerName(selectedPaymentInstrument);
     appendMaskedCC(selectedPaymentInstrument);

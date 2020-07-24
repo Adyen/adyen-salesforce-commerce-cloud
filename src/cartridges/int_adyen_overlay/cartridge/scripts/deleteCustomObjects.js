@@ -4,7 +4,7 @@
  * @input orderID : String
  */
 
-const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 function execute(args) {
   return handle(args.orderID);
@@ -13,15 +13,15 @@ function execute(args) {
 function handle(orderID) {
   const queryString = `custom.orderId LIKE '${orderID}*'`;
   const searchQuery = CustomObjectMgr.queryCustomObjects(
-    "adyenNotification",
+    'adyenNotification',
     queryString,
-    null
+    null,
   );
   if (searchQuery.count > 0) {
-    dw.system.Logger.getLogger("Adyen", "adyen").info(
-      "Removing related Custom Objects with merchantReference {0} with count {1}",
+    dw.system.Logger.getLogger('Adyen', 'adyen').info(
+      'Removing related Custom Objects with merchantReference {0} with count {1}',
       orderID,
-      searchQuery.count
+      searchQuery.count,
     );
   }
   while (searchQuery.hasNext()) {
@@ -33,18 +33,18 @@ function handle(orderID) {
 }
 
 function remove(co) {
-  dw.system.Logger.getLogger("Adyen", "adyen").info(
-    "Remove CO object with merchantReference {0} and pspReferenceNumber  {1}",
+  dw.system.Logger.getLogger('Adyen', 'adyen').info(
+    'Remove CO object with merchantReference {0} and pspReferenceNumber  {1}',
     co.custom.merchantReference,
-    co.custom.pspReference
+    co.custom.pspReference,
   );
   try {
     CustomObjectMgr.remove(co);
   } catch (e) {
-    dw.system.Logger.getLogger("Adyen", "adyen").error(
-      "Error occured during delete CO, ID: {0}, erorr message {1}",
+    dw.system.Logger.getLogger('Adyen', 'adyen').error(
+      'Error occured during delete CO, ID: {0}, erorr message {1}',
       co.custom.orderId,
-      e.message
+      e.message,
     );
   }
 }

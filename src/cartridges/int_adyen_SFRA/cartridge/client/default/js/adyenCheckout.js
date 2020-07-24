@@ -1,25 +1,25 @@
-import store from "../../../store";
+import store from '../../../store';
 import {
   renderGenericComponent,
   setCheckoutConfiguration,
   assignPaymentMethodValue,
   showValidation,
   validateComponents,
-} from "./adyen_checkout";
+} from './adyen_checkout';
 
-$("#dwfrm_billing").submit(function (e) {
+$('#dwfrm_billing').submit(function (e) {
   e.preventDefault();
 
   const form = $(this);
-  const url = form.attr("action");
+  const url = form.attr('action');
 
   $.ajax({
-    type: "POST",
+    type: 'POST',
     url,
     data: form.serialize(),
     async: false,
     success(data) {
-      store.formErrorsExist = "fieldErrors" in data;
+      store.formErrorsExist = 'fieldErrors' in data;
     },
   });
 });
@@ -32,16 +32,16 @@ if (window.installments) {
     store.checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
   } catch (e) {} // eslint-disable-line no-empty
 }
-if (window.paypalMerchantID !== "null") {
+if (window.paypalMerchantID !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
     window.paypalMerchantID;
 }
 
 // Submit the payment
-$('button[value="submit-payment"]').on("click", () => {
-  if (document.querySelector("#selectedPaymentOption").value === "AdyenPOS") {
-    document.querySelector("#terminalId").value = document.querySelector(
-      "#terminalList"
+$('button[value="submit-payment"]').on('click', () => {
+  if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
+    document.querySelector('#terminalId').value = document.querySelector(
+      '#terminalList',
     ).value;
     return true;
   }
@@ -52,6 +52,7 @@ $('button[value="submit-payment"]').on("click", () => {
 });
 
 /**
- * Assigns stateData value to the hidden stateData input field so it's sent to the backend for processing
+ * Assigns stateData value to the hidden stateData input field
+ * so it's sent to the backend for processing
  */
 export const methods = { renderGenericComponent };

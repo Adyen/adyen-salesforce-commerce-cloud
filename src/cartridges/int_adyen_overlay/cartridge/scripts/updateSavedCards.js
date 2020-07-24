@@ -5,13 +5,13 @@
  */
 
 /* API Includes */
-const Logger = require("dw/system/Logger");
-const PaymentInstrument = require("dw/order/PaymentInstrument");
-const Transaction = require("dw/system/Transaction");
-const constants = require("*/cartridge/adyenConstants/constants");
+const Logger = require('dw/system/Logger');
+const PaymentInstrument = require('dw/order/PaymentInstrument');
+const Transaction = require('dw/system/Transaction');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 /* Script Modules */
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function updateSavedCards(args) {
   try {
@@ -19,15 +19,16 @@ function updateSavedCards(args) {
     if (
       !(customer && customer.getProfile() && customer.getProfile().getWallet())
     ) {
-      Logger.getLogger("Adyen").error(
-        "Error while updating saved cards, could not get customer data"
+      Logger.getLogger('Adyen').error(
+        'Error while updating saved cards, could not get customer data',
       );
       return { error: true };
     }
 
     if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
       const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
-      // To make it compatible with upgrade from older versions (<= 19.2.2), first delete payment instruments with METHOD_CREDIT_CARD
+      // To make it compatible with upgrade from older versions (<= 19.2.2),
+      // first delete payment instruments with METHOD_CREDIT_CARD
       const savedCreditCards = customer
         .getProfile()
         .getWallet()
@@ -52,15 +53,15 @@ function updateSavedCards(args) {
         // Create from existing cards a paymentInstrument
         for (let index = 0; index < oneClickPaymentMethods.length; index++) {
           const payment = oneClickPaymentMethods[index];
-          const expiryMonth = payment.expiryMonth ? payment.expiryMonth : "";
-          const expiryYear = payment.expiryYear ? payment.expiryYear : "";
-          const holderName = payment.holderName ? payment.holderName : "";
-          const lastFour = payment.lastFour ? payment.lastFour : "";
-          const number = lastFour ? new Array(12 + 1).join("*") + lastFour : "";
+          const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
+          const expiryYear = payment.expiryYear ? payment.expiryYear : '';
+          const holderName = payment.holderName ? payment.holderName : '';
+          const lastFour = payment.lastFour ? payment.lastFour : '';
+          const number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
           const token = payment.id;
           const cardType = payment.brand
             ? AdyenHelper.getSFCCCardType(payment.brand)
-            : "";
+            : '';
 
           // if we have everything we need, create a new payment instrument
           if (
@@ -88,26 +89,26 @@ function updateSavedCards(args) {
       return { error: false };
     }
   } catch (ex) {
-    Logger.getLogger("Adyen").error(
-      `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`
+    Logger.getLogger('Adyen').error(
+      `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`,
     );
     return { error: true };
   }
 }
 
 function getOneClickPaymentMethods(customer) {
-  const getPaymentMethods = require("*/cartridge/scripts/adyenGetPaymentMethods");
+  const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
   const { storedPaymentMethods } = getPaymentMethods.getMethods(
     null,
     customer,
-    ""
+    '',
   );
   const oneClickPaymentMethods = [];
   for (let i = 0; i < storedPaymentMethods.length; i++) {
     if (
       storedPaymentMethods[i].supportedShopperInteractions &&
       storedPaymentMethods[i].supportedShopperInteractions.indexOf(
-        "Ecommerce"
+        'Ecommerce',
       ) > -1
     ) {
       oneClickPaymentMethods.push(storedPaymentMethods[i]);

@@ -1,8 +1,8 @@
-const Transaction = require("dw/system/Transaction");
-const HookMgr = require("dw/system/HookMgr");
-const PaymentMgr = require("dw/order/PaymentMgr");
-const OrderMgr = require("dw/order/OrderMgr");
-const PaymentInstrument = require("dw/order/PaymentInstrument");
+const Transaction = require('dw/system/Transaction');
+const HookMgr = require('dw/system/HookMgr');
+const PaymentMgr = require('dw/order/PaymentMgr');
+const OrderMgr = require('dw/order/OrderMgr');
+const PaymentInstrument = require('dw/order/PaymentInstrument');
 
 /**
  * handles the payment authorization for each payment instrument
@@ -25,7 +25,7 @@ function handlePayments(order, orderNumber) {
       for (let i = 0; i < paymentInstruments.length; i++) {
         const paymentInstrument = paymentInstruments[i];
         const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-          paymentInstrument.paymentMethod
+          paymentInstrument.paymentMethod,
         );
         let authorizationResult;
 
@@ -36,20 +36,20 @@ function handlePayments(order, orderNumber) {
         } else {
           if (
             HookMgr.hasHook(
-              `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`
+              `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`,
             )
           ) {
             authorizationResult = HookMgr.callHook(
               `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`,
-              "Authorize",
+              'Authorize',
               orderNumber,
               paymentInstrument,
-              paymentProcessor
+              paymentProcessor,
             );
           } else {
             authorizationResult = HookMgr.callHook(
-              "app.payment.processor.default",
-              "Authorize"
+              'app.payment.processor.default',
+              'Authorize',
             );
           }
           result = authorizationResult;
@@ -78,7 +78,7 @@ function validatePayment(req, currentBasket) {
   let applicablePaymentCards;
   let applicablePaymentMethods;
   const creditCardPaymentMethod = PaymentMgr.getPaymentMethod(
-    PaymentInstrument.METHOD_CREDIT_CARD
+    PaymentInstrument.METHOD_CREDIT_CARD,
   );
   const paymentAmount = currentBasket.totalGrossPrice.value;
   const { countryCode } = req.geolocation;
@@ -89,12 +89,12 @@ function validatePayment(req, currentBasket) {
   applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(
     currentCustomer,
     countryCode,
-    paymentAmount
+    paymentAmount,
   );
   applicablePaymentCards = creditCardPaymentMethod.getApplicablePaymentCards(
     currentCustomer,
     countryCode,
-    paymentAmount
+    paymentAmount,
   );
 
   let invalid = true;
@@ -103,23 +103,23 @@ function validatePayment(req, currentBasket) {
     const paymentInstrument = paymentInstruments[i];
     if (
       PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(
-        paymentInstrument.paymentMethod
+        paymentInstrument.paymentMethod,
       )
     ) {
       invalid = false;
     }
 
     const paymentMethod = PaymentMgr.getPaymentMethod(
-      paymentInstrument.getPaymentMethod()
+      paymentInstrument.getPaymentMethod(),
     );
     if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
       if (
         PaymentInstrument.METHOD_CREDIT_CARD.equals(
-          paymentInstrument.paymentMethod
+          paymentInstrument.paymentMethod,
         )
       ) {
         const card = PaymentMgr.getPaymentCard(
-          paymentInstrument.creditCardType
+          paymentInstrument.creditCardType,
         );
         // Checks whether payment card is still applicable or if there is a credit card token set.
         if (

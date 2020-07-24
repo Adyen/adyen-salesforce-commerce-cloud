@@ -24,16 +24,16 @@
  * @output sessionValidity : String;
  *
  */
-require("dw/crypto");
-require("dw/system");
-require("dw/order");
-require("dw/util");
-require("dw/value");
-require("dw/net");
-require("dw/web");
+require('dw/crypto');
+require('dw/system');
+require('dw/order');
+require('dw/util');
+require('dw/value');
+require('dw/net');
+require('dw/web');
 
 // script include
-const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
+const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems(args) {
   let order;
@@ -67,7 +67,7 @@ function getLineItems(args) {
       lineItemObject.description = description;
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
-      lineItemObject.taxCategory = "None";
+      lineItemObject.taxCategory = 'None';
       lineItemObject.taxPercentage = (
         new Number(vatPercentage) * 10000
       ).toFixed();

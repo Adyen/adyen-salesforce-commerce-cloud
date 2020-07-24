@@ -1,4 +1,4 @@
-const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 /**
  * Verifies the required information for billing form is provided.
@@ -8,10 +8,10 @@ const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
-  const array = require("*/cartridge/scripts/util/array");
+  const array = require('*/cartridge/scripts/util/array');
   const viewData = viewFormData;
   let creditCardErrors = {};
-  const isCreditCard = req.form.brandCode === "scheme";
+  const isCreditCard = req.form.brandCode === 'scheme';
   if (!req.form.storedPaymentUUID && isCreditCard) {
     // verify credit card form data
     creditCardErrors = COHelpers.validateCreditCard(paymentForm);
@@ -59,7 +59,7 @@ function processForm(req, paymentForm, viewFormData) {
     const { paymentInstruments } = req.currentCustomer.wallet;
     const paymentInstrument = array.find(
       paymentInstruments,
-      (item) => viewData.storedPaymentUUID === item.UUID
+      (item) => viewData.storedPaymentUUID === item.UUID,
     );
 
     viewData.paymentInformation.cardNumber.value =
@@ -88,23 +88,23 @@ function processForm(req, paymentForm, viewFormData) {
  * @param {Object} billingData - payment information
  */
 function savePaymentInformation(req, basket, billingData) {
-  const CustomerMgr = require("dw/customer/CustomerMgr");
+  const CustomerMgr = require('dw/customer/CustomerMgr');
 
   if (
     !billingData.storedPaymentUUID &&
     req.currentCustomer.raw.authenticated &&
     req.currentCustomer.raw.registered &&
     billingData.saveCard &&
-    billingData.paymentMethod.value === "CREDIT_CARD"
+    billingData.paymentMethod.value === 'CREDIT_CARD'
   ) {
     const customer = CustomerMgr.getCustomerByCustomerNumber(
-      req.currentCustomer.profile.customerNo
+      req.currentCustomer.profile.customerNo,
     );
 
     const saveCardResult = COHelpers.savePaymentInstrumentToWallet(
       billingData,
       basket,
-      customer
+      customer,
     );
 
     req.currentCustomer.wallet.paymentInstruments.push({
@@ -116,7 +116,7 @@ function savePaymentInformation(req, basket, billingData) {
       UUID: saveCardResult.UUID,
       creditCardNumber: Object.hasOwnProperty.call(
         saveCardResult,
-        "creditCardNumber"
+        'creditCardNumber',
       )
         ? saveCardResult.creditCardNumber
         : null,

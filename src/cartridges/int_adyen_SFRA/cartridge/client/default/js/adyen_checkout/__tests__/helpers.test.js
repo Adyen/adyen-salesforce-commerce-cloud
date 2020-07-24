@@ -1,4 +1,4 @@
-import { paymentFromComponent } from "../helpers";
+import { paymentFromComponent } from '../helpers';
 
 let component;
 beforeEach(() => {
@@ -9,9 +9,9 @@ beforeEach(() => {
   };
 });
 
-describe("Helpers", () => {
-  it("should make payment ajax call with fullResponse", async () => {
-    const data = { fullResponse: { action: "mocked_action" } };
+describe('Helpers', () => {
+  it('should make payment ajax call with fullResponse', async () => {
+    const data = { fullResponse: { action: 'mocked_action' } };
     $.ajax = jest.fn(({ success }) => {
       success(data);
       return { fail: jest.fn() };
@@ -21,14 +21,14 @@ describe("Helpers", () => {
     expect(component.setStatus).toHaveBeenCalledTimes(0);
     expect(component.reject).toHaveBeenCalledTimes(0);
   });
-  it("should make payment ajax call that fails", async () => {
+  it('should make payment ajax call that fails', async () => {
     $.ajax = jest.fn(({ success }) => {
       success({});
       return { fail: jest.fn() };
     });
     await paymentFromComponent({}, component);
     expect(component.handleAction).toHaveBeenCalledTimes(0);
-    expect(component.setStatus).toBeCalledWith("ready");
-    expect(component.reject).toBeCalledWith("Payment Refused");
+    expect(component.setStatus).toBeCalledWith('ready');
+    expect(component.reject).toBeCalledWith('Payment Refused');
   });
 });

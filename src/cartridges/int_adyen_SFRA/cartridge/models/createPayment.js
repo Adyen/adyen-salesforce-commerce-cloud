@@ -25,22 +25,22 @@ export function createSelectedPaymentInstruments({
   const results = {
     paymentMethod,
     amount: paymentTransaction.amount.value,
-    ...getField("selectedAdyenPM", custom.adyenPaymentMethod),
-    ...getField("selectedIssuerName", custom.adyenIssuerName),
+    ...getField('selectedAdyenPM', custom.adyenPaymentMethod),
+    ...getField('selectedIssuerName', custom.adyenIssuerName),
     ...getParsedField(
-      "adyenAdditionalPaymentData",
-      custom.adyenAdditionalPaymentData
+      'adyenAdditionalPaymentData',
+      custom.adyenAdditionalPaymentData,
     ),
-    ...getField("adyenAction", custom.adyenAction),
-    ...getOrNull("lastFour", creditCardNumberLastDigits),
-    ...getOrNull("owner", creditCardHolder),
-    ...getOrNull("expirationYear", creditCardExpirationYear),
-    ...getOrNull("type", creditCardType),
-    ...getOrNull("maskedCreditCardNumber", maskedCreditCardNumber),
-    ...getOrNull("expirationMonth", creditCardExpirationMonth),
+    ...getField('adyenAction', custom.adyenAction),
+    ...getOrNull('lastFour', creditCardNumberLastDigits),
+    ...getOrNull('owner', creditCardHolder),
+    ...getOrNull('expirationYear', creditCardExpirationYear),
+    ...getOrNull('type', creditCardType),
+    ...getOrNull('maskedCreditCardNumber', maskedCreditCardNumber),
+    ...getOrNull('expirationMonth', creditCardExpirationMonth),
   };
 
-  if (paymentMethod === "GIFT_CERTIFICATE") {
+  if (paymentMethod === 'GIFT_CERTIFICATE') {
     results.giftCertificateCode = giftCertificateCode;
     results.maskedGiftCertificateCode = maskedGiftCertificateCode;
   }

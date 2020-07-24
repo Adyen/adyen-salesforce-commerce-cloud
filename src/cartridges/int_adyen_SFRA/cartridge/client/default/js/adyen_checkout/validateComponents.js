@@ -1,16 +1,16 @@
-import store from "../../../../store";
+import store from '../../../../store';
 
 function validateCustomInputField(input) {
   return input.value
-    ? input.classList.remove("adyen-checkout__input--error")
-    : input.classList.add("adyen-checkout__input--error");
+    ? input.classList.remove('adyen-checkout__input--error')
+    : input.classList.add('adyen-checkout__input--error');
 }
 
 function handleAch() {
   const bankAccount = {
-    ownerName: document.querySelector("#bankAccountOwnerNameValue").value,
-    bankAccountNumber: document.querySelector("#bankAccountNumberValue").value,
-    bankLocationId: document.querySelector("#bankLocationIdValue").value,
+    ownerName: document.querySelector('#bankAccountOwnerNameValue').value,
+    bankAccountNumber: document.querySelector('#bankAccountNumberValue').value,
+    bankLocationId: document.querySelector('#bankLocationIdValue').value,
   };
   store.stateData.paymentMethod = {
     ...store.stateData.paymentMethod,
@@ -19,8 +19,8 @@ function handleAch() {
 }
 
 function checkRatePay() {
-  const hasGender = document.querySelector("#genderInput").value;
-  const hasDateOfBirth = document.querySelector("#dateOfBirthInput").value;
+  const hasGender = document.querySelector('#genderInput').value;
+  const hasDateOfBirth = document.querySelector('#dateOfBirthInput').value;
   return hasGender && hasDateOfBirth;
 }
 
@@ -28,10 +28,10 @@ function handleRatepay() {
   const isValid = checkRatePay();
   const setRatePay = () => {
     store.stateData.shopperName = {
-      gender: document.querySelector("#genderInput").value,
+      gender: document.querySelector('#genderInput').value,
     };
     store.stateData.dateOfBirth = document.querySelector(
-      "#dateOfBirthInput"
+      '#dateOfBirthInput',
     ).value;
   };
   isValid && setRatePay();
@@ -46,16 +46,16 @@ function setInputOnChange(input) {
 }
 
 function validateAch() {
-  const isAch = document.querySelector("#component_ach");
+  const isAch = document.querySelector('#component_ach');
   const validate = () => {
-    const inputs = document.querySelectorAll("#component_ach > input");
+    const inputs = document.querySelectorAll('#component_ach > input');
     inputs.forEach(setInputOnChange);
   };
   isAch && validate();
 }
 
 function validateRatepay() {
-  const input = document.querySelector("#dateOfBirthInput");
+  const input = document.querySelector('#dateOfBirthInput');
   setInputOnChange(input);
 }
 
@@ -72,7 +72,7 @@ export function validateComponents() {
     customMethods[store.selectedMethod]();
   }
 
-  document.querySelector("#adyenStateData").value = JSON.stringify(
-    store.stateData
+  document.querySelector('#adyenStateData').value = JSON.stringify(
+    store.stateData,
   );
 }

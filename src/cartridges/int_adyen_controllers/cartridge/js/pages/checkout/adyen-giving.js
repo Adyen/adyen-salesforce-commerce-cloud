@@ -11,28 +11,28 @@ function handleOnDonate(state, component) {
     pspReference: window.pspReference,
   };
   $.ajax({
-    url: "Adyen-Donate",
-    type: "post",
+    url: 'Adyen-Donate',
+    type: 'post',
     data: JSON.stringify(donationData),
-    contentType: "application/; charset=utf-8",
+    contentType: 'application/; charset=utf-8',
     success() {
-      component.setStatus("success");
+      component.setStatus('success');
     },
   });
 }
 
 function handleOnCancel() {
-  const adyenGiving = document.getElementById("adyenGiving");
-  adyenGiving.style.transition = "all 3s ease-in-out";
-  adyenGiving.style.display = "none";
+  const adyenGiving = document.getElementById('adyenGiving');
+  adyenGiving.style.transition = 'all 3s ease-in-out';
+  adyenGiving.style.display = 'none';
   donation.unmount();
 }
 
 if (
-  document.querySelector(".adyen-payment-details") &&
+  document.querySelector('.adyen-payment-details') &&
   window.adyenGivingAvailable
 ) {
-  const adyenGivingNode = document.getElementById("donate-container");
+  const adyenGivingNode = document.getElementById('donate-container');
 
   let amounts;
   try {
@@ -54,5 +54,5 @@ if (
   };
 
   const checkout = new AdyenCheckout(window.Configuration);
-  donation = checkout.create("donation", donationConfig).mount(adyenGivingNode);
+  donation = checkout.create('donation', donationConfig).mount(adyenGivingNode);
 }

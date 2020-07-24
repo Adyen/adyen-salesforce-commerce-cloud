@@ -1,14 +1,14 @@
-const OrderMgr = require("dw/order/OrderMgr");
-const server = require("server");
-const csrfProtection = require("*/cartridge/scripts/middleware/csrf");
-const consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
-const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+const OrderMgr = require('dw/order/OrderMgr');
+const server = require('server');
+const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
+const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 server.extend(module.superModule);
 
 server.prepend(
-  "Confirm",
+  'Confirm',
   server.middleware.https,
   consentTracking.consent,
   csrfProtection.generateToken,
@@ -20,10 +20,10 @@ server.prepend(
       AdyenHelper.getAdyenGivingEnabled() &&
       AdyenHelper.isAdyenGivingAvailable(paymentMethod)
     ) {
-      const protocol = req.https ? "https" : "http";
+      const protocol = req.https ? 'https' : 'http';
       const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
         protocol,
-        req.host
+        req.host,
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const configuredAmounts = AdyenHelper.getDonationAmounts();
@@ -54,7 +54,7 @@ server.prepend(
       res.setViewData(viewData);
     }
     return next();
-  }
+  },
 );
 
 module.exports = server.exports();

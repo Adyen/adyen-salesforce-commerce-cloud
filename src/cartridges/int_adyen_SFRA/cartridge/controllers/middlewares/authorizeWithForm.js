@@ -3,12 +3,12 @@ import * as URLUtils from 'dw/web/URLUtils';
 import * as OrderMgr from 'dw/order/OrderMgr';
 import * as Transaction from 'dw/system/Transaction';
 import * as Resource from 'dw/web/Resource';
-import { clearForms } from './clearForms';
+import { clearForms } from '../utils';
 import * as COHelpers from '*/cartridge/scripts/checkout/checkoutHelpers';
 import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
 import * as adyenCheckout from '*/cartridge/scripts/adyenCheckout';
 
-export function authorizeWithForm(req, res, next) {
+function authorizeWithForm(req, res, next) {
   let paymentInstrument;
   let order;
 
@@ -103,3 +103,5 @@ export function authorizeWithForm(req, res, next) {
   res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
   return next();
 }
+
+export default authorizeWithForm;

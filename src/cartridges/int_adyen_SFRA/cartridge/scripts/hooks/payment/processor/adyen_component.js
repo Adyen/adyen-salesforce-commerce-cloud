@@ -2,12 +2,12 @@
  *
  */
 
-const Resource = require("dw/web/Resource");
-const Transaction = require("dw/system/Transaction");
-const Logger = require("dw/system/Logger");
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
-const collections = require("*/cartridge/scripts/util/collections");
-const constants = require("*/cartridge/adyenConstants/constants");
+const Resource = require('dw/web/Resource');
+const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const collections = require('*/cartridge/scripts/util/collections');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function Handle(basket, paymentInformation) {
   const currentBasket = basket;
@@ -19,7 +19,7 @@ function Handle(basket, paymentInformation) {
     });
     const paymentInstrument = currentBasket.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT,
-      currentBasket.totalGrossPrice
+      currentBasket.totalGrossPrice,
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
     paymentInstrument.custom.adyenPaymentMethod =
@@ -27,11 +27,11 @@ function Handle(basket, paymentInformation) {
 
     if (paymentInformation.isCreditCard) {
       const sfccCardType = AdyenHelper.getSFCCCardType(
-        paymentInformation.cardType
+        paymentInformation.cardType,
       );
       const tokenID = AdyenHelper.getCardToken(
         paymentInformation.storedPaymentUUID,
-        customer
+        customer,
       );
 
       paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
@@ -39,10 +39,10 @@ function Handle(basket, paymentInformation) {
 
       if (tokenID) {
         paymentInstrument.setCreditCardExpirationMonth(
-          paymentInformation.expirationMonth.value
+          paymentInformation.expirationMonth.value,
         );
         paymentInstrument.setCreditCardExpirationYear(
-          paymentInformation.expirationYear.value
+          paymentInformation.expirationYear.value,
         );
         paymentInstrument.setCreditCardToken(tokenID);
       }
@@ -68,11 +68,11 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  const Transaction = require("dw/system/Transaction");
-  const OrderMgr = require("dw/order/OrderMgr");
+  const Transaction = require('dw/system/Transaction');
+  const OrderMgr = require('dw/order/OrderMgr');
   const order = OrderMgr.getOrder(orderNumber);
 
-  const adyenCheckout = require("*/cartridge/scripts/adyenCheckout");
+  const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
   Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -85,7 +85,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   if (result.error) {
     const errors = [];
     errors.push(
-      Resource.msg("error.payment.processor.not.supported", "checkout", null)
+      Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     );
     return {
       authorized: false,
@@ -95,7 +95,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     };
   }
   // Trigger 3DS2 flow
-  if (result.threeDS2 || result.resultCode === "RedirectShopper") {
+  if (result.threeDS2 || result.resultCode === 'RedirectShopper') {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
 
@@ -124,7 +124,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
       // Signature only needed for redirect methods
       signature = AdyenHelper.getAdyenHash(
         result.redirectObject.url.substr(result.redirectObject.url.length - 25),
-        result.paymentData.substr(1, 25)
+        result.paymentData.substr(1, 25),
       );
     }
 
@@ -137,9 +137,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
       signature,
     };
   }
-  if (result.decision !== "ACCEPT") {
-    Logger.getLogger("Adyen").error(
-      `Payment failed, result: ${JSON.stringify(result)}`
+  if (result.decision !== 'ACCEPT') {
+    Logger.getLogger('Adyen').error(
+      `Payment failed, result: ${JSON.stringify(result)}`,
     );
     Transaction.rollback();
     return { error: true };

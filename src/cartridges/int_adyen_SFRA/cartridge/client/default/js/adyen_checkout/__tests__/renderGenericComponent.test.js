@@ -1,22 +1,22 @@
-import { renderGenericComponent } from "../renderGenericComponent";
-import store from "../../../../../store";
+import { renderGenericComponent } from '../renderGenericComponent';
+import store from '../../../../../store';
 
 beforeEach(() => {
   window.AdyenCheckout = jest.fn();
   window.Configuration = { amount: 0 };
 });
-describe("Render Generic Component", () => {
-  it("should call getPaymentMethods", async () => {
+describe('Render Generic Component', () => {
+  it('should call getPaymentMethods', async () => {
     $.ajax = jest.fn();
-    store.componentsObj = { foo: "bar", bar: "baz" };
+    store.componentsObj = { foo: 'bar', bar: 'baz' };
     await renderGenericComponent();
     expect($.ajax).toBeCalledWith({
-      url: "Adyen-GetPaymentMethods",
-      type: "get",
+      url: 'Adyen-GetPaymentMethods',
+      type: 'get',
       success: expect.any(Function),
     });
   });
-  it("should render", async () => {
+  it('should render', async () => {
     document.body.innerHTML = `
       <div id="paymentMethodsList"></div>
       <input type="radio" name="brandCode" value="card" />
@@ -29,28 +29,28 @@ describe("Render Generic Component", () => {
     window.AdyenCheckout = jest.fn(() => ({
       create: jest.fn(),
       paymentMethodsResponse: {
-        storedPaymentMethods: [{ supportedShopperInteractions: ["Ecommerce"] }],
+        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
       },
     }));
 
     const mockedSuccessResponse = {
-      amount: "mocked_amount",
-      countryCode: "mocked_country",
-      AdyenConnectedTerminals: { uniqueTerminalIds: ["mocked_id"] },
+      amount: 'mocked_amount',
+      countryCode: 'mocked_country',
+      AdyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
       AdyenPaymentMethods: {
-        paymentMethods: [{ type: "scheme", name: "Card" }],
+        paymentMethods: [{ type: 'scheme', name: 'Card' }],
         storedPaymentMethods: true,
       },
-      ImagePath: "example.com",
-      AdyenDescriptions: [{ description: "mocked_description" }],
+      ImagePath: 'example.com',
+      AdyenDescriptions: [{ description: 'mocked_description' }],
     };
 
     $.ajax = jest.fn(({ success }) => success(mockedSuccessResponse));
-    store.componentsObj = { foo: "bar", bar: "baz" };
+    store.componentsObj = { foo: 'bar', bar: 'baz' };
     await renderGenericComponent();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
-      document.querySelector("input[type=radio][name=brandCode]").value
+      document.querySelector('input[type=radio][name=brandCode]').value,
     ).toBeTruthy();
   });
 });

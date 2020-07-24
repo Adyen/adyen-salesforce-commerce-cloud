@@ -2,8 +2,8 @@
  * Risk data fields
  */
 
-require("dw/order");
-const LineItemHelper = require("*/cartridge/scripts/util/lineItemHelper");
+require('dw/order');
+const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 const __RiskDataHelper = {
   createBasketContentFields(order) {
@@ -13,7 +13,7 @@ const __RiskDataHelper = {
     productLines.forEach((item) => {
       const quantity = LineItemHelper.getQuantity(item);
       basketData[`riskdata.basket.item${itemNr}.itemID`] = LineItemHelper.getId(
-        item
+        item,
       );
       basketData[
         `riskdata.basket.item${itemNr}.productTitle`
@@ -24,20 +24,20 @@ const __RiskDataHelper = {
         item.adjustedNetPrice.currencyCode;
       basketData[`riskdata.basket.item${itemNr}.upc`] = item.product
         ? item.product.UPC
-        : "";
+        : '';
       basketData[`riskdata.basket.item${itemNr}.sku`] = item.product
         ? item.product.manufacturerSKU
-        : "";
+        : '';
       basketData[`riskdata.basket.item${itemNr}.brand`] = item.product
         ? item.product.brand
-        : "";
+        : '';
       basketData[
         `riskdata.basket.item${itemNr}.manufacturerName`
-      ] = item.product ? item.product.manufacturerName : "";
+      ] = item.product ? item.product.manufacturerName : '';
       basketData[`riskdata.basket.item${itemNr}.category`] =
         item.product && item.product.primaryCategory
           ? item.product.primaryCategory.displayName
-          : "";
+          : '';
       basketData[`riskdata.basket.item${itemNr}.quantity`] = quantity;
       itemNr++;
     });
