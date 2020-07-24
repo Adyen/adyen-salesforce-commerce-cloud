@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 let req;
 let res;
 let next;
@@ -8,8 +9,7 @@ afterEach(() => {
 });
 
 beforeEach(() => {
-  authorizeWithForm = require("../../utils/authorizeWithForm")
-    .authorizeWithForm;
+  authorizeWithForm = require("../authorizeWithForm").default;
 
   jest.clearAllMocks();
   const MD = "mocked_MD";
@@ -49,8 +49,8 @@ function paymentNotValid() {
   const Resource = require("dw/web/Resource");
 
   expect(OrderMgr.failOrder).toBeCalledTimes(1);
-  expect(URLUtils.url.mock.calls[0][0]).toEqual("Checkout-Begin");
-  expect(Resource.msg.mock.calls[0][0]).toEqual("error.payment.not.valid");
+  expect(URLUtils.url.mock.calls).toMatchSnapshot();
+  expect(Resource.msg.mock.calls).toMatchSnapshot();
 }
 
 describe("Authorize with Form", () => {
@@ -63,7 +63,7 @@ describe("Authorize with Form", () => {
     expect(Logger.error).toHaveBeenCalledWith(
       "Session variable does not exists"
     );
-    expect(URLUtils.url.mock.calls[0][0]).toEqual("Error-ErrorCode");
+    expect(URLUtils.url.mock.calls).toMatchSnapshot();
   });
   it("should call getOrder and getPaymentInstruments", () => {
     const OrderMgr = require("dw/order/OrderMgr");

@@ -1,5 +1,4 @@
-import { authorizeWithForm } from "./utils/authorizeWithForm";
-import { clearForms } from "./utils/clearForms";
+import * as middlewares from "./middlewares";
 
 const server = require("server");
 const URLUtils = require("dw/web/URLUtils");
@@ -52,7 +51,7 @@ server.post(
   "AuthorizeWithForm",
   csrfProtection.generateToken,
   server.middleware.https,
-  authorizeWithForm
+  middlewares.authorizeWithForm
 );
 
 /**
@@ -63,34 +62,7 @@ server.get(
   consentTracking.consent,
   csrfProtection.generateToken,
   server.middleware.https,
-  (req, res, next) => {
-    const protocol = req.https ? "https" : "http";
-    const adyenGetOriginKey = require("*/cartridge/scripts/adyenGetOriginKey");
-
-    try {
-      const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-        protocol,
-        req.host
-      );
-      const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
-      const { resultCode } = req.querystring;
-      const { token3ds2 } = req.querystring;
-      res.render("/threeds2/adyen3ds2", {
-        locale: request.getLocale(),
-        originKey,
-        environment,
-        resultCode,
-        token3ds2,
-      });
-    } catch (err) {
-      Logger.getLogger("Adyen").error(
-        `3DS2 redirect failed with reason: ${err.toString()}`
-      );
-      res.redirect(URLUtils.url("Error-ErrorCode", "err", "general"));
-    }
-
-    return next();
-  }
+  middlewares.adyen3ds2
 );
 
 /**
