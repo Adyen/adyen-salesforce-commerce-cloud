@@ -3,7 +3,7 @@ import * as URLUtils from "dw/web/URLUtils";
 import * as OrderMgr from "dw/order/OrderMgr";
 import * as Transaction from "dw/system/Transaction";
 import * as Resource from "dw/web/Resource";
-import { clearForms } from "../utils/clearForms";
+import { clearForms } from "../utils";
 import * as COHelpers from "*/cartridge/scripts/checkout/checkoutHelpers";
 import * as AdyenHelper from "*/cartridge/scripts/util/adyenHelper";
 import * as adyenCheckout from "*/cartridge/scripts/adyenCheckout";
