@@ -14,9 +14,3 @@ export const failOrder = jest.fn((orderNo, bool) => ({
   orderNo,
   bool,
 }));
-
-export default {
-  getOrder,
-  failOrder,
-  getPaymentInstruments,
-};

@@ -8,3 +8,5 @@ global.dw = {
 };
 global.showStoreDetails = true;
 global.$ = require("jquery");
+
+global.request = { getLocale: jest.fn(() => "nl_NL") };
