@@ -1,5 +1,2 @@
 export const savePaymentDetails = jest.fn();
-
-export default {
-  savePaymentDetails,
-};
+export const getAdyenEnvironment = jest.fn(() => "TEST");
