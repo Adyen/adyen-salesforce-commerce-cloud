@@ -1,4 +1,5 @@
 import * as middlewares from "./middlewares";
+import { clearForms } from "./utils";
 
 const server = require("server");
 const URLUtils = require("dw/web/URLUtils");

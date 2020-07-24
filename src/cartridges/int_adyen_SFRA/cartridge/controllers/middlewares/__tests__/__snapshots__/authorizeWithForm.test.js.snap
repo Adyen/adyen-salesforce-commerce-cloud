@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Authorize with Form should call 'failOrder' if 'placeOrder' returns error 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    undefined,
+  ],
+]
+`;
+
+exports[`Authorize with Form should call 'failOrder' if 'placeOrder' returns error 2`] = `
+Array [
+  Array [
+    "error.payment.not.valid",
+    "checkout",
+    null,
+  ],
+]
+`;
+
+exports[`Authorize with Form should call 'failOrder' if result has error 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    undefined,
+  ],
+]
+`;
+
+exports[`Authorize with Form should call 'failOrder' if result has error 2`] = `
+Array [
+  Array [
+    "error.payment.not.valid",
+    "checkout",
+    null,
+  ],
+]
+`;
+
+exports[`Authorize with Form should log error when theres no session privacy 1`] = `
+Array [
+  Array [
+    "Error-ErrorCode",
+    "err",
+    "general",
+  ],
+]
+`;
