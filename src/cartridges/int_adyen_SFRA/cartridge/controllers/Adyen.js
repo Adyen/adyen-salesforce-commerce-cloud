@@ -27,14 +27,25 @@ server.get(
     const PaRequest = req.querystring.PaRequest;
     const MD = req.querystring.MD;
     const TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
+    const signature = req.querystring.signature;
 
-    res.render('adyenform', {
-      issuerUrl: IssuerURL,
-      paRequest: PaRequest,
-      md: MD,
-      ContinueURL: TermURL,
-    });
-    next();
+    const currentSignature = AdyenHelper.getAdyenHash(
+        IssuerURL.substr(IssuerURL.length - 25),
+        MD.substr(1, 25),
+    );
+
+    if(signature === currentSignature) {
+      res.render('adyenform', {
+        issuerUrl: IssuerURL,
+        paRequest: PaRequest,
+        md: MD,
+        ContinueURL: TermURL,
+      });
+      return next();
+    }
+    Logger.getLogger("Adyen").error("Signature incorrect for 3D payment");
+    res.redirect(URLUtils.url('Home-Show', 'payment','failed3D'));
+    return next();
   },
 );
 
