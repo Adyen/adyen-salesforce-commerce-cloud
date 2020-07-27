@@ -87,5 +87,10 @@
       "eslint --ext js --fix src",
       "git add"
     ]
+  },
+  "jest": {
+    "setupFiles": [
+      "./jest/globals.js"
+    ]
   }
 }

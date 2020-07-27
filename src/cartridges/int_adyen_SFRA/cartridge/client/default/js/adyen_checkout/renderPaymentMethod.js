@@ -1,5 +1,5 @@
-import store from "../../../../store";
-import { displaySelectedMethod } from "./index";
+import store from '../../../../store';
+import { displaySelectedMethod } from './index';
 
 function getFallback(paymentMethod) {
   const ach = `<div id="component_ach">
@@ -47,23 +47,25 @@ function getImage(isStored, paymentMethod) {
 function getLabel(isStored, paymentMethod) {
   const label = isStored
     ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
-    : "";
+    : '';
   return `${paymentMethod.name}${label}`;
 }
 
 function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
   const fallback = getFallback(paymentMethod.type);
   const createTemplate = () => {
-    const template = document.createElement("template");
+    const template = document.createElement('template');
     template.innerHTML = fallback;
     container.append(template.content);
   };
-  fallback ? createTemplate() : setNode(paymentMethod.type)(paymentMethodID);
+  return fallback
+    ? createTemplate()
+    : setNode(paymentMethod.type)(paymentMethodID);
 }
 
 function handlePayment(options) {
-  options.isStored
-    ? setNode(options.paymentMethodID)("card", options.paymentMethod)
+  return options.isStored
+    ? setNode(options.paymentMethodID)('card', options.paymentMethod)
     : handleFallbackPayment(options);
 }
 
@@ -95,9 +97,9 @@ function setValid({ paymentMethodID, container }) {
 }
 
 function configureContainer({ paymentMethodID, container }) {
-  container.classList.add("additionalFields");
-  container.setAttribute("id", `component_${paymentMethodID}`);
-  container.setAttribute("style", "display:none");
+  container.classList.add('additionalFields');
+  container.setAttribute('id', `component_${paymentMethodID}`);
+  container.setAttribute('style', 'display:none');
 }
 
 function handleInput({ paymentMethodID }) {
@@ -111,14 +113,14 @@ export function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
-  description = null
+  description = null,
 ) {
-  const paymentMethodsUI = document.querySelector("#paymentMethodsList");
+  const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const li = document.createElement("li");
+  const li = document.createElement('li');
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
-  const isSchemeNotStored = paymentMethod.type === "scheme" && !isStored;
-  const container = document.createElement("div");
+  const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
+  const container = document.createElement('div');
 
   const options = {
     container,
@@ -134,7 +136,7 @@ export function renderPaymentMethod(
   const liContents = getListContents({ ...options, imagePath });
 
   li.innerHTML = liContents;
-  li.classList.add("paymentMethod");
+  li.classList.add('paymentMethod');
 
   handlePayment(options);
   configureContainer(options);

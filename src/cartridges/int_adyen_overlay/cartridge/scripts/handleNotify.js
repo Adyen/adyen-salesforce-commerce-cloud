@@ -10,10 +10,10 @@
  * @input CurrentHttpParameterMap : Object
  *
  */
-const Logger = require("dw/system/Logger");
-const Calendar = require("dw/util/Calendar");
-const StringUtils = require("dw/util/StringUtils");
-const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+const Logger = require('dw/system/Logger');
+const Calendar = require('dw/util/Calendar');
+const StringUtils = require('dw/util/StringUtils');
+const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);
@@ -21,8 +21,8 @@ function execute(args) {
 
 function notifyHttpParameterMap(hpm) {
   if (hpm === null) {
-    Logger.getLogger("Adyen", "adyen").fatal(
-      "Handling of Adyen notification has failed. No input parameters were provided."
+    Logger.getLogger('Adyen', 'adyen').fatal(
+      'Handling of Adyen notification has failed. No input parameters were provided.',
     );
     return PIPELET_NEXT;
   }
@@ -36,21 +36,21 @@ function notifyHttpParameterMap(hpm) {
 function notify(notificationData) {
   // Check the input parameters
   if (notificationData === null) {
-    Logger.getLogger("Adyen", "adyen").fatal(
-      "Handling of Adyen notification has failed. No input parameters were provided."
+    Logger.getLogger('Adyen', 'adyen').fatal(
+      'Handling of Adyen notification has failed. No input parameters were provided.',
     );
     return PIPELET_NEXT;
   }
 
   try {
     const msg = createLogMessage(notificationData);
-    Logger.getLogger("Adyen").debug(msg);
+    Logger.getLogger('Adyen').debug(msg);
     const calObj = new Calendar();
     const keyValue = notificationData.merchantReference;
-    `-${StringUtils.formatCalendar(calObj, "yyyyMMddhhmmssSSS")}`;
+    `-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
     const customObj = CustomObjectMgr.createCustomObject(
-      "adyenNotification",
-      keyValue
+      'adyenNotification',
+      keyValue,
     );
     for (const field in notificationData) {
       try {
@@ -61,41 +61,41 @@ function notify(notificationData) {
     }
 
     switch (notificationData.eventCode) {
-      case "AUTHORISATION":
+      case 'AUTHORISATION':
         // Save all request to custom attribute for Authorization event
         customObj.custom.Adyen_log = JSON.stringify(notificationData);
       // eslint-disable-next-line no-fallthrough
-      case "CANCELLATION":
-      case "CANCEL_OR_REFUND":
-      case "REFUND":
-      case "CAPTURE_FAILED":
-      case "ORDER_OPENED":
-      case "ORDER_CLOSED":
-      case "OFFER_CLOSED":
-      case "PENDING":
-      case "CAPTURE":
-        customObj.custom.updateStatus = "PROCESS";
-        Logger.getLogger("Adyen").info(
+      case 'CANCELLATION':
+      case 'CANCEL_OR_REFUND':
+      case 'REFUND':
+      case 'CAPTURE_FAILED':
+      case 'ORDER_OPENED':
+      case 'ORDER_CLOSED':
+      case 'OFFER_CLOSED':
+      case 'PENDING':
+      case 'CAPTURE':
+        customObj.custom.updateStatus = 'PROCESS';
+        Logger.getLogger('Adyen').info(
           "Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PROCESS' status.",
           notificationData.merchantReference,
-          notificationData.eventCode
+          notificationData.eventCode,
         );
         break;
       default:
-        customObj.custom.updateStatus = "PENDING";
-        Logger.getLogger("Adyen").info(
+        customObj.custom.updateStatus = 'PENDING';
+        Logger.getLogger('Adyen').info(
           "Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PENDING' status.",
           notificationData.merchantReference,
-          notificationData.eventCode
+          notificationData.eventCode,
         );
     }
     return {
       success: true,
     };
   } catch (e) {
-    Logger.getLogger("Adyen", "adyen").error(
+    Logger.getLogger('Adyen', 'adyen').error(
       `Notification failed: ${JSON.stringify(notificationData)}\n` +
-        `Error message: ${e.message}`
+        `Error message: ${e.message}`,
     );
     return {
       success: false,
@@ -105,10 +105,10 @@ function notify(notificationData) {
 }
 
 function createLogMessage(notificationData) {
-  const VERSION = "4d";
-  let msg = "";
+  const VERSION = '4d';
+  let msg = '';
   msg = `AdyenNotification v ${VERSION}`;
-  msg += "\n================================================================\n";
+  msg += '\n================================================================\n';
   msg = `${msg}reason : ${notificationData.reason}`;
   msg = `${msg}\neventDate : ${notificationData.eventDate}`;
   msg = `${msg}\nmerchantReference : ${notificationData.merchantReference}`;

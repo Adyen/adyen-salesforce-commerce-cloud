@@ -1,10 +1,10 @@
-import store from "../../../store";
-import { onFieldValid, onBrand } from "./commons";
+import store from '../../../store';
+import { onFieldValid, onBrand } from './commons';
 
-const cardNode = document.getElementById("card");
+const cardNode = document.getElementById('card');
 store.checkoutConfiguration.amount = {
   value: 0,
-  currency: "EUR",
+  currency: 'EUR',
 };
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
@@ -21,12 +21,12 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
 };
 
 const checkout = new AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create("card").mount(cardNode);
+const card = checkout.create('card').mount(cardNode);
 
-$('button[value="add-new-payment"]').on("click", () => {
+$('button[value="add-new-payment"]').on('click', () => {
   if (store.isValid) {
-    document.querySelector("#adyenStateData").value = JSON.stringify(
-      store.componentState.data
+    document.querySelector('#adyenStateData').value = JSON.stringify(
+      store.componentState.data,
     );
     return true;
   }

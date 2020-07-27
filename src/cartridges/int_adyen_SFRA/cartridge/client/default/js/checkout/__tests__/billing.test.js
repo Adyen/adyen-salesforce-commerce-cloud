@@ -1,7 +1,7 @@
-import { methods } from "../billing";
+import { methods } from '../billing';
 
-describe("Billing", () => {
-  it("should append html to payment details", () => {
+describe('Billing', () => {
+  it('should append html to payment details', () => {
     document.body.innerHTML = `
       <div class="payment-details">
         <span>some_child</span>
@@ -10,16 +10,16 @@ describe("Billing", () => {
 
     const selectedPaymentInstruments = [
       {
-        selectedAdyenPM: "mocked_pm",
-        selectedIssuerName: "mocked_issuer_name",
-        maskedCreditCardNumber: "mocked_masked_cc",
-        expirationMonth: "mocked_expiration_moth",
-        expirationYear: "mocked_expiration_year",
+        selectedAdyenPM: 'mocked_pm',
+        selectedIssuerName: 'mocked_issuer_name',
+        maskedCreditCardNumber: 'mocked_masked_cc',
+        expirationMonth: 'mocked_expiration_moth',
+        expirationYear: 'mocked_expiration_year',
       },
     ];
     const order = {
       resources: {
-        cardEnding: "mocked_card_ending",
+        cardEnding: 'mocked_card_ending',
       },
       billing: {
         payment: {
@@ -28,6 +28,6 @@ describe("Billing", () => {
       },
     };
     methods.updatePaymentInformation(order);
-    expect(document.querySelector(".payment-details")).toMatchSnapshot();
+    expect(document.querySelector('.payment-details')).toMatchSnapshot();
   });
 });

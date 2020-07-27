@@ -1,6 +1,6 @@
-import store from "../../../../store";
-import { assignPaymentMethodValue, paymentFromComponent } from "./index";
-import { onBrand, onFieldValid } from "../commons";
+import store from '../../../../store';
+import { assignPaymentMethodValue, paymentFromComponent } from './index';
+import { onBrand, onFieldValid } from '../commons';
 
 function getComponentName(data) {
   return data.paymentMethod.storedPaymentMethodId
@@ -15,8 +15,8 @@ export function getCardConfig() {
       store.isValid = state.isValid;
       const isSelected = getComponentName(state.data) === store.selectedMethod;
       if (isSelected) {
-        store.updateSelectedPayment("isValid", store.isValid);
-        store.updateSelectedPayment("stateData", state.data);
+        store.updateSelectedPayment('isValid', store.isValid);
+        store.updateSelectedPayment('stateData', state.data);
       }
     },
     onFieldValid,
@@ -27,32 +27,32 @@ export function getCardConfig() {
 export function getPaypalConfig() {
   return {
     environment: window.Configuration.environment,
-    intent: "capture",
+    intent: 'capture',
     onSubmit: (state, component) => {
       assignPaymentMethodValue();
-      document.querySelector("#adyenStateData").value = JSON.stringify(
-        store.selectedPayment.stateData
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        store.selectedPayment.stateData,
       );
 
       paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
       paymentFromComponent({ cancelTransaction: true }, component);
-      component.setStatus("ready");
+      component.setStatus('ready');
     },
     onError: (error, component) => {
       if (component) {
-        component.setStatus("ready");
+        component.setStatus('ready');
       }
     },
     onAdditionalDetails: (state) => {
-      document.querySelector("#additionalDetailsHidden").value = JSON.stringify(
-        state.data
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
       );
-      document.querySelector("#showConfirmationForm").submit();
+      document.querySelector('#showConfirmationForm').submit();
     },
     onClick: (data, actions) => {
-      $("#dwfrm_billing").trigger("submit");
+      $('#dwfrm_billing').trigger('submit');
       if (store.formErrorsExist) {
         return actions.reject();
       }
@@ -83,40 +83,40 @@ export function setCheckoutConfiguration() {
 
       // Optionally prefill some fields, here all fields are filled:
       data: {
-        firstName: document.getElementById("shippingFirstNamedefault").value,
-        lastName: document.getElementById("shippingLastNamedefault").value,
+        firstName: document.getElementById('shippingFirstNamedefault').value,
+        lastName: document.getElementById('shippingLastNamedefault').value,
       },
     },
     paypal: getPaypalConfig(),
     afterpay_default: {
       visibility: {
-        personalDetails: "editable",
-        billingAddress: "hidden",
-        deliveryAddress: "hidden",
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
       },
       data: {
         personalDetails: {
-          firstName: document.querySelector("#shippingFirstNamedefault").value,
-          lastName: document.querySelector("#shippingLastNamedefault").value,
-          telephoneNumber: document.querySelector("#shippingPhoneNumberdefault")
+          firstName: document.querySelector('#shippingFirstNamedefault').value,
+          lastName: document.querySelector('#shippingLastNamedefault').value,
+          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
             .value,
-          shopperEmail: document.querySelector("#email").value,
+          shopperEmail: document.querySelector('#email').value,
         },
       },
     },
     facilypay_3x: {
       visibility: {
-        personalDetails: "editable",
-        billingAddress: "hidden",
-        deliveryAddress: "hidden",
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
       },
       data: {
         personalDetails: {
-          firstName: document.querySelector("#shippingFirstNamedefault").value,
-          lastName: document.querySelector("#shippingLastNamedefault").value,
-          telephoneNumber: document.querySelector("#shippingPhoneNumberdefault")
+          firstName: document.querySelector('#shippingFirstNamedefault').value,
+          lastName: document.querySelector('#shippingLastNamedefault').value,
+          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
             .value,
-          shopperEmail: document.querySelector("#email").value,
+          shopperEmail: document.querySelector('#email').value,
         },
       },
     },

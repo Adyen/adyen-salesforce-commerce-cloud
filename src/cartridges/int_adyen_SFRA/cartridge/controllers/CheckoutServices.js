@@ -1,24 +1,24 @@
-const server = require("server");
+const server = require('server');
 
 server.extend(module.superModule);
 
-const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
-const adyenHelpers = require("*/cartridge/scripts/checkout/adyenHelpers");
-const collections = require("*/cartridge/scripts/util/collections");
-const constants = require("*/cartridge/adyenConstants/constants");
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+const collections = require('*/cartridge/scripts/util/collections');
+const constants = require('*/cartridge/adyenConstants/constants');
 
-server.prepend("PlaceOrder", server.middleware.https, function (
+server.prepend('PlaceOrder', server.middleware.https, function (
   req,
   res,
-  next
+  next,
 ) {
-  const BasketMgr = require("dw/order/BasketMgr");
-  const OrderMgr = require("dw/order/OrderMgr");
-  const Resource = require("dw/web/Resource");
-  const Transaction = require("dw/system/Transaction");
-  const URLUtils = require("dw/web/URLUtils");
-  const basketCalculationHelpers = require("*/cartridge/scripts/helpers/basketCalculationHelpers");
-  const hooksHelper = require("*/cartridge/scripts/helpers/hooks");
+  const BasketMgr = require('dw/order/BasketMgr');
+  const OrderMgr = require('dw/order/OrderMgr');
+  const Resource = require('dw/web/Resource');
+  const Transaction = require('dw/system/Transaction');
+  const URLUtils = require('dw/web/URLUtils');
+  const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+  const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
   let isAdyen = false;
 
   const currentBasket = BasketMgr.getCurrentBasket();
@@ -28,7 +28,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
       cartError: true,
       fieldErrors: [],
       serverErrors: [],
-      redirectUrl: URLUtils.url("Cart-Show").toString(),
+      redirectUrl: URLUtils.url('Cart-Show').toString(),
     });
     return next();
   }
@@ -46,7 +46,7 @@ server.prepend("PlaceOrder", server.middleware.https, function (
       ) {
         isAdyen = true;
       }
-    }
+    },
   );
 
   if (!isAdyen) {
@@ -57,33 +57,33 @@ server.prepend("PlaceOrder", server.middleware.https, function (
 
   if (viewData && viewData.csrfError) {
     res.json();
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
-  if (req.session.privacyCache.get("fraudDetectionStatus")) {
+  if (req.session.privacyCache.get('fraudDetectionStatus')) {
     res.json({
       error: true,
       cartError: true,
-      redirectUrl: URLUtils.url("Error-ErrorCode", "err", "01").toString(),
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
+      errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
   const validationOrderStatus = hooksHelper(
-    "app.validate.order",
-    "validateOrder",
+    'app.validate.order',
+    'validateOrder',
     currentBasket,
-    require("*/cartridge/scripts/hooks/validateOrder").validateOrder
+    require('*/cartridge/scripts/hooks/validateOrder').validateOrder,
   );
   if (validationOrderStatus.error) {
     res.json({
       error: true,
       errorMessage: validationOrderStatus.message,
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
   // Check to make sure there is a shipping address
@@ -91,12 +91,12 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     res.json({
       error: true,
       errorStage: {
-        stage: "shipping",
-        step: "address",
+        stage: 'shipping',
+        step: 'address',
       },
-      errorMessage: Resource.msg("error.no.shipping.address", "checkout", null),
+      errorMessage: Resource.msg('error.no.shipping.address', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -105,12 +105,12 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     res.json({
       error: true,
       errorStage: {
-        stage: "payment",
-        step: "billingAddress",
+        stage: 'payment',
+        step: 'billingAddress',
       },
-      errorMessage: Resource.msg("error.no.billing.address", "checkout", null),
+      errorMessage: Resource.msg('error.no.billing.address', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -125,24 +125,24 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     res.json({
       error: true,
       errorStage: {
-        stage: "payment",
-        step: "paymentInstrument",
+        stage: 'payment',
+        step: 'paymentInstrument',
       },
-      errorMessage: Resource.msg("error.payment.not.valid", "checkout", null),
+      errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
   // Re-calculate the payments.
   const calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(
-    currentBasket
+    currentBasket,
   );
   if (calculatedPaymentTransactionTotal.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -151,9 +151,9 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   if (!order) {
     res.json({
       error: true,
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -162,9 +162,9 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   if (handlePaymentResult.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg("error.payment.not.valid", "checkout", null),
+      errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -172,14 +172,14 @@ server.prepend("PlaceOrder", server.middleware.https, function (
     res.json({
       error: false,
       continueUrl: URLUtils.url(
-        "Adyen-Adyen3DS2",
-        "resultCode",
+        'Adyen-Adyen3DS2',
+        'resultCode',
         handlePaymentResult.resultCode,
-        "token3ds2",
-        handlePaymentResult.token3ds2
+        'token3ds2',
+        handlePaymentResult.token3ds2,
       ).toString(),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
   if (handlePaymentResult.redirectObject) {
@@ -189,58 +189,58 @@ server.prepend("PlaceOrder", server.middleware.https, function (
       res.json({
         error: false,
         continueUrl: URLUtils.url(
-          "Adyen-Adyen3D",
-          "IssuerURL",
+          'Adyen-Adyen3D',
+          'IssuerURL',
           handlePaymentResult.redirectObject.url,
-          "PaRequest",
+          'PaRequest',
           handlePaymentResult.redirectObject.data.PaReq,
-          "MD",
-          handlePaymentResult.redirectObject.data.MD
+          'MD',
+          handlePaymentResult.redirectObject.data.MD,
         ).toString(),
       });
-      this.emit("route:Complete", req, res);
+      this.emit('route:Complete', req, res);
       return;
     }
     res.json({
       error: false,
       continueUrl: URLUtils.url(
-        "Adyen-Redirect",
-        "redirectUrl",
+        'Adyen-Redirect',
+        'redirectUrl',
         handlePaymentResult.redirectObject.url,
-        "signature",
-        handlePaymentResult.signature
+        'signature',
+        handlePaymentResult.signature,
       ).toString(),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
   const fraudDetectionStatus = hooksHelper(
-    "app.fraud.detection",
-    "fraudDetection",
+    'app.fraud.detection',
+    'fraudDetection',
     currentBasket,
-    require("*/cartridge/scripts/hooks/fraudDetection").fraudDetection
+    require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection,
   );
-  if (fraudDetectionStatus.status === "fail") {
+  if (fraudDetectionStatus.status === 'fail') {
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
 
     // fraud detection failed
-    req.session.privacyCache.set("fraudDetectionStatus", true);
+    req.session.privacyCache.set('fraudDetectionStatus', true);
 
     res.json({
       error: true,
       cartError: true,
       redirectUrl: URLUtils.url(
-        "Error-ErrorCode",
-        "err",
-        fraudDetectionStatus.errorCode
+        'Error-ErrorCode',
+        'err',
+        fraudDetectionStatus.errorCode,
       ).toString(),
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
 
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
@@ -249,24 +249,24 @@ server.prepend("PlaceOrder", server.middleware.https, function (
   if (placeOrderResult.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg("error.technical", "checkout", null),
+      errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
-    this.emit("route:Complete", req, res);
+    this.emit('route:Complete', req, res);
     return;
   }
 
   COHelpers.sendConfirmationEmail(order, req.locale.id);
 
   // Reset usingMultiShip after successful Order placement
-  req.session.privacyCache.set("usingMultiShipping", false);
+  req.session.privacyCache.set('usingMultiShipping', false);
 
   res.json({
     error: false,
     orderID: order.orderNo,
     orderToken: order.orderToken,
-    continueUrl: URLUtils.url("Order-Confirm").toString(),
+    continueUrl: URLUtils.url('Order-Confirm').toString(),
   });
-  this.emit("route:Complete", req, res);
+  this.emit('route:Complete', req, res);
 });
 
 module.exports = server.exports();

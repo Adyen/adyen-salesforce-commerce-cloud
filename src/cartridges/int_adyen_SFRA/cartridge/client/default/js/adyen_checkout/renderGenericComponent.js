@@ -1,16 +1,16 @@
-import store from "../../../../store";
-import { renderPaymentMethod, displaySelectedMethod } from "./index";
+import store from '../../../../store';
+import { renderPaymentMethod, displaySelectedMethod } from './index';
 
 function addPosTerminals(terminals) {
-  const dd_terminals = document.createElement("select");
-  dd_terminals.id = "terminalList";
+  const dd_terminals = document.createElement('select');
+  dd_terminals.id = 'terminalList';
   for (const t in terminals) {
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = terminals[t];
     option.text = terminals[t];
     dd_terminals.appendChild(option);
   }
-  document.querySelector("#adyenPosTerminals").append(dd_terminals);
+  document.querySelector('#adyenPosTerminals').append(dd_terminals);
 }
 
 /**
@@ -18,8 +18,8 @@ function addPosTerminals(terminals) {
  */
 function getPaymentMethods(paymentMethods) {
   $.ajax({
-    url: "Adyen-GetPaymentMethods",
-    type: "get",
+    url: 'Adyen-GetPaymentMethods',
+    type: 'get',
     success(data) {
       paymentMethods(data);
     },
@@ -51,20 +51,20 @@ function resolveUnmount(key, val) {
  */
 function isMethodTypeBlocked(methodType) {
   const blockedMethods = [
-    "bcmc_mobile_QR",
-    "applepay",
-    "cup",
-    "wechatpay",
-    "wechatpay_pos",
-    "wechatpaySdk",
-    "wechatpayQr",
+    'bcmc_mobile_QR',
+    'applepay',
+    'cup',
+    'wechatpay',
+    'wechatpay_pos',
+    'wechatpaySdk',
+    'wechatpayQr',
   ];
   return blockedMethods.includes(methodType);
 }
 
 function renderStoredPaymentMethod(data) {
   return (pm) => {
-    if (pm.supportedShopperInteractions.includes("Ecommerce")) {
+    if (pm.supportedShopperInteractions.includes('Ecommerce')) {
       renderPaymentMethod(pm, true, data.ImagePath);
     }
   };
@@ -84,14 +84,14 @@ function renderPaymentMethods(data) {
         pm,
         false,
         data.ImagePath,
-        data.AdyenDescriptions[i].description
+        data.AdyenDescriptions[i].description,
       );
   });
 }
 
 function renderPosTerminals(data) {
   const removeChilds = () => {
-    const posTerminals = document.querySelector("#adyenPosTerminals");
+    const posTerminals = document.querySelector('#adyenPosTerminals');
     while (posTerminals.firstChild) {
       posTerminals.removeChild(posTerminals.firstChild);
     }
@@ -107,8 +107,8 @@ function setCheckoutConfiguration(data) {
   const setField = (key, val) => val && { [key]: val };
   store.checkoutConfiguration = {
     ...store.checkoutConfiguration,
-    ...setField("amount", data.amount),
-    ...setField("countryCode", data.countryCode),
+    ...setField('amount', data.amount),
+    ...setField('countryCode', data.countryCode),
   };
 }
 
@@ -125,14 +125,14 @@ export async function renderGenericComponent() {
     setCheckoutConfiguration(data);
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
-    document.querySelector("#paymentMethodsList").innerHTML = "";
+    document.querySelector('#paymentMethodsList').innerHTML = '';
 
     renderStoredPaymentMethods(data);
     renderPaymentMethods(data);
     renderPosTerminals(data);
 
     const firstPaymentMethod = document.querySelector(
-      "input[type=radio][name=brandCode]"
+      'input[type=radio][name=brandCode]',
     );
     firstPaymentMethod.checked = true;
     displaySelectedMethod(firstPaymentMethod.value);

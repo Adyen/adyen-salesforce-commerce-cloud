@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Authorize 3DS2 should call fail order and redirect if result has error 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    "mocked_error.payment.not.valid",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should complete authorization 1`] = `
+Array [
+  Array [
+    "Order-Confirm",
+    "ID",
+    "mocked_orderNo",
+    "token",
+    "mocked_orderToken",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should do payments call with challengeResult 1`] = `
+Array [
+  Array [
+    Object {
+      "details": Object {
+        "threeds2.challengeResult": "mocked_challenge_result",
+      },
+      "paymentData": "mocked_adyen_payment_data",
+    },
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should do payments call with fingerprint 1`] = `
+Array [
+  Array [
+    Object {
+      "details": Object {
+        "threeds2.fingerprint": "mocked_fingerprint_result",
+      },
+      "paymentData": "mocked_adyen_payment_data",
+    },
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should error when placing order 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "placeOrder",
+    "paymentError",
+    "mocked_error.payment.not.valid",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should go to error page when there is no session 1`] = `
+Array [
+  Array [
+    "Error-ErrorCode",
+    "err",
+    "general",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should go to error page when there is no session 2`] = `
+Array [
+  Array [
+    "Session variables for 3DS2 do not exists",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should redirect if form resultCode is invalid 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    "mocked_error.payment.not.valid",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should redirect if form resultCode is invalid 2`] = `
+Array [
+  Array [
+    "paymentDetails 3DS2 not available",
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should redirect when resultCode is ChallengeShopper 1`] = `
+Array [
+  Array [
+    "Adyen-Adyen3DS2",
+    "resultCode",
+    "ChallengeShopper",
+    "token3ds2",
+    "mocked_challenge_token",
+  ],
+]
+`;

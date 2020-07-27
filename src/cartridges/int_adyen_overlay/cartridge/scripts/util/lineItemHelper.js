@@ -2,8 +2,8 @@
  *
  */
 
-require("dw/order");
-const AdyenHelper = require("*/cartridge/scripts/util/adyenHelper");
+require('dw/order');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const __LineItemHelper = {
   getDescription(lineItem) {
@@ -14,7 +14,7 @@ const __LineItemHelper = {
       return lineItem.product.name;
     }
     if (lineItem instanceof dw.order.PriceAdjustment) {
-      return "Discount";
+      return 'Discount';
     }
 
     return null;
@@ -36,7 +36,7 @@ const __LineItemHelper = {
 
   getQuantity(lineItem) {
     if (lineItem instanceof dw.order.ShippingLineItem) {
-      return "1";
+      return '1';
     }
     if (lineItem instanceof dw.order.ProductLineItem) {
       return lineItem.quantityValue.toFixed();

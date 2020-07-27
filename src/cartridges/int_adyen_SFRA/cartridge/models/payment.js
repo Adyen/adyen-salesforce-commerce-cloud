@@ -1,5 +1,5 @@
-const collections = require("*/cartridge/scripts/util/collections");
-const { createSelectedPaymentInstruments } = require("./createPayment");
+const collections = require('*/cartridge/scripts/util/collections');
+const { createSelectedPaymentInstruments } = require('./createPayment');
 
 const base = module.superModule;
 
@@ -12,7 +12,7 @@ const base = module.superModule;
 function getSelectedPaymentInstruments(selectedPaymentInstruments) {
   return collections.map(
     selectedPaymentInstruments,
-    createSelectedPaymentInstruments
+    createSelectedPaymentInstruments,
   );
 }
 
