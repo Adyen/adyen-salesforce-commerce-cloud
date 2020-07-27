@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Redirect should fail if signature doesnt match 1`] = `
+Array [
+  Array [
+    "Redirect signature is not correct",
+  ],
+]
+`;
+
+exports[`Redirect should fail if there is no order and signature 1`] = `
+Array [
+  Array [
+    "No signature or no order with orderNo mocked_orderNo",
+  ],
+  Array [
+    "Redirect signature is not correct",
+  ],
+]
+`;
