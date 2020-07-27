@@ -36,7 +36,7 @@ server.prepend(
       installments: installments,
       paypalMerchantID: paypalMerchantID,
       googleMerchantID: googleMerchantID,
-      merchantAccount: merchantAccount
+      merchantAccount: merchantAccount,
     };
 
     res.setViewData(viewData);

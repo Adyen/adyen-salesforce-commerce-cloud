@@ -69,16 +69,17 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
   paywithgoogle: {
-    environment: 'TEST', // Change this to PRODUCTION when you're ready to accept live Google Pay payments
-    onSubmit: (state, component) => {
+    environment: window.Configuration.environment,
+    onSubmit: () => {
       assignPaymentMethodValue();
+      document.querySelector('button[value="submit-payment"]').disabled = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
     configuration: {
-      gatewayMerchantId: window.merchantAccount,  //Your Adyen merchant or company account name
+      gatewayMerchantId: window.merchantAccount,
     },
     showPayButton: true,
-    buttonColor: "white", //Optional. Use a white Google Pay button.
+    buttonColor: 'white',
   },
   paypal: {
     environment: window.Configuration.environment,
@@ -154,7 +155,7 @@ if (window.installments) {
 if (window.paypalMerchantID !== 'null') {
   checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
 }
-if (window.googleMerchantID !== 'null') {
+if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'LIVE') {
   checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
 }
 
@@ -164,7 +165,7 @@ if (window.googleMerchantID !== 'null') {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
+  if (!['paypal', 'paywithgoogle'].includes(type)) {
     document.querySelector('button[value="submit-payment"]').disabled = false;
   } else {
     document.querySelector('button[value="submit-payment"]').disabled = true;
@@ -336,17 +337,17 @@ function renderPaymentMethod(
   li.append(container);
   paymentMethodsUI.append(li);
 
-  if(paymentMethod.type !== 'paywithgoogle') {
+  if (paymentMethod.type !== 'paywithgoogle') {
     node && node.mount(container);
   } else {
     node
-        .isAvailable()
-        .then(() => {
-          node.mount(container);
-        })
-        .catch(e => {
-          console.error('google pay not available');
-        });
+      .isAvailable()
+      .then(() => {
+        node.mount(container);
+      })
+      .catch(() => {
+        console.error('google pay not available');
+      });
   }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);

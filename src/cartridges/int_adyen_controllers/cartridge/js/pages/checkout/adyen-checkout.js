@@ -78,6 +78,19 @@ function initializeBillingEvents() {
         billingAddressRequired: false, // turn billingAddress section on/off
         showEmailAddress: false, // allow shopper to specify their email address
       },
+      paywithgoogle: {
+        environment: window.Configuration.environment,
+        onSubmit: () => {
+          assignPaymentMethodValue();
+          document.querySelector('#billing-submit').disabled = false;
+          document.querySelector('#billing-submit').click();
+        },
+        configuration: {
+          gatewayMerchantId: window.merchantAccount,
+        },
+        showPayButton: true,
+        buttonColor: 'white',
+      },
       paypal: {
         environment: window.Configuration.environment,
         intent: 'capture',
@@ -164,6 +177,9 @@ function initializeBillingEvents() {
     if (window.paypalMerchantID !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
     }
+    if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'LIVE') {
+      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
+    }
     renderGenericComponent();
   }
 }
@@ -230,7 +246,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
+  if (!['paypal', 'paywithgoogle'].includes(type)) {
     document.querySelector('#billing-submit').disabled = false;
   } else {
     document.querySelector('#billing-submit').disabled = true;
@@ -460,7 +476,18 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.append(container);
   paymentMethodsUI.append(li);
 
-  node && node.mount(container);
+  if (paymentMethod.type !== 'paywithgoogle') {
+    node && node.mount(container);
+  } else {
+    node
+      .isAvailable()
+      .then(() => {
+        node.mount(container);
+      })
+      .catch(() => {
+        console.error('google pay not available');
+      });
+  }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
