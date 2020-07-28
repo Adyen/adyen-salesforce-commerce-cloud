@@ -39,7 +39,6 @@ function getPMs(req, res, next) {
       description: Resource.msg(`hpp.description.${method.type}`, 'hpp', ''),
     }));
   } catch (err) {
-    console.log(err);
     Logger.getLogger('Adyen').error(
       `Error retrieving Payment Methods. Error message: ${
         err.message
