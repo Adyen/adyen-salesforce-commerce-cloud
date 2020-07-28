@@ -7,7 +7,6 @@ const checkoutConfiguration = window.Configuration;
 let formErrorsExist;
 let isValid = false;
 let checkout;
-
 $('#dwfrm_billing').submit(function (e) {
   e.preventDefault();
 
@@ -68,6 +67,19 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       firstName: document.getElementById('shippingFirstNamedefault').value,
       lastName: document.getElementById('shippingLastNamedefault').value,
     },
+  },
+  paywithgoogle: {
+    environment: window.Configuration.environment,
+    onSubmit: () => {
+      assignPaymentMethodValue();
+      document.querySelector('button[value="submit-payment"]').disabled = false;
+      document.querySelector('button[value="submit-payment"]').click();
+    },
+    configuration: {
+      gatewayMerchantId: window.merchantAccount,
+    },
+    showPayButton: true,
+    buttonColor: 'white',
   },
   paypal: {
     environment: window.Configuration.environment,
@@ -143,6 +155,9 @@ if (window.installments) {
 if (window.paypalMerchantID !== 'null') {
   checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
 }
+if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'LIVE') {
+  checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
+}
 
 /**
  * Changes the "display" attribute of the selected method from hidden to visible
@@ -150,10 +165,10 @@ if (window.paypalMerchantID !== 'null') {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-  } else {
+  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
     document.querySelector('button[value="submit-payment"]').disabled = true;
+  } else {
+    document.querySelector('button[value="submit-payment"]').disabled = false;
   }
   document
     .querySelector(`#component_${type}`)
@@ -322,7 +337,16 @@ function renderPaymentMethod(
   li.append(container);
   paymentMethodsUI.append(li);
 
-  node && node.mount(container);
+  if (paymentMethod.type !== 'paywithgoogle') {
+    node && node.mount(container);
+  } else {
+    node
+      .isAvailable()
+      .then(() => {
+        node.mount(container);
+      })
+      .catch(() => {}); // eslint-disable-line no-empty
+  }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
