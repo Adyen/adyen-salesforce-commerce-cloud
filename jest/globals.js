@@ -9,4 +9,8 @@ global.dw = {
 global.showStoreDetails = true;
 global.$ = require('jquery');
 
+global.session = {
+  forms: { billing: { clearFormElement: jest.fn() } },
+};
+
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
