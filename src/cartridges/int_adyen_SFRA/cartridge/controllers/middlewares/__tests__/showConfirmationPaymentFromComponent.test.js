@@ -8,7 +8,10 @@ beforeEach(() => {
     .default;
   jest.clearAllMocks();
   res = { redirect: jest.fn() };
-  req = { form: { additionalDetailsHidden: JSON.stringify({ foo: 'bar' }) } };
+  req = {
+    form: { additionalDetailsHidden: JSON.stringify({ foo: 'bar' }) },
+    locale: { id: 'nl_NL' },
+  };
 });
 
 afterEach(() => {
@@ -23,10 +26,29 @@ describe('Show Confirmation Payment From Component', () => {
       const URLUtils = require('dw/web/URLUtils');
       adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
         resultCode: a,
-        paymentMethod: [],
       }));
       showConfirmationPaymentFromComponent(req, res, jest.fn());
       expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
     },
   );
+  it('should redirect on placeOrder error', () => {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const URLUtils = require('dw/web/URLUtils');
+    const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+      resultCode: 'Authorised',
+    }));
+    COHelpers.placeOrder.mockImplementation(() => ({ error: true }));
+    showConfirmationPaymentFromComponent(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+  });
+  it('should redirect on unsuccessful payment', () => {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const URLUtils = require('dw/web/URLUtils');
+    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+      resultCode: 'Not_Authorised',
+    }));
+    showConfirmationPaymentFromComponent(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+  });
 });

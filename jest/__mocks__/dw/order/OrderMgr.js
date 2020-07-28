@@ -28,6 +28,7 @@ export const getOrder = jest.fn((/* orderNo */) => ({
   setExportStatus: jest.fn(),
   orderNo: 'mocked_orderNo',
   orderToken: 'mocked_orderToken',
+  custom: {},
 }));
 
 export const failOrder = jest.fn((orderNo, bool) => ({
