@@ -106,7 +106,6 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
     return next();
   } catch (e) {
-    console.log(e);
     Logger.getLogger('Adyen').error(
       `Could not verify /payment/details: ${e.message}`,
     );

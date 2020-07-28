@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get Payment Methods should handle installments when basket has no total 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "AdyenConnectedTerminals": Object {
+          "foo": "bar",
+        },
+        "AdyenDescriptions": Array [
+          Object {
+            "brandCode": "visa",
+            "description": "mocked_hpp.description.visa",
+          },
+        ],
+        "AdyenPaymentMethods": Object {
+          "paymentMethods": Array [
+            Object {
+              "type": "visa",
+            },
+          ],
+        },
+        "ImagePath": "mocked_loading_contextimages/logos/medium/",
+        "amount": Object {
+          "currency": undefined,
+          "value": 1000,
+        },
+        "countryCode": "NL",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`Get Payment Methods should handle installments when basket has total 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "AdyenConnectedTerminals": Object {
+          "foo": "bar",
+        },
+        "AdyenDescriptions": Array [
+          Object {
+            "brandCode": "visa",
+            "description": "mocked_hpp.description.visa",
+          },
+        ],
+        "AdyenPaymentMethods": Object {
+          "paymentMethods": Array [
+            Object {
+              "type": "visa",
+            },
+          ],
+        },
+        "ImagePath": "mocked_loading_contextimages/logos/medium/",
+        "amount": Object {
+          "currency": "EUR",
+          "value": 1000,
+        },
+        "countryCode": "NL",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`Get Payment Methods should return response without installments 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "AdyenConnectedTerminals": Object {
+          "foo": "bar",
+        },
+        "AdyenDescriptions": Array [
+          Object {
+            "brandCode": "visa",
+            "description": "mocked_hpp.description.visa",
+          },
+        ],
+        "AdyenPaymentMethods": Object {
+          "paymentMethods": Array [
+            Object {
+              "type": "visa",
+            },
+          ],
+        },
+        "ImagePath": "mocked_loading_contextimages/logos/medium/",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
