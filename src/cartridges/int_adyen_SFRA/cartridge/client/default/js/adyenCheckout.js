@@ -165,10 +165,10 @@ if (window.googleMerchantID !== 'null' && window.Configuration.environment === '
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (!['paypal', 'paywithgoogle'].includes(type)) {
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-  } else {
+  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
     document.querySelector('button[value="submit-payment"]').disabled = true;
+  } else {
+    document.querySelector('button[value="submit-payment"]').disabled = false;
   }
   document
     .querySelector(`#component_${type}`)
@@ -345,9 +345,7 @@ function renderPaymentMethod(
       .then(() => {
         node.mount(container);
       })
-      .catch(() => {
-        console.error('google pay not available');
-      });
+      .catch(() => {}); // eslint-disable-line no-empty
   }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
