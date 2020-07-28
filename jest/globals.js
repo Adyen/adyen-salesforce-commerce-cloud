@@ -10,6 +10,7 @@ global.showStoreDetails = true;
 global.$ = require('jquery');
 
 global.session = {
+  privacy: { orderNo: 'mocked_orderNo' },
   forms: { billing: { clearFormElement: jest.fn() } },
 };
 
