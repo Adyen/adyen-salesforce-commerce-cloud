@@ -1,5 +1,5 @@
-import store from '../../../../../store';
-import { validateComponents } from '../validateComponents';
+const store = require('../../../../../store');
+const { validateComponents } = require('../validateComponents');
 
 function inputAssert(input) {
   input.onchange();

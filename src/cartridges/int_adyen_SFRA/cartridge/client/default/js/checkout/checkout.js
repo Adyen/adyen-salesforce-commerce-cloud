@@ -1,10 +1,10 @@
-import * as shippingHelpers from 'base/checkout/shipping';
-import * as billingHelpers from 'base/checkout/billing';
-import * as summaryHelpers from 'base/checkout/summary';
-import * as billing from './billing';
-import * as adyenCheckout from '../adyenCheckout';
+const shippingHelpers = require('base/checkout/shipping');
+const billingHelpers = require('base/checkout/billing');
+const summaryHelpers = require('base/checkout/summary');
+const billing = require('./billing');
+const adyenCheckout = require('../adyenCheckout');
 
-export function updateCheckoutView() {
+module.exports.updateCheckoutView = function updateCheckoutView() {
   $('body').on('checkout:updateCheckoutView', (e, data) => {
     shippingHelpers.methods.updateMultiShipInformation(data.order);
     summaryHelpers.updateTotals(data.order.totals);
@@ -33,4 +33,4 @@ export function updateCheckoutView() {
       data.options,
     );
   });
-}
+};

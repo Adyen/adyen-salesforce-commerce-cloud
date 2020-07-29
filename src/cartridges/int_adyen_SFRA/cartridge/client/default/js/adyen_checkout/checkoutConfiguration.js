@@ -1,6 +1,6 @@
-import store from '../../../../store';
-import { assignPaymentMethodValue, paymentFromComponent } from './index';
-import { onBrand, onFieldValid } from '../commons';
+const helpers = require('./helpers');
+const { onBrand, onFieldValid } = require('../commons');
+const store = require('../../../../store');
 
 function getComponentName(data) {
   return data.paymentMethod.storedPaymentMethodId
@@ -8,7 +8,7 @@ function getComponentName(data) {
     : data.paymentMethod.type;
 }
 
-export function getCardConfig() {
+function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
@@ -24,20 +24,20 @@ export function getCardConfig() {
   };
 }
 
-export function getPaypalConfig() {
+function getPaypalConfig() {
   return {
     environment: window.Configuration.environment,
     intent: 'capture',
     onSubmit: (state, component) => {
-      assignPaymentMethodValue();
+      helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(
         store.selectedPayment.stateData,
       );
 
-      paymentFromComponent(state.data, component);
+      helpers.paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
-      paymentFromComponent({ cancelTransaction: true }, component);
+      helpers.paymentFromComponent({ cancelTransaction: true }, component);
       component.setStatus('ready');
     },
     onError: (error, component) => {
@@ -60,7 +60,7 @@ export function getPaypalConfig() {
   };
 }
 
-export function handleOnChange(state) {
+function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
@@ -70,7 +70,7 @@ export function handleOnChange(state) {
   store.componentsObj[type].stateData = state.data;
 }
 
-export function setCheckoutConfiguration() {
+function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.showPayButton = false;
 
@@ -122,3 +122,10 @@ export function setCheckoutConfiguration() {
     },
   };
 }
+
+module.exports = {
+  getCardConfig,
+  getPaypalConfig,
+  handleOnChange,
+  setCheckoutConfiguration,
+};

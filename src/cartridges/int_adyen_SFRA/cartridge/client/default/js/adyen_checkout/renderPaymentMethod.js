@@ -1,5 +1,5 @@
-import store from '../../../../store';
-import { displaySelectedMethod } from './index';
+const store = require('../../../../store');
+const helpers = require('./helpers');
 
 function getFallback(paymentMethod) {
   const ach = `<div id="component_ach">
@@ -105,11 +105,11 @@ function configureContainer({ paymentMethodID, container }) {
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
-    displaySelectedMethod(event.target.value);
+    helpers.displaySelectedMethod(event.target.value);
   };
 }
 
-export function renderPaymentMethod(
+module.exports.renderPaymentMethod = function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
@@ -148,4 +148,4 @@ export function renderPaymentMethod(
 
   handleInput(options);
   setValid(options);
-}
+};

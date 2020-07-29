@@ -1,4 +1,4 @@
-import { methods } from '../billing';
+const { methods } = require('../billing');
 
 describe('Billing', () => {
   it('should append html to payment details', () => {

@@ -1,12 +1,12 @@
-import store from '../../../../store';
+const store = require('../../../../store');
 
-export function onFieldValid(data) {
+module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
     store.endDigits = data.endDigits;
     document.querySelector('#cardNumber').value = store.maskedCardNumber;
   }
-}
+};
 
-export function onBrand(brandObject) {
+module.exports.onBrand = function onBrand(brandObject) {
   document.querySelector('#cardType').value = brandObject.brand;
-}
+};

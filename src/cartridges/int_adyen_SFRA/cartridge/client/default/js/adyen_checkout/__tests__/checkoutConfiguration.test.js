@@ -1,5 +1,5 @@
-import store from '../../../../../store';
-import { getCardConfig, getPaypalConfig } from '../checkoutConfiguration';
+const { getCardConfig, getPaypalConfig } = require('../checkoutConfiguration');
+const store = require('../../../../../store');
 
 let card;
 let paypal;

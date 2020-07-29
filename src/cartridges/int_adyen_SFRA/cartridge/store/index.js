@@ -1,4 +1,4 @@
-import { observable, computed } from 'mobx';
+const { observable, computed } = require('mobx');
 
 class Store {
   MASKED_CC_PREFIX = '************';
@@ -44,4 +44,4 @@ class Store {
   }
 }
 
-export default new Store();
+module.exports = new Store();

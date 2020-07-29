@@ -1,4 +1,4 @@
-import store from '../../../../store';
+const store = require('../../../../store');
 
 function validateCustomInputField(input) {
   return input.value
@@ -59,7 +59,7 @@ function validateRatepay() {
   setInputOnChange(input);
 }
 
-export function validateComponents() {
+module.exports.validateComponents = function validateComponents() {
   validateAch();
   validateRatepay();
 
@@ -75,4 +75,4 @@ export function validateComponents() {
   document.querySelector('#adyenStateData').value = JSON.stringify(
     store.stateData,
   );
-}
+};

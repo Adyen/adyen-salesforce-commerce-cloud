@@ -1,5 +1,5 @@
-import { renderPaymentMethod } from '../renderPaymentMethod';
-import store from '../../../../../store';
+const { renderPaymentMethod } = require('../renderPaymentMethod');
+const store = require('../../../../../store');
 
 let mount;
 describe('Render Payment Method', () => {

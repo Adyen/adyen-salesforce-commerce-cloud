@@ -44,4 +44,4 @@ function updatePaymentInformation(order) {
   }
 }
 
-export const methods = { updatePaymentInformation };
+module.exports.methods = { updatePaymentInformation };

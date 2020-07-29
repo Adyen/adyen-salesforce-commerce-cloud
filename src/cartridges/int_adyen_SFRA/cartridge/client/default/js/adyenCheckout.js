@@ -1,11 +1,15 @@
-import store from '../../../store';
-import {
+const store = require('../../../store');
+const {
   renderGenericComponent,
+} = require('./adyen_checkout/renderGenericComponent');
+const {
   setCheckoutConfiguration,
+} = require('./adyen_checkout/checkoutConfiguration');
+const {
   assignPaymentMethodValue,
   showValidation,
-  validateComponents,
-} from './adyen_checkout';
+} = require('./adyen_checkout/helpers');
+const { validateComponents } = require('./adyen_checkout/validateComponents');
 
 $('#dwfrm_billing').submit(function (e) {
   e.preventDefault();
@@ -55,4 +59,4 @@ $('button[value="submit-payment"]').on('click', () => {
  * Assigns stateData value to the hidden stateData input field
  * so it's sent to the backend for processing
  */
-export const methods = { renderGenericComponent };
+module.exports.methods = { renderGenericComponent };

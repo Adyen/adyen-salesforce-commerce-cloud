@@ -1,5 +1,6 @@
-import store from '../../../../store';
-import { renderPaymentMethod, displaySelectedMethod } from './index';
+const store = require('../../../../store');
+const { renderPaymentMethod } = require('./renderPaymentMethod');
+const helpers = require('./helpers');
 
 function addPosTerminals(terminals) {
   const dd_terminals = document.createElement('select');
@@ -115,7 +116,7 @@ function setCheckoutConfiguration(data) {
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
-export async function renderGenericComponent() {
+module.exports.renderGenericComponent = async function renderGenericComponent() {
   if (Object.keys(store.componentsObj).length !== 0) {
     await unmountComponents();
   }
@@ -135,6 +136,6 @@ export async function renderGenericComponent() {
       'input[type=radio][name=brandCode]',
     );
     firstPaymentMethod.checked = true;
-    displaySelectedMethod(firstPaymentMethod.value);
+    helpers.displaySelectedMethod(firstPaymentMethod.value);
   });
-}
+};
