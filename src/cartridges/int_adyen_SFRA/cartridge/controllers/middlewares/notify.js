@@ -1,6 +1,6 @@
-import * as Transaction from 'dw/system/Transaction';
-import * as checkAuth from '*/cartridge/scripts/checkNotificationAuth';
-import * as handleNotify from '*/cartridge/scripts/handleNotify';
+const Transaction = require('dw/system/Transaction');
+const checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
+const handleNotify = require('*/cartridge/scripts/handleNotify');
 
 function notify(req, res, next) {
   const status = checkAuth.check(req);
@@ -22,4 +22,4 @@ function notify(req, res, next) {
   }
   next();
 }
-export default notify;
+module.exports = notify;

@@ -1,17 +1,17 @@
-import * as Logger from 'dw/system/Logger';
-import * as URLUtils from 'dw/web/URLUtils';
-import * as OrderMgr from 'dw/order/OrderMgr';
-import * as Transaction from 'dw/system/Transaction';
-import * as Resource from 'dw/web/Resource';
-import * as Locale from 'dw/util/Locale';
-import * as adyenCheckout from '*/cartridge/scripts/adyenCheckout';
-import * as constants from '*/cartridge/adyenConstants/constants';
-import * as COHelpers from '*/cartridge/scripts/checkout/checkoutHelpers';
-import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
-import { clearForms } from '../utils';
-import { OrderModel } from '*/cartridge/models/order';
+const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
+const OrderMgr = require('dw/order/OrderMgr');
+const Transaction = require('dw/system/Transaction');
+const Resource = require('dw/web/Resource');
+const Locale = require('dw/util/Locale');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const constants = require('*/cartridge/adyenConstants/constants');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const { clearForms } = require('../utils/index');
+const OrderModel = require('*/cartridge/models/order');
 
-export default function showConfirmation(req, res, next) {
+function showConfirmation(req, res, next) {
   try {
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     const paymentInstruments = order.getPaymentInstruments(
@@ -144,3 +144,5 @@ export default function showConfirmation(req, res, next) {
     return next();
   }
 }
+
+module.exports = showConfirmation;

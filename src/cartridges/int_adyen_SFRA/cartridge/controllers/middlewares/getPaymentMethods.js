@@ -1,13 +1,13 @@
-import * as BasketMgr from 'dw/order/BasketMgr';
-import * as Resource from 'dw/web/Resource';
-import * as PaymentMgr from 'dw/order/PaymentMgr';
-import * as Locale from 'dw/util/Locale';
-import * as Logger from 'dw/system/Logger';
-import * as CustomerMgr from 'dw/customer/CustomerMgr';
-import * as getPaymentMethods from '*/cartridge/scripts/adyenGetPaymentMethods';
-import * as adyenTerminalApi from '*/cartridge/scripts/adyenTerminalApi';
-import * as constants from '*/cartridge/adyenConstants/constants';
-import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
+const BasketMgr = require('dw/order/BasketMgr');
+const Resource = require('dw/web/Resource');
+const PaymentMgr = require('dw/order/PaymentMgr');
+const Locale = require('dw/util/Locale');
+const Logger = require('dw/system/Logger');
+const CustomerMgr = require('dw/customer/CustomerMgr');
+const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
+const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getPMs(req, res, next) {
   let countryCode = Locale.getLocale(req.locale.id).country;
@@ -73,4 +73,4 @@ function getPMs(req, res, next) {
   return next();
 }
 
-export default getPMs;
+module.exports = getPMs;

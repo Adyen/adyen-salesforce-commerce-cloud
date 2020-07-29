@@ -4,7 +4,7 @@ let res;
 let req;
 
 beforeEach(() => {
-  paymentFromComponent = require('../paymentFromComponent').default;
+  paymentFromComponent = require('../paymentFromComponent');
   jest.clearAllMocks();
   req = { form: { data: { paymentMethod: { type: 'mocked_type' } } } };
   res = { json: jest.fn() };

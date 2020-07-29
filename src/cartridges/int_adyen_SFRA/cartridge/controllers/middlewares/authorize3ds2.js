@@ -1,12 +1,12 @@
-import * as Logger from 'dw/system/Logger';
-import * as URLUtils from 'dw/web/URLUtils';
-import * as OrderMgr from 'dw/order/OrderMgr';
-import * as Transaction from 'dw/system/Transaction';
-import * as Resource from 'dw/web/Resource';
-import { clearForms } from '../utils';
-import * as COHelpers from '*/cartridge/scripts/checkout/checkoutHelpers';
-import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
-import * as adyenCheckout from '*/cartridge/scripts/adyenCheckout';
+const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
+const OrderMgr = require('dw/order/OrderMgr');
+const Transaction = require('dw/system/Transaction');
+const Resource = require('dw/web/Resource');
+const { clearForms } = require('../utils/index');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 function authorize3ds2(req, res, next) {
   let paymentInstrument;
@@ -145,4 +145,4 @@ function authorize3ds2(req, res, next) {
   return next();
 }
 
-export default authorize3ds2;
+module.exports = authorize3ds2;

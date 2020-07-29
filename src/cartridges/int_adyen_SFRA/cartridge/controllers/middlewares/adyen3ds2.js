@@ -1,6 +1,6 @@
-import * as URLUtils from 'dw/web/URLUtils';
-import * as Logger from 'dw/system/Logger';
-import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
+const URLUtils = require('dw/web/URLUtils');
+const Logger = require('dw/system/Logger');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function adyen3ds2(req, res, next) {
   const protocol = req.https ? 'https' : 'http';
@@ -31,4 +31,4 @@ function adyen3ds2(req, res, next) {
   return next();
 }
 
-export default adyen3ds2;
+module.exports = adyen3ds2;

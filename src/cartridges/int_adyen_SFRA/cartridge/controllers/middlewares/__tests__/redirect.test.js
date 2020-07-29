@@ -4,7 +4,7 @@ let res;
 let redirect;
 
 beforeEach(() => {
-  redirect = require('../redirect').default;
+  redirect = require('../redirect');
   jest.clearAllMocks();
   req = {
     querystring: {

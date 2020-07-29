@@ -1,9 +1,9 @@
-export { default as adyen3ds2 } from './adyen3ds2';
-export { default as authorizeWithForm } from './authorizeWithForm';
-export { default as authorize3ds2 } from './authorize3ds2';
-export { default as redirect } from './redirect';
-export { default as showConfirmationPaymentFromComponent } from './showConfirmationPaymentFromComponent';
-export { default as showConfirmation } from './showConfirmation';
-export { default as getPaymentMethods } from './getPaymentMethods';
-export { default as paymentFromComponent } from './paymentFromComponent';
-export { default as notify } from './notify';
+module.exports.adyen3ds2 = require('./adyen3ds2');
+module.exports.authorizeWithForm = require('./authorizeWithForm');
+module.exports.authorize3ds2 = require('./authorize3ds2');
+module.exports.redirect = require('./redirect');
+module.exports.showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
+module.exports.showConfirmation = require('./showConfirmation');
+module.exports.getPaymentMethods = require('./getPaymentMethods');
+module.exports.paymentFromComponent = require('./paymentFromComponent');
+module.exports.notify = require('./notify');

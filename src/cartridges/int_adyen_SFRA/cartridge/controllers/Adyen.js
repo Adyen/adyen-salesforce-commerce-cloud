@@ -1,22 +1,6 @@
-import * as middlewares from './middlewares';
-import { clearForms } from './utils';
-
 const server = require('server');
 const URLUtils = require('dw/web/URLUtils');
-const Transaction = require('dw/system/Transaction');
-// eslint-disable-next-line no-unused-vars
-const OrderMgr = require('dw/order/OrderMgr');
-const CustomerMgr = require('dw/customer/CustomerMgr');
-const Resource = require('dw/web/Resource');
-// eslint-disable-next-line no-unused-vars
-const Site = require('dw/system/Site');
-const Logger = require('dw/system/Logger');
-const PaymentMgr = require('dw/order/PaymentMgr');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const constants = require('*/cartridge/adyenConstants/constants');
-const collections = require('*/cartridge/scripts/util/collections');
-const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const middlewares = require('./middlewares/index');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 

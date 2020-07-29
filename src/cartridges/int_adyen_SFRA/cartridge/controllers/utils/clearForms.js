@@ -1,13 +1,4 @@
 /**
- * Clear system session data
- */
-export function clearForms() {
-  // Clears all forms used in the checkout process.
-  session.forms.billing.clearFormElement();
-  clearCustomSessionFields();
-}
-
-/**
  * Clear custom session data
  */
 function clearCustomSessionFields() {
@@ -20,3 +11,14 @@ function clearCustomSessionFields() {
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
 }
+
+/**
+ * Clear system session data
+ */
+function clearForms() {
+  // Clears all forms used in the checkout process.
+  session.forms.billing.clearFormElement();
+  clearCustomSessionFields();
+}
+
+module.exports = clearForms;
