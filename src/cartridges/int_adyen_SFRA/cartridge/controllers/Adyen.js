@@ -43,8 +43,8 @@ server.get(
       });
       return next();
     }
-    Logger.getLogger("Adyen").error("Signature incorrect for 3D payment");
-    res.redirect(URLUtils.url('Home-Show', 'payment','failed3D'));
+    Logger.getLogger('Adyen').error('Signature incorrect for 3DS payment');
+    res.redirect(URLUtils.url('Home-Show', 'Payment','Failed3DS'));
     return next();
   },
 );
