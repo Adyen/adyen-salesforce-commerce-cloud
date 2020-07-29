@@ -9,7 +9,7 @@ function getParsedField(name, str) {
 function getOrNull(name, obj) {
   return obj ? { [name]: obj } : { [name]: null };
 }
-export function createSelectedPaymentInstruments({
+module.exports.createSelectedPaymentInstruments = function createSelectedPaymentInstruments({
   paymentMethod,
   paymentTransaction,
   custom,
@@ -46,4 +46,4 @@ export function createSelectedPaymentInstruments({
   }
 
   return results;
-}
+};

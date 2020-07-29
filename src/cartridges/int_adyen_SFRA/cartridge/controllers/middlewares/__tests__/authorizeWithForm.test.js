@@ -9,7 +9,7 @@ afterEach(() => {
 });
 
 beforeEach(() => {
-  authorizeWithForm = require('../authorizeWithForm').default;
+  authorizeWithForm = require('../authorizeWithForm');
 
   jest.clearAllMocks();
   const MD = 'mocked_MD';

@@ -1,5 +1,5 @@
-import store from '../../../store';
-import { onFieldValid, onBrand } from './commons';
+const { onFieldValid, onBrand } = require('./commons/index');
+const store = require('../../../store');
 
 const cardNode = document.getElementById('card');
 store.checkoutConfiguration.amount = {

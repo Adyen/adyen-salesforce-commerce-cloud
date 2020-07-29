@@ -1,12 +1,12 @@
-import * as OrderMgr from 'dw/order/OrderMgr';
-import * as BasketMgr from 'dw/order/BasketMgr';
-import * as PaymentMgr from 'dw/order/PaymentMgr';
-import * as Logger from 'dw/system/Logger';
-import * as Transaction from 'dw/system/Transaction';
-import * as adyenCheckout from '*/cartridge/scripts/adyenCheckout';
-import * as COHelpers from '*/cartridge/scripts/checkout/checkoutHelpers';
-import * as constants from '*/cartridge/adyenConstants/constants';
-import * as collections from '*/cartridge/scripts/util/collections';
+const OrderMgr = require('dw/order/OrderMgr');
+const BasketMgr = require('dw/order/BasketMgr');
+const PaymentMgr = require('dw/order/PaymentMgr');
+const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const constants = require('*/cartridge/adyenConstants/constants');
+const collections = require('*/cartridge/scripts/util/collections');
 
 function paymentFromComponent(req, res, next) {
   let order;
@@ -58,4 +58,4 @@ function paymentFromComponent(req, res, next) {
   return next();
 }
 
-export default paymentFromComponent;
+module.exports = paymentFromComponent;

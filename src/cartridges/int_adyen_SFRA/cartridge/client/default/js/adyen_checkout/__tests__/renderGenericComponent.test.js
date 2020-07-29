@@ -1,5 +1,5 @@
-import { renderGenericComponent } from '../renderGenericComponent';
-import store from '../../../../../store';
+const { renderGenericComponent } = require('../renderGenericComponent');
+const store = require('../../../../../store');
 
 beforeEach(() => {
   window.AdyenCheckout = jest.fn();

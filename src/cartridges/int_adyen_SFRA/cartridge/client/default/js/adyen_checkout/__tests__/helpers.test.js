@@ -1,4 +1,4 @@
-import { paymentFromComponent } from '../helpers';
+const { paymentFromComponent } = require('../helpers');
 
 let component;
 beforeEach(() => {

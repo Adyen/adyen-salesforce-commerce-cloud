@@ -5,7 +5,7 @@ let res;
 let notify;
 
 beforeEach(() => {
-  notify = require('../notify').default;
+  notify = require('../notify');
   jest.clearAllMocks();
   req = {};
   res = { render: jest.fn() };

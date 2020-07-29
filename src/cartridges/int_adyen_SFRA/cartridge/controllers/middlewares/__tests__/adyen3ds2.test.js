@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import adyen3ds2 from '../adyen3ds2';
+const adyen3ds2 = require('../adyen3ds2');
 
 let req;
 let res;

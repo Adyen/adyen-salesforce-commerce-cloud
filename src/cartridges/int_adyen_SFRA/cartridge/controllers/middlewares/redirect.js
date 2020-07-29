@@ -1,10 +1,10 @@
-import * as OrderMgr from 'dw/order/OrderMgr';
-import * as Logger from 'dw/system/Logger';
-import * as Transaction from 'dw/system/Transaction';
-import * as URLUtils from 'dw/web/URLUtils';
-import * as Resource from 'dw/web/Resource';
-import * as constants from '*/cartridge/adyenConstants/constants';
-import * as AdyenHelper from '*/cartridge/scripts/util/adyenHelper';
+const OrderMgr = require('dw/order/OrderMgr');
+const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
+const URLUtils = require('dw/web/URLUtils');
+const Resource = require('dw/web/Resource');
+const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function redirect(req, res, next) {
   const { signature } = req.querystring;
@@ -55,4 +55,4 @@ function redirect(req, res, next) {
   return next();
 }
 
-export default redirect;
+module.exports = redirect;

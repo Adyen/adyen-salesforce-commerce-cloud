@@ -3,7 +3,7 @@ let getPaymentMethods;
 let req;
 let res;
 beforeEach(() => {
-  getPaymentMethods = require('../getPaymentMethods').default;
+  getPaymentMethods = require('../getPaymentMethods');
   jest.clearAllMocks();
   res = { json: jest.fn() };
   req = {

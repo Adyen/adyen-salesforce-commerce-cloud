@@ -1,6 +1,6 @@
-import store from '../../../../store';
+const store = require('../../../../store');
 
-export function assignPaymentMethodValue() {
+function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   adyenPaymentMethod.value = document.querySelector(
     `#lb_${store.selectedMethod}`,
@@ -11,7 +11,7 @@ export function assignPaymentMethodValue() {
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-export function paymentFromComponent(data, component) {
+function paymentFromComponent(data, component) {
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
@@ -27,7 +27,7 @@ export function paymentFromComponent(data, component) {
   }).fail(() => {});
 }
 
-export function resetPaymentMethod() {
+function resetPaymentMethod() {
   $('#requiredBrandCode').hide();
   $('#selectedIssuer').val('');
   $('#adyenIssuerName').val('');
@@ -43,7 +43,7 @@ export function resetPaymentMethod() {
 /**
  * Changes the "display" attribute of the selected method from hidden to visible
  */
-export function displaySelectedMethod(type) {
+function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();
   if (type !== 'paypal') {
@@ -94,8 +94,16 @@ function doCustomValidation() {
     : true;
 }
 
-export function showValidation() {
+function showValidation() {
   return store.selectedPaymentIsValid
     ? doCustomValidation()
     : displayValidationErrors();
 }
+
+module.exports = {
+  assignPaymentMethodValue,
+  paymentFromComponent,
+  resetPaymentMethod,
+  displaySelectedMethod,
+  showValidation,
+};

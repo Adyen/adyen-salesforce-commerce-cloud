@@ -1,1 +1,1 @@
-export const OrderModel = jest.fn();
+module.exports = jest.fn();

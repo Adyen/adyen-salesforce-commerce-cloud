@@ -4,8 +4,7 @@ let res;
 let req;
 
 beforeEach(() => {
-  showConfirmationPaymentFromComponent = require('../showConfirmationPaymentFromComponent')
-    .default;
+  showConfirmationPaymentFromComponent = require('../showConfirmationPaymentFromComponent');
   jest.clearAllMocks();
   res = { redirect: jest.fn() };
   req = {

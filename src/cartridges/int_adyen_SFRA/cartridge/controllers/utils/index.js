@@ -1,1 +1,1 @@
-export { clearForms } from './clearForms';
+module.exports.clearForms = require('./clearForms');

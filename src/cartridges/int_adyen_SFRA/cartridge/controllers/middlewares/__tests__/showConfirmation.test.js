@@ -4,7 +4,7 @@ let res;
 let req;
 
 beforeEach(() => {
-  showConfirmation = require('../showConfirmation').default;
+  showConfirmation = require('../showConfirmation');
   jest.clearAllMocks();
 
   window.session.privacy = { orderNo: 'mocked_orderNo' };
