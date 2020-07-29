@@ -1,4 +1,4 @@
-const createSelectedPaymentInstruments = require('../createPayment');
+const { createSelectedPaymentInstruments } = require('../createPayment');
 
 const withCustom = {
   selectedAdyenPM: 'mocked_custom_pm',
