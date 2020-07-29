@@ -9,7 +9,16 @@ export const getShipments = jest.fn(() => [
 export const getTotalGrossPrice = jest.fn(() => ({
   currencyCode: 'EUR',
 }));
+export const getPaymentInstruments = jest.fn(() => [
+  {
+    custom: {},
+    paymentTransaction: { paymentProcessor: 'mocked_payment_processor' },
+  },
+]);
 export const getCurrentBasket = jest.fn(() => ({
   getShipments,
   getTotalGrossPrice,
+  getPaymentInstruments,
+  removePaymentInstrument: jest.fn(),
+  createPaymentInstrument: jest.fn(() => getPaymentInstruments()[0]),
 }));

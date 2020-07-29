@@ -137,58 +137,7 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
 server.post(
   'PaymentFromComponent',
   server.middleware.https,
-  (req, res, next) => {
-    let order;
-    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const BasketMgr = require('dw/order/BasketMgr');
-    const reqDataObj = JSON.parse(req.form.data);
-
-    if (reqDataObj.cancelTransaction) {
-      order = OrderMgr.getOrder(session.privacy.orderNo);
-      Logger.getLogger('Adyen').error(
-        `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
-      );
-      Transaction.wrap(() => {
-        OrderMgr.failOrder(order, true);
-      });
-      res.json({ result: 'cancelled' });
-      return next();
-    }
-    const currentBasket = BasketMgr.getCurrentBasket();
-
-    let paymentInstrument;
-    Transaction.wrap(() => {
-      collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-        currentBasket.removePaymentInstrument(item);
-      });
-      paymentInstrument = currentBasket.createPaymentInstrument(
-        constants.METHOD_ADYEN_COMPONENT,
-        currentBasket.totalGrossPrice,
-      );
-      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-        paymentInstrument.paymentMethod,
-      );
-      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentData = req.form.data;
-      paymentInstrument.custom.adyenPaymentMethod =
-        reqDataObj.paymentMethod.type;
-    });
-    order = COHelpers.createOrder(currentBasket);
-    session.privacy.orderNo = order.orderNo;
-
-    const result = adyenCheckout.createPaymentRequest({
-      Order: order,
-      PaymentInstrument: paymentInstrument,
-    });
-
-    if (result.resultCode !== 'Pending') {
-      Transaction.wrap(() => {
-        OrderMgr.failOrder(order, true);
-      });
-    }
-    res.json(result);
-    return next();
-  },
+  middlewares.paymentFromComponent,
 );
 
 /**
