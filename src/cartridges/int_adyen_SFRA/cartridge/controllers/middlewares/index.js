@@ -6,3 +6,4 @@ export { default as showConfirmationPaymentFromComponent } from './showConfirmat
 export { default as showConfirmation } from './showConfirmation';
 export { default as getPaymentMethods } from './getPaymentMethods';
 export { default as paymentFromComponent } from './paymentFromComponent';
+export { default as notify } from './notify';

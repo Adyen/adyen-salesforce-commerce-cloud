@@ -143,28 +143,7 @@ server.post(
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
-server.post('Notify', server.middleware.https, (req, res, next) => {
-  const checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
-  const status = checkAuth.check(req);
-  if (!status) {
-    res.render('/adyen/error');
-    return {};
-  }
-  const handleNotify = require('*/cartridge/scripts/handleNotify');
-  Transaction.begin();
-  const notificationResult = handleNotify.notify(req.form);
-
-  if (notificationResult.success) {
-    Transaction.commit();
-    res.render('/notify');
-  } else {
-    res.render('/notifyError', {
-      errorMessage: notificationResult.errorMessage,
-    });
-    Transaction.rollback();
-  }
-  next();
-});
+server.post('Notify', server.middleware.https, middlewares.notify);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
