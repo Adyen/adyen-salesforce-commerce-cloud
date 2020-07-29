@@ -5,3 +5,4 @@ export { default as redirect } from './redirect';
 export { default as showConfirmationPaymentFromComponent } from './showConfirmationPaymentFromComponent';
 export { default as showConfirmation } from './showConfirmation';
 export { default as getPaymentMethods } from './getPaymentMethods';
+export { default as paymentFromComponent } from './paymentFromComponent';

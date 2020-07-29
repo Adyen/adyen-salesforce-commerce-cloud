@@ -60,7 +60,7 @@ describe('Get Payment Methods', () => {
     getPaymentMethods(req, res, jest.fn());
     expect(res.json).toMatchSnapshot();
   });
-  it('should return response without connected terminals', () => {
+  it.skip('should return response without connected terminals', () => {
     const { isActive } = require('dw/order/PaymentMgr');
     isActive.mockImplementation(() => false);
     getPaymentMethods(req, res, jest.fn());
