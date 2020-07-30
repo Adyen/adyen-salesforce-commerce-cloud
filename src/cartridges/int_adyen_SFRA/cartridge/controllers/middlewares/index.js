@@ -7,3 +7,4 @@ module.exports.showConfirmation = require('./showConfirmation');
 module.exports.getPaymentMethods = require('./getPaymentMethods');
 module.exports.paymentFromComponent = require('./paymentFromComponent');
 module.exports.notify = require('./notify');
+module.exports.begin = require('./begin');
