@@ -1,16 +1,16 @@
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-const collections = require('*/cartridge/scripts/util/collections');
+const BasketMgr = require('dw/order/BasketMgr');
+const OrderMgr = require('dw/order/OrderMgr');
+const Resource = require('dw/web/Resource');
+const Transaction = require('dw/system/Transaction');
+const URLUtils = require('dw/web/URLUtils');
 const constants = require('*/cartridge/adyenConstants/constants');
+const collections = require('*/cartridge/scripts/util/collections');
+const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
 function placeOrder(req, res, next) {
-  const BasketMgr = require('dw/order/BasketMgr');
-  const OrderMgr = require('dw/order/OrderMgr');
-  const Resource = require('dw/web/Resource');
-  const Transaction = require('dw/system/Transaction');
-  const URLUtils = require('dw/web/URLUtils');
-  const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-  const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
   let isAdyen = false;
 
   const currentBasket = BasketMgr.getCurrentBasket();
