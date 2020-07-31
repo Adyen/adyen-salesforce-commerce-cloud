@@ -1,5 +1,7 @@
+const CustomerMgr = require('dw/customer/CustomerMgr');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
 function deletePayment(req, res, next) {
-  const CustomerMgr = require('dw/customer/CustomerMgr');
   const payment = res.getViewData();
 
   if (payment) {
