@@ -1,3 +1,4 @@
+const server = require('server');
 const Resource = require('dw/web/Resource');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const Transaction = require('dw/system/Transaction');

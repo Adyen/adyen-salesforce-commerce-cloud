@@ -14,12 +14,4 @@ global.session = {
   forms: { billing: { clearFormElement: jest.fn() } },
 };
 
-global.server = {
-  forms: {
-    getForm: jest.fn(() => ({
-      adyenStateData: { value: 'mocked_value' },
-    })),
-  },
-};
-
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
