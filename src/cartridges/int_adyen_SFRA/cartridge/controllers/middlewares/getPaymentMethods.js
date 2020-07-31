@@ -48,7 +48,7 @@ function getPMs(req, res, next) {
     return next();
   }
 
-  let connectedTerminals = {};
+  let connectedTerminals = '{}';
   if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
     connectedTerminals = adyenTerminalApi.getTerminals().response;
   }
