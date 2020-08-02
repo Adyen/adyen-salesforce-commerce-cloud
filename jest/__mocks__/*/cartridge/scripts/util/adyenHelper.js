@@ -4,3 +4,5 @@ export const getAdyenHash = jest.fn((str) => str);
 export const getLoadingContext = jest.fn(() => 'mocked_loading_context');
 export const getCreditCardInstallments = jest.fn(() => true);
 export const getCurrencyValueForApi = jest.fn(() => 1000);
+export const getSFCCCardType = jest.fn(() => 'visa');
+export const getCardToken = jest.fn(() => 'mockedID');
