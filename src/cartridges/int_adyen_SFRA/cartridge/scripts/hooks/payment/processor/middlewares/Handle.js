@@ -41,10 +41,8 @@ function Handle(basket, paymentInformation) {
                 paymentInstrument.setCreditCardToken(tokenID);
             }
         } else {
-            console.log('inside else');
             // Local payment data
             if (paymentInformation.adyenIssuerName) {
-                console.log('inside else else else ');
                 paymentInstrument.custom.adyenIssuerName =
                     paymentInformation.adyenIssuerName;
             }
