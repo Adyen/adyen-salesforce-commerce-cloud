@@ -12,6 +12,7 @@ global.$ = require('jquery');
 global.session = {
   privacy: { orderNo: 'mocked_orderNo' },
   forms: { billing: { clearFormElement: jest.fn() } },
+  currency: { currencyCode: 'EUR' },
 };
 
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
