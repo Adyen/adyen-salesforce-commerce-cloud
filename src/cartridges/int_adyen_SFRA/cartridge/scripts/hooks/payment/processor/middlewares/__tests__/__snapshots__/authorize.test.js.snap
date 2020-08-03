@@ -22,6 +22,7 @@ Object {
     "custom": Object {
       "adyenPaymentData": undefined,
     },
+    "paymentMethod": "mocked_method",
     "paymentTransaction": Object {
       "paymentProcessor": "mockedPaymentProcessor",
     },
@@ -57,6 +58,7 @@ Object {
     "custom": Object {
       "adyenPaymentData": "mockedpaymentData",
     },
+    "paymentMethod": "mocked_method",
     "paymentTransaction": Object {
       "paymentProcessor": "mockedPaymentProcessor",
     },
