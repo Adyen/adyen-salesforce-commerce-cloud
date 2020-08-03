@@ -8,3 +8,5 @@ module.exports.getPaymentMethods = require('./getPaymentMethods');
 module.exports.paymentFromComponent = require('./paymentFromComponent');
 module.exports.notify = require('./notify');
 module.exports.placeOrder = require('./placeOrder');
+module.exports.savePayment = require('./savePayment');
+module.exports.deletePayment = require('./deletePayment');
