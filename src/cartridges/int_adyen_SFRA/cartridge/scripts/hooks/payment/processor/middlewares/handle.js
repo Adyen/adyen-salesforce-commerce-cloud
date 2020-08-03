@@ -3,7 +3,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
 
-function Handle(basket, paymentInformation) {
+function handle(basket, paymentInformation) {
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];
@@ -40,18 +40,12 @@ function Handle(basket, paymentInformation) {
         );
         paymentInstrument.setCreditCardToken(tokenID);
       }
-    } else {
-      // Local payment data
-      if (paymentInformation.adyenIssuerName) {
-        paymentInstrument.custom.adyenIssuerName =
-          paymentInformation.adyenIssuerName;
-      }
     }
   });
 
   return { fieldErrors: cardErrors, serverErrors, error: false };
 }
 
-module.exports = Handle;
+module.exports = handle;
 
 // export default Handle;

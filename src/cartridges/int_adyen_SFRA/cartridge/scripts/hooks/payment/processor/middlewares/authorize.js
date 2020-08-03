@@ -11,7 +11,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
  *      payment method
  * @return {Object} returns an error object
  */
-function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
+function authorize(orderNumber, paymentInstrument, paymentProcessor) {
   const Transaction = require('dw/system/Transaction');
   const OrderMgr = require('dw/order/OrderMgr');
   const order = OrderMgr.getOrder(orderNumber);
@@ -93,4 +93,4 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   return { authorized: true, error: false };
 }
 
-module.exports = Authorize;
+module.exports = authorize;
