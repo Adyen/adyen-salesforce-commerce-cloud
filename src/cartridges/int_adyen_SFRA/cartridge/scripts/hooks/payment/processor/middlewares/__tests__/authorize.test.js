@@ -15,7 +15,9 @@ afterEach(() => {
 
 describe('adyen component authorize function', () => {
   it('return with appropriate mesages when create payment request fails', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       error: {},
     }));
@@ -28,7 +30,9 @@ describe('adyen component authorize function', () => {
   });
 
   it('handle the create payment request result 3DS', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       resultCode: 'RedirectShopper',
       redirectObject: {
@@ -46,7 +50,9 @@ describe('adyen component authorize function', () => {
   });
 
   it('handle the create payment request result 3DS2', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       threeDS2: 'mockedthreeDS2',
       resultCode: 'mockedresultCode',
@@ -61,7 +67,9 @@ describe('adyen component authorize function', () => {
   });
 
   it('handle the create payment request result redirectShopper', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       resultCode: 'RedirectShopper',
       redirectObject: {
@@ -78,7 +86,9 @@ describe('adyen component authorize function', () => {
   });
 
   it('handle the create payment request decision accept', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       decision: 'ACCEPT',
     }));
@@ -91,7 +101,9 @@ describe('adyen component authorize function', () => {
   });
 
   it('handle create payment request decisions other than accept', () => {
-    const { createPaymentRequest } = require('*/cartridge/scripts/adyenCheckout');
+    const {
+      createPaymentRequest,
+    } = require('*/cartridge/scripts/adyenCheckout');
     createPaymentRequest.mockImplementation(() => ({
       decision: "DON'T ACCEPT",
     }));

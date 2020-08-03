@@ -17,7 +17,11 @@ function Handle(basket, paymentInformation) {
  * @return {Object} returns an error object
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.authorize(orderNumber, paymentInstrument, paymentProcessor);
+  return middlewares.authorize(
+    orderNumber,
+    paymentInstrument,
+    paymentProcessor,
+  );
 }
 
 exports.Handle = Handle;
