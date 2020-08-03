@@ -194,6 +194,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
           handlePaymentResult.redirectObject.data.PaReq,
           'MD',
           handlePaymentResult.redirectObject.data.MD,
+          'signature',
+          handlePaymentResult.signature,
         ).toString(),
       });
       this.emit('route:Complete', req, res);
