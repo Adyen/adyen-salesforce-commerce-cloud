@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Begin should set view data 1`] = `
+Array [
+  Array [
+    Object {
+      "adyen": Object {
+        "environment": "test",
+        "installments": true,
+        "originKey": "mocked_origin_key",
+        "paypalMerchantID": "mocked_payment_merchant_id",
+      },
+    },
+  ],
+]
+`;
