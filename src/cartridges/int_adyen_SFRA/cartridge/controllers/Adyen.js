@@ -30,11 +30,11 @@ server.get(
     const signature = req.querystring.signature;
 
     const currentSignature = AdyenHelper.getAdyenHash(
-        IssuerURL.substr(IssuerURL.length - 25),
-        MD.substr(1, 25),
+      IssuerURL.substr(IssuerURL.length - 25),
+      MD.substr(1, 25),
     );
 
-    if(signature === currentSignature) {
+    if (signature === currentSignature) {
       res.render('adyenform', {
         issuerUrl: IssuerURL,
         paRequest: PaRequest,
@@ -44,7 +44,7 @@ server.get(
       return next();
     }
     Logger.getLogger('Adyen').error('Signature incorrect for 3DS payment');
-    res.redirect(URLUtils.url('Home-Show', 'Payment','Failed3DS'));
+    res.redirect(URLUtils.url('Home-Show', 'Payment', 'Failed3DS'));
     return next();
   },
 );
