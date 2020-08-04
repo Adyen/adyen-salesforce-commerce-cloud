@@ -37,7 +37,7 @@ var adyenHelperObj = {
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
   CHECKOUT_COMPONENT_VERSION: '3.9.4',
-  VERSION: '20.2.0',
+  VERSION: '20.1.1',
 
   getService: function (service) {
     // Create the service config (used for all services)
