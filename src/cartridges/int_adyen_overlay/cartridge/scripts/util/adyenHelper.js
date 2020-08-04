@@ -324,6 +324,7 @@ var adyenHelperObj = {
       || paymentMethod.indexOf('ratepay') > -1
       || paymentMethod.indexOf('facilypay') > -1
       || paymentMethod === 'zip'
+      || paymentMethod === 'affirm'
     ) {
       return true;
     }
