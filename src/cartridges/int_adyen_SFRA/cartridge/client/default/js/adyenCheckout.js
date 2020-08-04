@@ -93,12 +93,12 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     },
     onCancel: (data, component) => {
       paymentFromComponent({ cancelTransaction: true }, component);
-      component.setStatus('ready');
     },
     onError: (error, component) => {
       if (component) {
         component.setStatus('ready');
       }
+      document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: (state) => {
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
@@ -404,13 +404,13 @@ function paymentFromComponent(data, component) {
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
-    data: { data: JSON.stringify(data) },
+    data: { data: JSON.stringify(data),
+      paymentMethod: document.querySelector('#adyenPaymentMethodName').value },
     success: function (data) {
       if (data.fullResponse && data.fullResponse.action) {
         component.handleAction(data.fullResponse.action);
       } else {
-        component.setStatus('ready');
-        component.reject('Payment Refused');
+        document.querySelector('#showConfirmationForm').submit();
       }
     },
   }).fail(function () {});

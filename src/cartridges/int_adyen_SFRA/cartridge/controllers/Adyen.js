@@ -551,16 +551,32 @@ server.post(
       const paymentInstruments = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
       );
+
       let adyenPaymentInstrument;
-
-      const paymentData = stateData.paymentData;
-      const details = stateData.details;
-
       // looping through all Adyen payment methods, however, this only can be one.
       const instrumentsIter = paymentInstruments.iterator();
       while (instrumentsIter.hasNext()) {
         adyenPaymentInstrument = instrumentsIter.next();
       }
+
+      if(!(stateData && stateData.paymentData && stateData.details)){
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order, true);
+          adyenPaymentInstrument.custom.adyenPaymentData = null;
+        });
+        res.redirect(
+            URLUtils.url(
+                'Checkout-Begin',
+                'stage',
+                'placeOrder',
+                'paymentError',
+                Resource.msg('error.payment.not.valid', 'checkout', null),
+            ),
+        );
+        return next();
+      }
+      const paymentData = stateData.paymentData;
+      const details = stateData.details;
 
       // redirect to payment/details
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
@@ -643,7 +659,7 @@ server.post(
       return next();
     } catch (e) {
       Logger.getLogger('Adyen').error(
-        `Could not verify /payment/details: ${e.message}`,
+        `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
       );
       res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
       return next();
@@ -768,17 +784,12 @@ server.post('PaymentFromComponent', server.middleware.https, function (
   const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
   const BasketMgr = require('dw/order/BasketMgr');
   const reqDataObj = JSON.parse(req.form.data);
-
   if (reqDataObj.cancelTransaction) {
-    order = OrderMgr.getOrder(session.privacy.orderNo);
+    // order = OrderMgr.getOrder(session.privacy.orderNo);
     Logger.getLogger('Adyen').error(
       `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
     );
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
-    res.json({ result: 'cancelled' });
-    return next();
+    return {};
   }
   const currentBasket = BasketMgr.getCurrentBasket();
 
@@ -796,7 +807,7 @@ server.post('PaymentFromComponent', server.middleware.https, function (
     ).paymentProcessor;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
-    paymentInstrument.custom.adyenPaymentMethod = reqDataObj.paymentMethod.type;
+    paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   order = COHelpers.createOrder(currentBasket);
   session.privacy.orderNo = order.orderNo;
@@ -806,11 +817,6 @@ server.post('PaymentFromComponent', server.middleware.https, function (
     PaymentInstrument: paymentInstrument,
   });
 
-  if (result.resultCode !== 'Pending') {
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
-  }
   res.json(result);
   return next();
 });
