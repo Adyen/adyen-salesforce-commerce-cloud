@@ -243,15 +243,15 @@ function showConfirmationPaymentFromComponent() {
     paymentInformation.get('paypalStateData').value(),
   );
 
-  if(!(passedData && passedData.details && passedData.paymentData)){
+  if (!(passedData && passedData.details && passedData.paymentData)) {
     // fail order
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
     // should be assingned by previous calls or not
     const errorStatus = new dw.system.Status(
-        dw.system.Status.ERROR,
-        'confirm.error.declined',
+      dw.system.Status.ERROR,
+      'confirm.error.declined',
     );
 
     app.getController('COSummary').Start({

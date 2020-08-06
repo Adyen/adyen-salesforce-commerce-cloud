@@ -110,7 +110,7 @@ function initializeBillingEvents() {
         onCancel: (data, component) => {
           paymentFromComponent({ cancelPaypal: true }, component);
         },
-        onError: (error, component) => {
+        onError: (/* error, component */) => {
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
@@ -561,7 +561,7 @@ function paymentFromComponent(data, component) {
         component.handleAction(data.result.fullResponse.action);
       } else {
         document.querySelector('#paypalStateData').value = JSON.stringify(
-            "null",
+          'null',
         );
         $('#dwfrm_billing').trigger('submit');
       }

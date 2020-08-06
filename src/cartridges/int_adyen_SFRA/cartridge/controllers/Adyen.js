@@ -559,19 +559,19 @@ server.post(
         adyenPaymentInstrument = instrumentsIter.next();
       }
 
-      if(!(stateData && stateData.paymentData && stateData.details)){
+      if (!(stateData && stateData.paymentData && stateData.details)) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(order, true);
           adyenPaymentInstrument.custom.adyenPaymentData = null;
         });
         res.redirect(
-            URLUtils.url(
-                'Checkout-Begin',
-                'stage',
-                'placeOrder',
-                'paymentError',
-                Resource.msg('error.payment.not.valid', 'checkout', null),
-            ),
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'placeOrder',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
         );
         return next();
       }
@@ -780,7 +780,6 @@ server.post('PaymentFromComponent', server.middleware.https, function (
   res,
   next,
 ) {
-  let order;
   const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
   const BasketMgr = require('dw/order/BasketMgr');
   const reqDataObj = JSON.parse(req.form.data);
@@ -809,7 +808,7 @@ server.post('PaymentFromComponent', server.middleware.https, function (
     paymentInstrument.custom.adyenPaymentData = req.form.data;
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
-  order = COHelpers.createOrder(currentBasket);
+  const order = COHelpers.createOrder(currentBasket);
   session.privacy.orderNo = order.orderNo;
 
   const result = adyenCheckout.createPaymentRequest({

@@ -404,8 +404,10 @@ function paymentFromComponent(data, component) {
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
-    data: { data: JSON.stringify(data),
-      paymentMethod: document.querySelector('#adyenPaymentMethodName').value },
+    data: {
+      data: JSON.stringify(data),
+      paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
+    },
     success: function (data) {
       if (data.fullResponse && data.fullResponse.action) {
         component.handleAction(data.fullResponse.action);
