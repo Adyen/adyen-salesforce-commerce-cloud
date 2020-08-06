@@ -109,10 +109,9 @@ function initializeBillingEvents() {
         },
         onCancel: (data, component) => {
           paymentFromComponent({ cancelPaypal: true }, component);
-          component.setStatus('ready');
         },
         onError: (error, component) => {
-          component && component.setStatus('ready');
+          $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
           document.querySelector('#paypalStateData').value = JSON.stringify(
@@ -561,8 +560,10 @@ function paymentFromComponent(data, component) {
       ) {
         component.handleAction(data.result.fullResponse.action);
       } else {
-        component.setStatus('ready');
-        component.reject('Payment Refused');
+        document.querySelector('#paypalStateData').value = JSON.stringify(
+            "null",
+        );
+        $('#dwfrm_billing').trigger('submit');
       }
     },
   }).fail(function (/* xhr, textStatus */) {});

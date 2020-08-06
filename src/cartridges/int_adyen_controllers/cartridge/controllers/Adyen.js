@@ -170,13 +170,9 @@ function paymentFromComponent() {
       .getRequestBodyAsString()
       .indexOf('cancelTransaction') > -1
   ) {
-    const order = OrderMgr.getOrder(session.privacy.orderNo);
     Logger.getLogger('Adyen').error(
       `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
     );
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
     return;
   }
 
@@ -221,9 +217,6 @@ function paymentFromComponent() {
     PaymentInstrument: paymentInstrument,
   });
 
-  if (result.resultCode !== 'Pending') {
-    OrderMgr.failOrder(order, true);
-  }
   Transaction.commit();
   const responseUtils = require('*/cartridge/scripts/util/Response');
   responseUtils.renderJSON({ result: result });
@@ -249,6 +242,24 @@ function showConfirmationPaymentFromComponent() {
   const passedData = JSON.parse(
     paymentInformation.get('paypalStateData').value(),
   );
+
+  if(!(passedData && passedData.details && passedData.paymentData)){
+    // fail order
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+    // should be assingned by previous calls or not
+    const errorStatus = new dw.system.Status(
+        dw.system.Status.ERROR,
+        'confirm.error.declined',
+    );
+
+    app.getController('COSummary').Start({
+      PlaceOrderError: errorStatus,
+    });
+    return {};
+  }
+
   const details = passedData.details;
   const paymentData = passedData.paymentData;
 
