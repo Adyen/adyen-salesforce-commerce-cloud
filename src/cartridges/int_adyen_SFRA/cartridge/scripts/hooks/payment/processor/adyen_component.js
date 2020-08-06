@@ -116,6 +116,10 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
       && result.redirectObject.data.MD
     ) {
       authorized3d = true;
+      signature = AdyenHelper.getAdyenHash(
+        result.redirectObject.url.substr(result.redirectObject.url.length - 25),
+        result.redirectObject.data.MD.substr(1, 25),
+      );
     } else {
       // Signature only needed for redirect methods
       signature = AdyenHelper.getAdyenHash(
