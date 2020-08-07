@@ -242,8 +242,8 @@ function showConfirmationPaymentFromComponent() {
   const passedData = JSON.parse(
     paymentInformation.get('paypalStateData').value(),
   );
-
-  if (!(passedData && passedData.details && passedData.paymentData)) {
+  const hasStateData = passedData && passedData.details && passedData.paymentData;
+  if (!hasStateData) {
     // fail order
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);

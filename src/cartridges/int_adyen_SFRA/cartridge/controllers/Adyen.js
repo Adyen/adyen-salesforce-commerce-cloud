@@ -559,7 +559,8 @@ server.post(
         adyenPaymentInstrument = instrumentsIter.next();
       }
 
-      if (!(stateData && stateData.paymentData && stateData.details)) {
+      const hasStateData= stateData && stateData.paymentData && stateData.details;
+      if (!hasStateData) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(order, true);
           adyenPaymentInstrument.custom.adyenPaymentData = null;
@@ -784,7 +785,6 @@ server.post('PaymentFromComponent', server.middleware.https, function (
   const BasketMgr = require('dw/order/BasketMgr');
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    // order = OrderMgr.getOrder(session.privacy.orderNo);
     Logger.getLogger('Adyen').error(
       `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
     );
