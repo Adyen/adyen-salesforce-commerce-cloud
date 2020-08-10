@@ -9,7 +9,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const { clearForms } = require('../utils/index');
+const { clearForms } = require('../../utils/index');
 
 function showConfirmationPaymentFromComponent(req, res, next) {
   try {

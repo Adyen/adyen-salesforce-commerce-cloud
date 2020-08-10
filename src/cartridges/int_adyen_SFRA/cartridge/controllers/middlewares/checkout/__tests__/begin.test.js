@@ -1,5 +1,7 @@
 /* eslint-disable global-require */
-const begin = require('../begin');
+const {
+  checkout: { begin },
+} = require('../../index');
 
 let res;
 let req;

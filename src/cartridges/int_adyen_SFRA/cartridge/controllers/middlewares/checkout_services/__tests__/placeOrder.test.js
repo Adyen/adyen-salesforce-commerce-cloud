@@ -5,7 +5,9 @@ let res;
 let placeOrder;
 
 beforeEach(() => {
-  placeOrder = require('../placeOrder');
+  const { checkoutServices } = require('../../index');
+  placeOrder = checkoutServices.placeOrder;
+
   jest.clearAllMocks();
   res = { getViewData: jest.fn(), json: jest.fn() };
   req = {

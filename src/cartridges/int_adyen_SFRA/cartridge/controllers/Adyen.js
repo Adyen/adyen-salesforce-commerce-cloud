@@ -1,8 +1,8 @@
 const server = require('server');
 const URLUtils = require('dw/web/URLUtils');
-const middlewares = require('./middlewares/index');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const { adyen } = require('./middlewares/index');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
@@ -36,7 +36,7 @@ server.post(
   'AuthorizeWithForm',
   csrfProtection.generateToken,
   server.middleware.https,
-  middlewares.authorizeWithForm,
+  adyen.authorizeWithForm,
 );
 
 /**
@@ -47,7 +47,7 @@ server.get(
   consentTracking.consent,
   csrfProtection.generateToken,
   server.middleware.https,
-  middlewares.adyen3ds2,
+  adyen.adyen3ds2,
 );
 
 /**
@@ -60,22 +60,18 @@ server.post(
   csrfProtection.generateToken,
   csrfProtection.validateRequest,
   server.middleware.https,
-  middlewares.authorize3ds2,
+  adyen.authorize3ds2,
 );
 
 /**
  * Redirect to Adyen after saving order etc.
  */
-server.get('Redirect', server.middleware.https, middlewares.redirect);
+server.get('Redirect', server.middleware.https, adyen.redirect);
 
 /**
  * Show confirmation after return from Adyen
  */
-server.get(
-  'ShowConfirmation',
-  server.middleware.https,
-  middlewares.showConfirmation,
-);
+server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 
 /**
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
@@ -83,7 +79,7 @@ server.get(
 server.post(
   'ShowConfirmationPaymentFromComponent',
   server.middleware.https,
-  middlewares.showConfirmationPaymentFromComponent,
+  adyen.showConfirmationPaymentFromComponent,
 );
 
 /**
@@ -92,7 +88,7 @@ server.post(
 server.get(
   'GetPaymentMethods',
   server.middleware.https,
-  middlewares.getPaymentMethods,
+  adyen.getPaymentMethods,
 );
 
 /**
@@ -121,13 +117,13 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
 server.post(
   'PaymentFromComponent',
   server.middleware.https,
-  middlewares.paymentFromComponent,
+  adyen.paymentFromComponent,
 );
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
-server.post('Notify', server.middleware.https, middlewares.notify);
+server.post('Notify', server.middleware.https, adyen.notify);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;

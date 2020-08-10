@@ -4,7 +4,8 @@ let res;
 let req;
 
 beforeEach(() => {
-  deletePayment = require('../deletePayment');
+  const { paymentInstruments } = require('../../index');
+  deletePayment = paymentInstruments.deletePayment;
   jest.clearAllMocks();
   res = { getViewData: jest.fn(() => ({ UUID: 'mocked_UUID' })) };
   req = { currentCustomer: { profile: { customerNo: 'mocked_customerNo' } } };

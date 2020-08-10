@@ -1,7 +1,11 @@
 const server = require('server');
-const middlewares = require('./middlewares/index');
+const { checkoutServices } = require('./middlewares/index');
 
 server.extend(module.superModule);
-server.prepend('PlaceOrder', server.middleware.https, middlewares.placeOrder);
+server.prepend(
+  'PlaceOrder',
+  server.middleware.https,
+  checkoutServices.placeOrder,
+);
 
 module.exports = server.exports();
