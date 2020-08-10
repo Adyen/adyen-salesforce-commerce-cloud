@@ -1,10 +1,10 @@
 const URLUtils = require('dw/web/URLUtils');
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
 function adyen3ds2(req, res, next) {
   const protocol = req.https ? 'https' : 'http';
-  const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
   try {
     const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
