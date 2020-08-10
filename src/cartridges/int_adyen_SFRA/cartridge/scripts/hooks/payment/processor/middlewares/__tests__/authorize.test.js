@@ -5,16 +5,15 @@ let currentBasket;
 beforeEach(() => {
   authorize = require('../authorize');
   jest.clearAllMocks();
-  const { getCurrentBasket } = require('dw/order/BasketMgr');
-  currentBasket = getCurrentBasket();
+  currentBasket  = require('dw/order/BasketMgr').getCurrentBasket();
 });
 
 afterEach(() => {
   jest.resetModules();
 });
 
-describe('adyen component authorize function', () => {
-  it('return with appropriate mesages when create payment request fails', () => {
+describe('Authorize', () => {
+  it('should return when create payment request fails', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');
@@ -29,7 +28,7 @@ describe('adyen component authorize function', () => {
     expect(authorizeResult).toMatchSnapshot();
   });
 
-  it('handle the create payment request result 3DS', () => {
+  it('should authorize 3DS payments', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');
@@ -49,7 +48,7 @@ describe('adyen component authorize function', () => {
     expect(authorizeResult).toMatchSnapshot();
   });
 
-  it('handle the create payment request result 3DS2', () => {
+  it('should authorize 3DS2 payments', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');
@@ -66,7 +65,7 @@ describe('adyen component authorize function', () => {
     expect(authorizeResult).toMatchSnapshot();
   });
 
-  it('handle the create payment request result redirectShopper', () => {
+  it('should authorize redirectShopper payments', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');
@@ -85,7 +84,7 @@ describe('adyen component authorize function', () => {
     expect(authorizeResult).toMatchSnapshot();
   });
 
-  it('handle the create payment request decision accept', () => {
+  it('should handle the create payment request decision accept', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');
@@ -100,7 +99,7 @@ describe('adyen component authorize function', () => {
     expect(authorizeResult).toMatchSnapshot();
   });
 
-  it('handle create payment request decisions other than accept', () => {
+  it('should handle create payment request decisions other than accept', () => {
     const {
       createPaymentRequest,
     } = require('*/cartridge/scripts/adyenCheckout');

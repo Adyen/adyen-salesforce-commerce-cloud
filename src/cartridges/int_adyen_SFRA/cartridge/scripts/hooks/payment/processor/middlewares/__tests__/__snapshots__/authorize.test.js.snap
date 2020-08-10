@@ -1,19 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`adyen component authorize function handle create payment request decisions other than accept 1`] = `
-Object {
-  "error": true,
-}
-`;
-
-exports[`adyen component authorize function handle the create payment request decision accept 1`] = `
-Object {
-  "authorized": true,
-  "error": false,
-}
-`;
-
-exports[`adyen component authorize function handle the create payment request result 3DS 1`] = `
+exports[`Authorize should authorize 3DS payments 1`] = `
 Object {
   "authorized": true,
   "authorized3d": true,
@@ -41,7 +28,7 @@ Object {
 }
 `;
 
-exports[`adyen component authorize function handle the create payment request result 3DS2 1`] = `
+exports[`Authorize should authorize 3DS2 payments 1`] = `
 Object {
   "resultCode": "mockedresultCode",
   "threeDS2": "mockedthreeDS2",
@@ -49,7 +36,7 @@ Object {
 }
 `;
 
-exports[`adyen component authorize function handle the create payment request result redirectShopper 1`] = `
+exports[`Authorize should authorize redirectShopper payments 1`] = `
 Object {
   "authorized": true,
   "authorized3d": false,
@@ -75,7 +62,20 @@ Object {
 }
 `;
 
-exports[`adyen component authorize function return with appropriate mesages when create payment request fails 1`] = `
+exports[`Authorize should handle create payment request decisions other than accept 1`] = `
+Object {
+  "error": true,
+}
+`;
+
+exports[`Authorize should handle the create payment request decision accept 1`] = `
+Object {
+  "authorized": true,
+  "error": false,
+}
+`;
+
+exports[`Authorize should return when create payment request fails 1`] = `
 Object {
   "authorized": false,
   "error": true,

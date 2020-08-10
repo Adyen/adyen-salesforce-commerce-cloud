@@ -25,7 +25,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('adyen component handle function', () => {
+describe('Handle', () => {
   it('should create payment instrument', () => {
     handle(currentBasket, paymentInformation);
     expect(currentBasket.createPaymentInstrument).toBeCalledTimes(1);
