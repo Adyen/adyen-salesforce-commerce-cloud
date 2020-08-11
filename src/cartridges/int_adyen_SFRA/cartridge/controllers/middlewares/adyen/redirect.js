@@ -7,9 +7,25 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function redirect(req, res, next) {
-  const { signature } = req.querystring;
   const order = OrderMgr.getOrder(session.privacy.orderNo);
-  if (order && signature) {
+  function handleIncorrectSignature() {
+    Logger.getLogger('Adyen').error('Redirect signature is not correct');
+    Transaction.wrap(() => {
+      OrderMgr.failOrder(order, true);
+    });
+    res.redirect(
+      URLUtils.url(
+        'Checkout-Begin',
+        'stage',
+        'payment',
+        'paymentError',
+        Resource.msg('error.payment.not.valid', 'checkout', null),
+      ),
+    );
+    return next();
+  }
+
+  function getCurrentSignature() {
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
@@ -28,6 +44,12 @@ function redirect(req, res, next) {
       ),
       paymentData.substr(1, 25),
     );
+    return currentSignature;
+  }
+
+  const { signature } = req.querystring;
+  if (order && signature) {
+    const currentSignature = getCurrentSignature();
 
     if (signature === currentSignature) {
       res.redirect(req.querystring.redirectUrl);
@@ -39,20 +61,7 @@ function redirect(req, res, next) {
     );
   }
 
-  Logger.getLogger('Adyen').error('Redirect signature is not correct');
-  Transaction.wrap(() => {
-    OrderMgr.failOrder(order, true);
-  });
-  res.redirect(
-    URLUtils.url(
-      'Checkout-Begin',
-      'stage',
-      'payment',
-      'paymentError',
-      Resource.msg('error.payment.not.valid', 'checkout', null),
-    ),
-  );
-  return next();
+  return handleIncorrectSignature();
 }
 
 module.exports = redirect;
