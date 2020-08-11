@@ -5,7 +5,7 @@ let currentBasket;
 beforeEach(() => {
   authorize = require('../authorize');
   jest.clearAllMocks();
-  currentBasket  = require('dw/order/BasketMgr').getCurrentBasket();
+  currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
 });
 
 afterEach(() => {
@@ -40,12 +40,14 @@ describe('Authorize', () => {
         },
       },
     }));
+    const paymentInstrument = currentBasket.createPaymentInstrument();
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
+    expect(paymentInstrument.setCreditCardType.mock.calls).toMatchSnapshot();
   });
 
   it('should authorize 3DS2 payments', () => {
@@ -76,12 +78,14 @@ describe('Authorize', () => {
       },
       paymentData: 'mockedpaymentData',
     }));
+    const paymentInstrument = currentBasket.createPaymentInstrument();
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
+    expect(paymentInstrument.setCreditCardType.mock.calls).toMatchSnapshot();
   });
 
   it('should handle the create payment request decision accept', () => {

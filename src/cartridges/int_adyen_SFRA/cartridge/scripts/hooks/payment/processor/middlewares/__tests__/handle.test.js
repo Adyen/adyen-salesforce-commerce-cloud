@@ -6,8 +6,7 @@ let currentBasket;
 beforeEach(() => {
   handle = require('../handle');
   jest.clearAllMocks();
-  const { getCurrentBasket } = require('dw/order/BasketMgr');
-  currentBasket = getCurrentBasket();
+  currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
   paymentInformation = {
     isCreditCard: true,
     cardType: 'mockedType',

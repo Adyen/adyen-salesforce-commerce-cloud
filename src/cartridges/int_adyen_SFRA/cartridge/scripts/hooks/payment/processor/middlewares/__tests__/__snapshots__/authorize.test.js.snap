@@ -28,6 +28,8 @@ Object {
 }
 `;
 
+exports[`Authorize should authorize 3DS payments 2`] = `Array []`;
+
 exports[`Authorize should authorize 3DS2 payments 1`] = `
 Object {
   "resultCode": "mockedresultCode",
@@ -61,6 +63,8 @@ Object {
   "signature": "mockedURL",
 }
 `;
+
+exports[`Authorize should authorize redirectShopper payments 2`] = `Array []`;
 
 exports[`Authorize should handle create payment request decisions other than accept 1`] = `
 Object {
