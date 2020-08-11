@@ -47,7 +47,6 @@ describe('Authorize', () => {
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(paymentInstrument.setCreditCardType.mock.calls).toMatchSnapshot();
   });
 
   it('should authorize 3DS2 payments', () => {
@@ -85,7 +84,6 @@ describe('Authorize', () => {
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(paymentInstrument.setCreditCardType.mock.calls).toMatchSnapshot();
   });
 
   it('should handle the create payment request decision accept', () => {
