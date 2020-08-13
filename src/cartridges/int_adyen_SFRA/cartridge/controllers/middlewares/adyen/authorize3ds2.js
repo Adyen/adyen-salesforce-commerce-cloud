@@ -3,10 +3,10 @@ const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
-const { clearForms } = require('../utils/index');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const { clearForms } = require('../../utils/index');
 
 function authorize3ds2(req, res, next) {
   let paymentInstrument;

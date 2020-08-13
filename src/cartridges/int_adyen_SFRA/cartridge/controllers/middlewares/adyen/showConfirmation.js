@@ -8,8 +8,8 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const { clearForms } = require('../utils/index');
 const OrderModel = require('*/cartridge/models/order');
+const { clearForms } = require('../../utils/index');
 
 function showConfirmation(req, res, next) {
   try {

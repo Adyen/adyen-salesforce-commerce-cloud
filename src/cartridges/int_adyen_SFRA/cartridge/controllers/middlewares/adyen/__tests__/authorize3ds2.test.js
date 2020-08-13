@@ -4,7 +4,9 @@ let req;
 let res;
 let authorize3ds2;
 beforeEach(() => {
-  authorize3ds2 = require('../authorize3ds2');
+  const { adyen } = require('../../index');
+  authorize3ds2 = adyen.authorize3ds2;
+
   jest.clearAllMocks();
 
   window.session = {

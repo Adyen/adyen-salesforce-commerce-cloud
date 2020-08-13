@@ -4,7 +4,8 @@ let req;
 let res;
 
 beforeEach(() => {
-  confirm = require('../confirm');
+  const { order } = require('../../index');
+  confirm = order.confirm;
   jest.clearAllMocks();
   res = { setViewData: jest.fn(), getViewData: jest.fn(() => ({})) };
   req = { querystring: { ID: 'mocked_querystring_id' } };

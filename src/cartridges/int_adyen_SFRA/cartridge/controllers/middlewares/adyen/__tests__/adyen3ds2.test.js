@@ -1,5 +1,7 @@
 /* eslint-disable global-require */
-const adyen3ds2 = require('../adyen3ds2');
+const {
+  adyen: { adyen3ds2 },
+} = require('../../index');
 
 let req;
 let res;

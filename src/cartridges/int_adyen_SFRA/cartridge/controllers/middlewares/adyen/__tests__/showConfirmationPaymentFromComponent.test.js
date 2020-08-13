@@ -4,7 +4,9 @@ let res;
 let req;
 
 beforeEach(() => {
-  showConfirmationPaymentFromComponent = require('../showConfirmationPaymentFromComponent');
+  const { adyen } = require('../../index');
+  showConfirmationPaymentFromComponent =
+    adyen.showConfirmationPaymentFromComponent;
   jest.clearAllMocks();
   res = { redirect: jest.fn() };
   req = {

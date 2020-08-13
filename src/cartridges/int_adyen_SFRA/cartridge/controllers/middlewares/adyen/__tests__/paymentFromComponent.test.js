@@ -4,7 +4,8 @@ let res;
 let req;
 
 beforeEach(() => {
-  paymentFromComponent = require('../paymentFromComponent');
+  const { adyen } = require('../../index');
+  paymentFromComponent = adyen.paymentFromComponent;
   jest.clearAllMocks();
   req = { form: { data: { paymentMethod: { type: 'mocked_type' } } } };
   res = { json: jest.fn() };

@@ -5,7 +5,8 @@ let res;
 let notify;
 
 beforeEach(() => {
-  notify = require('../notify');
+  const { adyen } = require('../../index');
+  notify = adyen.notify;
   jest.clearAllMocks();
   req = {};
   res = { render: jest.fn() };

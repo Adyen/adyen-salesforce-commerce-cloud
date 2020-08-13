@@ -4,7 +4,8 @@ let res;
 let redirect;
 
 beforeEach(() => {
-  redirect = require('../redirect');
+  const { adyen } = require('../../index');
+  redirect = adyen.redirect;
   jest.clearAllMocks();
   req = {
     querystring: {

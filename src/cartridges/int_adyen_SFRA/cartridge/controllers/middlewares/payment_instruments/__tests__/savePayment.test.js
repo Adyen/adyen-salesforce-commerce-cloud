@@ -4,7 +4,8 @@ let res;
 let req;
 
 beforeEach(() => {
-  savePayment = require('../savePayment');
+  const { paymentInstruments } = require('../../index');
+  savePayment = paymentInstruments.savePayment;
   jest.clearAllMocks();
   res = { json: jest.fn() };
   req = { currentCustomer: { profile: { customerNo: 'mocked_customerNo' } } };
