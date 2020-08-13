@@ -7,7 +7,7 @@ const consentTracking = require('*/cartridge/scripts/middleware/consentTracking'
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const middlewares = require('./middlewares/index');
+const { paymentInstruments } = require('./middlewares/index');
 
 server.prepend(
   'List',
@@ -47,13 +47,13 @@ server.prepend(
 server.prepend(
   'SavePayment',
   csrfProtection.validateAjaxRequest,
-  middlewares.savePayment,
+  paymentInstruments.savePayment,
 );
 
 server.append(
   'DeletePayment',
   userLoggedIn.validateLoggedInAjax,
-  middlewares.deletePayment,
+  paymentInstruments.deletePayment,
 );
 
 module.exports = server.exports();
