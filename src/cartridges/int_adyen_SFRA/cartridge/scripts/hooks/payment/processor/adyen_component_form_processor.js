@@ -1,4 +1,3 @@
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const middlewares = require('./middlewares/index');
 
 /**
