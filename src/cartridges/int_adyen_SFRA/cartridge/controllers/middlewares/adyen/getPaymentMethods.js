@@ -10,67 +10,79 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getPMs(req, res, next) {
-  let countryCode = Locale.getLocale(req.locale.id).country;
-  const currentBasket = BasketMgr.getCurrentBasket();
-  if (
-    currentBasket.getShipments().length > 0 &&
-    currentBasket.getShipments()[0].shippingAddress
-  ) {
-    countryCode = currentBasket
-      .getShipments()[0]
-      .shippingAddress.getCountryCode().value;
-  }
-  let response;
-  let paymentMethodDescriptions = [];
-  let customer;
-  try {
+  function getCustomer() {
     if (req.currentCustomer.profile) {
-      customer = CustomerMgr.getCustomerByCustomerNumber(
+      return CustomerMgr.getCustomerByCustomerNumber(
         req.currentCustomer.profile.customerNo,
       );
     }
-    response = getPaymentMethods.getMethods(
+    return null;
+  }
+
+  const currentBasket = BasketMgr.getCurrentBasket();
+
+  function getCountryCode() {
+    const countryCode = Locale.getLocale(req.locale.id).country;
+    const firstItem = currentBasket.getShipments()?.[0];
+    if (firstItem?.shippingAddress) {
+      return firstItem.shippingAddress.getCountryCode().value;
+    }
+    return countryCode;
+  }
+
+  function getConnectedTerminals() {
+    if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
+      return adyenTerminalApi.getTerminals().response;
+    }
+    return '{}';
+  }
+
+  function handlePaymentMethod() {
+    const countryCode = getCountryCode();
+    const response = getPaymentMethods.getMethods(
       BasketMgr.getCurrentBasket(),
-      customer || null,
+      getCustomer(),
       countryCode,
     );
-    paymentMethodDescriptions = response.paymentMethods.map((method) => ({
+    const paymentMethodDescriptions = response.paymentMethods.map((method) => ({
       brandCode: method.type,
       description: Resource.msg(`hpp.description.${method.type}`, 'hpp', ''),
     }));
+
+    const connectedTerminals = getConnectedTerminals();
+
+    const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
+    const jsonResponse = {
+      AdyenPaymentMethods: response,
+      ImagePath: adyenURL,
+      AdyenDescriptions: paymentMethodDescriptions,
+      AdyenConnectedTerminals: JSON.parse(connectedTerminals),
+    };
+
+    if (AdyenHelper.getCreditCardInstallments()) {
+      const paymentAmount = currentBasket.getTotalGrossPrice()
+        ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+        : 1000;
+      const currency = currentBasket.getTotalGrossPrice().currencyCode;
+      jsonResponse.amount = { value: paymentAmount, currency };
+      jsonResponse.countryCode = countryCode;
+    }
+
+    res.json(jsonResponse);
+    return next();
+  }
+
+  try {
+    return handlePaymentMethod();
   } catch (err) {
     Logger.getLogger('Adyen').error(
       `Error retrieving Payment Methods. Error message: ${
         err.message
       } more details: ${err.toString()} in ${err.fileName}:${err.lineNumber}`,
     );
-    response = [];
+    // response = [];
     return next();
   }
-
-  let connectedTerminals = {};
-  if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
-    connectedTerminals = adyenTerminalApi.getTerminals().response;
-  }
-
-  const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
-  const jsonResponse = {
-    AdyenPaymentMethods: response,
-    ImagePath: adyenURL,
-    AdyenDescriptions: paymentMethodDescriptions,
-    AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-  };
-  if (AdyenHelper.getCreditCardInstallments()) {
-    const paymentAmount = currentBasket.getTotalGrossPrice()
-      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-      : 1000;
-    const currency = currentBasket.getTotalGrossPrice().currencyCode;
-    jsonResponse.amount = { value: paymentAmount, currency };
-    jsonResponse.countryCode = countryCode;
-  }
-
-  res.json(jsonResponse);
-  return next();
 }
 
 module.exports = getPMs;
