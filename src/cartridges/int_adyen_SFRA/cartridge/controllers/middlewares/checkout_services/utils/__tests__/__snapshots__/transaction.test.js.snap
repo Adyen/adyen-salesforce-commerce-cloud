@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Transaction should return json with error details when payment transaction calculation fails 1`] = `
+Array [
+  Array [
+    Object {
+      "error": true,
+      "errorMessage": "mocked_error.technical",
+    },
+  ],
+]
+`;
+
+exports[`Transaction should return json with error details when payment validation fails 1`] = `
+Array [
+  Array [
+    Object {
+      "error": true,
+      "errorMessage": "mocked_error.payment.not.valid",
+      "errorStage": Object {
+        "stage": "payment",
+        "step": "paymentInstrument",
+      },
+    },
+  ],
+]
+`;
