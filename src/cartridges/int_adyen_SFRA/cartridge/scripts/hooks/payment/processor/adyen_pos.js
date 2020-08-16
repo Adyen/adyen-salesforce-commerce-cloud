@@ -1,7 +1,7 @@
 const middlewares = require('./middlewares/index');
 
-function Handle(basket /* , paymentInformation */) {
-  return middlewares.pos_handle(basket /* , paymentInformation */);
+function Handle(basket) {
+  return middlewares.pos_handle(basket);
 }
 
 /**
