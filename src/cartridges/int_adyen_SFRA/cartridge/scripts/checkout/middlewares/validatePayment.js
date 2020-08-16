@@ -40,7 +40,6 @@ function validatePayment(req, currentBasket) {
       )
     ) {
       invalid = false;
-      console.log('here1');
     }
     const paymentMethod = PaymentMgr.getPaymentMethod(
       paymentInstrument.getPaymentMethod(),
@@ -59,15 +58,10 @@ function validatePayment(req, currentBasket) {
           (card && applicablePaymentCards.contains(card)) ||
           paymentInstrument.getCreditCardToken()
         ) {
-          console.log(
-            `card token is ${paymentInstrument.getCreditCardToken()}`,
-          );
           invalid = false;
-          console.log('here2');
         }
       } else {
         invalid = false;
-        console.log('here3');
       }
     }
 
