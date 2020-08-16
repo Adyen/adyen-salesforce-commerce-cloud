@@ -10,6 +10,9 @@ export const getTotalGrossPrice = jest.fn(() => ({
   currencyCode: 'EUR',
 }));
 
+export const getCreditCardToken = jest.fn(() => 'mockedCreditCardToken');
+export const getPaymentMethod = jest.fn(() => 'mockedPaymentMethod');
+
 export const setCreditCardNumber = jest.fn();
 export const setCreditCardType = jest.fn();
 export const setCreditCardExpirationMonth = jest.fn();
@@ -40,4 +43,9 @@ export const getCurrentBasket = jest.fn(() => ({
   createPaymentInstrument: jest.fn(() => getPaymentInstruments()[0]),
   defaultShipment: getDefaultShipment(),
   billingAddress: getBillingAddress(),
+  totalGrossPrice: {value: 'mockedValue'},
+  paymentInstruments: [{
+    getPaymentMethod,
+    getCreditCardToken,
+  }]
 }));
