@@ -548,7 +548,7 @@ function createCheckoutComponent(
  */
 function paymentFromComponent(data, component) {
   $.ajax({
-    url: 'Adyen-PaymentFromComponent',
+    url: window.paymentFromComponentUrl,
     type: 'post',
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
