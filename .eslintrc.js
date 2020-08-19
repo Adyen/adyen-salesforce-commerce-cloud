@@ -88,7 +88,7 @@ module.exports = {
     "object-curly-newline": ["error", {
       "ImportDeclaration": { multiline: true, "minProperties": 4}
     }],
-
+    "implicit-arrow-linebreak": "off",
     /* Rules below should be removed after they are gone. They default to "error",
        but those errors wont be fixed now, since the refactoring should solve those issues.
        We keep it as "warn" so we don't introduce them again while refactoring. */
