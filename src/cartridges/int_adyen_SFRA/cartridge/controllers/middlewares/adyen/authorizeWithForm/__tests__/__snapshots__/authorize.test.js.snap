@@ -1,0 +1,168 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Authorize should authorize when MD is valid 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "adyenPaymentData": null,
+      },
+    },
+    Object {
+      "resultCode": "Authorised",
+    },
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            undefined,
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Array [
+              Object {
+                "custom": Object {
+                  "adyenPaymentData": null,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle error when MD is invalid 1`] = `
+Array [
+  Array [
+    "Session variable does not exists",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle invalid payment when result code is not Authorised 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            undefined,
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Array [
+              Object {
+                "custom": Object {
+                  "adyenPaymentData": null,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    "payment",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle invalid payment when there is an error while placing an order 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            undefined,
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Array [
+              Object {
+                "custom": Object {
+                  "adyenPaymentData": null,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    "placeOrder",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
