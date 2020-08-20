@@ -1,10 +1,10 @@
 /* eslint-disable global-require */
-let handlePayments;
+let getPayments;
 let order;
 let orderNumber;
 
 beforeEach(() => {
-  handlePayments = require('../handlePayments');
+  getPayments = require('../getPayments');
   order = {
     totalNetPrice: 10,
     paymentInstruments: [
@@ -22,25 +22,13 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('handlePayments', () => {
-  it('should return when totalNetPrice is 0.0', () => {
-    order.totalNetPrice = 0.0;
-    const handlePaymentsResult = handlePayments(order, orderNumber);
-    expect(handlePaymentsResult).toEqual({});
-  });
-
-  it('should return error if there are no paymentInstruments', () => {
-    order.paymentInstruments = [];
-    const handlePaymentsResult = handlePayments(order, orderNumber);
-    expect(handlePaymentsResult.error).toBeTruthy();
-  });
-
+describe('Get Payments', () => {
   it('should setTransactionID when there is no payment processor', () => {
     const { getPaymentMethod } = require('dw/order/PaymentMgr');
     getPaymentMethod.mockImplementation(() => ({
       paymentProcessor: null,
     }));
-    handlePayments(order, orderNumber);
+    getPayments(order, orderNumber);
     expect(
       order.paymentInstruments[0].paymentTransaction.setTransactionID,
     ).toBeCalledTimes(1);
@@ -51,12 +39,12 @@ describe('handlePayments', () => {
     callHook.mockImplementation(() => ({
       error: true,
     }));
-    const handlePaymentsResult = handlePayments(order, orderNumber);
+    const handlePaymentsResult = getPayments(order, orderNumber);
     expect(handlePaymentsResult.error).toBeTruthy();
   });
 
   it('should not return error when authorization result does not return an error', () => {
-    const handlePaymentsResult = handlePayments(order, orderNumber);
+    const handlePaymentsResult = getPayments(order, orderNumber);
     expect(handlePaymentsResult.error).toBeFalsy();
   });
 });
