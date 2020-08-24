@@ -244,11 +244,12 @@ function showConfirmationPaymentFromComponent() {
   );
   const hasStateData = passedData && passedData.details && passedData.paymentData;
   if (!hasStateData) {
-    // fail order
+    //The billing step is fulfilled, but order will be failed
+    app.getForm('billing').object.fulfilled.value = true
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
-    // should be assingned by previous calls or not
+
     const errorStatus = new dw.system.Status(
       dw.system.Status.ERROR,
       'confirm.error.declined',
