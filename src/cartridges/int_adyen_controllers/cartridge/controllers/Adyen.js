@@ -244,8 +244,8 @@ function showConfirmationPaymentFromComponent() {
   );
   const hasStateData = passedData && passedData.details && passedData.paymentData;
   if (!hasStateData) {
-    //The billing step is fulfilled, but order will be failed
-    app.getForm('billing').object.fulfilled.value = true
+    // The billing step is fulfilled, but order will be failed
+    app.getForm('billing').object.fulfilled.value = true;
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
