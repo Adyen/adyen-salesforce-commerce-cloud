@@ -45,7 +45,9 @@ function getLineItems(args) {
 
   // Add all product and shipping line items to request
   const lineItems = [];
-  for (const lineItem in order.getAllLineItems()) {
+  const allLineItems = order.getAllLineItems();
+  for (const i in allLineItems) {
+    const lineItem = allLineItems[i];
     if (
       (lineItem instanceof dw.order.ProductLineItem
         && !lineItem.bonusProductLineItem)
