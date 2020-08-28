@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "20.1.1",
+  "version": "20.1.2",
   "description": "SFRA cartridge",
   "main": "index.js",
   "paths": {
