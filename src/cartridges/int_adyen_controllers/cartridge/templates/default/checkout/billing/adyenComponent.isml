@@ -1,7 +1,7 @@
 <isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 <isset name="adyenOneClickEnabled" value="${AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
@@ -22,6 +22,8 @@
     window.Configuration = {originKey, loadingContext, environment, locale};
     window.installments = "${AdyenHelper.getCreditCardInstallments()}";
     window.paypalMerchantID = "${AdyenHelper.getPaypalMerchantID()}";
+    window.googleMerchantID = "${AdyenHelper.getGoogleMerchantID()}";
+    window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 

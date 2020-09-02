@@ -1,13 +1,19 @@
-const { getCardConfig, getPaypalConfig } = require('../checkoutConfiguration');
+const {
+  getCardConfig,
+  getPaypalConfig,
+  getGooglePayConfig,
+} = require('../checkoutConfiguration');
 const store = require('../../../../../store');
 
 let card;
 let paypal;
+let paywithgoogle;
 beforeEach(() => {
   window.Configuration = { environment: 'TEST' };
   store.checkoutConfiguration = {};
   card = getCardConfig();
   paypal = getPaypalConfig();
+  paywithgoogle = getGooglePayConfig();
 });
 
 describe('Checkout Configuration', () => {
@@ -49,6 +55,26 @@ describe('Checkout Configuration', () => {
       expect(document.getElementById('adyenStateData').value).toBe(
         JSON.stringify(store.selectedPayment.stateData),
       );
+    });
+  });
+  describe('GooglePay', () => {
+    it('handles onSubmit', () => {
+      document.body.innerHTML = `
+        <div id="lb_paywithgoogle">Google Pay</div>
+        <div id="adyenPaymentMethodName"></div>
+        <button value="submit-payment"></button>
+      `;
+      const spy = jest.fn();
+      const submitButton = document.querySelector(
+        'button[value="submit-payment"]',
+      );
+      submitButton.addEventListener('click', () => {
+        spy();
+      });
+      store.selectedMethod = 'paywithgoogle';
+      paywithgoogle.onSubmit({ data: {} });
+      expect(spy).toBeCalledTimes(1);
+      expect(submitButton.disabled).toBeFalsy();
     });
   });
 });

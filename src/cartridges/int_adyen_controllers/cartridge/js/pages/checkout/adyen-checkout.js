@@ -80,6 +80,19 @@ function initializeBillingEvents() {
         billingAddressRequired: false, // turn billingAddress section on/off
         showEmailAddress: false, // allow shopper to specify their email address
       },
+      paywithgoogle: {
+        environment: window.Configuration.environment,
+        onSubmit: () => {
+          assignPaymentMethodValue();
+          document.querySelector('#billing-submit').disabled = false;
+          document.querySelector('#billing-submit').click();
+        },
+        configuration: {
+          gatewayMerchantId: window.merchantAccount,
+        },
+        showPayButton: true,
+        buttonColor: 'white',
+      },
       paypal: {
         environment: window.Configuration.environment,
         intent: 'capture',
@@ -163,6 +176,13 @@ function initializeBillingEvents() {
         checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
       } catch (e) {} // eslint-disable-line no-empty
     }
+    if (
+      window.googleMerchantID !== 'null' &&
+      window.Configuration.environment === 'LIVE'
+    ) {
+      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier =
+        window.googleMerchantID;
+    }
     if (window.paypalMerchantID !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
         window.paypalMerchantID;
@@ -233,10 +253,10 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
-    document.querySelector('#billing-submit').disabled = false;
-  } else {
+  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
+  } else {
+    document.querySelector('#billing-submit').disabled = false;
   }
   document
     .querySelector(`#component_${type}`)
@@ -467,7 +487,16 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   li.append(container);
   paymentMethodsUI.append(li);
 
-  node && node.mount(container);
+  if (paymentMethod.type !== 'paywithgoogle') {
+    node && node.mount(container);
+  } else {
+    node
+      .isAvailable()
+      .then(() => {
+        node.mount(container);
+      })
+      .catch(() => {}); // eslint-disable-line no-empty
+  }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = (event) => {
