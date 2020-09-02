@@ -218,6 +218,14 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
+  getAdyenLevel23DataEnabled: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
+  },
+
+  getAdyenLevel23CommodityCode: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
+  },
+
   getAdyenGivingEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenGiving_enabled');
   },
