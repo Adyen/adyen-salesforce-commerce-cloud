@@ -31,13 +31,10 @@ require('dw/util');
 require('dw/value');
 require('dw/net');
 require('dw/web');
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 // script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
-
-Logger.getLogger('Adyen').error('inside l2/3 file');
 
 function getLineItems(args) {
   let order;
