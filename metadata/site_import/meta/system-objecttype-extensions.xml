@@ -352,7 +352,7 @@
                 <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23_CommodityCode">
-                <display-name xml:lang="x-default">Commodity Code that best describes your products (only applicable for Level 2/3 Data Authorisation)</display-name>
+                <display-name xml:lang="x-default">Commodity Code that best describes your products (only applicable for Level 2/3 Data Authorisation) https://www.unspsc.org/search-code</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
