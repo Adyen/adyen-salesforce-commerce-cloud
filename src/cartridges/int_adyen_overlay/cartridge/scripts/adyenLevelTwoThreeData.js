@@ -37,28 +37,12 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems(args) {
-  let order;
-  if (args.Order) {
-    order = args.Order;
-  } else {
-    return null;
-  }
-
+  const order = args.Order ? args.Order : null;
+  if (!order) return null;
   // Add all product and shipping line items to request
   const lineItemObject = {};
   const allLineItems = order.getAllLineItems();
-  const customer = order.getCustomer();
-  const profile = customer && customer.registered && customer.getProfile()
-    ? customer.getProfile()
-    : null;
-  let shopperReference;
-  if (profile && profile.getCustomerNo()) {
-    shopperReference = profile.getCustomerNo();
-  } else if (order.getCustomerNo()) {
-    shopperReference = order.getCustomerNo();
-  } else if (customer.getID()) {
-    shopperReference = customer.getID();
-  }
+  const shopperReference = getShopperReference(order);
 
   lineItemObject['enhancedSchemeData.customerReference'] = shopperReference.substring(0, 25);
 
@@ -69,10 +53,11 @@ function getLineItems(args) {
     const id = LineItemHelper.getId(lineItem);
     const quantity = LineItemHelper.getQuantity(lineItem);
     const itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
+    function getTotal(amount) { return taxTotal + amount; }
     const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+    taxTotal = getTotal(parseFloat(vatAmount.toFixed()));
 
-    taxTotal += parseFloat(vatAmount.toFixed());
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''); //eslint-disable-line no-control-regex
+    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''); // eslint-disable-line no-control-regex
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.unitPrice`] = itemAmount.toFixed();
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.totalAmount`] = JSON.stringify(parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()));
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.quantity`] = quantity;
@@ -84,6 +69,22 @@ function getLineItems(args) {
   }
   lineItemObject['enhancedSchemeData.totalTaxAmount'] = JSON.stringify(taxTotal);
   return lineItemObject;
+}
+
+function getShopperReference(order) {
+  const customer = order.getCustomer();
+  const profile = customer && customer.registered && customer.getProfile()
+    ? customer.getProfile()
+    : null;
+  if (profile && profile.getCustomerNo()) {
+    return profile.getCustomerNo();
+  }
+  if (order.getCustomerNo()) {
+    return order.getCustomerNo();
+  } if (customer.getID()) {
+    return customer.getID();
+  }
+  return 'no-unique-ref';
 }
 
 module.exports = {

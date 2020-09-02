@@ -559,7 +559,7 @@ server.post(
         adyenPaymentInstrument = instrumentsIter.next();
       }
 
-      //This is state data from the component
+      // This is state data from the component
       const hasStateData = stateData && stateData.paymentData && stateData.details;
       if (!hasStateData) {
         Transaction.wrap(function () {
