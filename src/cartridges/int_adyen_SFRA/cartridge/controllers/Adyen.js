@@ -1,5 +1,6 @@
 const server = require('server');
 const URLUtils = require('dw/web/URLUtils');
+const Logger = require('dw/system/Logger');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const { adyen } = require('./middlewares/index');
@@ -13,20 +14,7 @@ server.get(
   'Adyen3D',
   csrfProtection.generateToken,
   server.middleware.https,
-  (req, res, next) => {
-    const { IssuerURL } = req.querystring;
-    const { PaRequest } = req.querystring;
-    const { MD } = req.querystring;
-    const TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
-
-    res.render('adyenform', {
-      issuerUrl: IssuerURL,
-      paRequest: PaRequest,
-      md: MD,
-      ContinueURL: TermURL,
-    });
-    next();
-  },
+  adyen.adyen3d,
 );
 
 /**

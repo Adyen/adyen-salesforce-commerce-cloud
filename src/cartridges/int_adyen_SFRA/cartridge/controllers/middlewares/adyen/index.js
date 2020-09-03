@@ -1,3 +1,4 @@
+const adyen3d = require('./adyen3d');
 const adyen3ds2 = require('./adyen3ds2');
 const authorizeWithForm = require('./authorizeWithForm');
 const authorize3ds2 = require('./authorize3ds2');
@@ -9,6 +10,7 @@ const notify = require('./notify');
 const showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
 
 module.exports = {
+  adyen3d,
   adyen3ds2,
   authorizeWithForm,
   authorize3ds2,

@@ -1,5 +1,13 @@
-module.exports.adyen = require('./adyen/index');
-module.exports.checkoutServices = require('./checkout_services/index');
-module.exports.checkout = require('./checkout/index');
-module.exports.order = require('./order/index');
-module.exports.paymentInstruments = require('./payment_instruments/index');
+const adyen = require('./adyen/index');
+const checkoutServices = require('./checkout_services/index');
+const checkout = require('./checkout/index');
+const order = require('./order/index');
+const paymentInstruments = require('./payment_instruments/index');
+
+module.exports = {
+  adyen,
+  checkoutServices,
+  checkout,
+  order,
+  paymentInstruments,
+};

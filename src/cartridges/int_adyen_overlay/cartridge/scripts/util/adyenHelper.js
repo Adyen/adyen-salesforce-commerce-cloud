@@ -181,14 +181,12 @@ var __AdyenHelper = {
 
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
-    `sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
-    return checkoutUrl;
+    return `${checkoutUrl}sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
   },
 
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
-    `sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
-    return checkoutCSS;
+    return `${checkoutCSS}sdk/${__AdyenHelper.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
   },
 
   getLoadingContext() {
