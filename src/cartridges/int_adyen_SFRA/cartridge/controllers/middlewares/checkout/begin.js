@@ -16,6 +16,8 @@ function begin(req, res, next) {
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const installments = AdyenHelper.getCreditCardInstallments();
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
+  const googleMerchantID = AdyenHelper.getGoogleMerchantID();
+  const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
 
   const viewData = res.getViewData();
   viewData.adyen = {
@@ -23,6 +25,8 @@ function begin(req, res, next) {
     environment,
     installments,
     paypalMerchantID,
+    googleMerchantID,
+    merchantAccount,
   };
 
   res.setViewData(viewData);

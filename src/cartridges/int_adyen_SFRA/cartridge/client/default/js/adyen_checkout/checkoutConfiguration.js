@@ -56,7 +56,24 @@ function getPaypalConfig() {
       if (store.formErrorsExist) {
         return actions.reject();
       }
+      return null;
     },
+  };
+}
+
+function getGooglePayConfig() {
+  return {
+    environment: window.Configuration.environment,
+    onSubmit: () => {
+      helpers.assignPaymentMethodValue();
+      document.querySelector('button[value="submit-payment"]').disabled = false;
+      document.querySelector('button[value="submit-payment"]').click();
+    },
+    configuration: {
+      gatewayMerchantId: window.merchantAccount,
+    },
+    showPayButton: true,
+    buttonColor: 'white',
   };
 }
 
@@ -87,6 +104,7 @@ function setCheckoutConfiguration() {
         lastName: document.getElementById('shippingLastNamedefault').value,
       },
     },
+    paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     afterpay_default: {
       visibility: {
@@ -126,6 +144,6 @@ function setCheckoutConfiguration() {
 module.exports = {
   getCardConfig,
   getPaypalConfig,
-  handleOnChange,
+  getGooglePayConfig,
   setCheckoutConfiguration,
 };
