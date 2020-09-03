@@ -24,13 +24,25 @@ Array [
         "results": Array [
           Object {
             "type": "return",
-            "value": Array [
-              Object {
-                "custom": Object {
-                  "adyenPaymentData": null,
-                },
+            "value": Object {
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
-            ],
+            },
           },
         ],
       },

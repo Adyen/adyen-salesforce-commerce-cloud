@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('Authorize', () => {
   it('should authorize when MD is valid', () => {
-    OrderMgr.getPaymentInstruments.mockImplementation(() => [
+    OrderMgr.toArray.mockImplementation(() => [
       { custom: { adyenPaymentData: 'Authorised' } },
     ]);
     window.session.privacy.MD = 'mocked_md';
@@ -36,7 +36,7 @@ describe('Authorize', () => {
     expect(handleError.mock.calls).toMatchSnapshot();
   });
   it('should handle invalid payment when result code is not Authorised', () => {
-    OrderMgr.getPaymentInstruments.mockImplementation(() => [
+    OrderMgr.toArray.mockImplementation(() => [
       { custom: { adyenPaymentData: 'Not_Authorised' } },
     ]);
     window.session.privacy.MD = 'mocked_md';
@@ -44,7 +44,7 @@ describe('Authorize', () => {
     expect(handleInvalidPayment.mock.calls).toMatchSnapshot();
   });
   it('should handle invalid payment when there is an error while placing an order', () => {
-    OrderMgr.getPaymentInstruments.mockImplementation(() => [
+    OrderMgr.toArray.mockImplementation(() => [
       { custom: { adyenPaymentData: 'Authorised' } },
     ]);
     COHelpers.placeOrder.mockImplementation(() => ({ error: true }));

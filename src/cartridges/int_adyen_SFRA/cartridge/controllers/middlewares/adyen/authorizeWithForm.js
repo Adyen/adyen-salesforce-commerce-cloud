@@ -1,4 +1,3 @@
-const Logger = require('dw/system/Logger');
 const handleAuthorize = require('./authorizeWithForm/authorize');
 const handleError = require('./authorizeWithForm/error');
 
@@ -8,6 +7,7 @@ function authorizeWithForm(req, res, next) {
     try {
       return handleAuthorize({ req, res, next });
     } catch (e) {
+      console.log(e);
       const msg = `Error retrieving Payment Methods. Error message: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`;
