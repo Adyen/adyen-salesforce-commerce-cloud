@@ -32,61 +32,69 @@ require('dw/value');
 require('dw/net');
 require('dw/web');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
-// script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
-function getLineItems(args) {
-  const order = args.Order ? args.Order : null;
-  if (!order) return null;
-  // Add all product and shipping line items to request
-  const lineItemObject = {};
-  const allLineItems = order.getAllLineItems();
-  const shopperReference = getShopperReference(order);
-
-  lineItemObject['enhancedSchemeData.customerReference'] = shopperReference.substring(0, 25);
-
-  let taxTotal = 0.0;
-  for (const item in allLineItems) {
+function getLineItemObjectWithTaxTotal(allLineItems) {
+  return function (acc, item) {
     const lineItem = allLineItems[item];
     const description = LineItemHelper.getDescription(lineItem);
     const id = LineItemHelper.getId(lineItem);
     const quantity = LineItemHelper.getQuantity(lineItem);
     const itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
-    function getTotal(amount) { return taxTotal + amount; }
     const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
-    taxTotal = getTotal(parseFloat(vatAmount.toFixed()));
+    const taxTotal = acc.taxTotal + parseFloat(vatAmount.toFixed());
+    const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
 
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''); // eslint-disable-line no-control-regex
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.unitPrice`] = itemAmount.toFixed();
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.totalAmount`] = JSON.stringify(parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()));
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.quantity`] = quantity;
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.productCode`] = id.substring(0, 12);
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.unitOfMeasure`] = 'EAC';
-    if (AdyenHelper.getAdyenLevel23CommodityCode()) {
-      lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.commodityCode`] = AdyenHelper.getAdyenLevel23CommodityCode();
-    }
+    const fields = {
+      description: description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''),
+      unitPrice: itemAmount.toFixed(),
+      totalAmount: JSON.stringify(parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed())),
+      quantity,
+      productCode: id.substring(0, 12),
+      unitOfMeasure: 'EAC',
+      ...(commodityCode && { commodityCode }),
+    };
+    const lineItemDetail = Object.keys(fields).reduce((acc, key) => ({
+      ...acc,
+      [`enhancedSchemeData.itemDetailLine${item + 1}.${key}`]: fields[key],
+    }), {});
+
+    const lineItemObject = {
+      ...acc.lineItemObject,
+      ...lineItemDetail,
+    };
+
+    return { taxTotal, lineItemObject };
+  };
+}
+
+function getLineItems({ Order: order }) {
+  if (!order) {
+    return null;
   }
-  lineItemObject['enhancedSchemeData.totalTaxAmount'] = JSON.stringify(taxTotal);
-  return lineItemObject;
+
+  // Add all product and shipping line items to request
+  const allLineItems = order.getAllLineItems();
+  const shopperReference = getShopperReference(order);
+
+  const initialLineItemObject = { 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) };
+  const initialLineItemsAcc = { taxTotal: 0.0, lineItemObject: initialLineItemObject };
+  const { taxTotal, lineItemObject } = Object.keys(allLineItems).reduce(getLineItemObjectWithTaxTotal(allLineItems), initialLineItemsAcc);
+
+  return {
+    ...lineItemObject,
+    'enhancedSchemeData.totalTaxAmount': JSON.stringify(taxTotal),
+  };
 }
 
 function getShopperReference(order) {
   const customer = order.getCustomer();
-  const profile = customer && customer.registered && customer.getProfile()
-    ? customer.getProfile()
-    : null;
-  if (profile && profile.getCustomerNo()) {
-    return profile.getCustomerNo();
-  }
-  if (order.getCustomerNo()) {
-    return order.getCustomerNo();
-  } if (customer.getID()) {
-    return customer.getID();
-  }
-  return 'no-unique-ref';
+  const isRegistered = customer && customer.registered;
+  const profile = isRegistered && customer.getProfile();
+  const profileCustomerNo = profile && profile.getCustomerNo();
+  const orderNo = profileCustomerNo || order.getCustomerNo();
+
+  return orderNo || customer.getID() || 'no-unique-ref';
 }
 
-module.exports = {
-  getLineItems: getLineItems,
-};
+module.exports.getLineItems = getLineItems;
