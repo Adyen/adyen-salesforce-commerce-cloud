@@ -59,7 +59,7 @@ function getLineItems(args) {
 
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''); // eslint-disable-line no-control-regex
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.unitPrice`] = itemAmount.toFixed();
-    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.totalAmount`] = JSON.stringify(parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()));
+    lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.totalAmount`] = parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed());
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.quantity`] = quantity;
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.productCode`] = id.substring(0, 12);
     lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.unitOfMeasure`] = 'EAC';
@@ -67,7 +67,7 @@ function getLineItems(args) {
       lineItemObject[`enhancedSchemeData.itemDetailLine${item + 1}.commodityCode`] = AdyenHelper.getAdyenLevel23CommodityCode();
     }
   }
-  lineItemObject['enhancedSchemeData.totalTaxAmount'] = JSON.stringify(taxTotal);
+  lineItemObject['enhancedSchemeData.totalTaxAmount'] = taxTotal;
   return lineItemObject;
 }
 
