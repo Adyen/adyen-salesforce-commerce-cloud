@@ -344,6 +344,19 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenLevel23DataEnabled">
+                <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenLevel23_CommodityCode">
+                <display-name xml:lang="x-default">Commodity Code that best describes your products (only applicable for Level 2/3 Data Authorisation) https://www.unspsc.org/search-code</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_Mode">
                 <display-name xml:lang="x-default">Test/Production Mode</display-name>
                 <description xml:lang="x-default">Set to live for Production or test for test mode</description>
@@ -492,6 +505,8 @@
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
+                <attribute attribute-id="AdyenLevel23DataEnabled"/>
+                <attribute attribute-id="AdyenLevel23_CommodityCode"/>
 	            <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="Adyen_PaypalMerchantID"/>
