@@ -23,8 +23,9 @@ Object {
     "data": Object {
       "MD": "mockedMD",
     },
+    "url": "mockedUrl",
   },
-  "signature": null,
+  "signature": "mockedUrl __ ockedMD",
 }
 `;
 
@@ -58,7 +59,7 @@ Object {
   "redirectObject": Object {
     "url": "mockedURL",
   },
-  "signature": "mockedURL",
+  "signature": "mockedURL __ ockedpaymentData",
 }
 `;
 

@@ -19,7 +19,7 @@ export const setCreditCardExpirationMonth = jest.fn();
 export const setCreditCardExpirationYear = jest.fn();
 export const setCreditCardToken = jest.fn();
 
-export const getPaymentInstruments = jest.fn(() => [
+export const toArray = jest.fn(() => [
   {
     custom: {},
     paymentTransaction: { paymentProcessor: 'mocked_payment_processor' },
@@ -31,6 +31,7 @@ export const getPaymentInstruments = jest.fn(() => [
     paymentMethod: 'mocked_method',
   },
 ]);
+export const getPaymentInstruments = jest.fn(() => ({ toArray }));
 export const getDefaultShipment = jest.fn(() => ({
   shippingAddress: 'mocked_shipping_address',
 }));
@@ -40,12 +41,17 @@ export const getCurrentBasket = jest.fn(() => ({
   getTotalGrossPrice,
   getPaymentInstruments,
   removePaymentInstrument: jest.fn(),
-  createPaymentInstrument: jest.fn(() => getPaymentInstruments()[0]),
+  createPaymentInstrument: jest.fn(() => toArray()[0]),
   defaultShipment: getDefaultShipment(),
   billingAddress: getBillingAddress(),
-  totalGrossPrice: {value: 'mockedValue'},
-  paymentInstruments: [{
-    getPaymentMethod,
-    getCreditCardToken,
-  }]
+  totalGrossPrice: { value: 'mockedValue' },
+  paymentInstruments: {
+    toArray: jest.fn(() => [
+      {
+        getPaymentMethod,
+        getCreditCardToken,
+      },
+    ]),
+  },
+  toArray,
 }));

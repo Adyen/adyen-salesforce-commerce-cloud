@@ -1,4 +1,3 @@
-const Logger = require('dw/system/Logger');
 const handleAuthorize = require('./authorizeWithForm/authorize');
 const handleError = require('./authorizeWithForm/error');
 

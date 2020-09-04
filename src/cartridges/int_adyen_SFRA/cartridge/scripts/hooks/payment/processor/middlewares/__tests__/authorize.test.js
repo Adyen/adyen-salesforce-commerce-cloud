@@ -22,7 +22,7 @@ describe('Authorize', () => {
     }));
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      currentBasket.toArray()[0],
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -35,12 +35,13 @@ describe('Authorize', () => {
     createPaymentRequest.mockImplementation(() => ({
       resultCode: 'RedirectShopper',
       redirectObject: {
+        url: 'mockedUrl',
         data: {
           MD: 'mockedMD',
         },
       },
     }));
-    const paymentInstrument = currentBasket.createPaymentInstrument();
+    const paymentInstrument = currentBasket.toArray()[0];
     const authorizeResult = authorize(
       '15',
       paymentInstrument,
@@ -60,7 +61,7 @@ describe('Authorize', () => {
     }));
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      currentBasket.toArray()[0],
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -77,7 +78,7 @@ describe('Authorize', () => {
       },
       paymentData: 'mockedpaymentData',
     }));
-    const paymentInstrument = currentBasket.createPaymentInstrument();
+    const paymentInstrument = currentBasket.toArray()[0];
     const authorizeResult = authorize(
       '15',
       paymentInstrument,
@@ -95,7 +96,7 @@ describe('Authorize', () => {
     }));
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      currentBasket.toArray()[0],
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -110,7 +111,7 @@ describe('Authorize', () => {
     }));
     const authorizeResult = authorize(
       '15',
-      currentBasket.createPaymentInstrument(),
+      currentBasket.toArray()[0],
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();

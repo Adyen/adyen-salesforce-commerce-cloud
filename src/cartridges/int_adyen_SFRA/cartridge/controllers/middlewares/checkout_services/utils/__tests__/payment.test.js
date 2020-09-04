@@ -35,6 +35,7 @@ describe('Payment', () => {
         url: 'mocked_url',
         data: { PaReq: 'mocked_PaReq', MD: 'mocked_MD' },
       },
+      signature: 'mocked_signature',
       authorized3d: true,
     });
     const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
