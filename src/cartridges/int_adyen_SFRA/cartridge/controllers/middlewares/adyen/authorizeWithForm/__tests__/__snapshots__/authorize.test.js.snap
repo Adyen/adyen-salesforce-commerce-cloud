@@ -25,11 +25,28 @@ Array [
           Object {
             "type": "return",
             "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenPaymentData": "Authorised",
+                },
+              },
+              "iterator": [Function],
               "toArray": [MockFunction] {
                 "calls": Array [
                   Array [],
+                  Array [],
                 ],
                 "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": "Authorised",
+                        },
+                      },
+                    ],
+                  },
                   Object {
                     "type": "return",
                     "value": Array [
@@ -101,13 +118,42 @@ Array [
         "results": Array [
           Object {
             "type": "return",
-            "value": Array [
-              Object {
+            "value": Object {
+              "0": Object {
                 "custom": Object {
-                  "adyenPaymentData": null,
+                  "adyenPaymentData": "Not_Authorised",
                 },
               },
-            ],
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": "Not_Authorised",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           },
         ],
       },
@@ -148,13 +194,42 @@ Array [
         "results": Array [
           Object {
             "type": "return",
-            "value": Array [
-              Object {
+            "value": Object {
+              "0": Object {
                 "custom": Object {
-                  "adyenPaymentData": null,
+                  "adyenPaymentData": "Authorised",
                 },
               },
-            ],
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": "Authorised",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           },
         ],
       },

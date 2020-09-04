@@ -20,11 +20,13 @@ function iterator() {
     },
   };
 }
-export const toArray = jest.fn(() => paymentInstrument);
+export const toArray = jest.fn(paymentInstrument);
 export const getPaymentInstruments = jest.fn(() => ({
   iterator,
   toArray,
+  0: toArray()[0],
 }));
+
 export const getOrder = jest.fn((/* orderNo */) => ({
   getPaymentInstruments,
   setPaymentStatus: jest.fn(),
