@@ -1,6 +1,5 @@
 const server = require('server');
 const URLUtils = require('dw/web/URLUtils');
-const Logger = require('dw/system/Logger');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const { adyen } = require('./middlewares/index');
