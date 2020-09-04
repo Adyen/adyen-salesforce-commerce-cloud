@@ -38,32 +38,33 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 function getLineItems({ Order: order }) {
   if (!order) return null;
   // Add all product and shipping line items to request
-  const lineItemObject = {};
   const allLineItems = order.getAllLineItems();
   const shopperReference = getShopperReference(order);
 
-  lineItemObject['enhancedSchemeData.customerReference'] = shopperReference.substring(0, 25);
-
-  const taxTotal = allLineItems.toArray().reduce((acc, lineItem, index) => {
+  return allLineItems.toArray().reduce((acc, lineItem, index) => {
     const description = LineItemHelper.getDescription(lineItem);
     const id = LineItemHelper.getId(lineItem);
     const quantity = LineItemHelper.getQuantity(lineItem);
     const itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
     const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+    const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
 
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, '');
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`] = itemAmount.toFixed();
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`] = parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed());
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.quantity`] = quantity;
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.productCode`] = id.substring(0, 12);
-    lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`] = 'EAC';
-    if (AdyenHelper.getAdyenLevel23CommodityCode()) {
-      lineItemObject[`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`] = AdyenHelper.getAdyenLevel23CommodityCode();
-    }
-    return acc + parseFloat(vatAmount.toFixed());
-  }, 0.0);
-  lineItemObject['enhancedSchemeData.totalTaxAmount'] = taxTotal;
-  return lineItemObject;
+    const currentLineItem = {
+      [`enhancedSchemeData.itemDetailLine${index + 1}.description`]: description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.toFixed(),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
+      [`enhancedSchemeData.itemDetailLine${index + 1}.productCode`]: id.substring(0, 12),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
+      ...(commodityCode && { [`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`]: commodityCode }),
+    };
+
+    return {
+      ...acc,
+      ...currentLineItem,
+      'enhancedSchemeData.totalTaxAmount': acc['enhancedSchemeData.totalTaxAmount'] + parseFloat(vatAmount.toFixed()),
+    };
+  }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) });
 }
 
 function getShopperReference(order) {
