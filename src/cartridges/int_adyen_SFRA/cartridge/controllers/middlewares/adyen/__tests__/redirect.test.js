@@ -9,7 +9,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   req = {
     querystring: {
-      signature: 'some_mocked_url/signature',
+      signature: 'some_mocked_url/signature __ ocked_adyen_payment_data',
       redirectUrl: 'https://some_mocked_url/signature',
     },
   };

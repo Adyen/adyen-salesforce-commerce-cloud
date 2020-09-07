@@ -57,7 +57,7 @@ function validatePayment(req, currentBasket) {
     applicablePaymentMethods,
   );
 
-  const isValid = paymentInstruments.every(validatePaymentInstrument);
+  const isValid = paymentInstruments.toArray().every(validatePaymentInstrument);
   result.error = !isValid;
   return result;
 }

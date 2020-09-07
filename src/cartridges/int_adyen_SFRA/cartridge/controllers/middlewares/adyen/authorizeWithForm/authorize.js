@@ -39,9 +39,9 @@ function authorize(paymentInstrument, order, options) {
 function handleAuthorize(options) {
   const { req } = options;
   const order = OrderMgr.getOrder(session.privacy.orderNo);
-  const [paymentInstrument] = order.getPaymentInstruments(
-    session.privacy.paymentMethod,
-  );
+  const [paymentInstrument] = order
+    .getPaymentInstruments(session.privacy.paymentMethod)
+    .toArray();
 
   const hasValidMD = session.privacy.MD === req.form.MD;
   return hasValidMD

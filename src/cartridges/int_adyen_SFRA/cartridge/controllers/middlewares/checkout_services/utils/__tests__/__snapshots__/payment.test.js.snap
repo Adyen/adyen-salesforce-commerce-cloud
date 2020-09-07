@@ -15,7 +15,7 @@ exports[`Payment should return 3d json response 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\"]",
+      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"signature\\",\\"mocked_signature\\"]",
       "error": false,
     },
   ],

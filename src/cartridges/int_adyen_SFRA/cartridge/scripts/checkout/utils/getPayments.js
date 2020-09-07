@@ -14,7 +14,7 @@ const getAuthorizationResult = (pProcessor, orderNo, pInstrument) => {
 };
 
 const getPayments = (order, orderNumber) =>
-  order.paymentInstruments.reduce((acc, paymentInstrument) => {
+  order.paymentInstruments.toArray().reduce((acc, paymentInstrument) => {
     if (!acc.error) {
       const { paymentProcessor } = PaymentMgr.getPaymentMethod(
         paymentInstrument.paymentMethod,
@@ -24,7 +24,7 @@ const getPayments = (order, orderNumber) =>
         const authorizationResult = getAuthorizationResult(
           paymentProcessor,
           orderNumber,
-          paymentProcessor,
+          paymentInstrument,
         );
 
         if (authorizationResult.error) {
@@ -40,7 +40,6 @@ const getPayments = (order, orderNumber) =>
       paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
       Transaction.commit();
     }
-
     return acc;
   }, {});
 

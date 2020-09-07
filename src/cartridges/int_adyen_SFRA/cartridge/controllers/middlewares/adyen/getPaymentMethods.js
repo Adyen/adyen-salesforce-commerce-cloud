@@ -7,7 +7,7 @@ function getPMs(req, res, next) {
   } catch (err) {
     const msg = `Error retrieving Payment Methods. Error message: ${
       err.message
-      } more details: ${err.toString()} in ${err.fileName}:${err.lineNumber}`;
+    } more details: ${err.toString()} in ${err.fileName}:${err.lineNumber}`;
     Logger.getLogger('Adyen').error(msg);
     return next();
   }

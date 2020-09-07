@@ -33,6 +33,8 @@ function handlePaymentAuthorization(order, { res }, emit) {
             handlePaymentResult.redirectObject.data.PaReq,
             'MD',
             handlePaymentResult.redirectObject.data.MD,
+            'signature',
+            handlePaymentResult.signature,
           ).toString(),
         });
         emit('route:Complete');

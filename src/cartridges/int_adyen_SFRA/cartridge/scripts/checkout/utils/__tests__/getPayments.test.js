@@ -2,17 +2,20 @@
 let getPayments;
 let order;
 let orderNumber;
+let setTransactionID;
 
 beforeEach(() => {
   getPayments = require('../getPayments');
+  setTransactionID = jest.fn((orderNo) => true);
+  const toArray = jest.fn(() => [
+    {
+      ID: 'mockedPaymentInstrument',
+      paymentTransaction: { setTransactionID },
+    },
+  ]);
   order = {
     totalNetPrice: 10,
-    paymentInstruments: [
-      {
-        ID: 'mockedPaymentInstrument',
-        paymentTransaction: { setTransactionID: jest.fn((orderNo) => true) },
-      },
-    ],
+    paymentInstruments: { toArray },
   };
   orderNumber = 'mockedOrderNumber';
   jest.clearAllMocks();
@@ -29,9 +32,7 @@ describe('Get Payments', () => {
       paymentProcessor: null,
     }));
     getPayments(order, orderNumber);
-    expect(
-      order.paymentInstruments[0].paymentTransaction.setTransactionID,
-    ).toBeCalledTimes(1);
+    expect(setTransactionID).toBeCalledTimes(1);
   });
 
   it('should return error when authorization result returns an error', () => {

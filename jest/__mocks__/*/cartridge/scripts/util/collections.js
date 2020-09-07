@@ -1,1 +1,1 @@
-export const forEach = (arr, cb) => arr.forEach(cb);
+export const forEach = (arr, cb) => arr.toArray().forEach(cb);

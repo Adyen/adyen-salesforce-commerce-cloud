@@ -173,7 +173,7 @@ exports[`Place Order should redirect with authorize3d 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\"]",
+      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"signature\\",null]",
       "error": false,
     },
   ],

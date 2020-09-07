@@ -30,7 +30,7 @@ describe('Place Order', () => {
   it('should go to next middleware if payment instrument is not Adyen', () => {
     const next = jest.fn();
     const BasketMgr = require('dw/order/BasketMgr');
-    BasketMgr.getPaymentInstruments.mockImplementation(() => [
+    BasketMgr.toArray.mockReturnValue([
       {
         paymentMethod: 'mocked_example',
       },

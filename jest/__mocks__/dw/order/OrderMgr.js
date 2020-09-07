@@ -7,7 +7,7 @@ const paymentInstrument = () => [
 ];
 
 // eslint-disable-next-line no-extend-native
-Array.prototype.iterator = function iterator() {
+function iterator() {
   return {
     val: paymentInstrument(),
     next() {
@@ -19,9 +19,14 @@ Array.prototype.iterator = function iterator() {
       return !!this.val;
     },
   };
-};
+}
+export const toArray = jest.fn(paymentInstrument);
+export const getPaymentInstruments = jest.fn(() => ({
+  iterator,
+  toArray,
+  0: toArray()[0],
+}));
 
-export const getPaymentInstruments = jest.fn(paymentInstrument);
 export const getOrder = jest.fn((/* orderNo */) => ({
   getPaymentInstruments,
   setPaymentStatus: jest.fn(),
