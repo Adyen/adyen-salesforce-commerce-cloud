@@ -11,7 +11,10 @@ beforeEach(() => {
 
 describe('Helpers', () => {
   it('should make payment ajax call with fullResponse', async () => {
-    const data = { fullResponse: { action: 'mocked_action' } };
+    const data = {
+      data: { fullResponse: { action: 'mocked_action' } },
+      paymentMethod: 'mocked_paymentMethod',
+    };
     $.ajax = jest.fn(({ success }) => {
       success(data);
       return { fail: jest.fn() };
@@ -26,7 +29,10 @@ describe('Helpers', () => {
       success({});
       return { fail: jest.fn() };
     });
-    await paymentFromComponent({}, component);
+    await paymentFromComponent(
+      { data: {}, paymentMethod: 'mocked_paymentMethod' },
+      component,
+    );
     expect(component.handleAction).toHaveBeenCalledTimes(0);
     expect(component.setStatus).toBeCalledWith('ready');
     expect(component.reject).toBeCalledWith('Payment Refused');

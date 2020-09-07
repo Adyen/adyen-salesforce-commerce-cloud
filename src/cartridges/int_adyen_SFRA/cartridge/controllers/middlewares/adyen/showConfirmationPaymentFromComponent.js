@@ -28,17 +28,24 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     return next();
   }
 
-  function handlePaymentsCall(stateData, paymentInstruments) {
+  function checkStateData(stateData, paymentInstruments) {
     let adyenPaymentInstrument;
-
-    const { paymentData } = stateData;
-    const { details } = stateData;
 
     // looping through all Adyen payment methods, however, this only can be one.
     const instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
       adyenPaymentInstrument = instrumentsIter.next();
     }
+
+    const hasStateData =
+      stateData && stateData.paymentData && stateData.details;
+
+    return { hasStateData, adyenPaymentInstrument };
+  }
+
+  function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
+    const { details } = stateData;
+    const { paymentData } = stateData;
 
     // redirect to payment/details
     const requestObject = {
@@ -83,18 +90,41 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
     return next();
   }
-
+  console.log('showConfirmation start');
   try {
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
-    const { result, adyenPaymentInstrument } = handlePaymentsCall(
+
+    const { hasStateData, adyenPaymentInstrument } = checkStateData(
       stateData,
       paymentInstruments,
     );
 
+    if (!hasStateData) {
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+        adyenPaymentInstrument.custom.adyenPaymentData = null;
+      });
+      res.redirect(
+        URLUtils.url(
+          'Checkout-Begin',
+          'stage',
+          'placeOrder',
+          'paymentError',
+          Resource.msg('error.payment.not.valid', 'checkout', null),
+        ),
+      );
+      return next();
+    }
+
+    const { result } = handlePaymentsDetailsCall(
+      stateData,
+      adyenPaymentInstrument,
+    );
+    console.log(result);
     Transaction.wrap(() => {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
@@ -102,10 +132,13 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
       return handleAuthorisedPayment(order, result, adyenPaymentInstrument);
     }
+    console.log(result.resultCode);
     return handlePaymentError(order);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-      `Could not verify /payment/details: ${e.message}`,
+      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
