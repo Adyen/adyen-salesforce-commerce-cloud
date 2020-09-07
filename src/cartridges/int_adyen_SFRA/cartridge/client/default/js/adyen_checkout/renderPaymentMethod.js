@@ -26,11 +26,11 @@ function getFallback(paymentMethod) {
 
 function setNode(paymentMethodID) {
   const createNode = (...args) => {
+    if (!store.componentsObj[paymentMethodID]) {
+      store.componentsObj[paymentMethodID] = {};
+    }
     try {
       const node = store.checkout.create(...args);
-      if (!store.componentsObj[paymentMethodID]) {
-        store.componentsObj[paymentMethodID] = {};
-      }
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
       /* No component for payment method */

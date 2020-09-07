@@ -328,7 +328,9 @@ var __AdyenHelper = {
       paymentMethod.indexOf('klarna') > -1 ||
       paymentMethod.indexOf('ratepay') > -1 ||
       paymentMethod.indexOf('facilypay') > -1 ||
-      paymentMethod === 'zip'
+      paymentMethod === 'zip' ||
+      paymentMethod === 'affirm' ||
+      paymentMethod === 'clearpay'
     ) {
       return true;
     }
