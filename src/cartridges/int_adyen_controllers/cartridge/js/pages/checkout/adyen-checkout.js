@@ -111,10 +111,9 @@ function initializeBillingEvents() {
         },
         onCancel: (data, component) => {
           paymentFromComponent({ cancelPaypal: true }, component);
-          component.setStatus('ready');
         },
-        onError: (error, component) => {
-          component && component.setStatus('ready');
+        onError: (/* error, component */) => {
+          $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
           document.querySelector('#paypalStateData').value = JSON.stringify(
@@ -561,7 +560,7 @@ function createCheckoutComponent(
  */
 function paymentFromComponent(data, component) {
   $.ajax({
-    url: 'Adyen-PaymentFromComponent',
+    url: window.paymentFromComponentUrl,
     type: 'post',
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
@@ -573,8 +572,10 @@ function paymentFromComponent(data, component) {
       ) {
         component.handleAction(data.result.fullResponse.action);
       } else {
-        component.setStatus('ready');
-        component.reject('Payment Refused');
+        document.querySelector('#paypalStateData').value = JSON.stringify(
+          'null',
+        );
+        $('#dwfrm_billing').trigger('submit');
       }
     },
   }).fail((/* xhr, textStatus */) => {});
