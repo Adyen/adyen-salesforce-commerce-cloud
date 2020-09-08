@@ -90,7 +90,6 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
     return next();
   }
-  console.log('showConfirmation start');
   try {
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
     const order = OrderMgr.getOrder(session.privacy.orderNo);
@@ -104,27 +103,14 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
 
     if (!hasStateData) {
-      Transaction.wrap(() => {
-        OrderMgr.failOrder(order, true);
-        adyenPaymentInstrument.custom.adyenPaymentData = null;
-      });
-      res.redirect(
-        URLUtils.url(
-          'Checkout-Begin',
-          'stage',
-          'placeOrder',
-          'paymentError',
-          Resource.msg('error.payment.not.valid', 'checkout', null),
-        ),
-      );
-      return next();
+      return handlePaymentError(order);
     }
 
     const { result } = handlePaymentsDetailsCall(
       stateData,
       adyenPaymentInstrument,
     );
-    console.log(result);
+
     Transaction.wrap(() => {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
@@ -132,7 +118,6 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
       return handleAuthorisedPayment(order, result, adyenPaymentInstrument);
     }
-    console.log(result.resultCode);
     return handlePaymentError(order);
   } catch (e) {
     Logger.getLogger('Adyen').error(

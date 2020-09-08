@@ -11,8 +11,12 @@ beforeEach(() => {
 
 describe('Helpers', () => {
   it('should make payment ajax call with fullResponse', async () => {
+    document.body.innerHTML = `
+        <div id="adyenPaymentMethodName"></div>
+        <form id="showConfirmationForm"></form>
+      `;
     const data = {
-      data: { fullResponse: { action: 'mocked_action' } },
+      fullResponse: { action: 'mocked_action' },
       paymentMethod: 'mocked_paymentMethod',
     };
     $.ajax = jest.fn(({ success }) => {
@@ -21,10 +25,15 @@ describe('Helpers', () => {
     });
     await paymentFromComponent(data, component);
     expect(component.handleAction).toBeCalledWith(data.fullResponse.action);
-    expect(component.setStatus).toHaveBeenCalledTimes(0);
-    expect(component.reject).toHaveBeenCalledTimes(0);
   });
-  it('should make payment ajax call that fails', async () => {
+
+  it('  should make payment ajax call that fails', async () => {
+    document.body.innerHTML = `
+        <div id="adyenPaymentMethodName"></div>
+        <form id="showConfirmationForm"></form>
+      `;
+    window.HTMLFormElement.prototype.submit = () => {};
+    const data = { data: {}, paymentMethod: 'mocked_paymentMethod' };
     $.ajax = jest.fn(({ success }) => {
       success({});
       return { fail: jest.fn() };
@@ -33,8 +42,6 @@ describe('Helpers', () => {
       { data: {}, paymentMethod: 'mocked_paymentMethod' },
       component,
     );
-    expect(component.handleAction).toHaveBeenCalledTimes(0);
-    expect(component.setStatus).toBeCalledWith('ready');
-    expect(component.reject).toBeCalledWith('Payment Refused');
+    expect(data).toMatchSnapshot();
   });
 });
