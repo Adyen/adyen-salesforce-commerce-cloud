@@ -1,4 +1,3 @@
-const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Logger = require('dw/system/Logger');
