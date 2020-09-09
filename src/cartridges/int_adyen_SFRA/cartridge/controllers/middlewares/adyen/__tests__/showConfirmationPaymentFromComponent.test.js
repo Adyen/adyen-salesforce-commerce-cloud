@@ -7,7 +7,6 @@ beforeEach(() => {
   const { adyen } = require('../../index');
   showConfirmationPaymentFromComponent =
     adyen.showConfirmationPaymentFromComponent;
-  // const hasStateData = true;
   jest.clearAllMocks();
   res = { redirect: jest.fn() };
   req = {
