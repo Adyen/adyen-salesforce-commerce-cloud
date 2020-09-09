@@ -14,7 +14,7 @@
 
 <div>
     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
-    <input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
+    <input type="hidden" id="paymentFromComponentStateData" name="${pdict.CurrentForms.adyPaydata.paymentFromComponentStateData.htmlName}">
 
     <div id="newCard"></div>
 
