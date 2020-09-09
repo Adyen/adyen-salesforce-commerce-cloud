@@ -38,12 +38,12 @@ function getPaypalConfig() {
     },
     onCancel: (data, component) => {
       helpers.paymentFromComponent({ cancelTransaction: true }, component);
-      component.setStatus('ready');
     },
     onError: (error, component) => {
       if (component) {
         component.setStatus('ready');
       }
+      document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: (state) => {
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(

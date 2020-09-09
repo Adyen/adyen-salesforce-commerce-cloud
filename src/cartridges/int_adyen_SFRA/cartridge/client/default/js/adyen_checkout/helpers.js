@@ -15,13 +15,15 @@ function paymentFromComponent(data, component) {
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
-    data: { data: JSON.stringify(data) },
+    data: {
+      data: JSON.stringify(data),
+      paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
+    },
     success(data) {
       if (data.fullResponse?.action) {
         component.handleAction(data.fullResponse.action);
       } else {
-        component.setStatus('ready');
-        component.reject('Payment Refused');
+        document.querySelector('#showConfirmationForm').submit();
       }
     },
   }).fail(() => {});

@@ -28,17 +28,22 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     return next();
   }
 
-  function handlePaymentsCall(stateData, paymentInstruments) {
+  function checkStateData(stateData, paymentInstruments) {
     let adyenPaymentInstrument;
-
-    const { paymentData } = stateData;
-    const { details } = stateData;
 
     // looping through all Adyen payment methods, however, this only can be one.
     const instrumentsIter = paymentInstruments.iterator();
     while (instrumentsIter.hasNext()) {
       adyenPaymentInstrument = instrumentsIter.next();
     }
+
+    const hasStateData = stateData?.paymentData && stateData?.details;
+
+    return { hasStateData, adyenPaymentInstrument };
+  }
+
+  function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
+    const { details, paymentData } = stateData;
 
     // redirect to payment/details
     const requestObject = {
@@ -83,16 +88,25 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
     return next();
   }
-
   try {
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
-    const { result, adyenPaymentInstrument } = handlePaymentsCall(
+
+    const { hasStateData, adyenPaymentInstrument } = checkStateData(
       stateData,
       paymentInstruments,
+    );
+
+    if (!hasStateData) {
+      return handlePaymentError(order);
+    }
+
+    const { result } = handlePaymentsDetailsCall(
+      stateData,
+      adyenPaymentInstrument,
     );
 
     Transaction.wrap(() => {
@@ -105,7 +119,9 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     return handlePaymentError(order);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-      `Could not verify /payment/details: ${e.message}`,
+      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();

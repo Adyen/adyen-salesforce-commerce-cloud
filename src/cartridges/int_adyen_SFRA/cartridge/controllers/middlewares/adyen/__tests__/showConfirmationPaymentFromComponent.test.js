@@ -10,7 +10,12 @@ beforeEach(() => {
   jest.clearAllMocks();
   res = { redirect: jest.fn() };
   req = {
-    form: { additionalDetailsHidden: JSON.stringify({ foo: 'bar' }) },
+    form: {
+      additionalDetailsHidden: JSON.stringify({
+        paymentData: 'mocked_paymentData',
+        details: 'mocked_details',
+      }),
+    },
     locale: { id: 'nl_NL' },
   };
 });
@@ -25,6 +30,7 @@ describe('Show Confirmation Payment From Component', () => {
     (a) => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
       const URLUtils = require('dw/web/URLUtils');
+
       adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
         resultCode: a,
       }));

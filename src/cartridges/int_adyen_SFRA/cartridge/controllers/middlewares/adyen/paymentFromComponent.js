@@ -1,4 +1,3 @@
-const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Logger = require('dw/system/Logger');
@@ -9,19 +8,13 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 
 function paymentFromComponent(req, res, next) {
-  let order;
   const reqDataObj = JSON.parse(req.form.data);
 
   if (reqDataObj.cancelTransaction) {
-    order = OrderMgr.getOrder(session.privacy.orderNo);
     Logger.getLogger('Adyen').error(
       `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
     );
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
-    res.json({ result: 'cancelled' });
-    return next();
+    return {};
   }
   const currentBasket = BasketMgr.getCurrentBasket();
 
@@ -39,9 +32,9 @@ function paymentFromComponent(req, res, next) {
     );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
-    paymentInstrument.custom.adyenPaymentMethod = reqDataObj.paymentMethod.type;
+    paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
-  order = COHelpers.createOrder(currentBasket);
+  const order = COHelpers.createOrder(currentBasket);
   session.privacy.orderNo = order.orderNo;
 
   const result = adyenCheckout.createPaymentRequest({
@@ -49,11 +42,6 @@ function paymentFromComponent(req, res, next) {
     PaymentInstrument: paymentInstrument,
   });
 
-  if (result.resultCode !== 'Pending') {
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
-  }
   res.json(result);
   return next();
 }
