@@ -32,16 +32,13 @@ describe('Helpers', () => {
         <div id="adyenPaymentMethodName"></div>
         <form id="showConfirmationForm"></form>
       `;
-    window.HTMLFormElement.prototype.submit = () => {};
+    window.HTMLFormElement.prototype.submit = jest.fn();
     const data = { data: {}, paymentMethod: 'mocked_paymentMethod' };
     $.ajax = jest.fn(({ success }) => {
       success({});
       return { fail: jest.fn() };
     });
-    await paymentFromComponent(
-      { data: {}, paymentMethod: 'mocked_paymentMethod' },
-      component,
-    );
+    await paymentFromComponent(data, component);
     expect(data).toMatchSnapshot();
   });
 });

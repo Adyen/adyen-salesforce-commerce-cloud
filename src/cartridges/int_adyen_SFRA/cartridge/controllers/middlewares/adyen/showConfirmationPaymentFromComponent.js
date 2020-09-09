@@ -37,15 +37,13 @@ function showConfirmationPaymentFromComponent(req, res, next) {
       adyenPaymentInstrument = instrumentsIter.next();
     }
 
-    const hasStateData =
-      stateData && stateData.paymentData && stateData.details;
+    const hasStateData = stateData?.paymentData && stateData?.details;
 
     return { hasStateData, adyenPaymentInstrument };
   }
 
   function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
-    const { details } = stateData;
-    const { paymentData } = stateData;
+    const { details, paymentData } = stateData;
 
     // redirect to payment/details
     const requestObject = {

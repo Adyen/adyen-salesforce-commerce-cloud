@@ -19,8 +19,8 @@ describe('Payment from Component', () => {
   it('should cancel transaction', () => {
     req.form.data.cancelTransaction = true;
     req.form.data = JSON.stringify(req.form.data);
-    paymentFromComponent(req, res, jest.fn());
-    expect(res.json.mock.calls).toMatchSnapshot();
+    const expected = paymentFromComponent(req, res, jest.fn());
+    expect(expected).toEqual({});
   });
   it('should return json response', () => {
     req.form.data = JSON.stringify(req.form.data);
