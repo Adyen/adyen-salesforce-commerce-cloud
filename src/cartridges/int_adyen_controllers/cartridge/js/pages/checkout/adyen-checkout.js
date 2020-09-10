@@ -114,7 +114,31 @@ function initializeBillingEvents() {
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
-          document.querySelector('#paypalStateData').value = JSON.stringify(
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+            state.data,
+          );
+          $('#dwfrm_billing').trigger('submit');
+        },
+      },
+      mbway: {
+        showPayButton: true,
+        onSubmit: (state, component) => {
+          $('#dwfrm_billing').trigger('submit');
+          assignPaymentMethodValue();
+          if (formErrorsExist) {
+            return false;
+          }
+          document.getElementById('component_mbway').querySelector('button').disabled = true;
+          paymentFromComponent(state.data, component);
+          document.querySelector('#adyenStateData').value = JSON.stringify(
+            state.data,
+          );
+        },
+        onError: (/* error, component */) => {
+          $('#dwfrm_billing').trigger('submit');
+        },
+        onAdditionalDetails: (state /* , component */) => {
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
             state.data,
           );
           $('#dwfrm_billing').trigger('submit');
@@ -245,7 +269,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -560,7 +584,7 @@ function paymentFromComponent(data, component) {
       ) {
         component.handleAction(data.result.fullResponse.action);
       } else {
-        document.querySelector('#paypalStateData').value = JSON.stringify(
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
           'null',
         );
         $('#dwfrm_billing').trigger('submit');
@@ -571,8 +595,8 @@ function paymentFromComponent(data, component) {
 
 $('#dwfrm_billing').submit(function (e) {
   if (
-    selectedMethod === 'paypal'
-    && !document.querySelector('#paypalStateData').value
+    ['paypal', 'mbway'].indexOf(selectedMethod) > -1
+    && !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
     const form = $(this);

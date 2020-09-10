@@ -240,13 +240,15 @@ function showConfirmationPaymentFromComponent() {
   }
 
   const passedData = JSON.parse(
-    paymentInformation.get('paypalStateData').value(),
+    paymentInformation.get('paymentFromComponentStateData').value(),
   );
   // This is state data from the component
   const hasStateData = passedData && passedData.details && passedData.paymentData;
+
+  // The billing step is fulfilled, this is necessary for unsuccessful payments
+  app.getForm('billing').object.fulfilled.value = true;
+
   if (!hasStateData) {
-    // The billing step is fulfilled, but order will be failed
-    app.getForm('billing').object.fulfilled.value = true;
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });
@@ -289,6 +291,7 @@ function showConfirmationPaymentFromComponent() {
     app.getController('COSummary').ShowConfirmation(order);
     return {};
   }
+
   // fail order
   Transaction.wrap(function () {
     OrderMgr.failOrder(order, true);
