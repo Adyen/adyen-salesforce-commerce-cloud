@@ -5,7 +5,6 @@ const dwsvc = require('dw/svc');
 const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
-require('dw/value');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 

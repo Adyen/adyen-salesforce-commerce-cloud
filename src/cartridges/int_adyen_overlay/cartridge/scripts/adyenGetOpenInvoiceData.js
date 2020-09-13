@@ -34,7 +34,6 @@ require('dw/web');
 
 // script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
-const Logger = require('dw/system/Logger');
 
 function getLineItems(args) {
   let order;
