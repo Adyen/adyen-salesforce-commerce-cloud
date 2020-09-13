@@ -5,6 +5,7 @@ const dwsvc = require('dw/svc');
 const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
+require('dw/value');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -638,7 +639,8 @@ var adyenHelperObj = {
     const digitsNumber = adyenHelperObj.getFractionDigits(
       currencyCode.toString(),
     );
-    return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
+    const value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
+    return new dw.value.Money(value, currencyCode);
   },
 
   getFractionDigits: function (currencyCode) {
