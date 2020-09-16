@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment should handle payment instruments with payload 1`] = `
+Object {
+  "adyenPaymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": "mocked_adyen_payment_data",
+    },
+  },
+  "details": Object {
+    "payload": "mocked_payload",
+  },
+  "paymentData": "mocked_adyen_payment_data",
+}
+`;
+
+exports[`Payment should handle payment instruments with redirect result 1`] = `
+Object {
+  "adyenPaymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": "mocked_adyen_payment_data",
+    },
+  },
+  "details": Object {
+    "redirectResult": "mocked_redirect_result",
+  },
+  "paymentData": "mocked_adyen_payment_data",
+}
+`;
