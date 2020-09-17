@@ -3,6 +3,9 @@
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
+<isscript>
+    var adyenAction = JSON.parse(paymentInstr.custom.adyenAction);
+</isscript>
 <html>
 <head>
     <script type="text/javascript" src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
@@ -12,7 +15,9 @@
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
         var token3ds2 = "${pdict.token3ds2}";
-
+        var action = JSON.parse('${paymentInstr.custom.adyenAction}'.replace(/&quot;/g, '\"'));
+        console.log('action is ... ' + action)
+        console.log(adyenAction)
         function initiateCheckout () {
             var configuration = {
                 locale: '${pdict.locale}',

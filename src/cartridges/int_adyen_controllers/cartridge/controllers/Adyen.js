@@ -432,6 +432,7 @@ function redirect3ds2() {
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
       token3ds2: request.httpParameterMap.get('token3ds2').stringValue,
+      decision: request.httpParameterMap.get('decision').stringValue,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
     .render('/threeds2/adyen3ds2');
