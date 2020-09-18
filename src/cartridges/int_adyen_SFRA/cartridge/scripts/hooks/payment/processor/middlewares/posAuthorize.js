@@ -6,7 +6,7 @@ const Logger = require('dw/system/Logger');
 /**
  * Authorize
  */
-function pos_authorize(orderNumber, paymentInstrument, paymentProcessor) {
+function posAuthorize(orderNumber, paymentInstrument, paymentProcessor) {
   let errors;
   const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
   Transaction.wrap(() => {
@@ -56,4 +56,4 @@ function pos_authorize(orderNumber, paymentInstrument, paymentProcessor) {
   return result;
 }
 
-module.exports = pos_authorize;
+module.exports = posAuthorize;

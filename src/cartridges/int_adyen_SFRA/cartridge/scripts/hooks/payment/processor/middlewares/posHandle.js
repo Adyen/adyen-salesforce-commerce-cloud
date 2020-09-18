@@ -2,7 +2,7 @@ const Transaction = require('dw/system/Transaction');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
 
-function pos_handle(basket) {
+function posHandle(basket) {
   Transaction.wrap(() => {
     collections.forEach(basket.getPaymentInstruments(), (item) => {
       basket.removePaymentInstrument(item);
@@ -18,4 +18,4 @@ function pos_handle(basket) {
   return { error: false };
 }
 
-module.exports = pos_handle;
+module.exports = posHandle;

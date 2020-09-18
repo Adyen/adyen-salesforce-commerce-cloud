@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`pos_authorize should return error if createTerminalPayment fails 1`] = `
+exports[`POS Authorize should return error if createTerminalPayment fails 1`] = `
 Object {
   "authorized": false,
   "error": true,
@@ -11,7 +11,7 @@ Object {
 }
 `;
 
-exports[`pos_authorize should return error if createTerminalPayment fails 2`] = `
+exports[`POS Authorize should return error if createTerminalPayment fails 2`] = `
 Array [
   Array [
     "POS Authorise error, result: mockedResponse",
@@ -19,7 +19,7 @@ Array [
 ]
 `;
 
-exports[`pos_authorize should return error if there is no terminal ID 1`] = `
+exports[`POS Authorize should return error if there is no terminal ID 1`] = `
 Object {
   "authorized": false,
   "error": true,
@@ -30,7 +30,7 @@ Object {
 }
 `;
 
-exports[`pos_authorize should return error if there is no terminal ID 2`] = `
+exports[`POS Authorize should return error if there is no terminal ID 2`] = `
 Array [
   Array [
     "No terminal selected",
@@ -38,7 +38,7 @@ Array [
 ]
 `;
 
-exports[`pos_authorize should return success response when createTerminalPayment passes 1`] = `
+exports[`POS Authorize should return success response when createTerminalPayment passes 1`] = `
 Object {
   "response": "mockedSuccessResponse",
 }

@@ -1,1 +1,1 @@
-export const find = jest.fn((str, callback) => str);
+export const find = jest.fn((array, callback) => array.find(callback));
