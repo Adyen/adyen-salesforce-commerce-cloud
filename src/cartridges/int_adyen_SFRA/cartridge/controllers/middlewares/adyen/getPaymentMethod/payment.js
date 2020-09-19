@@ -28,7 +28,7 @@ function handlePaymentMethod({ req, res, next }) {
     AdyenPaymentMethods: response,
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
-    AdyenConnectedTerminals: JSON.stringify(connectedTerminals) == "{}" ? '' : JSON.parse(connectedTerminals)
+    AdyenConnectedTerminals: JSON.stringify(connectedTerminals) === "{}" ? '' : JSON.parse(connectedTerminals)
   };
 
   if (AdyenHelper.getCreditCardInstallments()) {
