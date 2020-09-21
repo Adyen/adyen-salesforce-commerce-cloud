@@ -1,6 +1,15 @@
-module.exports.authorize = require('./authorize');
-module.exports.handle = require('./handle');
-module.exports.pos_handle = require('./pos_handle');
-module.exports.pos_authorize = require('./pos_authorize');
-module.exports.processForm = require('./processForm');
-module.exports.savePaymentInformation = require('./savePaymentInformation');
+const authorize = require('./authorize');
+const handle = require('./handle');
+const posHandle = require('./posHandle');
+const posAuthorize = require('./posAuthorize');
+const processForm = require('./processForm');
+const savePaymentInformation = require('./savePaymentInformation');
+
+module.exports = {
+  authorize,
+  handle,
+  posHandle,
+  posAuthorize,
+  processForm,
+  savePaymentInformation,
+};

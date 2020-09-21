@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
-let pos_authorize;
+let posAuthorize;
 let orderNumber;
 let paymentInstrument;
 let paymentProcessor;
 let Logger;
 
 beforeEach(() => {
-  pos_authorize = require('../pos_authorize');
+  posAuthorize = require('../posAuthorize');
   orderNumber = 'mockedNum';
   paymentInstrument = {
     paymentTransaction: {},
@@ -20,7 +20,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('pos_authorize', () => {
+describe('POS Authorize', () => {
   it('should return error if there is no terminal ID', () => {
     const { getForm } = require('server').forms;
     getForm.mockImplementation(() => ({
@@ -29,7 +29,7 @@ describe('pos_authorize', () => {
       },
     }));
 
-    const authorizeResult = pos_authorize(
+    const authorizeResult = posAuthorize(
       orderNumber,
       paymentInstrument,
       paymentProcessor,
@@ -47,7 +47,7 @@ describe('pos_authorize', () => {
       response: 'mockedResponse',
     }));
 
-    const authorizeResult = pos_authorize(
+    const authorizeResult = posAuthorize(
       orderNumber,
       paymentInstrument,
       paymentProcessor,
@@ -57,7 +57,7 @@ describe('pos_authorize', () => {
   });
 
   it('should return success response when createTerminalPayment passes', () => {
-    const authorizeResult = pos_authorize(
+    const authorizeResult = posAuthorize(
       orderNumber,
       paymentInstrument,
       paymentProcessor,
