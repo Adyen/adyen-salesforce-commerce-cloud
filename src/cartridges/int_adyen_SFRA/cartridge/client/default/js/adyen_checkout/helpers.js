@@ -19,9 +19,9 @@ function paymentFromComponent(data, component) {
       data: JSON.stringify(data),
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
-    success(data) {
-      if (data.fullResponse?.action) {
-        component.handleAction(data.fullResponse.action);
+    success(response) {
+      if (response.fullResponse?.action) {
+        component.handleAction(response.fullResponse.action);
       } else {
         document.querySelector('#showConfirmationForm').submit();
       }

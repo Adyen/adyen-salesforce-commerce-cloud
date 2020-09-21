@@ -11,7 +11,7 @@ const {
 } = require('./adyen_checkout/helpers');
 const { validateComponents } = require('./adyen_checkout/validateComponents');
 
-$('#dwfrm_billing').submit(function (e) {
+$('#dwfrm_billing').submit((e) => {
   e.preventDefault();
 
   const form = $(this);

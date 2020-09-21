@@ -20,6 +20,6 @@ function notify(req, res, next) {
     });
     Transaction.rollback();
   }
-  next();
+  return next();
 }
 module.exports = notify;

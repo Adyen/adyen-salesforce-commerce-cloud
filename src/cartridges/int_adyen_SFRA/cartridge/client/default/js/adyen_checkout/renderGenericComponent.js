@@ -3,15 +3,15 @@ const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
 
 function addPosTerminals(terminals) {
-  const dd_terminals = document.createElement('select');
-  dd_terminals.id = 'terminalList';
-  for (const t in terminals) {
+  const ddTerminals = document.createElement('select');
+  ddTerminals.id = 'terminalList';
+  Object.keys(terminals).forEach((t) => {
     const option = document.createElement('option');
     option.value = terminals[t];
     option.text = terminals[t];
-    dd_terminals.appendChild(option);
-  }
-  document.querySelector('#adyenPosTerminals').append(dd_terminals);
+    ddTerminals.appendChild(option);
+  });
+  document.querySelector('#adyenPosTerminals').append(ddTerminals);
 }
 
 /**
@@ -27,6 +27,15 @@ function getPaymentMethods(paymentMethods) {
   });
 }
 
+function resolveUnmount(key, val) {
+  try {
+    return Promise.resolve(val.node.unmount(`component_${key}`));
+  } catch (e) {
+    // try/catch block for val.unmount
+    return Promise.resolve(false);
+  }
+}
+
 /**
  * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
@@ -36,15 +45,6 @@ function unmountComponents() {
     return resolveUnmount(key, val);
   });
   return Promise.all(promises);
-}
-
-function resolveUnmount(key, val) {
-  try {
-    return Promise.resolve(val.node.unmount(`component_${key}`));
-  } catch (e) {
-    // try/catch block for val.unmount
-    return Promise.resolve(false);
-  }
 }
 
 /**
@@ -79,15 +79,16 @@ function renderStoredPaymentMethods(data) {
 }
 
 function renderPaymentMethods(data) {
-  data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
-    !isMethodTypeBlocked(pm.type) &&
+  data.AdyenPaymentMethods.paymentMethods.forEach(
+    (pm, i) =>
+      !isMethodTypeBlocked(pm.type) &&
       renderPaymentMethod(
         pm,
         false,
         data.ImagePath,
         data.AdyenDescriptions[i].description,
-      );
-  });
+      ),
+  );
 }
 
 function renderPosTerminals(data) {

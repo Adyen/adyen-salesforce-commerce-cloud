@@ -6,10 +6,10 @@ const handleError = require('./error');
 const handleInvalidPayment = require('./payment');
 const handleOrderConfirmation = require('./order');
 
-function authorize(paymentInstrument, order, options) {
+function authorize(order, options) {
   const { req } = options;
   const jsonRequest = {
-    paymentData: paymentInstrument.custom.adyenPaymentData,
+    paymentData: this.custom.adyenPaymentData,
     details: {
       MD: req.form.MD,
       PaRes: req.form.PaRes,
@@ -18,7 +18,7 @@ function authorize(paymentInstrument, order, options) {
   const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
 
   Transaction.wrap(() => {
-    paymentInstrument.custom.adyenPaymentData = null;
+    this.custom.adyenPaymentData = null;
   });
 
   // if error, return to checkout page
@@ -33,7 +33,7 @@ function authorize(paymentInstrument, order, options) {
   const { error } = COHelpers.placeOrder(order, fraudDetectionStatus);
   return error
     ? handleInvalidPayment(order, 'placeOrder', options)
-    : handleOrderConfirmation(paymentInstrument, result, order, options);
+    : handleOrderConfirmation(this, result, order, options);
 }
 
 function handleAuthorize(options) {
@@ -45,7 +45,7 @@ function handleAuthorize(options) {
 
   const hasValidMD = session.privacy.MD === req.form.MD;
   return hasValidMD
-    ? authorize(paymentInstrument, order, options)
+    ? authorize.call(paymentInstrument, order, options)
     : handleError('Session variable does not exists', options);
 }
 

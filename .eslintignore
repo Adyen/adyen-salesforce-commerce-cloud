@@ -4,3 +4,8 @@ bundle.js
 src/cartridges/int_adyen_controllers/cartridge/js/pages/checkout/bundle.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
 src/cartridges/int_adyen_SFRA/test
+*.test.js
+
+# remove lines below from ignore after refactor
+src/cartridges/int_adyen_overlay
+src/cartridges/int_adyen_controllers

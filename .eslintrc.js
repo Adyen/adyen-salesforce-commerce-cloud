@@ -58,7 +58,7 @@ module.exports = {
     "prettier",
   ],
   "ignorePatterns": [
-    "*.ds",
+    "*.ds"
   ],
   "rules": {
     "prettier/prettier": "error",
@@ -89,36 +89,6 @@ module.exports = {
       "ImportDeclaration": { multiline: true, "minProperties": 4}
     }],
     "implicit-arrow-linebreak": "off",
-    /* Rules below should be removed after they are gone. They default to "error",
-       but those errors wont be fixed now, since the refactoring should solve those issues.
-       We keep it as "warn" so we don't introduce them again while refactoring. */
-    "block-scoped-var": "warn",
-    "camelcase": "warn",
-    "consistent-return": "warn",
-    "default-case": "warn",
-    "global-require": "warn",
-    "guard-for-in": "warn",
-    "import/no-dynamic-require": "warn",
-    "import/prefer-default-export": "warn",
-    "import/order": "warn",
-    "import/no-cycle": "warn",
-    "no-param-reassign": "warn",
-    "no-use-before-define": "warn",
-    "no-plusplus": "warn",
-    "no-continue": "warn",
-    "no-loop-func": "warn",
-    "no-lonely-if": "warn",
-    "no-restricted-syntax": "warn",
-    "no-underscore-dangle": "warn",
-    "no-restricted-properties": "warn",
-    "no-restricted-globals": "warn",
-    "no-unused-expressions": "warn",
-    "no-unused-vars": "warn",
-    "no-new-wrappers": "warn",
-    "no-shadow": "warn",
-    "no-multi-assign": "warn",
-    "prefer-destructuring": "warn",
-    "radix": "warn",
-    "vars-on-top": "warn",
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["order"] }]
   },
 };

@@ -6,7 +6,7 @@ let setTransactionID;
 
 beforeEach(() => {
   getPayments = require('../getPayments');
-  setTransactionID = jest.fn((orderNo) => true);
+  setTransactionID = jest.fn(() => true);
   const toArray = jest.fn(() => [
     {
       ID: 'mockedPaymentInstrument',

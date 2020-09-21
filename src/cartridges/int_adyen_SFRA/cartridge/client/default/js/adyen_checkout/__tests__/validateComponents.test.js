@@ -4,7 +4,7 @@ const { validateComponents } = require('../validateComponents');
 function inputAssert(input) {
   input.onchange();
   expect(input.classList.contains('adyen-checkout__input--error')).toBeTruthy();
-  input.value = 'foo';
+  input.setAttribute('value', 'foo');
   input.onchange();
   expect(input.classList.contains('adyen-checkout__input--error')).toBeFalsy();
 }

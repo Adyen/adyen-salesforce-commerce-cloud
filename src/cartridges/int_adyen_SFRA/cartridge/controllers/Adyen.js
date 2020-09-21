@@ -1,7 +1,7 @@
 const server = require('server');
-const URLUtils = require('dw/web/URLUtils');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const adyenGiving = require('*/cartridge/scripts/adyenGiving');
 const { adyen } = require('./middlewares/index');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
@@ -82,7 +82,6 @@ server.get(
  * Complete a donation through adyenGiving
  */
 server.post('Donate', server.middleware.https, (req /* , res, next */) => {
-  const adyenGiving = require('*/cartridge/scripts/adyenGiving');
   const { pspReference } = req.form;
   const { orderNo } = req.form;
   const donationAmount = {

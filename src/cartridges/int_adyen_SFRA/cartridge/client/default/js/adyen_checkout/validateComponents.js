@@ -34,12 +34,14 @@ function handleRatepay() {
       '#dateOfBirthInput',
     ).value;
   };
-  isValid && setRatePay();
+  if (isValid) {
+    setRatePay();
+  }
 }
 
-function setInputOnChange(input) {
-  if (input) {
-    input.onchange = function () {
+function setInputOnChange() {
+  if (this) {
+    this.onchange = function validate() {
       validateCustomInputField(this);
     };
   }
@@ -49,14 +51,16 @@ function validateAch() {
   const isAch = document.querySelector('#component_ach');
   const validate = () => {
     const inputs = document.querySelectorAll('#component_ach > input');
-    inputs.forEach(setInputOnChange);
+    inputs.forEach((input) => setInputOnChange.call(input));
   };
-  isAch && validate();
+  if (isAch) {
+    validate();
+  }
 }
 
 function validateRatepay() {
   const input = document.querySelector('#dateOfBirthInput');
-  setInputOnChange(input);
+  setInputOnChange.call(input);
 }
 
 module.exports.validateComponents = function validateComponents() {

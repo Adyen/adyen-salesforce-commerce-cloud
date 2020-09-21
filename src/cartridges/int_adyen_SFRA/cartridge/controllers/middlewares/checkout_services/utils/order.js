@@ -44,6 +44,7 @@ function createOrder(currentBasket, { res, req, next }, emit) {
       );
       return isAuthorized;
     }
+    return false;
   };
 
   const handleCreateOrder = (order) => {
@@ -64,6 +65,7 @@ function createOrder(currentBasket, { res, req, next }, emit) {
       // Places the order
       return isSuccessful && handlePlaceOrder(order, fraudDetectionStatus);
     }
+    return false;
   };
 
   const isAdyen = hasAdyenPaymentMethod(currentBasket);
@@ -92,9 +94,10 @@ function createOrder(currentBasket, { res, req, next }, emit) {
         orderToken: order.orderToken,
         continueUrl: URLUtils.url('Order-Confirm').toString(),
       });
-      emit('route:Complete');
+      return emit('route:Complete');
     }
   }
+  return undefined;
 }
 
 module.exports = createOrder;

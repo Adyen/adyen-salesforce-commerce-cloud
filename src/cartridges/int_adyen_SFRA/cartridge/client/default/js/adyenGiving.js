@@ -22,11 +22,11 @@ function handleOnDonate(state, component) {
   });
 }
 
-function handleOnCancel(/* state, component */) {
+function handleOnCancel(state, component) {
   const adyenGiving = document.getElementById('adyenGiving');
   adyenGiving.style.transition = 'all 3s ease-in-out';
   adyenGiving.style.display = 'none';
-  donation.unmount();
+  component.unmount();
 }
 
 function getAmounts() {
@@ -50,6 +50,4 @@ const donationConfig = {
 };
 
 const checkout = new AdyenCheckout(window.Configuration);
-const donation = checkout
-  .create('donation', donationConfig)
-  .mount(adyenGivingNode);
+checkout.create('donation', donationConfig).mount(adyenGivingNode);

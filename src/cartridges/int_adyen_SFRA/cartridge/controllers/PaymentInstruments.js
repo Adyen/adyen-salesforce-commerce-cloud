@@ -7,6 +7,7 @@ const consentTracking = require('*/cartridge/scripts/middleware/consentTracking'
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 const { paymentInstruments } = require('./middlewares/index');
 
 server.prepend(
@@ -14,7 +15,7 @@ server.prepend(
   userLoggedIn.validateLoggedIn,
   consentTracking.consent,
   (req, res, next) => {
-    require('*/cartridge/scripts/updateSavedCards').updateSavedCards({
+    updateSavedCards({
       CurrentCustomer: req.currentCustomer.raw,
     });
     next();
