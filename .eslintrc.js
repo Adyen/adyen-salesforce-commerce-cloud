@@ -90,6 +90,6 @@ module.exports = {
       "ImportDeclaration": { multiline: true, "minProperties": 4 }
     }],
     "implicit-arrow-linebreak": "off",
-    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["order"] }]
+    "no-param-reassign": ["error", { "props": false }]
   },
 };

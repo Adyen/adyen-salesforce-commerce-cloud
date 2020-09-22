@@ -38,10 +38,10 @@ function authorize3ds2(req, res, next) {
     return next();
   }
 
-  function handlePaymentError(order) {
+  function handlePaymentError(order, paymentInstrument) {
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
-      this.custom.adyenPaymentData = null;
+      paymentInstrument.custom.adyenPaymentData = null;
     });
     res.redirect(
       URLUtils.url(
@@ -69,9 +69,9 @@ function authorize3ds2(req, res, next) {
     return next();
   }
 
-  function handleOrderConfirm(order, result) {
+  function handleOrderConfirm(paymentInstrument, order, result) {
     Transaction.begin();
-    AdyenHelper.savePaymentDetails(this, order, result);
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
     order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
     order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
     Transaction.commit();
@@ -89,7 +89,7 @@ function authorize3ds2(req, res, next) {
     return next();
   }
 
-  function handlePlaceOrder(order, result) {
+  function handlePlaceOrder(paymentInstrument, order, result) {
     // custom fraudDetection
     const fraudDetectionStatus = { status: 'success' };
 
@@ -99,7 +99,7 @@ function authorize3ds2(req, res, next) {
       return handlePlaceOrderError(order);
     }
 
-    return handleOrderConfirm.call(this, order, result);
+    return handleOrderConfirm(paymentInstrument, order, result);
   }
 
   function checkForSuccessfulPayment(result) {
@@ -111,13 +111,13 @@ function authorize3ds2(req, res, next) {
     return authorisedSuccessfully || isChallengeShopper;
   }
 
-  function handlePaymentsCall(paymentDetailsRequest, order) {
+  function handlePaymentsCall(paymentDetailsRequest, order, paymentInstrument) {
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
 
     const isValid = checkForSuccessfulPayment(result);
     if (!isValid) {
       // Payment failed
-      return handlePaymentError.call(this, order);
+      return handlePaymentError(order, paymentInstrument);
     }
     if (result.resultCode === 'ChallengeShopper') {
       // Redirect to ChallengeShopper
@@ -126,9 +126,9 @@ function authorize3ds2(req, res, next) {
 
     // delete paymentData from requests
     Transaction.wrap(() => {
-      this.custom.adyenPaymentData = null;
+      paymentInstrument.custom.adyenPaymentData = null;
     });
-    return handlePlaceOrder.call(this, order, result);
+    return handlePlaceOrder(paymentInstrument, order, result);
   }
 
   function hasFingerprint() {
@@ -157,10 +157,10 @@ function authorize3ds2(req, res, next) {
         },
       };
 
-      return handlePaymentsCall.call(
-        paymentInstrument,
+      return handlePaymentsCall(
         paymentDetailsRequest,
         order,
+        paymentInstrument,
       );
     }
     const paymentDetailsRequest = {
@@ -170,11 +170,7 @@ function authorize3ds2(req, res, next) {
       },
     };
 
-    return handlePaymentsCall.call(
-      paymentInstrument,
-      paymentDetailsRequest,
-      order,
-    );
+    return handlePaymentsCall(paymentDetailsRequest, order, paymentInstrument);
   }
   function createAuthorization(session) {
     const is3DS2 = hasFingerprint() || hasChallengeResult();
