@@ -4,7 +4,6 @@ const PaymentMgr = require('dw/order/PaymentMgr');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 
 /* Script Modules */
 const app = require(Resource.msg('scripts.app.js', 'require', null)); // eslint-disable-line import/no-dynamic-require
@@ -97,9 +96,6 @@ function Authorize(args) {
             '1',
           ),
           resultCode: result.resultCode,
-          token3ds2: result.token3ds2,
-          action: result.action,
-          test1: 'test 1'
         }),
       };
     }

@@ -202,9 +202,6 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
             responseObject.action,
         );
-        paymentResponse.action = JSON.stringify(
-            responseObject.action,
-        );
       }
       paymentResponse.decision = 'ACCEPT';
       paymentResponse.threeDS2 = true;

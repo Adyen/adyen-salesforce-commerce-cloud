@@ -443,17 +443,12 @@ function redirect3ds2() {
     }
   }
 
-  // Logger.getLogger('Adyen').error('action from controller is ... ' + action);
-  // Logger.getLogger('Adyen').error('action from controller param map is ... ' + request.httpParameterMap.get('action').stringValue);
-  // Logger.getLogger('Adyen').error('action from controller param map is ... ' + request.httpParameterMap.get('action'));
   app
     .getView({
       locale: locale,
       originKey: originKey,
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
-      // action: request.httpParameterMap.get('action').stringValue,
-      // test1: request.httpParameterMap.get('test1').stringValue,
       action: action,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
@@ -466,7 +461,6 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
-  Logger.getLogger('Adyen').error('inside authorize3ds2');
   if (!CSRFProtection.validateRequest()) {
     Logger.getLogger('Adyen').error(
         `CSRF Mismatch for order ${session.privacy.orderNo}`,
@@ -499,8 +493,6 @@ function authorize3ds2() {
     }
 
     let details = {};
-    Logger.getLogger('Adyen').error('resultcode is ... ' + request.httpParameterMap.get('resultCode').stringValue);
-
     if (
         request.httpParameterMap.get('resultCode').stringValue
         === 'IdentifyShopper' || request.httpParameterMap.get('resultCode').stringValue === 'ChallengeShopper' || request.httpParameterMap.get('resultCode').stringValue === "challengeResult"
@@ -508,8 +500,6 @@ function authorize3ds2() {
       details = JSON.parse(request.httpParameterMap.get(
           'stateData',
       ).stringValue).details;
-      Logger.getLogger('Adyen').error('stateData details is ...' + JSON.stringify(details));
-
     } else {
       Logger.getLogger('Adyen').error('paymentDetails 3DS2 not available');
       Transaction.wrap(function () {
@@ -525,26 +515,19 @@ function authorize3ds2() {
       paymentData: paymentInstrument.custom.adyenPaymentData,
       details: details,
     };
-    Logger.getLogger('Adyen').error('paymentDetailsRequest is ...' + JSON.stringify(paymentDetailsRequest))
-
-      const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-      Logger.getLogger('Adyen').error('result is ...' + JSON.stringify(result))
-      if(!result.action) {
-        if (
-            (result.error || result.resultCode !== 'Authorised')
-        ) {
-          // Payment failed
-          Transaction.wrap(function () {
-            OrderMgr.failOrder(order, true);
-            paymentInstrument.custom.adyenPaymentData = null;
-          });
-          app.getController('COSummary').Start({
-            PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
-          });
-          return {};
-        }
+    const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+    if(!result.action && (result.error || result.resultCode !== 'Authorised')) {
+        // Payment failed
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order, true);
+          paymentInstrument.custom.adyenPaymentData = null;
+        });
+        app.getController('COSummary').Start({
+          PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
+        });
+        return {};
       }
-  else {
+    else {
         app
           .getView({
             ContinueURL: URLUtils.https(
