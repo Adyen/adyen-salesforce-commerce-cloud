@@ -79,6 +79,7 @@ module.exports = {
           "^dw",
           "^base",
           "^\\*",
+          "^mockData"
         ],
       },
     ],
@@ -86,7 +87,7 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "operator-linebreak": "off",
     "object-curly-newline": ["error", {
-      "ImportDeclaration": { multiline: true, "minProperties": 4}
+      "ImportDeclaration": { multiline: true, "minProperties": 4 }
     }],
     "implicit-arrow-linebreak": "off",
     "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["order"] }]

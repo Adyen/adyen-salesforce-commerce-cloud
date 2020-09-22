@@ -1,14 +1,14 @@
 const middlewares = require('./middlewares/index');
 
 function Handle(basket) {
-  return middlewares.pos_handle(basket);
+  return middlewares.posHandle(basket);
 }
 
 /**
  * Authorize
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.pos_authorize(
+  return middlewares.posAuthorize(
     orderNumber,
     paymentInstrument,
     paymentProcessor,

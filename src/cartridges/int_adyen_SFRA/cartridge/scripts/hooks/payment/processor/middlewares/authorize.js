@@ -1,6 +1,35 @@
 const Resource = require('dw/web/Resource');
 const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
+const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const paymentResponseHandler = require('./authorize/paymentResponse');
+
+function errorHandler() {
+  const serverErrors = [
+    Resource.msg('error.payment.processor.not.supported', 'checkout', null),
+  ];
+
+  return {
+    authorized: false,
+    fieldErrors: [],
+    serverErrors,
+    error: true,
+  };
+}
+
+function check3DS2(result) {
+  return result.threeDS2 || result.resultCode === 'RedirectShopper';
+}
+
+function paymentErrorHandler(result) {
+  Logger.getLogger('Adyen').error(
+    `Payment failed, result: ${JSON.stringify(result)}`,
+  );
+  Transaction.rollback();
+  return { error: true };
+}
 
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom
@@ -12,11 +41,8 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
  * @return {Object} returns an error object
  */
 function authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  const Transaction = require('dw/system/Transaction');
-  const OrderMgr = require('dw/order/OrderMgr');
   const order = OrderMgr.getOrder(orderNumber);
 
-  const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
   Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -27,71 +53,14 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
     PaymentInstrument: paymentInstrument,
   });
   if (result.error) {
-    const errors = [];
-    errors.push(
-      Resource.msg('error.payment.processor.not.supported', 'checkout', null),
-    );
-    return {
-      authorized: false,
-      fieldErrors: [],
-      serverErrors: errors,
-      error: true,
-    };
+    return errorHandler();
   }
   // Trigger 3DS2 flow
-  if (result.threeDS2 || result.resultCode === 'RedirectShopper') {
-    paymentInstrument.custom.adyenPaymentData = result.paymentData;
-    Transaction.commit();
-
-    session.privacy.orderNo = order.orderNo;
-    session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-
-    if (result.threeDS2) {
-      return {
-        threeDS2: result.threeDS2,
-        resultCode: result.resultCode,
-        token3ds2: result.token3ds2,
-      };
-    }
-
-    let signature = null;
-    let authorized3d = false;
-
-    // If the response has MD, then it is a 3DS transaction
-    if (
-      result.redirectObject &&
-      result.redirectObject.data &&
-      result.redirectObject.data.MD
-    ) {
-      authorized3d = true;
-      // Signature for 3DS payments
-      signature = AdyenHelper.getAdyenHash(
-        result.redirectObject.url.substr(result.redirectObject.url.length - 25),
-        result.redirectObject.data.MD.substr(1, 25),
-      );
-    } else {
-      // Signature for redirect methods
-      signature = AdyenHelper.getAdyenHash(
-        result.redirectObject.url.substr(result.redirectObject.url.length - 25),
-        result.paymentData.substr(1, 25),
-      );
-    }
-
-    return {
-      authorized: true,
-      authorized3d,
-      orderNo: orderNumber,
-      paymentInstrument,
-      redirectObject: result.redirectObject,
-      signature,
-    };
+  if (check3DS2(result)) {
+    return paymentResponseHandler(paymentInstrument, result, orderNumber);
   }
   if (result.decision !== 'ACCEPT') {
-    Logger.getLogger('Adyen').error(
-      `Payment failed, result: ${JSON.stringify(result)}`,
-    );
-    Transaction.rollback();
-    return { error: true };
+    return paymentErrorHandler(result);
   }
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
   Transaction.commit();
