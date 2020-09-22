@@ -198,10 +198,11 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.resultCode === 'IdentifyShopper'
       || paymentResponse.resultCode === 'ChallengeShopper'
     ) {
-      Logger.getLogger('Adyen').error(JSON.stringify(responseObject.action))
       if (responseObject.action) {
-        Logger.getLogger('Adyen').error('inside if action')
         paymentInstrument.custom.adyenAction = JSON.stringify(
+            responseObject.action,
+        );
+        paymentResponse.action = JSON.stringify(
             responseObject.action,
         );
       }
