@@ -1,4 +1,5 @@
 const server = require('server');
+const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 server.extend(module.superModule);
 
@@ -11,7 +12,7 @@ server.prepend(
   userLoggedIn.validateLoggedIn,
   consentTracking.consent,
   (req, res, next) => {
-    require('*/cartridge/scripts/updateSavedCards').updateSavedCards({
+    updateSavedCards({
       CurrentCustomer: req.currentCustomer.raw,
     });
     next();

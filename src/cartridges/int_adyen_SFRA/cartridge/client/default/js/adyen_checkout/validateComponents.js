@@ -34,12 +34,12 @@ function handleRatepay() {
       '#dateOfBirthInput',
     ).value;
   };
-  isValid && setRatePay();
+  return isValid && setRatePay();
 }
 
 function setInputOnChange(input) {
   if (input) {
-    input.onchange = function () {
+    input.onchange = function validate() {
       validateCustomInputField(this);
     };
   }
@@ -51,7 +51,7 @@ function validateAch() {
     const inputs = document.querySelectorAll('#component_ach > input');
     inputs.forEach(setInputOnChange);
   };
-  isAch && validate();
+  return isAch && validate();
 }
 
 function validateRatepay() {

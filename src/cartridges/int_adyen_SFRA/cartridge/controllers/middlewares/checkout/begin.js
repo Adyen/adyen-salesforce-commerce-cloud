@@ -1,9 +1,10 @@
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function begin(req, res, next) {
   if (req.currentCustomer.raw.isAuthenticated()) {
-    require('*/cartridge/scripts/updateSavedCards').updateSavedCards({
+    updateSavedCards({
       CurrentCustomer: req.currentCustomer.raw,
     });
   }

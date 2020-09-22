@@ -7,6 +7,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function savePayment(req, res, next) {
   if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
@@ -39,12 +40,11 @@ function savePayment(req, res, next) {
       success: false,
       error: [Resource.msg('error.card.information.error', 'creditCard', null)],
     });
-    this.emit('route:Complete', req, res);
-    return;
+    return this.emit('route:Complete', req, res);
   }
   Transaction.commit();
 
-  require('*/cartridge/scripts/updateSavedCards').updateSavedCards({
+  updateSavedCards({
     CurrentCustomer: req.currentCustomer.raw,
   });
 
@@ -55,7 +55,7 @@ function savePayment(req, res, next) {
     success: true,
     redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
   });
-  this.emit('route:Complete', req, res);
+  return this.emit('route:Complete', req, res);
 }
 
 module.exports = savePayment;

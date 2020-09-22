@@ -7,9 +7,6 @@ function authorizeWithForm(req, res, next) {
     try {
       return handleAuthorize({ req, res, next });
     } catch (e) {
-      const msg = `Error retrieving Payment Methods. Error message: ${
-        e.message
-      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`;
       return handleErr('Unable to retrieve order data from session.');
     }
   }

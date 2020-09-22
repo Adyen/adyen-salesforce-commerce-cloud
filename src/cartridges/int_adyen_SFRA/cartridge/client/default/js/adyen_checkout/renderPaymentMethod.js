@@ -148,7 +148,10 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   li.append(container);
   paymentMethodsUI.append(li);
 
-  store.componentsObj[paymentMethodID]?.node?.mount(container);
+  const node = store.componentsObj[paymentMethodID]?.node;
+  if (node) {
+    node.mount(container);
+  }
 
   handleInput(options);
   setValid(options);

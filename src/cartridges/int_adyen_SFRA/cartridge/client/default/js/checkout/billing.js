@@ -10,21 +10,24 @@ function appendToPaymentSummary(html) {
 
 function appendMaskedCC({ maskedCreditCardNumber }) {
   const innerHTML = `<div>${maskedCreditCardNumber}</div>`;
-  maskedCreditCardNumber && appendToPaymentSummary(innerHTML);
+  return maskedCreditCardNumber && appendToPaymentSummary(innerHTML);
 }
 
 function appendIssuerName({ selectedIssuerName }) {
   const innerHTML = `<div><span>${selectedIssuerName}</span></div>`;
-  selectedIssuerName && appendToPaymentSummary(innerHTML);
+  return selectedIssuerName && appendToPaymentSummary(innerHTML);
 }
 function appendExpiration({ expirationMonth, expirationYear }, order) {
   const innerHTML = `<div><span>${order.resources.cardEnding} ${expirationMonth}/${expirationYear}</span></div>`;
-  hasData(expirationMonth, expirationYear) && appendToPaymentSummary(innerHTML);
+  return (
+    hasData(expirationMonth, expirationYear) &&
+    appendToPaymentSummary(innerHTML)
+  );
 }
 
 function appendPaymentMethod({ selectedAdyenPM }) {
   const innerHTML = `<div><span>${selectedAdyenPM}</span></div>`;
-  selectedAdyenPM && appendToPaymentSummary(innerHTML);
+  return selectedAdyenPM && appendToPaymentSummary(innerHTML);
 }
 
 /**
