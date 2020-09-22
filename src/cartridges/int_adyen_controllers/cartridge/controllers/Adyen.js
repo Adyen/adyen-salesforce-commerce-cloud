@@ -417,7 +417,6 @@ function getPaymentMethods(cart, customer) {
 }
 
 function redirect3ds2() {
-  Logger.getLogger('Adyen').error('inside redirect3ds2');
   const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
   const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
     request.httpProtocol,
