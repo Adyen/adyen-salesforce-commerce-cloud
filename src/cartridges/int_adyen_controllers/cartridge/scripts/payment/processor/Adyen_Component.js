@@ -96,6 +96,8 @@ function Authorize(args) {
             '1',
           ),
           resultCode: result.resultCode,
+          token3ds2: result.token3ds2,
+          action: result.action,
         }),
       };
     }
