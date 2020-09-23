@@ -494,7 +494,11 @@ function authorize3ds2() {
     let details = {};
     if (
         request.httpParameterMap.get('resultCode').stringValue
-        === 'IdentifyShopper' || request.httpParameterMap.get('resultCode').stringValue === 'ChallengeShopper' || request.httpParameterMap.get('resultCode').stringValue === "challengeResult"
+        === 'IdentifyShopper' ||
+        request.httpParameterMap.get('resultCode').stringValue
+        === 'ChallengeShopper' ||
+        request.httpParameterMap.get('resultCode').stringValue
+        === "challengeResult"
     ) {
       details = JSON.parse(request.httpParameterMap.get(
           'stateData',
@@ -540,23 +544,23 @@ function authorize3ds2() {
         return {};
       }
 
-      order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-      order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-      paymentInstrument.custom.adyenPaymentData = null;
-      AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-      Transaction.commit();
+    order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+    order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+    paymentInstrument.custom.adyenPaymentData = null;
+    AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
+    Transaction.commit();
 
-      OrderModel.submit(order);
-      clearForms();
-      app.getController('COSummary').ShowConfirmation(order);
-      return {};
-    }
-
-    Logger.getLogger('Adyen').error('Session variables for 3DS2 do not exist');
-    app.getController('COSummary').Start({
-      PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
-    });
+    OrderModel.submit(order);
+    clearForms();
+    app.getController('COSummary').ShowConfirmation(order);
     return {};
+  }
+
+  Logger.getLogger('Adyen').error('Session variables for 3DS2 do not exist');
+  app.getController('COSummary').Start({
+    PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
+  });
+  return {};
 }
 
 /**
