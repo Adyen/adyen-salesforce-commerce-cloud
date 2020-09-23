@@ -516,17 +516,17 @@ function authorize3ds2() {
     };
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
     if(!result.action && (result.error || result.resultCode !== 'Authorised')) {
-        // Payment failed
-        Transaction.wrap(function () {
-          OrderMgr.failOrder(order, true);
-          paymentInstrument.custom.adyenPaymentData = null;
-        });
-        app.getController('COSummary').Start({
-          PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
-        });
-        return {};
-      }
-    else {
+       // Payment failed
+       Transaction.wrap(function () {
+         OrderMgr.failOrder(order, true);
+         paymentInstrument.custom.adyenPaymentData = null;
+       });
+       app.getController('COSummary').Start({
+         PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
+       });
+       return {};
+    }
+    else if(result.action){
         app
           .getView({
             ContinueURL: URLUtils.https(
