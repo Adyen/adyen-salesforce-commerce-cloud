@@ -425,22 +425,7 @@ function redirect3ds2() {
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const locale = request.getLocale();
 
-  let paymentInstrument;
-  let order;
-  let action;
-  if (session.privacy.orderNo && session.privacy.paymentMethod) {
-    try {
-      order = OrderMgr.getOrder(session.privacy.orderNo);
-      paymentInstrument = order.getPaymentInstruments(
-          session.privacy.paymentMethod,
-      )[0];
-      action = paymentInstrument.custom.adyenAction;
-    } catch (e) {
-      Logger.getLogger('Adyen').error(
-          'Unable to retrieve order data from session 3DS2.',
-      );
-    }
-  }
+  const action = getAction();
 
   app
     .getView({
@@ -448,7 +433,7 @@ function redirect3ds2() {
       originKey: originKey,
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
-      action: action,
+      action,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
     .render('/threeds2/adyen3ds2');
@@ -530,19 +515,19 @@ function authorize3ds2() {
        });
        return {};
     }
-    else if(result.action){
-        app
-          .getView({
-            ContinueURL: URLUtils.https(
-              'Adyen-Redirect3DS2',
-              'utm_nooverride',
-              '1',
-            ),
-            action: JSON.stringify(result.action),
-          })
-            .render('/threeds2/adyen3ds2');
-        return {};
-      }
+    if(result.action){
+      app
+        .getView({
+          ContinueURL: URLUtils.https(
+            'Adyen-Redirect3DS2',
+            'utm_nooverride',
+            '1',
+          ),
+          action: JSON.stringify(result.action),
+        })
+          .render('/threeds2/adyen3ds2');
+      return {};
+    }
 
     order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
     order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
@@ -669,6 +654,29 @@ function clearCustomSessionFields() {
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
+}
+
+function getAction() {
+  if (!session.privacy.orderNo || !session.privacy.paymentMethod) {
+    throw3D2Error('Session variables for 3DS2 do not exist');
+    return;
+  }
+  const order = OrderMgr.getOrder(session.privacy.orderNo);
+  const paymentInstrument = order?.getPaymentInstruments(
+      session.privacy.paymentMethod,
+  )[0];
+  if(!paymentInstrument) {
+    throw3D2Error('Unable to retrieve order data from session 3DS2.');
+    return;
+  }
+  return paymentInstrument.custom.adyenAction;
+}
+
+function throw3D2Error(message) {
+  Logger.getLogger('Adyen').error(message);
+  app.getController('COSummary').Start({
+    PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
+  });
 }
 
 exports.Authorize3DS2 = guard.ensure(['https', 'post'], authorize3ds2);
