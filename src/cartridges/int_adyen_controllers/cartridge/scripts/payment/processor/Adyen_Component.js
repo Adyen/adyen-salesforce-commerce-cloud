@@ -92,12 +92,13 @@ function Authorize(args) {
         view: app.getView({
           ContinueURL: URLUtils.https(
             'Adyen-Redirect3DS2',
+            'action',
+            result.action,
             'utm_nooverride',
             '1',
           ),
           resultCode: result.resultCode,
           token3ds2: result.token3ds2,
-          action: result.action,
         }),
       };
     }

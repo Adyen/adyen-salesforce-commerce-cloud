@@ -425,15 +425,13 @@ function redirect3ds2() {
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const locale = request.getLocale();
 
-  const action = getAction();
-
   app
     .getView({
       locale: locale,
       originKey: originKey,
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
-      action,
+      action: request.httpParameterMap.get('action').stringValue,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
     .render('/threeds2/adyen3ds2');
@@ -447,7 +445,7 @@ function redirect3ds2() {
 function authorize3ds2() {
   if (!CSRFProtection.validateRequest()) {
     Logger.getLogger('Adyen').error(
-        `CSRF Mismatch for order ${session.privacy.orderNo}`,
+      `CSRF Mismatch for order ${session.privacy.orderNo}`,
     );
     response.redirect(URLUtils.httpHome());
     return;
@@ -461,11 +459,11 @@ function authorize3ds2() {
     try {
       order = OrderMgr.getOrder(session.privacy.orderNo);
       paymentInstrument = order.getPaymentInstruments(
-          session.privacy.paymentMethod,
+        session.privacy.paymentMethod,
       )[0];
     } catch (e) {
       Logger.getLogger('Adyen').error(
-          'Unable to retrieve order data from session 3DS2.',
+        'Unable to retrieve order data from session 3DS2.',
       );
       Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
@@ -478,15 +476,15 @@ function authorize3ds2() {
 
     let details = {};
     if (
-        request.httpParameterMap.get('resultCode').stringValue
-        === 'IdentifyShopper' ||
-        request.httpParameterMap.get('resultCode').stringValue
-        === 'ChallengeShopper' ||
-        request.httpParameterMap.get('resultCode').stringValue
-        === "challengeResult"
+      request.httpParameterMap.get('resultCode').stringValue
+        === 'IdentifyShopper'
+        || request.httpParameterMap.get('resultCode').stringValue
+        === 'ChallengeShopper'
+        || request.httpParameterMap.get('resultCode').stringValue
+        === 'challengeResult'
     ) {
       details = JSON.parse(request.httpParameterMap.get(
-          'stateData',
+        'stateData',
       ).stringValue).details;
     } else {
       Logger.getLogger('Adyen').error('paymentDetails 3DS2 not available');
@@ -504,18 +502,18 @@ function authorize3ds2() {
       details: details,
     };
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-    if(!result.action && (result.error || result.resultCode !== 'Authorised')) {
-       // Payment failed
-       Transaction.wrap(function () {
-         OrderMgr.failOrder(order, true);
-         paymentInstrument.custom.adyenPaymentData = null;
-       });
-       app.getController('COSummary').Start({
-         PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
-       });
-       return {};
+    if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
+      // Payment failed
+      Transaction.wrap(function () {
+        OrderMgr.failOrder(order, true);
+        paymentInstrument.custom.adyenPaymentData = null;
+      });
+      app.getController('COSummary').Start({
+        PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
+      });
+      return {};
     }
-    if(result.action){
+    if (result.action) {
       app
         .getView({
           ContinueURL: URLUtils.https(
@@ -525,7 +523,7 @@ function authorize3ds2() {
           ),
           action: JSON.stringify(result.action),
         })
-          .render('/threeds2/adyen3ds2');
+        .render('/threeds2/adyen3ds2');
       return {};
     }
 
@@ -654,29 +652,6 @@ function clearCustomSessionFields() {
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
-}
-
-function getAction() {
-  if (!session.privacy.orderNo || !session.privacy.paymentMethod) {
-    throw3D2Error('Session variables for 3DS2 do not exist');
-    return;
-  }
-  const order = OrderMgr.getOrder(session.privacy.orderNo);
-  const paymentInstrument = order?.getPaymentInstruments(
-      session.privacy.paymentMethod,
-  )[0];
-  if(!paymentInstrument) {
-    throw3D2Error('Unable to retrieve order data from session 3DS2.');
-    return;
-  }
-  return paymentInstrument.custom.adyenAction;
-}
-
-function throw3D2Error(message) {
-  Logger.getLogger('Adyen').error(message);
-  app.getController('COSummary').Start({
-    PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
-  });
 }
 
 exports.Authorize3DS2 = guard.ensure(['https', 'post'], authorize3ds2);

@@ -199,8 +199,8 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       || paymentResponse.resultCode === 'ChallengeShopper'
     ) {
       if (responseObject.action) {
-        paymentInstrument.custom.adyenAction = JSON.stringify(
-            responseObject.action,
+        paymentResponse.action = JSON.stringify(
+          responseObject.action,
         );
       }
       paymentResponse.decision = 'ACCEPT';
