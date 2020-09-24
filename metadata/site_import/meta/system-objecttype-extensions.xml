@@ -111,13 +111,21 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenMD">
+                <display-name xml:lang="x-default">adyenMD</display-name>
+                <description xml:lang="x-default">Adyen MD for 3D Secure</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayment">
                 <display-name xml:lang="x-default">AdyenPayment</display-name>
                 <attribute attribute-id="adyenIssuerName"/>
                 <attribute attribute-id="adyenPaymentMethod"/>
-                <attribute attribute-id="adyenPaymentData"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -146,7 +154,6 @@
                 <attribute-group group-id="AdyenPayment">
                     <display-name xml:lang="x-default">AdyenPayment</display-name>
                     <attribute attribute-id="adyenCreditCardType"/>
-                    <attribute attribute-id="adyenPaymentData"/>
                 </attribute-group>
             </group-definitions>
     </type-extension>
@@ -288,7 +295,6 @@
             </attribute-definition>
         </custom-attribute-definitions>
     </type-extension>
-
 
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>

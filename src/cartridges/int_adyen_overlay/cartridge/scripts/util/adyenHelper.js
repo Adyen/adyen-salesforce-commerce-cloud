@@ -503,7 +503,11 @@ var __AdyenHelper = {
 
     stateData.merchantAccount = __AdyenHelper.getAdyenMerchantAccount();
     stateData.reference = reference;
-    stateData.returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+    stateData.returnUrl = URLUtils.https(
+      'Adyen-ShowConfirmation',
+      'merchantReference',
+      reference,
+    ).toString();
     stateData.applicationInfo = __AdyenHelper.getApplicationInfo(true);
     stateData.enableRecurring = __AdyenHelper.getAdyenRecurringEnabled();
     stateData.additionalData = {};
