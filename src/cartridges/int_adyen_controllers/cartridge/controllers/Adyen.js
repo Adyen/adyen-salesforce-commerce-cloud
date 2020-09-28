@@ -1,6 +1,5 @@
 const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
-// const logger = require("dw/system/Logger").getLogger("Adyen", "adyen");
 const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
 // eslint-disable-next-line no-unused-vars
@@ -98,6 +97,10 @@ function showConfirmation() {
       return response.redirect(URLUtils.httpHome());
     }
     order = OrderMgr.getOrder(result.merchantReference);
+
+    const paymentInstrument = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+    )[0];
     if (
       ['Authorised', 'Pending', 'Received', 'PresentToShopper'].indexOf(
         result.resultCode,
@@ -125,6 +128,7 @@ function showConfirmation() {
         });
         return {};
       }
+
       Transaction.wrap(() => {
         AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
       });
@@ -428,10 +432,9 @@ function redirect3ds2() {
       environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
       token3ds2: request.httpParameterMap.get('token3ds2').stringValue,
+      merchantReference: request.httpParameterMap.get('merchantReference').stringValue,
       ContinueURL: URLUtils.https(
         'Adyen-Authorize3DS2',
-        'merchantReference',
-        request.httpParameterMap.get('merchantReference').stringValue,
       ),
     })
     .render('/threeds2/adyen3ds2');
@@ -443,7 +446,6 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
-  // TODOBAS test this function
   if (!CSRFProtection.validateRequest()) {
     Logger.getLogger('Adyen').error(
       `CSRF Mismatch for order ${
@@ -457,7 +459,7 @@ function authorize3ds2() {
     Transaction.begin();
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     let paymentInstrument;
-    const orderNo = request.httpParameterMap.get('merchantReference')
+    let orderNo = request.httpParameterMap.get('merchantReference')
       .stringValue;
     let order = OrderMgr.getOrder(orderNo);
     paymentInstrument = order.getPaymentInstruments(
@@ -504,9 +506,11 @@ function authorize3ds2() {
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
+      clearAdyenData(paymentInstrument);
       return response.redirect(URLUtils.httpHome());
     }
-    order = OrderMgr.getOrder(result.merchantReference);
+    orderNo = result.merchantReference || orderNo;
+    order = OrderMgr.getOrder(orderNo);
     if (
       (result.error || result.resultCode !== 'Authorised') &&
       result.resultCode !== 'ChallengeShopper'
@@ -526,6 +530,8 @@ function authorize3ds2() {
         .getView({
           ContinueURL: URLUtils.https(
             'Adyen-Redirect3DS2',
+            'merchantReference',
+            orderNo,
             'utm_nooverride',
             '1',
           ),
@@ -536,6 +542,7 @@ function authorize3ds2() {
       return {};
     }
 
+    order = OrderMgr.getOrder(result.merchantReference);
     order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
     order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
     paymentInstrument.custom.adyenPaymentData = null;
@@ -622,7 +629,7 @@ function authorizeWithForm() {
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }
-  return response.redirect(URLUtils.httpHome());
+  return {};
 }
 
 /**
