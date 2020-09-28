@@ -97,6 +97,10 @@ function showConfirmation() {
       return response.redirect(URLUtils.httpHome());
     }
     order = OrderMgr.getOrder(result.merchantReference);
+
+    const paymentInstrument = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+    )[0];
     if (
       ['Authorised', 'Pending', 'Received', 'PresentToShopper'].indexOf(
         result.resultCode,
@@ -124,6 +128,7 @@ function showConfirmation() {
         });
         return {};
       }
+
       Transaction.wrap(() => {
         AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
       });
