@@ -1,5 +1,6 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="token3ds2" value="${pdict.token3ds2}" scope="page"/>
+<isset name="merchantReference" value="${pdict.merchantReference}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
@@ -12,6 +13,7 @@
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
         var token3ds2 = "${pdict.token3ds2}";
+        var merchantReference = "${pdict.merchantReference}";
 
         function initiateCheckout () {
             var configuration = {
@@ -83,6 +85,7 @@
                 <span id="errorLoadComponent"></span>
                 <input type="hidden" name="resultCode" value="${resultCode}"/>
                 <input type="hidden" name="token3ds2" value="${token3ds2}"/>
+                <input type="hidden" name="merchantReference" value="${merchantReference}"/>
                 <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
                 <input type="hidden" id="challengeResult" name="challengeResult"/>
             </div>
