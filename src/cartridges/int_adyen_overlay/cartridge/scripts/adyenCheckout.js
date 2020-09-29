@@ -301,6 +301,7 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
     );
     return {
       error: true,
+      invalidRequest: true,
     };
   }
 
