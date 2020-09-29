@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment should handle challengeShopper 1`] = `
+Array [
+  Array [
+    "Adyen-Adyen3DS2",
+    "resultCode",
+    "ChallengeShopper",
+    "token3ds2",
+    "mocked_challengeToken",
+  ],
+]
+`;
+
+exports[`Payment should place order 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "adyenPaymentData": null,
+      },
+    },
+    "mocked_order",
+    Object {
+      "error": false,
+      "resultCode": "Authorised",
+    },
+    Object {
+      "next": [MockFunction],
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
