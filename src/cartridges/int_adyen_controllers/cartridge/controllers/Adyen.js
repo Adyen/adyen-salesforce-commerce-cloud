@@ -431,7 +431,7 @@ function redirect3ds2() {
       originKey: originKey,
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
-      token3ds2: request.httpParameterMap.get('token3ds2').stringValue,
+      action: request.httpParameterMap.get('action').stringValue,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
     .render('/threeds2/adyen3ds2');
@@ -475,27 +475,17 @@ function authorize3ds2() {
     }
 
     let details = {};
-
     if (
       request.httpParameterMap.get('resultCode').stringValue
         === 'IdentifyShopper'
-      && request.httpParameterMap.get('fingerprintResult').stringValue
-    ) {
-      details = {
-        'threeds2.fingerprint': request.httpParameterMap.get(
-          'fingerprintResult',
-        ).stringValue,
-      };
-    } else if (
-      request.httpParameterMap.get('resultCode').stringValue
+        || request.httpParameterMap.get('resultCode').stringValue
         === 'ChallengeShopper'
-      && request.httpParameterMap.get('challengeResult').stringValue
+        || request.httpParameterMap.get('resultCode').stringValue
+        === 'challengeResult'
     ) {
-      details = {
-        'threeds2.challengeResult': request.httpParameterMap.get(
-          'challengeResult',
-        ).stringValue,
-      };
+      details = JSON.parse(request.httpParameterMap.get(
+        'stateData',
+      ).stringValue).details;
     } else {
       Logger.getLogger('Adyen').error('paymentDetails 3DS2 not available');
       Transaction.wrap(function () {
@@ -511,12 +501,8 @@ function authorize3ds2() {
       paymentData: paymentInstrument.custom.adyenPaymentData,
       details: details,
     };
-
     const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
-    if (
-      (result.error || result.resultCode !== 'Authorised')
-      && result.resultCode !== 'ChallengeShopper'
-    ) {
+    if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
       // Payment failed
       Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
@@ -526,7 +512,8 @@ function authorize3ds2() {
         PlaceOrderError: new Status(Status.ERROR, 'confirm.error.declined', ''),
       });
       return {};
-    } if (result.resultCode === 'ChallengeShopper') {
+    }
+    if (result.action) {
       app
         .getView({
           ContinueURL: URLUtils.https(
@@ -534,10 +521,9 @@ function authorize3ds2() {
             'utm_nooverride',
             '1',
           ),
-          resultCode: result.resultCode,
-          token3ds2: result.authentication['threeds2.challengeToken'],
+          action: JSON.stringify(result.action),
         })
-        .render('adyenpaymentredirect');
+        .render('/threeds2/adyen3ds2');
       return {};
     }
 
