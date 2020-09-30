@@ -173,13 +173,16 @@ server.get(
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const resultCode = req.querystring.resultCode;
-      const token3ds2 = req.querystring.token3ds2;
+      // const token3ds2 = req.querystring.token3ds2;
+      const action = req.querystring.action;
+
       res.render('/threeds2/adyen3ds2', {
         locale: request.getLocale(),
         originKey: originKey,
         environment: environment,
         resultCode: resultCode,
-        token3ds2: token3ds2,
+        action,
+        // token3ds2: token3ds2,
       });
     } catch (err) {
       Logger.getLogger('Adyen').error(
@@ -222,19 +225,10 @@ server.post(
 
       let details = {};
       if (
-        req.form.resultCode === 'IdentifyShopper'
-        && req.form.fingerprintResult
+        req.form.resultCode === 'IdentifyShopper' || req.form.resultCode === 'ChallengeShopper' || req.form.resultCode
+          === 'challengeResult'
       ) {
-        details = {
-          'threeds2.fingerprint': req.form.fingerprintResult,
-        };
-      } else if (
-        req.form.resultCode === 'ChallengeShopper'
-        && req.form.challengeResult
-      ) {
-        details = {
-          'threeds2.challengeResult': req.form.challengeResult,
-        };
+        details = JSON.parse(req.form.stateData).details;
       } else {
         Logger.getLogger('Adyen').error('paymentDetails 3DS2 not available');
         res.redirect(
@@ -256,10 +250,8 @@ server.post(
 
       const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
 
-      if (
-        (result.error || result.resultCode !== 'Authorised')
-        && result.resultCode !== 'ChallengeShopper'
-      ) {
+
+      if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
         // Payment failed
         Transaction.wrap(function () {
           OrderMgr.failOrder(order, true);
@@ -275,17 +267,25 @@ server.post(
           ),
         );
         return next();
-      } if (result.resultCode === 'ChallengeShopper') {
+      } if (result.action) {
         // Redirect to ChallengeShopper
+
         res.redirect(
           URLUtils.url(
             'Adyen-Adyen3DS2',
-            'resultCode',
-            result.resultCode,
-            'token3ds2',
-            result.authentication['threeds2.challengeToken'],
+              'action',
+        JSON.stringify(result.action),
           ),
         );
+        // res.redirect(
+        //     URLUtils.url(
+        //         'Adyen-Adyen3DS2',
+        //         'resultCode',
+        //         result.resultCode,
+        //         'token3ds2',
+        //         result.authentication['threeds2.challengeToken'],
+        //     ),
+        // );
         return next();
       }
 
