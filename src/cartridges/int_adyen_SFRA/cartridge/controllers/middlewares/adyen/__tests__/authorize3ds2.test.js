@@ -25,7 +25,7 @@ beforeEach(() => {
       resultCode: 'IdentifyShopper',
       fingerprintResult: 'mocked_fingerprint_result',
       challengeResult: 'mocked_challenge_result',
-      stateData: '{"details":{"mockeddetails":"mockedvalue"}}'
+      stateData: '{"details": {"mockeddetails":"mockedvalue"}}'
     },
     locale: {
       id: 'nl_NL',
@@ -91,9 +91,7 @@ describe('Authorize 3DS2', () => {
 
     adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
       resultCode: 'ChallengeShopper',
-      authentication: {
-        'threeds2.challengeToken': 'mocked_challenge_token',
-      },
+
     }));
 
     authorize3ds2(req, res, jest.fn());

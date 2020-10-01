@@ -162,7 +162,7 @@ exports[`Place Order should handle threeDS2 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"mocked_threeDS2_resultCode\\",\\"action\\",null]",
+      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"mocked_threeDS2_resultCode\\",\\"action\\",\\"mocked_action\\"]",
       "error": false,
     },
   ],

@@ -104,7 +104,7 @@ describe('Place Order', () => {
     adyenHelpers.handlePayments.mockImplementation(() => ({
       threeDS2: true,
       resultCode: 'mocked_threeDS2_resultCode',
-      token3ds2: 'mocked_token3ds2',
+      action: 'mocked_action',
     }));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();

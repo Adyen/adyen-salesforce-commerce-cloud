@@ -21,7 +21,6 @@ function handle3DS2Authentication(session, options) {
     paymentData: paymentInstrument.custom.adyenPaymentData,
     details: JSON.parse(stateData).details,
   };
-
   return handlePaymentsCall(
     paymentDetailsRequest,
     order,

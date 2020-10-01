@@ -5,7 +5,7 @@ Array [
   Array [
     "/threeds2/adyen3ds2",
     Object {
-      "action": undefined,
+      "action": "mocked_action",
       "environment": "test",
       "locale": "nl_NL",
       "originKey": "mocked_origin_key",
