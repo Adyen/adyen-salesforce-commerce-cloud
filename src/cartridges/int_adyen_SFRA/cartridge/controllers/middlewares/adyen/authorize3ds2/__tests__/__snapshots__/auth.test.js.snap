@@ -4,9 +4,7 @@ exports[`Auth should handle 3ds2 auth when challenge shopper 1`] = `
 Array [
   Array [
     Object {
-      "details": Object {
-        "threeds2.challengeResult": true,
-      },
+      "details": "mocked details",
       "paymentData": "mocked_adyen_payment_data",
     },
     Object {
@@ -66,6 +64,9 @@ Array [
         "form": Object {
           "challengeResult": true,
           "resultCode": "ChallengeShopper",
+          "stateData": Object {
+            "details": "mocked details",
+          },
         },
         "locale": Object {
           "id": "mocked_locale",
@@ -83,9 +84,7 @@ exports[`Auth should handle 3ds2 auth when has fingerprint 1`] = `
 Array [
   Array [
     Object {
-      "details": Object {
-        "threeds2.fingerprint": true,
-      },
+      "details": "mocked details",
       "paymentData": "mocked_adyen_payment_data",
     },
     Object {
@@ -145,6 +144,9 @@ Array [
         "form": Object {
           "fingerprintResult": true,
           "resultCode": "IdentifyShopper",
+          "stateData": Object {
+            "details": "mocked details",
+          },
         },
         "locale": Object {
           "id": "mocked_locale",
@@ -166,6 +168,9 @@ Array [
       "req": Object {
         "form": Object {
           "resultCode": "NOT_AUTHORIZED",
+          "stateData": Object {
+            "details": "mocked details",
+          },
         },
         "locale": Object {
           "id": "mocked_locale",

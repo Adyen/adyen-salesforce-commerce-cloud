@@ -96,7 +96,7 @@
              <attribute-definition attribute-id="adyenAction">
                 <display-name xml:lang="x-default">adyenAction</display-name>
                 <description xml:lang="x-default">Action data from payment response</description>
-                <type>string</type>
+                <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>

@@ -28,9 +28,7 @@ exports[`Authorize 3DS2 should do payments call with challengeResult 1`] = `
 Array [
   Array [
     Object {
-      "details": Object {
-        "threeds2.challengeResult": "mocked_challenge_result",
-      },
+      "details": undefined,
       "paymentData": "mocked_adyen_payment_data",
     },
   ],
@@ -41,9 +39,7 @@ exports[`Authorize 3DS2 should do payments call with fingerprint 1`] = `
 Array [
   Array [
     Object {
-      "details": Object {
-        "threeds2.fingerprint": "mocked_fingerprint_result",
-      },
+      "details": undefined,
       "paymentData": "mocked_adyen_payment_data",
     },
   ],
@@ -103,11 +99,11 @@ Array [
 exports[`Authorize 3DS2 should redirect when resultCode is ChallengeShopper 1`] = `
 Array [
   Array [
-    "Adyen-Adyen3DS2",
-    "resultCode",
-    "ChallengeShopper",
-    "token3ds2",
-    "mocked_challenge_token",
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    "mocked_error.payment.not.valid",
   ],
 ]
 `;

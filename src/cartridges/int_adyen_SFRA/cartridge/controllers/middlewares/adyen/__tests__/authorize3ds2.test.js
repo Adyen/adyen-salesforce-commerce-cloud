@@ -25,6 +25,7 @@ beforeEach(() => {
       resultCode: 'IdentifyShopper',
       fingerprintResult: 'mocked_fingerprint_result',
       challengeResult: 'mocked_challenge_result',
+      stateData: '{"details":{"mockeddetails":"mockedvalue"}}'
     },
     locale: {
       id: 'nl_NL',

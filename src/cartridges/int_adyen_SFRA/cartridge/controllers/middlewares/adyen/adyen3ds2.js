@@ -13,7 +13,6 @@ function adyen3ds2(req, res, next) {
     );
     const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const { resultCode } = req.querystring;
-    const { token3ds2 } = req.querystring;
     const { action } = req.querystring;
     res.render('/threeds2/adyen3ds2', {
       locale: request.getLocale(),

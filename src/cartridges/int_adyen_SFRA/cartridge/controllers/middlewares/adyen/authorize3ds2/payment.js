@@ -15,11 +15,7 @@ function checkForSuccessfulPayment(result) {
 
 function handleAction(result, { res, next }) {
   res.redirect(
-    URLUtils.url(
-      'Adyen-Adyen3DS2',
-        'action',
-        JSON.stringify(result.action),
-    ),
+    URLUtils.url('Adyen-Adyen3DS2', 'action', JSON.stringify(result.action)),
   );
   return next();
 }
