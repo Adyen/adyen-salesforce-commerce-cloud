@@ -28,7 +28,9 @@ exports[`Authorize 3DS2 should do payments call with challengeResult 1`] = `
 Array [
   Array [
     Object {
-      "details": undefined,
+      "details": Object {
+        "mockeddetails": "mockedvalue",
+      },
       "paymentData": "mocked_adyen_payment_data",
     },
   ],
@@ -39,7 +41,9 @@ exports[`Authorize 3DS2 should do payments call with fingerprint 1`] = `
 Array [
   Array [
     Object {
-      "details": undefined,
+      "details": Object {
+        "mockeddetails": "mockedvalue",
+      },
       "paymentData": "mocked_adyen_payment_data",
     },
   ],

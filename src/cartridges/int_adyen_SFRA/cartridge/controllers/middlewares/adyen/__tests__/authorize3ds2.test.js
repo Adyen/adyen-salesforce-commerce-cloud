@@ -40,7 +40,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('Authorize 3DS2', () => {
+describe.only('Authorize 3DS2', () => {
   it('should go to error page when there is no session', () => {
     const URLUtils = require('dw/web/URLUtils');
     const Logger = require('dw/system/Logger');

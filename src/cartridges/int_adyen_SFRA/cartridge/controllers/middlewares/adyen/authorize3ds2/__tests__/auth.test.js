@@ -20,7 +20,7 @@ beforeEach(() => {
   req = {
     form: {
       resultCode: 'Authorized',
-      stateData: {details: 'mocked details'}
+      stateData: '{ "details":"mocked details"}'
     },
     locale: {
       id: 'mocked_locale'
@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 describe('Auth', () => {
-  it('should handle 3ds2 auth when challenge shopper', () => {
+  it.only('should handle 3ds2 auth when challenge shopper', () => {
     req.form.resultCode = 'ChallengeShopper'
     req.form.challengeResult = true
 

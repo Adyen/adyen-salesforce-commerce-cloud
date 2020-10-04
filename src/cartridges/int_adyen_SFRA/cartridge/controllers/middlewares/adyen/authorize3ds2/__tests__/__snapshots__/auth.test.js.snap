@@ -64,9 +64,7 @@ Array [
         "form": Object {
           "challengeResult": true,
           "resultCode": "ChallengeShopper",
-          "stateData": Object {
-            "details": "mocked details",
-          },
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
         },
         "locale": Object {
           "id": "mocked_locale",
