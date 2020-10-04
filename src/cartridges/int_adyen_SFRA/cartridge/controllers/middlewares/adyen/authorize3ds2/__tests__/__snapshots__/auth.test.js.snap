@@ -142,9 +142,7 @@ Array [
         "form": Object {
           "fingerprintResult": true,
           "resultCode": "IdentifyShopper",
-          "stateData": Object {
-            "details": "mocked details",
-          },
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
         },
         "locale": Object {
           "id": "mocked_locale",
@@ -166,9 +164,7 @@ Array [
       "req": Object {
         "form": Object {
           "resultCode": "NOT_AUTHORIZED",
-          "stateData": Object {
-            "details": "mocked details",
-          },
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
         },
         "locale": Object {
           "id": "mocked_locale",

@@ -28,7 +28,7 @@ describe('Payment', () => {
     expect(handlePaymentError).toBeCalledTimes(1)
   })
   it('should handle challengeShopper', () => {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({ resultCode: 'ChallengeShopper', authentication: { 'threeds2.challengeToken': 'mocked_challengeToken' } })
+    adyenCheckout.doPaymentDetailsCall.mockReturnValue({ resultCode: 'ChallengeShopper', action: 'mocked_action' })
     handlePaymentsCall({}, {}, {}, { res, next: jest.fn() })
     expect(URLUtils.url.mock.calls).toMatchSnapshot()
   })

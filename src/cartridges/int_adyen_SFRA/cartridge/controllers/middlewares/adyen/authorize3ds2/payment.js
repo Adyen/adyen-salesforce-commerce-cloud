@@ -3,14 +3,12 @@ const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const { handlePaymentError } = require('./errorHandler');
 const handlePlaceOrder = require('./order');
-const Logger = require('dw/system/Logger');
 
 function checkForSuccessfulPayment(result) {
   const hasError = result.error;
   const isAuthorised = result.resultCode === 'Authorised';
   const authorisedSuccessfully = !hasError && isAuthorised;
   const isAction = result.action;
-
   return authorisedSuccessfully || isAction;
 }
 

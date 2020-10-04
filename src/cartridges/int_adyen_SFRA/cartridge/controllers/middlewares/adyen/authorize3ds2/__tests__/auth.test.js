@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 describe('Auth', () => {
-  it.only('should handle 3ds2 auth when challenge shopper', () => {
+  it('should handle 3ds2 auth when challenge shopper', () => {
     req.form.resultCode = 'ChallengeShopper'
     req.form.challengeResult = true
 

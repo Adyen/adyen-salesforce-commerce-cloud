@@ -100,14 +100,12 @@ Array [
 ]
 `;
 
-exports[`Authorize 3DS2 should redirect when resultCode is ChallengeShopper 1`] = `
+exports[`Authorize 3DS2 should redirect when result contains action 1`] = `
 Array [
   Array [
-    "Checkout-Begin",
-    "stage",
-    "payment",
-    "paymentError",
-    "mocked_error.payment.not.valid",
+    "Adyen-Adyen3DS2",
+    "action",
+    "\\"mocked_action\\"",
   ],
 ]
 `;

@@ -40,10 +40,9 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe.only('Authorize 3DS2', () => {
+describe('Authorize 3DS2', () => {
   it('should go to error page when there is no session', () => {
     const URLUtils = require('dw/web/URLUtils');
-    const Logger = require('dw/system/Logger');
 
     window.session.privacy = {};
 
@@ -85,15 +84,14 @@ describe.only('Authorize 3DS2', () => {
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
     expect(OrderMgr.failOrder).toBeCalledTimes(1);
   });
-  it('should redirect when resultCode is ChallengeShopper', () => {
+  it('should redirect when result contains action', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
     adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
       resultCode: 'ChallengeShopper',
-
+      action: 'mocked_action',
     }));
-
     authorize3ds2(req, res, jest.fn());
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
   });

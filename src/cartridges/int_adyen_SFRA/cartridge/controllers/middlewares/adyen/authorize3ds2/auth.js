@@ -1,7 +1,6 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const handlePaymentsCall = require('./payment');
 const { toggle3DS2Error } = require('./errorHandler');
-const Logger = require('dw/system/Logger');
 
 function contains3ds2Action({ req }) {
   return (
@@ -19,9 +18,8 @@ function handle3DS2Authentication(session, options) {
   )[0];
   const paymentDetailsRequest = {
     paymentData: paymentInstrument.custom.adyenPaymentData,
-    details: JSON.parse(req.form.stateData).details
+    details: JSON.parse(req.form.stateData).details,
   };
-  Logger.getLogger('Adyen').error('paymentDetailsRequest handle3DS2Authentication is ... ' + JSON.stringify(paymentDetailsRequest));
   return handlePaymentsCall(
     paymentDetailsRequest,
     order,
