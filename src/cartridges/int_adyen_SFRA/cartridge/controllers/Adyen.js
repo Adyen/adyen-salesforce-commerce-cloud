@@ -173,7 +173,6 @@ server.get(
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const resultCode = req.querystring.resultCode;
-      // const token3ds2 = req.querystring.token3ds2;
       const action = req.querystring.action;
 
       res.render('/threeds2/adyen3ds2', {
@@ -182,7 +181,6 @@ server.get(
         environment: environment,
         resultCode: resultCode,
         action,
-        // token3ds2: token3ds2,
       });
     } catch (err) {
       Logger.getLogger('Adyen').error(
@@ -250,7 +248,6 @@ server.post(
 
       const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
 
-
       if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
         // Payment failed
         Transaction.wrap(function () {
@@ -273,19 +270,10 @@ server.post(
         res.redirect(
           URLUtils.url(
             'Adyen-Adyen3DS2',
-              'action',
-        JSON.stringify(result.action),
+            'action',
+            JSON.stringify(result.action),
           ),
         );
-        // res.redirect(
-        //     URLUtils.url(
-        //         'Adyen-Adyen3DS2',
-        //         'resultCode',
-        //         result.resultCode,
-        //         'token3ds2',
-        //         result.authentication['threeds2.challengeToken'],
-        //     ),
-        // );
         return next();
       }
 

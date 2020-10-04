@@ -20,7 +20,6 @@
             onAdditionalDetails: handleOnAdditionalDetails
         }
         var checkout = new AdyenCheckout(configuration);
-        console.log('action is .. ' + action);
         var threeDS2Node = checkout.createFromAction(action).mount(threeDS2Element);
 
         function handleOnAdditionalDetails(state) {

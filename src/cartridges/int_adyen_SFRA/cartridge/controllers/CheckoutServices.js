@@ -6,7 +6,6 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 
 server.prepend('PlaceOrder', server.middleware.https, function (
   req,
@@ -169,15 +168,14 @@ server.prepend('PlaceOrder', server.middleware.https, function (
   }
 
   if (handlePaymentResult.threeDS2) {
-    Logger.getLogger('Adyen').error('handlePaymentResult is ... ' + JSON.stringify(handlePaymentResult.action))
     res.json({
       error: false,
       continueUrl: URLUtils.url(
         'Adyen-Adyen3DS2',
         'resultCode',
         handlePaymentResult.resultCode,
-          'action',
-          handlePaymentResult.action,
+        'action',
+        handlePaymentResult.action,
       ).toString(),
     });
     this.emit('route:Complete', req, res);

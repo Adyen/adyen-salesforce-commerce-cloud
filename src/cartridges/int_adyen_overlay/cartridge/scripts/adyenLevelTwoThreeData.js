@@ -50,11 +50,11 @@ function getLineItems({ Order: order }) {
     const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
 
     const currentLineItem = {
-      [`enhancedSchemeData.itemDetailLine${index + 1}.description`]: description?.substring(0, 26).replace(/[^\x00-\x7F]/g, ''),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.description`]: description.substring(0, 26).replace(/[^\x00-\x7F]/g, ''),
       [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.toFixed(),
       [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()),
       [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
-      [`enhancedSchemeData.itemDetailLine${index + 1}.productCode`]: id?.substring(0, 12),
+      [`enhancedSchemeData.itemDetailLine${index + 1}.productCode`]: id.substring(0, 12),
       [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
       ...(commodityCode && { [`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`]: commodityCode }),
     };
@@ -64,7 +64,7 @@ function getLineItems({ Order: order }) {
       ...currentLineItem,
       'enhancedSchemeData.totalTaxAmount': acc['enhancedSchemeData.totalTaxAmount'] + parseFloat(vatAmount.toFixed()),
     };
-  }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference?.substring(0, 25) });
+  }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) });
 }
 
 function getShopperReference(order) {
