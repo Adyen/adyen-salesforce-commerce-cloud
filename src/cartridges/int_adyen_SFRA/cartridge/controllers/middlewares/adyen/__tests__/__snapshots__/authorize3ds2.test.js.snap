@@ -24,7 +24,7 @@ Array [
 ]
 `;
 
-exports[`Authorize 3DS2 should do payments call with challengeResult 1`] = `
+exports[`Authorize 3DS2 should do payments call with resultcode ChallengeShopper 1`] = `
 Array [
   Array [
     Object {
@@ -37,7 +37,7 @@ Array [
 ]
 `;
 
-exports[`Authorize 3DS2 should do payments call with fingerprint 1`] = `
+exports[`Authorize 3DS2 should do payments call with resultcode IdentifyShopper 1`] = `
 Array [
   Array [
     Object {

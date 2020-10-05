@@ -4,7 +4,6 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
 <script type="text/javascript" src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
 <link rel="stylesheet"  href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
 <div id="threeDS2"></div>
@@ -25,7 +24,7 @@
     function handleOnAdditionalDetails(state) {
         document.getElementById("stateData").value = JSON.stringify(state.data);
         if(JSON.stringify(state.data).includes("threeds2.challengeResult")){
-            document.getElementById("resultCode").value = "challengeResult";
+            document.getElementById("challengeResult").value = "true";
         }
         document.getElementById("3ds2-form").submit();
     }
@@ -41,6 +40,7 @@
             <span id="errorLoadComponent"></span>
             <input type="hidden" id="resultCode" name="resultCode" value="${resultCode}"/>
             <input type="hidden" id="stateData" name="stateData" />
+            <input type="hidden" id="challengeResult" name="challengeResult"/>
         </div>
     </div>
 </form>

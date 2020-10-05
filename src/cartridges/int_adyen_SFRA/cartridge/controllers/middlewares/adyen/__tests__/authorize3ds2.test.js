@@ -23,8 +23,6 @@ beforeEach(() => {
   req = {
     form: {
       resultCode: 'IdentifyShopper',
-      fingerprintResult: 'mocked_fingerprint_result',
-      challengeResult: 'mocked_challenge_result',
       stateData: '{"details": {"mockeddetails":"mockedvalue"}}'
     },
     locale: {
@@ -51,12 +49,12 @@ describe('Authorize 3DS2', () => {
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
     expect(Logger.error.mock.calls).toMatchSnapshot();
   });
-  it('should do payments call with fingerprint', () => {
+  it('should do payments call with resultcode IdentifyShopper', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     authorize3ds2(req, res, jest.fn());
     expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
   });
-  it('should do payments call with challengeResult', () => {
+  it('should do payments call with resultcode ChallengeShopper', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     req.form.resultCode = 'ChallengeShopper';
     authorize3ds2(req, res, jest.fn());
@@ -65,7 +63,6 @@ describe('Authorize 3DS2', () => {
   it('should redirect if form resultCode is invalid', () => {
     const URLUtils = require('dw/web/URLUtils');
     const Logger = require('dw/system/Logger');
-
     req.form.resultCode = 'Invalid';
 
     authorize3ds2(req, res, jest.fn());
