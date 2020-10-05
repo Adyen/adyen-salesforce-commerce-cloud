@@ -476,12 +476,8 @@ function authorize3ds2() {
 
     let details = {};
     if (
-      request.httpParameterMap.get('resultCode').stringValue
-        === 'IdentifyShopper'
-        || request.httpParameterMap.get('resultCode').stringValue
-        === 'ChallengeShopper'
-        || request.httpParameterMap.get('resultCode').stringValue
-        === 'challengeResult'
+      ['IdentifyShopper', 'ChallengeShopper'].indexOf(request.httpParameterMap.get('resultCode').stringValue) !== -1
+        || request.httpParameterMap.get('challengeResult').stringValue
     ) {
       details = JSON.parse(request.httpParameterMap.get(
         'stateData',

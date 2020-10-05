@@ -25,7 +25,7 @@
         function handleOnAdditionalDetails(state) {
             document.getElementById("stateData").value = JSON.stringify(state.data);
             if(JSON.stringify(state.data).includes("threeds2.challengeResult")){
-                document.getElementById("resultCode").value = "challengeResult";
+                document.getElementById("challengeResult").value = "true";
             }
                 document.getElementById("3ds2-form").submit();
         }
@@ -41,6 +41,7 @@
             <span id="errorLoadComponent"></span>
             <input type="hidden" id="resultCode" name="resultCode" value="${resultCode}"/>
             <input type="hidden" id="stateData" name="stateData" />
+            <input type="hidden" id="challengeResult" name="challengeResult"/>
         </div>
     </div>
 </form>

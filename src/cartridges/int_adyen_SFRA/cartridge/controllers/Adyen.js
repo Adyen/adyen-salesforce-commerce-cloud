@@ -220,11 +220,10 @@ server.post(
         res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
         return next();
       }
-
       let details = {};
       if (
-        req.form.resultCode === 'IdentifyShopper' || req.form.resultCode === 'ChallengeShopper' || req.form.resultCode
-          === 'challengeResult'
+        ['IdentifyShopper', 'ChallengeShopper'].indexOf(req.form.resultCode) !== -1
+          || req.form.challengeResult
       ) {
         details = JSON.parse(req.form.stateData).details;
       } else {
