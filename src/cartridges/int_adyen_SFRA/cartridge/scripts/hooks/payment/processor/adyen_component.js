@@ -103,6 +103,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         threeDS2: result.threeDS2,
         resultCode: result.resultCode,
         token3ds2: result.token3ds2,
+        action: result.action,
       };
     }
 

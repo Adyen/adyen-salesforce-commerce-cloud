@@ -174,8 +174,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         'Adyen-Adyen3DS2',
         'resultCode',
         handlePaymentResult.resultCode,
-        'token3ds2',
-        handlePaymentResult.token3ds2,
+        'action',
+        handlePaymentResult.action,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
