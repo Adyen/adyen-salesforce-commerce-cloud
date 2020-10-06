@@ -31,9 +31,9 @@ Object {
 
 exports[`Authorize should authorize 3DS2 payments 1`] = `
 Object {
+  "action": "mockedAction",
   "resultCode": "mockedresultCode",
   "threeDS2": "mockedthreeDS2",
-  "token3ds2": "mockedtoken3ds2",
 }
 `;
 

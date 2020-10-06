@@ -22,7 +22,7 @@ describe('Payment', () => {
     adyenHelpers.handlePayments.mockReturnValue({
       threeDS2: true,
       resultCode: 'IdentifyShopper',
-      token3ds2: 'mocked_token',
+      action: 'mocked_action',
     });
     const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
     expect(res.json.mock.calls).toMatchSnapshot();

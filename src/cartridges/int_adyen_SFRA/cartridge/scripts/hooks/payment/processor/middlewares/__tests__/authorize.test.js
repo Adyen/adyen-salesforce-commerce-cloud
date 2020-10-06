@@ -57,7 +57,7 @@ describe('Authorize', () => {
     createPaymentRequest.mockImplementation(() => ({
       threeDS2: 'mockedthreeDS2',
       resultCode: 'mockedresultCode',
-      token3ds2: 'mockedtoken3ds2',
+      action: 'mockedAction',
     }));
     const authorizeResult = authorize(
       '15',

@@ -11,8 +11,8 @@ function handlePaymentAuthorization(order, { res }, emit) {
           'Adyen-Adyen3DS2',
           'resultCode',
           handlePaymentResult.resultCode,
-          'token3ds2',
-          handlePaymentResult.token3ds2,
+          'action',
+          handlePaymentResult.action,
         ).toString(),
       });
       emit('route:Complete');

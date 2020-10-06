@@ -2,9 +2,9 @@
 
 exports[`Payment Response Handler should get 3ds2 response 1`] = `
 Object {
+  "action": "mocked_action",
   "resultCode": "mocked_result_code",
   "threeDS2": true,
-  "token3ds2": "mocked_token3ds2",
 }
 `;
 

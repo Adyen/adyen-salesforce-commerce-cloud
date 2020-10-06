@@ -8,20 +8,13 @@ function checkForSuccessfulPayment(result) {
   const hasError = result.error;
   const isAuthorised = result.resultCode === 'Authorised';
   const authorisedSuccessfully = !hasError && isAuthorised;
-  const isChallengeShopper = result.resultCode === 'ChallengeShopper';
-
-  return authorisedSuccessfully || isChallengeShopper;
+  const isAction = result.action;
+  return authorisedSuccessfully || isAction;
 }
 
-function handleChallengeShopper(result, { res, next }) {
+function handleAction(result, { res, next }) {
   res.redirect(
-    URLUtils.url(
-      'Adyen-Adyen3DS2',
-      'resultCode',
-      result.resultCode,
-      'token3ds2',
-      result.authentication['threeds2.challengeToken'],
-    ),
+    URLUtils.url('Adyen-Adyen3DS2', 'action', JSON.stringify(result.action)),
   );
   return next();
 }
@@ -38,9 +31,9 @@ function handlePaymentsCall(
     // Payment failed
     return handlePaymentError(order, paymentInstrument, options);
   }
-  if (result.resultCode === 'ChallengeShopper') {
+  if (result.action) {
     // Redirect to ChallengeShopper
-    return handleChallengeShopper(result, options);
+    return handleAction(result, options);
   }
 
   // delete paymentData from requests

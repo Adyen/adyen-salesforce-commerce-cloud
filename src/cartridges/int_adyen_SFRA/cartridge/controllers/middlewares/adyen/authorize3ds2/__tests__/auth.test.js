@@ -20,6 +20,7 @@ beforeEach(() => {
   req = {
     form: {
       resultCode: 'Authorized',
+      stateData: '{ "details":"mocked details"}'
     },
     locale: {
       id: 'mocked_locale'

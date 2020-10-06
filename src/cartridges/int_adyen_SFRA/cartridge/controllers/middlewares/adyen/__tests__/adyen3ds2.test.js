@@ -14,7 +14,7 @@ beforeEach(() => {
     host: 'mocked_host',
     querystring: {
       resultCode: 'Authorised',
-      token3ds2: 'mocked_token',
+      action: 'mocked_action'
     },
   };
 
