@@ -1,13 +1,16 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const constants = require('*/cartridge/adyenConstants/constants');
 const handleError = require('./error');
 const handleInvalidPayment = require('./payment');
 const handleOrderConfirmation = require('./order');
 
 function authorize(paymentInstrument, order, options) {
-  const { req } = options;
+  const { req, res } = options;
   const jsonRequest = {
     paymentData: paymentInstrument.custom.adyenPaymentData,
     details: {
@@ -16,10 +19,17 @@ function authorize(paymentInstrument, order, options) {
     },
   };
   const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
-
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
   });
+
+  // If invalid payments/details call, return back to home page
+  if (result.invalidRequest) {
+    Logger.getLogger('Adyen').error(
+      `Invalid request for order ${order.orderNo}`,
+    );
+    return res.redirect(URLUtils.httpHome());
+  }
 
   // if error, return to checkout page
   if (result.error || result.resultCode !== 'Authorised') {
@@ -38,15 +48,18 @@ function authorize(paymentInstrument, order, options) {
 
 function handleAuthorize(options) {
   const { req } = options;
-  const order = OrderMgr.getOrder(session.privacy.orderNo);
+  const order = OrderMgr.getOrder(req.querystring.merchantReference);
   const [paymentInstrument] = order
-    .getPaymentInstruments(session.privacy.paymentMethod)
+    .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)
     .toArray();
 
+  Logger.getLogger('Adyen').error(
+    `sessionMD = ${session.privacy.MD} and req.form.MD = ${req.form.MD}`,
+  );
   const hasValidMD = session.privacy.MD === req.form.MD;
   return hasValidMD
     ? authorize(paymentInstrument, order, options)
-    : handleError('Session variable does not exists', options);
+    : handleError('Not a valid MD', options);
 }
 
 module.exports = handleAuthorize;

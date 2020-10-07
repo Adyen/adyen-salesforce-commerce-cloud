@@ -1,3 +1,6 @@
+<script type="text/javascript">
+    console.log('3ds2 started');
+</script>
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="action" value="${pdict.action}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
@@ -9,8 +12,11 @@
 <div id="threeDS2"></div>
 
 <script type="text/javascript">
+    console.log('3ds2');
+    console.log("${pdict.action}");
     var resultCode = "${pdict.resultCode}";
     var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
+    console.log(action);
     var threeDS2Element = document.getElementById('threeDS2');
     var configuration = {
         locale: '${pdict.locale}',

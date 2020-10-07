@@ -35,7 +35,8 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
+  // TODOBAS delete this
+  // session.privacy.orderNo = order.orderNo;
 
   const result = adyenCheckout.createPaymentRequest({
     Order: order,

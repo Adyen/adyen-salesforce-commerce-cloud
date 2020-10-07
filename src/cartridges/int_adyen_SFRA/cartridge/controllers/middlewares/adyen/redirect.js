@@ -6,9 +6,9 @@ const {
 } = require('./redirect/signature');
 
 function redirect(req, res, next) {
-  const order = OrderMgr.getOrder(session.privacy.orderNo);
+  const { signature, redirectUrl, merchantReference } = req.querystring;
+  const order = OrderMgr.getOrder(merchantReference);
 
-  const { signature, redirectUrl } = req.querystring;
   if (order && signature) {
     const currentSignature = getCurrentSignature(order, { req });
 
@@ -18,7 +18,7 @@ function redirect(req, res, next) {
     }
   } else {
     Logger.getLogger('Adyen').error(
-      `No signature or no order with orderNo ${session.privacy.orderNo}`,
+      `No signature or no order with orderNo ${merchantReference}`,
     );
   }
 

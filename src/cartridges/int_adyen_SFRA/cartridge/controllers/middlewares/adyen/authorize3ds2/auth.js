@@ -1,4 +1,5 @@
 const OrderMgr = require('dw/order/OrderMgr');
+const constants = require('*/cartridge/adyenConstants/constants');
 const handlePaymentsCall = require('./payment');
 const { toggle3DS2Error } = require('./errorHandler');
 
@@ -9,11 +10,12 @@ function contains3ds2Action({ req }) {
   );
 }
 
-function handle3DS2Authentication(session, options) {
+function handle3DS2Authentication(options) {
   const { req } = options;
+  // TODOBAS get merchantReference from req
   const order = OrderMgr.getOrder(session.privacy.orderNo);
   const paymentInstrument = order.getPaymentInstruments(
-    session.privacy.paymentMethod,
+    constants.METHOD_ADYEN_COMPONENT,
   )[0];
   const paymentDetailsRequest = {
     paymentData: paymentInstrument.custom.adyenPaymentData,

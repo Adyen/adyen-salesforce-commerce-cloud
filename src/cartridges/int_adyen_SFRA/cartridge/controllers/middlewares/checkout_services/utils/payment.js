@@ -1,9 +1,13 @@
 const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
+const Logger = require('dw/system/Logger');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
 function handlePaymentAuthorization(order, { res }, emit) {
   const handleRedirectResult = (handlePaymentResult) => {
+    Logger.getLogger('Adyen').error(
+      `handlePaymentResult = ${JSON.stringify(handlePaymentResult)}`,
+    );
     if (handlePaymentResult.threeDS2) {
       res.json({
         error: false,
@@ -35,6 +39,8 @@ function handlePaymentAuthorization(order, { res }, emit) {
             handlePaymentResult.redirectObject.data.MD,
             'signature',
             handlePaymentResult.signature,
+            'merchantReference',
+            order.orderNo,
           ).toString(),
         });
         emit('route:Complete');
@@ -48,6 +54,8 @@ function handlePaymentAuthorization(order, { res }, emit) {
           handlePaymentResult.redirectObject.url,
           'signature',
           handlePaymentResult.signature,
+          'merchantReference',
+          order.orderNo,
         ).toString(),
       });
       emit('route:Complete');

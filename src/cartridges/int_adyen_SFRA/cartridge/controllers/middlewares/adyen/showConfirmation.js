@@ -11,7 +11,8 @@ function showConfirmation(req, res, next) {
   const options = { req, res, next };
 
   try {
-    const order = OrderMgr.getOrder(session.privacy.orderNo);
+    // TODOBAS get merchantRef from querystring
+    const order = OrderMgr.getOrder(req.querystring.merchantReference);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
@@ -34,7 +35,13 @@ function showConfirmation(req, res, next) {
 
     // Authorised: The payment authorisation was successfully completed.
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
-      return handleAuthorised(order, result, adyenPaymentInstrument, options);
+      const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
+      return handleAuthorised(
+        merchantRefOrder,
+        result,
+        adyenPaymentInstrument,
+        options,
+      );
     }
     return payment.handlePaymentError(order, 'placeOrder', options);
   } catch (e) {

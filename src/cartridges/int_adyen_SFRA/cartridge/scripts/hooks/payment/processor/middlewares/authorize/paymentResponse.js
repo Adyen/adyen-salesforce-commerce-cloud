@@ -35,12 +35,12 @@ function getRedirectResponse(result, orderNumber, paymentInstrument) {
 }
 
 function paymentResponseHandler(paymentInstrument, result, orderNumber) {
-  const order = OrderMgr.getOrder(orderNumber);
   paymentInstrument.custom.adyenPaymentData = result.paymentData;
   Transaction.commit();
 
-  session.privacy.orderNo = order.orderNo;
-  session.privacy.paymentMethod = paymentInstrument.paymentMethod;
+  // TODOBAS delete these
+  // session.privacy.orderNo = order.orderNo;
+  // session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
   return result.threeDS2
     ? get3DS2Response(result)
