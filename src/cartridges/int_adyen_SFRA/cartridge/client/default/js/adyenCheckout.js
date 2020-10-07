@@ -113,6 +113,35 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
   },
+  mbway: {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      assignPaymentMethodValue();
+      if (formErrorsExist) {
+        return false;
+      }
+      document.getElementById('component_mbway').querySelector('button').disabled = true;
+      paymentFromComponent(state.data, component);
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+          state.data,
+      );
+    },
+    onError: (/* error, component */) => {
+      document.querySelector('#showConfirmationForm').submit();
+      // $('#dwfrm_billing').trigger('submit');
+    },
+    onAdditionalDetails: (state /* , component */) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+          state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+      // document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+      //     state.data,
+      // );
+      // $('#dwfrm_billing').trigger('submit');
+    },
+  },
   afterpay_default: {
     visibility: {
       personalDetails: 'editable',
@@ -165,7 +194,7 @@ if (window.googleMerchantID !== 'null' && window.Configuration.environment === '
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1) {
     document.querySelector('button[value="submit-payment"]').disabled = true;
   } else {
     document.querySelector('button[value="submit-payment"]').disabled = false;

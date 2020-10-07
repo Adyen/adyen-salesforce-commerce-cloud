@@ -62,9 +62,9 @@ function createPaymentRequest(args) {
     }
 
     // L2/3 Data
-    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
-      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
-    }
+    // if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+    //   paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
+    // }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount,
@@ -105,6 +105,7 @@ function createPaymentRequest(args) {
     if (paymentMethodType === 'paywithgoogle') {
       paymentRequest.browserInfo = {};
     }
+    paymentRequest.shopperStatement = "MBWay shopper statement-c5";
     // make API call
     return doPaymentCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
