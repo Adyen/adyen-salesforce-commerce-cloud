@@ -12,6 +12,7 @@ function assignPaymentMethodValue() {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component) {
+  console.log('paymentFromComponent!');
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
@@ -48,10 +49,10 @@ function resetPaymentMethod() {
 function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-  } else {
+  if (['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1) {
     document.querySelector('button[value="submit-payment"]').disabled = true;
+  } else {
+    document.querySelector('button[value="submit-payment"]').disabled = false;
   }
   document
     .querySelector(`#component_${type}`)

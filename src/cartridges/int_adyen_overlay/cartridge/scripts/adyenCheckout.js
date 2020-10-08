@@ -100,8 +100,9 @@ function createPaymentRequest(args) {
     if (paymentMethodType === 'paywithgoogle') {
       paymentRequest.browserInfo = {};
     }
+    // paymentRequest.shopperStatement = "MBWay shopper statement-c5";
 
-    // make API call
+  // make API call
     return doPaymentCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(
