@@ -67,23 +67,26 @@ function getMbwayConfig() {
     onSubmit: (state, component) => {
       $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
-      console.log('assignPaymentMethodValue!');
       if (store.formErrorsExist) {
-        console.log('form errors!');
         return false;
       }
-      document.getElementById('component_mbway') ? document.getElementById('component_mbway').querySelector('button').disabled = true : null;
+      if (document.getElementById('component_mbway')) {
+        document
+          .getElementById('component_mbway')
+          .querySelector('button').disabled = true;
+      }
       helpers.paymentFromComponent(state.data, component);
       document.querySelector('#adyenStateData').value = JSON.stringify(
-          store.selectedPayment.stateData
+        store.selectedPayment.stateData,
       );
+      return null;
     },
     onError: (/* error, component */) => {
       document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: (state /* , component */) => {
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-          state.data,
+        state.data,
       );
       document.querySelector('#showConfirmationForm').submit();
     },
@@ -176,5 +179,5 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   setCheckoutConfiguration,
-  getMbwayConfig
+  getMbwayConfig,
 };

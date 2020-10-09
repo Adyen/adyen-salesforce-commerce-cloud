@@ -100,7 +100,6 @@ function createPaymentRequest(args) {
     if (paymentMethodType === 'paywithgoogle') {
       paymentRequest.browserInfo = {};
     }
-    // paymentRequest.shopperStatement = "MBWay shopper statement-c5";
 
   // make API call
     return doPaymentCall(order, paymentInstrument, paymentRequest);

@@ -12,7 +12,6 @@ function assignPaymentMethodValue() {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component) {
-  console.log('paymentFromComponent!');
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',
