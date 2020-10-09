@@ -124,22 +124,17 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       document.getElementById('component_mbway').querySelector('button').disabled = true;
       paymentFromComponent(state.data, component);
       document.querySelector('#adyenStateData').value = JSON.stringify(
-          state.data,
+        state.data,
       );
     },
     onError: (/* error, component */) => {
       document.querySelector('#showConfirmationForm').submit();
-      // $('#dwfrm_billing').trigger('submit');
     },
     onAdditionalDetails: (state /* , component */) => {
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-          state.data,
+        state.data,
       );
       document.querySelector('#showConfirmationForm').submit();
-      // document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
-      //     state.data,
-      // );
-      // $('#dwfrm_billing').trigger('submit');
     },
   },
   afterpay_default: {
