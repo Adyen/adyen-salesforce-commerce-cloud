@@ -12,14 +12,12 @@ function checkForSuccessfulPayment(result) {
   return authorisedSuccessfully || isAction;
 }
 
-function handleAction(result, { res, next }) {
-  res.redirect(
-    URLUtils.url('Adyen-Adyen3DS2', 'action', JSON.stringify(result.action)),
-  );
+function handleAction(orderNo, { res, next }) {
+  res.redirect(URLUtils.url('Adyen-Adyen3DS2', 'orderNo', orderNo));
   return next();
 }
 
-function handlePaymentsCall(
+function handlePaymentsDetailsCall(
   paymentDetailsRequest,
   order,
   paymentInstrument,
@@ -31,16 +29,21 @@ function handlePaymentsCall(
     // Payment failed
     return handlePaymentError(order, paymentInstrument, options);
   }
+  const orderNo = result.merchantReference || order.orderNo;
   if (result.action) {
     // Redirect to ChallengeShopper
-    return handleAction(result, options);
+    Transaction.wrap(() => {
+      paymentInstrument.custom.adyenAction = JSON.stringify(result.action);
+    });
+    return handleAction(orderNo, options);
   }
 
   // delete paymentData from requests
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
+    paymentInstrument.custom.adyenAction = null;
   });
   return handlePlaceOrder(paymentInstrument, order, result, options);
 }
 
-module.exports = handlePaymentsCall;
+module.exports = handlePaymentsDetailsCall;

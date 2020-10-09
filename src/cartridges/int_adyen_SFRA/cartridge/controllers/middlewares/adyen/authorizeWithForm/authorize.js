@@ -53,10 +53,7 @@ function handleAuthorize(options) {
     .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)
     .toArray();
 
-  Logger.getLogger('Adyen').error(
-    `sessionMD = ${session.privacy.MD} and req.form.MD = ${req.form.MD}`,
-  );
-  const hasValidMD = session.privacy.MD === req.form.MD;
+  const hasValidMD = paymentInstrument.custom.adyenMD === req.form.MD;
   return hasValidMD
     ? authorize(paymentInstrument, order, options)
     : handleError('Not a valid MD', options);

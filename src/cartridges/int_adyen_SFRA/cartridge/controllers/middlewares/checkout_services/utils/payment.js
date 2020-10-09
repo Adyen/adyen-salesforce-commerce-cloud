@@ -1,6 +1,8 @@
 const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
 const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
+const constants = require('*/cartridge/adyenConstants/constants');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
 function handlePaymentAuthorization(order, { res }, emit) {
@@ -11,12 +13,14 @@ function handlePaymentAuthorization(order, { res }, emit) {
     if (handlePaymentResult.threeDS2) {
       res.json({
         error: false,
+        actionBas: JSON.stringify(handlePaymentResult.action),
+        order,
         continueUrl: URLUtils.url(
           'Adyen-Adyen3DS2',
           'resultCode',
           handlePaymentResult.resultCode,
-          'action',
-          handlePaymentResult.action,
+          'orderNo',
+          order.orderNo,
         ).toString(),
       });
       emit('route:Complete');
@@ -26,7 +30,13 @@ function handlePaymentAuthorization(order, { res }, emit) {
     if (handlePaymentResult.redirectObject) {
       // If authorized3d, then redirectObject from credit card, hence it is 3D Secure
       if (handlePaymentResult.authorized3d) {
-        session.privacy.MD = handlePaymentResult.redirectObject.data.MD;
+        const paymentInstrument = order.getPaymentInstruments(
+          constants.METHOD_ADYEN_COMPONENT,
+        )[0];
+        Transaction.wrap(() => {
+          paymentInstrument.custom.adyenMD =
+            handlePaymentResult.redirectObject.data.MD;
+        });
         res.json({
           error: false,
           continueUrl: URLUtils.url(
@@ -37,10 +47,10 @@ function handlePaymentAuthorization(order, { res }, emit) {
             handlePaymentResult.redirectObject.data.PaReq,
             'MD',
             handlePaymentResult.redirectObject.data.MD,
+            'merchantReference',
+            handlePaymentResult.orderNo,
             'signature',
             handlePaymentResult.signature,
-            'merchantReference',
-            order.orderNo,
           ).toString(),
         });
         emit('route:Complete');
@@ -52,10 +62,10 @@ function handlePaymentAuthorization(order, { res }, emit) {
           'Adyen-Redirect',
           'redirectUrl',
           handlePaymentResult.redirectObject.url,
+          'merchantReference',
+          handlePaymentResult.orderNo,
           'signature',
           handlePaymentResult.signature,
-          'merchantReference',
-          order.orderNo,
         ).toString(),
       });
       emit('route:Complete');

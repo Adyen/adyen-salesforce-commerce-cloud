@@ -20,9 +20,15 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
+      console.log(response);
       if (response.fullResponse?.action) {
+        console.log('actionHandle');
+        document.querySelector('#merchantReference').value = response.orderNo;
         component.handleAction(response.fullResponse.action);
       } else {
+        console.log('else');
+        console.log(response.orderNo);
+        document.querySelector('#merchantReference').value = response.orderNo;
         document.querySelector('#showConfirmationForm').submit();
       }
     },

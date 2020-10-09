@@ -46,7 +46,9 @@ function showConfirmation(req, res, next) {
     return payment.handlePaymentError(order, 'placeOrder', options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-      `Could not verify /payment/details: ${e.message}`,
+      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
