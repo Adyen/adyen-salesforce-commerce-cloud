@@ -118,14 +118,13 @@ checkoutConfiguration.paymentMethodsConfiguration = {
     onSubmit: (state, component) => {
       $('#dwfrm_billing').trigger('submit');
       assignPaymentMethodValue();
-      if (formErrorsExist) {
-        return false;
+      if (!formErrorsExist) {
+        document.getElementById('component_mbway').querySelector('button').disabled = true;
+        paymentFromComponent(state.data, component);
+        document.querySelector('#adyenStateData').value = JSON.stringify(
+          state.data,
+        );
       }
-      document.getElementById('component_mbway').querySelector('button').disabled = true;
-      paymentFromComponent(state.data, component);
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        state.data,
-      );
     },
     onError: (/* error, component */) => {
       document.querySelector('#showConfirmationForm').submit();
