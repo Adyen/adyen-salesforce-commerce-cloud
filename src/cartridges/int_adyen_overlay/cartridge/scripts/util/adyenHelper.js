@@ -154,6 +154,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenCreditCardInstallments');
   },
 
+  getSystemIntegratorName: function () {
+    return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
+  },
+
   getPaypalMerchantID: function () {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
   },
@@ -696,6 +700,7 @@ var adyenHelperObj = {
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
       version: externalPlatformVersion,
+      integrator: 'zaid'
     };
 
     if (isEcom) {
@@ -704,6 +709,14 @@ var adyenHelperObj = {
         version: adyenHelperObj.VERSION,
       };
     }
+
+    // applicationInfo.systemIntegrator = {
+    //   name: this.getSystemIntegratorName()
+    // }
+    applicationInfo.systemIntegrator = {
+      name: 'zaid'
+    }
+
     return applicationInfo;
   },
 
