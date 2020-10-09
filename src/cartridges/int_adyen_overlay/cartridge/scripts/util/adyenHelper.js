@@ -700,7 +700,7 @@ var adyenHelperObj = {
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
       version: externalPlatformVersion,
-      integrator: 'zaid'
+      integrator: this.getSystemIntegratorName(),
     };
 
     if (isEcom) {
@@ -708,13 +708,6 @@ var adyenHelperObj = {
         name: 'adyen-salesforce-commerce-cloud',
         version: adyenHelperObj.VERSION,
       };
-    }
-
-    // applicationInfo.systemIntegrator = {
-    //   name: this.getSystemIntegratorName()
-    // }
-    applicationInfo.systemIntegrator = {
-      name: 'zaid'
     }
 
     return applicationInfo;
