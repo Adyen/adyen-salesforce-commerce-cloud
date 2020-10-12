@@ -61,6 +61,36 @@ function getPaypalConfig() {
   };
 }
 
+function getMbwayConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      helpers.assignPaymentMethodValue();
+      if (!store.formErrorsExist) {
+        if (document.getElementById('component_mbway')) {
+          document
+            .getElementById('component_mbway')
+            .querySelector('button').disabled = true;
+        }
+        helpers.paymentFromComponent(state.data, component);
+        document.querySelector('#adyenStateData').value = JSON.stringify(
+          store.selectedPayment.stateData,
+        );
+      }
+    },
+    onError: (/* error, component */) => {
+      document.querySelector('#showConfirmationForm').submit();
+    },
+    onAdditionalDetails: (state /* , component */) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+    },
+  };
+}
+
 function getGooglePayConfig() {
   return {
     environment: window.Configuration.environment,
@@ -106,6 +136,7 @@ function setCheckoutConfiguration() {
     },
     paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
+    mbway: getMbwayConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',
@@ -146,4 +177,5 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   setCheckoutConfiguration,
+  getMbwayConfig,
 };

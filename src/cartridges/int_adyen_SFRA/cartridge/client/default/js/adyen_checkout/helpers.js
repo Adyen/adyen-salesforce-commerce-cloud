@@ -48,11 +48,8 @@ function resetPaymentMethod() {
 function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();
-  if (type !== 'paypal') {
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-  } else {
-    document.querySelector('button[value="submit-payment"]').disabled = true;
-  }
+  document.querySelector('button[value="submit-payment"]').disabled =
+    ['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1;
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');
