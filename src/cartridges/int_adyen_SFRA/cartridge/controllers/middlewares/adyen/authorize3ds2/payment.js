@@ -1,6 +1,8 @@
 const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const { clearForms } = require('../../../utils/index');
 const { handlePaymentError } = require('./errorHandler');
 const handlePlaceOrder = require('./order');
 
@@ -23,7 +25,16 @@ function handlePaymentsDetailsCall(
   paymentInstrument,
   options,
 ) {
+  const { res, next } = options;
   const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+  // If invalid payments/details call, return back to home page
+  if (result.invalidRequest) {
+    Logger.getLogger('Adyen').error(
+      `Invalid request for order ${order.orderNo}`,
+    );
+    res.redirect(URLUtils.httpHome());
+    return next();
+  }
   const isValid = checkForSuccessfulPayment(result);
   if (!isValid) {
     // Payment failed
@@ -37,12 +48,7 @@ function handlePaymentsDetailsCall(
     });
     return handleAction(orderNo, options);
   }
-
-  // delete paymentData from requests
-  Transaction.wrap(() => {
-    paymentInstrument.custom.adyenPaymentData = null;
-    paymentInstrument.custom.adyenAction = null;
-  });
+  clearForms.clearAdyenData(paymentInstrument);
   return handlePlaceOrder(paymentInstrument, order, result, options);
 }
 

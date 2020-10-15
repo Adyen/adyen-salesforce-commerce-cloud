@@ -21,7 +21,17 @@ function paymentFromComponent(data, component) {
     },
     success(response) {
       console.log(response);
-      if (response.fullResponse?.action) {
+      if (response.orderCreated) {
+        console.log(response.orderNo);
+        document.querySelector('#merchantReference').value = response.orderNo;
+        document.querySelector('#showConfirmationForm').submit();
+      } else if (response.returnShopper) {
+        console.log('shopperCancelled');
+        if (component) {
+          console.log('component y');
+          component.setStatus('ready');
+        }
+      } else if (response.fullResponse?.action) {
         console.log('actionHandle');
         document.querySelector('#merchantReference').value = response.orderNo;
         component.handleAction(response.fullResponse.action);

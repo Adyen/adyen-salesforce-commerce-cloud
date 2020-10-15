@@ -1,10 +1,10 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const Transaction = require('dw/system/Transaction');
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
+const { clearForms } = require('../../../utils/index');
 const handleError = require('./error');
 const handleInvalidPayment = require('./payment');
 const handleOrderConfirmation = require('./order');
@@ -19,10 +19,7 @@ function authorize(paymentInstrument, order, options) {
     },
   };
   const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
-  Transaction.wrap(() => {
-    paymentInstrument.custom.adyenPaymentData = null;
-  });
-
+  clearForms.clearAdyenData(paymentInstrument);
   // If invalid payments/details call, return back to home page
   if (result.invalidRequest) {
     Logger.getLogger('Adyen').error(
@@ -53,6 +50,7 @@ function handleAuthorize(options) {
     .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)
     .toArray();
 
+  // TODOBAS Check this flow when 3ds2 is disabled
   const hasValidMD = paymentInstrument.custom.adyenMD === req.form.MD;
   return hasValidMD
     ? authorize(paymentInstrument, order, options)

@@ -17,7 +17,7 @@ function handleOrderConfirm(
   order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
   Transaction.commit();
   COHelpers.sendConfirmationEmail(order, req.locale.id);
-  clearForms();
+  clearForms.clearForms();
   res.redirect(
     URLUtils.url(
       'Order-Confirm',

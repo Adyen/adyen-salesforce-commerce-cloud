@@ -5,13 +5,13 @@ const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('./showConfirmation/payment');
+const { clearForms } = require('../../utils/index');
 const handleAuthorised = require('./showConfirmation/authorise');
 
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
 
   try {
-    // TODOBAS get merchantRef from querystring
     const order = OrderMgr.getOrder(req.querystring.merchantReference);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -32,6 +32,11 @@ function showConfirmation(req, res, next) {
     Transaction.wrap(() => {
       adyenPaymentInstrument.custom.adyenPaymentData = null;
     });
+
+    if (result.invalidRequest) {
+      Logger.getLogger('Adyen').error('Invalid /payments/details call');
+      return response.redirect(URLUtils.httpHome());
+    }
 
     // Authorised: The payment authorisation was successfully completed.
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
