@@ -13,11 +13,8 @@
 <div id="threeDS2"></div>
 
 <script type="text/javascript">
-    console.log('3ds2');;
-    console.log("${pdict.merchantReference}");
     var resultCode = "${pdict.resultCode}";
     var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
-    console.log(action);
     var threeDS2Element = document.getElementById('threeDS2');
     var configuration = {
         locale: '${pdict.locale}',

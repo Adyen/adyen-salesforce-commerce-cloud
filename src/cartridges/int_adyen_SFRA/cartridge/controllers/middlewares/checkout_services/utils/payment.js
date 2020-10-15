@@ -7,13 +7,9 @@ const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
 function handlePaymentAuthorization(order, { res }, emit) {
   const handleRedirectResult = (handlePaymentResult) => {
-    Logger.getLogger('Adyen').error(
-      `handlePaymentResult = ${JSON.stringify(handlePaymentResult)}`,
-    );
     if (handlePaymentResult.threeDS2) {
       res.json({
         error: false,
-        actionBas: JSON.stringify(handlePaymentResult.action),
         order,
         continueUrl: URLUtils.url(
           'Adyen-Adyen3DS2',

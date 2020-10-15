@@ -38,10 +38,6 @@ function paymentResponseHandler(paymentInstrument, result, orderNumber) {
   paymentInstrument.custom.adyenPaymentData = result.paymentData;
   Transaction.commit();
 
-  // TODOBAS delete these
-  // session.privacy.orderNo = order.orderNo;
-  // session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-
   return result.threeDS2
     ? get3DS2Response(result)
     : getRedirectResponse(result, orderNumber, paymentInstrument);

@@ -29,9 +29,7 @@ function showConfirmation(req, res, next) {
     };
 
     const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-    Transaction.wrap(() => {
-      adyenPaymentInstrument.custom.adyenPaymentData = null;
-    });
+    clearForms.clearAdyenData(adyenPaymentInstrument);
 
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error('Invalid /payments/details call');

@@ -13,9 +13,6 @@ function contains3ds2Action({ req }) {
 
 function handle3DS2Authentication(options) {
   const { req } = options;
-  // TODOBAS get merchantReference from req
-  Logger.getLogger('Adyen').error('Handle3DS2');
-  Logger.getLogger('Adyen').error(req.form.merchantReference);
   const order = OrderMgr.getOrder(req.form.merchantReference);
   const paymentInstrument = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,

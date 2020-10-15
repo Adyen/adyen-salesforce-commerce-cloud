@@ -23,7 +23,6 @@ function adyen3ds2(req, res, next) {
     )[0];
     const action = paymentInstrument.custom.adyenAction;
 
-    Logger.getLogger('Adyen').error(`action = ${JSON.stringify(action)}`);
     res.render('/threeds2/adyen3ds2', {
       locale: request.getLocale(),
       originKey,

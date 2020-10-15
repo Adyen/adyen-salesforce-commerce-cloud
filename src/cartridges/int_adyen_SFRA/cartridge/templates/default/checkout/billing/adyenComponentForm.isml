@@ -7,9 +7,6 @@
     assets.addJs('/js/bundle.js');
 </isscript>
 <script>
-    console.log("${pdict.order}");
-    console.log("${pdict.order.orderNumber}");
-
     window.Configuration = {
         locale: '${request.locale}',
         originKey: '${pdict.adyen.originKey}',

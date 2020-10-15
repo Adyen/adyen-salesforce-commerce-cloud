@@ -50,7 +50,6 @@ function handleAuthorize(options) {
     .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)
     .toArray();
 
-  // TODOBAS Check this flow when 3ds2 is disabled
   const hasValidMD = paymentInstrument.custom.adyenMD === req.form.MD;
   return hasValidMD
     ? authorize(paymentInstrument, order, options)

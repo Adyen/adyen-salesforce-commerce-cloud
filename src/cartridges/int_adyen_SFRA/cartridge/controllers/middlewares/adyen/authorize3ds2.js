@@ -3,8 +3,6 @@ const URLUtils = require('dw/web/URLUtils');
 const createAuthorization = require('./authorize3ds2/auth');
 
 function authorize3ds2(req, res, next) {
-  Logger.getLogger('Adyen').error('Authorise3ds2');
-  Logger.getLogger('Adyen').error(req.form.merchantReference);
   const options = { req, res, next };
   try {
     return createAuthorization(options);
