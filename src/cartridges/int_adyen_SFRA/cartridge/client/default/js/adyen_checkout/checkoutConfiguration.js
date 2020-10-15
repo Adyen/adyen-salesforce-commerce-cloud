@@ -37,17 +37,9 @@ function getPaypalConfig() {
       helpers.paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
-      console.log('onCancel');
-      helpers.paymentFromComponent(
-        {
-          cancelTransaction: true,
-          merchantReference: document.querySelector('#merchantReference').value,
-        },
-        component,
-      );
+      helpers.paymentFromComponent({ cancelTransaction: true }, component);
     },
     onError: (error, component) => {
-      console.log('onError');
       if (component) {
         component.setStatus('ready');
       }

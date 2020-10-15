@@ -8,10 +8,6 @@ function showConfirmationPaymentFromComponent(req, res, next) {
   try {
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
     const order = OrderMgr.getOrder(session.privacy.orderNo);
-    Logger.getLogger('Adyen').error(
-      `MerchantReferenceInShowconfirm = ${merchantReference}`,
-    );
-    const order = OrderMgr.getOrder(merchantReference);
     return handlePayment(stateData, order, options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
