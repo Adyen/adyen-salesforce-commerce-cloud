@@ -1,5 +1,4 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 const handlePaymentsDetailsCall = require('./payment');
 const { toggle3DS2Error } = require('./errorHandler');

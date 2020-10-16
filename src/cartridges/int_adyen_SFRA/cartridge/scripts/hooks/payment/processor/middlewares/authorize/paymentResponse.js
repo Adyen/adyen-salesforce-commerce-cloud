@@ -1,5 +1,4 @@
 const Transaction = require('dw/system/Transaction');
-const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function get3DS2Response({ threeDS2, resultCode, action }) {
