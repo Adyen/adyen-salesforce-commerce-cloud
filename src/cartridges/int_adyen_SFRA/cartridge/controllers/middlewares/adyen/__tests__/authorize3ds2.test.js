@@ -9,17 +9,6 @@ beforeEach(() => {
 
   jest.clearAllMocks();
 
-  window.session = {
-    privacy: {
-      orderNo: 'mocked_orderNo',
-      paymentMethod: 'mocked_pm',
-    },
-    forms: {
-      billing: {
-        clearFormElement: jest.fn(),
-      },
-    },
-  };
   req = {
     form: {
       resultCode: 'IdentifyShopper',
@@ -39,13 +28,11 @@ afterEach(() => {
 });
 
 describe('Authorize 3DS2', () => {
-  it('should go to error page when there is no session', () => {
+  it('should go to error page when authorisation fails', () => {
     const URLUtils = require('dw/web/URLUtils');
     const Logger = require('dw/system/Logger');
 
-    window.session.privacy = {};
-
-    authorize3ds2(req, res, jest.fn());
+    authorize3ds2({}, res, jest.fn());
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
     expect(Logger.error.mock.calls).toMatchSnapshot();
   });

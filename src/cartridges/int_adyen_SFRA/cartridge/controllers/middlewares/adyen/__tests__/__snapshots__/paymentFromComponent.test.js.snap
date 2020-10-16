@@ -4,6 +4,7 @@ exports[`Payment from Component should return json response 1`] = `
 Array [
   Array [
     Object {
+      "orderNo": "mocked_orderNo",
       "resultCode": "Authorised",
     },
   ],

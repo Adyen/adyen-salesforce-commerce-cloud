@@ -1,7 +1,6 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
-const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('./showConfirmation/payment');
@@ -35,7 +34,6 @@ function showConfirmation(req, res, next) {
       Logger.getLogger('Adyen').error('Invalid /payments/details call');
       return response.redirect(URLUtils.httpHome());
     }
-
     // Authorised: The payment authorisation was successfully completed.
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
       const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);

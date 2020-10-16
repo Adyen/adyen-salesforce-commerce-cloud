@@ -43,13 +43,3 @@ Array [
   ],
 ]
 `;
-
-exports[`Authorize with Form should log error when theres no session privacy 1`] = `
-Array [
-  Array [
-    "Error-ErrorCode",
-    "err",
-    "general",
-  ],
-]
-`;

@@ -162,8 +162,13 @@ exports[`Place Order should handle threeDS2 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"mocked_threeDS2_resultCode\\",\\"action\\",\\"mocked_action\\"]",
+      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"mocked_threeDS2_resultCode\\",\\"orderNo\\",\\"mocked_orderNo\\"]",
       "error": false,
+      "order": Object {
+        "getPaymentInstruments": [MockFunction],
+        "orderNo": "mocked_orderNo",
+        "orderToken": "mocked_orderToken",
+      },
     },
   ],
 ]
@@ -173,7 +178,7 @@ exports[`Place Order should redirect with authorize3d 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"signature\\",null]",
+      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",null]",
       "error": false,
     },
   ],
@@ -184,7 +189,7 @@ exports[`Place Order should redirect without authorize3d 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Redirect\\",\\"redirectUrl\\",null,\\"signature\\",null]",
+      "continueUrl": "[\\"Adyen-Redirect\\",\\"redirectUrl\\",null,\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",null]",
       "error": false,
     },
   ],

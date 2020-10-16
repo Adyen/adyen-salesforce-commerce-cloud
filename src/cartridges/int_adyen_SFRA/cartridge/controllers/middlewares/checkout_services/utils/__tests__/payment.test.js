@@ -1,13 +1,19 @@
 const handlePaymentAuthorization = require('../payment');
-
+const { getPaymentInstruments } = require('dw/order/OrderMgr');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 
 let res;
 let emit;
+let order;
 beforeEach(() => {
   jest.clearAllMocks();
   res = { json: jest.fn() };
   emit = jest.fn();
+
+  order = {
+    getPaymentInstruments,
+    orderNo: 'mocked_orderNo',
+  }
 });
 
 describe('Payment', () => {
@@ -24,7 +30,7 @@ describe('Payment', () => {
       resultCode: 'IdentifyShopper',
       action: 'mocked_action',
     });
-    const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
+    const paymentCompleted = handlePaymentAuthorization(order, { res }, emit);
     expect(res.json.mock.calls).toMatchSnapshot();
     expect(paymentCompleted).toBeFalsy();
     expect(emit).toBeCalledWith('route:Complete');
@@ -37,8 +43,9 @@ describe('Payment', () => {
       },
       signature: 'mocked_signature',
       authorized3d: true,
+      orderNo: 'mocked_orderNo',
     });
-    const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
+    const paymentCompleted = handlePaymentAuthorization(order, { res }, emit);
     expect(res.json.mock.calls).toMatchSnapshot();
     expect(paymentCompleted).toBeFalsy();
     expect(emit).toBeCalledWith('route:Complete');
@@ -48,8 +55,9 @@ describe('Payment', () => {
       redirectObject: { url: 'mocked_url' },
       authorized3d: false,
       signature: 'mocked_signature',
+      orderNo: 'mocked_orderNo',
     });
-    const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
+    const paymentCompleted = handlePaymentAuthorization(order, { res }, emit);
     expect(res.json.mock.calls).toMatchSnapshot();
     expect(paymentCompleted).toBeFalsy();
     expect(emit).toBeCalledWith('route:Complete');
@@ -59,7 +67,7 @@ describe('Payment', () => {
       redirectObject: false,
       threeDS2: false,
     });
-    const paymentCompleted = handlePaymentAuthorization({}, { res }, emit);
+    const paymentCompleted = handlePaymentAuthorization(order, { res }, emit);
     expect(paymentCompleted).toBeTruthy();
   });
 });

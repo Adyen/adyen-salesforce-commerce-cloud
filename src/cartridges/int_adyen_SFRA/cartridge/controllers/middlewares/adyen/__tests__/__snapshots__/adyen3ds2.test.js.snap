@@ -5,9 +5,10 @@ Array [
   Array [
     "/threeds2/adyen3ds2",
     Object {
-      "action": "mocked_action",
+      "action": "mocked_adyen_action",
       "environment": "test",
       "locale": "nl_NL",
+      "merchantReference": "mocked_orderNo",
       "originKey": "mocked_origin_key",
       "resultCode": "Authorised",
     },

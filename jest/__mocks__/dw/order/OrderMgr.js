@@ -2,6 +2,8 @@ const paymentInstrument = () => [
   {
     custom: {
       adyenPaymentData: 'mocked_adyen_payment_data',
+      adyenMD: 'mocked_adyen_MD',
+      adyenAction: 'mocked_adyen_action',
     },
   },
 ];

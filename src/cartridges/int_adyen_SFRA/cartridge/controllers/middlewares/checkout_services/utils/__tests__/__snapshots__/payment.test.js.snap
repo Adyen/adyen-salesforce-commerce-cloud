@@ -4,7 +4,7 @@ exports[`Payment should redirect 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Redirect\\",\\"redirectUrl\\",\\"mocked_url\\",\\"signature\\",\\"mocked_signature\\"]",
+      "continueUrl": "[\\"Adyen-Redirect\\",\\"redirectUrl\\",\\"mocked_url\\",\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",\\"mocked_signature\\"]",
       "error": false,
     },
   ],
@@ -15,7 +15,7 @@ exports[`Payment should return 3d json response 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"signature\\",\\"mocked_signature\\"]",
+      "continueUrl": "[\\"Adyen-Adyen3D\\",\\"IssuerURL\\",\\"mocked_url\\",\\"PaRequest\\",\\"mocked_PaReq\\",\\"MD\\",\\"mocked_MD\\",\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",\\"mocked_signature\\"]",
       "error": false,
     },
   ],
@@ -26,8 +26,12 @@ exports[`Payment should return 3ds2 json response 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"IdentifyShopper\\",\\"action\\",\\"mocked_action\\"]",
+      "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"IdentifyShopper\\",\\"orderNo\\",\\"mocked_orderNo\\"]",
       "error": false,
+      "order": Object {
+        "getPaymentInstruments": [MockFunction],
+        "orderNo": "mocked_orderNo",
+      },
     },
   ],
 ]

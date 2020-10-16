@@ -6,7 +6,6 @@ const payment = require('./payment');
 
 function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   const { req } = options;
-
   if (
     result.resultCode === 'Received' &&
     result.paymentMethod.indexOf('alipay_hk') > -1
@@ -22,7 +21,6 @@ function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   if (placeOrderResult.error) {
     return payment.handlePaymentError(order, 'placeOrder', options);
   }
-
   const currentLocale = Locale.getLocale(req.locale.id);
   const orderModel = new OrderModel(order, {
     countryCode: currentLocale.country,

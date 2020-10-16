@@ -11,9 +11,10 @@ const handleError = require('../error');
 
 let req;
 let res;
+
 beforeEach(() => {
   jest.clearAllMocks();
-  req = { form: { MD: 'mocked_md' } };
+  req = { form: { MD: 'mocked_md' }, querystring: { merchantReference : 'mocked_merchantReference'} };
   res = { redirect: jest.fn() };
 });
 
@@ -24,31 +25,28 @@ afterEach(() => {
 describe('Authorize', () => {
   it('should authorize when MD is valid', () => {
     OrderMgr.toArray.mockImplementation(() => [
-      { custom: { adyenPaymentData: 'Authorised' } },
+      { custom: { adyenPaymentData: 'Authorised', adyenMD: 'mocked_md' } },
     ]);
-    window.session.privacy.MD = 'mocked_md';
     handleAuthorize({ req, res, next: jest.fn() });
     expect(handleOrderConfirmation.mock.calls).toMatchSnapshot();
   });
   it('should handle error when MD is invalid', () => {
-    window.session.privacy.MD = 'invalid_mocked_md';
+    req.form.MD = 'invalid_mocked_md';
     handleAuthorize({ req, res, next: jest.fn() });
     expect(handleError.mock.calls).toMatchSnapshot();
   });
   it('should handle invalid payment when result code is not Authorised', () => {
     OrderMgr.toArray.mockImplementation(() => [
-      { custom: { adyenPaymentData: 'Not_Authorised' } },
+      { custom: { adyenPaymentData: 'Not_Authorised', adyenMD: 'mocked_md' } },
     ]);
-    window.session.privacy.MD = 'mocked_md';
     handleAuthorize({ req, res, next: jest.fn() });
     expect(handleInvalidPayment.mock.calls).toMatchSnapshot();
   });
   it('should handle invalid payment when there is an error while placing an order', () => {
     OrderMgr.toArray.mockImplementation(() => [
-      { custom: { adyenPaymentData: 'Authorised' } },
+      { custom: { adyenPaymentData: 'Authorised', adyenMD: 'mocked_md' } },
     ]);
     COHelpers.placeOrder.mockImplementation(() => ({ error: true }));
-    window.session.privacy.MD = 'mocked_md';
     handleAuthorize({ req, res, next: jest.fn() });
     expect(handleInvalidPayment.mock.calls).toMatchSnapshot();
   });

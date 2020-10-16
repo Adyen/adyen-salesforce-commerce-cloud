@@ -28,19 +28,28 @@ function authorize(paymentInstrument, order, options) {
     return res.redirect(URLUtils.httpHome());
   }
 
+  const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
   // if error, return to checkout page
   if (result.error || result.resultCode !== 'Authorised') {
-    return handleInvalidPayment(order, 'payment', options);
+    return handleInvalidPayment(merchantRefOrder, 'payment', options);
   }
 
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
 
   // Places the order
-  const { error } = COHelpers.placeOrder(order, fraudDetectionStatus);
+  const { error } = COHelpers.placeOrder(
+    merchantRefOrder,
+    fraudDetectionStatus,
+  );
   return error
-    ? handleInvalidPayment(order, 'placeOrder', options)
-    : handleOrderConfirmation(paymentInstrument, result, order, options);
+    ? handleInvalidPayment(merchantRefOrder, 'placeOrder', options)
+    : handleOrderConfirmation(
+      paymentInstrument,
+      result,
+      merchantRefOrder,
+      options,
+    );
 }
 
 function handleAuthorize(options) {

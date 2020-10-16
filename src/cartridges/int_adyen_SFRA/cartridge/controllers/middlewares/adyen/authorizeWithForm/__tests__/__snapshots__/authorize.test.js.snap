@@ -5,6 +5,8 @@ Array [
   Array [
     Object {
       "custom": Object {
+        "adyenAction": null,
+        "adyenMD": null,
         "adyenPaymentData": null,
       },
     },
@@ -18,7 +20,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            undefined,
+            "mocked_method",
           ],
         ],
         "results": Array [
@@ -27,6 +29,7 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
+                  "adyenMD": "mocked_md",
                   "adyenPaymentData": "Authorised",
                 },
               },
@@ -42,6 +45,7 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenMD": "mocked_md",
                           "adyenPaymentData": "Authorised",
                         },
                       },
@@ -52,6 +56,8 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
                           "adyenPaymentData": null,
                         },
                       },
@@ -74,6 +80,9 @@ Array [
         "form": Object {
           "MD": "mocked_md",
         },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
       },
       "res": Object {
         "redirect": [MockFunction],
@@ -86,12 +95,15 @@ Array [
 exports[`Authorize should handle error when MD is invalid 1`] = `
 Array [
   Array [
-    "Session variable does not exists",
+    "Not a valid MD",
     Object {
       "next": [MockFunction],
       "req": Object {
         "form": Object {
-          "MD": "mocked_md",
+          "MD": "invalid_mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
         },
       },
       "res": Object {
@@ -112,7 +124,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            undefined,
+            "mocked_method",
           ],
         ],
         "results": Array [
@@ -121,6 +133,7 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
+                  "adyenMD": "mocked_md",
                   "adyenPaymentData": "Not_Authorised",
                 },
               },
@@ -136,6 +149,7 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenMD": "mocked_md",
                           "adyenPaymentData": "Not_Authorised",
                         },
                       },
@@ -146,6 +160,8 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
                           "adyenPaymentData": null,
                         },
                       },
@@ -169,6 +185,9 @@ Array [
         "form": Object {
           "MD": "mocked_md",
         },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
       },
       "res": Object {
         "redirect": [MockFunction],
@@ -188,7 +207,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            undefined,
+            "mocked_method",
           ],
         ],
         "results": Array [
@@ -197,6 +216,7 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
+                  "adyenMD": "mocked_md",
                   "adyenPaymentData": "Authorised",
                 },
               },
@@ -212,6 +232,7 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenMD": "mocked_md",
                           "adyenPaymentData": "Authorised",
                         },
                       },
@@ -222,6 +243,8 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
                           "adyenPaymentData": null,
                         },
                       },
@@ -244,6 +267,9 @@ Array [
       "req": Object {
         "form": Object {
           "MD": "mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
         },
       },
       "res": Object {
