@@ -11,9 +11,7 @@ function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
 
   if (reqDataObj.cancelTransaction) {
-    Logger.getLogger('Adyen').error(
-      `Shopper cancelled transaction for order ${session.privacy.orderNo}`,
-    );
+    Logger.getLogger('Adyen').error('Shopper cancelled transaction');
     return {};
   }
   const currentBasket = BasketMgr.getCurrentBasket();
@@ -35,13 +33,12 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
-
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
   });
 
+  result.orderNo = order.orderNo;
   res.json(result);
   return next();
 }
