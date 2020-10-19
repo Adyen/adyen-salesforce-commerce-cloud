@@ -1,6 +1,3 @@
-<script type="text/javascript">
-    console.log('3ds2 started');
-</script>
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="action" value="${pdict.action}" scope="page"/>
 <isset name="merchantReference" value="${pdict.merchantReference}" scope="page"/>
