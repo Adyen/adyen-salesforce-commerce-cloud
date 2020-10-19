@@ -42,14 +42,15 @@ function authorize(paymentInstrument, order, options) {
     merchantRefOrder,
     fraudDetectionStatus,
   );
+  const orderConfirmationArgs = [
+    paymentInstrument,
+    result,
+    merchantRefOrder,
+    options,
+  ];
   return error
     ? handleInvalidPayment(merchantRefOrder, 'placeOrder', options)
-    : handleOrderConfirmation(
-      paymentInstrument,
-      result,
-      merchantRefOrder,
-      options,
-    );
+    : handleOrderConfirmation(...orderConfirmationArgs);
 }
 
 function handleAuthorize(options) {
