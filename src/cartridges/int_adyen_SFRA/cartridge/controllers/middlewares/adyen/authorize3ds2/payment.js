@@ -19,14 +19,8 @@ function handleAction(orderNo, { res, next }) {
   return next();
 }
 
-function handlePaymentsDetailsCall(
-  paymentDetailsRequest,
-  order,
-  paymentInstrument,
-  options,
-) {
+function checkForValidRequest(result, order, paymentInstrument, options) {
   const { res, next } = options;
-  const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
   // If invalid payments/details call, return back to home page
   if (result.invalidRequest) {
     Logger.getLogger('Adyen').error(
@@ -40,16 +34,36 @@ function handlePaymentsDetailsCall(
     // Payment failed
     return handlePaymentError(order, paymentInstrument, options);
   }
-  const orderNo = result.merchantReference || order.orderNo;
-  if (result.action) {
-    // Redirect to ChallengeShopper
-    Transaction.wrap(() => {
-      paymentInstrument.custom.adyenAction = JSON.stringify(result.action);
-    });
-    return handleAction(orderNo, options);
+  return true;
+}
+
+// eslint-disable-next-line consistent-return
+function handlePaymentsDetailsCall(
+  paymentDetailsRequest,
+  order,
+  paymentInstrument,
+  options,
+) {
+  const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+  const isValid = checkForValidRequest(
+    result,
+    order,
+    paymentInstrument,
+    options,
+  );
+
+  if (isValid) {
+    const orderNo = result.merchantReference || order.orderNo;
+    if (result.action) {
+      // Redirect to ChallengeShopper
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenAction = JSON.stringify(result.action);
+      });
+      return handleAction(orderNo, options);
+    }
+    clearForms.clearAdyenData(paymentInstrument);
+    return handlePlaceOrder(paymentInstrument, order, result, options);
   }
-  clearForms.clearAdyenData(paymentInstrument);
-  return handlePlaceOrder(paymentInstrument, order, result, options);
 }
 
 module.exports = handlePaymentsDetailsCall;
