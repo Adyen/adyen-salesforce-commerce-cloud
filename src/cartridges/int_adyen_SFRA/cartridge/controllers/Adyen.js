@@ -722,20 +722,18 @@ server.get('GetPaymentMethods', server.middleware.https, function (
   }
 
   const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
+  const paymentAmount = currentBasket.getTotalGrossPrice()
+      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+      : 1000;
+  const currency = currentBasket.getTotalGrossPrice().currencyCode;
   const jsonResponse = {
     AdyenPaymentMethods: response,
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
     AdyenConnectedTerminals: JSON.parse(connectedTerminals),
+    amount: { value: paymentAmount, currency: currency },
+    countryCode,
   };
-  if (AdyenHelper.getCreditCardInstallments()) {
-    const paymentAmount = currentBasket.getTotalGrossPrice()
-      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-      : 1000;
-    const currency = currentBasket.getTotalGrossPrice().currencyCode;
-    jsonResponse.amount = { value: paymentAmount, currency: currency };
-    jsonResponse.countryCode = countryCode;
-  }
 
   res.json(jsonResponse);
   return next();
