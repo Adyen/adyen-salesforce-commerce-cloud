@@ -65,7 +65,7 @@ module.exports = {
     "no-var": "error",
     "prefer-const": "warn",
     "complexity": [
-      "warn",
+      "error",
       {
         "max": 4,
       },
