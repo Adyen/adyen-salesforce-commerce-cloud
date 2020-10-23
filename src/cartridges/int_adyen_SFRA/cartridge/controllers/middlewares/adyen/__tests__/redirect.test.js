@@ -11,6 +11,7 @@ beforeEach(() => {
     querystring: {
       signature: 'some_mocked_url/signature __ ocked_adyen_payment_data',
       redirectUrl: 'https://some_mocked_url/signature',
+      merchantReference: 'mocked_merchantReference',
     },
   };
 
@@ -18,11 +19,6 @@ beforeEach(() => {
     redirect: jest.fn(),
   };
 
-  window.session = {
-    privacy: {
-      orderNo: 'mocked_orderNo',
-    },
-  };
 });
 
 afterEach(() => {

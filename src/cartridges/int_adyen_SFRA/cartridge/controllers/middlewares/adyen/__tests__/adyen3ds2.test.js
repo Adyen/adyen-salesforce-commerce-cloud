@@ -14,7 +14,8 @@ beforeEach(() => {
     host: 'mocked_host',
     querystring: {
       resultCode: 'Authorised',
-      action: 'mocked_action'
+      action: 'mocked_action',
+      orderNo: 'mocked_orderNo',
     },
   };
 

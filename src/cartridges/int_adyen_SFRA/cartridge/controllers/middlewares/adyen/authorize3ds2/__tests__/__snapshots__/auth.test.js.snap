@@ -14,7 +14,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            "mocked_paymentMethod",
+            "mocked_method",
           ],
         ],
         "results": Array [
@@ -23,6 +23,8 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
+                  "adyenAction": "mocked_adyen_action",
+                  "adyenMD": "mocked_adyen_MD",
                   "adyenPaymentData": "mocked_adyen_payment_data",
                 },
               },
@@ -37,6 +39,8 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenAction": "mocked_adyen_action",
+                          "adyenMD": "mocked_adyen_MD",
                           "adyenPaymentData": "mocked_adyen_payment_data",
                         },
                       },
@@ -55,6 +59,8 @@ Array [
     },
     Object {
       "custom": Object {
+        "adyenAction": "mocked_adyen_action",
+        "adyenMD": "mocked_adyen_MD",
         "adyenPaymentData": "mocked_adyen_payment_data",
       },
     },
@@ -92,7 +98,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            "mocked_paymentMethod",
+            "mocked_method",
           ],
         ],
         "results": Array [
@@ -101,6 +107,8 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
+                  "adyenAction": "mocked_adyen_action",
+                  "adyenMD": "mocked_adyen_MD",
                   "adyenPaymentData": "mocked_adyen_payment_data",
                 },
               },
@@ -115,6 +123,8 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
+                          "adyenAction": "mocked_adyen_action",
+                          "adyenMD": "mocked_adyen_MD",
                           "adyenPaymentData": "mocked_adyen_payment_data",
                         },
                       },
@@ -133,6 +143,8 @@ Array [
     },
     Object {
       "custom": Object {
+        "adyenAction": "mocked_adyen_action",
+        "adyenMD": "mocked_adyen_MD",
         "adyenPaymentData": "mocked_adyen_payment_data",
       },
     },

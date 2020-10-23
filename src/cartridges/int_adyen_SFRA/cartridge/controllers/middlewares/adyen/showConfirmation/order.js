@@ -15,7 +15,7 @@ function handleOrderConfirm(
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
-  clearForms();
+  clearForms.clearForms();
   res.redirect(
     URLUtils.url(
       'Order-Confirm',

@@ -185,7 +185,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.resultCode === 'ChallengeShopper'
     ) {
       if (responseObject.action) {
-        paymentResponse.action = JSON.stringify(
+        paymentInstrument.custom.adyenAction = JSON.stringify(
             responseObject.action,
         );
       }

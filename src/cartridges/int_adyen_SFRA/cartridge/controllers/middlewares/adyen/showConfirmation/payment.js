@@ -35,11 +35,11 @@ function handleReceived(order, result, { res, next }) {
   return next();
 }
 
-function handlePaymentError(order, page, { next }) {
+function handlePaymentError(order, page, { res, next }) {
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
-  handleRedirect(page);
+  handleRedirect(page, { res });
   return next();
 }
 

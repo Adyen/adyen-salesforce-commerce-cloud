@@ -13,28 +13,17 @@ beforeEach(() => {
   authorizeWithForm = adyen.authorizeWithForm;
 
   jest.clearAllMocks();
-  const MD = 'mocked_MD';
-  window.session = {
-    privacy: {
-      orderNo: 'mocked_order_number',
-      paymentMethod: 'Authorised',
-      MD,
-    },
-    forms: {
-      billing: {
-        clearFormElement: jest.fn(),
-      },
-    },
-  };
-
   req = {
     form: {
-      MD,
+      MD: 'mocked_adyen_MD',
       PaRes: 'mocked_paRes',
     },
     locale: {
       id: 'mocked_locale_id',
     },
+    querystring: {
+      merchantReference: 'mocked_merchantReference',
+    }
   };
 
   res = {
@@ -55,31 +44,18 @@ function paymentNotValid() {
 }
 
 describe('Authorize with Form', () => {
-  it('should log error when theres no session privacy', () => {
-    const Logger = require('dw/system/Logger');
-    const URLUtils = require('dw/web/URLUtils');
-
-    window.session.privacy = {};
-    authorizeWithForm(req, res, next);
-    expect(Logger.error).toHaveBeenCalledWith(
-      'Session variable does not exists',
-    );
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
-  });
   it('should call getOrder and getPaymentInstruments', () => {
     const OrderMgr = require('dw/order/OrderMgr');
-
     authorizeWithForm(req, res, next);
-    expect(OrderMgr.getOrder).toBeCalledTimes(1);
+    expect(OrderMgr.getOrder).toBeCalledTimes(2);
     expect(OrderMgr.getPaymentInstruments).toBeCalledTimes(1);
   });
   it('should log error if privacy MD doesnt match form MD', () => {
     const Logger = require('dw/system/Logger');
-
-    window.session.privacy.MD = 'invalid_mocked_MD';
+    req.form.MD = 'invalid_mocked_MD';
     authorizeWithForm(req, res, next);
     expect(Logger.error).toHaveBeenCalledWith(
-      'Session variable does not exists',
+      'Not a valid MD',
     );
   });
 
@@ -87,6 +63,7 @@ describe('Authorize with Form', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     adyenCheckout.doPaymentDetailsCall.mockReturnValue({
       error: true,
+      merchantReference: 'mocked_merchantReference'
     });
     authorizeWithForm(req, res, next);
     paymentNotValid();
@@ -94,9 +71,9 @@ describe('Authorize with Form', () => {
   it("should call 'failOrder' if result code is not 'Authorised'", () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const OrderMgr = require('dw/order/OrderMgr');
-
     adyenCheckout.doPaymentDetailsCall.mockReturnValue({
       resultCode: 'Not_Authorised',
+      merchantReference: 'mocked_merchantReference'
     });
     authorizeWithForm(req, res, next);
     expect(OrderMgr.failOrder).toBeCalledTimes(1);
@@ -115,6 +92,7 @@ describe('Authorize with Form', () => {
     const URLUtils = require('dw/web/URLUtils');
     adyenCheckout.doPaymentDetailsCall.mockReturnValue({
       resultCode: 'Authorised',
+      merchantReference: 'mocked_merchantReference',
     });
     authorizeWithForm(req, res, next);
     expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');

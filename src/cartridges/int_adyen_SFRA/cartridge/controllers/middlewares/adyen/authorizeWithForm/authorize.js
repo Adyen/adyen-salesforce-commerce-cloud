@@ -1,11 +1,33 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const constants = require('*/cartridge/adyenConstants/constants');
+const { clearForms } = require('../../../utils/index');
 const handleError = require('./error');
 const handleInvalidPayment = require('./payment');
 const handleOrderConfirmation = require('./order');
 
+function checkForValidRequest(result, order, merchantRefOrder, options) {
+  const { res, next } = options;
+  // If invalid payments/details call, return back to home page
+  if (result.invalidRequest) {
+    Logger.getLogger('Adyen').error(
+      `Invalid request for order ${order.orderNo}`,
+    );
+    res.redirect(URLUtils.httpHome());
+    return next();
+  }
+
+  // if error, return to checkout page
+  if (result.error || result.resultCode !== 'Authorised') {
+    return handleInvalidPayment(merchantRefOrder, 'payment', options);
+  }
+  return true;
+}
+
+// eslint-disable-next-line consistent-return
 function authorize(paymentInstrument, order, options) {
   const { req } = options;
   const jsonRequest = {
@@ -16,37 +38,48 @@ function authorize(paymentInstrument, order, options) {
     },
   };
   const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+  clearForms.clearAdyenData(paymentInstrument);
 
-  Transaction.wrap(() => {
-    paymentInstrument.custom.adyenPaymentData = null;
-  });
+  const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
+  const isValid = checkForValidRequest(
+    result,
+    order,
+    merchantRefOrder,
+    options,
+  );
 
-  // if error, return to checkout page
-  if (result.error || result.resultCode !== 'Authorised') {
-    return handleInvalidPayment(order, 'payment', options);
+  if (isValid) {
+    // custom fraudDetection
+    const fraudDetectionStatus = { status: 'success' };
+
+    // Places the order
+    const { error } = COHelpers.placeOrder(
+      merchantRefOrder,
+      fraudDetectionStatus,
+    );
+    const orderConfirmationArgs = [
+      paymentInstrument,
+      result,
+      merchantRefOrder,
+      options,
+    ];
+    return error
+      ? handleInvalidPayment(merchantRefOrder, 'placeOrder', options)
+      : handleOrderConfirmation(...orderConfirmationArgs);
   }
-
-  // custom fraudDetection
-  const fraudDetectionStatus = { status: 'success' };
-
-  // Places the order
-  const { error } = COHelpers.placeOrder(order, fraudDetectionStatus);
-  return error
-    ? handleInvalidPayment(order, 'placeOrder', options)
-    : handleOrderConfirmation(paymentInstrument, result, order, options);
 }
 
 function handleAuthorize(options) {
   const { req } = options;
-  const order = OrderMgr.getOrder(session.privacy.orderNo);
+  const order = OrderMgr.getOrder(req.querystring.merchantReference);
   const [paymentInstrument] = order
-    .getPaymentInstruments(session.privacy.paymentMethod)
+    .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)
     .toArray();
 
-  const hasValidMD = session.privacy.MD === req.form.MD;
+  const hasValidMD = paymentInstrument.custom.adyenMD === req.form.MD;
   return hasValidMD
     ? authorize(paymentInstrument, order, options)
-    : handleError('Session variable does not exists', options);
+    : handleError('Not a valid MD', options);
 }
 
 module.exports = handleAuthorize;

@@ -1,5 +1,7 @@
 const URLUtils = require('dw/web/URLUtils');
 const Logger = require('dw/system/Logger');
+const OrderMgr = require('dw/order/OrderMgr');
+const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
@@ -13,13 +15,21 @@ function adyen3ds2(req, res, next) {
     );
     const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const { resultCode } = req.querystring;
-    const { action } = req.querystring;
+    const { orderNo } = req.querystring;
+
+    const order = OrderMgr.getOrder(orderNo);
+    const paymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    const action = paymentInstrument.custom.adyenAction;
+
     res.render('/threeds2/adyen3ds2', {
       locale: request.getLocale(),
       originKey,
       environment,
       resultCode,
       action,
+      merchantReference: orderNo,
     });
   } catch (err) {
     Logger.getLogger('Adyen').error(

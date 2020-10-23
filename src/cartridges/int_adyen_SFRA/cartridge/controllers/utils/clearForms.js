@@ -1,3 +1,4 @@
+const Transaction = require('dw/system/Transaction');
 /**
  * Clear custom session data
  */
@@ -21,4 +22,18 @@ function clearForms() {
   clearCustomSessionFields();
 }
 
-module.exports = clearForms;
+/**
+ * Clear Adyen payment data
+ */
+function clearAdyenData(paymentInstrument) {
+  Transaction.wrap(() => {
+    paymentInstrument.custom.adyenPaymentData = null;
+    paymentInstrument.custom.adyenMD = null;
+    paymentInstrument.custom.adyenAction = null;
+  });
+}
+
+module.exports = {
+  clearForms,
+  clearAdyenData,
+};

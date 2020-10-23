@@ -11,7 +11,7 @@ Array [
 exports[`Redirect should fail if there is no order and signature 1`] = `
 Array [
   Array [
-    "No signature or no order with orderNo mocked_orderNo",
+    "No signature or no order with orderNo mocked_merchantReference",
   ],
   Array [
     "Redirect signature is not correct",

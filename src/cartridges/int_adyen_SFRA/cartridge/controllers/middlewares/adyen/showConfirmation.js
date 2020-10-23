@@ -1,17 +1,17 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
-const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('./showConfirmation/payment');
+const { clearForms } = require('../../utils/index');
 const handleAuthorised = require('./showConfirmation/authorise');
 
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
 
   try {
-    const order = OrderMgr.getOrder(session.privacy.orderNo);
+    const order = OrderMgr.getOrder(req.querystring.merchantReference);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
@@ -28,18 +28,28 @@ function showConfirmation(req, res, next) {
     };
 
     const result = adyenCheckout.doPaymentDetailsCall(requestObject);
-    Transaction.wrap(() => {
-      adyenPaymentInstrument.custom.adyenPaymentData = null;
-    });
+    clearForms.clearAdyenData(adyenPaymentInstrument);
 
+    if (result.invalidRequest) {
+      Logger.getLogger('Adyen').error('Invalid /payments/details call');
+      return response.redirect(URLUtils.httpHome());
+    }
     // Authorised: The payment authorisation was successfully completed.
     if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
-      return handleAuthorised(order, result, adyenPaymentInstrument, options);
+      const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
+      return handleAuthorised(
+        merchantRefOrder,
+        result,
+        adyenPaymentInstrument,
+        options,
+      );
     }
     return payment.handlePaymentError(order, 'placeOrder', options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-      `Could not verify /payment/details: ${e.message}`,
+      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();

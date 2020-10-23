@@ -4,6 +4,8 @@ exports[`Payment should handle payment instruments with payload 1`] = `
 Object {
   "adyenPaymentInstrument": Object {
     "custom": Object {
+      "adyenAction": "mocked_adyen_action",
+      "adyenMD": "mocked_adyen_MD",
       "adyenPaymentData": "mocked_adyen_payment_data",
     },
   },
@@ -18,6 +20,8 @@ exports[`Payment should handle payment instruments with redirect result 1`] = `
 Object {
   "adyenPaymentInstrument": Object {
     "custom": Object {
+      "adyenAction": "mocked_adyen_action",
+      "adyenMD": "mocked_adyen_MD",
       "adyenPaymentData": "mocked_adyen_payment_data",
     },
   },

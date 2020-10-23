@@ -6,7 +6,12 @@ function adyen3d(req, res, next) {
   const { IssuerURL } = req.querystring;
   const { PaRequest } = req.querystring;
   const { MD } = req.querystring;
-  const TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
+  const { merchantReference } = req.querystring;
+  const TermURL = URLUtils.https(
+    'Adyen-AuthorizeWithForm',
+    'merchantReference',
+    merchantReference,
+  );
   const { signature } = req.querystring;
   const currentSignature = AdyenHelper.getAdyenHash(
     IssuerURL.substr(IssuerURL.length - 25),

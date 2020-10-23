@@ -8,13 +8,14 @@ beforeEach(() => {
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
-  window.session.privacy = { orderNo: 'mocked_orderNo' };
   res = {
     redirect: jest.fn(),
   };
 
   req = {
-    querystring: {},
+    querystring: {
+      merchantReference: 'mocked_merchantReference'
+    },
     locale: { id: 'nl_NL' },
   };
 });
@@ -44,6 +45,7 @@ describe('Show Confirmation', () => {
       adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
         resultCode: a,
         paymentMethod: [],
+        merchantReference: 'mocked_merchantReference',
       }));
       showConfirmation(req, res, jest.fn());
       expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');

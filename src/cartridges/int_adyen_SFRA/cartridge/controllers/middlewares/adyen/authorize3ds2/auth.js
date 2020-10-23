@@ -1,5 +1,6 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const handlePaymentsCall = require('./payment');
+const constants = require('*/cartridge/adyenConstants/constants');
+const handlePaymentsDetailsCall = require('./payment');
 const { toggle3DS2Error } = require('./errorHandler');
 
 function contains3ds2Action({ req }) {
@@ -9,17 +10,17 @@ function contains3ds2Action({ req }) {
   );
 }
 
-function handle3DS2Authentication(session, options) {
+function handle3DS2Authentication(options) {
   const { req } = options;
-  const order = OrderMgr.getOrder(session.privacy.orderNo);
+  const order = OrderMgr.getOrder(req.form.merchantReference);
   const paymentInstrument = order.getPaymentInstruments(
-    session.privacy.paymentMethod,
+    constants.METHOD_ADYEN_COMPONENT,
   )[0];
   const paymentDetailsRequest = {
     paymentData: paymentInstrument.custom.adyenPaymentData,
     details: JSON.parse(req.form.stateData).details,
   };
-  return handlePaymentsCall(
+  return handlePaymentsDetailsCall(
     paymentDetailsRequest,
     order,
     paymentInstrument,
@@ -27,11 +28,9 @@ function handle3DS2Authentication(session, options) {
   );
 }
 
-function createAuthorization(session, options) {
+function createAuthorization(options) {
   const is3DS2 = contains3ds2Action(options);
-  return is3DS2
-    ? handle3DS2Authentication(session, options)
-    : toggle3DS2Error(options);
+  return is3DS2 ? handle3DS2Authentication(options) : toggle3DS2Error(options);
 }
 
 module.exports = createAuthorization;

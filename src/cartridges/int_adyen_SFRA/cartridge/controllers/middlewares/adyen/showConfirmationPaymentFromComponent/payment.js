@@ -65,7 +65,7 @@ function handleAuthorisedPayment(
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
-  clearForms();
+  clearForms.clearForms();
   res.redirect(
     URLUtils.https(
       'Order-Confirm',

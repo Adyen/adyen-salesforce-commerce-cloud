@@ -1,5 +1,6 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="action" value="${pdict.action}" scope="page"/>
+<isset name="merchantReference" value="${pdict.merchantReference}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
@@ -26,6 +27,7 @@
         if(JSON.stringify(state.data).includes("threeds2.challengeResult")){
             document.getElementById("challengeResult").value = "true";
         }
+        document.getElementById("merchantReference").value = '${pdict.merchantReference}';
         document.getElementById("3ds2-form").submit();
     }
 </script>
@@ -41,6 +43,7 @@
             <input type="hidden" id="resultCode" name="resultCode" value="${resultCode}"/>
             <input type="hidden" id="stateData" name="stateData" />
             <input type="hidden" id="challengeResult" name="challengeResult"/>
+            <input type="hidden" id="merchantReference" name="merchantReference"/>
         </div>
     </div>
 </form>

@@ -117,6 +117,7 @@ describe('Place Order', () => {
         data: { MD: 'mocked_MD', PaReq: 'mocked_PaReq' },
         url: 'mocked_url',
       },
+      orderNo: 'mocked_orderNo',
     }));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();
@@ -126,6 +127,7 @@ describe('Place Order', () => {
     adyenHelpers.handlePayments.mockImplementation(() => ({
       authorized3d: false,
       redirectObject: true,
+      orderNo: 'mocked_orderNo',
     }));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();
