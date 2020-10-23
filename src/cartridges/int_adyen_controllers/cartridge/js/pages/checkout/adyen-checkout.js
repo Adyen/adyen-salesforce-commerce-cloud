@@ -423,6 +423,7 @@ async function renderGenericComponent() {
   const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = checkoutConfiguration.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
