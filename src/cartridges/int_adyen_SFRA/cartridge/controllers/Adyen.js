@@ -723,8 +723,8 @@ server.get('GetPaymentMethods', server.middleware.https, function (
 
   const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
   const paymentAmount = currentBasket.getTotalGrossPrice()
-      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-      : 1000;
+    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+    : 1000;
   const currency = currentBasket.getTotalGrossPrice().currencyCode;
   const jsonResponse = {
     AdyenPaymentMethods: response,
