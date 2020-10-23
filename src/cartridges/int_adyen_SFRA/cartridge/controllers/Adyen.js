@@ -732,7 +732,7 @@ server.get('GetPaymentMethods', server.middleware.https, function (
     AdyenDescriptions: paymentMethodDescriptions,
     AdyenConnectedTerminals: JSON.parse(connectedTerminals),
     amount: { value: paymentAmount, currency: currency },
-    countryCode,
+    countryCode: countryCode,
   };
 
   res.json(jsonResponse);
