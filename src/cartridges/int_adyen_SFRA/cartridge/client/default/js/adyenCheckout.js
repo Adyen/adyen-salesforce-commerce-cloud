@@ -377,6 +377,10 @@ function renderPaymentMethod(
     displaySelectedMethod(event.target.value);
   };
 
+  if (paymentMethodID === 'giropay') {
+    container.innerHTML = '';
+  }
+
   if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
     componentsObj[paymentMethodID].isValid = true;
   }
