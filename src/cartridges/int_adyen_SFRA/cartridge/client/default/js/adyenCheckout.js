@@ -51,7 +51,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       const componentName = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : state.data.paymentMethod.type;
-      if (componentName === selectedMethod) {
+      if (componentName === selectedMethod || selectedMethod === 'bcmc') {
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
       }
