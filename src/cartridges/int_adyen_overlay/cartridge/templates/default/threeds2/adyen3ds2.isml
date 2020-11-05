@@ -12,8 +12,7 @@
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
         var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
-        var merchantReference = "${pdict.merchantReference}";
-        console.log('merchant ref is ' + merchantReference);
+        var merchantReference = "${pdict.merchantReference}".replace(/&quot;/g, '\"');
         var threeDS2Element = document.getElementById('threeDS2');
         var configuration = {
             locale: '${pdict.locale}',
