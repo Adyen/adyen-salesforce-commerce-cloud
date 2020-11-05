@@ -85,8 +85,8 @@ function Authorize(args) {
         view: app.getView({
           ContinueURL: URLUtils.https(
             'Adyen-Redirect3DS2',
-              'merchantReference',
-              order.orderNo,
+            'merchantReference',
+            order.orderNo,
             'action',
             result.action,
             'utm_nooverride',
@@ -99,7 +99,11 @@ function Authorize(args) {
     }
 
     // If the response has MD, then it is a 3DS transaction
-    if (result.redirectObject?.data?.MD) {
+    if (
+      result.redirectObject
+        && result.redirectObject.data
+        && result.redirectObject.data.MD
+    ) {
       Transaction.wrap(() => {
         paymentInstrument.custom.adyenMD = result.redirectObject.data.MD;
       });
@@ -108,8 +112,8 @@ function Authorize(args) {
         view: app.getView({
           ContinueURL: URLUtils.https(
             'Adyen-AuthorizeWithForm',
-              'merchantReference',
-              order.orderNo,
+            'merchantReference',
+            order.orderNo,
             'utm_nooverride',
             '1',
           ),

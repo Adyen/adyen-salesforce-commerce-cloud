@@ -28,9 +28,9 @@ server.get(
     const orderNo = req.querystring.merchantReference;
     const MD = req.querystring.MD;
     const TermURL = URLUtils.https(
-        'Adyen-AuthorizeWithForm',
-        'merchantReference',
-        orderNo,
+      'Adyen-AuthorizeWithForm',
+      'merchantReference',
+      orderNo,
     );
     const signature = req.querystring.signature;
 
@@ -67,99 +67,99 @@ server.post(
     Logger.getLogger('Adyen').error(JSON.stringify(req.form));
     const orderNo = req.querystring.merchantReference;
     let order = OrderMgr.getOrder(orderNo);
-    let paymentInstrument = order.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
+    const paymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
     )[0];
 
-      try {
-        clearCustomSessionFields();
-        if (paymentInstrument.custom.adyenMD !== req.form.MD) {
-          clearAdyenData(paymentInstrument);
-          Logger.getLogger('Adyen').error(`Incorrect MD for order ${orderNo}`);
-          return response.redirect(URLUtils.httpHome());
-        }
-
-          const jsonRequest = {
-            paymentData: paymentInstrument.custom.adyenPaymentData,
-            details: {
-              MD: req.form.MD,
-              PaRes: req.form.PaRes,
-            },
-          };
-          const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
-          if (result.invalidRequest) {
-            Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
-            return response.redirect(URLUtils.httpHome());
-          }
-
-          // if error, return to checkout page
-          if (result.error || result.resultCode !== 'Authorised') {
-            Transaction.wrap(function () {
-              OrderMgr.failOrder(order, true);
-            });
-            res.redirect(
-                URLUtils.url(
-                    'Checkout-Begin',
-                    'stage',
-                    'payment',
-                    'paymentError',
-                    Resource.msg('error.payment.not.valid', 'checkout', null),
-                ),
-            );
-            return next();
-          }
-
-          // custom fraudDetection
-          const fraudDetectionStatus = {status: 'success'};
-
-          order = OrderMgr.getOrder(result.merchantReference);
-
-          // Places the order
-          const placeOrderResult = COHelpers.placeOrder(
-              order,
-              fraudDetectionStatus,
-          );
-          if (placeOrderResult.error) {
-            Transaction.wrap(function () {
-              OrderMgr.failOrder(order, true);
-            });
-            res.redirect(
-                URLUtils.url(
-                    'Checkout-Begin',
-                    'stage',
-                    'placeOrder',
-                    'paymentError',
-                    Resource.msg('error.payment.not.valid', 'checkout', null),
-                ),
-            );
-            return next();
-          }
-
-          Transaction.begin();
-          AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
-          order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
-          Transaction.commit();
-          COHelpers.sendConfirmationEmail(order, req.locale.id);
-          clearAdyenData(paymentInstrument);
-          clearForms();
-          res.redirect(
-              URLUtils.url(
-                  'Order-Confirm',
-                  'ID',
-                  order.orderNo,
-                  'token',
-                  order.orderToken,
-              ).toString(),
-          );
-          return next();
-      } catch (e) {
-        Logger.getLogger('Adyen').error(
-            `Could not verify authorizeWithForm: ${
-                e.message
-            } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-        );
+    try {
+      clearCustomSessionFields();
+      if (paymentInstrument.custom.adyenMD !== req.form.MD) {
+        clearAdyenData(paymentInstrument);
+        Logger.getLogger('Adyen').error(`Incorrect MD for order ${orderNo}`);
+        return response.redirect(URLUtils.httpHome());
       }
+
+      const jsonRequest = {
+        paymentData: paymentInstrument.custom.adyenPaymentData,
+        details: {
+          MD: req.form.MD,
+          PaRes: req.form.PaRes,
+        },
+      };
+      const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+      if (result.invalidRequest) {
+        Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
+        return response.redirect(URLUtils.httpHome());
+      }
+
+      // if error, return to checkout page
+      if (result.error || result.resultCode !== 'Authorised') {
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order, true);
+        });
+        res.redirect(
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'payment',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
+        );
+        return next();
+      }
+
+      // custom fraudDetection
+      const fraudDetectionStatus = { status: 'success' };
+
+      order = OrderMgr.getOrder(result.merchantReference);
+
+      // Places the order
+      const placeOrderResult = COHelpers.placeOrder(
+        order,
+        fraudDetectionStatus,
+      );
+      if (placeOrderResult.error) {
+        Transaction.wrap(function () {
+          OrderMgr.failOrder(order, true);
+        });
+        res.redirect(
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'placeOrder',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
+        );
+        return next();
+      }
+
+      Transaction.begin();
+      AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
+      order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
+      order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
+      Transaction.commit();
+      COHelpers.sendConfirmationEmail(order, req.locale.id);
+      clearAdyenData(paymentInstrument);
+      clearForms();
+      res.redirect(
+        URLUtils.url(
+          'Order-Confirm',
+          'ID',
+          order.orderNo,
+          'token',
+          order.orderToken,
+        ).toString(),
+      );
+      return next();
+    } catch (e) {
+      Logger.getLogger('Adyen').error(
+        `Could not verify authorizeWithForm: ${
+          e.message
+        } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
+      );
+    }
   },
 );
 
@@ -221,24 +221,24 @@ server.post(
       const orderNo = req.form.merchantReference;
       const order = OrderMgr.getOrder(orderNo);
       const paymentInstrument = order.getPaymentInstruments(
-          constants.METHOD_ADYEN_COMPONENT,
+        constants.METHOD_ADYEN_COMPONENT,
       )[0];
       let details = {};
       if (
-          ['IdentifyShopper', 'ChallengeShopper'].indexOf(req.form.resultCode) !== -1
+        ['IdentifyShopper', 'ChallengeShopper'].indexOf(req.form.resultCode) !== -1
           || req.form.challengeResult
       ) {
         details = JSON.parse(req.form.stateData).details;
       } else {
         Logger.getLogger('Adyen').error('paymentDetails 3DS2 not available');
         res.redirect(
-            URLUtils.url(
-                'Checkout-Begin',
-                'stage',
-                'payment',
-                'paymentError',
-                Resource.msg('error.payment.not.valid', 'checkout', null),
-            ),
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'payment',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
         );
         return next();
       }
@@ -264,13 +264,13 @@ server.post(
           paymentInstrument.custom.adyenPaymentData = null;
         });
         res.redirect(
-            URLUtils.url(
-                'Checkout-Begin',
-                'stage',
-                'payment',
-                'paymentError',
-                Resource.msg('error.payment.not.valid', 'checkout', null),
-            ),
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'payment',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
         );
         return next();
       }
@@ -278,13 +278,13 @@ server.post(
         // Redirect to ChallengeShopper
 
         res.redirect(
-            URLUtils.url(
-                'Adyen-Adyen3DS2',
-                'action',
-                JSON.stringify(result.action),
-                'merchantReference',
-                resultOrderNo,
-            ),
+          URLUtils.url(
+            'Adyen-Adyen3DS2',
+            'action',
+            JSON.stringify(result.action),
+            'merchantReference',
+            resultOrderNo,
+          ),
         );
         return next();
       }
@@ -295,25 +295,25 @@ server.post(
       });
 
       // custom fraudDetection
-      const fraudDetectionStatus = {status: 'success'};
+      const fraudDetectionStatus = { status: 'success' };
 
       // Places the order
       const placeOrderResult = COHelpers.placeOrder(
-          resultOrder,
-          fraudDetectionStatus,
+        resultOrder,
+        fraudDetectionStatus,
       );
       if (placeOrderResult.error) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(resultOrder, true);
         });
         res.redirect(
-            URLUtils.url(
-                'Checkout-Begin',
-                'stage',
-                'placeOrder',
-                'paymentError',
-                Resource.msg('error.payment.not.valid', 'checkout', null),
-            ),
+          URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'placeOrder',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+          ),
         );
         return next();
       }
@@ -326,20 +326,20 @@ server.post(
       COHelpers.sendConfirmationEmail(resultOrder, req.locale.id);
       clearForms();
       res.redirect(
-          URLUtils.url(
-              'Order-Confirm',
-              'ID',
-              resultOrder.orderNo,
-              'token',
-              resultOrder.orderToken,
-          ).toString(),
+        URLUtils.url(
+          'Order-Confirm',
+          'ID',
+          resultOrder.orderNo,
+          'token',
+          resultOrder.orderToken,
+        ).toString(),
       );
       return next();
     } catch (e) {
       Logger.getLogger('Adyen').error(
-          `Could not complete authorize3ds2: ${
-              e.message
-          } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
+        `Could not complete authorize3ds2: ${
+          e.message
+        } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
       );
     }
   },
@@ -446,7 +446,7 @@ server.get('ShowConfirmation', server.middleware.https, function (
     const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
 
     const paymentInstrument = merchantRefOrder.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
+      constants.METHOD_ADYEN_COMPONENT,
     )[0];
 
     // Authorised: The payment authorisation was successfully completed.
@@ -796,7 +796,7 @@ server.post('PaymentFromComponent', server.middleware.https, function (
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     Logger.getLogger('Adyen').error(
-      `Shopper cancelled transaction`,
+      'Shopper cancelled transaction',
     );
     return {};
   }

@@ -6,7 +6,6 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 
 server.prepend('PlaceOrder', server.middleware.https, function (
   req,
@@ -157,7 +156,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (
     return;
   }
   const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+    constants.METHOD_ADYEN_COMPONENT,
   )[0];
 
   // Handles payment authorization
@@ -180,8 +179,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         handlePaymentResult.resultCode,
         'action',
         handlePaymentResult.action,
-          'merchantReference',
-          order.orderNo,
+        'merchantReference',
+        order.orderNo,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
@@ -204,8 +203,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
           handlePaymentResult.redirectObject.data.MD,
           'signature',
           handlePaymentResult.signature,
-            'merchantReference',
-            order.orderNo,
+          'merchantReference',
+          order.orderNo,
         ).toString(),
       });
       this.emit('route:Complete', req, res);
@@ -219,8 +218,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         handlePaymentResult.redirectObject.url,
         'signature',
         handlePaymentResult.signature,
-          'merchantReference',
-          order.orderNo,
+        'merchantReference',
+        order.orderNo,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
