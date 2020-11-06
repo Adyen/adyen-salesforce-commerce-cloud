@@ -40,7 +40,6 @@ server.get(
     );
 
     if (signature === currentSignature) {
-      Logger.getLogger('Adyen').error('signature matches .. ');
       res.render('adyenform', {
         issuerUrl: IssuerURL,
         paRequest: PaRequest,
@@ -64,7 +63,6 @@ server.post(
   server.middleware.https,
   function (req, res, next) {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    Logger.getLogger('Adyen').error(JSON.stringify(req.form));
     const orderNo = req.querystring.merchantReference;
     let order = OrderMgr.getOrder(orderNo);
     const paymentInstrument = order.getPaymentInstruments(

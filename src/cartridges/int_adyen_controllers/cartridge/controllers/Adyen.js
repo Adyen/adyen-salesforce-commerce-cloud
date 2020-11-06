@@ -222,6 +222,7 @@ function paymentFromComponent() {
     Order: order,
     PaymentInstrument: paymentInstrument,
   });
+  result.orderNo = order.orderNo;
 
   Transaction.commit();
   const responseUtils = require('*/cartridge/scripts/util/Response');
@@ -233,7 +234,7 @@ function paymentFromComponent() {
  */
 function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
-  const orderNumber = session.privacy.orderNo;
+  const orderNumber = paymentInformation.get('merchantReference').value();
   const order = OrderMgr.getOrder(orderNumber);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
