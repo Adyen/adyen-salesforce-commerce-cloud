@@ -57,7 +57,6 @@ function Handle(basket, paymentInformation) {
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom
  *      logic to authorize credit card payment.
- * @param {number} orderNumber - The current order's number
  * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
  * @param {dw.order.PaymentProcessor} paymentProcessor -  The payment processor of the current
  *      payment method
@@ -69,11 +68,9 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
   const order = OrderMgr.getOrder(orderNumber);
 
   const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-  Transaction.wrap(function () {
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-  });
 
   Transaction.begin();
+  paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
@@ -95,14 +92,13 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
 
-    session.privacy.orderNo = order.orderNo;
-    session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-
     if (result.threeDS2) {
       return {
         threeDS2: result.threeDS2,
         resultCode: result.resultCode,
         token3ds2: result.token3ds2,
+        action: result.action,
+        merchantReference: order.orderNo,
       };
     }
 

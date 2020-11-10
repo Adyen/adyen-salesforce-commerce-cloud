@@ -198,6 +198,11 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.resultCode === 'IdentifyShopper'
       || paymentResponse.resultCode === 'ChallengeShopper'
     ) {
+      if (responseObject.action) {
+        paymentResponse.action = JSON.stringify(
+          responseObject.action,
+        );
+      }
       paymentResponse.decision = 'ACCEPT';
       paymentResponse.threeDS2 = true;
       let token3ds2;
@@ -320,6 +325,7 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
     );
     return {
       error: true,
+      invalidRequest: true,
     };
   }
 

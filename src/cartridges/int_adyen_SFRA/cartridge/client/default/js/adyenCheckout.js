@@ -51,7 +51,7 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       const componentName = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : state.data.paymentMethod.type;
-      if (componentName === selectedMethod) {
+      if (componentName === selectedMethod || selectedMethod === 'bcmc') {
         componentsObj[selectedMethod].isValid = isValid;
         componentsObj[selectedMethod].stateData = state.data;
       }
@@ -113,6 +113,29 @@ checkoutConfiguration.paymentMethodsConfiguration = {
       }
     },
   },
+  mbway: {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      assignPaymentMethodValue();
+      if (!formErrorsExist) {
+        document.getElementById('component_mbway').querySelector('button').disabled = true;
+        paymentFromComponent(state.data, component);
+        document.querySelector('#adyenStateData').value = JSON.stringify(
+          state.data,
+        );
+      }
+    },
+    onError: (/* error, component */) => {
+      document.querySelector('#showConfirmationForm').submit();
+    },
+    onAdditionalDetails: (state /* , component */) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+    },
+  },
   afterpay_default: {
     visibility: {
       personalDetails: 'editable',
@@ -165,7 +188,7 @@ if (window.googleMerchantID !== 'null' && window.Configuration.environment === '
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1) {
     document.querySelector('button[value="submit-payment"]').disabled = true;
   } else {
     document.querySelector('button[value="submit-payment"]').disabled = false;
@@ -224,6 +247,7 @@ async function renderGenericComponent() {
     checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
     if (data.amount) {
       checkoutConfiguration.amount = data.amount;
+      checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = data.amount;
     }
     if (data.countryCode) {
       checkoutConfiguration.countryCode = data.countryCode;
@@ -353,6 +377,10 @@ function renderPaymentMethod(
     displaySelectedMethod(event.target.value);
   };
 
+  if (paymentMethodID === 'giropay') {
+    container.innerHTML = '';
+  }
+
   if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
     componentsObj[paymentMethodID].isValid = true;
   }
@@ -409,6 +437,9 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success: function (data) {
+      if (data.orderNo) {
+        document.querySelector('#merchantReference').value = data.orderNo;
+      }
       if (data.fullResponse && data.fullResponse.action) {
         component.handleAction(data.fullResponse.action);
       } else {

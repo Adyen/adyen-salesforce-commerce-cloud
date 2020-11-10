@@ -66,7 +66,7 @@ function initializeBillingEvents() {
           const componentName = state.data.paymentMethod.storedPaymentMethodId
             ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
             : state.data.paymentMethod.type;
-          if (componentName === selectedMethod) {
+          if (componentName === selectedMethod || selectedMethod === 'bcmc') {
             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
             componentsObj[selectedMethod].isValid = isValid;
             componentsObj[selectedMethod].stateData = state.data;
@@ -423,6 +423,7 @@ async function renderGenericComponent() {
   const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -515,6 +516,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     displaySelectedMethod(event.target.value);
   };
 
+  if (paymentMethodID === 'giropay') {
+    container.innerHTML = '';
+  }
+
   if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
     componentsObj[paymentMethodID].isValid = true;
   }
@@ -577,6 +582,9 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
     success: function (data) {
+      if (data.result && data.result.orderNo) {
+        document.querySelector('#merchantReference').value = data.result.orderNo;
+      }
       if (
         data.result
         && data.result.fullResponse
