@@ -63,7 +63,7 @@ function createPaymentRequest(args) {
 
     // L2/3 Data
     if (AdyenHelper.getAdyenLevel23DataEnabled()) {
-      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
+      // paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
     }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
