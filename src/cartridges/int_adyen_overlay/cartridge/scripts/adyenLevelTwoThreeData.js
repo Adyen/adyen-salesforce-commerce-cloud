@@ -31,7 +31,6 @@ require('dw/util');
 require('dw/value');
 require('dw/net');
 require('dw/web');
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
@@ -50,14 +49,19 @@ function getLineItems({ Order: order }) {
     const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
     const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
     const currentLineItem = {
-      [`enhancedSchemeData.itemDetailLine${index + 1}.description`]: description?.substring(0, 26).replace(/[^\x00-\x7F]/g, ''),
       [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.toFixed(),
       [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()),
       [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
-      [`enhancedSchemeData.itemDetailLine${index + 1}.productCode`]: id?.substring(0, 12),
       [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
       ...(commodityCode && { [`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`]: commodityCode }),
     };
+
+    if (description) {
+      currentLineItem[`enhancedSchemeData.itemDetailLine${index + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, '');
+    }
+    if (id) {
+      currentLineItem[`enhancedSchemeData.itemDetailLine${index + 1}.productCode`] = id.substring(0, 12);
+    }
 
     return {
       ...acc,
