@@ -31,7 +31,7 @@
   "dependencies": {
     "babel-loader": "^8.0.4",
     "cleave.js": "^1.0.1",
-    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
