@@ -26,14 +26,13 @@ function getMethods(basket, customer, countryCode) {
     // paymentMethods call from checkout
     if (basket) {
       paymentAmount = basket.getTotalGrossPrice()
-        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
+        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).getValueOrNull()
         : 1000;
       currencyCode = basket.currencyCode;
     } else { // paymentMethods call from My Account
       paymentAmount = 1000;
       currencyCode = session.currency.currencyCode;
     }
-
     const paymentMethodsRequest = {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       amount: {

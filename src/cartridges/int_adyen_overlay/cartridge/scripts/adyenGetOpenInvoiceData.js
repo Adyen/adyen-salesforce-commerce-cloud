@@ -60,12 +60,12 @@ function getLineItems(args) {
       const description = LineItemHelper.getDescription(lineItem);
       const id = LineItemHelper.getId(lineItem);
       const quantity = LineItemHelper.getQuantity(lineItem);
-      const itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
-      const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+      const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
+      const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
       const vatPercentage = LineItemHelper.getVatPercentage(lineItem);
 
-      lineItemObject.amountExcludingTax = itemAmount.toFixed();
-      lineItemObject.taxAmount = vatAmount.toFixed();
+      lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
+      lineItemObject.taxAmount = vatAmount.getValue().toFixed();
       lineItemObject.description = description;
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;

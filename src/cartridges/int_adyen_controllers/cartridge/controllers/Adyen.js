@@ -406,7 +406,7 @@ function getPaymentMethods(cart, customer) {
   }
 
   const paymentAmount = currentBasket.getTotalGrossPrice()
-    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).getValueOrNull()
     : 1000;
   const currency = currentBasket.getTotalGrossPrice().currencyCode;
   const jsonResponse = {
