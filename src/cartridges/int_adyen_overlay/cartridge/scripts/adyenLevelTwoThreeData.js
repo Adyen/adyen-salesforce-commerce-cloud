@@ -54,14 +54,9 @@ function getLineItems({ Order: order }) {
       [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
       [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
       ...(commodityCode && { [`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`]: commodityCode }),
+      ...(description && { [`enhancedSchemeData.itemDetailLine${index + 1}.description`]: description.substring(0, 26).replace(/[^\x00-\x7F]/g, '') }),
+      ...(id && { [`enhancedSchemeData.itemDetailLine${index + 1}.productCode`]: id.substring(0, 12) }),
     };
-
-    if (description) {
-      currentLineItem[`enhancedSchemeData.itemDetailLine${index + 1}.description`] = description.substring(0, 26).replace(/[^\x00-\x7F]/g, '');
-    }
-    if (id) {
-      currentLineItem[`enhancedSchemeData.itemDetailLine${index + 1}.productCode`] = id.substring(0, 12);
-    }
 
     return {
       ...acc,
