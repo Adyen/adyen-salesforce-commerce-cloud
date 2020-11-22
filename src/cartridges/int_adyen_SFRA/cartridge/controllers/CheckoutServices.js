@@ -171,14 +171,15 @@ server.prepend('PlaceOrder', server.middleware.https, function (
   }
 
   if (handlePaymentResult.threeDS2) {
+    Transaction.wrap(function () {
+      paymentInstrument.custom.adyenAction = handlePaymentResult.action;
+    });
     res.json({
       error: false,
       continueUrl: URLUtils.url(
         'Adyen-Adyen3DS2',
         'resultCode',
         handlePaymentResult.resultCode,
-        'action',
-        handlePaymentResult.action,
         'merchantReference',
         order.orderNo,
       ).toString(),

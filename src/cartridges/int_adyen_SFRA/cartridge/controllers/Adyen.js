@@ -180,8 +180,19 @@ server.get(
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const resultCode = req.querystring.resultCode;
-      const action = req.querystring.action;
       const orderNo = req.querystring.merchantReference;
+
+      const order = OrderMgr.getOrder(orderNo);
+      const paymentInstrument = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+      )[0];
+
+      const action = paymentInstrument.custom.adyenAction;
+      if (paymentInstrument.custom.adyenAction) {
+        Transaction.wrap(function () {
+          paymentInstrument.custom.adyenAction = null;
+        });
+      }
 
       res.render('/threeds2/adyen3ds2', {
         locale: request.getLocale(),
@@ -274,12 +285,13 @@ server.post(
       }
       if (result.action) {
         // Redirect to ChallengeShopper
+        Transaction.wrap(function () {
+          paymentInstrument.custom.adyenAction = JSON.stringify(result.action);
+        });
 
         res.redirect(
           URLUtils.url(
             'Adyen-Adyen3DS2',
-            'action',
-            JSON.stringify(result.action),
             'merchantReference',
             resultOrderNo,
           ),
