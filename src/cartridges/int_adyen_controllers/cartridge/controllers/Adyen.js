@@ -430,14 +430,24 @@ function redirect3ds2() {
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const locale = request.getLocale();
 
+  const orderNo = request.httpParameterMap.get('merchantReference').stringValue;
+  const order = OrderMgr.getOrder(orderNo);
+  const paymentInstrument = order.getPaymentInstruments(
+    constants.METHOD_ADYEN_COMPONENT,
+  )[0];
+  const action = paymentInstrument.custom.adyenAction;
+  Transaction.wrap(function () {
+    paymentInstrument.custom.adyenAction = null;
+  });
+
   app
     .getView({
       locale: locale,
       originKey: originKey,
       environment: environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
-      action: request.httpParameterMap.get('action').stringValue,
-      merchantReference: request.httpParameterMap.get('merchantReference').stringValue,
+      action: action,
+      merchantReference: orderNo,
       ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
     })
     .render('/threeds2/adyen3ds2');
