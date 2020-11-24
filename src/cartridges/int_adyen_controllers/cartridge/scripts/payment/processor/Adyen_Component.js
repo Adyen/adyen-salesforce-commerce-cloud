@@ -80,6 +80,9 @@ function Authorize(args) {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
     if (result.threeDS2) {
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenAction = result.action;
+      });
       return {
         authorized3d: true,
         view: app.getView({
@@ -87,8 +90,6 @@ function Authorize(args) {
             'Adyen-Redirect3DS2',
             'merchantReference',
             order.orderNo,
-            'action',
-            result.action,
             'utm_nooverride',
             '1',
           ),

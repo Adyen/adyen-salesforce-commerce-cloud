@@ -188,6 +188,9 @@ server.get(
       )[0];
 
       const action = paymentInstrument.custom.adyenAction;
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenAction = null;
+      });
 
       res.render('/threeds2/adyen3ds2', {
         locale: request.getLocale(),
