@@ -353,7 +353,7 @@ function donate() {
 function orderConfirm(orderNo) {
   let order = null;
   if (orderNo) {
-    order = OrderMgr.getOrder(orderNof);
+    order = OrderMgr.getOrder(orderNo);
   }
   if (!order) {
     app.getController('Error').Start();

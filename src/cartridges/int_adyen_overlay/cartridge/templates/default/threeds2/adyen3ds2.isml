@@ -15,7 +15,6 @@
         var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
         var merchantReference = "${pdict.merchantReference}".replace(/&quot;/g, '\"');
         var orderToken = "${pdict.orderToken}".replace(/&quot;/g, '\"');
-        console.log('ordertoken ' + orderToken);
         var threeDS2Element = document.getElementById('threeDS2');
         var configuration = {
             locale: '${pdict.locale}',
