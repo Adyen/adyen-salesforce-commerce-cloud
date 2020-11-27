@@ -440,6 +440,9 @@ function paymentFromComponent(data, component) {
       if (data.orderNo) {
         document.querySelector('#merchantReference').value = data.orderNo;
       }
+      if (data.orderToken) {
+        document.querySelector('#orderToken').value = data.orderToken;
+      }
       if (data.fullResponse && data.fullResponse.action) {
         component.handleAction(data.fullResponse.action);
       } else {

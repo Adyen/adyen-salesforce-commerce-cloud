@@ -31,5 +31,6 @@
 	<field formid="adyenStateData" type="string" mandatory="true"/>
 	<field formid="paymentFromComponentStateData" type="string" mandatory="true"/>
 	<field formid="merchantReference" type="string" mandatory="true"/>
+	<field formid="orderToken" type="string" mandatory="true"/>
 
 </form>

@@ -69,22 +69,40 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
   const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
+  const errors = [];
+  const errorObj = {
+    authorized: false,
+    fieldErrors: [],
+    serverErrors: errors,
+    error: true,
+  };
+
   Transaction.begin();
   paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+  const orderCustomer = order.getCustomer();
+  const sessionCustomer = session.getCustomer();
+  if (orderCustomer.authenticated && orderCustomer.ID !== sessionCustomer.ID) {
+    Logger.getLogger('Adyen').error('orderCustomer is not the same as the sessionCustomer');
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+    errors.push(
+      Resource.msg('error.technical', 'checkout', null),
+    );
+    return {
+      ...errorObj,
+    };
+  }
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
   });
   if (result.error) {
-    const errors = [];
     errors.push(
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     );
     return {
-      authorized: false,
-      fieldErrors: [],
-      serverErrors: errors,
-      error: true,
+      ...errorObj,
     };
   }
   // Trigger 3DS2 flow

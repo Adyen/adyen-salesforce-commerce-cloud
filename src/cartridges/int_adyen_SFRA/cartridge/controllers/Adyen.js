@@ -26,11 +26,14 @@ server.get(
     const IssuerURL = req.querystring.IssuerURL;
     const PaRequest = req.querystring.PaRequest;
     const orderNo = req.querystring.merchantReference;
+    const orderToken = req.querystring.orderToken;
     const MD = req.querystring.MD;
     const TermURL = URLUtils.https(
       'Adyen-AuthorizeWithForm',
       'merchantReference',
       orderNo,
+      'orderToken',
+      orderToken,
     );
     const signature = req.querystring.signature;
 
@@ -64,7 +67,9 @@ server.post(
   function (req, res, next) {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const orderNo = req.querystring.merchantReference;
-    let order = OrderMgr.getOrder(orderNo);
+    const orderToken = req.querystring.orderToken;
+    let order = OrderMgr.getOrder(orderNo, orderToken);
+
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
@@ -110,7 +115,7 @@ server.post(
       // custom fraudDetection
       const fraudDetectionStatus = { status: 'success' };
 
-      order = OrderMgr.getOrder(result.merchantReference);
+      order = OrderMgr.getOrder(result.merchantReference, orderToken);
 
       // Places the order
       const placeOrderResult = COHelpers.placeOrder(
@@ -181,8 +186,9 @@ server.get(
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const resultCode = req.querystring.resultCode;
       const orderNo = req.querystring.merchantReference;
+      const orderToken = req.querystring.orderToken;
 
-      const order = OrderMgr.getOrder(orderNo);
+      const order = OrderMgr.getOrder(orderNo, orderToken);
       const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
       )[0];
@@ -199,6 +205,7 @@ server.get(
         resultCode: resultCode,
         action,
         merchantReference: orderNo,
+        orderToken: orderToken,
       });
     } catch (err) {
       Logger.getLogger('Adyen').error(
@@ -226,7 +233,8 @@ server.post(
       Transaction.begin();
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
       const orderNo = req.form.merchantReference;
-      const order = OrderMgr.getOrder(orderNo);
+      const orderToken = req.form.orderToken;
+      const order = OrderMgr.getOrder(orderNo, orderToken);
       const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
       )[0];
@@ -262,7 +270,7 @@ server.post(
         return response.redirect(URLUtils.httpHome());
       }
       const resultOrderNo = result.merchantReference || orderNo;
-      const resultOrder = OrderMgr.getOrder(resultOrderNo);
+      const resultOrder = OrderMgr.getOrder(resultOrderNo, orderToken);
 
       if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
         // Payment failed
@@ -292,6 +300,8 @@ server.post(
             'Adyen-Adyen3DS2',
             'merchantReference',
             resultOrderNo,
+            'orderToken',
+            orderToken,
           ),
         );
         return next();
@@ -359,8 +369,9 @@ server.post(
 server.get('Redirect', server.middleware.https, function (req, res, next) {
   const signature = req.querystring.signature;
   const orderNo = req.querystring.merchantReference;
+  const orderToken = req.querystring.orderToken;
 
-  const order = OrderMgr.getOrder(orderNo);
+  const order = OrderMgr.getOrder(orderNo, orderToken);
   if (order && signature) {
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -416,7 +427,8 @@ server.get('ShowConfirmation', server.middleware.https, function (
   next,
 ) {
   try {
-    const order = OrderMgr.getOrder(req.querystring.merchantReference);
+    const orderToken = req.querystring.orderToken;
+    const order = OrderMgr.getOrder(req.querystring.merchantReference, orderToken);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
@@ -451,7 +463,7 @@ server.get('ShowConfirmation', server.middleware.https, function (
       Logger.getLogger('Adyen').error('Invalid /payments/details call');
       return response.redirect(URLUtils.httpHome());
     }
-    const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
+    const merchantRefOrder = OrderMgr.getOrder(result.merchantReference, orderToken);
 
     const paymentInstrument = merchantRefOrder.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -566,7 +578,8 @@ server.post(
   function (req, res, next) {
     try {
       const stateData = JSON.parse(req.form.additionalDetailsHidden);
-      const order = OrderMgr.getOrder(req.form.merchantReference);
+      const orderToken = req.form.orderToken;
+      const order = OrderMgr.getOrder(req.form.merchantReference, orderToken);
       const paymentInstruments = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
       );
@@ -834,6 +847,7 @@ server.post('PaymentFromComponent', server.middleware.https, function (
   });
 
   result.orderNo = order.orderNo;
+  result.orderToken = order.getOrderToken();
   res.json(result);
   return next();
 });

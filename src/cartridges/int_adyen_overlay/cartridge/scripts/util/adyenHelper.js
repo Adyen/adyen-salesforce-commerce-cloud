@@ -510,6 +510,8 @@ var adyenHelperObj = {
       'Adyen-ShowConfirmation',
       'merchantReference',
       reference,
+      'orderToken',
+      order.getOrderToken(),
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
     stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();

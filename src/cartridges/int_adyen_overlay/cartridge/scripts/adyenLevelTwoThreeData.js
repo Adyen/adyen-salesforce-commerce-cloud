@@ -31,6 +31,7 @@ require('dw/util');
 require('dw/value');
 require('dw/net');
 require('dw/web');
+
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');

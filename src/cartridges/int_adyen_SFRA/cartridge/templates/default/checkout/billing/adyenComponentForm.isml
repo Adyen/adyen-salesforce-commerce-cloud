@@ -57,4 +57,5 @@
       action="${ShowConfirmationPaymentFromComponent}">
             <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
             <input type="hidden" id="merchantReference" name="merchantReference"/>
+            <input type="hidden" id="orderToken" name="orderToken"/>
 </form>

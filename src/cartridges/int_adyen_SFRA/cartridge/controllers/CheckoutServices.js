@@ -147,6 +147,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
 
   // Creates a new order.
   const order = COHelpers.createOrder(currentBasket);
+  const orderToken = order.getOrderToken();
+
   if (!order) {
     res.json({
       error: true,
@@ -182,6 +184,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         handlePaymentResult.resultCode,
         'merchantReference',
         order.orderNo,
+        'orderToken',
+        orderToken,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
@@ -206,6 +210,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
           handlePaymentResult.signature,
           'merchantReference',
           order.orderNo,
+          'orderToken',
+          orderToken,
         ).toString(),
       });
       this.emit('route:Complete', req, res);
@@ -221,6 +227,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         handlePaymentResult.signature,
         'merchantReference',
         order.orderNo,
+        'orderToken',
+        orderToken,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
