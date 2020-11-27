@@ -389,11 +389,6 @@ var adyenHelperObj = {
     }
 
     const customer = args.order.getCustomer();
-    const sessionCustomer = session.getCustomer();
-    if (customer.ID !== sessionCustomer.ID) {
-      dwsystem.Logger.getLogger('Adyen').error('User attempting to access order they do not own');
-      return null;
-    }
     const profile = customer && customer.registered && customer.getProfile()
       ? customer.getProfile()
       : null;
