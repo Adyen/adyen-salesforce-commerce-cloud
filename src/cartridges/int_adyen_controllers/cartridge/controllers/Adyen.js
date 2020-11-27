@@ -72,7 +72,6 @@ function showConfirmation() {
       .stringValue;
     const orderToken = request.httpParameterMap.get('orderToken')
       .stringValue;
-    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
     const order = OrderMgr.getOrder(orderNumber, orderToken);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -240,7 +239,6 @@ function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
   const orderNumber = paymentInformation.get('merchantReference').value();
   const orderToken = paymentInformation.get('orderToken').value();
-  Logger.getLogger('Adyen').error(`orderToken showConfirmationPaymentFromComponent ${orderToken}`);
   const order = OrderMgr.getOrder(orderNumber, orderToken);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
@@ -355,7 +353,7 @@ function donate() {
 function orderConfirm(orderNo) {
   let order = null;
   if (orderNo) {
-    order = OrderMgr.getOrder(orderNo);
+    order = OrderMgr.getOrder(orderNof);
   }
   if (!order) {
     app.getController('Error').Start();
@@ -438,7 +436,6 @@ function redirect3ds2() {
 
   const orderNo = request.httpParameterMap.get('merchantReference').stringValue;
   const orderToken = request.httpParameterMap.get('orderToken').stringValue;
-  Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
   const order = OrderMgr.getOrder(orderNo, orderToken);
   const paymentInstrument = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
@@ -488,7 +485,6 @@ function authorize3ds2() {
       .stringValue;
     const orderToken = request.httpParameterMap.get('orderToken')
       .stringValue;
-    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
     const order = OrderMgr.getOrder(orderNo, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -587,7 +583,6 @@ function authorizeWithForm() {
       .stringValue;
     const orderToken = request.httpParameterMap.get('orderToken')
       .stringValue;
-    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
     let order = OrderMgr.getOrder(orderNo, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,

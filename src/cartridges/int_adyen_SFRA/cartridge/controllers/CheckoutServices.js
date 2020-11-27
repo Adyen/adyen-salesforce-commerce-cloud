@@ -2,7 +2,6 @@ const server = require('server');
 
 server.extend(module.superModule);
 
-const Logger = require('dw/system/Logger');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const collections = require('*/cartridge/scripts/util/collections');
@@ -149,8 +148,6 @@ server.prepend('PlaceOrder', server.middleware.https, function (
   // Creates a new order.
   const order = COHelpers.createOrder(currentBasket);
   const orderToken = order.getOrderToken();
-
-  Logger.getLogger('Adyen').error(`order token is ${orderToken}`);
 
   if (!order) {
     res.json({
