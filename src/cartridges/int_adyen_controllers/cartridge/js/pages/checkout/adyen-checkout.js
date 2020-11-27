@@ -582,8 +582,9 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
     success: function (data) {
-      if (data.result && data.result.orderNo) {
+      if (data.result && data.result.orderNo && data.result.orderToken) {
         document.querySelector('#merchantReference').value = data.result.orderNo;
+        document.querySelector('#orderToken').value = data.result.orderToken;
       }
       if (
         data.result

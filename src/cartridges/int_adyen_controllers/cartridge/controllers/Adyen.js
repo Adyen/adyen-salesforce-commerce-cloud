@@ -70,7 +70,10 @@ function showConfirmation() {
   try {
     const orderNumber = request.httpParameterMap.get('merchantReference')
       .stringValue;
-    const order = OrderMgr.getOrder(orderNumber);
+    const orderToken = request.httpParameterMap.get('orderToken')
+      .stringValue;
+    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
+    const order = OrderMgr.getOrder(orderNumber, orderToken);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     );
@@ -95,7 +98,7 @@ function showConfirmation() {
       Logger.getLogger('Adyen').error('Invalid /payments/details call');
       return response.redirect(URLUtils.httpHome());
     }
-    const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
+    const merchantRefOrder = OrderMgr.getOrder(result.merchantReference, orderToken);
 
     const paymentInstrument = merchantRefOrder.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -223,6 +226,7 @@ function paymentFromComponent() {
     PaymentInstrument: paymentInstrument,
   });
   result.orderNo = order.orderNo;
+  result.orderToken = order.getOrderToken();
 
   Transaction.commit();
   const responseUtils = require('*/cartridge/scripts/util/Response');
@@ -235,7 +239,9 @@ function paymentFromComponent() {
 function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
   const orderNumber = paymentInformation.get('merchantReference').value();
-  const order = OrderMgr.getOrder(orderNumber);
+  const orderToken = paymentInformation.get('orderToken').value();
+  Logger.getLogger('Adyen').error(`orderToken showConfirmationPaymentFromComponent ${orderToken}`);
+  const order = OrderMgr.getOrder(orderNumber, orderToken);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
@@ -431,7 +437,9 @@ function redirect3ds2() {
   const locale = request.getLocale();
 
   const orderNo = request.httpParameterMap.get('merchantReference').stringValue;
-  const order = OrderMgr.getOrder(orderNo);
+  const orderToken = request.httpParameterMap.get('orderToken').stringValue;
+  Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
+  const order = OrderMgr.getOrder(orderNo, orderToken);
   const paymentInstrument = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   )[0];
@@ -448,7 +456,12 @@ function redirect3ds2() {
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
       action: action,
       merchantReference: orderNo,
-      ContinueURL: URLUtils.https('Adyen-Authorize3DS2'),
+      orderToken: orderToken,
+      ContinueURL: URLUtils.https(
+        'Adyen-Authorize3DS2',
+        'orderToken',
+        orderToken,
+      ),
     })
     .render('/threeds2/adyen3ds2');
 }
@@ -473,7 +486,10 @@ function authorize3ds2() {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const orderNo = request.httpParameterMap.get('merchantReference')
       .stringValue;
-    const order = OrderMgr.getOrder(orderNo);
+    const orderToken = request.httpParameterMap.get('orderToken')
+      .stringValue;
+    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
+    const order = OrderMgr.getOrder(orderNo, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
@@ -508,7 +524,7 @@ function authorize3ds2() {
       return response.redirect(URLUtils.httpHome());
     }
     const resultOrderNo = result.merchantReference || orderNo;
-    const resultOrder = OrderMgr.getOrder(resultOrderNo);
+    const resultOrder = OrderMgr.getOrder(resultOrderNo, orderToken);
 
     if (!result.action && (result.error || result.resultCode !== 'Authorised')) {
       // Payment failed
@@ -533,6 +549,7 @@ function authorize3ds2() {
           ),
           action: JSON.stringify(result.action),
           merchantReference: resultOrderNo,
+          orderToken: orderToken,
         })
         .render('/threeds2/adyen3ds2');
       return {};
@@ -568,7 +585,10 @@ function authorizeWithForm() {
     const PaRes = request.httpParameterMap.get('PaRes').stringValue;
     const orderNo = request.httpParameterMap.get('merchantReference')
       .stringValue;
-    let order = OrderMgr.getOrder(orderNo);
+    const orderToken = request.httpParameterMap.get('orderToken')
+      .stringValue;
+    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
+    let order = OrderMgr.getOrder(orderNo, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
@@ -607,7 +627,7 @@ function authorizeWithForm() {
       });
       return {};
     }
-    order = OrderMgr.getOrder(result.merchantReference);
+    order = OrderMgr.getOrder(result.merchantReference, orderToken);
     order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
     order.setExportStatus(dw.order.Order.EXPORT_STATUS_READY);
     clearAdyenData(paymentInstrument);

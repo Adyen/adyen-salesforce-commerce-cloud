@@ -31,6 +31,8 @@ require('dw/util');
 require('dw/value');
 require('dw/net');
 require('dw/web');
+
+const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
@@ -68,6 +70,11 @@ function getLineItems({ Order: order }) {
 
 function getShopperReference(order) {
   const customer = order.getCustomer();
+  const sessionCustomer = session.getCustomer();
+  if (customer.ID !== sessionCustomer.ID) {
+    Logger.getLogger('Adyen').error('User attempting to access order they do not own');
+    return null;
+  }
   const isRegistered = customer && customer.registered;
   const profile = isRegistered && customer.getProfile();
   const profileCustomerNo = profile && profile.getCustomerNo();

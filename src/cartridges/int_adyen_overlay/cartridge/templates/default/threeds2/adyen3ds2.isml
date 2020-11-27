@@ -1,5 +1,6 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
 <isset name="merchantReference" value="${pdict.merchantReference}" scope="page"/>
+<isset name="orderToken" value="${pdict.orderToken}" scope="page"/>
 <isset name="action" value="${pdict.action}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
@@ -13,6 +14,8 @@
         var resultCode = "${pdict.resultCode}";
         var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
         var merchantReference = "${pdict.merchantReference}".replace(/&quot;/g, '\"');
+        var orderToken = "${pdict.orderToken}".replace(/&quot;/g, '\"');
+        console.log('ordertoken ' + orderToken);
         var threeDS2Element = document.getElementById('threeDS2');
         var configuration = {
             locale: '${pdict.locale}',
@@ -42,6 +45,7 @@
             <span id="errorLoadComponent"></span>
             <input type="hidden" id="resultCode" name="resultCode" value="${resultCode}"/>
             <input type="hidden" name="merchantReference" value="${merchantReference}"/>
+            <input type="hidden" name="orderToken" value="${orderToken}"/>
             <input type="hidden" id="stateData" name="stateData" />
             <input type="hidden" id="challengeResult" name="challengeResult"/>
         </div>
