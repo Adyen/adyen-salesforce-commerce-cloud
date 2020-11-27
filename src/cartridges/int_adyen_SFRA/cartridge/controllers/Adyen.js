@@ -68,9 +68,7 @@ server.post(
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const orderNo = req.querystring.merchantReference;
     const orderToken = req.querystring.orderToken;
-    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
     let order = OrderMgr.getOrder(orderNo, orderToken);
-    Logger.getLogger('Adyen').error(`order ${order}`);
 
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -190,7 +188,6 @@ server.get(
       const orderNo = req.querystring.merchantReference;
       const orderToken = req.querystring.orderToken;
 
-      Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
       const order = OrderMgr.getOrder(orderNo, orderToken);
       const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
@@ -238,7 +235,6 @@ server.post(
       const orderNo = req.form.merchantReference;
       const orderToken = req.form.orderToken;
       const order = OrderMgr.getOrder(orderNo, orderToken);
-      Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
       const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
       )[0];
@@ -374,7 +370,6 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
   const signature = req.querystring.signature;
   const orderNo = req.querystring.merchantReference;
   const orderToken = req.querystring.orderToken;
-  Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
 
   const order = OrderMgr.getOrder(orderNo, orderToken);
   if (order && signature) {
@@ -433,7 +428,6 @@ server.get('ShowConfirmation', server.middleware.https, function (
 ) {
   try {
     const orderToken = req.querystring.orderToken;
-    Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
     const order = OrderMgr.getOrder(req.querystring.merchantReference, orderToken);
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -585,7 +579,6 @@ server.post(
     try {
       const stateData = JSON.parse(req.form.additionalDetailsHidden);
       const orderToken = req.form.orderToken;
-      Logger.getLogger('Adyen').error(`orderToken ${orderToken}`);
       const order = OrderMgr.getOrder(req.form.merchantReference, orderToken);
       const paymentInstruments = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
