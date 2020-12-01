@@ -6,7 +6,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyen.com/checkout/v51/payments</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v51/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -16,7 +16,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyen.com/checkout/v51/payments/details</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v51/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -26,7 +26,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyen.com/v51/paymentMethods</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v51/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -46,7 +46,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPosPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-test.adyen.com/sync</url>
+        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-live.adyenpayments.com/sync</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -56,7 +56,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenOriginKeysLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-test.adyen.com/v1/originKeys</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v1/originKeys</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -66,7 +66,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenConnectedTerminalsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-test.adyen.com/connectedTerminals</url>
+        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-live.adyenpayments.com/connectedTerminals</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -76,7 +76,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGivingLive">
-        <url>https://[YOUR_LIVE_PREFIX]-3pal-test.adyen.com/pal/servlet/Payment/v40/donate</url>
+        <url>https://[YOUR_LIVE_PREFIX]-pal-live.adyenpayments.com/pal/servlet/Payment/v40/donate</url>
         <user-id></user-id>
         <password/>
     </service-credential>
