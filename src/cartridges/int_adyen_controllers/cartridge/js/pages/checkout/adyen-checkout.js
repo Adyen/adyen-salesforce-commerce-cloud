@@ -200,8 +200,8 @@ function initializeBillingEvents() {
     if (window.paypalMerchantID !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
     }
-    if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'LIVE') {
-      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
+    if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
+      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier = window.googleMerchantID;
     }
     renderGenericComponent();
   }
