@@ -31,7 +31,9 @@
 <isset name="ratePayValues" value="${AdyenHelper.getRatePayID()}" scope="page"/>
 
 <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
-<input type="hidden" id="paypalStateData" name="${pdict.CurrentForms.adyPaydata.paypalStateData.htmlName}">
+<input type="hidden" id="paymentFromComponentStateData" name="${pdict.CurrentForms.adyPaydata.paymentFromComponentStateData.htmlName}">
+<input type="hidden" id="merchantReference" name="${pdict.CurrentForms.adyPaydata.merchantReference.htmlName}">
+<input type="hidden" id="orderToken" name="${pdict.CurrentForms.adyPaydata.orderToken.htmlName}">
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.number.htmlName}">
 <input type="hidden" class="form-control" id="cardType" name="${pdict.CurrentForms.billing.paymentMethods.creditCard.type.htmlName}">
 

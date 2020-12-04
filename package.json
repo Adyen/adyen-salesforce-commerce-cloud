@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "20.1.2",
+  "version": "20.1.3",
   "description": "SFRA cartridge",
   "main": "index.js",
   "paths": {
@@ -31,7 +31,7 @@
   "dependencies": {
     "babel-loader": "^8.0.4",
     "cleave.js": "^1.0.1",
-    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-formatter-pretty": "^1.3.0",
     "eslint-formatter-summary": "^1.0.2",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.3",
     "istanbul": "^0.4.4",
     "jest": "^25.1.0",

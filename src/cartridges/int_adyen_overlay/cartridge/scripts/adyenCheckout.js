@@ -36,6 +36,7 @@ const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
+const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 
 function createPaymentRequest(args) {
   try {
@@ -60,9 +61,14 @@ function createPaymentRequest(args) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
+    // L2/3 Data
+    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
+    }
+
     const myAmount = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount,
-    ); // args.Amount * 100;
+    ).getValueOrNull(); // args.Amount * 100;
     paymentRequest.amount = {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
       value: myAmount,
@@ -192,6 +198,11 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.resultCode === 'IdentifyShopper'
       || paymentResponse.resultCode === 'ChallengeShopper'
     ) {
+      if (responseObject.action) {
+        paymentResponse.action = JSON.stringify(
+          responseObject.action,
+        );
+      }
       paymentResponse.decision = 'ACCEPT';
       paymentResponse.threeDS2 = true;
       let token3ds2;
@@ -314,6 +325,7 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
     );
     return {
       error: true,
+      invalidRequest: true,
     };
   }
 
@@ -336,7 +348,6 @@ function doPaymentDetailsCall(paymentDetailsRequest) {
     );
     return { error: true };
   }
-
   return responseObject;
 }
 

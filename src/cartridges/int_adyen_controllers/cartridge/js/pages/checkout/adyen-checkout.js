@@ -66,7 +66,7 @@ function initializeBillingEvents() {
           const componentName = state.data.paymentMethod.storedPaymentMethodId
             ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
             : state.data.paymentMethod.type;
-          if (componentName === selectedMethod) {
+          if (componentName === selectedMethod || selectedMethod === 'bcmc') {
             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
             componentsObj[selectedMethod].isValid = isValid;
             componentsObj[selectedMethod].stateData = state.data;
@@ -114,7 +114,31 @@ function initializeBillingEvents() {
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
-          document.querySelector('#paypalStateData').value = JSON.stringify(
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+            state.data,
+          );
+          $('#dwfrm_billing').trigger('submit');
+        },
+      },
+      mbway: {
+        showPayButton: true,
+        onSubmit: (state, component) => {
+          $('#dwfrm_billing').trigger('submit');
+          assignPaymentMethodValue();
+          if (formErrorsExist) {
+            return false;
+          }
+          document.getElementById('component_mbway').querySelector('button').disabled = true;
+          paymentFromComponent(state.data, component);
+          document.querySelector('#adyenStateData').value = JSON.stringify(
+            state.data,
+          );
+        },
+        onError: (/* error, component */) => {
+          $('#dwfrm_billing').trigger('submit');
+        },
+        onAdditionalDetails: (state /* , component */) => {
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
             state.data,
           );
           $('#dwfrm_billing').trigger('submit');
@@ -176,8 +200,8 @@ function initializeBillingEvents() {
     if (window.paypalMerchantID !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
     }
-    if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'LIVE') {
-      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier = window.googleMerchantID;
+    if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
+      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier = window.googleMerchantID;
     }
     renderGenericComponent();
   }
@@ -245,7 +269,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -399,6 +423,7 @@ async function renderGenericComponent() {
   const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -491,6 +516,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     displaySelectedMethod(event.target.value);
   };
 
+  if (paymentMethodID === 'giropay') {
+    container.innerHTML = '';
+  }
+
   if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
     componentsObj[paymentMethodID].isValid = true;
   }
@@ -553,6 +582,10 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
     success: function (data) {
+      if (data.result && data.result.orderNo && data.result.orderToken) {
+        document.querySelector('#merchantReference').value = data.result.orderNo;
+        document.querySelector('#orderToken').value = data.result.orderToken;
+      }
       if (
         data.result
         && data.result.fullResponse
@@ -560,7 +593,7 @@ function paymentFromComponent(data, component) {
       ) {
         component.handleAction(data.result.fullResponse.action);
       } else {
-        document.querySelector('#paypalStateData').value = JSON.stringify(
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
           'null',
         );
         $('#dwfrm_billing').trigger('submit');
@@ -571,8 +604,8 @@ function paymentFromComponent(data, component) {
 
 $('#dwfrm_billing').submit(function (e) {
   if (
-    selectedMethod === 'paypal'
-    && !document.querySelector('#paypalStateData').value
+    ['paypal', 'mbway'].indexOf(selectedMethod) > -1
+    && !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
     const form = $(this);

@@ -37,7 +37,7 @@ var adyenHelperObj = {
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
   CHECKOUT_COMPONENT_VERSION: '3.9.4',
-  VERSION: '20.1.2',
+  VERSION: '20.1.3',
 
   getService: function (service) {
     // Create the service config (used for all services)
@@ -154,6 +154,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenCreditCardInstallments');
   },
 
+  getSystemIntegratorName: function () {
+    return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
+  },
+
   getPaypalMerchantID: function () {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
   },
@@ -216,6 +220,14 @@ var adyenHelperObj = {
 
   getAdyenBasketFieldsEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+
+  getAdyenLevel23DataEnabled: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
+  },
+
+  getAdyenLevel23CommodityCode: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
   getAdyenGivingEnabled: function () {
@@ -494,7 +506,13 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
-    stateData.returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+    stateData.returnUrl = URLUtils.https(
+      'Adyen-ShowConfirmation',
+      'merchantReference',
+      reference,
+      'orderToken',
+      order.getOrderToken(),
+    ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
     stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
     stateData.additionalData = {};
@@ -630,7 +648,8 @@ var adyenHelperObj = {
     const digitsNumber = adyenHelperObj.getFractionDigits(
       currencyCode.toString(),
     );
-    return Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
+    const value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
+    return new dw.value.Money(value, currencyCode);
   },
 
   getFractionDigits: function (currencyCode) {
@@ -688,6 +707,7 @@ var adyenHelperObj = {
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
       version: externalPlatformVersion,
+      integrator: this.getSystemIntegratorName(),
     };
 
     if (isEcom) {
@@ -696,6 +716,7 @@ var adyenHelperObj = {
         version: adyenHelperObj.VERSION,
       };
     }
+
     return applicationInfo;
   },
 

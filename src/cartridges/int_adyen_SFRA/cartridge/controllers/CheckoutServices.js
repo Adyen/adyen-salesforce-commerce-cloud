@@ -147,6 +147,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (
 
   // Creates a new order.
   const order = COHelpers.createOrder(currentBasket);
+  const orderToken = order.getOrderToken();
+
   if (!order) {
     res.json({
       error: true,
@@ -155,6 +157,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (
     this.emit('route:Complete', req, res);
     return;
   }
+  const paymentInstrument = order.getPaymentInstruments(
+    constants.METHOD_ADYEN_COMPONENT,
+  )[0];
 
   // Handles payment authorization
   const handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
@@ -168,14 +173,19 @@ server.prepend('PlaceOrder', server.middleware.https, function (
   }
 
   if (handlePaymentResult.threeDS2) {
+    Transaction.wrap(function () {
+      paymentInstrument.custom.adyenAction = handlePaymentResult.action;
+    });
     res.json({
       error: false,
       continueUrl: URLUtils.url(
         'Adyen-Adyen3DS2',
         'resultCode',
         handlePaymentResult.resultCode,
-        'token3ds2',
-        handlePaymentResult.token3ds2,
+        'merchantReference',
+        order.orderNo,
+        'orderToken',
+        orderToken,
       ).toString(),
     });
     this.emit('route:Complete', req, res);
@@ -183,7 +193,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (
   } if (handlePaymentResult.redirectObject) {
     // If authorized3d, then redirectObject from credit card, hence it is 3D Secure
     if (handlePaymentResult.authorized3d) {
-      session.privacy.MD = handlePaymentResult.redirectObject.data.MD;
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenMD = handlePaymentResult.redirectObject.data.MD;
+      });
       res.json({
         error: false,
         continueUrl: URLUtils.url(
@@ -196,6 +208,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (
           handlePaymentResult.redirectObject.data.MD,
           'signature',
           handlePaymentResult.signature,
+          'merchantReference',
+          order.orderNo,
+          'orderToken',
+          orderToken,
         ).toString(),
       });
       this.emit('route:Complete', req, res);
@@ -209,6 +225,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (
         handlePaymentResult.redirectObject.url,
         'signature',
         handlePaymentResult.signature,
+        'merchantReference',
+        order.orderNo,
+        'orderToken',
+        orderToken,
       ).toString(),
     });
     this.emit('route:Complete', req, res);

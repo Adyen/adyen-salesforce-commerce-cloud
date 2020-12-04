@@ -3,6 +3,8 @@ const URLUtils = require('dw/web/URLUtils');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
+const OrderMgr = require('dw/order/OrderMgr');
 const constants = require('*/cartridge/adyenConstants/constants');
 
 /* Script Modules */
@@ -50,11 +52,22 @@ function Authorize(args) {
     paymentInstrument.getPaymentMethod(),
   ).getPaymentProcessor();
 
-  Transaction.wrap(function () {
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-  });
-
   Transaction.begin();
+  paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+
+  const orderCustomer = order.getCustomer();
+  const sessionCustomer = session.getCustomer();
+  if (orderCustomer.authenticated && orderCustomer.ID !== sessionCustomer.ID) {
+    Logger.getLogger('Adyen').error('orderCustomer is not the same as the sessionCustomer');
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+    return {
+      error: true,
+      PlaceOrderError: 'orderCustomer is not the same as the sessionCustomer',
+    };
+  }
+
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
@@ -82,16 +95,19 @@ function Authorize(args) {
   if (result.threeDS2 || result.resultCode === 'RedirectShopper') {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
-
-    session.privacy.orderNo = order.orderNo;
-    session.privacy.paymentMethod = paymentInstrument.paymentMethod;
-
     if (result.threeDS2) {
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenAction = result.action;
+      });
       return {
         authorized3d: true,
         view: app.getView({
           ContinueURL: URLUtils.https(
             'Adyen-Redirect3DS2',
+            'merchantReference',
+            order.orderNo,
+            'orderToken',
+            order.getOrderToken(),
             'utm_nooverride',
             '1',
           ),
@@ -104,15 +120,21 @@ function Authorize(args) {
     // If the response has MD, then it is a 3DS transaction
     if (
       result.redirectObject
-      && result.redirectObject.data
-      && result.redirectObject.data.MD
+        && result.redirectObject.data
+        && result.redirectObject.data.MD
     ) {
-      session.privacy.MD = result.redirectObject.data.MD;
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenMD = result.redirectObject.data.MD;
+      });
       return {
         authorized3d: true,
         view: app.getView({
           ContinueURL: URLUtils.https(
             'Adyen-AuthorizeWithForm',
+            'merchantReference',
+            order.orderNo,
+            'orderToken',
+            order.getOrderToken(),
             'utm_nooverride',
             '1',
           ),

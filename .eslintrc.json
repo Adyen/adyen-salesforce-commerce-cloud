@@ -74,7 +74,7 @@
     "no-restricted-syntax": "off",
     "guard-for-in": "off",
     "prefer-arrow-callback": "off",
-    "object-shorthand": "off"
+    "object-shorthand": "off",
+    "no-control-regex": "off"
   }
 }
-

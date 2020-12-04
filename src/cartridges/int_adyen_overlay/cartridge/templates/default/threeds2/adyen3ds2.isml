@@ -1,92 +1,53 @@
 <isset name="resultCode" value="${pdict.resultCode}" scope="page"/>
-<isset name="token3ds2" value="${pdict.token3ds2}" scope="page"/>
+<isset name="merchantReference" value="${pdict.merchantReference}" scope="page"/>
+<isset name="orderToken" value="${pdict.orderToken}" scope="page"/>
+<isset name="action" value="${pdict.action}" scope="page"/>
 <isset name="authorise3DS2" value="${URLUtils.https('Adyen-Authorize3DS2')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 
-<html>
-<head>
     <script type="text/javascript" src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <link rel="stylesheet"  href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+
+    <div id="threeDS2"></div>
 
     <script type="text/javascript">
         var resultCode = "${pdict.resultCode}";
-        var token3ds2 = "${pdict.token3ds2}";
+        var action = JSON.parse("${pdict.action}".replace(/&quot;/g, '\"'));
+        var merchantReference = "${pdict.merchantReference}".replace(/&quot;/g, '\"');
+        var orderToken = "${pdict.orderToken}".replace(/&quot;/g, '\"');
+        var threeDS2Element = document.getElementById('threeDS2');
+        var configuration = {
+            locale: '${pdict.locale}',
+            originKey: '${pdict.originKey}',
+            environment: '${pdict.environment}',
+            onAdditionalDetails: handleOnAdditionalDetails
+        }
+        var checkout = new AdyenCheckout(configuration);
+        var threeDS2Node = checkout.createFromAction(action).mount(threeDS2Element);
 
-        function initiateCheckout () {
-            var configuration = {
-                locale: '${pdict.locale}',
-                originKey: '${pdict.originKey}',
-                environment: '${pdict.environment}'
+        function handleOnAdditionalDetails(state) {
+            document.getElementById("stateData").value = JSON.stringify(state.data);
+            if(JSON.stringify(state.data).includes("threeds2.challengeResult")){
+                document.getElementById("challengeResult").value = "true";
             }
-            this.checkout = new AdyenCheckout(configuration);
-        }
-
-        function initiateComponents () {
-            initiateCheckout();
-            if (resultCode == "ChallengeShopper") {
-                initiate3DS2ChallengeShopper(token3ds2);
-            } else if (resultCode == "IdentifyShopper") {
-                initiate3DS2IdentifyShopper(token3ds2);
-            }
-        }
-
-        function initiate3DS2IdentifyShopper (fingerprintToken) {
-            var threeDS2IdentifyShopperNode = document.getElementById('threeDS2');
-            var identifyShopperComponent = this.checkout.create('threeDS2DeviceFingerprint', {
-                fingerprintToken: fingerprintToken,
-                onComplete: function (fingerprintData) {
-                    var fingerprintResult = fingerprintData.data.details["threeds2.fingerprint"];
-                    var fingerprintResultField = document.getElementById('fingerprintResult');
-                    fingerprintResultField.value = fingerprintResult;
-                    document.getElementById("3ds2-form").submit();
-
-                }, // Gets triggered whenever the ThreeDS2 component has a result
-
-                onError: function (error) {
-                    console.log(JSON.stringify(error));
-                } // Gets triggered on error
-            });
-            identifyShopperComponent.mount(threeDS2IdentifyShopperNode);
-        }
-
-        function initiate3DS2ChallengeShopper (challengeToken) {
-            var threeDS2ChallengeShopperNode = document.getElementById('threeDS2');
-            var challengeShopperComponent = this.checkout
-                .create('threeDS2Challenge', {
-                    challengeToken: challengeToken,
-                    onComplete: function (challengeData) {
-                        var challengeResult = challengeData.data.details["threeds2.challengeResult"];
-                        var challengeResultField = document.getElementById('challengeResult');
-                        challengeResultField.value = challengeResult;
-                        document.getElementById("3ds2-form").submit();
-                    },
-                    onError: function (error) {
-                        console.log(JSON.stringify(error));
-
-                    }, // Gets triggered on error
-                    size: '05' // Defaults to '01'
-                });
-            challengeShopperComponent.mount(threeDS2ChallengeShopperNode);
+                document.getElementById("3ds2-form").submit();
         }
     </script>
 
-</head>
-<body onload=initiateComponents()>
-    <form method="post"
-          id="3ds2-form"
-          action="${authorise3DS2}">
-        <div class="row">
-            <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
-            <div class="col-sm-6">
-                <div id="threeDS2"></div>
-                <span id="errorLoadComponent"></span>
-                <input type="hidden" name="resultCode" value="${resultCode}"/>
-                <input type="hidden" name="token3ds2" value="${token3ds2}"/>
-                <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
-                <input type="hidden" id="challengeResult" name="challengeResult"/>
-            </div>
+<body>
+<form method="post"
+      id="3ds2-form"
+      action="${authorise3DS2}">
+    <div class="row">
+        <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+        <div id="containerDiv" class="col-sm-6">
+            <span id="errorLoadComponent"></span>
+            <input type="hidden" id="resultCode" name="resultCode" value="${resultCode}"/>
+            <input type="hidden" name="merchantReference" value="${merchantReference}"/>
+            <input type="hidden" name="orderToken" value="${orderToken}"/>
+            <input type="hidden" id="stateData" name="stateData" />
+            <input type="hidden" id="challengeResult" name="challengeResult"/>
         </div>
-    </form>
+    </div>
+</form>
 </body>
-</html>
