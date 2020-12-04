@@ -18,22 +18,26 @@ function initializeBillingEvents() {
   $('#billing-submit').on('click', function () {
     const isAdyenPOS = document.querySelector('.payment-method-options :checked').value
       === 'AdyenPOS';
+    const isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
+
     if (isAdyenPOS) {
       document.querySelector(
         '#dwfrm_adyPaydata_terminalId',
       ).value = document.querySelector('#terminalList').value;
       return true;
     }
-    const adyenPaymentMethod = document.querySelector(
-      '#adyenPaymentMethodName',
-    );
-    const paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`)
-      .innerHTML;
-    adyenPaymentMethod.value = paymentMethodLabel;
+    if (isAdyen) {
+      const adyenPaymentMethod = document.querySelector(
+        '#adyenPaymentMethodName',
+      );
+      const paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`)
+        .innerHTML;
+      adyenPaymentMethod.value = paymentMethodLabel;
 
-    validateComponents();
+      validateComponents();
 
-    return showValidation();
+      return showValidation();
+    }
   });
 
   if (window.getPaymentMethodsResponse) {

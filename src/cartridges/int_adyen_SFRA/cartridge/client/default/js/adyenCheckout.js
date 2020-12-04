@@ -461,9 +461,11 @@ $('button[value="submit-payment"]').on('click', function () {
     return true;
   }
 
-  assignPaymentMethodValue();
-  validateComponents();
-  return showValidation();
+  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent') {
+    assignPaymentMethodValue();
+    validateComponents();
+    return showValidation();
+  }
 });
 
 function assignPaymentMethodValue() {
