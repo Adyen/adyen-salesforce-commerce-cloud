@@ -68,7 +68,7 @@ function initializeBillingEvents() {
           const componentName = state.data.paymentMethod.storedPaymentMethodId
             ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
             : state.data.paymentMethod.type;
-          if (componentName === selectedMethod) {
+          if (componentName === selectedMethod || selectedMethod === 'bcmc') {
             $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
             componentsObj[selectedMethod].isValid = isValid;
             componentsObj[selectedMethod].stateData = state.data;
