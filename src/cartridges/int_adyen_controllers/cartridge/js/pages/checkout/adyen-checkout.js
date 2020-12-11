@@ -177,9 +177,9 @@ function initializeBillingEvents() {
     }
     if (
       window.googleMerchantID !== 'null' &&
-      window.Configuration.environment === 'LIVE'
+      window.Configuration.environment === 'live'
     ) {
-      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.merchantIdentifier =
+      checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier =
         window.googleMerchantID;
     }
     if (window.paypalMerchantID !== 'null') {
