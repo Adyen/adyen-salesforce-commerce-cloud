@@ -167,6 +167,10 @@ var __AdyenHelper = {
     return __AdyenHelper.getCustomPreference('AdyenCreditCardInstallments');
   },
 
+  getSystemIntegratorName: function () {
+    return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
+  },
+
   getPaypalMerchantID() {
     return __AdyenHelper.getCustomPreference('Adyen_PaypalMerchantID');
   },
@@ -702,6 +706,7 @@ var __AdyenHelper = {
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
       version: externalPlatformVersion,
+      integrator: this.getSystemIntegratorName(),
     };
 
     if (isEcom) {
