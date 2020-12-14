@@ -227,6 +227,14 @@ var __AdyenHelper = {
     return __AdyenHelper.getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
+  getAdyenLevel23DataEnabled: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
+  },
+
+  getAdyenLevel23CommodityCode: function () {
+    return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
+  },
+
   getAdyenGivingEnabled() {
     return __AdyenHelper.getCustomPreference('AdyenGiving_enabled');
   },

@@ -60,6 +60,11 @@ function createPaymentRequest(args) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
+    // L2/3 Data
+    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
+    }
+
     const myAmount = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount,
     ); // args.Amount * 100;
