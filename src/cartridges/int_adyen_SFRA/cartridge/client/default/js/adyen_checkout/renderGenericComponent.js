@@ -110,7 +110,6 @@ function setCheckoutConfiguration(data) {
   store.checkoutConfiguration = {
     ...store.checkoutConfiguration,
     ...setField('amount', data.amount),
-    ...setField('paymentMethodsConfiguration.paypal.amount', data.amount),
     ...setField('countryCode', data.countryCode),
   };
 }

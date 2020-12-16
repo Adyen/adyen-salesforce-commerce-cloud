@@ -36,6 +36,7 @@ const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
+const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 
 function createPaymentRequest(args) {
   try {

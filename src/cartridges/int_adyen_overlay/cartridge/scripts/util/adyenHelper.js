@@ -168,7 +168,7 @@ var __AdyenHelper = {
   },
 
   getSystemIntegratorName: function () {
-    return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
+    return __AdyenHelper.getCustomPreference('Adyen_IntegratorName');
   },
 
   getPaypalMerchantID() {
@@ -228,11 +228,11 @@ var __AdyenHelper = {
   },
 
   getAdyenLevel23DataEnabled: function () {
-    return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
+    return __AdyenHelper.getCustomPreference('AdyenLevel23DataEnabled');
   },
 
   getAdyenLevel23CommodityCode: function () {
-    return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
+    return __AdyenHelper.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
   getAdyenGivingEnabled() {

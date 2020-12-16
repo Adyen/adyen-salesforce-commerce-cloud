@@ -1,8 +1,12 @@
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-function get3DS2Response({ threeDS2, resultCode, action }) {
-  return { threeDS2, resultCode, action };
+function get3DS2Response(result) {
+  return {
+    threeDS2: result.threeDS2,
+    resultCode: result.resultCode,
+    action: JSON.stringify(result.fullResponse.action),
+  };
 }
 
 function getRedirectResponse(result, orderNumber, paymentInstrument) {
