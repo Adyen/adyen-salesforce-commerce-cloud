@@ -63,7 +63,7 @@ const __LineItemHelper = {
     ) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.getAdjustedTax());
     }
-    if (lineItem instanceof dw.order.PriceAdjustment) {
+    if (lineItem instanceof dw.order.PriceAdjustment && lineItem.getPromotion().getPromotionClass() !== 'ORDER') {
       return AdyenHelper.getCurrencyValueForApi(lineItem.tax);
     }
     return null;

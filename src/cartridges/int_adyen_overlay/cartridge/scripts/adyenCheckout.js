@@ -36,6 +36,7 @@ const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
+const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 
 function createPaymentRequest(args) {
   try {
@@ -58,6 +59,11 @@ function createPaymentRequest(args) {
     // Get 3DS2 data
     if (AdyenHelper.getAdyen3DS2Enabled()) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    }
+
+    // L2/3 Data
+    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
     }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(

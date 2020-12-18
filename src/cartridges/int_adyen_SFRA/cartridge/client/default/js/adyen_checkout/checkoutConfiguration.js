@@ -13,7 +13,9 @@ function getCardConfig() {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
       store.isValid = state.isValid;
-      const isSelected = getComponentName(state.data) === store.selectedMethod;
+      const isSelected =
+        getComponentName(state.data) === store.selectedMethod ||
+        store.selectedMethod === 'bcmc';
       if (isSelected) {
         store.updateSelectedPayment('isValid', store.isValid);
         store.updateSelectedPayment('stateData', state.data);

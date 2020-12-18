@@ -167,6 +167,10 @@ var __AdyenHelper = {
     return __AdyenHelper.getCustomPreference('AdyenCreditCardInstallments');
   },
 
+  getSystemIntegratorName: function () {
+    return __AdyenHelper.getCustomPreference('Adyen_IntegratorName');
+  },
+
   getPaypalMerchantID() {
     return __AdyenHelper.getCustomPreference('Adyen_PaypalMerchantID');
   },
@@ -221,6 +225,14 @@ var __AdyenHelper = {
 
   getAdyenBasketFieldsEnabled() {
     return __AdyenHelper.getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+
+  getAdyenLevel23DataEnabled: function () {
+    return __AdyenHelper.getCustomPreference('AdyenLevel23DataEnabled');
+  },
+
+  getAdyenLevel23CommodityCode: function () {
+    return __AdyenHelper.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
   getAdyenGivingEnabled() {
@@ -702,6 +714,7 @@ var __AdyenHelper = {
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
       version: externalPlatformVersion,
+      integrator: this.getSystemIntegratorName(),
     };
 
     if (isEcom) {
