@@ -52,6 +52,20 @@ function Authorize(args) {
 
   Transaction.begin();
   paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+
+  const orderCustomer = order.getCustomer();
+  const sessionCustomer = session.getCustomer();
+  if (orderCustomer.authenticated && orderCustomer.ID !== sessionCustomer.ID) {
+    Logger.getLogger('Adyen').error('orderCustomer is not the same as the sessionCustomer');
+    Transaction.wrap(function () {
+      OrderMgr.failOrder(order, true);
+    });
+    return {
+      error: true,
+      PlaceOrderError: 'orderCustomer is not the same as the sessionCustomer',
+    };
+  }
+
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
@@ -81,6 +95,9 @@ function Authorize(args) {
     Transaction.commit();
 
     if (result.threeDS2) {
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenAction = JSON.stringify(result.fullResponse.action);
+      });
       return {
         authorized3d: true,
         view: app.getView({
@@ -88,6 +105,8 @@ function Authorize(args) {
             'Adyen-Redirect3DS2',
             'merchantReference',
             order.orderNo,
+              'orderToken',
+              order.getOrderToken(),
             'utm_nooverride',
             '1',
           ),
@@ -109,6 +128,8 @@ function Authorize(args) {
             'Adyen-AuthorizeWithForm',
             'merchantReference',
             order.orderNo,
+              'orderToken',
+              order.getOrderToken(),
             'utm_nooverride',
             '1',
           ),

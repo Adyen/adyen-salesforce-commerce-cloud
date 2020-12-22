@@ -116,7 +116,7 @@ function initializeBillingEvents() {
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
-          document.querySelector('#paypalStateData').value = JSON.stringify(
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
             state.data,
           );
           $('#dwfrm_billing').trigger('submit');
@@ -409,6 +409,7 @@ async function renderGenericComponent() {
   const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -565,6 +566,10 @@ function paymentFromComponent(data, component) {
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',
     success(data) {
+      if (data.result && data.result.orderNo && data.result.orderToken) {
+        document.querySelector('#orderToken').value = data.result.orderToken;
+        document.querySelector('#merchantReference').value = data.result.orderNo;
+      }
       if (
         data.result &&
         data.result.fullResponse &&
@@ -572,7 +577,7 @@ function paymentFromComponent(data, component) {
       ) {
         component.handleAction(data.result.fullResponse.action);
       } else {
-        document.querySelector('#paypalStateData').value = JSON.stringify(
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
           'null',
         );
         $('#dwfrm_billing').trigger('submit');
@@ -584,7 +589,7 @@ function paymentFromComponent(data, component) {
 $('#dwfrm_billing').submit(function (e) {
   if (
     selectedMethod === 'paypal' &&
-    !document.querySelector('#paypalStateData').value
+    !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
     const form = $(this);

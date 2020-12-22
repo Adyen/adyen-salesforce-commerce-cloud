@@ -26,7 +26,7 @@ function getMethods(basket, customer, countryCode) {
     // paymentMethods call from checkout
     if (basket) {
       paymentAmount = basket.getTotalGrossPrice()
-        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
+        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).getValueOrNull()
         : 1000;
       currencyCode = basket.currencyCode;
     } else {

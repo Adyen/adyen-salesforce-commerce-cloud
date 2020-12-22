@@ -33,7 +33,7 @@ function handlePaymentMethod({ req, res, next }) {
 
   if (AdyenHelper.getCreditCardInstallments()) {
     const paymentAmount = currentBasket.getTotalGrossPrice()
-      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).getValueOrNull()
       : 1000;
     const currency = currentBasket.getTotalGrossPrice().currencyCode;
     jsonResponse.amount = { value: paymentAmount, currency };
