@@ -171,6 +171,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
   },
 
+  getSystemIntegratorName: function () {
+    return __AdyenHelper.getCustomPreference('Adyen_IntegratorName');
+  },
+
   getPaypalMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
   },
@@ -225,6 +229,14 @@ var adyenHelperObj = {
 
   getAdyenBasketFieldsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+
+  getAdyenLevel23DataEnabled: function () {
+    return __AdyenHelper.getCustomPreference('AdyenLevel23DataEnabled');
+  },
+
+  getAdyenLevel23CommodityCode: function () {
+    return __AdyenHelper.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
   getAdyenGivingEnabled() {

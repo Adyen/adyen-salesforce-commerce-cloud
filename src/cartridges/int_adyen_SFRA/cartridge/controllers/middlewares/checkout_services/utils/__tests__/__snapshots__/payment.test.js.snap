@@ -29,7 +29,47 @@ Array [
       "continueUrl": "[\\"Adyen-Adyen3DS2\\",\\"resultCode\\",\\"IdentifyShopper\\",\\"orderNo\\",\\"mocked_orderNo\\"]",
       "error": false,
       "order": Object {
-        "getPaymentInstruments": [MockFunction],
+        "getPaymentInstruments": [MockFunction] {
+          "calls": Array [
+            Array [
+              "mocked_method",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Object {
+                "0": Object {
+                  "custom": Object {
+                    "adyenAction": "mocked_action",
+                    "adyenMD": "mocked_adyen_MD",
+                    "adyenPaymentData": "mocked_adyen_payment_data",
+                  },
+                },
+                "iterator": [Function],
+                "toArray": [MockFunction] {
+                  "calls": Array [
+                    Array [],
+                  ],
+                  "results": Array [
+                    Object {
+                      "type": "return",
+                      "value": Array [
+                        Object {
+                          "custom": Object {
+                            "adyenAction": "mocked_action",
+                            "adyenMD": "mocked_adyen_MD",
+                            "adyenPaymentData": "mocked_adyen_payment_data",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
         "orderNo": "mocked_orderNo",
       },
     },

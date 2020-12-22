@@ -12,7 +12,7 @@ describe('Payment Response Handler', () => {
     const result = {
       threeDS2: true,
       resultCode: 'mocked_result_code',
-      action: 'mocked_action',
+      fullResponse: {action: 'mocked_action'},
     };
     const response = paymentResponseHandler(
       paymentInstrument,

@@ -153,6 +153,10 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
     node.mount(container);
   }
 
+  if (paymentMethodID === 'giropay') {
+    container.innerHTML = '';
+  }
+
   handleInput(options);
   setValid(options);
 };
