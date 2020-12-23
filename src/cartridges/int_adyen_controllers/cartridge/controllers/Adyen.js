@@ -240,9 +240,8 @@ function paymentFromComponent() {
  */
 function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
-  const orderNumber = request.httpParameterMap.get('merchantReference')
-      .stringValue;
-  const orderToken = request.httpParameterMap.get('orderToken').stringValue;
+  const orderNumber = paymentInformation.get('merchantReference').value();
+  const orderToken = paymentInformation.get('orderToken').value();
   const order = OrderMgr.getOrder(orderNumber, orderToken);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
