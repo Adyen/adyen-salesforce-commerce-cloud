@@ -27,6 +27,7 @@ function getCardConfig() {
 }
 
 function getPaypalConfig() {
+  window.paypalTerminatedEarly = false;
   return {
     environment: window.Configuration.environment,
     intent: 'capture',
@@ -39,21 +40,30 @@ function getPaypalConfig() {
       helpers.paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
+      window.paypalTerminatedEarly = false;
       helpers.paymentFromComponent({ cancelTransaction: true }, component);
     },
     onError: (error, component) => {
+      window.paypalTerminatedEarly = false;
       if (component) {
         component.setStatus('ready');
       }
       document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: (state) => {
+      window.paypalTerminatedEarly = false;
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
         state.data,
       );
       document.querySelector('#showConfirmationForm').submit();
     },
     onClick: (data, actions) => {
+      if(window.paypalTerminatedEarly) {
+        helpers.paymentFromComponent({ cancelTransaction: true });
+        window.paypalTerminatedEarly = false;
+        return actions.resolve();
+      }
+      window.paypalTerminatedEarly = true;
       $('#dwfrm_billing').trigger('submit');
       if (store.formErrorsExist) {
         return actions.reject();

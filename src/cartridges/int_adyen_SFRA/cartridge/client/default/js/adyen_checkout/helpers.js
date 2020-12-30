@@ -11,7 +11,7 @@ function assignPaymentMethodValue() {
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-function paymentFromComponent(data, component) {
+function paymentFromComponent(data, component = {}) {
   $.ajax({
     url: 'Adyen-PaymentFromComponent',
     type: 'post',

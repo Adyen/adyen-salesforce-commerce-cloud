@@ -8,6 +8,7 @@ const {
 const {
   assignPaymentMethodValue,
   showValidation,
+  paymentFromComponent,
 } = require('./adyen_checkout/helpers');
 const { validateComponents } = require('./adyen_checkout/validateComponents');
 
@@ -52,6 +53,11 @@ if (window.paypalMerchantID !== 'null') {
 
 // Submit the payment
 $('button[value="submit-payment"]').on('click', () => {
+  if(window.paypalTerminatedEarly) {
+    paymentFromComponent({ cancelTransaction: true });
+    window.paypalTerminatedEarly = false;
+    return false;
+  }
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
     document.querySelector('#terminalId').value = document.querySelector(
       '#terminalList',
