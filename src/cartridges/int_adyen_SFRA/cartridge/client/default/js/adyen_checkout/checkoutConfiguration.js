@@ -29,6 +29,7 @@ function getCardConfig() {
 function getPaypalConfig() {
   window.paypalTerminatedEarly = false;
   return {
+    showPayButton: true,
     environment: window.Configuration.environment,
     intent: 'capture',
     onSubmit: (state, component) => {
@@ -58,7 +59,7 @@ function getPaypalConfig() {
       document.querySelector('#showConfirmationForm').submit();
     },
     onClick: (data, actions) => {
-      if(window.paypalTerminatedEarly) {
+      if (window.paypalTerminatedEarly) {
         helpers.paymentFromComponent({ cancelTransaction: true });
         window.paypalTerminatedEarly = false;
         return actions.resolve();

@@ -10,12 +10,18 @@ let paymentMethodsResponse;
 let checkout;
 let formErrorsExist;
 let isValid;
+let paypalTerminatedEarly = false;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
 function initializeBillingEvents() {
   $('#billing-submit').on('click', () => {
+    if(paypalTerminatedEarly) {
+      paymentFromComponent({ cancelTransaction: true });
+      paypalTerminatedEarly = false;
+      return false;
+    }
     const isAdyenPOS = document.querySelector(
       '.payment-method-options :checked',
     ).value;
@@ -97,6 +103,12 @@ function initializeBillingEvents() {
         environment: window.Configuration.environment,
         intent: 'capture',
         onClick: (data, actions) => {
+          if(paypalTerminatedEarly) {
+            paymentFromComponent({ cancelTransaction: true });
+            paypalTerminatedEarly = false;
+            return actions.resolve();
+          }
+          paypalTerminatedEarly = true;
           $('#dwfrm_billing').trigger('submit');
           if (formErrorsExist) {
             return actions.reject();
@@ -110,12 +122,15 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
+          paypalTerminatedEarly = false;
           paymentFromComponent({ cancelPaypal: true }, component);
         },
         onError: (/* error, component */) => {
+          paypalTerminatedEarly = false;
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
+          paypalTerminatedEarly = false;
           document.querySelector('#paypalStateData').value = JSON.stringify(
             state.data,
           );
@@ -563,7 +578,7 @@ function createCheckoutComponent(
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-function paymentFromComponent(data, component) {
+function paymentFromComponent(data, component  = {}) {
   $.ajax({
     url: window.paymentFromComponentUrl,
     type: 'post',

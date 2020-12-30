@@ -53,7 +53,7 @@ if (window.paypalMerchantID !== 'null') {
 
 // Submit the payment
 $('button[value="submit-payment"]').on('click', () => {
-  if(window.paypalTerminatedEarly) {
+  if (window.paypalTerminatedEarly) {
     paymentFromComponent({ cancelTransaction: true });
     window.paypalTerminatedEarly = false;
     return false;
