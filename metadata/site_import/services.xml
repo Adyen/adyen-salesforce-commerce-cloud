@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="AdyenPayment">
-        <url>https://checkout-test.adyen.com/checkout/v51/payments</url>
+        <url>https://checkout-test.adyen.com/checkout/v66/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v51/payments</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v66/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetails">
-        <url>https://checkout-test.adyen.com/checkout/v51/payments/details</url>
+        <url>https://checkout-test.adyen.com/checkout/v66/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v51/payments/details</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v66/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethods">
-        <url>https://checkout-test.adyen.com/v51/paymentMethods</url>
+        <url>https://checkout-test.adyen.com/v66/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v51/paymentMethods</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v66/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
