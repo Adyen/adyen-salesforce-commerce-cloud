@@ -465,8 +465,6 @@ function redirect3ds2() {
  * @returns rendering template or error
  */
 function authorize3ds2() {
-  Logger.getLogger('Adyen').error('entering authorize3ds2 3ds2');
-
   if (!CSRFProtection.validateRequest()) {
     Logger.getLogger('Adyen').error(
       `CSRF Mismatch for order ${
