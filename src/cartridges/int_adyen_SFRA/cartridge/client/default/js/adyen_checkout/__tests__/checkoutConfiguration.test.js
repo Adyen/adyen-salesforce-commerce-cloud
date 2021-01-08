@@ -3,6 +3,7 @@ const {
   getPaypalConfig,
   getGooglePayConfig,
   getMbwayConfig,
+  getQRCodeConfig,
 } = require('../checkoutConfiguration');
 const store = require('../../../../../store');
 
@@ -10,6 +11,7 @@ let card;
 let paypal;
 let paywithgoogle;
 let mbway;
+let swish;
 beforeEach(() => {
   window.Configuration = { environment: 'TEST' };
   store.checkoutConfiguration = {};
@@ -17,6 +19,7 @@ beforeEach(() => {
   paypal = getPaypalConfig();
   paywithgoogle = getGooglePayConfig();
   mbway = getMbwayConfig();
+  swish = getQRCodeConfig();
 });
 
 describe('Checkout Configuration', () => {
@@ -90,6 +93,21 @@ describe('Checkout Configuration', () => {
       store.selectedMethod = 'mbway';
       store.componentsObj = { mbway: { stateData: { foo: 'bar' } } };
       mbway.onSubmit({ data: {} });
+      expect(document.getElementById('adyenStateData').value).toBe(
+          JSON.stringify(store.selectedPayment.stateData),
+      );
+    });
+  });
+  describe('QR code (swish)', () => {
+    it('handles onSubmit', () => {
+      document.body.innerHTML = `
+        <div id="lb_swish">swish</div>
+        <div id="adyenPaymentMethodName"></div>
+        <div id="adyenStateData"></div>
+      `;
+      store.selectedMethod = 'swish';
+      store.componentsObj = { swish: { stateData: { foo: 'bar' } } };
+      swish.onSubmit({ data: {} });
       expect(document.getElementById('adyenStateData').value).toBe(
           JSON.stringify(store.selectedPayment.stateData),
       );

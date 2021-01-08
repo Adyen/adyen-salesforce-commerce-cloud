@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Payment from Component should cancel transaction 1`] = `
+Array [
+  Array [
+    "Checkout-Begin",
+    "stage",
+    "placeOrder",
+  ],
+]
+`;
+
 exports[`Payment from Component should return json response 1`] = `
 Array [
   Array [

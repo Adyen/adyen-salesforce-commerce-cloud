@@ -8,7 +8,7 @@ beforeEach(() => {
   paymentFromComponent = adyen.paymentFromComponent;
   jest.clearAllMocks();
   req = { form: { data: { paymentMethod: { type: 'mocked_type' } } } };
-  res = { json: jest.fn() };
+  res = { redirect: jest.fn(), json: jest.fn() };
 });
 
 afterEach(() => {
@@ -17,10 +17,15 @@ afterEach(() => {
 
 describe('Payment from Component', () => {
   it('should cancel transaction', () => {
+    const URLUtils = require('dw/web/URLUtils');
+
     req.form.data.cancelTransaction = true;
     req.form.data = JSON.stringify(req.form.data);
-    const expected = paymentFromComponent(req, res, jest.fn());
-    expect(expected).toEqual({});
+    // const expected = paymentFromComponent(req, res, jest.fn());
+    paymentFromComponent(req, res, jest.fn());
+
+    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+    // expect(expected).toEqual({});
   });
   it('should return json response', () => {
     req.form.data = JSON.stringify(req.form.data);

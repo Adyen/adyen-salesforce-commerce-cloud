@@ -2,6 +2,8 @@ const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
+const OrderMgr = require('dw/order/OrderMgr');
+const URLUtils = require('dw/web/URLUtils');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -11,8 +13,16 @@ function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
 
   if (reqDataObj.cancelTransaction) {
-    Logger.getLogger('Adyen').error('Shopper cancelled transaction');
-    return {};
+    Logger.getLogger('Adyen').error(
+      `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
+    );
+
+    const order = OrderMgr.getOrder(reqDataObj.merchantReference);
+    Transaction.wrap(() => {
+      OrderMgr.failOrder(order, true);
+    });
+    res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
+    return next();
   }
   const currentBasket = BasketMgr.getCurrentBasket();
 
