@@ -1,1 +1,1 @@
-module.exports.qrCodeMethods = ['swish', 'wechatpayQR'];
+module.exports.qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile'];

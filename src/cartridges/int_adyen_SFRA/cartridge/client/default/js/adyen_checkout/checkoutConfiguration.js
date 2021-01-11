@@ -172,6 +172,7 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     mbway: getMbwayConfig(),
     swish: getQRCodeConfig(),
+    bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
     afterpay_default: {
       visibility: {
