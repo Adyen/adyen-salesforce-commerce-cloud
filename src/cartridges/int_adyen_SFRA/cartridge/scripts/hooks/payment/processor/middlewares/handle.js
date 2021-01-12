@@ -11,8 +11,11 @@ function handle(basket, paymentInformation) {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
     });
+
+    const paymentMethod = paymentInformation.isCreditCard ? constants.METHOD_CREDIT_CARD : constants.METHOD_ADYEN_COMPONENT;
+
     const paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
+        paymentMethod,
       currentBasket.totalGrossPrice,
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
@@ -28,7 +31,11 @@ function handle(basket, paymentInformation) {
         customer,
       );
 
-      paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
+      const cardNumber = paymentInformation.cardNumber ||
+          paymentInformation.adyenPaymentMethod.substring(
+              paymentInformation.adyenPaymentMethod.indexOf('*')
+          );
+      paymentInstrument.setCreditCardNumber(cardNumber);
       paymentInstrument.setCreditCardType(sfccCardType);
 
       if (tokenID) {

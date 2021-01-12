@@ -6,22 +6,22 @@ const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalc
 const { checkForErrors } = require('../helpers/index');
 
 const handleTransaction = (currentBasket, { res, req }, emit) => {
-  const validatePayment = () => {
-    // Re-validates existing payment instruments
-    const validPayment = adyenHelpers.validatePayment(req, currentBasket);
-    if (validPayment.error) {
-      res.json({
-        error: true,
-        errorStage: {
-          stage: 'payment',
-          step: 'paymentInstrument',
-        },
-        errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null),
-      });
-      emit('route:Complete');
-    }
-    return !validPayment.error;
-  };
+  // const validatePayment = () => {
+  //   // Re-validates existing payment instruments
+  //   const validPayment = adyenHelpers.validatePayment(req, currentBasket);
+  //   if (validPayment.error) {
+  //     res.json({
+  //       error: true,
+  //       errorStage: {
+  //         stage: 'payment',
+  //         step: 'paymentInstrument',
+  //       },
+  //       errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null),
+  //     });
+  //     emit('route:Complete');
+  //   }
+  //   return !validPayment.error;
+  // };
 
   const calculatePaymentTransaction = () => {
     const calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(
@@ -47,7 +47,8 @@ const handleTransaction = (currentBasket, { res, req }, emit) => {
     basketCalculationHelpers.calculateTotals(currentBasket);
   });
 
-  return validatePayment() && calculatePaymentTransaction();
+  // return validatePayment() && calculatePaymentTransaction();
+  return calculatePaymentTransaction();
 };
 
 module.exports = handleTransaction;

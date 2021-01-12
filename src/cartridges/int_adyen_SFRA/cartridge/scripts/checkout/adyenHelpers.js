@@ -52,10 +52,10 @@ function validatePayment(req, currentBasket) {
     paymentAmount,
   );
 
-  const validatePaymentInstrument = validatePaymentMethod(
-    applicablePaymentCards,
-    applicablePaymentMethods,
-  );
+  // const validatePaymentInstrument = validatePaymentMethod(
+  //   applicablePaymentCards,
+  //   applicablePaymentMethods,
+  // );
 
   const isValid = paymentInstruments.toArray().every(validatePaymentInstrument);
   result.error = !isValid;
