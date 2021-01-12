@@ -18,7 +18,7 @@ const getPayments = (order, orderNumber) =>
   order.paymentInstruments.toArray().reduce((acc, paymentInstrument) => {
     if (!acc.error) {
       const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-          constants.METHOD_ADYEN_COMPONENT,
+        constants.METHOD_ADYEN_COMPONENT,
       );
 
       if (paymentProcessor) {

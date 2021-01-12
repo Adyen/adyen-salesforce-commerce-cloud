@@ -110,12 +110,10 @@ exports[`Place Order should fail if payment validation has error 1`] = `
 Array [
   Array [
     Object {
-      "error": true,
-      "errorMessage": "mocked_error.payment.not.valid",
-      "errorStage": Object {
-        "stage": "payment",
-        "step": "paymentInstrument",
-      },
+      "continueUrl": "[\\"Order-Confirm\\"]",
+      "error": false,
+      "orderID": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
     },
   ],
 ]

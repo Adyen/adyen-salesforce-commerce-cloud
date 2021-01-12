@@ -1,6 +1,5 @@
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const array = require('*/cartridge/scripts/util/array');
-const Logger = require('dw/system/Logger');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {
   if (!req.form.storedPaymentUUID && isCreditCard) {
@@ -14,7 +13,7 @@ function setSessionPrivacy({ adyenPaymentFields }) {
   session.privacy.adyenFingerprint = adyenPaymentFields.adyenFingerprint.value;
 }
 
-function getPaymentInstrument(req, { storedPaymentUUID }) {
+function getPaymentInstrument(req, storedPaymentUUID) {
   const { paymentInstruments } = req.currentCustomer.wallet;
   const findById = (item) => storedPaymentUUID === item.UUID;
   return array.find(paymentInstruments, findById);
@@ -22,20 +21,10 @@ function getPaymentInstrument(req, { storedPaymentUUID }) {
 
 // process payment information
 function getProcessFormResult(storedPaymentUUID, req, viewData) {
-  // Logger.getLogger('Adyen').error('wallet PIs' + req.currentCustomer.wallet.paymentInstruments);
-  // const paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
-
-  // array.find(paymentInstruments, function (item) {
-  //   Logger.getLogger('Adyen').error( JSON.stringify(storedPaymentUUID));
-  //   Logger.getLogger('Adyen').error( item.UUID);
-  //   return viewData.storedPaymentUUID === item.UUID;
-  // });
-
   const { authenticated, registered } = req.currentCustomer.raw;
 
   if (storedPaymentUUID && authenticated && registered) {
-    const paymentInstrument = getPaymentInstrument(req, viewData);
-
+    const paymentInstrument = getPaymentInstrument(req, storedPaymentUUID);
     return {
       error: false,
       viewData: {
@@ -89,11 +78,10 @@ function getViewData(
 
 function getStoredPaymentUUID(paymentForm) {
   const { selectedCardID } = paymentForm.creditCardFields;
-  Logger.getLogger('Adyen').error('selectedCardID ' + selectedCardID);
-  if(selectedCardID) {
-    Logger.getLogger('Adyen').error('paymentForm.creditCardFields.selectedCardID.value ' + paymentForm.creditCardFields.selectedCardID.value);
-    return paymentForm.creditCardFields.selectedCardID.value;
-  }
+
+  return selectedCardID
+    ? paymentForm.creditCardFields.selectedCardID.value
+    : null;
 }
 
 /**
@@ -105,10 +93,8 @@ function getStoredPaymentUUID(paymentForm) {
  */
 function processForm(req, paymentForm, viewFormData) {
   const brand = JSON.stringify(req.form.brandCode);
-  const isCreditCard = req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
-  Logger.getLogger('Adyen').error('isCreditCard ' + isCreditCard);
-  Logger.getLogger('Adyen').error('brand.indexOf(storedCard) ' + brand.indexOf('storedCard'));
-  Logger.getLogger('Adyen').error('req.form.brandCode === scheme ' + req.form.brandCode === 'scheme');
+  const isCreditCard =
+    req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
   const creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {

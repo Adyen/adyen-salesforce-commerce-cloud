@@ -16,11 +16,7 @@ Array [
   Array [
     Object {
       "error": true,
-      "errorMessage": "mocked_error.payment.not.valid",
-      "errorStage": Object {
-        "stage": "payment",
-        "step": "paymentInstrument",
-      },
+      "errorMessage": "mocked_error.technical",
     },
   ],
 ]
