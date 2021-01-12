@@ -106,19 +106,6 @@ Array [
 ]
 `;
 
-exports[`Place Order should fail if payment validation has error 1`] = `
-Array [
-  Array [
-    Object {
-      "continueUrl": "[\\"Order-Confirm\\"]",
-      "error": false,
-      "orderID": "mocked_orderNo",
-      "orderToken": "mocked_orderToken",
-    },
-  ],
-]
-`;
-
 exports[`Place Order should fail if placeOrder has error 1`] = `
 Array [
   Array [
