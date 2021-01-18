@@ -130,6 +130,12 @@ function handleInput({ paymentMethodID }) {
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
       });
+    } else if(window.paypalTerminatedEarly) {
+      helpers.paymentFromComponent({
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+      });
+      window.paypalTerminatedEarly = false;
     }
 
     helpers.displaySelectedMethod(event.target.value);
