@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
+const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
   const ach = `<div id="component_ach">
@@ -108,7 +109,29 @@ function configureContainer({ paymentMethodID, container }) {
 
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
-  input.onchange = (event) => {
+  input.onchange = async (event) => {
+    if (
+      document.querySelector('.adyen-checkout__qr-loader') &&
+      qrCodeMethods.indexOf(store.selectedMethod) > -1
+    ) {
+      const compName = store.selectedMethod;
+      const qrComponent = store.componentsObj[compName];
+
+      await Promise.resolve(qrComponent.node.unmount(`component_${compName}`));
+      delete store.componentsObj[compName];
+
+      setNode(compName)(compName);
+      const node = store.componentsObj[compName]?.node;
+      if (node) {
+        node.mount(document.querySelector(`#component_${compName}`));
+      }
+
+      helpers.paymentFromComponent({
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+      });
+    }
+
     helpers.displaySelectedMethod(event.target.value);
   };
 }

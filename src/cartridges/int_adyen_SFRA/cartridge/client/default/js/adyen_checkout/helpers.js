@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const { qrCodeMethods } = require('./qrCodeMethods');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -25,8 +26,6 @@ function paymentFromComponent(data, component) {
       }
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
-      } else {
-        document.querySelector('#showConfirmationForm').submit();
       }
     },
   }).fail(() => {});
@@ -52,7 +51,7 @@ function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'mbway'].indexOf(type) > -1;
+    ['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1;
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');

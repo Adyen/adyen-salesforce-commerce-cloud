@@ -28,6 +28,7 @@ function getCardConfig() {
 
 function getPaypalConfig() {
   return {
+    showPayButton: true,
     environment: window.Configuration.environment,
     intent: 'capture',
     onSubmit: (state, component) => {
@@ -39,7 +40,13 @@ function getPaypalConfig() {
       helpers.paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
-      helpers.paymentFromComponent({ cancelTransaction: true }, component);
+      helpers.paymentFromComponent(
+        {
+          cancelTransaction: true,
+          merchantReference: document.querySelector('#merchantReference').value,
+        },
+        component,
+      );
     },
     onError: (error, component) => {
       if (component) {
@@ -59,6 +66,31 @@ function getPaypalConfig() {
         return actions.reject();
       }
       return null;
+    },
+  };
+}
+
+function getQRCodeConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        return;
+      }
+
+      helpers.assignPaymentMethodValue();
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        store.selectedPayment.stateData,
+      );
+
+      helpers.paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state /* , component */) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
     },
   };
 }
@@ -139,6 +171,9 @@ function setCheckoutConfiguration() {
     paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     mbway: getMbwayConfig(),
+    swish: getQRCodeConfig(),
+    bcmc_mobile: getQRCodeConfig(),
+    wechatpayQR: getQRCodeConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',
@@ -180,4 +215,5 @@ module.exports = {
   getGooglePayConfig,
   setCheckoutConfiguration,
   getMbwayConfig,
+  getQRCodeConfig,
 };
