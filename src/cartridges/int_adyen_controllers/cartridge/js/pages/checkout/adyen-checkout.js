@@ -10,12 +10,20 @@ let paymentMethodsResponse;
 let checkout;
 let formErrorsExist;
 let isValid;
+let paypalTerminatedEarly = false;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
 function initializeBillingEvents() {
   $('#billing-submit').on('click', () => {
+    if(paypalTerminatedEarly) {
+      paymentFromComponent({
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+      });
+      paypalTerminatedEarly = false;
+    }
     const isAdyenPOS = document.querySelector(
       '.payment-method-options :checked',
     ).value;
@@ -97,6 +105,15 @@ function initializeBillingEvents() {
         environment: window.Configuration.environment,
         intent: 'capture',
         onClick: (data, actions) => {
+          if(paypalTerminatedEarly) {
+            paymentFromComponent({
+              cancelTransaction: true,
+              merchantReference: document.querySelector('#merchantReference').value,
+            });
+            paypalTerminatedEarly = false;
+            return actions.resolve();
+          }
+          paypalTerminatedEarly = true;
           $('#dwfrm_billing').trigger('submit');
           if (formErrorsExist) {
             return actions.reject();
@@ -110,12 +127,18 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
-          paymentFromComponent({ cancelPaypal: true }, component);
+          paypalTerminatedEarly = false;
+          paymentFromComponent({
+            cancelPaypal: true,
+            merchantReference: document.querySelector('#merchantReference').value,
+          }, component);
         },
         onError: (/* error, component */) => {
+          paypalTerminatedEarly = false;
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
+          paypalTerminatedEarly = false;
           document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
             state.data,
           );
