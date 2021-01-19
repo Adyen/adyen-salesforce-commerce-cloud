@@ -177,15 +177,27 @@ function getDetails() {
  * Make a payment from inside a component (used by paypal)
  */
 function paymentFromComponent() {
+  Logger.getLogger('Adyen').error(request.httpParameterMap.getRequestBodyAsString());
+  Logger.getLogger('Adyen').error(request.httpParameterMap.get('merchantReference').stringValue);
   if (
     request.httpParameterMap
       .getRequestBodyAsString()
       .indexOf('cancelTransaction') > -1
   ) {
-    Logger.getLogger('Adyen').error(
-      `Shopper cancelled transaction`,
-    );
-    return;
+    Logger.getLogger('Adyen').error(request.httpParameterMap.getRequestBodyAsString());
+    Logger.getLogger('Adyen').error(request.httpParameterMap.get('merchantReference').stringValue);
+
+
+    // Logger.getLogger('Adyen').error(
+    //     `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
+    // );
+    //
+    // const order = OrderMgr.getOrder(reqDataObj.merchantReference);
+    // Transaction.wrap(() => {
+    //   OrderMgr.failOrder(order, true);
+    // });
+    // res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
+    // return next();
   }
 
   const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
