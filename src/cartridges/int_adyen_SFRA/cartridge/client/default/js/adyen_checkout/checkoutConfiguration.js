@@ -66,7 +66,10 @@ function getPaypalConfig() {
     },
     onClick: (data, actions) => {
       if (window.paypalTerminatedEarly) {
-        helpers.paymentFromComponent({ cancelTransaction: true });
+        helpers.paymentFromComponent({
+          cancelTransaction: true,
+          merchantReference: document.querySelector('#merchantReference').value,
+        });
         window.paypalTerminatedEarly = false;
         return actions.resolve();
       }
