@@ -17,13 +17,13 @@ let paypalTerminatedEarly = false;
  */
 function initializeBillingEvents() {
   $('#billing-submit').on('click', () => {
-    if(paypalTerminatedEarly) {
-      paymentFromComponent({
-        cancelTransaction: true,
-        merchantReference: document.querySelector('#merchantReference').value,
-      });
-      paypalTerminatedEarly = false;
-    }
+    // if(paypalTerminatedEarly) {
+    //   paymentFromComponent({
+    //     cancelTransaction: true,
+    //     merchantReference: document.querySelector('#merchantReference').value,
+    //   });
+    //   paypalTerminatedEarly = false;
+    // }
     const isAdyenPOS = document.querySelector(
       '.payment-method-options :checked',
     ).value;
