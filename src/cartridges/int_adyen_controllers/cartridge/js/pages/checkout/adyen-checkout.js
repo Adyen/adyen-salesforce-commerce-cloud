@@ -538,7 +538,13 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
       await Promise.resolve(qrComponent.node.unmount(`component_${compName}`));
       delete componentsObj[compName];
 
-      setNode(compName)(compName);
+      createCheckoutComponent(
+          checkout,
+          compName,
+          container,
+          paymentMethodID,
+      );
+
       const node = componentsObj[compName]?.node;
       if (node) {
         node.mount(document.querySelector(`#component_${compName}`));
