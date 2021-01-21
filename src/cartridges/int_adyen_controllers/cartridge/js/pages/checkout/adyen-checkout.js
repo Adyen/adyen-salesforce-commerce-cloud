@@ -111,7 +111,10 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
-          paymentFromComponent({ cancelPaypal: true }, component);
+          paymentFromComponent({
+            cancelTransaction: true,
+            merchantReference: document.querySelector('#merchantReference').value,
+          }, component);
         },
         onError: (/* error, component */) => {
           $('#dwfrm_billing').trigger('submit');
@@ -147,7 +150,7 @@ function initializeBillingEvents() {
           $('#dwfrm_billing').trigger('submit');
         },
       },
-      swish: getnfig(),
+      swish: getQRCodeConfig(),
       bcmc_mobile: getQRCodeConfig(),
       wechatpayQR: getQRCodeConfig(),
       afterpay_default: {
@@ -532,24 +535,6 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
         document.querySelector('.adyen-checkout__qr-loader') &&
         qrCodeMethods.indexOf(selectedMethod) > -1
     ) {
-      const compName = selectedMethod;
-      const qrComponent = componentsObj[compName];
-
-      await Promise.resolve(qrComponent.node.unmount(`component_${compName}`));
-      delete componentsObj[compName];
-
-      createCheckoutComponent(
-          checkout,
-          compName,
-          container,
-          paymentMethodID,
-      );
-
-      const node = componentsObj[compName]?.node;
-      if (node) {
-        node.mount(document.querySelector(`#component_${compName}`));
-      }
-
       paymentFromComponent({
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
@@ -667,7 +652,7 @@ $('#dwfrm_billing').submit(function (e) {
   }
 });
 
-function getQRCodeConfigQRCodeCo() {
+function getQRCodeConfig() {
   return {
     showPayButton: true,
     onSubmit: (state, component) => {

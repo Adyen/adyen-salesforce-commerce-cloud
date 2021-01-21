@@ -186,16 +186,7 @@ function paymentFromComponent() {
     Logger.getLogger('Adyen').error(
         `Shopper cancelled paymentFromComponent transaction for order ${merchantReference}`,
     );
-
-    const order = OrderMgr.getOrder(merchantReference);
-
-    Logger.getLogger('Adyen').error('gonna do nothing');
-    // Transaction.wrap(() => {
-    //   OrderMgr.failOrder(order, true);
-    // });
-    // return response.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
-    // return response.redirect(URLUtils.https('COShipping-Start'));
-    // return;
+    return;
   } else {
     const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
@@ -275,13 +266,8 @@ function showConfirmationPaymentFromComponent() {
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
-    const errorStatus = new dw.system.Status(
-      dw.system.Status.ERROR,
-      'confirm.error.declined',
-    );
-    app.getController('COSummary').Start({
-      PlaceOrderError: errorStatus,
-    });
+    app.getController('COBilling').Start();
+
     return {};
   }
   const { details } = stateData;
