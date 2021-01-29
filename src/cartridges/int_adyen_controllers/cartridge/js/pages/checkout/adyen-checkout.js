@@ -1,6 +1,7 @@
 require('./bundle');
 require('./adyen-giving');
 
+const { qrCodeMethods } = require('./qrCodeMethods');
 let maskedCardNumber;
 const MASKED_CC_PREFIX = '************';
 let selectedMethod;
@@ -110,7 +111,10 @@ function initializeBillingEvents() {
           );
         },
         onCancel: (data, component) => {
-          paymentFromComponent({ cancelPaypal: true }, component);
+          paymentFromComponent({
+            cancelTransaction: true,
+            merchantReference: document.querySelector('#merchantReference').value,
+          }, component);
         },
         onError: (/* error, component */) => {
           $('#dwfrm_billing').trigger('submit');
@@ -122,6 +126,33 @@ function initializeBillingEvents() {
           $('#dwfrm_billing').trigger('submit');
         },
       },
+      mbway: {
+        showPayButton: true,
+        onSubmit: (state, component) => {
+          $('#dwfrm_billing').trigger('submit');
+          assignPaymentMethodValue();
+          if (formErrorsExist) {
+            return false;
+          }
+          document.getElementById('component_mbway').querySelector('button').disabled = true;
+          paymentFromComponent(state.data, component);
+          document.querySelector('#adyenStateData').value = JSON.stringify(
+              state.data,
+          );
+        },
+        onError: (/* error, component */) => {
+          $('#dwfrm_billing').trigger('submit');
+        },
+        onAdditionalDetails: (state /* , component */) => {
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+              state.data,
+          );
+          $('#dwfrm_billing').trigger('submit');
+        },
+      },
+      swish: getQRCodeConfig(),
+      bcmc_mobile: getQRCodeConfig(),
+      wechatpayQR: getQRCodeConfig(),
       afterpay_default: {
         visibility: {
           personalDetails: 'editable',
@@ -252,7 +283,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle'].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -499,7 +530,17 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   }
 
   const input = document.querySelector(`#rb_${paymentMethodID}`);
-  input.onchange = (event) => {
+  input.onchange = async function (event) {
+    if (
+        document.querySelector('.adyen-checkout__qr-loader') &&
+        qrCodeMethods.indexOf(selectedMethod) > -1
+    ) {
+      paymentFromComponent({
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+      });
+    }
+
     displaySelectedMethod(event.target.value);
   };
 
@@ -592,7 +633,7 @@ function paymentFromComponent(data, component) {
 
 $('#dwfrm_billing').submit(function (e) {
   if (
-    selectedMethod === 'paypal' &&
+      ['paypal', 'mbway', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
     !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
@@ -610,6 +651,31 @@ $('#dwfrm_billing').submit(function (e) {
     });
   }
 });
+
+function getQRCodeConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (formErrorsExist) {
+        return;
+      }
+
+      assignPaymentMethodValue();
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+          state.data,
+      );
+
+      paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state /* , component */) => {
+      document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+          state.data,
+      );
+      $('#dwfrm_billing').trigger('submit');
+    },
+  };
+}
 
 /**
  * @function

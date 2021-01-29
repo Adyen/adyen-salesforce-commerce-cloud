@@ -178,61 +178,62 @@ function getDetails() {
  */
 function paymentFromComponent() {
   if (
-    request.httpParameterMap
-      .getRequestBodyAsString()
-      .indexOf('cancelTransaction') > -1
+      request.httpParameterMap
+          .getRequestBodyAsString()
+          .indexOf('cancelTransaction') > -1
   ) {
+    const merchantReference = JSON.parse(request.httpParameterMap.getRequestBodyAsString()).merchantReference;
     Logger.getLogger('Adyen').error(
-      `Shopper cancelled transaction`,
+        `Shopper cancelled paymentFromComponent transaction for order ${merchantReference}`,
     );
     return;
+  } else {
+    const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
+
+    const currentBasket = BasketMgr.getCurrentBasket();
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    let paymentInstrument;
+    let order;
+
+    Transaction.wrap(() => {
+      const result = adyenRemovePreviousPI.removePaymentInstruments(
+          currentBasket,
+      );
+      if (result.error) {
+        return result;
+      }
+      const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
+      paymentInstrument = currentBasket.createPaymentInstrument(
+          constants.METHOD_ADYEN_COMPONENT,
+          currentBasket.totalGrossPrice,
+      );
+      const {paymentProcessor} = PaymentMgr.getPaymentMethod(
+          paymentInstrument.paymentMethod,
+      );
+      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.custom.adyenPaymentData = stateDataStr;
+      try {
+        paymentInstrument.custom.adyenPaymentMethod = JSON.parse(
+            stateDataStr,
+        ).paymentMethod.type;
+      } catch (e) {
+        // Error parsing paymentMethod
+      }
+    });
+    order = OrderMgr.createOrder(currentBasket);
+
+    Transaction.begin();
+    const result = adyenCheckout.createPaymentRequest({
+      Order: order,
+      PaymentInstrument: paymentInstrument,
+    });
+    result.orderNo = order.orderNo;
+    result.orderToken = order.getOrderToken();
+
+    Transaction.commit();
+    const responseUtils = require('*/cartridge/scripts/util/Response');
+    responseUtils.renderJSON({result});
   }
-
-  const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
-
-  const currentBasket = BasketMgr.getCurrentBasket();
-  const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-  let paymentInstrument;
-  let order;
-
-  Transaction.wrap(() => {
-    const result = adyenRemovePreviousPI.removePaymentInstruments(
-      currentBasket,
-    );
-    if (result.error) {
-      return result;
-    }
-    const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
-    paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
-      currentBasket.totalGrossPrice,
-    );
-    const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-      paymentInstrument.paymentMethod,
-    );
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-    paymentInstrument.custom.adyenPaymentData = stateDataStr;
-    try {
-      paymentInstrument.custom.adyenPaymentMethod = JSON.parse(
-        stateDataStr,
-      ).paymentMethod.type;
-    } catch (e) {
-      // Error parsing paymentMethod
-    }
-  });
-  order = OrderMgr.createOrder(currentBasket);
-
-  Transaction.begin();
-  const result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument,
-  });
-  result.orderNo = order.orderNo;
-  result.orderToken = order.getOrderToken();
-
-  Transaction.commit();
-  const responseUtils = require('*/cartridge/scripts/util/Response');
-  responseUtils.renderJSON({ result });
 }
 
 /**
@@ -265,13 +266,8 @@ function showConfirmationPaymentFromComponent() {
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
-    const errorStatus = new dw.system.Status(
-      dw.system.Status.ERROR,
-      'confirm.error.declined',
-    );
-    app.getController('COSummary').Start({
-      PlaceOrderError: errorStatus,
-    });
+    app.getController('COBilling').Start();
+
     return {};
   }
   const { details } = stateData;
@@ -702,7 +698,7 @@ exports.getExternalPlatformVersion = getExternalPlatformVersion();
 
 exports.PaymentFromComponent = guard.ensure(
   ['https', 'post'],
-  paymentFromComponent,
+    paymentFromComponent,
 );
 
 exports.Donate = guard.ensure(['https', 'post'], donate);
