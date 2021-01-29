@@ -2,6 +2,7 @@ const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 const { fraudDetection } = require('*/cartridge/scripts/hooks/fraudDetection');
 const { hasAdyenPaymentMethod } = require('../helpers/index');
 const handleTransaction = require('./transaction');
@@ -68,6 +69,26 @@ function createOrder(currentBasket, { res, req, next }, emit) {
     return false;
   };
 
+  const saveAddresses = ({ currentCustomer }, order) => {
+    if (currentCustomer.addressBook) {
+      const allAddresses = addressHelpers.gatherShippingAddresses(order);
+      allAddresses.forEach((address) => {
+        if (
+          !addressHelpers.checkIfAddressStored(
+            address,
+            currentCustomer.addressBook.addresses,
+          )
+        ) {
+          addressHelpers.saveAddress(
+            address,
+            currentCustomer,
+            addressHelpers.generateAddressName(address),
+          );
+        }
+      });
+    }
+  };
+
   const isAdyen = hasAdyenPaymentMethod(currentBasket);
 
   if (!isAdyen) {
@@ -81,6 +102,9 @@ function createOrder(currentBasket, { res, req, next }, emit) {
   );
   if (isValidTransaction) {
     const order = COHelpers.createOrder(currentBasket);
+
+    saveAddresses(req, order);
+
     const isOrderCreated = handleCreateOrder(order);
     if (isOrderCreated) {
       COHelpers.sendConfirmationEmail(order, req.locale.id);

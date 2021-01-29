@@ -21,6 +21,7 @@ beforeEach(() => {
   req = {
     locale: { id: 'nl_NL' },
     session: { privacyCache: { set: jest.fn() } },
+    currentCustomer: {addressBook: true},
   };
   res = { json: jest.fn() };
   emit = jest.fn();

@@ -5,6 +5,9 @@ Array [
   Array [
     "route:Complete",
     Object {
+      "currentCustomer": Object {
+        "addressBook": true,
+      },
       "locale": Object {
         "id": "NL",
       },

@@ -13,6 +13,7 @@ beforeEach(() => {
   req = {
     session: { privacyCache: { get: jest.fn(), set: jest.fn() } },
     locale: { id: 'NL' },
+    currentCustomer: {addressBook: true},
   };
 });
 
