@@ -117,15 +117,14 @@ function initializeBillingEvents() {
           assignPaymentMethodValue();
           paymentFromComponent(state.data, component);
           document.querySelector('#adyenStateData').value = JSON.stringify(
-            state.data,
+              state.data,
           );
         },
         onCancel: (data, component) => {
           paypalTerminatedEarly = false;
           paymentFromComponent({
-            cancelPaypal: true,
-            merchantReference: document.querySelector('#merchantReference').value,
-          }, component);
+            cancelTransaction: true,
+            merchantReference: document.querySelector('#merchantReference').value, }, component);
         },
         onError: (/* error, component */) => {
           paypalTerminatedEarly = false;
@@ -153,6 +152,16 @@ function initializeBillingEvents() {
               state.data,
           );
         },
+        onError: (/* error, component */) => {
+          $('#dwfrm_billing').trigger('submit');
+        },
+        onAdditionalDetails: (state /* , component */) => {
+          document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+              state.data,
+          );
+          $('#dwfrm_billing').trigger('submit');
+        },
+      },
       swish: getQRCodeConfig(),
       bcmc_mobile: getQRCodeConfig(),
       wechatpayQR: getQRCodeConfig(),
@@ -168,13 +177,13 @@ function initializeBillingEvents() {
               '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_lastName',
+               '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_phone',
+               '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-              '#dwfrm_billing_billingAddress_email_emailAddress',
+               '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
@@ -188,16 +197,16 @@ function initializeBillingEvents() {
         data: {
           personalDetails: {
             firstName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_firstName',
+                '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_lastName',
+                '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_phone',
+                '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-              '#dwfrm_billing_billingAddress_email_emailAddress',
+                '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
