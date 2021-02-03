@@ -53,12 +53,12 @@ if (window.paypalMerchantID !== 'null') {
 
 // Submit the payment
 $('button[value="submit-payment"]').on('click', () => {
-  if (window.paypalTerminatedEarly) {
+  if (store.paypalTerminatedEarly) {
     paymentFromComponent({
       cancelTransaction: true,
       merchantReference: document.querySelector('#merchantReference').value,
     });
-    window.paypalTerminatedEarly = false;
+    store.paypalTerminatedEarly = false;
   }
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
     document.querySelector('#terminalId').value = document.querySelector(
