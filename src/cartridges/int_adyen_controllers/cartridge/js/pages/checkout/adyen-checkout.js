@@ -11,6 +11,7 @@ let paymentMethodsResponse;
 let checkout;
 let formErrorsExist;
 let isValid;
+let paypalTerminatedEarly = false;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
@@ -98,6 +99,15 @@ function initializeBillingEvents() {
         environment: window.Configuration.environment,
         intent: 'capture',
         onClick: (data, actions) => {
+          if(paypalTerminatedEarly) {
+            paymentFromComponent({
+              cancelTransaction: true,
+              merchantReference: document.querySelector('#merchantReference').value,
+            });
+            paypalTerminatedEarly = false;
+            return actions.resolve();
+          }
+          paypalTerminatedEarly = true;
           $('#dwfrm_billing').trigger('submit');
           if (formErrorsExist) {
             return actions.reject();
@@ -107,21 +117,23 @@ function initializeBillingEvents() {
           assignPaymentMethodValue();
           paymentFromComponent(state.data, component);
           document.querySelector('#adyenStateData').value = JSON.stringify(
-            state.data,
+              state.data,
           );
         },
         onCancel: (data, component) => {
+          paypalTerminatedEarly = false;
           paymentFromComponent({
             cancelTransaction: true,
-            merchantReference: document.querySelector('#merchantReference').value,
-          }, component);
+            merchantReference: document.querySelector('#merchantReference').value, }, component);
         },
         onError: (/* error, component */) => {
+          paypalTerminatedEarly = false;
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: (state /* , component */) => {
+          paypalTerminatedEarly = false;
           document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
-            state.data,
+              state.data,
           );
           $('#dwfrm_billing').trigger('submit');
         },
@@ -165,13 +177,13 @@ function initializeBillingEvents() {
               '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_lastName',
+               '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_phone',
+               '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-              '#dwfrm_billing_billingAddress_email_emailAddress',
+               '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
@@ -185,16 +197,16 @@ function initializeBillingEvents() {
         data: {
           personalDetails: {
             firstName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_firstName',
+                '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_lastName',
+                '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-              '#dwfrm_billing_billingAddress_addressFields_phone',
+                '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-              '#dwfrm_billing_billingAddress_email_emailAddress',
+                '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
@@ -533,8 +545,10 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   input.onchange = async function (event) {
     if (
         document.querySelector('.adyen-checkout__qr-loader') &&
-        qrCodeMethods.indexOf(selectedMethod) > -1
+        qrCodeMethods.indexOf(selectedMethod) > -1 ||
+        paypalTerminatedEarly
     ) {
+      paypalTerminatedEarly = false;
       paymentFromComponent({
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
