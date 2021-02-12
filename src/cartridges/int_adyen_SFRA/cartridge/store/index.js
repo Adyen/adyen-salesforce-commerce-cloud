@@ -17,6 +17,8 @@ class Store {
 
   @observable isValid = false;
 
+  @observable paypalTerminatedEarly = false;
+
   @observable componentState = {};
 
   @computed get maskedCardNumber() {
