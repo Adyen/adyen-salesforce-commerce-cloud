@@ -10,7 +10,6 @@ beforeEach(() => {
   req = {
     querystring: {
       signature: 'some_mocked_url/signature __ ocked_adyen_payment_data',
-      redirectUrl: 'https://some_mocked_url/signature',
       merchantReference: 'mocked_merchantReference',
     },
   };
@@ -42,7 +41,7 @@ describe('Redirect', () => {
   it('should redirect on valid signature', () => {
     const Logger = require('dw/system/Logger');
     redirect(req, res, jest.fn());
-    expect(res.redirect).toBeCalledWith(req.querystring.redirectUrl);
+    expect(res.redirect).toBeCalledWith('https://some_mocked_url/signature');
     expect(Logger.error).toBeCalledTimes(0);
   });
 });

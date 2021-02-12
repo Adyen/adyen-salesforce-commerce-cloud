@@ -54,12 +54,14 @@ function handlePaymentAuthorization(order, { res }, emit) {
         emit('route:Complete');
         return false;
       }
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenRedirectURL =
+          handlePaymentResult.redirectObject.url;
+      });
       res.json({
         error: false,
         continueUrl: URLUtils.url(
           'Adyen-Redirect',
-          'redirectUrl',
-          handlePaymentResult.redirectObject.url,
           'merchantReference',
           handlePaymentResult.orderNo,
           'signature',

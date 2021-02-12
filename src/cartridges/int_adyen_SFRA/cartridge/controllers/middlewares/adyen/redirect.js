@@ -1,18 +1,21 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Logger = require('dw/system/Logger');
+const constants = require('*/cartridge/adyenConstants/constants');
 const {
   getCurrentSignature,
   handleIncorrectSignature,
 } = require('./redirect/signature');
 
 function redirect(req, res, next) {
-  const { signature, redirectUrl, merchantReference } = req.querystring;
+  const { signature, merchantReference } = req.querystring;
   const order = OrderMgr.getOrder(merchantReference);
-
   if (order && signature) {
-    const currentSignature = getCurrentSignature(order, { req });
-
+    const currentSignature = getCurrentSignature(order);
     if (signature === currentSignature) {
+      const paymentInstrument = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+      )[0];
+      const redirectUrl = paymentInstrument.custom.adyenRedirectURL;
       res.redirect(redirectUrl);
       return next();
     }
