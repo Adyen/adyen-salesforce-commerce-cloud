@@ -1,6 +1,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
+
 const {
   getCurrentSignature,
   handleIncorrectSignature,
@@ -17,6 +18,7 @@ function redirect(req, res, next) {
       )[0];
       const redirectUrl = paymentInstrument.custom.adyenRedirectURL;
       res.redirect(redirectUrl);
+      paymentInstrument.custom.adyenRedirectURL = null;
       return next();
     }
   } else {
