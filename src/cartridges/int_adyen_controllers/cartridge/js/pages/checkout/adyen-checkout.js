@@ -229,6 +229,10 @@ function initializeBillingEvents() {
       checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
         window.paypalMerchantID;
     }
+    if(window.cardholderNameBool !== 'null') {
+      checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
+      checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
+    }
     renderGenericComponent();
   }
 }

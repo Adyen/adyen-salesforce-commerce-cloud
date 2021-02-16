@@ -5,6 +5,7 @@ const dwsvc = require('dw/svc');
 const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
+const   Logger = require('dw/system/Logger');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -225,6 +226,10 @@ var adyenHelperObj = {
 
   getAdyenBasketFieldsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+
+  getAdyenCardholderNameEnabled: function () {
+    return adyenHelperObj.getCustomPreference('AdyenCardHolderName_enabled');
   },
 
   getAdyenLevel23DataEnabled: function () {
