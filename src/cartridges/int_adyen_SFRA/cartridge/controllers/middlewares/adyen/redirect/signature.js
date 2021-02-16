@@ -23,15 +23,16 @@ function handleIncorrectSignature(order, { res, next }) {
   return next();
 }
 
-function getCurrentSignature(order, { req }) {
+function getCurrentSignature(order) {
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
   const adyenPaymentInstrument = paymentInstruments[0];
   const paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
+  const redirectUrl = adyenPaymentInstrument.custom.adyenRedirectURL;
 
   return AdyenHelper.getAdyenHash(
-    req.querystring.redirectUrl.substr(req.querystring.redirectUrl.length - 25),
+    redirectUrl.substr(redirectUrl.length - 25),
     paymentData.substr(1, 25),
   );
 }

@@ -183,6 +183,7 @@ Array [
                     "adyenAction": "mocked_action",
                     "adyenMD": "mocked_adyen_MD",
                     "adyenPaymentData": "mocked_adyen_payment_data",
+                    "adyenRedirectURL": "https://some_mocked_url/signature",
                   },
                 },
                 "iterator": [Function],
@@ -199,6 +200,7 @@ Array [
                             "adyenAction": "mocked_action",
                             "adyenMD": "mocked_adyen_MD",
                             "adyenPaymentData": "mocked_adyen_payment_data",
+                            "adyenRedirectURL": "https://some_mocked_url/signature",
                           },
                         },
                       ],
@@ -232,7 +234,7 @@ exports[`Place Order should redirect without authorize3d 1`] = `
 Array [
   Array [
     Object {
-      "continueUrl": "[\\"Adyen-Redirect\\",\\"redirectUrl\\",null,\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",null]",
+      "continueUrl": "[\\"Adyen-Redirect\\",\\"merchantReference\\",\\"mocked_orderNo\\",\\"signature\\",null]",
       "error": false,
     },
   ],

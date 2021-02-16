@@ -7,6 +7,7 @@ Object {
       "adyenAction": "mocked_adyen_action",
       "adyenMD": "mocked_adyen_MD",
       "adyenPaymentData": "mocked_adyen_payment_data",
+      "adyenRedirectURL": "https://some_mocked_url/signature",
     },
   },
   "details": Object {
@@ -23,6 +24,7 @@ Object {
       "adyenAction": "mocked_adyen_action",
       "adyenMD": "mocked_adyen_MD",
       "adyenPaymentData": "mocked_adyen_payment_data",
+      "adyenRedirectURL": "https://some_mocked_url/signature",
     },
   },
   "details": Object {

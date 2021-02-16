@@ -4,6 +4,7 @@ const paymentInstrument = () => [
   {
     custom: {
       adyenPaymentData: 'mocked_adyen_payment_data',
+      adyenRedirectURL: 'https://some_mocked_url/signature',
       adyenMD: 'mocked_adyen_MD',
     },
   },
