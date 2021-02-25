@@ -227,6 +227,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
+  getAdyenCardholderNameEnabled: function () {
+    return adyenHelperObj.getCustomPreference('AdyenCardHolderName_enabled');
+  },
+
   getAdyenLevel23DataEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
   },

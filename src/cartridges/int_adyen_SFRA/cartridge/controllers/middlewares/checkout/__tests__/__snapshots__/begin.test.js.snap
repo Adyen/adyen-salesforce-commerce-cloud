@@ -5,6 +5,7 @@ Array [
   Array [
     Object {
       "adyen": Object {
+        "cardholderNameBool": true,
         "environment": "test",
         "googleMerchantID": "mocked_google_merchant_id",
         "installments": true,

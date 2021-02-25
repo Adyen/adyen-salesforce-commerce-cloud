@@ -19,6 +19,7 @@ function begin(req, res, next) {
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
+  const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
 
   const viewData = res.getViewData();
   viewData.adyen = {
@@ -28,6 +29,7 @@ function begin(req, res, next) {
     paypalMerchantID,
     googleMerchantID,
     merchantAccount,
+    cardholderNameBool,
   };
 
   res.setViewData(viewData);
