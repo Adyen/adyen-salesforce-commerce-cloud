@@ -45,6 +45,7 @@ function getOriginKey(origin) {
 
     return JSON.parse(resultObject.getText());
   } catch (e) {
+    Logger.getLogger('Adyen').error(`It seems your API key is incorrect ... Please make sure API key is configured`);
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
