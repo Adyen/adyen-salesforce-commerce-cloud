@@ -16,6 +16,7 @@
     window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
     window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
     window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
+    window.paypalIntent = '${pdict.adyen.paypalIntent}';
     window.merchantAccount = '${pdict.adyen.merchantAccount}';
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>

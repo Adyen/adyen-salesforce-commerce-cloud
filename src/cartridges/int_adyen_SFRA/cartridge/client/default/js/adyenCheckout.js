@@ -35,6 +35,11 @@ if (window.cardholderNameBool !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
 
+// if (window.paypalIntent !== 'null') {
+//   store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
+//   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
+// }
+
 if (window.installments) {
   try {
     const installments = JSON.parse(window.installments);
