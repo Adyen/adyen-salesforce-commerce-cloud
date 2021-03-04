@@ -26,7 +26,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v64/paymentMethods</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v64/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -56,7 +56,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenOriginKeysLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/v1/originKeys</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v1/originKeys</url>
         <user-id></user-id>
         <password/>
     </service-credential>
