@@ -131,12 +131,7 @@ function clearNotifications(/* pdict */) {
  */
 function submitOrder(order) {
   const adyenService = require('*/cartridge/scripts/adyenService');
-  adyenService.submit(order);
-
-  return {
-    Order: order,
-    order_created: true,
-  };
+  return adyenService.submit(order);
 }
 
 module.exports = {
