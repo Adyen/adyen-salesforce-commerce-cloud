@@ -13,7 +13,7 @@ function setSessionPrivacy({ adyenPaymentFields }) {
   session.privacy.adyenFingerprint = adyenPaymentFields.adyenFingerprint.value;
 }
 
-function getPaymentInstrument(req, { storedPaymentUUID }) {
+function getPaymentInstrument(req, storedPaymentUUID) {
   const { paymentInstruments } = req.currentCustomer.wallet;
   const findById = (item) => storedPaymentUUID === item.UUID;
   return array.find(paymentInstruments, findById);
@@ -23,7 +23,7 @@ function getPaymentInstrument(req, { storedPaymentUUID }) {
 function getProcessFormResult(storedPaymentUUID, req, viewData) {
   const { authenticated, registered } = req.currentCustomer.raw;
   if (storedPaymentUUID && authenticated && registered) {
-    const paymentInstrument = getPaymentInstrument(req, viewData);
+    const paymentInstrument = getPaymentInstrument(req, storedPaymentUUID);
 
     return {
       error: false,
@@ -78,10 +78,9 @@ function getViewData(
 
 function getStoredPaymentUUID(paymentForm) {
   const { selectedCardID } = paymentForm.creditCardFields;
-  const storedPaymentUUID = selectedCardID && {
-    storedPaymentUUID: selectedCardID.value,
-  };
-  return storedPaymentUUID;
+  return selectedCardID
+      ? paymentForm.creditCardFields.selectedCardID.value
+      : null;
 }
 
 /**
@@ -92,7 +91,9 @@ function getStoredPaymentUUID(paymentForm) {
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
-  const isCreditCard = req.form.brandCode === 'scheme';
+  const brand = JSON.stringify(req.form.brandCode);
+  const isCreditCard =
+      req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
   const creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {
