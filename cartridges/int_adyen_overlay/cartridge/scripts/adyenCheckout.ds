@@ -41,15 +41,14 @@ function execute(args) {
 }
 
 function alternativePaymentMethod(args){
-    var paymentMethodObject = {
-        "type" : args.PaymentType
-    };
-   if(args.adyenForm.issuer.value !== null){
+    var paymentMethodObject = !empty(args.paymentMethodObject) ? args.paymentMethodObject : { type: args.PaymentType };
+
+    if(args.adyenForm.issuer.value !== null){
         paymentMethodObject['issuer'] = args.adyenForm.issuer.value;
     }
 
-   var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
-   return createPaymentRequest(args, paymentMethodObject, returnUrl); 
+    var returnUrl = URLUtils.https('Adyen-ShowConfirmation').toString();
+    return createPaymentRequest(args, paymentMethodObject, returnUrl); 
 }
 
 function creditCard(args) {
@@ -194,7 +193,8 @@ function doPaymentCall(args, requestObject){
             Logger.getLogger("Adyen").error('error parsing response object ' + ex.message);
             return {error: true};
         }
-
+        
+        args.fullResponse = responseObj;
         // if the card is enrolled for 3D Secure, the response contains a redirect object
         args.RedirectObject = ('redirect' in responseObj && !empty(responseObj.redirect) ? responseObj.redirect : '');
         args.resultCode = responseObj.resultCode; // resultCode
