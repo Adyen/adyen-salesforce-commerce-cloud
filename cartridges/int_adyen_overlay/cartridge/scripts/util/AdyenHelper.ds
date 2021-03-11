@@ -726,6 +726,10 @@ var __AdyenHelper: Object = {
         if ('AdyenCardType' in result && !empty(result.AdyenCardType)) {
             order.custom.Adyen_paymentMethod = result.AdyenCardType;
         }
+
+        if (!empty(result.fullResponse) && !empty(result.fullResponse.additionalData)) {
+            paymentInstrument.paymentTransaction.custom.Adyen_additionalData = JSON.stringify(result.fullResponse.additionalData);
+        }
         // Save full response to transaction custom attribute
         paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
 
