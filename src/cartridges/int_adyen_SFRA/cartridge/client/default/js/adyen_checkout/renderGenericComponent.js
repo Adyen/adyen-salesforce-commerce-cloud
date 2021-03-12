@@ -20,6 +20,9 @@ function addPosTerminals(terminals) {
 function getPaymentMethods(paymentMethods) {
   $.ajax({
     url: 'Adyen-GetPaymentMethods',
+
+    URLUtils.https('Adyen-AuthorizeWithForm');
+
     type: 'get',
     success(data) {
       paymentMethods(data);
