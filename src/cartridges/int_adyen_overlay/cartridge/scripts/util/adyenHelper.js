@@ -231,6 +231,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenCardHolderName_enabled');
   },
 
+  getAdyenPayPalIntent: function () {
+    return adyenHelperObj.getCustomPreference('AdyenPayPalIntent');
+  },
+
   getAdyenLevel23DataEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
   },

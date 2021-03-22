@@ -97,7 +97,7 @@ function initializeBillingEvents() {
       },
       paypal: {
         environment: window.Configuration.environment,
-        intent: 'capture',
+        intent: window.paypalIntent,
         onClick: (data, actions) => {
           if(paypalTerminatedEarly) {
             paymentFromComponent({
