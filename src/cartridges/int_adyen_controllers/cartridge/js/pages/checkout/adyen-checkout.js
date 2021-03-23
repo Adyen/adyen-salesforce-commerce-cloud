@@ -624,7 +624,7 @@ function createCheckoutComponent(
  */
 function paymentFromComponent(data, component) {
   $.ajax({
-    url: window.paymentFromComponentUrl,
+    url: window.paymentFromComponentURL,
     type: 'post',
     data: JSON.stringify(data),
     contentType: 'application/; charset=utf-8',

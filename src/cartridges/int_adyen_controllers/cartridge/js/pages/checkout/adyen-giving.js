@@ -11,7 +11,7 @@ function handleOnDonate(state, component) {
     pspReference: window.pspReference,
   };
   $.ajax({
-    url: 'Adyen-Donate',
+    url: window.donateURL,
     type: 'post',
     data: JSON.stringify(donationData),
     contentType: 'application/; charset=utf-8',
