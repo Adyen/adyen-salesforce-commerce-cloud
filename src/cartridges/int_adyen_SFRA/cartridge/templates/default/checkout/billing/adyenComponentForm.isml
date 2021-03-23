@@ -19,12 +19,17 @@
     window.paypalIntent = '${pdict.adyen.paypalIntent}';
     window.merchantAccount = '${pdict.adyen.merchantAccount}';
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
+
+    window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+    window.donateURL = "${URLUtils.https('Adyen-Donate')}";
+    window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>
 
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
+
 
 <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">

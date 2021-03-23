@@ -19,7 +19,7 @@ function addPosTerminals(terminals) {
  */
 function getPaymentMethods(paymentMethods) {
   $.ajax({
-    url: 'Adyen-GetPaymentMethods',
+    url: window.getPaymentMethodsURL,
     type: 'get',
     success(data) {
       paymentMethods(data);
