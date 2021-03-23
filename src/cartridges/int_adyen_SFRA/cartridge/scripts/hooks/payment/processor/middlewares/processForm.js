@@ -79,8 +79,8 @@ function getViewData(
 function getStoredPaymentUUID(paymentForm) {
   const { selectedCardID } = paymentForm.creditCardFields;
   return selectedCardID
-      ? paymentForm.creditCardFields.selectedCardID.value
-      : null;
+    ? paymentForm.creditCardFields.selectedCardID.value
+    : null;
 }
 
 /**
@@ -93,7 +93,7 @@ function getStoredPaymentUUID(paymentForm) {
 function processForm(req, paymentForm, viewFormData) {
   const brand = JSON.stringify(req.form.brandCode);
   const isCreditCard =
-      req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
+    req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
   const creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {

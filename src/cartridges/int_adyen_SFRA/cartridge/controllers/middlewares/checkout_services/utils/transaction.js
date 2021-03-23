@@ -5,7 +5,6 @@ const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalc
 const { checkForErrors } = require('../helpers/index');
 
 const handleTransaction = (currentBasket, { res, req }, emit) => {
-
   const calculatePaymentTransaction = () => {
     const calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(
       currentBasket,

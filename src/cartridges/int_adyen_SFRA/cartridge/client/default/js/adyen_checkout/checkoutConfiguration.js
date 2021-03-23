@@ -31,7 +31,7 @@ function getPaypalConfig() {
   return {
     showPayButton: true,
     environment: window.Configuration.environment,
-    intent: window.paypalIntent,
+    intent: 'capture',
     onSubmit: (state, component) => {
       helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(

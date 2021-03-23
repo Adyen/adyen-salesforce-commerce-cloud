@@ -14,7 +14,7 @@ function assignPaymentMethodValue() {
  */
 function paymentFromComponent(data, component) {
   $.ajax({
-    url: paymentFromComponentURL,
+    url: window.paymentFromComponentURL,
     type: 'post',
     data: {
       data: JSON.stringify(data),
