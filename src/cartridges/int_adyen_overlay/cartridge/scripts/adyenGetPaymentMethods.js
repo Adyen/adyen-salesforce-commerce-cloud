@@ -47,6 +47,10 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.countryCode = countryCode;
     }
 
+    if(request.getLocale()){
+      paymentMethodsRequest.shopperLocale = request.getLocale();
+    }
+
     // check logged in shopper for oneClick
     const profile =
       customer && customer.registered && customer.getProfile()
