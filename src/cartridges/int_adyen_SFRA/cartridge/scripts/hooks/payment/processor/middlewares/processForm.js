@@ -1,6 +1,5 @@
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const array = require('*/cartridge/scripts/util/array');
-const Logger = require('dw/system/Logger');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {
   if (!req.form.storedPaymentUUID && isCreditCard) {
@@ -57,7 +56,6 @@ function getViewData(
   adyenIssuerName,
   storedPaymentUUID,
 ) {
-  Logger.getLogger('Adyen').error('paymentForm.creditCardFields ' + JSON.stringify(paymentForm.creditCardFields));
   return {
     ...viewFormData,
     paymentMethod: {

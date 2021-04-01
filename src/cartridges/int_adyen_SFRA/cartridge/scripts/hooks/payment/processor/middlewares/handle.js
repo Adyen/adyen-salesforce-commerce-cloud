@@ -2,7 +2,6 @@ const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 
 function handle(basket, paymentInformation) {
   const currentBasket = basket;
@@ -29,12 +28,8 @@ function handle(basket, paymentInformation) {
         customer,
       );
 
-      Logger.getLogger('Adyen').error('payment info ' + JSON.stringify(paymentInformation));
-
       paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
       paymentInstrument.setCreditCardType(sfccCardType);
-
-
 
       if (tokenID) {
         paymentInstrument.setCreditCardExpirationMonth(

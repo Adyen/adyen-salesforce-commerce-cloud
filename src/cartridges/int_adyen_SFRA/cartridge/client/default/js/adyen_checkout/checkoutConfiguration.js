@@ -12,8 +12,6 @@ function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
-      // console.log('paymentMethodsResponse from store is   ' + JSON.stringify(store.checkoutConfiguration.paymentMethodsResponse.storedPaymentMethods));
-      console.log(state.data);
       store.isValid = state.isValid;
       const isSelected =
         getComponentName(state.data) === store.selectedMethod ||
