@@ -12,6 +12,8 @@ function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
+      // console.log('paymentMethodsResponse from store is   ' + JSON.stringify(store.checkoutConfiguration.paymentMethodsResponse.storedPaymentMethods));
+      console.log(state.data);
       store.isValid = state.isValid;
       const isSelected =
         getComponentName(state.data) === store.selectedMethod ||
@@ -19,6 +21,9 @@ function getCardConfig() {
       if (isSelected) {
         store.updateSelectedPayment('isValid', store.isValid);
         store.updateSelectedPayment('stateData', state.data);
+      }
+      if(state.data.paymentMethod.holderName) {
+        document.querySelector('#cardOwner').value = state.data.paymentMethod.holderName;
       }
     },
     onFieldValid,
