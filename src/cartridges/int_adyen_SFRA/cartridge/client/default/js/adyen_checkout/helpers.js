@@ -14,7 +14,7 @@ function assignPaymentMethodValue() {
  */
 function paymentFromComponent(data, component) {
   $.ajax({
-    url: 'Adyen-PaymentFromComponent',
+    url: window.paymentFromComponentURL,
     type: 'post',
     data: {
       data: JSON.stringify(data),

@@ -4,6 +4,7 @@ const store = require('../../../../../store');
 beforeEach(() => {
   window.AdyenCheckout = jest.fn();
   window.Configuration = { amount: 0 };
+  window.getPaymentMethodsURL = "Adyen-GetPaymentMethods";
 });
 describe('Render Generic Component', () => {
   it('should call getPaymentMethods', async () => {
