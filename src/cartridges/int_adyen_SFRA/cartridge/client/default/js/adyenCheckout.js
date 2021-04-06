@@ -31,8 +31,8 @@ $('#dwfrm_billing').submit(function apiRequest(e) {
 
 setCheckoutConfiguration();
 // if (window.cardholderNameBool !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
-  store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
+store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
+store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 // }
 
 if (window.installments) {
@@ -71,12 +71,16 @@ $('button[value="submit-payment"]').on('click', () => {
     return true;
   }
 
-  if(store.selectedMethod.includes('storedCard')) {
-    store.checkoutConfiguration.paymentMethodsResponse.storedPaymentMethods.forEach(method => {
-      if(method.id === store.selectedMethod.slice(10)) {
-        document.querySelector('#cardNumber').value = `${store.MASKED_CC_PREFIX}${method.lastFour}`;
-      }
-    })
+  if (store.selectedMethod.includes('storedCard')) {
+    store.checkoutConfiguration.paymentMethodsResponse.storedPaymentMethods.forEach(
+      (method) => {
+        if (method.id === store.selectedMethod.slice(10)) {
+          document.querySelector(
+            '#cardNumber',
+          ).value = `${store.MASKED_CC_PREFIX}${method.lastFour}`;
+        }
+      },
+    );
   }
 
   assignPaymentMethodValue();
