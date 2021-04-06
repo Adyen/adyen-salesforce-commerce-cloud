@@ -31,8 +31,8 @@ $('#dwfrm_billing').submit(function apiRequest(e) {
 
 setCheckoutConfiguration();
 if (window.cardholderNameBool !== 'null') {
-store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
-store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
+  store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
+  store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
 
 if (window.installments) {
