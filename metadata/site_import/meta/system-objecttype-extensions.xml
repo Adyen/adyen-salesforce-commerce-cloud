@@ -368,10 +368,17 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenPayPalIntent">
                 <display-name xml:lang="x-default">PayPal auto capture</display-name>
-                <type>boolean</type>
+                <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>capture</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>authorize</value>
+                    </value-definition>
+                </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23DataEnabled">
                 <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
