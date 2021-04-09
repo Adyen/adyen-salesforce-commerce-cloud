@@ -33,7 +33,7 @@ function handlePaymentMethod({ req, res, next }) {
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
     AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-    amount: { value: paymentAmount, currency },
+    amount: { value: parseFloat(paymentAmount), currency },
     countryCode,
   };
 
