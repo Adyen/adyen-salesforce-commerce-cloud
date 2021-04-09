@@ -64,7 +64,7 @@ module.exports.validateComponents = function validateComponents() {
   validateRatepay();
 
   const customMethods = {
-    ach: handleAch,
+    // ach: handleAch,
     ratepay: handleRatepay,
   };
 
