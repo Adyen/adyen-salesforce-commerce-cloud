@@ -408,7 +408,7 @@ function getPaymentMethods(cart, customer) {
     adyenConnectedTerminals: connectedTerminals,
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
-    amount: { value: paymentAmount, currency: currency },
+    amount: { value: parseFloat(paymentAmount), currency: currency },
     countryCode: countryCode,
   };
 
