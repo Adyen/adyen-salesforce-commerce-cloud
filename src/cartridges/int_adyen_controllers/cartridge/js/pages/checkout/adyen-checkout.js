@@ -567,7 +567,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     container.innerHTML = '';
   }
 
-  if (componentsObj[paymentMethodID] && !container.childNodes[0]) {
+  if (componentsObj[paymentMethodID] && !container.childNodes[0] && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
     componentsObj[paymentMethodID].isValid = true;
   }
 }
