@@ -96,7 +96,7 @@ function hasNoChildNodes({ paymentMethodID, container }) {
 }
 
 function setValid({ paymentMethodID, container }) {
-  if (hasNoChildNodes({ paymentMethodID, container })) {
+  if (hasNoChildNodes({ paymentMethodID, container }) && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }
