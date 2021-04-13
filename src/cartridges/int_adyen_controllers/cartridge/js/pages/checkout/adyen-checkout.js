@@ -97,6 +97,7 @@ function initializeBillingEvents() {
       paypal: {
         environment: window.Configuration.environment,
         intent: window.paypalIntent,
+        showPayButton: true,
         onClick: (data, actions) => {
           if(paypalTerminatedEarly) {
             paymentFromComponent({
@@ -109,6 +110,7 @@ function initializeBillingEvents() {
           paypalTerminatedEarly = true;
           $('#dwfrm_billing').trigger('submit');
           if (formErrorsExist) {
+            paypalTerminatedEarly = false;
             return actions.reject();
           }
         },
