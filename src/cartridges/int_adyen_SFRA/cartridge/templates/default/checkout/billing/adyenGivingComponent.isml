@@ -23,7 +23,6 @@
         var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
         var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
 
-
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">
