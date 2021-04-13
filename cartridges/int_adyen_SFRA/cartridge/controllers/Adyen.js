@@ -280,6 +280,32 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
                 res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
                 return next();
             }
+
+            // custom fraudDetection
+            const fraudDetectionStatus = { status: 'success' };
+
+            // Places the order
+            const placeOrderResult = COHelpers.placeOrder(
+                order,
+                fraudDetectionStatus
+            );
+
+            if (placeOrderResult.error) {
+                Transaction.wrap(function () {
+                    OrderMgr.failOrder(order, true);
+                });
+
+                res.redirect(URLUtils.url(
+                    'Checkout-Begin',
+                    'stage',
+                    'payment',
+                    'PlaceOrderError',
+                    Resource.msg('error.payment.not.valid', 'checkout', null))
+                );
+
+                return next();
+            }
+
             var OrderModel = require('*/cartridge/models/order');
             var Locale = require('dw/util/Locale');
             var currentLocale = Locale.getLocale(req.locale.id);
@@ -298,13 +324,13 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order, true);
             });
-            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.technical', 'checkout', null)));
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
             return next();
         }
     }
     catch (e){
         Logger.getLogger("Adyen").error("Could not verify /payment/details: " + e.message);
-        res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
 
