@@ -21,6 +21,7 @@
         var charityDescription = '${pdict.adyen.charityDescription}';
         var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
         var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
+        var donateURL = "${URLUtils.https('Adyen-Donate')}";
 
     </script>
     <div id="adyenGiving" class="card confirm-details">

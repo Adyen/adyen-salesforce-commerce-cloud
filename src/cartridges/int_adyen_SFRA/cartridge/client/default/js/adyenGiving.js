@@ -13,7 +13,7 @@ function handleOnDonate(state, component) {
   };
 
   $.ajax({
-    url: window.donateURL,
+    url: donateURL,
     type: 'post',
     data: donationData,
     success() {

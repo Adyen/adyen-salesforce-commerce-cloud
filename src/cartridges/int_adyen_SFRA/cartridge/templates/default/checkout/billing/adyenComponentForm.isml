@@ -21,7 +21,6 @@
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 
     window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
-    window.donateURL = "${URLUtils.https('Adyen-Donate')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>
 
