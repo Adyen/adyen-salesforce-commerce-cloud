@@ -517,8 +517,10 @@ var adyenHelperObj = {
     const { stateData } = filteredJson;
 
     let reference = 'recurringPayment-account';
+    let orderToken;
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
+      orderToken = order.getOrderToken();
     }
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
@@ -528,7 +530,7 @@ var adyenHelperObj = {
       'merchantReference',
       reference,
         'orderToken',
-        order.getOrderToken(),
+        orderToken
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
     stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
