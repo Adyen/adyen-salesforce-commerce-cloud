@@ -12,6 +12,7 @@
                 originKey: '${pdict.adyen.originKey}',
                 environment: '${pdict.adyen.environment}'
         };
+        window.donateURL = "${URLUtils.https('Adyen-Donate')}";
 
         var orderNo = '${pdict.order.orderNumber}';
         var donationAmounts = '${pdict.adyen.donationAmounts}'.replace(/&quot;/g, '\"');
@@ -21,7 +22,7 @@
         var charityDescription = '${pdict.adyen.charityDescription}';
         var adyenGivingBackgroundUrl = '${pdict.adyen.adyenGivingBackgroundUrl}';
         var adyenGivingLogoUrl = '${pdict.adyen.adyenGivingLogoUrl}';
-        var donateURL = "${URLUtils.https('Adyen-Donate')}";
+
 
     </script>
     <div id="adyenGiving" class="card confirm-details">
