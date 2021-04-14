@@ -1,26 +1,26 @@
 require('./bundle');
 require('./adyen-giving');
 
-const { qrCodeMethods } = require('./qrCodeMethods');
-let maskedCardNumber;
-const MASKED_CC_PREFIX = '************';
-let selectedMethod;
-const componentsObj = {};
-let checkoutConfiguration;
-let paymentMethodsResponse;
-let checkout;
-let formErrorsExist;
-let isValid;
-let paypalTerminatedEarly = false;
+var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile'];
+var maskedCardNumber;
+var MASKED_CC_PREFIX = '************';
+var selectedMethod;
+var componentsObj = {};
+var checkoutConfiguration;
+var paymentMethodsResponse;
+var checkout;
+var formErrorsExist;
+var isValid;
+var paypalTerminatedEarly = false;
 /**
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
 function initializeBillingEvents() {
   $('#billing-submit').on('click', function () {
-    const isAdyenPOS = document.querySelector('.payment-method-options :checked').value
+    var isAdyenPOS = document.querySelector('.payment-method-options :checked').value
         === 'AdyenPOS';
-    const isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
+    var isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
     if (isAdyenPOS) {
       document.querySelector(
           '#dwfrm_adyPaydata_terminalId',
@@ -28,10 +28,10 @@ function initializeBillingEvents() {
       return true;
     }
     if (isAdyen) {
-      const adyenPaymentMethod = document.querySelector(
+      var adyenPaymentMethod = document.querySelector(
           '#adyenPaymentMethodName',
       );
-      const paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`)
+      var paymentMethodLabel = document.querySelector(`#lb_${selectedMethod}`)
           .innerHTML;
       adyenPaymentMethod.value = paymentMethodLabel;
       validateComponents();
@@ -43,7 +43,7 @@ function initializeBillingEvents() {
     paymentMethodsResponse = window.getPaymentMethodsResponse;
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /* , component */) {
-      const type = state.data.paymentMethod.type;
+      var type = state.data.paymentMethod.type;
       isValid = state.isValid;
       if (!componentsObj[type]) {
         componentsObj[type] = {};
@@ -66,7 +66,7 @@ function initializeBillingEvents() {
         },
         onChange: function (state) {
           isValid = state.isValid;
-          const componentName = state.data.paymentMethod.storedPaymentMethodId
+          var componentName = state.data.paymentMethod.storedPaymentMethodId
             ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
             : state.data.paymentMethod.type;
           if (componentName === selectedMethod || selectedMethod === 'bcmc') {
@@ -215,7 +215,7 @@ function initializeBillingEvents() {
     };
     if (window.installments) {
       try {
-        const installments = JSON.parse(window.installments);
+        var installments = JSON.parse(window.installments);
         checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
       } catch (e) {} // eslint-disable-line no-empty
     }
@@ -245,10 +245,10 @@ function initializeBillingEvents() {
 function initializeAccountEvents() {
   checkoutConfiguration = window.Configuration;
   checkout = new AdyenCheckout(checkoutConfiguration);
-  const newCard = document.getElementById('newCard');
-  let adyenStateData;
-  let isValid = false;
-  const node = checkout
+  var newCard = document.getElementById('newCard');
+  var adyenStateData;
+  var isValid = false;
+  var node = checkout
     .create('card', {
       hasHolderName: true,
       holderNameRequired: true,
@@ -271,7 +271,7 @@ function initializeAccountEvents() {
 }
 
 function assignPaymentMethodValue() {
-  const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
+  var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   adyenPaymentMethod.value = document.querySelector(
     `#lb_${selectedMethod}`,
   ).innerHTML;
@@ -281,7 +281,7 @@ function assignPaymentMethodValue() {
  * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
 function unmountComponents() {
-  const promises = Object.entries(componentsObj).map(function ([key, val]) {
+  var promises = Object.entries(componentsObj).map(function ([key, val]) {
     delete componentsObj[key];
     return resolveUnmount(key, val);
   });
@@ -320,18 +320,18 @@ function showValidation() {
     return false;
   }
   if (selectedMethod === 'ach') {
-    let inputs = document.querySelectorAll('#component_ach > input');
+    var inputs = document.querySelectorAll('#component_ach > input');
     inputs = Object.values(inputs).filter(function (input) {
       return !(input.value && input.value.length > 0);
     });
-    for (let i = 0; i < inputs.length; i++) {
+    for (var i = 0; i < inputs.length; i++) {
       inputs[i].classList.add('adyen-checkout__input--error');
     }
     if (inputs.length) {
       return false;
     }
   } else if (selectedMethod === 'ratepay') {
-    const input = document.querySelector('#dateOfBirthInput');
+    var input = document.querySelector('#dateOfBirthInput');
     if (!(input.value && input.value.length > 0)) {
       input.classList.add('adyen-checkout__input--error');
       return false;
@@ -346,8 +346,8 @@ function showValidation() {
  */
 function validateComponents() {
   if (document.querySelector('#component_ach')) {
-    const inputs = document.querySelectorAll('#component_ach > input');
-    for (const input of inputs) {
+    var inputs = document.querySelectorAll('#component_ach > input');
+    for (var input of inputs) {
       input.onchange = function () {
         validateCustomInputField(this);
       };
@@ -359,7 +359,7 @@ function validateComponents() {
     };
   }
 
-  let stateData;
+  var stateData;
   if (
     componentsObj[selectedMethod] &&
     componentsObj[selectedMethod].stateData
@@ -370,7 +370,7 @@ function validateComponents() {
   }
 
   if (selectedMethod === 'ach') {
-    const bankAccount = {
+    var bankAccount = {
       ownerName: document.querySelector('#bankAccountOwnerNameValue').value,
       bankAccountNumber: document.querySelector('#bankAccountNumberValue')
         .value,
@@ -406,16 +406,7 @@ function validateCustomInputField(input) {
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  const ach = `<div id="component_ach">
-                    <span class="adyen-checkout__label">Bank Account Owner Name</span>
-                    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
-                    <span class="adyen-checkout__label">Bank Account Number</span>
-                    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17" >
-                    <span class="adyen-checkout__label">Routing Number</span>
-                    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9" >
-                 </div>`;
-
-  const ratepay = `<span class="adyen-checkout__label">Gender</span>
+  var ratepay = `<span class="adyen-checkout__label">Gender</span>
                     <select id="genderInput" class="adyen-checkout__input">
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
@@ -423,7 +414,7 @@ function getFallback(paymentMethod) {
                     <span class="adyen-checkout__label">Date of birth</span>
                     <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
 
-  const fallback = { ratepay };
+  var fallback = { ratepay };
   return fallback[paymentMethod];
 }
 
@@ -431,7 +422,7 @@ function getFallback(paymentMethod) {
  * checks if payment method is blocked and returns a boolean accordingly
  */
 function isMethodTypeBlocked(methodType) {
-  const blockedMethods = [
+  var blockedMethods = [
     'bcmc_mobile_QR',
     'applepay',
     'cup',
@@ -450,11 +441,11 @@ async function renderGenericComponent() {
   if (Object.keys(componentsObj).length) {
     await unmountComponents();
   }
-  let paymentMethod;
-  let i;
+  var paymentMethod;
+  var i;
   checkoutConfiguration.paymentMethodsResponse =
     paymentMethodsResponse.adyenPaymentMethods;
-  const paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
+  var paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
@@ -487,7 +478,7 @@ async function renderGenericComponent() {
       renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
   });
 
-  const firstPaymentMethod = document.querySelector(
+  var firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
   );
   firstPaymentMethod.checked = true;
@@ -495,32 +486,32 @@ async function renderGenericComponent() {
 }
 
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
-  const paymentMethodsUI = document.querySelector('#paymentMethodsList');
-  const li = document.createElement('li');
-  const paymentMethodID = storedPaymentMethodBool
+  var paymentMethodsUI = document.querySelector('#paymentMethodsList');
+  var li = document.createElement('li');
+  var paymentMethodID = storedPaymentMethodBool
     ? `storedCard${paymentMethod.id}`
     : paymentMethod.type;
-  const isSchemeNotStored =
+  var isSchemeNotStored =
     paymentMethod.type === 'scheme' && !storedPaymentMethodBool;
-  const paymentMethodImage = storedPaymentMethodBool
+  var paymentMethodImage = storedPaymentMethodBool
     ? `${path}${paymentMethod.brand}.png`
     : `${path}${paymentMethod.type}.png`;
-  const cardImage = `${path}card.png`;
-  const imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
-  const label = storedPaymentMethodBool
+  var cardImage = `${path}card.png`;
+  var imagePath = isSchemeNotStored ? cardImage : paymentMethodImage;
+  var label = storedPaymentMethodBool
     ? `${paymentMethod.name} ${MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : `${paymentMethod.name}`;
-  const liContents = `
+  var liContents = `
                               <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
                               <img class="paymentMethod_img" src="${imagePath}" ></img>
                               <label id="lb_${paymentMethodID}" for="rb_${paymentMethodID}" style="float: none; width: 100%; display: inline; text-align: inherit">${label}</label>
                              `;
-  const container = document.createElement('div');
+  var container = document.createElement('div');
 
   li.innerHTML = liContents;
   li.classList.add('paymentMethod');
 
-  const node = renderCheckoutComponent(
+  var node = renderCheckoutComponent(
     storedPaymentMethodBool,
     checkout,
     paymentMethod,
@@ -546,7 +537,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
       .catch(() => {}); // eslint-disable-line no-empty
   }
 
-  const input = document.querySelector(`#rb_${paymentMethodID}`);
+  var input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = async function (event) {
     if (
         document.querySelector('.adyen-checkout__qr-loader') &&
@@ -587,9 +578,9 @@ function renderCheckoutComponent(
       paymentMethodID,
     );
   }
-  const fallback = getFallback(paymentMethod.type);
+  var fallback = getFallback(paymentMethod.type);
   if (fallback) {
-    const template = document.createElement('template');
+    var template = document.createElement('template');
     template.innerHTML = fallback;
     container.append(template.content);
     return;
@@ -609,7 +600,7 @@ function createCheckoutComponent(
   paymentMethodID,
 ) {
   try {
-    const node = checkout.create(paymentMethod.type, paymentMethod);
+    var node = checkout.create(paymentMethod.type, paymentMethod);
     if (!componentsObj[paymentMethodID]) {
       componentsObj[paymentMethodID] = {};
     }
@@ -656,8 +647,8 @@ $('#dwfrm_billing').submit(function (e) {
     !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
-    const form = $(this);
-    const url = form.attr('action');
+    var form = $(this);
+    var url = form.attr('action');
 
     $.ajax({
       type: 'POST',
