@@ -32,21 +32,6 @@ describe('Validate Components', () => {
     inputAssert(input);
   });
 
-  it('should handle ach', () => {
-    document.body.innerHTML = `
-      <input id="bankAccountOwnerNameValue" value="example_owner" />
-      <input id="bankAccountNumberValue" value="example_account" />
-      <input id="bankLocationIdValue" value="example_location" />
-      <input id="adyenStateData" />
-    `;
-    store.selectedMethod = 'ach';
-    store.componentsObj = { ach: { stateData: { foo: 'bar' } } };
-    validateComponents();
-    expect(
-      JSON.parse(document.getElementById('adyenStateData').value),
-    ).toMatchSnapshot();
-  });
-
   it('should handle ratepay', () => {
     document.body.innerHTML = `
       <input id="genderInput" value="example_gender" />

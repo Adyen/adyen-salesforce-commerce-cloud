@@ -1,18 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Validate Components should handle ach 1`] = `
-Object {
-  "foo": "bar",
-  "paymentMethod": Object {
-    "bankAccount": Object {
-      "bankAccountNumber": "example_account",
-      "bankLocationId": "example_location",
-      "ownerName": "example_owner",
-    },
-  },
-}
-`;
-
 exports[`Validate Components should handle ratepay 1`] = `
 Object {
   "dateOfBirth": "example_dob",

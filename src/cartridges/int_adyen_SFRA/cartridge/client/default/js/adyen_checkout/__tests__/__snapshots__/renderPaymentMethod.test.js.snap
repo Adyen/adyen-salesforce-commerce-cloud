@@ -1,99 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Render Payment Method should render fallback ach payment method 1`] = `
-<ul
-  id="paymentMethodsList"
->
-  <li
-    class="paymentMethod"
-  >
-    
-    
-    <input
-      id="rb_ach"
-      name="brandCode"
-      type="radio"
-      value="ach"
-    />
-    
-    
-    <img
-      class="paymentMethod_img"
-      src="/mocked_path/ach.png"
-    />
-    
-    
-    <label
-      for="rb_ach"
-      id="lb_ach"
-    >
-      mocked_name
-    </label>
-    
-  
-    <p>
-      mocked_description
-    </p>
-    <div
-      class="additionalFields"
-      id="component_ach"
-      style="display:none"
-    >
-      <div
-        id="component_ach"
-      >
-        
-    
-        <span
-          class="adyen-checkout__label"
-        >
-          Bank Account Owner Name
-        </span>
-        
-    
-        <input
-          class="adyen-checkout__input"
-          id="bankAccountOwnerNameValue"
-          type="text"
-        />
-        
-    
-        <span
-          class="adyen-checkout__label"
-        >
-          Bank Account Number
-        </span>
-        
-    
-        <input
-          class="adyen-checkout__input"
-          id="bankAccountNumberValue"
-          maxlength="17"
-          type="text"
-        />
-        
-    
-        <span
-          class="adyen-checkout__label"
-        >
-          Routing Number
-        </span>
-        
-    
-        <input
-          class="adyen-checkout__input"
-          id="bankLocationIdValue"
-          maxlength="9"
-          type="text"
-        />
-        
-  
-      </div>
-    </div>
-  </li>
-</ul>
-`;
-
 exports[`Render Payment Method should render fallback ratepay payment method 1`] = `
 <ul
   id="paymentMethodsList"
@@ -235,7 +141,6 @@ Object {
     },
   },
   "scheme": Object {
-    "isValid": true,
     "node": Object {
       "mount": [MockFunction] {
         "calls": Array [

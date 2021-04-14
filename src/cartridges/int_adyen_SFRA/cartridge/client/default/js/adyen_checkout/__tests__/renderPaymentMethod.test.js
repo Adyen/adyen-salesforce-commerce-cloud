@@ -48,21 +48,6 @@ describe('Render Payment Method', () => {
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
   });
-  it('should render fallback ach payment method', () => {
-    const paymentMethod = {
-      type: 'ach',
-      name: 'mocked_name',
-      lastFour: '1234',
-    };
-    renderPaymentMethod(
-      paymentMethod,
-      false,
-      '/mocked_path/',
-      'mocked_description',
-    );
-    expect(mount).toBeCalledTimes(0);
-    expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
-  });
 
   it('should render fallback ratepay payment method', () => {
     const paymentMethod = {
