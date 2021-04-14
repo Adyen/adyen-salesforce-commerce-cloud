@@ -3,15 +3,6 @@ const helpers = require('./helpers');
 const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
-  const ach = `<div id="component_ach">
-    <span class="adyen-checkout__label">Bank Account Owner Name</span>
-    <input type="text" id="bankAccountOwnerNameValue" class="adyen-checkout__input">
-    <span class="adyen-checkout__label">Bank Account Number</span>
-    <input type="text" id="bankAccountNumberValue" class="adyen-checkout__input" maxlength="17" >
-    <span class="adyen-checkout__label">Routing Number</span>
-    <input type="text" id="bankLocationIdValue" class="adyen-checkout__input" maxlength="9" >
-  </div>`;
-
   const ratepay = `<span class="adyen-checkout__label">Gender</span>
     <select id="genderInput" class="adyen-checkout__input">
         <option value="MALE">Male</option>
@@ -96,7 +87,10 @@ function hasNoChildNodes({ paymentMethodID, container }) {
 }
 
 function setValid({ paymentMethodID, container }) {
-  if (hasNoChildNodes({ paymentMethodID, container }) && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
+  if (
+    hasNoChildNodes({ paymentMethodID, container }) &&
+    ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
+  ) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }
