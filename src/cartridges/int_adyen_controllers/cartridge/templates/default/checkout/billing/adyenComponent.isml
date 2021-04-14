@@ -27,7 +27,6 @@
     window.cardholderNameBool = '${AdyenHelper.getAdyenCardholderNameEnabled()}';
     window.paypalIntent = '${AdyenHelper.getAdyenPayPalIntent()}';
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
-    window.donateURL = "${URLUtils.https('Adyen-Donate')}";
     var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
 </script>
 

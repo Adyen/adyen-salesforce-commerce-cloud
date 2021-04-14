@@ -20,6 +20,7 @@
         window.charityDescription = '${pdict.AdyenGivingConfig.charityDescription}';
         window.adyenGivingBackgroundUrl = '${pdict.AdyenGivingConfig.adyenGivingBackgroundUrl}';
         window.adyenGivingLogoUrl = '${pdict.AdyenGivingConfig.adyenGivingLogoUrl}';
+        window.donateURL = "${URLUtils.https('Adyen-Donate')}";
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">
