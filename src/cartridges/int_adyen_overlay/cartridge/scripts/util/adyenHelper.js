@@ -14,10 +14,8 @@ var adyenHelperObj = {
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
-    PAYMENT_3DSECURE: 'AdyenPayment3DSecure',
     RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
-    PAYMENTMETHODS: 'AdyenPaymentMethods',
     POSPAYMENT: 'AdyenPosPayment',
     ORIGINKEYS: 'AdyenOriginKeys',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
