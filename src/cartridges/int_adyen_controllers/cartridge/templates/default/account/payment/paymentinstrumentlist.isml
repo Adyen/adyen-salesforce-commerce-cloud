@@ -2,7 +2,7 @@
 <isdecorate template="account/pt_account">
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
-	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/AdyenHelper')}"   scope="pdict"   />
+	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/adyenHelper')}"   scope="pdict"   />
 	<isset  name="Adyen3DS2Enabled"  value="${pdict.AdyenHelper.getAdyen3DS2Enabled()}" scope="page"   />
 	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
