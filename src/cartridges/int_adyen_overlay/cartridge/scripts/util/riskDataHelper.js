@@ -7,7 +7,7 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 const __RiskDataHelper = {
   createBasketContentFields(order) {
-    const productLines = order.getAllProductLineItems().toArray();
+    const productLines = order.getProductLineItems().toArray();
     let itemNr = 1;
     const basketData = {};
     productLines.forEach((item) => {

@@ -1,5 +1,6 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
 const constants = require('*/cartridge/adyenConstants/constants');
 
 const {
@@ -18,7 +19,9 @@ function redirect(req, res, next) {
       )[0];
       const redirectUrl = paymentInstrument.custom.adyenRedirectURL;
       res.redirect(redirectUrl);
-      paymentInstrument.custom.adyenRedirectURL = null;
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenRedirectURL = null;
+      });
       return next();
     }
   } else {

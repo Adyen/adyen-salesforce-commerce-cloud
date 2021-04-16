@@ -12,7 +12,7 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 function getLineItems({ Order: order }) {
     if (!order) return null;
     // Add all product and shipping line items to request
-    const allLineItems = order.getAllLineItems();
+    const allLineItems = order.getProductLineItems();
     const shopperReference = getShopperReference(order);
 
     return allLineItems.toArray().reduce((acc, lineItem, index) => {
