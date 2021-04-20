@@ -198,10 +198,8 @@ function handle(customObj) {
               order.orderNo,
           );
         }
-        //order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
         break;
       case 'ORDER_CLOSED':
-        // order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         if (customObj.custom.success === 'true') {
           order.setExportStatus(Order.EXPORT_STATUS_READY);
           Logger.getLogger('Adyen', 'adyen').info(
