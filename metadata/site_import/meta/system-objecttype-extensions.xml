@@ -29,8 +29,8 @@
                 <field-length>0</field-length>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_value">
-                <display-name xml:lang="x-default">Amount</display-name>
-                <description xml:lang="x-default">Amount paid (divide by 100)</description>
+                <display-name xml:lang="x-default">Amount paid (in minor units)</display-name>
+                <description xml:lang="x-default">Amount paid (in minor units)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

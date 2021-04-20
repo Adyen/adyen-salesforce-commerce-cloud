@@ -46,8 +46,7 @@ function notify(notificationData) {
     const msg = createLogMessage(notificationData);
     Logger.getLogger('Adyen').debug(msg);
     const calObj = new Calendar();
-    const keyValue = notificationData.merchantReference;
-    `-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
+    const keyValue = `${notificationData.merchantReference}-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
     const customObj = CustomObjectMgr.createCustomObject(
       'adyenNotification',
       keyValue,
