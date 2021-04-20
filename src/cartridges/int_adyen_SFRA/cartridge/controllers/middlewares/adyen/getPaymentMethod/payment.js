@@ -2,6 +2,7 @@ const Resource = require('dw/web/Resource');
 const BasketMgr = require('dw/order/BasketMgr');
 const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
 const {
   getConnectedTerminals,
   getCountryCode,
@@ -24,16 +25,16 @@ function handlePaymentMethod({ req, res, next }) {
   const connectedTerminals = getConnectedTerminals();
 
   const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
-  const paymentAmount = currentBasket.getTotalGrossPrice()
-    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-    : 1000;
   const currency = currentBasket.getTotalGrossPrice().currencyCode;
+  const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
+    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+    : new dw.value.Money(1000, currency);
   const jsonResponse = {
     AdyenPaymentMethods: response,
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
     AdyenConnectedTerminals: JSON.parse(connectedTerminals),
-    amount: { value: parseFloat(paymentAmount), currency },
+    amount: { value: paymentAmount.value, currency },
     countryCode,
   };
 

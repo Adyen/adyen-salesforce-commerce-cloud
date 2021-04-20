@@ -25,21 +25,21 @@ function getMethods(basket, customer, countryCode) {
 
     // paymentMethods call from checkout
     if (basket) {
-      paymentAmount = basket.getTotalGrossPrice()
-        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).getValueOrNull()
-        : 1000;
       currencyCode = basket.currencyCode;
+      paymentAmount = basket.getTotalGrossPrice().isAvailable()
+        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
+        : new dw.value.Money(1000, currency);
     } else {
       // paymentMethods call from My Account
-      paymentAmount = 1000;
       currencyCode = session.currency.currencyCode;
+      paymentAmount = new dw.value.Money(1000, currency);
     }
 
     const paymentMethodsRequest = {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       amount: {
         currency: currencyCode,
-        value: paymentAmount,
+        value: paymentAmount.value,
       },
     };
 

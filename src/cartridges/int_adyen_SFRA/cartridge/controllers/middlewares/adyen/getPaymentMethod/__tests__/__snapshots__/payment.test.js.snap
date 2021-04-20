@@ -23,7 +23,7 @@ Array [
       "ImagePath": "mocked_loading_contextimages/logos/medium/",
       "amount": Object {
         "currency": "EUR",
-        "value": 1000,
+        "value": undefined,
       },
       "countryCode": "NL",
     },
@@ -54,7 +54,7 @@ Array [
       "ImagePath": "mocked_loading_contextimages/logos/medium/",
       "amount": Object {
         "currency": "EUR",
-        "value": 1000,
+        "value": undefined,
       },
       "countryCode": "NL",
     },
