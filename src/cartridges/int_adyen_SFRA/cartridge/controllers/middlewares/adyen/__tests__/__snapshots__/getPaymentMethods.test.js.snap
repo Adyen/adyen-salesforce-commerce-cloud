@@ -26,7 +26,7 @@ exports[`Get Payment Methods should handle installments when basket has total 1`
         "ImagePath": "mocked_loading_contextimages/logos/medium/",
         "amount": Object {
           "currency": "EUR",
-          "value": undefined,
+          "value": 1000,
         },
         "countryCode": "NL",
       },
@@ -41,6 +41,78 @@ exports[`Get Payment Methods should handle installments when basket has total 1`
 }
 `;
 
-exports[`Get Payment Methods should return response without connected terminals 1`] = `[MockFunction]`;
+exports[`Get Payment Methods should return response without connected terminals 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "AdyenConnectedTerminals": Object {},
+        "AdyenDescriptions": Array [
+          Object {
+            "brandCode": "visa",
+            "description": "mocked_hpp.description.visa",
+          },
+        ],
+        "AdyenPaymentMethods": Object {
+          "paymentMethods": Array [
+            Object {
+              "type": "visa",
+            },
+          ],
+        },
+        "ImagePath": "mocked_loading_contextimages/logos/medium/",
+        "amount": Object {
+          "currency": "EUR",
+          "value": 1000,
+        },
+        "countryCode": "NL",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
 
-exports[`Get Payment Methods should return response without installments 1`] = `[MockFunction]`;
+exports[`Get Payment Methods should return response without installments 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "AdyenConnectedTerminals": Object {
+          "foo": "bar",
+        },
+        "AdyenDescriptions": Array [
+          Object {
+            "brandCode": "visa",
+            "description": "mocked_hpp.description.visa",
+          },
+        ],
+        "AdyenPaymentMethods": Object {
+          "paymentMethods": Array [
+            Object {
+              "type": "visa",
+            },
+          ],
+        },
+        "ImagePath": "mocked_loading_contextimages/logos/medium/",
+        "amount": Object {
+          "currency": "EUR",
+          "value": 1000,
+        },
+        "countryCode": "NL",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;

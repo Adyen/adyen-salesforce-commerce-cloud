@@ -3,7 +3,9 @@ export const getAdyenEnvironment = jest.fn(() => 'TEST');
 export const getAdyenHash = jest.fn((str, str2) => `${str} __ ${str2}`);
 export const getLoadingContext = jest.fn(() => 'mocked_loading_context');
 export const getCreditCardInstallments = jest.fn(() => true);
-export const getCurrencyValueForApi = jest.fn(() => 1000);
+export const getCurrencyValueForApi = jest.fn(() => ({
+    value: 1000,
+}));
 export const getPaypalMerchantID = jest.fn(() => 'mocked_paypal_merchant_id');
 export const getGoogleMerchantID = jest.fn(() => 'mocked_google_merchant_id');
 export const getAdyenCardholderNameEnabled = jest.fn(() => true);
