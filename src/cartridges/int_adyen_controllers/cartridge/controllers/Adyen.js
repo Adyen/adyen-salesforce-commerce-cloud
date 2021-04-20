@@ -399,10 +399,10 @@ function getPaymentMethods(cart, customer) {
     }
   }
 
+  const currency = currentBasket.getTotalGrossPrice().currencyCode;
   const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
       ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
       : new dw.value.Money(1000, currency);
-  const currency = currentBasket.getTotalGrossPrice().currencyCode;
   const jsonResponse = {
     adyenPaymentMethods: response,
     adyenConnectedTerminals: connectedTerminals,
