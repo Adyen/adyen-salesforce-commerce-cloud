@@ -79,6 +79,17 @@ function creditCard(args) {
             paymentMethodObject['storeDetails'] = true;
         }
         var returnUrl = URLUtils.https('Adyen-OrderConfirm').toString();
+
+        if (dw.system.System.getInstanceType() !== dw.system.System.PRODUCTION_SYSTEM) {
+            const testAcquirerResponseCode = args.CreditCardForm ? args.CreditCardForm.testAcquirerResponseCode.value : null;
+
+            if (!empty(testAcquirerResponseCode)) {
+                args.additionalData = { // eslint-disable-line no-param-reassign
+                    RequestedTestAcquirerResponseCode: testAcquirerResponseCode
+                };
+            }
+        }
+
         return createPaymentRequest(args, paymentMethodObject, returnUrl);
 
     }
@@ -151,6 +162,10 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
         if(args.PaymentType.indexOf('ratepay') != -1 && args.ratePayFingerprint){
             jsonObject["deviceFingerprint"] = args.ratePayFingerprint;
         }
+    }
+    
+    if (!empty(args.additionalData)) {
+        jsonObject.additionalData = args.additionalData;
     }
 
     var requestObject = AdyenHelper.extend(jsonObject, shopperObject);
@@ -294,10 +309,12 @@ function doPaymentCall(args, requestObject){
                 args.Order.setExportStatus(dw.order.Order.EXPORT_STATUS_NOTEXPORTED);
             }
 
-            errorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
-            if ('refusalReason' in responseObj && !empty(responseObj.refusalReason)) {
-                errorMessage += ' (' + responseObj.refusalReason + ')';
+            errorMessage = dw.web.Resource.msg('confirm.error.declined', 'checkout', null);
+            
+            if ('refusalReasonCode' in responseObj && !empty(responseObj.refusalReasonCode)) {
+                errorMessage = dw.web.Resource.msg('adyen.payment.error.' + responseObj.refusalReasonCode, 'adyen', errorMessage);
             }
+
             args.AdyenErrorMessage = errorMessage;
             Logger.getLogger('Adyen').info('Payment result: Refused');
         }
