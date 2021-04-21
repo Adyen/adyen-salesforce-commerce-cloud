@@ -6,18 +6,6 @@ function validateCustomInputField(input) {
     : input.classList.add('adyen-checkout__input--error');
 }
 
-function handleAch() {
-  const bankAccount = {
-    ownerName: document.querySelector('#bankAccountOwnerNameValue').value,
-    bankAccountNumber: document.querySelector('#bankAccountNumberValue').value,
-    bankLocationId: document.querySelector('#bankLocationIdValue').value,
-  };
-  store.stateData.paymentMethod = {
-    ...store.stateData.paymentMethod,
-    bankAccount,
-  };
-}
-
 function checkRatePay() {
   const hasGender = document.querySelector('#genderInput').value;
   const hasDateOfBirth = document.querySelector('#dateOfBirthInput').value;
@@ -64,7 +52,6 @@ module.exports.validateComponents = function validateComponents() {
   validateRatepay();
 
   const customMethods = {
-    ach: handleAch,
     ratepay: handleRatepay,
   };
 

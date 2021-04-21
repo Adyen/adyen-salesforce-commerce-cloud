@@ -6,8 +6,11 @@ export const getShipments = jest.fn(() => [
     },
   },
 ]);
+
+export const isAvailable = jest.fn(() => true);
 export const getTotalGrossPrice = jest.fn(() => ({
   currencyCode: 'EUR',
+  isAvailable,
 }));
 
 export const getCreditCardToken = jest.fn(() => 'mockedCreditCardToken');

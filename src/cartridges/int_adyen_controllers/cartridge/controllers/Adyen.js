@@ -399,16 +399,16 @@ function getPaymentMethods(cart, customer) {
     }
   }
 
-  const paymentAmount = currentBasket.getTotalGrossPrice()
-      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-      : 1000;
   const currency = currentBasket.getTotalGrossPrice().currencyCode;
+  const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
+      ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+      : new dw.value.Money(1000, currency);
   const jsonResponse = {
     adyenPaymentMethods: response,
     adyenConnectedTerminals: connectedTerminals,
     ImagePath: adyenURL,
     AdyenDescriptions: paymentMethodDescriptions,
-    amount: { value: paymentAmount, currency: currency },
+    amount: { value: paymentAmount.value, currency: currency },
     countryCode: countryCode,
   };
 

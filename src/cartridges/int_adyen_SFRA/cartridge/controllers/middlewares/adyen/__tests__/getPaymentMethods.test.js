@@ -1,4 +1,6 @@
 /* eslint-disable global-require */
+import {isAvailable} from "../../../../../../../../jest/__mocks__/dw/order/BasketMgr";
+
 let getPaymentMethods;
 let PaymentMgr;
 let adyenHelper;
@@ -42,7 +44,7 @@ describe('Get Payment Methods', () => {
     expect(res.json).toMatchSnapshot();
   });
   it('should handle installments when basket has no total', () => {
-    BasketMgr.getTotalGrossPrice.mockImplementation(() => false);
+    BasketMgr.isAvailable.mockImplementation(() => false);
     getPaymentMethods(req, res, jest.fn());
     expect(adyenHelper.getCurrencyValueForApi).toBeCalledTimes(0);
     expect(res.json).toMatchSnapshot();
