@@ -28,11 +28,11 @@ function getMethods(basket, customer, countryCode) {
       currencyCode = basket.currencyCode;
       paymentAmount = basket.getTotalGrossPrice().isAvailable()
         ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
-        : new dw.value.Money(1000, currency);
+        : new dw.value.Money(1000, currencyCode);
     } else {
       // paymentMethods call from My Account
       currencyCode = session.currency.currencyCode;
-      paymentAmount = new dw.value.Money(1000, currency);
+      paymentAmount = new dw.value.Money(1000, currencyCode);
     }
 
     const paymentMethodsRequest = {
