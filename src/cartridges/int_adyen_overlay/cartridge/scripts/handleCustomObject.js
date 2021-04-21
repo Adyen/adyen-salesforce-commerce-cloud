@@ -295,7 +295,7 @@ function setProcessedCOInfo(customObj) {
 function createLogMessage(customObj) {
   const VERSION = customObj.custom.version;
   let msg = '';
-  msg = 'AdyenNotification v '`${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
+  msg = `AdyenNotification v ${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
   msg += '\n================================================================\n';
   // msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
   msg = `${msg}reason : ${customObj.custom.reason}`;

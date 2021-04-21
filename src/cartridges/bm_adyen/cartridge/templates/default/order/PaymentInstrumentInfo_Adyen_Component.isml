@@ -28,7 +28,7 @@
 	</thead>
 	<tbody>
 		<tr><td class='infobox_title'>PSP reference</td><td class='infobox_item'><A target='new' HREF='https://ca-test.adyen.com/ca/ca/payments/searchPayments.shtml?skipList=firstResult&query=${order.custom.Adyen_pspReference}'><isprint value="${order.custom.Adyen_pspReference}"> </A></td></tr>
-		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.adyenPaymentMethod}"></td></tr>
+		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
 		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
 		<isif condition="${adyenAdditionalPaymentData != null}">
 			<isloop items="${adyenAdditionalPaymentData}" var="additionalItem" status="loopstate">

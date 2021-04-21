@@ -7,7 +7,7 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 const __RiskDataHelper = {
   createBasketContentFields(order) {
-    const productLines = order.getAllProductLineItems().toArray();
+    const productLines = order.getProductLineItems().toArray();
     let itemNr = 1;
     const basketData = {};
     productLines.forEach((item) => {
@@ -19,7 +19,7 @@ const __RiskDataHelper = {
         `riskdata.basket.item${itemNr}.productTitle`
       ] = LineItemHelper.getDescription(item);
       basketData[`riskdata.basket.item${itemNr}.amountPerItem`] =
-        LineItemHelper.getItemAmount(item) / quantity;
+        LineItemHelper.getItemAmount(item).divide(quantity);
       basketData[`riskdata.basket.item${itemNr}.currency`] =
         item.adjustedNetPrice.currencyCode;
       basketData[`riskdata.basket.item${itemNr}.upc`] = item.product

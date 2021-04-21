@@ -12,19 +12,19 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 function getLineItems({ Order: order }) {
     if (!order) return null;
     // Add all product and shipping line items to request
-    const allLineItems = order.getAllLineItems();
+    const allLineItems = order.getProductLineItems();
     const shopperReference = getShopperReference(order);
 
     return allLineItems.toArray().reduce((acc, lineItem, index) => {
         const description = LineItemHelper.getDescription(lineItem);
         const id = LineItemHelper.getId(lineItem);
         const quantity = LineItemHelper.getQuantity(lineItem);
-        const itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
-        const vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+        const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
+        const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
         const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
         const currentLineItem = {
-            [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.toFixed(),
-            [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.toFixed()) + parseFloat(vatAmount.toFixed()),
+            [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.value.toFixed(),
+            [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.value.toFixed()) + parseFloat(vatAmount.value.toFixed()),
             [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
             [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
             ...(commodityCode && { [`enhancedSchemeData.itemDetailLine${index + 1}.commodityCode`]: commodityCode }),
@@ -35,7 +35,7 @@ function getLineItems({ Order: order }) {
         return {
             ...acc,
             ...currentLineItem,
-            'enhancedSchemeData.totalTaxAmount': acc['enhancedSchemeData.totalTaxAmount'] + parseFloat(vatAmount.toFixed()),
+            'enhancedSchemeData.totalTaxAmount': acc['enhancedSchemeData.totalTaxAmount'] + parseFloat(vatAmount.value.toFixed()),
         };
     }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) });
 }

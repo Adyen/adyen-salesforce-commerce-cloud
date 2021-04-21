@@ -47,7 +47,7 @@
             <attribute-definition attribute-id="Adyen_donationAmount">
                 <display-name xml:lang="x-default">Adyen donation amount</display-name>
                 <description xml:lang="x-default">Amount donated via Adyen Giving</description>
-                <type>text</type>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
