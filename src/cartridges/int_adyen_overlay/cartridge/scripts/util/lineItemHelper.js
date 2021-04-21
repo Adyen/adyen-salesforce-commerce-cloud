@@ -50,7 +50,7 @@ const __LineItemHelper = {
 
   getVatPercentage(lineItem) {
     let vatPercentage = 0;
-    if (__LineItemHelper.getVatAmount(lineItem) !== 0) {
+    if (__LineItemHelper.getVatAmount(lineItem).value !== 0) {
       vatPercentage = lineItem.getTaxRate();
     }
     return vatPercentage;
@@ -66,7 +66,7 @@ const __LineItemHelper = {
     if (lineItem instanceof dw.order.PriceAdjustment && lineItem.getPromotion().getPromotionClass() !== 'ORDER') {
       return AdyenHelper.getCurrencyValueForApi(lineItem.tax);
     }
-    return null;
+    return new dw.value.Money(0, lineItem.getTax().getCurrencyCode());
   },
 
   getItemAmount(lineItem) {
@@ -79,7 +79,7 @@ const __LineItemHelper = {
     if (lineItem instanceof dw.order.PriceAdjustment) {
       return AdyenHelper.getCurrencyValueForApi(lineItem.netPrice);
     }
-    return null;
+    return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
 };
 

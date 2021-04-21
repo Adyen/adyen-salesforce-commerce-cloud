@@ -24,6 +24,7 @@ const Logger = require('dw/system/Logger');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 const constants = require('*/cartridge/adyenConstants/constants');
+const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function execute(args) {
   const result = handle(args.CustomObj);
@@ -85,7 +86,8 @@ function handle(customObj) {
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
         var paymentInstruments = order.getPaymentInstruments();
-        // Move adyen log request to order paymet transaction
+        var adyenPaymentInstrument = null;
+        // Move adyen log request to order payment transaction
         for (const pi in paymentInstruments) {
           if (
             [
@@ -100,20 +102,28 @@ function handle(customObj) {
             isAdyen = true;
             paymentInstruments[pi].paymentTransaction.custom.Adyen_log =
               customObj.custom.Adyen_log;
+            adyenPaymentInstrument = paymentInstruments[pi];
           }
         }
         if (customObj.custom.success === 'true') {
+          const amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
+          const totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
           if (order.paymentStatus === Order.PAYMENT_STATUS_PAID) {
             Logger.getLogger('Adyen', 'adyen').info(
               'Duplicate callback received for order {0}.',
               order.orderNo,
             );
-          } else if (order.paymentStatus === Order.PAYMENT_STATUS_PARTPAID) {
+          }
+          else if(amountPaid < totalAmount) {
+            order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
             Logger.getLogger('Adyen', 'adyen').info(
-              'Partial payment received for order {0}.',
-              order.orderNo,
+                'Partial amount {0} received for order number {1} with total amount {2}',
+                customObj.custom.value,
+                order.orderNo,
+                totalAmount,
             );
-          } else {
+          }
+          else {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(Order.EXPORT_STATUS_READY);
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
@@ -123,6 +133,7 @@ function handle(customObj) {
             );
             result.SubmitOrder = true;
           }
+          order.custom.Adyen_value = amountPaid.toString();
         } else {
           Logger.getLogger('Adyen', 'adyen').info(
             'Authorization for order {0} was not successful - no update.',
@@ -181,19 +192,21 @@ function handle(customObj) {
         );
         break;
       case 'ORDER_OPENED':
-        Logger.getLogger('Adyen', 'adyen').info(
-          'Order {0} updated to status PARTIALLY PAID.',
-          order.orderNo,
-        );
-        order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
+        if (customObj.custom.success === 'true') {
+          Logger.getLogger('Adyen', 'adyen').info(
+              'Order {0} opened for partial payments',
+              order.orderNo,
+          );
+        }
         break;
       case 'ORDER_CLOSED':
-        order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-        order.setExportStatus(Order.EXPORT_STATUS_READY);
-        Logger.getLogger('Adyen', 'adyen').info(
-          'Order {0} closed and updated to status PAID.',
-          order.orderNo,
-        );
+        if (customObj.custom.success === 'true') {
+          order.setExportStatus(Order.EXPORT_STATUS_READY);
+          Logger.getLogger('Adyen', 'adyen').info(
+              'Order {0} closed',
+              order.orderNo,
+          );
+        }
         break;
       case 'OFFER_CLOSED':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
@@ -254,7 +267,6 @@ function handle(customObj) {
         order.custom.Adyen_pspReference = customObj.custom.pspReference;
       }
 
-      order.custom.Adyen_value = customObj.custom.value;
       order.custom.Adyen_eventCode = customObj.custom.eventCode;
 
       // Payment Method must be persistent. When payment is cancelled,
@@ -295,7 +307,7 @@ function setProcessedCOInfo(customObj) {
 function createLogMessage(customObj) {
   const VERSION = customObj.custom.version;
   let msg = '';
-  msg = 'AdyenNotification v '`${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
+  msg = `AdyenNotification v ${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
   msg += '\n================================================================\n';
   // msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
   msg = `${msg}reason : ${customObj.custom.reason}`;

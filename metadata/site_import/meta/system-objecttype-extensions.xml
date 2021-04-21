@@ -29,8 +29,8 @@
                 <field-length>0</field-length>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_value">
-                <display-name xml:lang="x-default">Amount</display-name>
-                <description xml:lang="x-default">Amount paid (divide by 100)</description>
+                <display-name xml:lang="x-default">Amount paid (in minor units)</display-name>
+                <description xml:lang="x-default">Amount paid (in minor units)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -47,7 +47,7 @@
             <attribute-definition attribute-id="Adyen_donationAmount">
                 <display-name xml:lang="x-default">Adyen donation amount</display-name>
                 <description xml:lang="x-default">Amount donated via Adyen Giving</description>
-                <type>text</type>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
