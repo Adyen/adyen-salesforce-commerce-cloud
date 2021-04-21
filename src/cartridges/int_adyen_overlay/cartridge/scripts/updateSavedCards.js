@@ -104,14 +104,16 @@ function getOneClickPaymentMethods(customer) {
     '',
   );
   const oneClickPaymentMethods = [];
-  for (let i = 0; i < storedPaymentMethods.length; i++) {
-    if (
-      storedPaymentMethods[i].supportedShopperInteractions &&
-      storedPaymentMethods[i].supportedShopperInteractions.indexOf(
-        'Ecommerce',
-      ) > -1
-    ) {
-      oneClickPaymentMethods.push(storedPaymentMethods[i]);
+  if(storedPaymentMethods) {
+    for (let i = 0; i < storedPaymentMethods.length; i++) {
+      if (
+          storedPaymentMethods[i].supportedShopperInteractions &&
+          storedPaymentMethods[i].supportedShopperInteractions.indexOf(
+              'Ecommerce',
+          ) > -1
+      ) {
+        oneClickPaymentMethods.push(storedPaymentMethods[i]);
+      }
     }
   }
   return oneClickPaymentMethods;
