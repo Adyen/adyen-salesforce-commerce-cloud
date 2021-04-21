@@ -648,10 +648,7 @@ var adyenHelperObj = {
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
       ? result.resultCode
       : '';
-    order.custom.Adyen_value = result.adyenAmount
-      ? result.adyenAmount.toFixed(0)
-      : '';
-
+    order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
       result,
