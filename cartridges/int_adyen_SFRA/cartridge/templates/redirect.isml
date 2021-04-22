@@ -1,0 +1,17 @@
+<div class="checkout">
+    <div class="payerauth">
+        <form action="${pdict.redirectUrl}" method="post" id="redirectForm" name="redirectForm">
+<!--            <input type="hidden" name="TermUrl" value="${URLUtils.httpsContinue()}">-->
+        </form>
+        <script language="javascript">
+            var loaded = false;
+
+            function load() {
+                document.getElementById('redirectForm').submit();
+                loaded = true;
+            }
+
+            load();
+        </script>
+    </div>
+</div>

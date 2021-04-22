@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment should return json response with installments 1`] = `
+Array [
+  Array [
+    Object {
+      "AdyenConnectedTerminals": Object {
+        "foo": "bar",
+      },
+      "AdyenDescriptions": Array [
+        Object {
+          "brandCode": "visa",
+          "description": "mocked_hpp.description.visa",
+        },
+      ],
+      "AdyenPaymentMethods": Object {
+        "paymentMethods": Array [
+          Object {
+            "type": "visa",
+          },
+        ],
+      },
+      "ImagePath": "mocked_loading_contextimages/logos/medium/",
+      "amount": Object {
+        "currency": "EUR",
+        "value": 1000,
+      },
+      "countryCode": "NL",
+    },
+  ],
+]
+`;
+
+exports[`Payment should return json response without installments 1`] = `
+Array [
+  Array [
+    Object {
+      "AdyenConnectedTerminals": Object {
+        "foo": "bar",
+      },
+      "AdyenDescriptions": Array [
+        Object {
+          "brandCode": "visa",
+          "description": "mocked_hpp.description.visa",
+        },
+      ],
+      "AdyenPaymentMethods": Object {
+        "paymentMethods": Array [
+          Object {
+            "type": "visa",
+          },
+        ],
+      },
+      "ImagePath": "mocked_loading_contextimages/logos/medium/",
+      "amount": Object {
+        "currency": "EUR",
+        "value": 1000,
+      },
+      "countryCode": "NL",
+    },
+  ],
+]
+`;

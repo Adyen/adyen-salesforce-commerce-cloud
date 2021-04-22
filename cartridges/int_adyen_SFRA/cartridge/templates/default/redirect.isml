@@ -1,0 +1,17 @@
+
+<iscontent type="text/html"/>
+<script>
+console.log('redirect template!!!!');
+
+
+</script>
+
+<!--<isset name="Redirect" value="${URLUtils.https('Adyen-Redirect')}" scope="page"/>-->
+
+<form method="post"
+      id="redirectForm"
+      action="${pdict.redirectURL}">
+    <input type="hidden" id="merchantReference" name="merchantReference" value="${pdict.merchantReference}"/>
+    <input type="hidden" id="signature" name="signature" value="${pdict.signature}"/>
+
+</form>
