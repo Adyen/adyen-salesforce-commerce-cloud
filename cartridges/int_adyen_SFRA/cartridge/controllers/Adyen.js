@@ -10,22 +10,33 @@ var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
+const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 const EXTERNAL_PLATFORM_VERSION = "SFRA";
 
-server.get('Adyen3D', server.middleware.https, function (req, res, next) {
+server.get('Adyen3D', csrfProtection.generateToken, server.middleware.https, function (req, res, next) {
     var IssuerURL = req.querystring.IssuerURL;
     var PaRequest = req.querystring.PaRequest;
     var MD = req.querystring.MD;
     var TermURL = URLUtils.https('Adyen-AuthorizeWithForm');
+    const signature = req.querystring.signature;
+    const currentSignature = AdyenHelper.getAdyenHash(
+        IssuerURL.substr(IssuerURL.length - 25),
+        MD.substr(1, 25)
+    );
 
-    res.render('adyenform', {
-        issuerUrl: IssuerURL,
-        paRequest: PaRequest,
-        md: MD,
-        ContinueURL: TermURL
-    });
-    next();
+    if (signature === currentSignature) {
+        res.render('adyenform', {
+          issuerUrl: IssuerURL,
+          paRequest: PaRequest,
+          md: MD,
+          ContinueURL: TermURL,
+        });
+        return next();
+    }
+    Logger.getLogger('Adyen').error('Signature incorrect for 3DS payment');
+    res.redirect(URLUtils.url('Home-Show', 'Payment','Failed3DS'));
+    return next();
 });
 
 server.post('AuthorizeWithForm', server.middleware.https, function (req, res, next) {

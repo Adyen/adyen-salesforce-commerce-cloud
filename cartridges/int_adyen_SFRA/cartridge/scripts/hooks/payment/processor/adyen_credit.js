@@ -79,38 +79,54 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         };
     }
 
-    //Trigger 3DS2.0 flow
-    if(result.ThreeDS2){
+    //Trigger 3DS2 flow
+    if(result.threeDS2 || result.resultCode === 'RedirectShopper') {
+        let paymentData = result.paymentData || result.PaymentData;
+        paymentInstrument.custom.adyenPaymentData = paymentData;
         Transaction.commit();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
-        });
 
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
-        return {
-            ThreeDS2: result.ThreeDS2,
-            resultCode: result.resultCode,
-            token3ds2: result.token3ds2,
+        if (result.threeDS2) {
+            return {
+                ThreeDS2: result.ThreeDS2,
+                resultCode: result.resultCode,
+                token3ds2: result.token3ds2,
+            }
         }
-    }
 
-    //Trigger 3DS flow
-    else if (result.RedirectObject != '') {
-        Transaction.commit();
-        Transaction.wrap(function () {
-            paymentInstrument.custom.adyenPaymentData = result.PaymentData;
-        });
+        let signature = null;
+        let authorized3d = false;
+        let redirectObject = result.redirectObject || result.RedirectObject;
 
-        session.privacy.orderNo = order.orderNo;
-        session.privacy.paymentMethod = paymentInstrument.paymentMethod;
+        // If the response has MD, then it is a 3DS transaction
+        if (
+            redirectObject
+            && redirectObject.data
+            && redirectObject.data.MD
+        ) {
+            authorized3d = true;
+            signature = AdyenHelper.getAdyenHash(
+                redirectObject.url.substr(redirectObject.url.length - 25),
+                redirectObject.data.MD.substr(1, 25)
+            );
+        } else {
+            // Signature only needed for redirect methods
+            signature = AdyenHelper.getAdyenHash(
+                redirectObject.url.substr(redirectObject.url.length - 25),
+                paymentData.substr(1, 25)
+            );
+        }
+
         return {
             authorized: true,
-            authorized3d: true,
+            authorized3d: authorized3d,
             order: order,
+            orderNo: orderNumber,
             paymentInstrument: paymentInstrument,
-            redirectObject: result.RedirectObject
+            redirectObject: redirectObject,
+            signature: signature
         };
     }
 
