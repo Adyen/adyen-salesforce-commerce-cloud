@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Utils should get connected Terminals 1`] = `"{\\"foo\\":\\"bar\\"}"`;
+
+exports[`Utils should get customer 1`] = `
+Object {
+  "getProfile": [MockFunction],
+}
+`;
+
+exports[`Utils should get customer 2`] = `
+Array [
+  Array [
+    "mocked_customerNo",
+  ],
+]
+`;

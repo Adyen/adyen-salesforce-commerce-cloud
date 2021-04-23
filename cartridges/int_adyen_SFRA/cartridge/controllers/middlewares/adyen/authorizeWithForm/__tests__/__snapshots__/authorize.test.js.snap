@@ -1,0 +1,281 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Authorize should authorize when MD is valid 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "adyenAction": null,
+        "adyenMD": null,
+        "adyenPaymentData": null,
+      },
+    },
+    Object {
+      "resultCode": "Authorised",
+    },
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            "mocked_method",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenMD": "mocked_md",
+                  "adyenPaymentData": "Authorised",
+                },
+              },
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenMD": "mocked_md",
+                          "adyenPaymentData": "Authorised",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle error when MD is invalid 1`] = `
+Array [
+  Array [
+    "Not a valid MD",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "invalid_mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle invalid payment when result code is not Authorised 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            "mocked_method",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenMD": "mocked_md",
+                  "adyenPaymentData": "Not_Authorised",
+                },
+              },
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenMD": "mocked_md",
+                          "adyenPaymentData": "Not_Authorised",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    "payment",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Authorize should handle invalid payment when there is an error while placing an order 1`] = `
+Array [
+  Array [
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            "mocked_method",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenMD": "mocked_md",
+                  "adyenPaymentData": "Authorised",
+                },
+              },
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenMD": "mocked_md",
+                          "adyenPaymentData": "Authorised",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenAction": null,
+                          "adyenMD": null,
+                          "adyenPaymentData": null,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    "placeOrder",
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "MD": "mocked_md",
+        },
+        "querystring": Object {
+          "merchantReference": "mocked_merchantReference",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;

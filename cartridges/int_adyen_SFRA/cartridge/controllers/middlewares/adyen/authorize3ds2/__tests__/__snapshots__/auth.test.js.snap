@@ -1,0 +1,197 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Auth should handle 3ds2 auth when challenge shopper 1`] = `
+Array [
+  Array [
+    Object {
+      "details": "mocked details",
+      "paymentData": "mocked_adyen_payment_data",
+    },
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            "mocked_method",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenAction": "mocked_adyen_action",
+                  "adyenMD": "mocked_adyen_MD",
+                  "adyenPaymentData": "mocked_adyen_payment_data",
+                  "adyenRedirectURL": "https://some_mocked_url/signature",
+                },
+              },
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenAction": "mocked_adyen_action",
+                          "adyenMD": "mocked_adyen_MD",
+                          "adyenPaymentData": "mocked_adyen_payment_data",
+                          "adyenRedirectURL": "https://some_mocked_url/signature",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    Object {
+      "custom": Object {
+        "adyenAction": "mocked_adyen_action",
+        "adyenMD": "mocked_adyen_MD",
+        "adyenPaymentData": "mocked_adyen_payment_data",
+        "adyenRedirectURL": "https://some_mocked_url/signature",
+      },
+    },
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "challengeResult": true,
+          "resultCode": "ChallengeShopper",
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
+        },
+        "locale": Object {
+          "id": "mocked_locale",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Auth should handle 3ds2 auth when has fingerprint 1`] = `
+Array [
+  Array [
+    Object {
+      "details": "mocked details",
+      "paymentData": "mocked_adyen_payment_data",
+    },
+    Object {
+      "custom": Object {
+        "Adyen_pspReference": "mocked_pspRef",
+      },
+      "getPaymentInstruments": [MockFunction] {
+        "calls": Array [
+          Array [
+            "mocked_method",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": Object {
+              "0": Object {
+                "custom": Object {
+                  "adyenAction": "mocked_adyen_action",
+                  "adyenMD": "mocked_adyen_MD",
+                  "adyenPaymentData": "mocked_adyen_payment_data",
+                  "adyenRedirectURL": "https://some_mocked_url/signature",
+                },
+              },
+              "iterator": [Function],
+              "toArray": [MockFunction] {
+                "calls": Array [
+                  Array [],
+                ],
+                "results": Array [
+                  Object {
+                    "type": "return",
+                    "value": Array [
+                      Object {
+                        "custom": Object {
+                          "adyenAction": "mocked_adyen_action",
+                          "adyenMD": "mocked_adyen_MD",
+                          "adyenPaymentData": "mocked_adyen_payment_data",
+                          "adyenRedirectURL": "https://some_mocked_url/signature",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "setExportStatus": [MockFunction],
+      "setPaymentStatus": [MockFunction],
+    },
+    Object {
+      "custom": Object {
+        "adyenAction": "mocked_adyen_action",
+        "adyenMD": "mocked_adyen_MD",
+        "adyenPaymentData": "mocked_adyen_payment_data",
+        "adyenRedirectURL": "https://some_mocked_url/signature",
+      },
+    },
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "fingerprintResult": true,
+          "resultCode": "IdentifyShopper",
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
+        },
+        "locale": Object {
+          "id": "mocked_locale",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Auth should handle 3ds2 error 1`] = `
+Array [
+  Array [
+    Object {
+      "next": [MockFunction],
+      "req": Object {
+        "form": Object {
+          "resultCode": "NOT_AUTHORIZED",
+          "stateData": "{ \\"details\\":\\"mocked details\\"}",
+        },
+        "locale": Object {
+          "id": "mocked_locale",
+        },
+      },
+      "res": Object {
+        "redirect": [MockFunction],
+      },
+    },
+  ],
+]
+`;
