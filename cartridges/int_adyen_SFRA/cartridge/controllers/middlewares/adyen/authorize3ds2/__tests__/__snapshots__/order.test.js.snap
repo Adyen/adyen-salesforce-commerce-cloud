@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Order should handle place order error 1`] = `
+Array [
+  Array [
+    "Order-Confirm",
+    "ID",
+    "mocked_orderNo",
+    "token",
+    "mocked_orderToken",
+  ],
+]
+`;
