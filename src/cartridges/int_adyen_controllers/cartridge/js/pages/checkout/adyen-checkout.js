@@ -212,6 +212,13 @@ function initializeBillingEvents() {
           },
         },
       },
+      ratepay: {
+        visibility: {
+          personalDetails: 'editable',
+          billingAddress: 'hidden',
+          deliveryAddress: 'hidden',
+        }
+      }
     };
     if (window.installments) {
       try {
@@ -319,24 +326,6 @@ function showValidation() {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   }
-  if (selectedMethod === 'ach') {
-    var inputs = document.querySelectorAll('#component_ach > input');
-    inputs = Object.values(inputs).filter(function (input) {
-      return !(input.value && input.value.length > 0);
-    });
-    for (var i = 0; i < inputs.length; i++) {
-      inputs[i].classList.add('adyen-checkout__input--error');
-    }
-    if (inputs.length) {
-      return false;
-    }
-  } else if (selectedMethod === 'ratepay') {
-    var input = document.querySelector('#dateOfBirthInput');
-    if (!(input.value && input.value.length > 0)) {
-      input.classList.add('adyen-checkout__input--error');
-      return false;
-    }
-  }
   return true;
 }
 
@@ -345,20 +334,6 @@ function showValidation() {
  * so it's sent to the backend for processing
  */
 function validateComponents() {
-  if (document.querySelector('#component_ach')) {
-    var inputs = document.querySelectorAll('#component_ach > input');
-    for (var input of inputs) {
-      input.onchange = function () {
-        validateCustomInputField(this);
-      };
-    }
-  }
-  if (document.querySelector('#dateOfBirthInput')) {
-    document.querySelector('#dateOfBirthInput').onchange = function () {
-      validateCustomInputField(this);
-    };
-  }
-
   var stateData;
   if (
     componentsObj[selectedMethod] &&
@@ -369,52 +344,14 @@ function validateComponents() {
     stateData = { paymentMethod: { type: selectedMethod } };
   }
 
-  if (selectedMethod === 'ach') {
-    var bankAccount = {
-      ownerName: document.querySelector('#bankAccountOwnerNameValue').value,
-      bankAccountNumber: document.querySelector('#bankAccountNumberValue')
-        .value,
-      bankLocationId: document.querySelector('#bankLocationIdValue').value,
-    };
-    stateData.paymentMethod = {
-      ...stateData.paymentMethod,
-      bankAccount,
-    };
-  } else if (selectedMethod === 'ratepay') {
-    if (
-      document.querySelector('#genderInput').value &&
-      document.querySelector('#dateOfBirthInput').value
-    ) {
-      stateData.shopperName = {
-        gender: document.querySelector('#genderInput').value,
-      };
-      stateData.dateOfBirth = document.querySelector('#dateOfBirthInput').value;
-    }
-  }
   document.querySelector('#adyenStateData').value = JSON.stringify(stateData);
-}
-
-function validateCustomInputField(input) {
-  if (input.value === '') {
-    input.classList.add('adyen-checkout__input--error');
-  } else if (input.value.length > 0) {
-    input.classList.remove('adyen-checkout__input--error');
-  }
 }
 
 /**
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  var ratepay = `<span class="adyen-checkout__label">Gender</span>
-                    <select id="genderInput" class="adyen-checkout__input">
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                    </select>
-                    <span class="adyen-checkout__label">Date of birth</span>
-                    <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>`;
-
-  var fallback = { ratepay };
+  var fallback = { };
   return fallback[paymentMethod];
 }
 
