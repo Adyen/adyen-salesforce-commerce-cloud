@@ -1,59 +1,7 @@
 const store = require('../../../../store');
 
-function validateCustomInputField(input) {
-  return input.value
-    ? input.classList.remove('adyen-checkout__input--error')
-    : input.classList.add('adyen-checkout__input--error');
-}
-
-function checkRatePay() {
-  const hasGender = document.querySelector('#genderInput').value;
-  const hasDateOfBirth = document.querySelector('#dateOfBirthInput').value;
-  return hasGender && hasDateOfBirth;
-}
-
-function handleRatepay() {
-  const isValid = checkRatePay();
-  const setRatePay = () => {
-    store.stateData.shopperName = {
-      gender: document.querySelector('#genderInput').value,
-    };
-    store.stateData.dateOfBirth = document.querySelector(
-      '#dateOfBirthInput',
-    ).value;
-  };
-  return isValid && setRatePay();
-}
-
-function setInputOnChange(input) {
-  if (input) {
-    input.onchange = function validate() {
-      validateCustomInputField(this);
-    };
-  }
-}
-
-function validateAch() {
-  const isAch = document.querySelector('#component_ach');
-  const validate = () => {
-    const inputs = document.querySelectorAll('#component_ach > input');
-    inputs.forEach(setInputOnChange);
-  };
-  return isAch && validate();
-}
-
-function validateRatepay() {
-  const input = document.querySelector('#dateOfBirthInput');
-  setInputOnChange(input);
-}
-
 module.exports.validateComponents = function validateComponents() {
-  validateAch();
-  validateRatepay();
-
-  const customMethods = {
-    ratepay: handleRatepay,
-  };
+  const customMethods = {};
 
   if (store.selectedMethod in customMethods) {
     customMethods[store.selectedMethod]();

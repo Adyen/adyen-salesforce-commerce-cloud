@@ -219,6 +219,19 @@ function setCheckoutConfiguration() {
         },
       },
     },
+    ratepay: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
+      },
+      data: {
+        personalDetails: {
+          firstName: document.querySelector('#shippingFirstNamedefault').value,
+          lastName: document.querySelector('#shippingLastNamedefault').value,
+        },
+      },
+    },
   };
 }
 

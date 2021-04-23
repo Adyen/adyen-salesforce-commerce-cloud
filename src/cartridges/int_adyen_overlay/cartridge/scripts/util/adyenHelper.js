@@ -5,6 +5,9 @@ const dwsvc = require('dw/svc');
 const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
+const Bytes = require('dw/util/Bytes');
+const MessageDigest = require('dw/crypto/MessageDigest');
+const Encoding = require('dw/crypto/Encoding');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -210,9 +213,6 @@ var adyenHelperObj = {
 
   getAdyenHash(value, salt) {
     const data = value + salt;
-    const Bytes = require('dw/util/Bytes');
-    const MessageDigest = require('dw/crypto/MessageDigest');
-    const Encoding = require('dw/crypto/Encoding');
     const digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
     const signature = Encoding.toHex(
       digestSHA512.digestBytes(new Bytes(data, 'UTF-8')),
@@ -318,25 +318,18 @@ var adyenHelperObj = {
     return availablePaymentMethods.indexOf(paymentMethod) !== -1;
   },
 
-  getRatePayID() {
-    const returnValue = {};
-    if (
-      adyenCurrentSite &&
-      adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID')
-    ) {
-      returnValue.ratePayId = adyenCurrentSite.getCustomPreferenceValue(
-        'AdyenRatePayID',
-      );
+  getRatePayID: function getRatePayID() {
+    var returnValue = {};
+    if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID')) {
+      returnValue.ratePayId = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
     }
-    if (
-      !session.privacy.ratePayFingerprint ||
-      session.privacy.ratePayFingerprint === null
-    ) {
-      returnValue.sessionID = new dw.crypto.MessageDigest(
-        dw.crypto.MessageDigest.DIGEST_SHA_256,
-      ).digest(session.sessionID);
+
+    if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint === null) {
+      var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_256);
+      returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
       session.privacy.ratePayFingerprint = returnValue.sessionID;
     }
+
     return returnValue;
   },
 

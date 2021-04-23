@@ -3,16 +3,10 @@ const helpers = require('./helpers');
 const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
-  const ratepay = `<span class="adyen-checkout__label">Gender</span>
-    <select id="genderInput" class="adyen-checkout__input">
-        <option value="MALE">Male</option>
-        <option value="FEMALE">Female</option>
-    </select>
-    <span class="adyen-checkout__label">Date of birth</span>
-    <input id="dateOfBirthInput" class="adyen-checkout__input" type="date"/>
-  `;
-
-  const fallback = { ratepay };
+  const fallback = {};
+  if (fallback[paymentMethod]) {
+    store.componentsObj[paymentMethod] = {};
+  }
   return fallback[paymentMethod];
 }
 
