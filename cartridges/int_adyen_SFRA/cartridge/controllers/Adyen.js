@@ -27,15 +27,15 @@ server.get('Adyen3D', csrfProtection.generateToken, server.middleware.https, fun
 
     if (signature === currentSignature) {
         res.render('adyenform', {
-          issuerUrl: IssuerURL,
-          paRequest: PaRequest,
-          md: MD,
-          ContinueURL: TermURL,
+            issuerUrl: IssuerURL,
+            paRequest: PaRequest,
+            md: MD,
+            ContinueURL: TermURL
         });
         return next();
     }
     Logger.getLogger('Adyen').error('Signature incorrect for 3DS payment');
-    res.redirect(URLUtils.url('Home-Show', 'Payment','Failed3DS'));
+    res.redirect(URLUtils.url('Home-Show', 'Payment', 'Failed3DS'));
     return next();
 });
 

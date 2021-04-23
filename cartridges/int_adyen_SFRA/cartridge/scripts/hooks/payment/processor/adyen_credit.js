@@ -80,7 +80,8 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     }
 
     //Trigger 3DS2 flow
-    if(result.threeDS2 || result.resultCode === 'RedirectShopper') {
+    var isThreeDS2 = result.ThreeDS2 || result.threeDS2;
+    if(isThreeDS2 || result.resultCode === 'RedirectShopper') {
         let paymentData = result.paymentData || result.PaymentData;
         paymentInstrument.custom.adyenPaymentData = paymentData;
         Transaction.commit();
@@ -88,11 +89,11 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
         session.privacy.orderNo = order.orderNo;
         session.privacy.paymentMethod = paymentInstrument.paymentMethod;
 
-        if (result.threeDS2) {
+        if (isThreeDS2) {
             return {
-                ThreeDS2: result.ThreeDS2,
+                ThreeDS2: isThreeDS2,
                 resultCode: result.resultCode,
-                token3ds2: result.token3ds2,
+                token3ds2: result.token3ds2
             }
         }
 
