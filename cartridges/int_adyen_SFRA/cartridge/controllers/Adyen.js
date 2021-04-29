@@ -373,7 +373,8 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
         descriptions = paymentMethods.map(function (method) {
             return {
                 brandCode: method.type,
-                description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
+                description: Resource.msg('hpp.description.' + method.type, 'hpp', ""),
+                name: Resource.msg('hpp.name.' + method.type, 'hpp', method.name)
             };
         })
     } catch (err) {
