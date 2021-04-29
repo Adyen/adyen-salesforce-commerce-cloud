@@ -335,7 +335,7 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
             Transaction.wrap(function () {
                 OrderMgr.failOrder(order, true);
             });
-            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', AdyenHelper.getErrorMessage(adyenPaymentInstrument.custom.adyenPaymentMethod)));
             return next();
         }
     }
