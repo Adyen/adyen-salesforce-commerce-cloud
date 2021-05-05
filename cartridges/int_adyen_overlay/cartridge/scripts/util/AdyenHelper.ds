@@ -383,7 +383,7 @@ var __AdyenHelper: Object = {
 
             var shopperDetails = {
                 "firstName": order.getBillingAddress().firstName,
-                "gender": gender,
+                "gender": this.getGender(gender, order),
                 "infix": "",
                 "lastName": order.getBillingAddress().lastName
             };
