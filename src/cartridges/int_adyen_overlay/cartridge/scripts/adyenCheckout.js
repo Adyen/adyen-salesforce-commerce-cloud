@@ -94,6 +94,10 @@ function createPaymentRequest(args) {
     }
     // Set open invoice data
     if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
+      args.addTaxPercentage = true;
+      if(paymentRequest.paymentMethod.type.indexOf('klarna') > -1){
+        args.addTaxPercentage = false;
+      }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
         paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&

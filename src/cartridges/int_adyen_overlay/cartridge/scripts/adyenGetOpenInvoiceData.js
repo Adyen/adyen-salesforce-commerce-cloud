@@ -70,9 +70,9 @@ function getLineItems(args) {
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
-      lineItemObject.taxPercentage = (
+      lineItemObject.taxPercentage = args.addTaxPercentage ? (
         new Number(vatPercentage) * 10000
-      ).toFixed();
+      ).toFixed() : 0;
 
       lineItems.push(lineItemObject);
     }
