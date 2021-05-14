@@ -2,6 +2,9 @@ const URLUtils = require('dw/web/URLUtils');
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+/**
+ * Initiates a 3DS1 payment
+ */
 function adyen3d(req, res, next) {
   const { IssuerURL } = req.querystring;
   const { PaRequest } = req.querystring;
