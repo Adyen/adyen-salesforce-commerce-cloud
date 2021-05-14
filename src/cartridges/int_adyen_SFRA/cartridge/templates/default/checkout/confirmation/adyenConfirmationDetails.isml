@@ -1,3 +1,6 @@
+<script>console.log('payment is  ${payment}')</script>
+<script>console.log('request is  ${request}')</script>
+
 <div>${payment.selectedAdyenPM}</div>
 <isif condition="${payment.selectedIssuerName != null}">
     <div>${payment.selectedIssuerName}</div>

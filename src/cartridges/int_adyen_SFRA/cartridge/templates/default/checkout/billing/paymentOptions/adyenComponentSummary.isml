@@ -2,6 +2,9 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script>
+    console.log('hereee')
+</script>
 
 <isif condition="${payment.adyenAction != null}">
     <!--- Payment action for Voucher --->
