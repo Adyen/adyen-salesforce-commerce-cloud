@@ -6,6 +6,9 @@ server.extend(module.superModule);
 const userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 
+/*
+ * Prepends Account's 'Show' function to update saved cards.
+ */
 server.prepend(
   'Show',
   server.middleware.https,
