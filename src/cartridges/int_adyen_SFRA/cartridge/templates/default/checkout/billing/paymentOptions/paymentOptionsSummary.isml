@@ -1,38 +1,4 @@
-<script>
-    console.log('querystring is ${request.getHttpQueryString()}')
-</script>
-
-
 <div class="payment-details">
-    <isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-        <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-        <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-        <isscript>
-            var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/amazon.js');
-            <!--        assets.addJs('/js/bundle.js');-->
-        </isscript>
-        <script>
-            var indexOfID = `${request.getHttpQueryString().indexOf("amazonCheckoutSessionId") + 24}`;
-            // console.log('string index ' + indexOfID);
-            // console.log('parsed ' + Number.parseInt(indexOfID));
-            var amazonCheckoutSessionId = `${request.getHttpQueryString().substr(41)}`;
-            // console.log(amazonCheckoutSessionId);
-
-            window.Configuration = {
-                locale: '${request.locale}',
-                originKey: '${pdict.adyen.originKey}',
-                environment: '${pdict.adyen.environment}',
-                clientKey: 'test_UCP6BOCMABASLCJ43VOLSNE33E4GWX63'
-            };
-            window.returnURL = "${URLUtils.https('Order-Confirm')}";
-            window.amazonCheckoutSessionId = amazonCheckoutSessionId;
-
-        </script>
-        <div id="amazon-container"></div>
-
-    </isif>
-
     <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
         <isif condition="${payment.paymentMethod == 'AdyenPOS' || payment.paymentMethod == 'AdyenComponent'} ">
             <isinclude template="checkout/billing/paymentOptions/adyenComponentSummary"/>

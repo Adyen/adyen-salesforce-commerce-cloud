@@ -164,6 +164,29 @@ function handleOnChange(state) {
   store.componentsObj[type].stateData = state.data;
 }
 
+function getAmazonpayConfig() {
+  return {
+    showPayButton: true,
+    productType: 'PayOnly',
+    checkoutMode: 'ProcessOrder',
+    returnUrl: window.location.href,
+    configuration: {
+      merchantId: "AAUL9GPRGTX1U",
+      storeId: "amzn1.application-oa2-client.3e5db0a580f7468da2d9903dda981fce",
+      publicKeyId: "AGDRUNN37LQHSOCHN24AEYYB"
+    },
+    "amount": {
+      value: "88800",
+      currency: "GBP"
+    },
+    // onSubmit: () => {
+    //   helpers.assignPaymentMethodValue();
+    //   document.querySelector('button[value="submit-payment"]').disabled = false;
+    //   document.querySelector('button[value="submit-payment"]').click();
+    // },
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.showPayButton = false;
@@ -188,26 +211,7 @@ function setCheckoutConfiguration() {
     swish: getQRCodeConfig(),
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
-    amazonpay: {
-      showPayButton: true,
-      productType: 'PayOnly',
-      checkoutMode: 'ProcessOrder',
-      returnUrl: "https://zzft-004.sandbox.us01.dx.commercecloud.salesforce.com/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Begin?stage=placeOrder",
-      configuration: {
-        merchantId: "AAUL9GPRGTX1U",
-        storeId: "amzn1.application-oa2-client.3e5db0a580f7468da2d9903dda981fce",
-        publicKeyId: "AGDRUNN37LQHSOCHN24AEYYB"
-      },
-      "amount": {
-        value: "88800",
-        currency: "GBP"
-      },
-      // onSubmit: () => {
-      //   helpers.assignPaymentMethodValue();
-      //   document.querySelector('button[value="submit-payment"]').disabled = false;
-      //   document.querySelector('button[value="submit-payment"]').click();
-      // },
-    },
+    amazonpay: getAmazonpayConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',
