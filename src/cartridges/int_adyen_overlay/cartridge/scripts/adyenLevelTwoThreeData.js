@@ -1,3 +1,24 @@
+/**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Add all product and shipping line items to request
+ */
+
 require('dw/crypto');
 require('dw/system');
 require('dw/order');
@@ -11,7 +32,6 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems({ Order: order }) {
     if (!order) return null;
-    // Add all product and shipping line items to request
     const allLineItems = order.getProductLineItems();
     const shopperReference = getShopperReference(order);
 

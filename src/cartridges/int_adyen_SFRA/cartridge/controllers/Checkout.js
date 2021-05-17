@@ -5,6 +5,9 @@ const { checkout } = require('./middlewares/index');
 
 server.extend(module.superModule);
 
+/*
+ * Prepends Checkout's 'Begin' function with Adyen-specific configuration.
+ */
 server.prepend(
   'Begin',
   server.middleware.https,

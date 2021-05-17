@@ -7,6 +7,10 @@ const payment = require('./showConfirmation/payment');
 const { clearForms } = require('../../utils/index');
 const handleAuthorised = require('./showConfirmation/authorise');
 
+/*
+ * Makes a payment details call to Adyen and calls for the order confirmation to be shown
+ * if the payment was accepted.
+ */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
 

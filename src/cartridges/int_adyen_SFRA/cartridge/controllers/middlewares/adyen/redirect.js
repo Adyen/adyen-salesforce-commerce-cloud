@@ -8,6 +8,9 @@ const {
   handleIncorrectSignature,
 } = require('./redirect/signature');
 
+/*
+ * Redirect to Adyen after saving order etc.
+ */
 function redirect(req, res, next) {
   const { signature, merchantReference } = req.querystring;
   const order = OrderMgr.getOrder(merchantReference);
