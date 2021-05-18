@@ -48,12 +48,13 @@
          window.installments = '${pdict.adyen.installments}';
          window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
          window.amazonMerchantID = '${pdict.adyen.amazonMerchantID}';
+         window.amazonStoreID = '${pdict.adyen.amazonStoreID}';
+         window.amazonPublicKeyID = '${pdict.adyen.amazonPublicKeyID}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.paypalIntent = '${pdict.adyen.paypalIntent}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
-
          window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
          window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
      </script>

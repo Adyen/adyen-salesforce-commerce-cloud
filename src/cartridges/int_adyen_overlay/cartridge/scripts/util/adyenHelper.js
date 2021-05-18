@@ -180,6 +180,14 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_AmazonMerchantID');
   },
 
+  getAmazonPublicKeyID() {
+    return adyenHelperObj.getCustomPreference('Adyen_AmazonPublicKeyID');
+  },
+
+  getAmazonStoreID() {
+    return adyenHelperObj.getCustomPreference('Adyen_AmazonStoreID');
+  },
+
   getGoogleMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_GooglePayMerchantID');
   },
