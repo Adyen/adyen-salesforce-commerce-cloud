@@ -31,13 +31,15 @@
             clientKey: 'test_UCP6BOCMABASLCJ43VOLSNE33E4GWX63'
         };
         window.returnURL = "${URLUtils.https('Order-Confirm')}";
+        window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
-
     </script>
     <div id="amazon-container"></div>
+     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 
 <iselse>
     <script>
+         window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
          window.Configuration = {
              locale: '${request.locale}',
              originKey: '${pdict.adyen.originKey}',
@@ -45,6 +47,7 @@
          };
          window.installments = '${pdict.adyen.installments}';
          window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
+         window.amazonMerchantID = '${pdict.adyen.amazonMerchantID}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.paypalIntent = '${pdict.adyen.paypalIntent}';

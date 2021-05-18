@@ -11,6 +11,7 @@ const collections = require('*/cartridge/scripts/util/collections');
 
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
+  Logger.getLogger('Adyen').error('reqDataObj is ' + JSON.stringify(reqDataObj));
 
   if (reqDataObj.cancelTransaction) {
     Logger.getLogger('Adyen').error(
@@ -25,7 +26,6 @@ function paymentFromComponent(req, res, next) {
     return next();
   }
   const currentBasket = BasketMgr.getCurrentBasket();
-
   let paymentInstrument;
   Transaction.wrap(() => {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
@@ -33,7 +33,7 @@ function paymentFromComponent(req, res, next) {
     });
     paymentInstrument = currentBasket.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT,
-      currentBasket.totalGrossPrice,
+        currentBasket.totalGrossPrice,
     );
     const { paymentProcessor } = PaymentMgr.getPaymentMethod(
       paymentInstrument.paymentMethod,
@@ -43,11 +43,13 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
+  Logger.getLogger('Adyen').error('Order is ' + order);
+  Logger.getLogger('Adyen').error('paymentInstrument is ' + paymentInstrument);
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
     PaymentInstrument: paymentInstrument,
   });
-
+  Logger.getLogger('Adyen').error('result is ' + JSON.stringify(result));
   result.orderNo = order.orderNo;
   res.json(result);
   return next();
