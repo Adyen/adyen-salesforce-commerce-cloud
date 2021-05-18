@@ -59,6 +59,8 @@ function getLineItems(args) {
 			var	itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
 			var	vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
 			var	vatPercentage = LineItemHelper.getVatPercentage(lineItem);
+			var productURL = LineItemHelper.getProductURL(lineItem);
+			var productImage = LineItemHelper.getProductImage(lineItem);
 
 			lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
 			lineItemObject["taxAmount"] = vatAmount.toFixed();
@@ -67,6 +69,14 @@ function getLineItems(args) {
 			lineItemObject["quantity"] = quantity;
 			lineItemObject["taxCategory"] = "None";
 			lineItemObject["taxPercentage"] = (new Number(vatPercentage) * 10000).toFixed();
+
+			if (productURL) {
+				lineItemObject["productUrl"] = productURL;
+			}
+
+			if (productImage) {
+				lineItemObject["imageUrl"] = productImage;
+			}
 
 			lineItems.push(lineItemObject);
 		} 
