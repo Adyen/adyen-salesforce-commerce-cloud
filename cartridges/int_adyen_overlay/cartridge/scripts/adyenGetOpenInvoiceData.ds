@@ -36,45 +36,54 @@ importPackage( dw.web );
 var LineItemHelper = require ("*/cartridge/scripts/util/LineItemHelper");
 
 function getLineItems(args) {
-	var order;
-	if(args.Order){
-		order = args.Order;
-	}
-	else {
-		return null;
-	}
-		
-	// Add all product and shipping line items to request
-	var lineItems = [];
-	for each (var lineItem in order.getAllLineItems())
-	{
-		if ((lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem)
-			|| lineItem instanceof dw.order.ShippingLineItem
-			|| (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass == dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
-		) {
-			var lineItemObject = {};
-			var description = LineItemHelper.getDescription(lineItem);
-			var	id = LineItemHelper.getId(lineItem);
-			var	quantity = LineItemHelper.getQuantity(lineItem);
-			var	itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
-			var	vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
-			var	vatPercentage = LineItemHelper.getVatPercentage(lineItem);
+    var order;
+    if(args.Order){
+        order = args.Order;
+    }
+    else {
+        return null;
+    }
+        
+    // Add all product and shipping line items to request
+    var lineItems = [];
+    for each (var lineItem in order.getAllLineItems()) {
+        if ((lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem)
+            || lineItem instanceof dw.order.ShippingLineItem
+            || (lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass == dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+        ) {
+            var lineItemObject = {};
+            var description = LineItemHelper.getDescription(lineItem);
+            var id = LineItemHelper.getId(lineItem);
+            var quantity = LineItemHelper.getQuantity(lineItem);
+            var itemAmount = LineItemHelper.getItemAmount(lineItem) / quantity;
+            var vatAmount = LineItemHelper.getVatAmount(lineItem) / quantity;
+            var vatPercentage = LineItemHelper.getVatPercentage(lineItem);
+            var productURL = LineItemHelper.getProductURL(lineItem);
+            var productImage = LineItemHelper.getProductImage(lineItem);
 
-			lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
-			lineItemObject["taxAmount"] = vatAmount.toFixed();
-			lineItemObject["description"] = description;
-			lineItemObject["id"] = id;
-			lineItemObject["quantity"] = quantity;
-			lineItemObject["taxCategory"] = "None";
-			lineItemObject["taxPercentage"] = (new Number(vatPercentage) * 10000).toFixed();
+            lineItemObject["amountExcludingTax"] = itemAmount.toFixed();
+            lineItemObject["taxAmount"] = vatAmount.toFixed();
+            lineItemObject["description"] = description;
+            lineItemObject["id"] = id;
+            lineItemObject["quantity"] = quantity;
+            lineItemObject["taxCategory"] = "None";
+            lineItemObject["taxPercentage"] = (new Number(vatPercentage) * 10000).toFixed();
 
-			lineItems.push(lineItemObject);
-		} 
-	}
+            if (productURL) {
+                lineItemObject["productUrl"] = productURL;
+            }
+
+            if (productImage) {
+                lineItemObject["imageUrl"] = productImage;
+            }
+
+            lineItems.push(lineItemObject);
+        } 
+    }
 
    return lineItems;
 }
 
 module.exports = {
-	'getLineItems': getLineItems
+    'getLineItems': getLineItems
 }
