@@ -9,6 +9,14 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
+const Logger = require('dw/system/Logger');
+
+function contains3ds2Action(req) {
+  return (
+      ['IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
+  );
+}
+
 function savePayment(req, res, next) {
   if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
     return next();
@@ -34,7 +42,10 @@ function savePayment(req, res, next) {
     customer,
     paymentInstrument,
   );
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+
+  paymentInstrument.custom.adyenAction = JSON.stringify(zeroAuthResult.action);
+
+  if (zeroAuthResult.error || (zeroAuthResult.resultCode !== 'Authorised' && !contains3ds2Action(zeroAuthResult))) {
     Transaction.rollback();
     res.json({
       success: false,
@@ -42,6 +53,7 @@ function savePayment(req, res, next) {
     });
     return this.emit('route:Complete', req, res);
   }
+
   Transaction.commit();
 
   updateSavedCards({
@@ -51,9 +63,10 @@ function savePayment(req, res, next) {
   // Send account edited email
   accountHelpers.sendAccountEditedEmail(customer.profile);
 
+  const redirectUrl = contains3ds2Action(zeroAuthResult) ? 'PaymentInstruments-AddPayment': 'PaymentInstruments-List';
   res.json({
     success: true,
-    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
+    redirectUrl: URLUtils.url(redirectUrl).toString()
   });
   return this.emit('route:Complete', req, res);
 }

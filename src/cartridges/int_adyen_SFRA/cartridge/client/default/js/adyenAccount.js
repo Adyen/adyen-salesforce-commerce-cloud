@@ -19,7 +19,6 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
 };
-
 const checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
