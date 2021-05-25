@@ -49,7 +49,7 @@ describe('Save Payment', () => {
 
   it('should return redirectAction and succeed', () => {
     const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
-    adyenZeroAuth.zeroAuthPayment.mockImplementation(() => ({
+    adyenZeroAuth.zeroAuthPayment.mockReturnValue({
       resultCode: 'RedirectShopper',
       action: {
         paymentMethodType: "scheme",
@@ -61,7 +61,7 @@ describe('Save Payment', () => {
         method: "POST",
         type: "redirect"
       }
-    }));
+    });
     savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();
   });
