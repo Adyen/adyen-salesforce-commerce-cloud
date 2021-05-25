@@ -36,3 +36,24 @@ Array [
   ],
 ]
 `;
+
+exports[`Save Payment should return redirectAction and succeed 1`] = `
+Array [
+  Array [
+    Object {
+      "redirectUrl": "[\\"PaymentInstruments-List\\"]",
+      redirectAction: {
+        paymentMethodType: "scheme",
+        url: "https://checkoutshopper-test.adyen.com/checkoutshopper/threeDS2.shtml",
+        data: {
+            MD: "mockMD",
+            PaReq: "mockPaReq",
+            TermUrl: "https://checkoutshopper-test.adyen.com/checkoutshopMock"},
+        method: "POST",
+        type: "redirect"
+      },
+      "success": true,
+    },
+  ],
+]
+`;

@@ -21,6 +21,7 @@
 
 /* API Includes */
 const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -33,15 +34,21 @@ function zeroAuthPayment(customer, paymentInstrument) {
       paymentInstrument,
     );
 
-    if (AdyenHelper.getAdyen3DS2Enabled()) {
-      zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
-    }
+    // if (AdyenHelper.getAdyen3DS2Enabled()) {
+    //   zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
+    // }
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
       value: 0,
     };
 
+    zeroAuthRequest.returnUrl = URLUtils.https('PaymentInstruments-List').toString();
+
+    // StorepaymentMethod overrides enableReccuring/enableOneClick. Either one is allowed, not all.
     zeroAuthRequest.storePaymentMethod = true;
+    delete zeroAuthRequest.enableRecurring;
+    delete zeroAuthRequest.enableOneClick;
+
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 

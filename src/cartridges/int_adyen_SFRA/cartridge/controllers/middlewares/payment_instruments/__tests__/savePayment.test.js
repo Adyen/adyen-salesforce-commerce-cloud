@@ -23,6 +23,7 @@ describe('Save Payment', () => {
     savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(server.forms.getForm).toBeCalledTimes(0);
   });
+
   it('should fail if zeroAuth has error', () => {
     const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
     adyenZeroAuth.zeroAuthPayment.mockImplementation(() => ({
@@ -42,6 +43,25 @@ describe('Save Payment', () => {
   });
 
   it('should succeed', () => {
+    savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
+    expect(res.json.mock.calls).toMatchSnapshot();
+  });
+
+  it('should return redirectAction and succeed', () => {
+    const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+    adyenZeroAuth.zeroAuthPayment.mockImplementation(() => ({
+      resultCode: 'RedirectShopper',
+      action: {
+        paymentMethodType: "scheme",
+        url: "https://checkoutshopper-test.adyen.com/checkoutshopper/threeDS2.shtml",
+        data: {
+          MD: "mockMD",
+          PaReq: "mockPaReq",
+          TermUrl: "https://checkoutshopper-test.adyen.com/checkoutshopMock"},
+        method: "POST",
+        type: "redirect"
+      }
+    }));
     savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();
   });

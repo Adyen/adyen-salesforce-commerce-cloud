@@ -43,8 +43,6 @@ function savePayment(req, res, next) {
     paymentInstrument,
   );
 
-  paymentInstrument.custom.adyenAction = JSON.stringify(zeroAuthResult.action);
-
   if (zeroAuthResult.error || (zeroAuthResult.resultCode !== 'Authorised' && !contains3ds2Action(zeroAuthResult))) {
     Transaction.rollback();
     res.json({
@@ -63,10 +61,10 @@ function savePayment(req, res, next) {
   // Send account edited email
   accountHelpers.sendAccountEditedEmail(customer.profile);
 
-  const redirectUrl = contains3ds2Action(zeroAuthResult) ? 'PaymentInstruments-AddPayment': 'PaymentInstruments-List';
   res.json({
     success: true,
-    redirectUrl: URLUtils.url(redirectUrl).toString()
+    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
+    ...(zeroAuthResult.action && {redirectAction: zeroAuthResult.action})
   });
   return this.emit('route:Complete', req, res);
 }

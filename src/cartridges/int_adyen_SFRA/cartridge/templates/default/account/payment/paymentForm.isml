@@ -14,10 +14,6 @@
                 environment: '${pdict.adyen.environment}'
             };
         </script>
-        <text>${customer.getProfile()}</text>
-        <text>${customer.getProfile().getWallet()}</text>
-        <text>${customer.getProfile().getWallet().getPaymentInstruments()}</text>
-        <text>${paymentInstruments}</text>
         <form
                 action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
                 class="payment-form"
