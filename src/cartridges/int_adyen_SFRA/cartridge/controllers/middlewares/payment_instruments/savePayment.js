@@ -9,25 +9,15 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
-const Logger = require('dw/system/Logger');
-
 function contains3ds2Action(req) {
   return (
-      ['IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
+    ['IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
   );
 }
 
-function savePayment(req, res, next) {
-  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
-    return next();
-  }
-
-  const paymentForm = server.forms.getForm('creditCard');
-  const customer = CustomerMgr.getCustomerByCustomerNumber(
-    req.currentCustomer.profile.customerNo,
-  );
-
+function createPaymentInstrument(customer) {
   let paymentInstrument;
+  const paymentForm = server.forms.getForm('creditCard');
   const wallet = customer.getProfile().getWallet();
   Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
@@ -37,13 +27,36 @@ function savePayment(req, res, next) {
       paymentForm.adyenStateData.value;
   });
 
+  return paymentInstrument;
+}
+
+function getResponseBody(action) {
+  return {
+    success: true,
+    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
+    ...(action && { redirectAction: action }),
+  };
+}
+
+function savePayment(req, res, next) {
+  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
+    return next();
+  }
+
+  const customer = CustomerMgr.getCustomerByCustomerNumber(
+    req.currentCustomer.profile.customerNo,
+  );
+
   Transaction.begin();
   const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
     customer,
-    paymentInstrument,
+    createPaymentInstrument(customer),
   );
 
-  if (zeroAuthResult.error || (zeroAuthResult.resultCode !== 'Authorised' && !contains3ds2Action(zeroAuthResult))) {
+  if (
+    zeroAuthResult.error ||
+    (zeroAuthResult.resultCode !== 'Authorised' && !contains3ds2Action(zeroAuthResult))
+  ) {
     Transaction.rollback();
     res.json({
       success: false,
@@ -61,11 +74,7 @@ function savePayment(req, res, next) {
   // Send account edited email
   accountHelpers.sendAccountEditedEmail(customer.profile);
 
-  res.json({
-    success: true,
-    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
-    ...(zeroAuthResult.action && {redirectAction: zeroAuthResult.action})
-  });
+  res.json(getResponseBody(zeroAuthResult.action));
   return this.emit('route:Complete', req, res);
 }
 

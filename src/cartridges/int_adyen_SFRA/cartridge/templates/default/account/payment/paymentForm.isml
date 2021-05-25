@@ -18,7 +18,7 @@
                 action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
                 class="payment-form"
                 method="POST"
-                name="payment-form" ${pdict.paymentForm.attributes}>
+                id="payment-form" ${pdict.paymentForm.attributes}>
 
             <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
             <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">

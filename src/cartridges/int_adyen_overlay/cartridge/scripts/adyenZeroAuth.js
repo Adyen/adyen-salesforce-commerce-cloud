@@ -29,14 +29,12 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
+
     let zeroAuthRequest = AdyenHelper.createAdyenRequestObject(
       null,
       paymentInstrument,
     );
 
-    // if (AdyenHelper.getAdyen3DS2Enabled()) {
-    //   zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
-    // }
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
       value: 0,
