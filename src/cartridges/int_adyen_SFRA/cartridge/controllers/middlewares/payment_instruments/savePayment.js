@@ -9,9 +9,9 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
-function contains3ds2Action(req) {
+function containsValidResultCode(req) {
   return (
-    ['IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
+    ['Authorised', 'IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
   );
 }
 
@@ -53,10 +53,7 @@ function savePayment(req, res, next) {
     createPaymentInstrument(customer),
   );
 
-  if (
-    zeroAuthResult.error ||
-    (zeroAuthResult.resultCode !== 'Authorised' && !contains3ds2Action(zeroAuthResult))
-  ) {
+  if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
     Transaction.rollback();
     res.json({
       success: false,
