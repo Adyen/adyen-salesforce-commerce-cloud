@@ -9,7 +9,9 @@ const handlePayment = require('./showConfirmationPaymentFromComponent/payment');
 function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {
-    const stateData = JSON.parse(req.form.additionalDetailsHidden);
+    Logger.getLogger('Adyen').error(req.form);
+    Logger.getLogger('Adyen').error(req);
+    const stateData = JSON.parse(req.form);
     const order = OrderMgr.getOrder(req.form.merchantReference);
     return handlePayment(stateData, order, options);
   } catch (e) {

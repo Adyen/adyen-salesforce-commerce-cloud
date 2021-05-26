@@ -14,12 +14,18 @@
                 environment: '${pdict.adyen.environment}'
             };
         </script>
+        <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('redirectResult') > -1} ">
+            <script>
+                window.redirectResult = "${request.getHttpQueryString().substr(15)}";
+                window.confirmationUrl = "${URLUtils.https('Adyen-ConfirmRedirectResult')}";
+            </script>
+        </isif>
         <form
                 action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
                 class="payment-form"
                 method="POST"
                 id="payment-form" ${pdict.paymentForm.attributes}>
-
+            <div id="form-error" class="alert alert-danger" hidden="true"></div>
             <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
             <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
             <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">

@@ -40,7 +40,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
       value: 0,
     };
 
-    zeroAuthRequest.returnUrl = URLUtils.https('PaymentInstruments-List').toString();
+    zeroAuthRequest.returnUrl = URLUtils.https('PaymentInstruments-AddPayment').toString();
 
     // StorepaymentMethod overrides enableReccuring/enableOneClick. Either one is allowed, not all.
     zeroAuthRequest.storePaymentMethod = true;
