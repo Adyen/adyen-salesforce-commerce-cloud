@@ -5,6 +5,9 @@ const { order } = require('./middlewares/index');
 
 server.extend(module.superModule);
 
+/*
+ * Prepends Order's 'Confirm' function to support Adyen Giving.
+ */
 server.prepend(
   'Confirm',
   server.middleware.https,
