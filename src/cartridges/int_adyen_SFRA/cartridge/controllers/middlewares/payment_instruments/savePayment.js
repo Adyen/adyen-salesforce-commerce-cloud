@@ -11,7 +11,12 @@ const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function containsValidResultCode(req) {
   return (
-    ['Authorised', 'IdentifyShopper', 'ChallengeShopper', 'RedirectShopper'].indexOf(req.resultCode) !== -1
+    [
+      'Authorised',
+      'IdentifyShopper',
+      'ChallengeShopper',
+      'RedirectShopper',
+    ].indexOf(req.resultCode) !== -1
   );
 }
 

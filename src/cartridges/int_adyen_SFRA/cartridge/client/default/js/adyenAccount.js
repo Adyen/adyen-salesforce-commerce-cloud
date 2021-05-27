@@ -23,26 +23,24 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
 const checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
-$(function() {
-  if(window.redirectResult) {
+$(() => {
+  if (window.redirectResult) {
     $.ajax({
       type: 'GET',
       url: window.confirmationUrl,
       data: {
-          redirectResult: window.redirectResult
+        redirectResult: window.redirectResult,
       },
       async: false,
       success(data) {
-        if(['Authorised', 'Canceled'].indexOf(data.resultCode) === -1) {
+        if (['Authorised', 'Canceled'].indexOf(data.resultCode) === -1) {
           const errorDiv = $(document.getElementById('form-error'));
-          errorDiv.removeAttr("hidden");
+          errorDiv.removeAttr('hidden');
           errorDiv.text(data.refusalReason);
         } else {
           window.location.href = window.redirectUrl;
         }
-        console.log("SUCCESS");
-        console.log(data);
-      }
+      },
     });
   }
 });
@@ -59,14 +57,14 @@ function submitAddCard() {
         checkout.createFromAction(data.redirectAction).mount(cardNode);
       } else if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
-      } else if(data.error) {
+      } else if (data.error) {
         const errorDiv = $(document.getElementById('form-error'));
-        errorDiv.removeAttr("hidden");
+        errorDiv.removeAttr('hidden');
         errorDiv.text(data.error);
       }
     },
   });
-};
+}
 
 $('button[value="add-new-payment"]').on('click', (event) => {
   event.preventDefault();

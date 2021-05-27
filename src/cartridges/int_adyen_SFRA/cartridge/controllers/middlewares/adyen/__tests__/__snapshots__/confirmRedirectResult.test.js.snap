@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Confirm redirectResult should have redirectResult 1`] = `
+Array [
+  Array [
+    Object {
+      "details": Object {
+        "redirectResult": "mocked_redirect_result",
+      },
+    },
+  ],
+]
+`;
