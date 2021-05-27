@@ -11,6 +11,7 @@ function getOrderId(req) {
 function confirm(req, res, next) {
   const orderId = getOrderId(req);
   const order = OrderMgr.getOrder(orderId);
+  const paymentMethod = order.custom.Adyen_paymentMethod;
 
   if (
     AdyenHelper.getAdyenGivingEnabled() &&
