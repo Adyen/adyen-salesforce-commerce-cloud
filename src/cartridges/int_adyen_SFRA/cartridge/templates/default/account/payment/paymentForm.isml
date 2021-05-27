@@ -18,6 +18,7 @@
             <script>
                 window.redirectResult = "${request.getHttpQueryString().substr(15)}";
                 window.confirmationUrl = "${URLUtils.https('Adyen-ConfirmRedirectResult')}";
+                window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
             </script>
         </isif>
         <form

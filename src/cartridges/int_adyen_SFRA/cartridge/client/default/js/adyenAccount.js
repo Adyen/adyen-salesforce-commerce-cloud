@@ -38,7 +38,7 @@ $(function() {
           errorDiv.removeAttr("hidden");
           errorDiv.text(data.refusalReason);
         } else {
-          window.location.href =  'https://zzft-005.sandbox.us01.dx.commercecloud.salesforce.com/s/RefArch/wallet?lang=en_US';
+          window.location.href = window.redirectUrl;
         }
         console.log("SUCCESS");
         console.log(data);
