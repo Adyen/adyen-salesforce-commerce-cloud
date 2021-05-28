@@ -52,7 +52,7 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '3.18.2',
+  CHECKOUT_COMPONENT_VERSION: '3.23.0',
   VERSION: '21.1.0',
 
   getService(service) {

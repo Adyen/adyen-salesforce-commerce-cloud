@@ -63,10 +63,10 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
  */
-server.get(
-  'ConfirmRedirectResult',
+server.post(
+  'PaymentsDetails',
   server.middleware.https,
-  adyen.confirmRedirectResult,
+  adyen.paymentsDetails,
 );
 
 /**

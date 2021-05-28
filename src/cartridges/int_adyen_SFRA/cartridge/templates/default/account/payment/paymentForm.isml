@@ -1,10 +1,11 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/bundle.js');
+<!--             assets.addJs('/js/bundle.js'); -->
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">
@@ -13,14 +14,9 @@
                 originKey: '${pdict.adyen.originKey}',
                 environment: '${pdict.adyen.environment}'
             };
+            window.confirmationUrl = "${URLUtils.https('Adyen-PaymentsDetails')}";
+            window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
         </script>
-        <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('redirectResult') > -1} ">
-            <script>
-                window.redirectResult = "${request.getHttpQueryString().substr(15)}";
-                window.confirmationUrl = "${URLUtils.https('Adyen-ConfirmRedirectResult')}";
-                window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
-            </script>
-        </isif>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
             class="payment-form"
@@ -58,6 +54,11 @@
             </div>
         </iselse>
     </isif>
+</div>
+<div class="modal fade" id="action-modal" role="dialog">
+    <div class="modal-dialog">
+        <div id="action-container"></div>
+    </div>
 </div>
 
 

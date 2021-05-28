@@ -35,12 +35,16 @@ function zeroAuthPayment(customer, paymentInstrument) {
       paymentInstrument,
     );
 
+    if (AdyenHelper.getAdyen3DS2Enabled()) {
+      zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
+    }
+
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
       value: 0,
     };
 
-    zeroAuthRequest.returnUrl = URLUtils.https('PaymentInstruments-AddPayment').toString();
+    zeroAuthRequest.returnUrl = URLUtils.https('PaymentInstruments-List').toString();
 
     // StorepaymentMethod overrides enableReccuring/enableOneClick. Either one is allowed, not all.
     zeroAuthRequest.storePaymentMethod = true;

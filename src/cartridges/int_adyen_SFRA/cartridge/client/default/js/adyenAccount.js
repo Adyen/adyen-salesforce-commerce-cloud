@@ -19,31 +19,36 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
       store.componentState = state;
     },
   },
+}
+
+store.checkoutConfiguration.onAdditionalDetails = (state) =>{
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify(state.data),
+    contentType: "application/json; charset=utf-8",
+    async: false,
+    success(data) {
+      if(data.action) {
+        return handleAction(data.action);
+      }
+      if (['Authorised', 'Canceled'].indexOf(data.resultCode) === -1) {
+        const errorDiv = $(document.getElementById('form-error'));
+        errorDiv.removeAttr('hidden');
+        errorDiv.text(data.refusalReason);
+      } else {
+        window.location.href = window.redirectUrl;
+      }
+    },
+  });
 };
 const checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
-$(() => {
-  if (window.redirectResult) {
-    $.ajax({
-      type: 'GET',
-      url: window.confirmationUrl,
-      data: {
-        redirectResult: window.redirectResult,
-      },
-      async: false,
-      success(data) {
-        if (['Authorised', 'Canceled'].indexOf(data.resultCode) === -1) {
-          const errorDiv = $(document.getElementById('form-error'));
-          errorDiv.removeAttr('hidden');
-          errorDiv.text(data.refusalReason);
-        } else {
-          window.location.href = window.redirectUrl;
-        }
-      },
-    });
-  }
-});
+function handleAction(action) {
+  checkout.createFromAction(action).mount('#action-container');
+  $("#action-modal").modal({ backdrop: 'static', keyboard: false });
+}
 
 function submitAddCard() {
   const form = $(document.getElementById('payment-form'));
@@ -54,7 +59,7 @@ function submitAddCard() {
     async: false,
     success(data) {
       if (data.redirectAction) {
-        checkout.createFromAction(data.redirectAction).mount(cardNode);
+        handleAction(data.redirectAction);
       } else if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else if (data.error) {

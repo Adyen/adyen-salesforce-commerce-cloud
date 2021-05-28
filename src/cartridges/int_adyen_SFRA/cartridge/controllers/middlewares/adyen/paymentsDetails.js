@@ -1,15 +1,15 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
-const handlePayment = require('./confirmRedirectResult/payment');
+const handlePaymentsDetails = require('./paymentsDetails/payment');
 
 /*
  * Makes a payment details call to Adyen to confirm redirectResults and returns the resultCode
  */
-function confirmRedirectResult(req, res, next) {
+function paymentsDetails(req, res, next) {
   const options = { req, res, next };
   try {
-    const stateData = req.querystring;
-    const response = handlePayment(stateData, options);
+    var stateData = JSON.parse(req.body);
+    const response = handlePaymentsDetails(stateData, options);
     res.json(response);
     return next();
   } catch (e) {
@@ -23,4 +23,4 @@ function confirmRedirectResult(req, res, next) {
   }
 }
 
-module.exports = confirmRedirectResult;
+module.exports = paymentsDetails;
