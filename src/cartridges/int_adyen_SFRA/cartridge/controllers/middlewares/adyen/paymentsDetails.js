@@ -8,7 +8,7 @@ const handlePaymentsDetails = require('./paymentsDetails/payment');
 function paymentsDetails(req, res, next) {
   const options = { req, res, next };
   try {
-    var stateData = JSON.parse(req.body);
+    const stateData = JSON.parse(req.body);
     const response = handlePaymentsDetails(stateData, options);
     res.json(response);
     return next();

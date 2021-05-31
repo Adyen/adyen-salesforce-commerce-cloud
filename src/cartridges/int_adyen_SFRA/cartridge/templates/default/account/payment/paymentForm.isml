@@ -3,9 +3,19 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
+        <div id="cardError" class="card-error">
+            <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+        </div>
+        <script type="text/javascript">
+            if(window.location.href.indexOf("isAuthorised") > -1){
+                document.getElementById("cardError").style.display = "block";
+            }
+        </script>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
 <!--             assets.addJs('/js/bundle.js'); -->
+            assets.addCss('/css/adyenCss.css');
+            assets.addCss('/css/adyenCSS.css');
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">
@@ -56,7 +66,7 @@
     </isif>
 </div>
 <div class="modal fade" id="action-modal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" id="adyenModalDialog">
         <div id="action-container"></div>
     </div>
 </div>

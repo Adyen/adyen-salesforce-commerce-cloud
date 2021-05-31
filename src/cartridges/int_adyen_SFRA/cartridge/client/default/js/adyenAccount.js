@@ -1,7 +1,7 @@
 const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
-const cardNode = document.getElementById('card');
+// Store configuration
 store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
@@ -19,36 +19,41 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
       store.componentState = state;
     },
   },
+};
+
+// card and checkout component creation
+const cardNode = document.getElementById('card');
+const checkout = new AdyenCheckout(store.checkoutConfiguration);
+const card = checkout.create('card').mount(cardNode);
+
+// Handle Payment action
+function handleAction(action) {
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 }
 
-store.checkoutConfiguration.onAdditionalDetails = (state) =>{
+// confirm onAdditionalDetails event and paymentsDetails response
+store.checkoutConfiguration.onAdditionalDetails = (state) => {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
     data: JSON.stringify(state.data),
-    contentType: "application/json; charset=utf-8",
+    contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
-      if(data.action) {
-        return handleAction(data.action);
-      }
-      if (['Authorised', 'Canceled'].indexOf(data.resultCode) === -1) {
+      if (data.isSuccessful) {
+        window.location.href = window.redirectUrl;
+      } else if (!data.isFinal && typeof data.action === 'object') {
+        handleAction(data.action);
+      } else {
+        $('#action-modal').modal('hide');
         const errorDiv = $(document.getElementById('form-error'));
         errorDiv.removeAttr('hidden');
         errorDiv.text(data.refusalReason);
-      } else {
-        window.location.href = window.redirectUrl;
       }
     },
   });
 };
-const checkout = new AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create('card').mount(cardNode);
-
-function handleAction(action) {
-  checkout.createFromAction(action).mount('#action-container');
-  $("#action-modal").modal({ backdrop: 'static', keyboard: false });
-}
 
 function submitAddCard() {
   const form = $(document.getElementById('payment-form'));
@@ -71,6 +76,7 @@ function submitAddCard() {
   });
 }
 
+// Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
   event.preventDefault();
   if (store.isValid) {

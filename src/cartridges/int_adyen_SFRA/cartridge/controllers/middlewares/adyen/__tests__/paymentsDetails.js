@@ -36,7 +36,9 @@ describe('Confirm paymentsDetails', () => {
     paymentsDetails(req, res, jest.fn());
     expect(adyenCheckout.doPaymentDetailsCall).not.toHaveBeenCalled();
     expect(URLUtils.url.mock.calls[0][0]).toBe('PaymentInstruments-AddPayment');
-    expect(URLUtils.url.mock.calls[0][1]).toBe('mocked_error.payment.not.valid');
+    expect(URLUtils.url.mock.calls[0][1]).toBe(
+      'mocked_error.payment.not.valid',
+    );
   });
 
   test.each(['Authorised', 'Cancelled', 'Error', 'Refused'])(
@@ -46,15 +48,15 @@ describe('Confirm paymentsDetails', () => {
       const URLUtils = require('dw/web/URLUtils');
 
       adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-          resultCode: resultCode,
-          pspReference: 'mocked_pspReference',
+        resultCode,
+        pspReference: 'mocked_pspReference',
       }));
       req.querystring.redirectResult = 'mocked_redirect_result';
       paymentsDetails(req, res, jest.fn());
       expect(res.json.mock.calls[0][0]).toEqual({
-          resultCode: resultCode,
-          pspReference: 'mocked_pspReference',
-      })
+        resultCode,
+        pspReference: 'mocked_pspReference',
+      });
       expect(URLUtils.url).not.toHaveBeenCalled();
     },
   );
