@@ -6,10 +6,9 @@ const handlePaymentsDetails = require('./paymentsDetails/payment');
  * Makes a payment details call to Adyen to confirm redirectResults and returns the resultCode
  */
 function paymentsDetails(req, res, next) {
-  const options = { req, res, next };
   try {
     const stateData = JSON.parse(req.body);
-    const response = handlePaymentsDetails(stateData, options);
+    const response = handlePaymentsDetails(stateData);
     res.json(response);
     return next();
   } catch (e) {
