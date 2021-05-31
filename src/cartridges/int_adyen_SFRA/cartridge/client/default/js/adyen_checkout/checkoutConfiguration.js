@@ -187,6 +187,7 @@ function setCheckoutConfiguration() {
     swish: getQRCodeConfig(),
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
+    pix: getQRCodeConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',
