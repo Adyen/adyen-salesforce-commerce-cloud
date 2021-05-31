@@ -1,6 +1,8 @@
 const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
+let checkout;
+
 // Store configuration
 store.checkoutConfiguration.amount = {
   value: 0,
@@ -20,11 +22,6 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
 };
-
-// card and checkout component creation
-const cardNode = document.getElementById('card');
-const checkout = new AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create('card').mount(cardNode);
 
 // Handle Payment action
 function handleAction(action) {
@@ -54,6 +51,11 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
     },
   });
 };
+
+// card and checkout component creation
+const cardNode = document.getElementById('card');
+checkout = new AdyenCheckout(store.checkoutConfiguration);
+const card = checkout.create('card').mount(cardNode);
 
 function submitAddCard() {
   const form = $(document.getElementById('payment-form'));
