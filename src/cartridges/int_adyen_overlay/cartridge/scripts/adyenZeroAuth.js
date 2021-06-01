@@ -20,8 +20,6 @@
  */
 
 /* API Includes */
-
-
 const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */

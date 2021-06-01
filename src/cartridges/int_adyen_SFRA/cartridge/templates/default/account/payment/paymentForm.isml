@@ -13,7 +13,6 @@
         </script>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-<!--             assets.addJs('/js/bundle.js'); -->
             assets.addCss('/css/adyenCss.css');
             assets.addCss('/css/adyenCSS.css');
             assets.addJs('/js/adyenAccount.js');
@@ -24,7 +23,6 @@
                 originKey: '${pdict.adyen.originKey}',
                 environment: '${pdict.adyen.environment}'
             };
-            window.confirmationUrl = "${URLUtils.https('Adyen-PaymentsDetails')}";
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
         </script>
         <form
