@@ -26,7 +26,7 @@ const __LineItemHelper = {
       return lineItem.getID();
     }
     if (lineItem instanceof dw.order.ProductLineItem) {
-      return lineItem.product.name;
+      return lineItem.productName;
     }
     if (lineItem instanceof dw.order.PriceAdjustment) {
       return 'Discount';
@@ -43,7 +43,7 @@ const __LineItemHelper = {
       return lineItem.UUID;
     }
     if (lineItem instanceof dw.order.ProductLineItem) {
-      return lineItem.product.ID;
+      return lineItem.productID;
     }
 
     return null;
