@@ -1,6 +1,6 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<!-- <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script> -->
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
         <div id="cardError" class="card-error">
@@ -13,6 +13,7 @@
         </script>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
+            assets.addJs('/js/bundle.js');
             assets.addCss('/css/adyenCss.css');
             assets.addCss('/css/adyenCSS.css');
             assets.addJs('/js/adyenAccount.js');
