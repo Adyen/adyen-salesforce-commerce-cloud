@@ -44,9 +44,7 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
         handleAction(data.action);
       } else {
         $('#action-modal').modal('hide');
-        const errorDiv = $(document.getElementById('form-error'));
-        errorDiv.removeAttr('hidden');
-        errorDiv.text(data.refusalReason);
+        document.getElementById('cardError').style.display = 'block';
       }
     },
   });

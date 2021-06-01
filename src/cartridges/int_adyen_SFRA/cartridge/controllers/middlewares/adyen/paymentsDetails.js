@@ -1,14 +1,20 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
-const handlePaymentsDetails = require('./paymentsDetails/payment');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 /*
  * Makes a payment details call to Adyen to confirm redirectResults and returns the resultCode
  */
 function paymentsDetails(req, res, next) {
   try {
-    const stateData = JSON.parse(req.body);
-    const response = handlePaymentsDetails(stateData);
+    const paymentsDetailsResponse = adyenCheckout.doPaymentDetailsCall(
+      JSON.parse(req.body),
+    );
+    const response = AdyenHelper.createAdyenCheckoutResponse(
+      paymentsDetailsResponse,
+    );
+
     res.json(response);
     return next();
   } catch (e) {

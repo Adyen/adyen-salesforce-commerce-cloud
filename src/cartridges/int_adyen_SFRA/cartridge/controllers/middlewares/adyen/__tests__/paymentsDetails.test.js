@@ -33,121 +33,50 @@ describe('Confirm paymentsDetails', () => {
     expect(URLUtils.url.mock.calls[0]).toEqual(['Error-ErrorCode', 'err', 'general']);
   });
 
-  it('should handle payment confirmation status Unknown', () => {
+  it('should fail when doPaymentDetailsCall results in an error', () => {
+    const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+    adyenCheckout.doPaymentDetailsCall.mockImplementationOnce(() => {throw new Error('mock_error')});
+    paymentsDetails(req, res, jest.fn());
+    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(AdyenHelper.createAdyenCheckoutResponse.mock.calls.length).toEqual(0);
+    expect(URLUtils.url.mock.calls[0]).toEqual(['Error-ErrorCode', 'err', 'general']);
+  });
+
+  it('should fail when createAdyenCheckoutResponse results in an error', () => {
+    const URLUtils = require('dw/web/URLUtils');
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+    AdyenHelper.createAdyenCheckoutResponse.mockImplementationOnce(() => {throw new Error('mock_error')});
+    paymentsDetails(req, res, jest.fn());
+    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(AdyenHelper.createAdyenCheckoutResponse.mock.calls.length).toEqual(1);
+    expect(URLUtils.url.mock.calls[0]).toEqual(['Error-ErrorCode', 'err', 'general']);
+  });
+
+
+  it('should call paymentDetails request and response handler', () => {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
     const URLUtils = require('dw/web/URLUtils');
 
+
     adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-      resultCode:'Unknown',
+      resultCode:'mocked_resultCode',
       pspReference: 'mocked_pspReference',
     }));
     paymentsDetails(req, res, jest.fn());
     expect(URLUtils.url).not.toHaveBeenCalled();
     expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(AdyenHelper.createAdyenCheckoutResponse.mock.calls.length).toEqual(1);
+
     expect(res.json.mock.calls[0][0]).toEqual({
       isFinal: true,
       isSuccessful: false,
     });
     expect(URLUtils.url).not.toHaveBeenCalled();
   });
-
-  it('should handle payment confirmation status Authorised', () => {
-    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const URLUtils = require('dw/web/URLUtils');
-
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-      resultCode:'Authorised',
-      pspReference: 'mocked_pspReference',
-    }));
-    paymentsDetails(req, res, jest.fn());
-    expect(URLUtils.url).not.toHaveBeenCalled();
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
-    expect(res.json.mock.calls[0][0]).toEqual({
-      isFinal: true,
-      isSuccessful: true,
-    });
-    expect(URLUtils.url).not.toHaveBeenCalled();
-  });
-
-  it('should handle payment confirmation status Cancelled', () => {
-    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const URLUtils = require('dw/web/URLUtils');
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-      resultCode:'Cancelled',
-      pspReference: 'mocked_pspReference',
-    }));
-    paymentsDetails(req, res, jest.fn());
-    expect(res.json.mock.calls[0][0]).toEqual({
-      isFinal: true,
-      isSuccessful: false,
-    });
-    expect(URLUtils.url).not.toHaveBeenCalled();
-  });
-
-  it('should handle payment confirmation status Received', () => {
-    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const URLUtils = require('dw/web/URLUtils');
-
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-      resultCode:'Received',
-      pspReference: 'mocked_pspReference',
-    }));
-    paymentsDetails(req, res, jest.fn());
-    expect(URLUtils.url).not.toHaveBeenCalled();
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
-    expect(res.json.mock.calls[0][0]).toEqual({
-      isFinal: false,
-    });
-    expect(URLUtils.url).not.toHaveBeenCalled();
-  });
-
-  test.each(['Error', 'Refused'])(
-    'should handle payment confirmation status: %p',
-    (resultCode) => {
-      const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-      const URLUtils = require('dw/web/URLUtils');
-
-      adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-        resultCode,
-        refusalReason: 'mocked_reason'
-      }));
-      paymentsDetails(req, res, jest.fn());
-      expect(URLUtils.url).not.toHaveBeenCalled();
-
-      expect(res.json.mock.calls[0][0]).toEqual({
-        isFinal: true,
-        isSuccessful: false,
-        refusalReason: 'mocked_reason'
-      });
-    },
-  );
-
-  test.each([
-    'RedirectShopper',
-    'IdentifyShopper',
-    'ChallengeShopper',
-    'PresentToShopper',
-    'Pending',
-  ])(
-      'should handle payment confirmation status: %p',
-      (resultCode) => {
-        const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-        const URLUtils = require('dw/web/URLUtils');
-
-        adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
-          resultCode,
-          action: {type: 'redirect'},
-        }));
-        paymentsDetails(req, res, jest.fn());
-        expect(URLUtils.url).not.toHaveBeenCalled();
-
-        expect(res.json.mock.calls[0][0]).toEqual({
-          isFinal: false,
-          action: {type: 'redirect'}
-        });
-      },
-  );
 });

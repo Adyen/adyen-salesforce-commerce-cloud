@@ -3,14 +3,6 @@
 <!-- <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script> -->
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
-        <div id="cardError" class="card-error">
-            <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
-        </div>
-        <script type="text/javascript">
-            if(window.location.href.indexOf("isAuthorised") > -1){
-                document.getElementById("cardError").style.display = "block";
-            }
-        </script>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
             assets.addJs('/js/bundle.js');
@@ -31,7 +23,14 @@
             class="payment-form"
             method="POST"
             id="payment-form" ${pdict.paymentForm.attributes}>
-            <div id="form-error" class="alert alert-danger" hidden="true"></div>
+            <div id="cardError" class="card-error">
+                <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+            </div>
+            <script type="text/javascript">
+                if(window.location.href.indexOf("isAuthorised") > -1){
+                    document.getElementById("cardError").style.display = "block";
+                }
+            </script>
             <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
             <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
             <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
