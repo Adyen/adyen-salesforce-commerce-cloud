@@ -126,18 +126,6 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
   },
 
-  getAdyenRecurringPaymentsEnabled() {
-    let returnValue = false;
-    if (
-      !empty(adyenCurrentSite) &&
-      (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') ||
-        adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))
-    ) {
-      returnValue = true;
-    }
-    return returnValue;
-  },
-
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     let adyenGivingAvailable = false;
@@ -169,14 +157,6 @@ var adyenHelperObj = {
       donationAmounts: JSON.stringify(donationAmounts),
       pspReference: order.custom.Adyen_pspReference,
     };
-  },
-
-  getAdyenRecurringEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
-  },
-
-  getAdyenOneClickEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
 
   getCreditCardInstallments() {
@@ -519,6 +499,7 @@ var adyenHelperObj = {
 
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
@@ -529,6 +510,7 @@ var adyenHelperObj = {
       orderToken = order.getOrderToken();
     }
 
+    stateData.shopperInteraction = stateData.paymentMethod.storedPaymentMethodId ? 'ContAuth':'Ecommerce';
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
     stateData.returnUrl = URLUtils.https(
@@ -539,7 +521,7 @@ var adyenHelperObj = {
         orderToken
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
-    stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
+
     stateData.additionalData = {};
     return stateData;
   },

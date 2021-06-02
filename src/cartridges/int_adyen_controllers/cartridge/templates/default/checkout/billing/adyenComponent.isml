@@ -3,7 +3,6 @@
 
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
-<isset name="adyenOneClickEnabled" value="${AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
@@ -27,7 +26,7 @@
     window.cardholderNameBool = '${AdyenHelper.getAdyenCardholderNameEnabled()}';
     window.paypalIntent = '${AdyenHelper.getAdyenPayPalIntent()}';
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
-    var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
+    var showStoreDetails = ${customer.authenticated};
 </script>
 
 <isset name="ratePayValues" value="${AdyenHelper.getRatePayID()}" scope="page"/>
