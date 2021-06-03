@@ -159,6 +159,10 @@ var adyenHelperObj = {
     };
   },
 
+  getAdyenRecurringPaymentsEnabled() {
+    return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
+  },
+
   getCreditCardInstallments() {
     return adyenHelperObj.getCustomPreference('AdyenCreditCardInstallments');
   },

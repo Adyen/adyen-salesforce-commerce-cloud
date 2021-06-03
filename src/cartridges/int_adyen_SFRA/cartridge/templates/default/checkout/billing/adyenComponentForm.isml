@@ -1,5 +1,6 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
@@ -17,7 +18,7 @@
     window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
     window.paypalIntent = '${pdict.adyen.paypalIntent}';
     window.merchantAccount = '${pdict.adyen.merchantAccount}';
-    var showStoreDetails = ${customer.authenticated};
+    var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
 
     window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";

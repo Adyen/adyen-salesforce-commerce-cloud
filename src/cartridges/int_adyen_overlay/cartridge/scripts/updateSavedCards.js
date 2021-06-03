@@ -40,66 +40,67 @@ function updateSavedCards(args) {
       return { error: true };
     }
 
-    const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
-    // To make it compatible with upgrade from older versions (<= 19.2.2),
-    // first delete payment instruments with METHOD_CREDIT_CARD
-    const savedCreditCards = customer
-      .getProfile()
-      .getWallet()
-      .getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
-    const savedCreditCardsComponent = customer
-      .getProfile()
-      .getWallet()
-      .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+    if(AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+      const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
+      // To make it compatible with upgrade from older versions (<= 19.2.2),
+      // first delete payment instruments with METHOD_CREDIT_CARD
+      const savedCreditCards = customer
+        .getProfile()
+        .getWallet()
+        .getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+      const savedCreditCardsComponent = customer
+        .getProfile()
+        .getWallet()
+        .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
 
-    Transaction.wrap(() => {
-      // remove all current METHOD_CREDIT_CARD PaymentInstruments
-      for (let i = 0; i < savedCreditCards.length; i++) {
-        const creditCard = savedCreditCards[i];
-        customer.getProfile().getWallet().removePaymentInstrument(creditCard);
-      }
-      // remove all current METHOD_ADYEN_COMPONENT PaymentInstruments
-      for (let i = 0; i < savedCreditCardsComponent.length; i++) {
-        const creditCard = savedCreditCardsComponent[i];
-        customer.getProfile().getWallet().removePaymentInstrument(creditCard);
-      }
-
-      // Create from existing cards a paymentInstrument
-      for (let index = 0; index < oneClickPaymentMethods.length; index++) {
-        const payment = oneClickPaymentMethods[index];
-        const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
-        const expiryYear = payment.expiryYear ? payment.expiryYear : '';
-        const holderName = payment.holderName ? payment.holderName : '';
-        const lastFour = payment.lastFour ? payment.lastFour : '';
-        const number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
-        const token = payment.id;
-        const cardType = payment.brand
-          ? AdyenHelper.getSFCCCardType(payment.brand)
-          : '';
-
-        // if we have everything we need, create a new payment instrument
-        if (
-          expiryMonth &&
-          expiryYear &&
-          number &&
-          token &&
-          cardType &&
-          holderName
-        ) {
-          const newCreditCard = customer
-            .getProfile()
-            .getWallet()
-            .createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
-          newCreditCard.setCreditCardExpirationMonth(Number(expiryMonth));
-          newCreditCard.setCreditCardExpirationYear(Number(expiryYear));
-          newCreditCard.setCreditCardType(cardType);
-          newCreditCard.setCreditCardHolder(holderName);
-          newCreditCard.setCreditCardNumber(number);
-          newCreditCard.setCreditCardToken(token);
+      Transaction.wrap(() => {
+        // remove all current METHOD_CREDIT_CARD PaymentInstruments
+        for (let i = 0; i < savedCreditCards.length; i++) {
+          const creditCard = savedCreditCards[i];
+          customer.getProfile().getWallet().removePaymentInstrument(creditCard);
         }
-      }
-    });
+        // remove all current METHOD_ADYEN_COMPONENT PaymentInstruments
+        for (let i = 0; i < savedCreditCardsComponent.length; i++) {
+          const creditCard = savedCreditCardsComponent[i];
+          customer.getProfile().getWallet().removePaymentInstrument(creditCard);
+        }
 
+        // Create from existing cards a paymentInstrument
+        for (let index = 0; index < oneClickPaymentMethods.length; index++) {
+          const payment = oneClickPaymentMethods[index];
+          const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
+          const expiryYear = payment.expiryYear ? payment.expiryYear : '';
+          const holderName = payment.holderName ? payment.holderName : '';
+          const lastFour = payment.lastFour ? payment.lastFour : '';
+          const number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
+          const token = payment.id;
+          const cardType = payment.brand
+            ? AdyenHelper.getSFCCCardType(payment.brand)
+            : '';
+
+          // if we have everything we need, create a new payment instrument
+          if (
+            expiryMonth &&
+            expiryYear &&
+            number &&
+            token &&
+            cardType &&
+            holderName
+          ) {
+            const newCreditCard = customer
+              .getProfile()
+              .getWallet()
+              .createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
+            newCreditCard.setCreditCardExpirationMonth(Number(expiryMonth));
+            newCreditCard.setCreditCardExpirationYear(Number(expiryYear));
+            newCreditCard.setCreditCardType(cardType);
+            newCreditCard.setCreditCardHolder(holderName);
+            newCreditCard.setCreditCardNumber(number);
+            newCreditCard.setCreditCardToken(token);
+          }
+        }
+      });
+    }
       return { error: false };
   } catch (ex) {
     Logger.getLogger('Adyen').error(
