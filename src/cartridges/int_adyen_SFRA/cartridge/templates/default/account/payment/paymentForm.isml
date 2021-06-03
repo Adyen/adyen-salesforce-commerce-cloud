@@ -4,6 +4,8 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/bundle.js');
+        assets.addCss('/css/adyenCss.css');
+        assets.addCss('/css/adyenCSS.css');
         assets.addJs('/js/adyenAccount.js');
     </isscript>
     <script type="text/javascript">
@@ -12,13 +14,21 @@
             originKey: '${pdict.adyen.originKey}',
             environment: '${pdict.adyen.environment}'
         };
+        window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
     </script>
     <form
-            action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
-            class="payment-form"
-            method="POST"
-            name="payment-form" ${pdict.paymentForm.attributes}>
-
+        action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+        class="payment-form"
+        method="POST"
+        id="payment-form" ${pdict.paymentForm.attributes}>
+        <div id="cardError" class="card-error">
+            <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+        </div>
+        <script type="text/javascript">
+            if(window.location.href.indexOf("isAuthorised") > -1){
+                document.getElementById("cardError").style.display = "block";
+            }
+        </script>
         <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
         <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
         <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
@@ -39,16 +49,11 @@
             </div>
         </div>
     </form>
-    <iselse>
-        <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
-        <br/><br/>
-        <div class="row">
-            <div class="col">
-                <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
-            </div>
-            <div class="col"></div>
-        </div>
-    </iselse>
+</div>
+<div class="modal fade" id="action-modal" role="dialog">
+    <div class="modal-dialog" id="adyenModalDialog">
+        <div id="action-container"></div>
+    </div>
 </div>
 
 

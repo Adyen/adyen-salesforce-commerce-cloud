@@ -755,6 +755,48 @@ var adyenHelperObj = {
     }
     return { stateData: filteredStateData, invalidFields };
   },
+
+  createAdyenCheckoutResponse(checkoutresponse) {
+    if (
+        ['Authorised', 'Refused', 'Error', 'Cancelled'].indexOf(
+            checkoutresponse.resultCode,
+        ) !== -1
+    ) {
+      return {
+        isFinal: true,
+        isSuccessful: checkoutresponse.resultCode === 'Authorised',
+      }
+    }
+
+    if (
+        [
+          'RedirectShopper',
+          'IdentifyShopper',
+          'ChallengeShopper',
+          'PresentToShopper',
+          'Pending',
+        ].indexOf(checkoutresponse.resultCode) !== -1
+    ) {
+      return {
+        isFinal: false,
+        action: checkoutresponse.action,
+      };
+    }
+
+    if (checkoutresponse.resultCode === 'Received') {
+      return {
+        isFinal: false,
+      };
+    }
+
+    Logger.getLogger('Adyen').error(
+        `Unknown resultCode: ${checkoutresponse.resultCode}.`,
+    );
+    return {
+      isFinal: true,
+      isSuccessful: false,
+    };
+  },
 };
 
 module.exports = adyenHelperObj;
