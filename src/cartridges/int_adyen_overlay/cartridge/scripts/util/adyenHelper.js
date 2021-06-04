@@ -514,7 +514,13 @@ var adyenHelperObj = {
       orderToken = order.getOrderToken();
     }
 
-    stateData.shopperInteraction = stateData.paymentMethod.storedPaymentMethodId ? 'ContAuth':'Ecommerce';
+    if(stateData.paymentMethod?.storedPaymentMethodId) {
+      stateData.recurringProcessingModel = 'CardOnFile';
+      stateData.shopperInteraction = 'ContAuth';
+    } else {
+        stateData.shopperInteraction = 'Ecommerce';
+    }
+
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
     stateData.returnUrl = URLUtils.https(
