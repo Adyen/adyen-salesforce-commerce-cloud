@@ -45,11 +45,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
 
     zeroAuthRequest.returnUrl = URLUtils.https('Adyen-Redirect3DS1Response').toString();
 
-    // StorepaymentMethod overrides enableReccuring/enableOneClick. Either one is allowed, not all.
     zeroAuthRequest.storePaymentMethod = true;
-    delete zeroAuthRequest.enableRecurring;
-    delete zeroAuthRequest.enableOneClick;
-
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 

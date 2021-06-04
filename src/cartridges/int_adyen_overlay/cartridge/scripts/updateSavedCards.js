@@ -40,7 +40,7 @@ function updateSavedCards(args) {
       return { error: true };
     }
 
-    if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+    if(AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
       const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
       // To make it compatible with upgrade from older versions (<= 19.2.2),
       // first delete payment instruments with METHOD_CREDIT_CARD
@@ -100,9 +100,8 @@ function updateSavedCards(args) {
           }
         }
       });
-
-      return { error: false };
     }
+      return { error: false };
   } catch (ex) {
     Logger.getLogger('Adyen').error(
       `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`,

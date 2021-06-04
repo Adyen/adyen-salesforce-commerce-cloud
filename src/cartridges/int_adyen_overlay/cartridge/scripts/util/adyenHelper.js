@@ -126,18 +126,6 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
   },
 
-  getAdyenRecurringPaymentsEnabled() {
-    let returnValue = false;
-    if (
-      !empty(adyenCurrentSite) &&
-      (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') ||
-        adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))
-    ) {
-      returnValue = true;
-    }
-    return returnValue;
-  },
-
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     let adyenGivingAvailable = false;
@@ -171,11 +159,7 @@ var adyenHelperObj = {
     };
   },
 
-  getAdyenRecurringEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
-  },
-
-  getAdyenOneClickEnabled() {
+  getAdyenRecurringPaymentsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
 
@@ -519,6 +503,7 @@ var adyenHelperObj = {
 
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
@@ -527,6 +512,13 @@ var adyenHelperObj = {
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
+    }
+
+    if(stateData.paymentMethod?.storedPaymentMethodId) {
+      stateData.recurringProcessingModel = 'CardOnFile';
+      stateData.shopperInteraction = 'ContAuth';
+    } else {
+        stateData.shopperInteraction = 'Ecommerce';
     }
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
@@ -539,7 +531,7 @@ var adyenHelperObj = {
         orderToken
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
-    stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
+
     stateData.additionalData = {};
     return stateData;
   },
