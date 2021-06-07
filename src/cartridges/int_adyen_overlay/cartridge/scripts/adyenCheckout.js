@@ -161,6 +161,9 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       return { error: true };
     }
 
+    Logger.getLogger('Adyen').error('res object is ' + JSON.stringify(responseObject));
+
+
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
@@ -178,12 +181,16 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     paymentResponse.adyenAmount = paymentRequest.amount.value;
     paymentResponse.decision = 'ERROR';
 
+    Logger.getLogger('Adyen').error('before additionalData');
+
     if (responseObject.additionalData) {
       order.custom.Adyen_paymentMethod = responseObject.additionalData
         .paymentMethod
         ? responseObject.additionalData.paymentMethod
         : null;
     }
+
+    Logger.getLogger('Adyen').error('after additionalData');
 
     // Check the response object from /payment call
     if (
@@ -292,7 +299,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     }
     return paymentResponse;
   } catch (e) {
-    Logger.getLogger('Adyen').fatal(
+    Logger.getLogger('Adyen').error(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return { error: true };

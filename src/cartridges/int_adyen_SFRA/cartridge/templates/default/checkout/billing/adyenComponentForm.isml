@@ -19,9 +19,15 @@
     </isscript>
     <script>
         var indexOfID = `${request.getHttpQueryString().indexOf("amazonCheckoutSessionId") + 24}`;
+
+        console.log( `${request.getHttpQueryString()}` );
+<!--         var x = `${request.getHttpQueryString().toString().split("=")}`; -->
+        var x = '${request.getHttpQueryString()}'.split("=");
+        console.log('x is: ' + x[x.length - 1]);
         // console.log('string index ' + indexOfID);
         // console.log('parsed ' + Number.parseInt(indexOfID));
-        var amazonCheckoutSessionId = `${request.getHttpQueryString().substr(41)}`;
+<!--         var amazonCheckoutSessionId = `${request.getHttpQueryString().substr(41)}`; -->
+        var amazonCheckoutSessionId = x[x.length - 1];
         // console.log(amazonCheckoutSessionId);
 
         window.Configuration = {
@@ -30,7 +36,7 @@
             environment: '${pdict.adyen.environment}',
             clientKey: 'test_UCP6BOCMABASLCJ43VOLSNE33E4GWX63'
         };
-        window.returnURL = "${URLUtils.https('Order-Confirm')}";
+        window.returnURL = "${URLUtils.https('Order-Confirm', orderID, orderToken)}";
         window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
     </script>

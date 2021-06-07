@@ -171,9 +171,9 @@ function getAmazonpayConfig() {
     checkoutMode: 'ProcessOrder',
     returnUrl: window.returnURL,
     configuration: {
-      merchantId: window.amazonMerchantID,
-      storeId: window.amazonStoreID,
-      publicKeyId: window.amazonPublicKeyID
+      merchantId: 'AAUL9GPRGTX1U',
+      storeId: 'amzn1.application-oa2-client.3e5db0a580f7468da2d9903dda981fce',
+      publicKeyId: 'AGDRUNN37LQHSOCHN24AEYYB'
     },
     "amount": {
       value: "23728",

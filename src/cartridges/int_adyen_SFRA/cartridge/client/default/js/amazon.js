@@ -44,6 +44,9 @@ function paymentFromComponent(data, component) {
       // }
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
+      } else if(response.resultCode === "Authorised") {
+        // document.querySelector('#showConfirmationForm').submit();
+        window.location.href = window.returnURL;
       }
       else {
         // console.log('else is ');

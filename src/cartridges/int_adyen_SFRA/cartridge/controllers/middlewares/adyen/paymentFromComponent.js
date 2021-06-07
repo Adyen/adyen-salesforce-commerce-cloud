@@ -45,10 +45,16 @@ function paymentFromComponent(req, res, next) {
   const order = COHelpers.createOrder(currentBasket);
   Logger.getLogger('Adyen').error('Order is ' + order);
   Logger.getLogger('Adyen').error('paymentInstrument is ' + paymentInstrument);
-  const result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument,
+
+  let result;
+  Transaction.wrap(() => {
+     result = adyenCheckout.createPaymentRequest({
+      Order: order,
+      PaymentInstrument: paymentInstrument,
+    });
   });
+
+
   Logger.getLogger('Adyen').error('result is ' + JSON.stringify(result));
   result.orderNo = order.orderNo;
   res.json(result);
