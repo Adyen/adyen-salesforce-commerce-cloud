@@ -173,19 +173,32 @@ function getAmazonpayConfig() {
     configuration: {
       merchantId: 'AAUL9GPRGTX1U',
       storeId: 'amzn1.application-oa2-client.3e5db0a580f7468da2d9903dda981fce',
-      publicKeyId: 'AGDRUNN37LQHSOCHN24AEYYB'
+      publicKeyId: 'AGDRUNN37LQHSOCHN24AEYYB',
     },
-    "amount": {
-      value: "23728",
-      currency: "GBP"
+    amount: {
+      value: '23728',
+      currency: 'GBP',
     },
-  };
+    onClick: (resolve, reject) => {
+      console.log('click!');
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        reject();
+      } else {
+        resolve();
+      }
+    },
+    onError: (error, component) => {
+      console.log('on error');
+    }
+    };
 }
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.showPayButton = false;
-  store.checkoutConfiguration.clientKey = "test_UCP6BOCMABASLCJ43VOLSNE33E4GWX63";
+  store.checkoutConfiguration.clientKey =
+    'test_UCP6BOCMABASLCJ43VOLSNE33E4GWX63';
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),

@@ -8,13 +8,13 @@ function confirm(req, res, next) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
 
     if (
-        AdyenHelper.getAdyenGivingEnabled() &&
-        AdyenHelper.isAdyenGivingAvailable(paymentMethod)
+      AdyenHelper.getAdyenGivingEnabled() &&
+      AdyenHelper.isAdyenGivingAvailable(paymentMethod)
     ) {
       const protocol = req.https ? 'https' : 'http';
       const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-          protocol,
-          req.host,
+        protocol,
+        req.host,
       );
       const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
       const configuredAmounts = AdyenHelper.getDonationAmounts();

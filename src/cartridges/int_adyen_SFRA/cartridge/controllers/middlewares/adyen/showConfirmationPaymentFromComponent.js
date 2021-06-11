@@ -6,9 +6,12 @@ const handlePayment = require('./showConfirmationPaymentFromComponent/payment');
 function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {
-    const stateData = JSON.parse(req.form.additionalDetailsHidden);
+    const stateData = req.form.additionalDetailsHidden;
+    // const stateData = 'amazon';
+    Logger.getLogger('Adyen').error(stateData);
     const order = OrderMgr.getOrder(req.form.merchantReference);
-    return handlePayment(stateData, order, options);
+    // const result = req.form.result;
+    return handlePayment(stateData, order, req.form.result, options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${

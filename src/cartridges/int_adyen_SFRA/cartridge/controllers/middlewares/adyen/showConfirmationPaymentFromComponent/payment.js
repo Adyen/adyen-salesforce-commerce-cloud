@@ -3,6 +3,7 @@ const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const Locale = require('dw/util/Locale');
 const Resource = require('dw/web/Resource');
+const Logger = require('dw/system/Logger');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
@@ -78,7 +79,7 @@ function handleAuthorisedPayment(
   return next();
 }
 
-function handlePayment(stateData, order, options) {
+function handlePayment(stateData, order, result = null, options) {
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
@@ -86,11 +87,16 @@ function handlePayment(stateData, order, options) {
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
+  let finalResult;
   if (!hasStateData) {
-    return handlePaymentError(order, options);
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      Logger.getLogger('Adyen').error('went to handlepaymenterror');
+      return handlePaymentError(order, options);
+    }
   }
-
-  const { result } = handlePaymentsDetailsCall(
+  const { paymentDetailsresult } = handlePaymentsDetailsCall(
     stateData,
     adyenPaymentInstrument,
   );
@@ -98,11 +104,18 @@ function handlePayment(stateData, order, options) {
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
+  finalResult = finalResult || paymentDetailsresult;
+
+  Logger.getLogger('Adyen').error(JSON.stringify(finalResult));
+
   // Authorised: The payment authorisation was successfully completed.
-  if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
+  if (
+    ['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1
+  ) {
+    Logger.getLogger('Adyen').error('authorised');
     return handleAuthorisedPayment(
       order,
-      result,
+      finalResult,
       adyenPaymentInstrument,
       options,
     );

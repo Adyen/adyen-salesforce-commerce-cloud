@@ -19,7 +19,7 @@ function begin(req, res, next) {
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
   const amazonMerchantID = AdyenHelper.getAmazonMerchantID();
   const amazonStoreID = AdyenHelper.getAmazonStoreID();
-  const amazonPublicKeyID= AdyenHelper.getAmazonPublicKeyID();
+  const amazonPublicKeyID = AdyenHelper.getAmazonPublicKeyID();
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
   const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
