@@ -96,7 +96,7 @@ function handlePayment(stateData, order, result = null, options) { // eslint-dis
       return handlePaymentError(order, options);
     }
   }
-  const { paymentDetailsresult } = handlePaymentsDetailsCall(
+  const detailsCall = handlePaymentsDetailsCall(
     stateData,
     adyenPaymentInstrument,
   );
@@ -104,7 +104,7 @@ function handlePayment(stateData, order, result = null, options) { // eslint-dis
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  finalResult = finalResult || paymentDetailsresult;
+  finalResult = finalResult || detailsCall.result;
 
   // Authorised: The payment authorisation was successfully completed.
   if (

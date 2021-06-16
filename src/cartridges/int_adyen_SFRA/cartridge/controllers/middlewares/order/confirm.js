@@ -2,7 +2,7 @@ const OrderMgr = require('dw/order/OrderMgr');
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-function handleAdyenGiving(req, res) {
+function handleAdyenGiving(req, res, order) {
   const protocol = req.https ? 'https' : 'http';
   const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
     protocol,
@@ -46,7 +46,7 @@ function confirm(req, res, next) {
       AdyenHelper.getAdyenGivingEnabled() &&
       AdyenHelper.isAdyenGivingAvailable(paymentMethod)
     ) {
-      handleAdyenGiving(req, res);
+      handleAdyenGiving(req, res, order);
     }
   }
   return next();

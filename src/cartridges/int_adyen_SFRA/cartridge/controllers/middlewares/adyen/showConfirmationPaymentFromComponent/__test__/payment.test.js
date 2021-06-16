@@ -36,7 +36,7 @@ describe('Payment', () => {
       paymentData: 'mocked_paymentData',
       details: 'mocked_details',
     };
-    handlePayment(stateData, order, { req, res, next });
+    handlePayment(stateData, order, null, { req, res, next });
     expect(res.redirect.mock.calls).toMatchSnapshot();
   });
 
@@ -48,13 +48,13 @@ describe('Payment', () => {
       paymentData: 'mocked_paymentData',
       details: 'mocked_details',
     };
-    handlePayment(stateData, order, { req, res, next });
+    handlePayment(stateData, order, null, { req, res, next });
     expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
   });
 
   it('should handle payment error when theres not state data', () => {
     const stateData = {};
-    handlePayment(stateData, order, { req, res, next });
+    handlePayment(stateData, order, null, { req, res, next });
     expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
   });
 });

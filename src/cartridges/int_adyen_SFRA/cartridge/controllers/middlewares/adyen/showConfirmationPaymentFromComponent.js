@@ -7,10 +7,7 @@ function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {
     const stateData = req.form.additionalDetailsHidden;
-    // const stateData = 'amazon';
-    Logger.getLogger('Adyen').error(stateData);
     const order = OrderMgr.getOrder(req.form.merchantReference);
-    // const result = req.form.result;
     return handlePayment(stateData, order, req.form.result, options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
