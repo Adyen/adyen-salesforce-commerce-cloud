@@ -138,5 +138,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     );
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
+
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
+      data.amount;
   });
 };

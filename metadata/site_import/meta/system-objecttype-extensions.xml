@@ -536,6 +536,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_ClientKey">
+                <display-name xml:lang="x-default">Your Adyen Client Key to accept live payments</display-name>
+                <description xml:lang="x-default">Retrieve this value from Customer Area</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_PaypalMerchantID">
                 <display-name xml:lang="x-default">Your PayPal MerchantID to accept live payments</display-name>
                 <description xml:lang="x-default">https://docs.adyen.com/payment-methods/paypal/web-component#show-paypal-in-your-payment-form</description>
@@ -595,6 +603,7 @@
                 <attribute attribute-id="Adyen_AmazonPublicKeyID"/>
                 <attribute attribute-id="Adyen_AmazonMerchantID"/>
                 <attribute attribute-id="Adyen_AmazonStoreID"/>
+                <attribute attribute-id="Adyen_ClientKey"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
