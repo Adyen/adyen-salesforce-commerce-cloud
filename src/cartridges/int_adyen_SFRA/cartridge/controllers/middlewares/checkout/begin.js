@@ -19,6 +19,7 @@ function begin(req, res, next) {
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
   const amazonMerchantID = AdyenHelper.getAmazonMerchantID();
   const amazonStoreID = AdyenHelper.getAmazonStoreID();
+  const adyenClientKey = AdyenHelper.getAdyenClientKey();
   const amazonPublicKeyID = AdyenHelper.getAmazonPublicKeyID();
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
@@ -38,6 +39,7 @@ function begin(req, res, next) {
     merchantAccount,
     cardholderNameBool,
     paypalIntent,
+    adyenClientKey,
   };
 
   res.setViewData(viewData);

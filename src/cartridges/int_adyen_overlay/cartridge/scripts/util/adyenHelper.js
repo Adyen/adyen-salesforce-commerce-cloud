@@ -188,6 +188,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_AmazonStoreID');
   },
 
+  getAdyenClientKey() {
+    return adyenHelperObj.getCustomPreference('Adyen_ClientKey');
+  },
+
   getGoogleMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_GooglePayMerchantID');
   },

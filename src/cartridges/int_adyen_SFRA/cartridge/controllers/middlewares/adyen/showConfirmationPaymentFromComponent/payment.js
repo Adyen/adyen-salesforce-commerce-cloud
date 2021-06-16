@@ -79,7 +79,7 @@ function handleAuthorisedPayment(
   return next();
 }
 
-function handlePayment(stateData, order, result = null, options) {
+function handlePayment(stateData, order, result = null, options) { // eslint-disable-line
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
@@ -105,8 +105,6 @@ function handlePayment(stateData, order, result = null, options) {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
   finalResult = finalResult || paymentDetailsresult;
-
-  Logger.getLogger('Adyen').error(JSON.stringify(finalResult));
 
   // Authorised: The payment authorisation was successfully completed.
   if (

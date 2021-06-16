@@ -4,7 +4,6 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
-const Resource = require('dw/web/Resource');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -83,10 +82,10 @@ function paymentFromComponent(req, res, next) {
   //
   // }
   // else {
-    Logger.getLogger('Adyen').error(`result is ${JSON.stringify(result)}`);
-    result.orderNo = order.orderNo;
-    res.json(result);
-    return next();
+  Logger.getLogger('Adyen').error(`result is ${JSON.stringify(result)}`);
+  result.orderNo = order.orderNo;
+  res.json(result);
+  return next();
   // }
 }
 

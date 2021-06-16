@@ -20,17 +20,9 @@
     </isscript>
 
     <script>
-        var indexOfID = `${request.getHttpQueryString().indexOf("amazonCheckoutSessionId") + 24}`;
-
-        console.log( `${request.getHttpQueryString()}` );
 <!--         var x = `${request.getHttpQueryString().toString().split("=")}`; -->
-        var x = '${request.getHttpQueryString()}'.split("=");
-        console.log('x is: ' + x[x.length - 1]);
-        // console.log('string index ' + indexOfID);
-        // console.log('parsed ' + Number.parseInt(indexOfID));
-<!--         var amazonCheckoutSessionId = `${request.getHttpQueryString().substr(41)}`; -->
-        var amazonCheckoutSessionId = x[x.length - 1];
-        // console.log(amazonCheckoutSessionId);
+        var queryString = '${request.getHttpQueryString()}'.split("=");
+        var amazonCheckoutSessionId = queryString[queryString.length - 1];
 
         window.Configuration = {
             locale: '${request.locale}',
@@ -69,6 +61,7 @@
              environment: '${pdict.adyen.environment}'
          };
          window.installments = '${pdict.adyen.installments}';
+         window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
          window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
          window.amazonMerchantID = '${pdict.adyen.amazonMerchantID}';
          window.amazonStoreID = '${pdict.adyen.amazonStoreID}';
