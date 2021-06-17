@@ -11,7 +11,7 @@ function showConfirmationPaymentFromComponent(req, res, next) {
   try {
     const stateData = req.form.additionalDetailsHidden;
     const order = OrderMgr.getOrder(req.form.merchantReference);
-    return handlePayment(stateData, order, req.form.result, options);
+    return handlePayment(stateData, order, options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${

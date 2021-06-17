@@ -19,6 +19,8 @@
       window.amazonMerchantID = '${pdict.adyen.amazonMerchantID}';
       window.amazonStoreID = '${pdict.adyen.amazonStoreID}';
       window.amazonPublicKeyID = '${pdict.adyen.amazonPublicKeyID}';
+      window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+      window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>
 
 <isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -31,9 +33,7 @@
     <script>
         var queryString = '${request.getHttpQueryString()}'.split("=");
         var amazonCheckoutSessionId = queryString[queryString.length - 1];
-        window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
-        window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
     </script>
     <div id="amazon-container"></div>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
@@ -49,13 +49,12 @@
             id="showConfirmationForm"
             name="showConfirmationForm"
             action="${ShowConfirmationPaymentFromComponent}">
-                  <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-                  <input type="hidden" id="merchantReference" name="merchantReference"/>
-                  <input type="hidden" id="result" name="result" value="null"/>
+            <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
+            <input type="hidden" id="merchantReference" name="merchantReference"/>
+            <input type="hidden" id="result" name="result" value="null"/>
       </form>
 <iselse>
     <script>
-         window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
          window.installments = '${pdict.adyen.installments}';
          window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
@@ -64,7 +63,6 @@
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
          window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
-         window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
      </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
@@ -102,8 +100,8 @@
 
            id="showConfirmationForm"
            action="${ShowConfirmationPaymentFromComponent}">
-                 <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-                 <input type="hidden" id="merchantReference" name="merchantReference"/>
+           <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
+           <input type="hidden" id="merchantReference" name="merchantReference"/>
      </form>
 </iselse>
 </isif>

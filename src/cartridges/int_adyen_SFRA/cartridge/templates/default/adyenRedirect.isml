@@ -1,11 +1,5 @@
 
 <iscontent type="text/html"/>
-<script>
-
-
-</script>
-
-<!--<isset name="Redirect" value="${URLUtils.https('Adyen-Redirect')}" scope="page"/>-->
 
 <form method="post"
       id="redirectForm"

@@ -180,6 +180,7 @@ function getAmazonpayConfig() {
       if (store.formErrorsExist) {
         reject();
       } else {
+        helpers.assignPaymentMethodValue();
         resolve();
       }
     },

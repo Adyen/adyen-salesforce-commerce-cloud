@@ -34,7 +34,7 @@ function paymentFromComponent(data, component) {
       }
       handleAmazonResponse(response, component);
     },
-  }).fail(() => {});
+  });
 }
 
 const amazonConfig = {

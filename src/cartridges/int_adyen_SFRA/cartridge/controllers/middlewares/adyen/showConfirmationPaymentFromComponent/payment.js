@@ -78,11 +78,12 @@ function handleAuthorisedPayment(
   return next();
 }
 
-function handlePayment(stateData, order, result = null, options) { // eslint-disable-line
+// eslint-disable-next-line complexity
+function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
-
+  const { result } = options.req.form;
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
