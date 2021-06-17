@@ -3,6 +3,9 @@ const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const handlePayment = require('./showConfirmationPaymentFromComponent/payment');
 
+/*
+ * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
+ */
 function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {

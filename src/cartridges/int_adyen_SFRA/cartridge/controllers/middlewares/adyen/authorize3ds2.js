@@ -2,6 +2,12 @@ const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const createAuthorization = require('./authorize3ds2/auth');
 
+/**
+ * Continues a 3DS2 payment.
+ * Makes second call to /payments/details with IdentifyShopper or ChallengeShopper token.
+ *
+ * @returns rendering template or error
+ */
 function authorize3ds2(req, res, next) {
   const options = { req, res, next };
   try {

@@ -1,0 +1,20 @@
+.paymentMethod {
+  list-style-type: none;
+  margin: 0.5em 0 0.5em 0; }
+
+.paymentMethod_img {
+  margin: 0 0.25em 0 0.25em; }
+
+.additionalFields {
+  display: inline-block;
+  margin: 0.5em;
+  width: 100%; }
+
+.adyen-checkout__input-wrapper .adyen-checkout__dropdown__list {
+  z-index: 10; }
+
+#paymentMethodsUl {
+  width: 80%;
+  -webkit-padding-start: 0;
+          padding-inline-start: 0;
+  margin: auto; }

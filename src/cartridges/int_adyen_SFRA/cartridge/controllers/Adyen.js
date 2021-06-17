@@ -61,6 +61,20 @@ server.get('Redirect', server.middleware.https, adyen.redirect);
 server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 
 /**
+ *  Confirm payment status after receiving redirectResult from Adyen
+ */
+server.post('PaymentsDetails', server.middleware.https, adyen.paymentsDetails);
+
+/**
+ * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
+ */
+server.post(
+  'Redirect3DS1Response',
+  server.middleware.https,
+  adyen.redirect3ds1Response,
+);
+
+/**
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
  */
 server.post(

@@ -1,6 +1,6 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<isset name="adyenOneClickEnabled" value="${pdict.AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
+<isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 

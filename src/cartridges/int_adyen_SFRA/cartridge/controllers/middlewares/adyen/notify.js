@@ -2,6 +2,9 @@ const Transaction = require('dw/system/Transaction');
 const checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
 const handleNotify = require('*/cartridge/scripts/handleNotify');
 
+/**
+ * Called by Adyen to update status of payments. It should always display [accepted] when finished.
+ */
 function notify(req, res, next) {
   const status = checkAuth.check(req);
   if (!status) {

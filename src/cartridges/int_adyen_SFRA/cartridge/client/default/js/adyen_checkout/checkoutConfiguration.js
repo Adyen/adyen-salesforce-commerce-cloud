@@ -212,6 +212,7 @@ function setCheckoutConfiguration() {
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
+    pix: getQRCodeConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',

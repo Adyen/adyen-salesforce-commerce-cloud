@@ -1,5 +1,20 @@
 /**
- *
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  */
 const dwsvc = require('dw/svc');
 const dwsystem = require('dw/system');
@@ -111,18 +126,6 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
   },
 
-  getAdyenRecurringPaymentsEnabled() {
-    let returnValue = false;
-    if (
-      !empty(adyenCurrentSite) &&
-      (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') ||
-        adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))
-    ) {
-      returnValue = true;
-    }
-    return returnValue;
-  },
-
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     let adyenGivingAvailable = false;
@@ -156,11 +159,7 @@ var adyenHelperObj = {
     };
   },
 
-  getAdyenRecurringEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
-  },
-
-  getAdyenOneClickEnabled() {
+  getAdyenRecurringPaymentsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
 
@@ -520,6 +519,7 @@ var adyenHelperObj = {
 
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
@@ -528,6 +528,13 @@ var adyenHelperObj = {
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
+    }
+
+    if(stateData.paymentMethod?.storedPaymentMethodId) {
+      stateData.recurringProcessingModel = 'CardOnFile';
+      stateData.shopperInteraction = 'ContAuth';
+    } else {
+        stateData.shopperInteraction = 'Ecommerce';
     }
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
@@ -540,7 +547,7 @@ var adyenHelperObj = {
         orderToken
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
-    stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
+
     stateData.additionalData = {};
     return stateData;
   },
@@ -773,6 +780,48 @@ var adyenHelperObj = {
       }
     }
     return { stateData: filteredStateData, invalidFields };
+  },
+
+  createAdyenCheckoutResponse(checkoutresponse) {
+    if (
+        ['Authorised', 'Refused', 'Error', 'Cancelled'].indexOf(
+            checkoutresponse.resultCode,
+        ) !== -1
+    ) {
+      return {
+        isFinal: true,
+        isSuccessful: checkoutresponse.resultCode === 'Authorised',
+      }
+    }
+
+    if (
+        [
+          'RedirectShopper',
+          'IdentifyShopper',
+          'ChallengeShopper',
+          'PresentToShopper',
+          'Pending',
+        ].indexOf(checkoutresponse.resultCode) !== -1
+    ) {
+      return {
+        isFinal: false,
+        action: checkoutresponse.action,
+      };
+    }
+
+    if (checkoutresponse.resultCode === 'Received') {
+      return {
+        isFinal: false,
+      };
+    }
+
+    Logger.getLogger('Adyen').error(
+        `Unknown resultCode: ${checkoutresponse.resultCode}.`,
+    );
+    return {
+      isFinal: true,
+      isSuccessful: false,
+    };
   },
 };
 

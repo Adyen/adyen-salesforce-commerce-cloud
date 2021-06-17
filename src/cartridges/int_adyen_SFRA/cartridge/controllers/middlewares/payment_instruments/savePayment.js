@@ -9,17 +9,20 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
-function savePayment(req, res, next) {
-  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
-    return next();
-  }
-
-  const paymentForm = server.forms.getForm('creditCard');
-  const customer = CustomerMgr.getCustomerByCustomerNumber(
-    req.currentCustomer.profile.customerNo,
+function containsValidResultCode(req) {
+  return (
+    [
+      'Authorised',
+      'IdentifyShopper',
+      'ChallengeShopper',
+      'RedirectShopper',
+    ].indexOf(req.resultCode) !== -1
   );
+}
 
+function createPaymentInstrument(customer) {
   let paymentInstrument;
+  const paymentForm = server.forms.getForm('creditCard');
   const wallet = customer.getProfile().getWallet();
   Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
@@ -29,12 +32,33 @@ function savePayment(req, res, next) {
       paymentForm.adyenStateData.value;
   });
 
+  return paymentInstrument;
+}
+
+function getResponseBody(action) {
+  return {
+    success: true,
+    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
+    ...(action && { redirectAction: action }),
+  };
+}
+
+function savePayment(req, res, next) {
+  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
+    return next();
+  }
+
+  const customer = CustomerMgr.getCustomerByCustomerNumber(
+    req.currentCustomer.profile.customerNo,
+  );
+
   Transaction.begin();
   const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
     customer,
-    paymentInstrument,
+    createPaymentInstrument(customer),
   );
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+
+  if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
     Transaction.rollback();
     res.json({
       success: false,
@@ -42,6 +66,7 @@ function savePayment(req, res, next) {
     });
     return this.emit('route:Complete', req, res);
   }
+
   Transaction.commit();
 
   updateSavedCards({
@@ -51,10 +76,7 @@ function savePayment(req, res, next) {
   // Send account edited email
   accountHelpers.sendAccountEditedEmail(customer.profile);
 
-  res.json({
-    success: true,
-    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
-  });
+  res.json(getResponseBody(zeroAuthResult.action));
   return this.emit('route:Complete', req, res);
 }
 

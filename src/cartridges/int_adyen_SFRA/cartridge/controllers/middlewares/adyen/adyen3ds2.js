@@ -5,6 +5,9 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
+/**
+ * Initiates a 3DS2 payment
+ */
 function adyen3ds2(req, res, next) {
   const protocol = req.https ? 'https' : 'http';
 

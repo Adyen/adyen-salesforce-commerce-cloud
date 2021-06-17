@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment Response Handler should get 3ds2 response 1`] = `
+Object {
+  "action": "\\"mocked_action\\"",
+  "resultCode": "mocked_result_code",
+  "threeDS2": true,
+}
+`;
+
+exports[`Payment Response Handler should get redirect response with md signature 1`] = `
+Object {
+  "authorized": true,
+  "authorized3d": true,
+  "orderNo": "mocked_order_number",
+  "paymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": "mocked_payment_data",
+    },
+    "paymentMethod": "mocked_method",
+    "paymentTransaction": Object {
+      "paymentProcessor": "mocked_payment_processor",
+    },
+    "setCreditCardExpirationMonth": [MockFunction],
+    "setCreditCardExpirationYear": [MockFunction],
+    "setCreditCardNumber": [MockFunction],
+    "setCreditCardToken": [MockFunction],
+    "setCreditCardType": [MockFunction],
+  },
+  "redirectObject": Object {
+    "data": Object {
+      "MD": "mocked_redirect_MD",
+    },
+    "url": "mocked_redirect_url",
+  },
+  "signature": "ct_url __ ocked_redirect_MD",
+}
+`;
+
+exports[`Payment Response Handler should get redirect response with payment data signature 1`] = `
+Object {
+  "authorized": true,
+  "authorized3d": false,
+  "orderNo": "mocked_order_number",
+  "paymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": "mocked_payment_data",
+    },
+    "paymentMethod": "mocked_method",
+    "paymentTransaction": Object {
+      "paymentProcessor": "mocked_payment_processor",
+    },
+    "setCreditCardExpirationMonth": [MockFunction],
+    "setCreditCardExpirationYear": [MockFunction],
+    "setCreditCardNumber": [MockFunction],
+    "setCreditCardToken": [MockFunction],
+    "setCreditCardType": [MockFunction],
+  },
+  "redirectObject": Object {
+    "url": "mocked_redirect_url",
+  },
+  "signature": "ct_url __ ocked_payment_data",
+}
+`;
