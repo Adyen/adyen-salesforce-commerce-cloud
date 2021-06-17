@@ -37,7 +37,7 @@ function authorize(paymentInstrument, order, options) {
       PaRes: req.form.PaRes,
     },
   };
-  const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+  const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
   clearForms.clearAdyenData(paymentInstrument);
 
   const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);

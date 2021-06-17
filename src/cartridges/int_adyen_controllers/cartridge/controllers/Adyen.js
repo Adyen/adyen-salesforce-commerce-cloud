@@ -92,7 +92,7 @@ function showConfirmation() {
       details: getDetails(),
       paymentData,
     };
-    const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearAdyenData(adyenPaymentInstrument);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error('Invalid /payments/details call');
@@ -279,7 +279,7 @@ function showConfirmationPaymentFromComponent() {
     details,
     paymentData,
   };
-  const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+  const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
   const paymentProcessor = PaymentMgr.getPaymentMethod(
     adyenPaymentInstrument.getPaymentMethod(),
   ).getPaymentProcessor();
@@ -507,7 +507,7 @@ function authorize3ds2() {
       details,
     };
 
-    const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+    const result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
       clearAdyenData(paymentInstrument);
@@ -598,7 +598,7 @@ function authorizeWithForm() {
       },
     };
 
-    const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+    const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
       return response.redirect(URLUtils.httpHome());
