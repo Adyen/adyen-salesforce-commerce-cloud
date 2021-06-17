@@ -3,7 +3,6 @@ const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const Locale = require('dw/util/Locale');
 const Resource = require('dw/web/Resource');
-const Logger = require('dw/system/Logger');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
@@ -92,7 +91,6 @@ function handlePayment(stateData, order, result = null, options) { // eslint-dis
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
       finalResult = JSON.parse(result);
     } else {
-      Logger.getLogger('Adyen').error('went to handlepaymenterror');
       return handlePaymentError(order, options);
     }
   }
@@ -110,7 +108,6 @@ function handlePayment(stateData, order, result = null, options) { // eslint-dis
   if (
     ['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1
   ) {
-    Logger.getLogger('Adyen').error('authorised');
     return handleAuthorisedPayment(
       order,
       finalResult,
