@@ -1,11 +1,10 @@
 <isif condition="${pdict.adyen && pdict.adyen.adyenGivingAvailable}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-    <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/adyenGiving.js');
-<!--        assets.addJs('/js/bundle.js');-->
+        assets.addJs('/js/bundle.js');
     </isscript>
     <script>
         window.Configuration = {

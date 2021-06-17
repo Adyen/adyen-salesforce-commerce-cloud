@@ -1,11 +1,10 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-<!--            assets.addJs('/js/bundle.js');-->
+            assets.addJs('/js/bundle.js');
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">

@@ -1,22 +1,20 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <isset name="adyenOneClickEnabled" value="${pdict.AdyenHelper.getAdyenOneClickEnabled()}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-<!--    assets.addJs('/js/bundle.js');-->
+    assets.addJs('/js/bundle.js');
 </isscript>
 
 <isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-    <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/amazon.js');
-        <!--        assets.addJs('/js/bundle.js');-->
+        assets.addJs('/js/bundle.js');
     </isscript>
 
     <script>
