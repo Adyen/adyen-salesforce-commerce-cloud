@@ -44,7 +44,7 @@ function handlePaymentsDetailsCall(
   paymentInstrument,
   options,
 ) {
-  const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+  const result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
   const isValid = checkForValidRequest(
     result,
     order,

@@ -9,7 +9,7 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
  */
 function paymentsDetails(req, res, next) {
   try {
-    const paymentsDetailsResponse = adyenCheckout.doPaymentDetailsCall(
+    const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
       JSON.parse(req.body),
     );
     const response = AdyenHelper.createAdyenCheckoutResponse(

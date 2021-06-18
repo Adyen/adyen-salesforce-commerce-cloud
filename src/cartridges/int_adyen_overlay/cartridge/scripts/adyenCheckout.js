@@ -103,7 +103,7 @@ function createPaymentRequest(args) {
     }
 
   // make API call
-    return doPaymentCall(order, paymentInstrument, paymentRequest);
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `error processing payment. Error message: ${
@@ -114,7 +114,7 @@ function createPaymentRequest(args) {
   }
 }
 
-function doPaymentCall(order, paymentInstrument, paymentRequest) {
+function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
@@ -294,7 +294,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
   }
 }
 
-function doPaymentDetailsCall(paymentDetailsRequest) {
+function doPaymentsDetailsCall(paymentDetailsRequest) {
   const callResult = executeCall(
     AdyenHelper.SERVICE.PAYMENTDETAILS,
     paymentDetailsRequest,
@@ -350,6 +350,6 @@ function executeCall(serviceType, requestObject) {
 
 module.exports = {
   createPaymentRequest,
-  doPaymentCall,
-  doPaymentDetailsCall,
+  doPaymentsCall,
+  doPaymentsDetailsCall,
 };

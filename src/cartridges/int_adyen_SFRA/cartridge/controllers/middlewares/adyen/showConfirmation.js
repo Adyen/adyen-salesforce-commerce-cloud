@@ -31,7 +31,7 @@ function showConfirmation(req, res, next) {
       paymentData,
     };
 
-    const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearForms.clearAdyenData(adyenPaymentInstrument);
 
     if (result.invalidRequest) {

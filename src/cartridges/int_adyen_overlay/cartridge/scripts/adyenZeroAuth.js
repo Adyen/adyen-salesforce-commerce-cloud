@@ -49,7 +49,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 
-    return adyenCheckout.doPaymentCall(
+    return adyenCheckout.doPaymentsCall(
       null,
       paymentInstrument,
       zeroAuthRequest,
