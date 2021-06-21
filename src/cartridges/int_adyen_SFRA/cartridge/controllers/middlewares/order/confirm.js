@@ -1,13 +1,8 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function handleAdyenGiving(req, res, order) {
-  const protocol = req.https ? 'https' : 'http';
-  const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-    protocol,
-    req.host,
-  );
+  const clientKey = AdyenHelper.getAdyenClientKey();
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const configuredAmounts = AdyenHelper.getDonationAmounts();
   const charityName = AdyenHelper.getAdyenGivingCharityName();
@@ -23,7 +18,7 @@ function handleAdyenGiving(req, res, order) {
 
   const viewData = res.getViewData();
   viewData.adyen = {
-    originKey,
+    clientKey,
     environment,
     adyenGivingAvailable: true,
     pspReference: order.custom.Adyen_pspReference,

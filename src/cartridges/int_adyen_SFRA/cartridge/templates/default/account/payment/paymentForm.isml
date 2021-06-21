@@ -12,7 +12,7 @@
         <script type="text/javascript">
             window.Configuration = {
                 locale: '${request.locale}',
-                originKey: '${pdict.adyen.originKey}',
+                clientKey: '${pdict.adyen.clientKey}',
                 environment: '${pdict.adyen.environment}'
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
