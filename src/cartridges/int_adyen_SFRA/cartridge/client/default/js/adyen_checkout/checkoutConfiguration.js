@@ -164,9 +164,34 @@ function handleOnChange(state) {
   store.componentsObj[type].stateData = state.data;
 }
 
+function getAmazonpayConfig() {
+  return {
+    showPayButton: true,
+    productType: 'PayOnly',
+    checkoutMode: 'ProcessOrder',
+    returnUrl: window.returnURL,
+    configuration: {
+      merchantId: window.amazonMerchantID,
+      storeId: window.amazonStoreID,
+      publicKeyId: window.amazonPublicKeyID,
+    },
+    onClick: (resolve, reject) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        reject();
+      } else {
+        helpers.assignPaymentMethodValue();
+        resolve();
+      }
+    },
+    onError: () => {},
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.showPayButton = false;
+  store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),
@@ -187,6 +212,7 @@ function setCheckoutConfiguration() {
     swish: getQRCodeConfig(),
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
+    amazonpay: getAmazonpayConfig(),
     pix: getQRCodeConfig(),
     afterpay_default: {
       visibility: {

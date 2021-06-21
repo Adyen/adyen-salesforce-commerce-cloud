@@ -51,7 +51,9 @@ function displaySelectedMethod(type) {
   store.selectedMethod = type;
   resetPaymentMethod();
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1;
+    ['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(
+      type,
+    ) > -1;
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');

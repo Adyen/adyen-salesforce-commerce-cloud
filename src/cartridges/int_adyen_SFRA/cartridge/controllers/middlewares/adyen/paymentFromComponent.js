@@ -28,7 +28,6 @@ function paymentFromComponent(req, res, next) {
     return next();
   }
   const currentBasket = BasketMgr.getCurrentBasket();
-
   let paymentInstrument;
   Transaction.wrap(() => {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
@@ -46,9 +45,13 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
-  const result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument,
+
+  let result;
+  Transaction.wrap(() => {
+    result = adyenCheckout.createPaymentRequest({
+      Order: order,
+      PaymentInstrument: paymentInstrument,
+    });
   });
 
   result.orderNo = order.orderNo;

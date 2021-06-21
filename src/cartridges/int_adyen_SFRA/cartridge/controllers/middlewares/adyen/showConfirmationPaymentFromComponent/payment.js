@@ -78,19 +78,24 @@ function handleAuthorisedPayment(
   return next();
 }
 
+// eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
-
+  const result = options.req.form?.result;
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
+  let finalResult;
   if (!hasStateData) {
-    return handlePaymentError(order, options);
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      return handlePaymentError(order, options);
+    }
   }
-
-  const { result } = handlePaymentsDetailsCall(
+  const detailsCall = handlePaymentsDetailsCall(
     stateData,
     adyenPaymentInstrument,
   );
@@ -98,11 +103,15 @@ function handlePayment(stateData, order, options) {
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
+  finalResult = finalResult || detailsCall.result;
+
   // Authorised: The payment authorisation was successfully completed.
-  if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
+  if (
+    ['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1
+  ) {
     return handleAuthorisedPayment(
       order,
-      result,
+      finalResult,
       adyenPaymentInstrument,
       options,
     );

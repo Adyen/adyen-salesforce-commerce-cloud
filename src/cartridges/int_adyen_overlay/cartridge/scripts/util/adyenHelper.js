@@ -52,7 +52,7 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '3.18.2',
+  CHECKOUT_COMPONENT_VERSION: '4.5.0',
   VERSION: '21.1.0',
 
   getService(service) {
@@ -173,6 +173,22 @@ var adyenHelperObj = {
 
   getPaypalMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
+  },
+
+  getAmazonMerchantID() {
+    return adyenHelperObj.getCustomPreference('Adyen_AmazonMerchantID');
+  },
+
+  getAmazonPublicKeyID() {
+    return adyenHelperObj.getCustomPreference('Adyen_AmazonPublicKeyID');
+  },
+
+  getAmazonStoreID() {
+    return adyenHelperObj.getCustomPreference('Adyen_AmazonStoreID');
+  },
+
+  getAdyenClientKey() {
+    return adyenHelperObj.getCustomPreference('Adyen_ClientKey');
   },
 
   getGoogleMerchantID() {

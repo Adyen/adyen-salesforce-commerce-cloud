@@ -17,6 +17,10 @@ function begin(req, res, next) {
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const installments = AdyenHelper.getCreditCardInstallments();
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
+  const amazonMerchantID = AdyenHelper.getAmazonMerchantID();
+  const amazonStoreID = AdyenHelper.getAmazonStoreID();
+  const adyenClientKey = AdyenHelper.getAdyenClientKey();
+  const amazonPublicKeyID = AdyenHelper.getAmazonPublicKeyID();
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
   const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
@@ -28,10 +32,14 @@ function begin(req, res, next) {
     environment,
     installments,
     paypalMerchantID,
+    amazonMerchantID,
+    amazonStoreID,
+    amazonPublicKeyID,
     googleMerchantID,
     merchantAccount,
     cardholderNameBool,
     paypalIntent,
+    adyenClientKey,
   };
 
   res.setViewData(viewData);
