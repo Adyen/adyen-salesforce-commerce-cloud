@@ -8,10 +8,9 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
  * Initiates a 3DS2 payment
  */
 function adyen3ds2(req, res, next) {
-
   try {
     const clientKey = AdyenHelper.getAdyenClientKey();
-    environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+    const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     const { resultCode } = req.querystring;
     const { orderNo } = req.querystring;
 
