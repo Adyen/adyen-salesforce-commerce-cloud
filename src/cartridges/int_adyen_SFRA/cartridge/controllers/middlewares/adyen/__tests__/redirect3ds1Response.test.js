@@ -34,14 +34,14 @@ describe('Redirect 3DS1 Response', () => {
       PaRes: 'MOCK_PaRes'
     };
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode:'Authorised',
       pspReference: 'mocked_pspReference',
     }));
 
     redirect3ds1Response(req, res, jest.fn());
 
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
     expect(URLUtils.url.mock.calls[0][0]).toBe('PaymentInstruments-List');
   });
 
@@ -54,14 +54,14 @@ describe('Redirect 3DS1 Response', () => {
       PaRes: 'MOCK_PaRes'
     };
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode:'Cancelled',
       pspReference: 'mocked_pspReference',
     }));
 
     redirect3ds1Response(req, res, jest.fn());
 
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
     expect(URLUtils.url.mock.calls[0]).toEqual(['PaymentInstruments-AddPayment', 'isAuthorised', 'false']);
   });
 
@@ -71,14 +71,14 @@ describe('Redirect 3DS1 Response', () => {
 
     req.form = null;
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode:'Cancelled',
       pspReference: 'mocked_pspReference',
     }));
 
     redirect3ds1Response(req, res, jest.fn());
 
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls.length).toEqual(1);
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
   });
 
 });

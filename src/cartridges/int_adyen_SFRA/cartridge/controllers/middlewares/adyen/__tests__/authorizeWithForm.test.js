@@ -61,7 +61,7 @@ describe('Authorize with Form', () => {
 
   it("should call 'failOrder' if result has error", () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       error: true,
       merchantReference: 'mocked_merchantReference'
     });
@@ -71,7 +71,7 @@ describe('Authorize with Form', () => {
   it("should call 'failOrder' if result code is not 'Authorised'", () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const OrderMgr = require('dw/order/OrderMgr');
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Not_Authorised',
       merchantReference: 'mocked_merchantReference'
     });
@@ -90,7 +90,7 @@ describe('Authorize with Form', () => {
   it('should confirm order', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Authorised',
       merchantReference: 'mocked_merchantReference',
     });

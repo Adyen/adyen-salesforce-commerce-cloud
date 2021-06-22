@@ -35,7 +35,7 @@ function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
     paymentData,
   };
 
-  const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+  const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
   return { result, adyenPaymentInstrument };
 }
 

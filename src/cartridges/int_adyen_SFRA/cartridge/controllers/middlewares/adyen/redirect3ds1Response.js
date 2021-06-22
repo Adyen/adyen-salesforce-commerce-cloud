@@ -13,7 +13,7 @@ function redirect(req, res, next) {
         PaRes: req.form?.PaRes,
       },
     };
-    const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+    const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
 
     if (result.resultCode === 'Authorised') {
       res.redirect(URLUtils.url('PaymentInstruments-List'));
