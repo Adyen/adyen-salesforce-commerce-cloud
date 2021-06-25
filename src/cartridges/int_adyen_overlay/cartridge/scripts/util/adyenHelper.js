@@ -35,7 +35,6 @@ var adyenHelperObj = {
     RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     POSPAYMENT: 'AdyenPosPayment',
-    ORIGINKEYS: 'AdyenOriginKeys',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',

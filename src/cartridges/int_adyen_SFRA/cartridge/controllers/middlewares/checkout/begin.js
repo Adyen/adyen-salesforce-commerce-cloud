@@ -1,4 +1,3 @@
-const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
@@ -9,11 +8,7 @@ function begin(req, res, next) {
     });
   }
 
-  const protocol = req.https ? 'https' : 'http';
-  const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-    protocol,
-    req.host,
-  );
+  const clientKey = AdyenHelper.getAdyenClientKey();
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const installments = AdyenHelper.getCreditCardInstallments();
   const paypalMerchantID = AdyenHelper.getPaypalMerchantID();
@@ -28,7 +23,7 @@ function begin(req, res, next) {
 
   const viewData = res.getViewData();
   viewData.adyen = {
-    originKey,
+    clientKey,
     environment,
     installments,
     paypalMerchantID,
