@@ -416,11 +416,7 @@ function getPaymentMethods(cart, customer) {
 }
 
 function redirect3ds2() {
-  const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-  const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-    request.httpProtocol,
-    request.httpHost,
-  );
+  const clientKey = AdyenHelper.getAdyenClientKey();
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const locale = request.getLocale();
 
@@ -438,7 +434,7 @@ function redirect3ds2() {
   app
     .getView({
       locale,
-      originKey,
+      clientKey,
       environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
       action: action,

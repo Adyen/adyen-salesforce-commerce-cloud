@@ -1,4 +1,3 @@
-<isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
@@ -15,11 +14,11 @@
 <script>
     var paymentMethods = `${getPaymentMethodsResponse}`.replace(/&quot;/g, '\"');
     window.getPaymentMethodsResponse = JSON.parse(paymentMethods);
-    var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+    var clientKey = "${AdyenHelper.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
-    window.Configuration = {originKey, loadingContext, environment, locale};
+    window.Configuration = {clientKey, loadingContext, environment, locale};
     window.installments = "${AdyenHelper.getCreditCardInstallments()}";
     window.paypalMerchantID = "${AdyenHelper.getPaypalMerchantID()}";
     window.googleMerchantID = "${AdyenHelper.getGoogleMerchantID()}";
