@@ -167,6 +167,7 @@ function initializeBillingEvents() {
       bcmc_mobile: getQRCodeConfig(),
       wechatpayQR: getQRCodeConfig(),
       pix: getQRCodeConfig(),
+      amazonpay: getAmazonpayConfig(),
       afterpay_default: {
         visibility: {
           personalDetails: 'editable',
@@ -308,7 +309,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -387,6 +388,8 @@ async function renderGenericComponent() {
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
+        paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -622,6 +625,30 @@ function getQRCodeConfig() {
       );
       $('#dwfrm_billing').trigger('submit');
     },
+  };
+}
+
+function getAmazonpayConfig() {
+  return {
+    showPayButton: true,
+    productType: 'PayOnly',
+    checkoutMode: 'ProcessOrder',
+    returnUrl: window.returnURL,
+    configuration: {
+      merchantId: window.amazonMerchantID,
+      storeId: window.amazonStoreID,
+      publicKeyId: window.amazonPublicKeyID,
+    },
+    onClick: (resolve, reject) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (formErrorsExist) {
+        reject();
+      } else {
+        assignPaymentMethodValue();
+        resolve();
+      }
+    },
+    onError: () => {},
   };
 }
 

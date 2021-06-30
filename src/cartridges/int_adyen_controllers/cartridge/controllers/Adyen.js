@@ -243,6 +243,7 @@ function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
   const orderNumber = paymentInformation.get('merchantReference').value();
   const orderToken = paymentInformation.get('orderToken').value();
+  const result = paymentInformation.get('result').value();
   const order = OrderMgr.getOrder(orderNumber, orderToken);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
@@ -258,17 +259,23 @@ function showConfirmationPaymentFromComponent() {
     paymentInformation.get('paymentFromComponentStateData').value(),
   );
 
+  let finalResult;
+
   const hasStateData = stateData && stateData.details && stateData.paymentData;
   if (!hasStateData) {
-    // The billing step is fulfilled, but order will be failed
-    app.getForm('billing').object.fulfilled.value = true;
-    // fail order if no stateData available
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
-    app.getController('COBilling').Start();
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      // The billing step is fulfilled, but order will be failed
+      app.getForm('billing').object.fulfilled.value = true;
+      // fail order if no stateData available
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+      app.getController('COBilling').Start();
 
-    return {};
+      return {};
+    }
   }
   const { details } = stateData;
   const { paymentData } = stateData;
@@ -279,7 +286,7 @@ function showConfirmationPaymentFromComponent() {
     details,
     paymentData,
   };
-  const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
+  const detailsCall = adyenCheckout.doPaymentsDetailsCall(requestObject);
   const paymentProcessor = PaymentMgr.getPaymentMethod(
     adyenPaymentInstrument.getPaymentMethod(),
   ).getPaymentProcessor();
@@ -288,9 +295,12 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  if (result.resultCode === 'Authorised') {
+
+  finalResult = finalResult || detailsCall.result;
+
+  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
     Transaction.wrap(() => {
-      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
     OrderModel.submit(order);
     clearForms();
