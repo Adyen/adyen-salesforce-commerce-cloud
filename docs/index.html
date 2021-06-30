@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adyen Installments Configuration Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js"
+            integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A=="
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+          integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css"
+          integrity="sha256-7stu7f6AB+1rx5IqD8I+XuIcK4gSnpeGeSjqsODU+Rk=" crossorigin="anonymous"/>
+    <style>
+        @font-face {
+            font-family: "Fakt";
+            src: url("https://www.adyen.com/.resources/adyen-website/themes/fonts/fakt/Fakt-Normal.woff2");
+        }
+        @font-face {
+            font-font: "Fakt";
+            src: url("https://www.adyen.com/.resources/adyen-website/themes/fonts/adl-fakt/FaktPro-SemiBold.woff");
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        * {
+            font-family: "Fakt", Verdana, Roboto;
+        }
+
+        .multiselect-container>li>a>label>input[type=checkbox] {
+            margin-bottom: 5px !important;
+        }
+
+        a .fas, a .far {
+            color: #989898;
+            cursor: pointer;
+        }
+
+        a .fas:hover, a .far:hover {
+            color: #6a6a6a;
+        }
+
+        .multiselect-container > li > a > label {
+            margin: 0;
+            height: 100%;
+            cursor: pointer;
+            font-weight: 400;
+            padding: 2px 20px 3px 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-group {
+            border: 1px solid #d4cfcf;
+            border-radius: 5px;
+            display: block;
+            background-color: white;
+        }
+
+        span.multiselect-selected-text {
+            font-size: 14px;
+            width: 100%;
+        }
+
+        input[type=checkbox], input[type=radio] {
+            box-sizing: border-box;
+            padding: 0;
+            margin-bottom: 0 !important;
+            margin-right: 5px !important;
+        }
+
+        .btn-group-vertical > .btn, .btn-group > .btn {
+            position: relative;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: inherit !important;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            width: 100%;
+        }
+
+        .wizard {
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wizard::before {
+            background-color: #777872;
+            border-radius: 28px;
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .active-step .wizard::before {
+            background-color: dodgerblue;
+        }
+
+        .wizard-wrapper {
+            display: none;
+        }
+
+        .active-step .wizard-wrapper {
+            display: flex;
+        }
+
+        .wizard-1::before {
+            content: "1"
+        }
+
+        .wizard-2::before {
+            content: "2"
+        }
+
+        .wizard-3::before {
+            content: "3"
+        }
+
+    </style>
+</head>
+<body>
+<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" id="toaster" data-autohide="true"
+     style="position: absolute; top: 15px; right: 45%; z-index: 999999">
+    <div class="toast-body">
+        Copied to clipboard!
+    </div>
+</div>
+<div>
+    <div class="container my-5 px-0 rounded-lg">
+        <h1>Installment options wizard</h1>
+        <p>Define the installment options for the official Adyen Oracle Commerce Cloud payments plugin</p>
+    </div>
+    <div class="shadow-sm mx-auto container border m-2 p-2 rounded-lg active-step step-1">
+        <div class="d-flex p-2 bd-highlight justify-content-between">
+            <span class="wizard wizard-1">Choose what you want to do</span>
+        </div>
+        <div class="wizard-wrapper">
+            <div class="col-6 py-4 bd-highlight">
+                <h4>Create</h4>
+                <p>Create a new set of payment installment options</p>
+                <button type="button" class="btn btn-outline-primary" onclick="createInstallment(2)">Create</button>
+            </div>
+            <div class="col-6 p-4 bd-highlight">
+                <h4>Edit</h4>
+                <p>Edit an existing set of payment installment options</p>
+                <form class="form-inline">
+                    <input type="text" class="form-control col-10 mr-2" id="outputString" aria-describedby="outputPrepend"
+                           placeholder="Your installment options code" oninput="handleOutputChange(this.value)">
+                    <button type="button" class="btn btn-outline-primary" onclick="changeStep(2)">Edit</button>
+                    <div id="outputFeedback" class="invalid-feedback"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rules-wrapper">
+    <div id="rules" class="shadow-sm mx-auto container border m-2 p-2 rounded-lg step-2">
+        <div class="d-flex p-2 bd-highlight justify-content-between">
+            <span class="wizard wizard-2">Add, configure, duplicate and remove installment options</span>
+        </div>
+        <div class="wizard-wrapper" style="flex-direction: column">
+            <div class="d-flex flex-wrap" id="rulesRow"></div>
+            <div class="d-flex col-12 p-2 bd-highlight">
+                <button type="button" id="addRule" class="btn btn-outline-primary mr-2">Add installment option <i class="fas fa-plus"></i></button>
+                <button type="button" id="done" class="btn btn-outline-primary" onclick="setDone()">Done</button>
+                <button type="button" id="start-over" class="btn btn-link btn btn-link ml-auto" onclick="startOver()">Start over</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="shadow-sm mx-auto container border m-2 p-2 rounded-lg step-3">
+        <div class="d-flex p-2 bd-highlight justify-content-between">
+            <span class="wizard wizard-3">Copy your new installment options code</span>
+        </div>
+        <div class="wizard-wrapper flex-column">
+            <div class="col-12 py-4 bd-highlight">
+                <p>Your installment options code</p>
+                <form class="form-inline">
+                    <div class="col-12 p-0 input-group">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-primary" id="outputPrepend" onclick="copyText()"><i class="far fa-copy"></i></button>
+                        </div>
+                        <input disabled type="text" class="form-control" aria-describedby="outputPrepend" id="outputResult">
+                    </div>
+                </form>
+            </div>
+            <div class="col-12 p-2 bd-highlight d-flex justify-content-end">
+                <button type="button" class="btn btn-link btn btn-link" onclick="changeStep(2)">Edit</button>
+                <button type="button" class="btn btn-link btn btn-link" onclick="startOver()">Start Over</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rulesCount = 0;
+    let result = {};
+    const creditCards = [
+        {id: 1, name: "Amex"},
+        // {id: "argencard", name: "Argencard"},
+        // {id: "bcmc", name: "Bancontact/Mister Cash"},
+        // {id: "bijcard", name: "de Bijenkorf Card"},
+        // {id: "cabal", name: "Cabal"},
+        // {id: "cartebancaire", name: "Carte Bancaires"},
+        // {id: "codensa", name: "Codensa"},
+        // {id: "cup", name: "China Union Pay"},
+        // {id: "dankort", name: "Dankort"},
+        // {id: "diners", name: "Diners Club"},
+        // {id: "discover", name: "Discover"},
+        {id: 2, name: "ELO"},
+        // {id: "forbrugsforeningen", name: "Forbrugsforeningen"},
+        {id: 4, name: "HiperCard"},
+        // {id: "hipercard", name: "HiperCard"},
+        // {id: "jcb", name: "JCB"},
+        // {id: "karenmillen", name: "Karen Millen GiftCard"},
+        // {id: "laser", name: "Laser"},
+        // {id: "maestro", name: "Maestro"},
+        // {id: "maestrouk", name: "Maestro UK"},
+        {id: 8, name: "Mastercard"},
+        // {id: "mcalphabankbonus", name: "Alpha Bank Mastercard Bonus"},
+        // {id: "mir", name: "MIR"},
+        // {id: "naranja", name: "Naranja"},
+        // {id: "oasis", name: "Oasis GiftCard"},
+        // {id: "shopping", name: "Tarjeta Shopping"},
+        // {id: "solo", name: "Solo"},
+        // {id: "troy", name: "Troy"},
+        // {id: "uatp", name: "UATP"},
+        {id: 16, name: "Visa"},
+        // {id: "visaalphabankbonus", name: "Alpha Bank Visa Bonus"},
+        // {id: "visadankort", name: "Visa Dankort"},
+        // {id: "warehouse", name: "Warehouse GiftCard"},
+    ].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+    const outputField = document.getElementById("outputString");
+    // const outputAppend = document.getElementById('charsCount');
+    let sums = {};
+
+    function resetFields() {
+        outputField.classList.toggle("is-valid", false)
+        rulesCount = 0
+        result = {}
+        sums = {}
+        document.getElementById('rulesRow').innerHTML = ""
+        document.getElementById('outputString').value = ""
+        document.getElementById('outputResult').value = ""
+    }
+
+    function createInstallment(val) {
+        resetFields()
+        addRule()
+        changeStep(2)
+    }
+
+    function copyText() {
+        $('#toaster').toast('show');
+
+        const input = document.getElementById("outputResult");
+        input.removeAttribute("disabled")
+        input.select();
+        document.execCommand('copy')
+        input.toggleAttribute("disabled")
+        document.getSelection().removeAllRanges();
+    }
+
+    function toggleOutput(isValid, msg) {
+        const errMsg = msg || "Please provide a valid value.";
+        document.getElementById('outputFeedback').textContent = errMsg;
+        outputField.classList.toggle("is-invalid", !isValid);
+        outputField.classList.toggle("is-valid", isValid)
+    }
+
+    function changeStep(val) {
+        document.querySelector(`.active-step`).classList.toggle('active-step', false)
+        document.querySelector(`.step-${val}`).classList.toggle('active-step', true)
+    }
+
+    function setDone() {
+        changeStep(3)
+    }
+
+    function startOver() {
+        resetFields()
+        changeStep(1)
+    }
+
+    function validateField(value, id) {
+        const isValid = id.includes('numberOfInstallments') ? !!value && value>= 2 : !!value;
+        const el = document.getElementById(id);
+        el.classList.toggle("is-invalid", !isValid);
+        el.classList.toggle("is-valid", isValid)
+    }
+
+    function updateHash() {
+        const code = JSON.stringify(Object.values(result));
+        if (code.length > 1000) {
+            toggleOutput(false, "Too many rules. Please delete some")
+        }
+        const el = document.getElementById("outputString");
+        const codeEl = document.getElementById("outputResult")
+        codeEl.value = code;
+        el.value = code;
+    }
+
+    function handleOnChange(index, id, value) {
+        toggleOutput(true);
+        result[id][index] = parseInt(value);
+        updateHash()
+    }
+
+    function handleSelect(id, value) {
+        const hasId = id in sums;
+        if (!hasId) { sums[id] = [] }
+
+        const parsedValue = parseInt(value)
+        const hasValue = sums[id].includes(parsedValue);
+        sums[id] = hasValue ? sums[id].filter(v => v !== parsedValue) : [...sums[id], parsedValue];
+        const sum = sums[id].reduce((acc, num) => parseInt(acc) + parseInt(num), 0);
+
+        result[id][2] = parseInt(sum);
+        updateHash()
+    }
+
+    function isAllowedCreditCard(ruleId, value) {
+        const index = parseInt(value) & result[ruleId][2];
+        return index !== 0
+    }
+
+    function duplicateRule(id) {
+        result[rulesCount] = [...result[id]];
+        sums[rulesCount] = [...sums[id]];
+        addRule()
+    }
+
+    function removeRule(id) {
+        $('[data-toggle="tooltip"]').tooltip('hide')
+        document.getElementById(`rule${id}`).remove();
+        delete result[id];
+        updateHash()
+    }
+
+    function setCreditCards() {
+        Object.entries(result).forEach(([resultId, val]) => {
+            sums[resultId] = [];
+            creditCards.forEach(({ id }) => {
+                if ((parseInt(id) & val[2]) !== 0) sums[resultId] = [...sums[resultId], parseInt(id)]
+            });
+            addRule(resultId)
+        });
+    }
+
+    function handleOutputChange(value) {
+        try {
+            const json = JSON.parse(value);
+            setCounter(0);
+            result = json.reduce((acc, item, idx) => ({...acc, [idx]: item }),{});
+            document.getElementById("rulesRow").innerHTML = "";
+
+            setCreditCards()
+            toggleOutput(true)
+        } catch (e) {
+            toggleOutput(false)
+        }
+    }
+
+    function setCounter(val) {
+        rulesCount = val;
+    }
+
+    function selectAll(ruleId) {
+        return function() {
+            sums[ruleId] = []
+            creditCards.forEach(({id}) => handleSelect(ruleId, id))
+        }
+    }
+
+    function deselectAll(ruleId) {
+        return function() {
+            sums[ruleId] = []
+            result[ruleId][2] = 0
+            updateHash()
+        }
+    }
+
+    function addRule() {
+        const hasRules = rulesCount in result;
+        if (!hasRules) {
+            result[rulesCount] = [0, 2, 0]
+            sums[rulesCount] = []
+        }
+        const el = document.createElement('div');
+        el.setAttribute("id", `rule${rulesCount}`);
+        el.setAttribute("class", "col-12 px-2 mb-2");
+        el.innerHTML = `
+            <div aria-labelledby="headingOne">
+                <div class="pt-3 px-4 bg-light border">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-3">
+                                <label for="amountRange${rulesCount}">Minimum order total:</label>
+                                <input onblur="validateField(this.value, this.id)" min="0" type="number" class="form-control" id="amountRange${rulesCount}" aria-describedby="amountRange" placeholder="Enter Amount" oninput="handleOnChange(0, ${rulesCount}, this.value)" value="${result[rulesCount][0]}">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="numberOfInstallments${rulesCount}">Number of installments:</label>
+                                <input  onblur="validateField(this.value, this.id)"  min="2" type="number" class="form-control" id="numberOfInstallments${rulesCount}" aria-describedby="numberOfInstallments" placeholder="Enter Number of Installments" oninput="handleOnChange(1, ${rulesCount}, this.value)" value="${result[rulesCount][1]}">
+                            </div>
+                            <div class="form-group col-5">
+                                <label for="allowedCreditCards${rulesCount}">Enable cards:</label>
+                                <select id="allowedCreditCards${rulesCount}" multiple="multiple">
+                                    ${creditCards.map(({id, name}) => {
+            if (isAllowedCreditCard(rulesCount, id)) {
+                return `<option value="${id}" selected="selected">${name}</option>`
+            }
+            return `<option value="${id}">${name}</option>`
+        }).join("")}
+                                </select>
+                            </div>
+                            <div class="form-group d-inline-flex align-self-end align-items-center">
+                                <a class="btn btn-link p-0 ml-4 mb-1" data-toggle="tooltip" data-placement="top" title="Duplicate rule" role="button" onclick="duplicateRule(${rulesCount})">
+                                    <i aria-label="Duplicate rule" role="button" class="far fa-clone"></i>
+                                </a>
+                                <a class="btn btn-link p-0 ml-4 mb-1" data-toggle="tooltip" data-placement="top" title="Delete rule" role="button" onclick="removeRule(${rulesCount})">
+                                <i aria-label="Delete rule" role="button" class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            `;
+        const id = rulesCount;
+        document.getElementById('rulesRow').appendChild(el)
+        $('[data-toggle="tooltip"]').tooltip()
+        $(`#allowedCreditCards${rulesCount}`).multiselect({
+            inheritClass: true,
+            includeSelectAllOption: true,
+            onChange: function (option) {
+                handleSelect(id, option[0].value)
+            },
+            onSelectAll: selectAll(rulesCount),
+            onDeselectAll: deselectAll(rulesCount)
+        });
+        setCounter(rulesCount + 1);
+        updateHash()
+    }
+
+    document.getElementById("addRule").addEventListener('click', addRule)
+</script>
+</body>
+</html>
