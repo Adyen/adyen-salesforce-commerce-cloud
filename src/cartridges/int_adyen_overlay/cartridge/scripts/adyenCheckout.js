@@ -167,8 +167,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     }
 
     paymentResponse.fullResponse = responseObject;
-    paymentResponse.redirectObject = responseObject.redirect
-      ? responseObject.redirect
+    paymentResponse.redirectObject = responseObject.action
+      ? responseObject.action
       : '';
     paymentResponse.resultCode = responseObject.resultCode;
     paymentResponse.pspReference = responseObject.pspReference
@@ -196,13 +196,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       }
       paymentResponse.decision = 'ACCEPT';
       paymentResponse.threeDS2 = true;
-      let token3ds2;
-      if (responseObject.authentication['threeds2.fingerprintToken']) {
-        token3ds2 = responseObject.authentication['threeds2.fingerprintToken'];
-      } else if (responseObject.authentication['threeds2.challengeToken']) {
-        token3ds2 = responseObject.authentication['threeds2.challengeToken'];
-      }
-      paymentResponse.token3ds2 = token3ds2;
+
+      paymentResponse.token3ds2 = responseObject.action.token;
       paymentResponse.paymentData = responseObject.paymentData;
     } else if (
       paymentResponse.resultCode === 'Authorised' ||
