@@ -59,7 +59,7 @@ Object {
   "redirectObject": Object {
     "url": "mockedURL",
   },
-  "signature": "mockedURL __ ockedpaymentData",
+  "signature": "mockedURL __ 15",
 }
 `;
 

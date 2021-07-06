@@ -204,7 +204,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.resultCode === 'RedirectShopper'
     ) {
       paymentResponse.decision = 'ACCEPT';
-      paymentResponse.paymentData = responseObject.paymentData;
       // if 3D Secure is used, the statuses will be updated later
       if (paymentResponse.resultCode === 'Authorised') {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
@@ -218,60 +217,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
           responseObject.action,
         );
       }
-
-      if (responseObject.outputDetails) {
-        const outputDetailsData = [];
-        for (const data in responseObject.outputDetails) {
-          outputDetailsData.push({
-            key: data,
-            value: responseObject.outputDetails[data],
-          });
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          outputDetailsData,
-        );
-      }
-    } else if (paymentResponse.resultCode === 'Received') {
-      paymentResponse.decision = 'ACCEPT';
-      if (responseObject.additionalData['bankTransfer.owner']) {
-        const bankTransferData = [
-          {
-            key: 'bankTransfer.description',
-            value: 'bankTransfer.description',
-          },
-        ];
-        for (const data in responseObject.additionalData) {
-          if (data.indexOf('bankTransfer.') !== -1) {
-            bankTransferData.push({
-              key: data,
-              value: responseObject.additionalData[data],
-            });
-          }
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          bankTransferData,
-        );
-      }
-
-      if (responseObject.additionalData['comprafacil.entity']) {
-        const multiBancoData = [
-          { key: 'comprafacil.description', value: 'comprafacil.description' },
-        ];
-        for (const data in responseObject.additionalData) {
-          if (data.indexOf('comprafacil.') !== -1) {
-            multiBancoData.push({
-              key: data,
-              value: responseObject.additionalData[data],
-            });
-          }
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          multiBancoData,
-        );
-      }
-
-      order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-      order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
     } else {
       paymentResponse.decision = 'REFUSED';
       order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
