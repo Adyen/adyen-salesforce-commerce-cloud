@@ -11,10 +11,10 @@ beforeEach(() => {
   res = { redirect: jest.fn() };
   req = {
     form: {
-      additionalDetailsHidden: {
+      additionalDetailsHidden: JSON.stringify({
         paymentData: 'mocked_paymentData',
         details: 'mocked_details',
-      },
+      }),
       result: null
     },
     locale: { id: 'nl_NL' },
