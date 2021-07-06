@@ -51,7 +51,7 @@ const amazonConfig = {
       state.data,
     );
     document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
+      state.data,
     );
     paymentFromComponent(state.data, component);
   },

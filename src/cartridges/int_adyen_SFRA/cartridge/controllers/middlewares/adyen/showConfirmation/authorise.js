@@ -8,7 +8,7 @@ function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   const { req } = options;
   if (
     result.resultCode === 'Received' &&
-    result.additionalData?.paymentMethod?.indexOf('alipay_hk') > -1
+    result.additionalData?.paymentMethod ==='alipay_hk'
   ) {
     return payment.handleReceived(order, result, options);
   }

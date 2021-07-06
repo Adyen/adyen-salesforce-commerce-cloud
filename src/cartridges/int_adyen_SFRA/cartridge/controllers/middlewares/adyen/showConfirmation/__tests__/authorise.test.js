@@ -15,7 +15,7 @@ beforeEach(() => {
 
 describe('Authorise', () => {
   it('should handle alipay_hk', () => {
-    const result = { resultCode: 'Received', paymentMethod: ['alipay_hk'] };
+    const result = { resultCode: 'Received', additionalData: {paymentMethod: 'alipay_hk' }};
     handleAuthorised({}, result, {}, {});
     expect(payment.handleReceived).toBeCalledTimes(1);
   });

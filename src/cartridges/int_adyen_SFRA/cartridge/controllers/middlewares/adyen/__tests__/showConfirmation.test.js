@@ -56,7 +56,7 @@ describe('Show Confirmation', () => {
     const URLUtils = require('dw/web/URLUtils');
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Received',
-      paymentMethod: ['alipay_hk'],
+      additionalData: {paymentMethod: 'alipay_hk'},
     }));
     showConfirmation(req, res, jest.fn());
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
