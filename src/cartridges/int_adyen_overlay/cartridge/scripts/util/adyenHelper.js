@@ -23,6 +23,7 @@ const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
+const Logger = require('dw/system/Logger');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -484,6 +485,7 @@ var adyenHelperObj = {
     };
 
     const billingAddress = order.getBillingAddress();
+    Logger.getLogger('Adyen').error('billingaddresss is ' + JSON.stringify(billingAddress));
     let billingStreet = '';
     let billingHouseNumberOrName = '';
 
@@ -500,17 +502,25 @@ var adyenHelperObj = {
       billingStreet = 'N/A';
     }
 
+    // paymentRequest.billingAddress = {
+    //   city: billingAddress.city ? billingAddress.city : 'N/A',
+    //   country: billingAddress.countryCode
+    //     ? billingAddress.countryCode.value.toUpperCase()
+    //     : 'ZZ',
+    //   houseNumberOrName: billingHouseNumberOrName,
+    //   postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
+    //   stateOrProvince: billingAddress.stateCode
+    //     ? billingAddress.stateCode
+    //     : 'N/A',
+    //   street: billingStreet,
+    // };
     paymentRequest.billingAddress = {
-      city: billingAddress.city ? billingAddress.city : 'N/A',
-      country: billingAddress.countryCode
-        ? billingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
-      houseNumberOrName: billingHouseNumberOrName,
-      postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
-      stateOrProvince: billingAddress.stateCode
-        ? billingAddress.stateCode
-        : 'N/A',
-      street: billingStreet,
+      city: 'Paris',
+      country: "FR",
+      houseNumberOrName: "1",
+      postalCode: "11953",
+      stateOrProvince: "Paris",
+      street: "rue de jardan",
     };
 
     return paymentRequest;
