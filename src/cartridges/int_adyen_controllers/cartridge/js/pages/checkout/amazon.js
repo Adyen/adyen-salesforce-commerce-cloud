@@ -10,14 +10,15 @@ if(window.amazonCheckoutSessionId) {
                 resultCode: response.fullResponse.resultCode,
                 paymentMethod: response.fullResponse.additionalData.paymentMethod,
             });
-            $('#dwfrm_billing').trigger('submit');
-            // document.querySelector('#showConfirmationForm').submit();
+            document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+                response,
+            );
+            document.querySelector('#showConfirmationForm').submit();
         } else if (response.error) {
             document.querySelector('#result').value = JSON.stringify({
                 error: true,
             });
             $('#dwfrm_billing').trigger('submit');
-            // document.querySelector('#showConfirmationForm').submit();
         }
     }
 
@@ -28,10 +29,11 @@ if(window.amazonCheckoutSessionId) {
             contentType: 'application/; charset=utf-8',
             data: JSON.stringify(data),
             success(response) {
-                if (response.orderNo) {
-                    document.querySelector('#merchantReference').value = response.orderNo;
+                if (response.result && response.result.orderNo && response.result.orderToken) {
+                    document.querySelector('#orderToken').value = response.result.orderToken;
+                    document.querySelector('#merchantReference').value = response.result.orderNo;
                 }
-                handleAmazonResponse(response, component);
+                handleAmazonResponse(response.result, component);
             },
         });
     }
@@ -45,6 +47,15 @@ if(window.amazonCheckoutSessionId) {
             publicKeyId: window.amazonPublicKeyID,
         },
         amazonCheckoutSessionId: window.amazonCheckoutSessionId,
+        addressDetails: {
+            name: "zaid dreakh",
+            addressLine1: "Nieuwpoortstraat 94",
+            city: "Amsterdam",
+            stateOrRegion: "Amsterdam",
+            postalCode: "1055 RZ",
+            countryCode: "NL",
+            phoneNumber: "+331458375"
+        },
         onSubmit: (state, component) => {
             document.querySelector('#adyenStateData').value = JSON.stringify(
                 state.data,
@@ -58,22 +69,5 @@ if(window.amazonCheckoutSessionId) {
         .create('amazonpay', amazonConfig)
         .mount(amazonPayNode);
 
-    $('#dwfrm_billing').submit(function apiRequest(e) {
-        e.preventDefault();
-
-        const form = $(this);
-        const url = form.attr('action');
-
-        $.ajax({
-            type: 'POST',
-            url,
-            data: form.serialize(),
-            async: false,
-            success(data) {
-                store.formErrorsExist = 'fieldErrors' in data;
-            },
-        });
-    });
-    // $('#action-modal').modal({backdrop: 'static', keyboard: false});
     amazonPayComponent.submit();
 }

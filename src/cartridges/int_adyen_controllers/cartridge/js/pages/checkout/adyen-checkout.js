@@ -584,7 +584,7 @@ function paymentFromComponent(data, component) {
 
 $('#dwfrm_billing').submit(function (e) {
   if (
-      ['paypal', 'mbway', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
+      ['paypal', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
     !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
