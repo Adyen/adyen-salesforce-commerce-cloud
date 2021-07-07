@@ -27,15 +27,12 @@
     window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
     var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
-          console.log('request is : ' + JSON.stringify("${request}"));
-                    console.log('getHttpQueryString is : ' + JSON.stringify("${request.getHttpQueryString()}"));
 </script>
 
 <isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
     <script>
-          console.log('inside if query string ');
         var queryString = '${request.getHttpQueryString()}'.split("=");
         var amazonCheckoutSessionId = queryString[queryString.length - 1];
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;

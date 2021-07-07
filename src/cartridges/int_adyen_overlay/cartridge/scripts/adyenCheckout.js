@@ -61,15 +61,9 @@ function createPaymentRequest(args) {
       paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
     }
 
-    // const myAmount = AdyenHelper.getCurrencyValueForApi(
-    //   paymentInstrument.paymentTransaction.amount,
-    // ).getValueOrNull(); // args.Amount * 100;
-    Logger.getLogger('Adyen').error('paymentInstrument.paymentTransaction.amount ' + paymentInstrument.paymentTransaction.amount);
-
     const myAmount = AdyenHelper.getCurrencyValueForApi(
         paymentInstrument.paymentTransaction.amount,
     ).getValueOrNull(); // args.Amount * 100;
-    Logger.getLogger('Adyen').error('myAmount ' + JSON.stringify(myAmount));
     paymentRequest.amount = {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
       value: myAmount,
@@ -83,7 +77,6 @@ function createPaymentRequest(args) {
       paymentMethodType,
       paymentRequest,
     );
-    Logger.getLogger('Adyen').error('paymentRequest ' + JSON.stringify(paymentRequest));
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
       order,

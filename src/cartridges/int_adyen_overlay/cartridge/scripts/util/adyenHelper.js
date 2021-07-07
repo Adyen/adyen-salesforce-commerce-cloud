@@ -485,7 +485,6 @@ var adyenHelperObj = {
     };
 
     const billingAddress = order.getBillingAddress();
-    Logger.getLogger('Adyen').error('billingaddresss is ' + JSON.stringify(billingAddress));
     let billingStreet = '';
     let billingHouseNumberOrName = '';
 
@@ -816,7 +815,7 @@ var adyenHelperObj = {
       };
     }
 
-    Logger.getLogger('Adyen').error(
+    dwsystem.Logger.getLogger('Adyen').error(
         `Unknown resultCode: ${checkoutresponse.resultCode}.`,
     );
     return {

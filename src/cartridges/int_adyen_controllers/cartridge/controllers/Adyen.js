@@ -188,7 +188,6 @@ function paymentFromComponent() {
     );
     return;
   } else {
-    Logger.getLogger('Adyen').error('inside else ');
     const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
     const currentBasket = BasketMgr.getCurrentBasket();
@@ -219,13 +218,10 @@ function paymentFromComponent() {
             stateDataStr,
         ).paymentMethod.type;
       } catch (e) {
-        Logger.getLogger('Adyen').error('catch  ' + e);
         // Error parsing paymentMethod
       }
     });
-    Logger.getLogger('Adyen').error('after wrap  before create order');
     order = OrderMgr.createOrder(currentBasket);
-    Logger.getLogger('Adyen').error('after create order ');
 
     Transaction.begin();
     const result = adyenCheckout.createPaymentRequest({
@@ -234,8 +230,6 @@ function paymentFromComponent() {
     });
     result.orderNo = order.orderNo;
     result.orderToken = order.getOrderToken();
-
-    Logger.getLogger('Adyen').error(JSON.stringify(result));
 
     Transaction.commit();
     const responseUtils = require('*/cartridge/scripts/util/Response');
