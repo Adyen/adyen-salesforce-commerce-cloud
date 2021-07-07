@@ -502,25 +502,17 @@ var adyenHelperObj = {
       billingStreet = 'N/A';
     }
 
-    // paymentRequest.billingAddress = {
-    //   city: billingAddress.city ? billingAddress.city : 'N/A',
-    //   country: billingAddress.countryCode
-    //     ? billingAddress.countryCode.value.toUpperCase()
-    //     : 'ZZ',
-    //   houseNumberOrName: billingHouseNumberOrName,
-    //   postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
-    //   stateOrProvince: billingAddress.stateCode
-    //     ? billingAddress.stateCode
-    //     : 'N/A',
-    //   street: billingStreet,
-    // };
     paymentRequest.billingAddress = {
-      city: 'Paris',
-      country: "FR",
-      houseNumberOrName: "1",
-      postalCode: "11953",
-      stateOrProvince: "Paris",
-      street: "rue de jardan",
+      city: billingAddress.city ? billingAddress.city : 'N/A',
+      country: billingAddress.countryCode
+        ? billingAddress.countryCode.value.toUpperCase()
+        : 'ZZ',
+      houseNumberOrName: billingHouseNumberOrName,
+      postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
+      stateOrProvince: billingAddress.stateCode
+        ? billingAddress.stateCode
+        : 'N/A',
+      street: billingStreet,
     };
 
     return paymentRequest;

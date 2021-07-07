@@ -33,10 +33,6 @@
 
 <isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/amazon.js');
-    </isscript>
 
     <script>
           console.log('inside if query string ');
@@ -45,7 +41,7 @@
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
     </script>
     <div id="amazon-container"></div>
-     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
 
      <div class="modal fade" id="action-modal" role="dialog">
          <div class="modal-dialog" id="adyenModalDialog">
@@ -59,8 +55,10 @@
             name="showConfirmationForm"
             action="${ShowConfirmationPaymentFromComponent}">
             <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-            <input type="hidden" id="merchantReference" name="merchantReference"/>
-            <input type="hidden" id="result" name="result" value="null"/>
+            <input type="hidden" id="merchantReference" name="${pdict.CurrentForms.adyPaydata.merchantReference.htmlName}">
+            <input type="hidden" id="orderToken" name="${pdict.CurrentForms.adyPaydata.orderToken.htmlName}">
+            <input type="hidden" id="result" name="${pdict.CurrentForms.adyPaydata.result.htmlName}" value="null">
+            <input type="hidden" id="paymentFromComponentStateData" name="${pdict.CurrentForms.adyPaydata.paymentFromComponentStateData.htmlName}">
       </form>
 <iselse>
     <script>
