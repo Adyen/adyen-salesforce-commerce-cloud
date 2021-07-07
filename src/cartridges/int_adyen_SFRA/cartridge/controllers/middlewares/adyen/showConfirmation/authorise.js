@@ -6,12 +6,6 @@ const payment = require('./payment');
 
 function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   const { req } = options;
-  if (
-    result.resultCode === 'Received' &&
-    result.additionalData?.paymentMethod ==='alipay_hk'
-  ) {
-    return payment.handleReceived(order, result, options);
-  }
 
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };

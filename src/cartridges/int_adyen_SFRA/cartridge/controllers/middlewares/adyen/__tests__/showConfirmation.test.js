@@ -51,14 +51,4 @@ describe('Show Confirmation', () => {
       expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
     },
   );
-  it('should fail if resultCode is Received with Alipay payment', () => {
-    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const URLUtils = require('dw/web/URLUtils');
-    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
-      resultCode: 'Received',
-      additionalData: {paymentMethod: 'alipay_hk'},
-    }));
-    showConfirmation(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
-  });
 });

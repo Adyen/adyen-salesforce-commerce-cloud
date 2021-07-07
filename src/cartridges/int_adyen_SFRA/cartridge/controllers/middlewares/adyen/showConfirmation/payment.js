@@ -2,7 +2,6 @@ const URLUtils = require('dw/web/URLUtils');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
-const Logger = require('dw/system/Logger');
 
 function handleRedirect(page, { res }) {
   res.redirect(
@@ -14,25 +13,6 @@ function handleRedirect(page, { res }) {
       Resource.msg('error.payment.not.valid', 'checkout', null),
     ),
   );
-}
-
-function handleReceived(order, result, { res, next }) {
-  Transaction.wrap(() => {
-    OrderMgr.failOrder(order, true);
-  });
-  Logger.getLogger('Adyen').error(
-    `Did not complete Alipay transaction, result: ${JSON.stringify(result)}`,
-  );
-  res.redirect(
-    URLUtils.url(
-      'Checkout-Begin',
-      'stage',
-      'payment',
-      'paymentError',
-      Resource.msg('error.payment.not.valid', 'checkout', null),
-    ),
-  );
-  return next();
 }
 
 function handlePaymentError(order, page, { res, next }) {
@@ -66,7 +46,6 @@ function handlePaymentInstruments(paymentInstruments, { req }) {
 
 module.exports = {
   handleRedirect,
-  handleReceived,
   handlePaymentError,
   handlePaymentInstruments,
 };

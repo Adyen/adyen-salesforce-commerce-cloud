@@ -14,11 +14,6 @@ beforeEach(() => {
 });
 
 describe('Authorise', () => {
-  it('should handle alipay_hk', () => {
-    const result = { resultCode: 'Received', additionalData: {paymentMethod: 'alipay_hk' }};
-    handleAuthorised({}, result, {}, {});
-    expect(payment.handleReceived).toBeCalledTimes(1);
-  });
   it('should handle error', () => {
     COHelpers.placeOrder.mockReturnValue({ error: true });
     const result = { resultCode: 'Authorised' };
@@ -29,7 +24,6 @@ describe('Authorise', () => {
     COHelpers.placeOrder.mockReturnValue({ error: false });
     const result = { resultCode: 'Authorised' };
     handleAuthorised({}, result, {}, { req });
-    expect(payment.handleReceived).toBeCalledTimes(0);
     expect(payment.handlePaymentError).toBeCalledTimes(0);
   });
 });
