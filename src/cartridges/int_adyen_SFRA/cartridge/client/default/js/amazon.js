@@ -50,6 +50,9 @@ const amazonConfig = {
     document.querySelector('#adyenStateData').value = JSON.stringify(
       state.data,
     );
+    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+      state.data,
+    );
     paymentFromComponent(state.data, component);
   },
 };

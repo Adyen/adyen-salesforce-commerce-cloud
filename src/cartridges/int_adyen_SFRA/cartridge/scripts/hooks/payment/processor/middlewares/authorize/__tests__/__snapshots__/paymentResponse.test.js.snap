@@ -59,6 +59,6 @@ Object {
   "redirectObject": Object {
     "url": "mocked_redirect_url",
   },
-  "signature": "ct_url __ ocked_payment_data",
+  "signature": "ct_url __ mocked_order_number",
 }
 `;

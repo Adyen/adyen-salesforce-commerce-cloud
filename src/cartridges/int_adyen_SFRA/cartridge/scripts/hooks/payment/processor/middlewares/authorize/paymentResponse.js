@@ -20,8 +20,7 @@ function getRedirectResponse(result, orderNumber, paymentInstrument) {
   const getMDSignature = () =>
     createHash(result.redirectObject.data.MD.substr(1, 25));
   // Signature for redirect methods
-  const getPaymentDataSignature = () =>
-    createHash(result.paymentData.substr(1, 25));
+  const getPaymentDataSignature = () => createHash(orderNumber);
 
   const hasMD = !!result.redirectObject?.data?.MD;
   // If the response has MD, then it is a 3DS transaction
