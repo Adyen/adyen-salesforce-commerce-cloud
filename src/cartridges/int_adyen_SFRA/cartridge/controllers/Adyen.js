@@ -9,7 +9,7 @@ const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 /**
  * Complete a 3DS payment
  */
-server.get(
+server.use(
   'Adyen3D',
   csrfProtection.generateToken,
   server.middleware.https,
@@ -29,7 +29,7 @@ server.post(
 /**
  * Complete a 3DS2 payment
  */
-server.get(
+server.use(
   'Adyen3DS2',
   consentTracking.consent,
   csrfProtection.generateToken,

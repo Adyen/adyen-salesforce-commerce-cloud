@@ -17,15 +17,20 @@ function handleOrderConfirmation(
   Transaction.commit();
   COHelpers.sendConfirmationEmail(order, req.locale.id);
   clearForms.clearForms();
-  res.redirect(
-    URLUtils.url(
-      'Order-Confirm',
-      'ID',
-      order.orderNo,
-      'token',
-      order.orderToken,
-    ).toString(),
-  );
+  //TODO determine SFRA version for backwards compatibility
+  // res.redirect(
+  //   URLUtils.url(
+  //     'Order-Confirm',
+  //     'ID',
+  //     order.orderNo,
+  //     'token',
+  //     order.orderToken,
+  //   ).toString(),
+  // );
+  res.render('orderConfirmForm', {
+    orderID: order.orderNo,
+    orderToken: order.orderToken,
+  })
   return next();
 }
 
