@@ -180,7 +180,7 @@ function initializeBillingEvents() {
               '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-               '#dwfrm_billing_billingAddress_addressFields_lastName',
+                '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
                '#dwfrm_billing_billingAddress_addressFields_phone',
@@ -631,9 +631,34 @@ function getQRCodeConfig() {
 function getAmazonpayConfig() {
   return {
     showPayButton: true,
-    productType: 'PayOnly',
+    productType: 'PayAndShip',
     checkoutMode: 'ProcessOrder',
     returnUrl: window.returnURL,
+    addressDetails: {
+      name: document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_firstName',
+      ).value + ' ' + document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_lastName',
+      ).value,
+      addressLine1: document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_address1',
+      ).value,
+      city:  document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_city',
+      ).value,
+      stateOrRegion: document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_city',
+      ).value,
+      postalCode:  document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_postal',
+      ).value,
+      countryCode: document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_country',
+      ).value,
+      phoneNumber: document.querySelector(
+          '#dwfrm_billing_billingAddress_addressFields_phone',
+      ).value
+    },
     configuration: {
       merchantId: window.amazonMerchantID,
       storeId: window.amazonStoreID,

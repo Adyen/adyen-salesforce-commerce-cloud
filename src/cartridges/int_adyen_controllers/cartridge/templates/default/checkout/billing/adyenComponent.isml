@@ -38,13 +38,8 @@
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
     </script>
     <div id="amazon-container"></div>
-     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
-
-     <div class="modal fade" id="action-modal" role="dialog">
-         <div class="modal-dialog" id="adyenModalDialog">
-             <div id="action-container"></div>
-         </div>
-     </div>
+    <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
+    <div class="ui-widget-overlay ui-front" style="z-index: 100;"></div>
 
       </form>
       <form method="post"
