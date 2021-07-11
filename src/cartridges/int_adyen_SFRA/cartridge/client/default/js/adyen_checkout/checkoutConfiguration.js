@@ -167,9 +167,21 @@ function handleOnChange(state) {
 function getAmazonpayConfig() {
   return {
     showPayButton: true,
-    productType: 'PayOnly',
+    productType: 'PayAndShip',
     checkoutMode: 'ProcessOrder',
     returnUrl: window.returnURL,
+    addressDetails: {
+      name: `${document.querySelector('#shippingFirstNamedefault').value} ${
+        document.querySelector('#shippingLastNamedefault').value
+      }`,
+      addressLine1: document.querySelector('#shippingFirstNamedefault').value,
+      city: document.querySelector('#shippingAddressCitydefault').value,
+      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
+        .value,
+      postalCode: document.querySelector('#shippingZipCodedefault').value,
+      countryCode: document.querySelector('#shippingCountrydefault').value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
+    },
     configuration: {
       merchantId: window.amazonMerchantID,
       storeId: window.amazonStoreID,
