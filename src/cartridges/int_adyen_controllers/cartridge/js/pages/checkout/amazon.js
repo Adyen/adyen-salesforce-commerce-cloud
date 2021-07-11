@@ -2,7 +2,7 @@ if(window.amazonCheckoutSessionId) {
     const amazonPayNode = document.getElementById('amazon-container');
 
     function handleAmazonResponse(response, component) {
-        if (response.fullResponse?.action) {
+        if (response.fullResponse && response.fullResponse.action) {
             component.handleAction(response.fullResponse.action);
         } else if (response.resultCode === 'Authorised') {
             document.querySelector('#result').value = JSON.stringify({

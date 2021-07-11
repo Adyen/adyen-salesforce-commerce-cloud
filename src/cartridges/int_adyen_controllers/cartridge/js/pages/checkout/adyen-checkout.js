@@ -1,5 +1,6 @@
 require('./bundle');
 require('./adyen-giving');
+require('./amazon');
 
 var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];
 var maskedCardNumber;
