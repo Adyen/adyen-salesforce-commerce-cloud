@@ -23,7 +23,6 @@ const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
-const Logger = require('dw/system/Logger');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 

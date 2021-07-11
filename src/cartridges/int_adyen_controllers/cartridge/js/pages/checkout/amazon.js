@@ -47,15 +47,6 @@ if(window.amazonCheckoutSessionId) {
             publicKeyId: window.amazonPublicKeyID,
         },
         amazonCheckoutSessionId: window.amazonCheckoutSessionId,
-        addressDetails: {
-            name: "zaid dreakh",
-            addressLine1: "Nieuwpoortstraat 94",
-            city: "Amsterdam",
-            stateOrRegion: "Amsterdam",
-            postalCode: "1055 RZ",
-            countryCode: "NL",
-            phoneNumber: "+331458375"
-        },
         onSubmit: (state, component) => {
             document.querySelector('#adyenStateData').value = JSON.stringify(
                 state.data,
