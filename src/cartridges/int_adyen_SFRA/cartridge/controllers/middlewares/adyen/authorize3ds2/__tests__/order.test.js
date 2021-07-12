@@ -6,7 +6,7 @@ let handlePlaceOrder;
 let COHelpers;
 let req;
 let res;
-let AdyenHelper;
+let adyenHelper;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -18,20 +18,20 @@ beforeEach(() => {
   }
   handlePlaceOrder = require("../order");
   COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-  AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 })
 
 describe('Order', () => {
   it('should handle place order error', () => {
     const { handlePlaceOrderError } = require('../errorHandler');
-    AdyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
     COHelpers.placeOrder.mockReturnValue({ error: true })
     handlePlaceOrder()
     expect(handlePlaceOrderError).toBeCalledTimes(1)
   })
   it('should handle place order error', () => {
     const OrderMgr = require('dw/order/OrderMgr');
-    AdyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
     const order = OrderMgr.getOrder(session.privacy.orderNo);
     const paymentInstrument = order.getPaymentInstruments()[0];
 
