@@ -287,7 +287,6 @@ function showConfirmationPaymentFromComponent() {
     details,
     paymentData,
   };
-  const detailsCall = adyenCheckout.doPaymentsDetailsCall(requestObject);
 
   const paymentProcessor = PaymentMgr.getPaymentMethod(
     adyenPaymentInstrument.getPaymentMethod(),
@@ -298,8 +297,7 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
 
-  finalResult = finalResult || detailsCall;
-
+  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
 
   if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
     Transaction.wrap(() => {
