@@ -15,11 +15,11 @@ Array [
 exports[`Authorize 3DS2 should complete authorization 1`] = `
 Array [
   Array [
-    "Order-Confirm",
-    "ID",
-    "mocked_orderNo",
-    "token",
-    "mocked_orderToken",
+    "orderConfirmForm",
+    Object {
+      "orderID": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+    },
   ],
 ]
 `;

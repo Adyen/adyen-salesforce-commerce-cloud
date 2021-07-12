@@ -10,6 +10,7 @@ beforeEach(() => {
 
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 
   req = {
@@ -48,7 +49,7 @@ describe('Show Confirmation', () => {
         merchantReference: 'mocked_merchantReference',
       }));
       showConfirmation(req, res, jest.fn());
-      expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
+      expect(res.render.mock.calls[0][0]).toBe('orderConfirmForm');
     },
   );
   it('should fail if resultCode is Received with Alipay payment', () => {

@@ -31,15 +31,12 @@ function checkForValidRequest(result, order, merchantRefOrder, options) {
 function authorize(paymentInstrument, order, options) {
   const { req } = options;
   const jsonRequest = {
-    paymentData: paymentInstrument.custom.adyenPaymentData,
     details: {
       MD: req.form.MD,
       PaRes: req.form.PaRes,
     },
   };
-  Logger.getLogger('Adyen').error(JSON.stringify(jsonRequest));
   const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
-  Logger.getLogger('Adyen').error(JSON.stringify(result));
   clearForms.clearAdyenData(paymentInstrument);
 
   const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
@@ -50,7 +47,6 @@ function authorize(paymentInstrument, order, options) {
     options,
   );
 
-  Logger.getLogger(`isvalid is ${isValid}`)
   if (isValid) {
     // custom fraudDetection
     const fraudDetectionStatus = { status: 'success' };

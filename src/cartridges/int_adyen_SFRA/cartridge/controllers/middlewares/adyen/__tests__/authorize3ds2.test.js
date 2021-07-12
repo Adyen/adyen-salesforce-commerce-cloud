@@ -20,6 +20,7 @@ beforeEach(() => {
   };
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 });
 
@@ -108,6 +109,6 @@ describe('Authorize 3DS2', () => {
 
     authorize3ds2(req, res, jest.fn());
 
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+    expect(res.render.mock.calls).toMatchSnapshot();
   });
 });

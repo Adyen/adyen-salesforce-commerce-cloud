@@ -11,7 +11,10 @@ beforeEach(() => {
   jest.clearAllMocks();
 
   req = { locale: { id: 'mocked_locale_id' } }
-  res = { redirect: jest.fn() }
+  res = {
+    redirect: jest.fn(),
+    render: jest.fn(),
+  }
   handlePlaceOrder = require("../order")
   COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 })
@@ -31,6 +34,6 @@ describe('Order', () => {
     const paymentInstrument = order.getPaymentInstruments()[0];
 
     handlePlaceOrder(paymentInstrument, order, {}, { req, res, next: jest.fn() })
-    expect(URLUtils.url.mock.calls).toMatchSnapshot()
+    expect(res.render.mock.calls).toMatchSnapshot()
   })
 })

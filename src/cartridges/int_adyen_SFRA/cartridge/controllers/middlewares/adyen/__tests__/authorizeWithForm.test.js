@@ -28,6 +28,7 @@ beforeEach(() => {
 
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 
   next = jest.fn();
@@ -95,6 +96,6 @@ describe('Authorize with Form', () => {
       merchantReference: 'mocked_merchantReference',
     });
     authorizeWithForm(req, res, next);
-    expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
+    expect(res.render.mock.calls[0][0]).toEqual('orderConfirmForm');
   });
 });

@@ -53,7 +53,7 @@ server.post(
 /**
  * Redirect to Adyen after saving order etc.
  */
-server.get('Redirect', server.middleware.https, adyen.redirect);
+server.use('Redirect', server.middleware.https, adyen.redirect);
 
 /**
  * Show confirmation after return from Adyen

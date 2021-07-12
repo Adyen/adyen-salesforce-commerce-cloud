@@ -3,11 +3,11 @@
 exports[`Order should handle place order error 1`] = `
 Array [
   Array [
-    "Order-Confirm",
-    "ID",
-    "mocked_orderNo",
-    "token",
-    "mocked_orderToken",
+    "orderConfirmForm",
+    Object {
+      "orderID": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+    },
   ],
 ]
 `;
