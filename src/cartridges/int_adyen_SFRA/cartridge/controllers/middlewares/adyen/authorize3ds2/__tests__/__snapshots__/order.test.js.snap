@@ -11,3 +11,5 @@ Array [
   ],
 ]
 `;
+
+exports[`Order should handle place order error 1`] = `Array []`;

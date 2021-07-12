@@ -3,6 +3,7 @@ let req;
 let res;
 let next;
 let authorizeWithForm;
+let adyenHelper;
 
 afterEach(() => {
   jest.resetModules();
@@ -11,7 +12,7 @@ afterEach(() => {
 beforeEach(() => {
   const { adyen } = require('../../index');
   authorizeWithForm = adyen.authorizeWithForm;
-
+  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
   jest.clearAllMocks();
   req = {
     form: {
@@ -88,7 +89,17 @@ describe('Authorize with Form', () => {
     paymentNotValid();
     COHelpers.placeOrder.mockClear();
   });
-  it('should confirm order', () => {
+  it('should confirm order for SFRA6', () => {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
+    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+      resultCode: 'Authorised',
+      merchantReference: 'mocked_merchantReference',
+    });
+    authorizeWithForm(req, res, next);
+    expect(res.render.mock.calls[0][0]).toEqual('orderConfirmForm');
+  });
+  it('should confirm order for SFRA5', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
     adyenCheckout.doPaymentDetailsCall.mockReturnValue({
@@ -96,6 +107,6 @@ describe('Authorize with Form', () => {
       merchantReference: 'mocked_merchantReference',
     });
     authorizeWithForm(req, res, next);
-    expect(res.render.mock.calls[0][0]).toEqual('orderConfirmForm');
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
   });
 });

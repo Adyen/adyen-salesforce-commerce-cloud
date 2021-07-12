@@ -1,5 +1,6 @@
 const Transaction = require('dw/system/Transaction');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const URLUtils = require('dw/web/URLUtils');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { clearForms } = require('../../../utils/index');
 const { handlePlaceOrderError } = require('./errorHandler');
@@ -17,20 +18,24 @@ function handleOrderConfirm(
   Transaction.commit();
   COHelpers.sendConfirmationEmail(order, req.locale.id);
   clearForms.clearForms();
-  // TODO determine SFRA version for backwards compatibility
-  // res.redirect(
-  //   URLUtils.url(
-  //     'Order-Confirm',
-  //     'ID',
-  //     order.orderNo,
-  //     'token',
-  //     order.orderToken,
-  //   ).toString(),
-  // );
-  res.render('orderConfirmForm', {
-    orderID: order.orderNo,
-    orderToken: order.orderToken,
-  });
+
+  // determines SFRA version for backwards compatibility
+  if(AdyenHelper.getAdyenSFRA6Compatibility() === true) {
+    res.render('orderConfirmForm', {
+      orderID: order.orderNo,
+      orderToken: order.orderToken,
+    });
+  } else {
+    res.redirect(
+      URLUtils.url(
+        'Order-Confirm',
+        'ID',
+        order.orderNo,
+        'token',
+        order.orderToken,
+      ).toString(),
+    );
+  }
   return next();
 }
 
