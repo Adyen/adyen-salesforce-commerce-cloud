@@ -195,7 +195,7 @@ function setCheckoutConfiguration() {
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),
-    storedCard:getCardConfig(),
+    storedCard: getCardConfig(),
     boletobancario: {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off

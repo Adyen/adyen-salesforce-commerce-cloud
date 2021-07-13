@@ -1,6 +1,6 @@
+const Logger = require('dw/system/Logger');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const array = require('*/cartridge/scripts/util/array');
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {
@@ -18,8 +18,12 @@ function setSessionPrivacy({ adyenPaymentFields }) {
 function getPaymentInstrument(req, storedPaymentMethodId) {
   const { currentCustomer } = req;
 
-  const findById = (item) => storedPaymentMethodId === item.getCreditCardToken();
-  const paymentInstruments = AdyenHelper.getCustomer(currentCustomer).getProfile().getWallet().getPaymentInstruments();
+  const findById = (item) =>
+    storedPaymentMethodId === item.getCreditCardToken();
+  const paymentInstruments = AdyenHelper.getCustomer(currentCustomer)
+    .getProfile()
+    .getWallet()
+    .getPaymentInstruments();
   return array.find(paymentInstruments, findById);
 }
 
@@ -27,7 +31,10 @@ function getPaymentInstrument(req, storedPaymentMethodId) {
 function getProcessFormResult(paymentMethod, req, viewData) {
   const { authenticated, registered } = req.currentCustomer.raw;
   if (paymentMethod.storedPaymentMethodId && authenticated && registered) {
-    const paymentInstrument = getPaymentInstrument(req, paymentMethod.storedPaymentMethodId);
+    const paymentInstrument = getPaymentInstrument(
+      req,
+      paymentMethod.storedPaymentMethodId,
+    );
     return {
       error: false,
       viewData: {
@@ -78,8 +85,9 @@ function getViewData(
 
 function getPaymentMethodFromForm(paymentForm) {
   try {
-    return JSON.parse(paymentForm.adyenPaymentFields?.adyenStateData?.value).paymentMethod;
-  } catch(error) {
+    return JSON.parse(paymentForm.adyenPaymentFields?.adyenStateData?.value)
+      .paymentMethod;
+  } catch (error) {
     Logger.getLogger('Adyen').error('Failed to parse payment form stateData');
     return {};
   }
