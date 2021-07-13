@@ -23,6 +23,7 @@ const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
+const CustomerMgr = require('dw/customer/CustomerMgr');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -86,6 +87,15 @@ var adyenHelperObj = {
       // e.message
     }
     return adyenService;
+  },
+
+  getCustomer(currentCustomer) {
+    if (currentCustomer.profile) {
+      return CustomerMgr.getCustomerByCustomerNumber(
+          currentCustomer.profile.customerNo,
+      );
+    }
+    return null;
   },
 
   getCustomPreference(field) {

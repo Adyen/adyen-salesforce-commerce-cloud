@@ -1,17 +1,7 @@
-const CustomerMgr = require('dw/customer/CustomerMgr');
 const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const constants = require('*/cartridge/adyenConstants/constants');
-
-function getCustomer(currentCustomer) {
-  if (currentCustomer.profile) {
-    return CustomerMgr.getCustomerByCustomerNumber(
-      currentCustomer.profile.customerNo,
-    );
-  }
-  return null;
-}
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;
@@ -30,7 +20,6 @@ function getConnectedTerminals() {
 }
 
 module.exports = {
-  getCustomer,
   getCountryCode,
   getConnectedTerminals,
 };

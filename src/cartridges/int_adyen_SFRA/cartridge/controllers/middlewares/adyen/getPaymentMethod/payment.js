@@ -6,7 +6,6 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const {
   getConnectedTerminals,
   getCountryCode,
-  getCustomer,
 } = require('./utils');
 
 function handlePaymentMethod({ req, res, next }) {
@@ -14,7 +13,7 @@ function handlePaymentMethod({ req, res, next }) {
   const countryCode = getCountryCode(currentBasket, req.locale);
   const response = getPaymentMethods.getMethods(
     BasketMgr.getCurrentBasket(),
-    getCustomer(req.currentCustomer),
+    AdyenHelper.getCustomer(req.currentCustomer),
     countryCode,
   );
   const paymentMethodDescriptions = response.paymentMethods.map((method) => ({
