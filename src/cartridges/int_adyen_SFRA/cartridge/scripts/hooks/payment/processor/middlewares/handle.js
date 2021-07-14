@@ -20,11 +20,13 @@ function handle(basket, paymentInformation) {
       paymentInformation.adyenPaymentMethod;
 
     if (paymentInformation.isCreditCard) {
-      const sfccCardType = AdyenHelper.getSFCCCardType(
-        paymentInformation.cardType,
-      );
+      // If the card wasn't a stored card we need to convert sfccCardType
+      const sfccCardType = !paymentInformation.creditCardToken
+        ? AdyenHelper.getSFCCCardType(paymentInformation.cardType)
+        : paymentInformation.cardType;
+
       const tokenID = AdyenHelper.getCardToken(
-        paymentInformation.storedPaymentUUID,
+        paymentInformation.creditCardToken,
         customer,
       );
 

@@ -97,9 +97,6 @@ function updateSavedCards(args) {
             newCreditCard.setCreditCardHolder(holderName);
             newCreditCard.setCreditCardNumber(number);
             newCreditCard.setCreditCardToken(token);
-            Logger.getLogger('Adyen').error('newCreditCard');
-            Logger.getLogger('Adyen').error(token);
-            Logger.getLogger('Adyen').error(newCreditCard.getCreditCardToken());
           }
         }
       });

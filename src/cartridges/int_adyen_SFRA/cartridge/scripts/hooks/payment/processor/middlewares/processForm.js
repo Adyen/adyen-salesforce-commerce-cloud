@@ -107,8 +107,6 @@ function processForm(req, paymentForm, viewFormData) {
   const creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {
-    Logger.getLogger('Adyen').error(creditCardErrors);
-
     return {
       fieldErrors: creditCardErrors,
       error: true,
