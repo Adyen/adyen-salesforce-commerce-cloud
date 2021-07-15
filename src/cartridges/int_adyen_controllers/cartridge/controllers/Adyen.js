@@ -414,6 +414,17 @@ function getPaymentMethods(cart, customer) {
   const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
       ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
       : new dw.value.Money(1000, currency);
+
+  const shippingForm = session.forms.singleshipping;
+  const shippingAddress = {
+    firstName:  shippingForm.shippingAddress.addressFields.firstName.value,
+    lastName:  shippingForm.shippingAddress.addressFields.lastName.value,
+    address1:  shippingForm.shippingAddress.addressFields.address1.value,
+    city:  shippingForm.shippingAddress.addressFields.city.value,
+    country:  shippingForm.shippingAddress.addressFields.country.value,
+    phone:  shippingForm.shippingAddress.addressFields.phone.value,
+    postalCode:  shippingForm.shippingAddress.addressFields.postal.value,
+  };
   const jsonResponse = {
     adyenPaymentMethods: response,
     adyenConnectedTerminals: connectedTerminals,
@@ -421,6 +432,7 @@ function getPaymentMethods(cart, customer) {
     AdyenDescriptions: paymentMethodDescriptions,
     amount: { value: paymentAmount.value, currency: currency },
     countryCode: countryCode,
+    shippingAddress:shippingAddress,
   };
 
   return jsonResponse;

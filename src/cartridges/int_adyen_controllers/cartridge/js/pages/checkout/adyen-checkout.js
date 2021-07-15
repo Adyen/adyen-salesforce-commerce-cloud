@@ -636,29 +636,14 @@ function getAmazonpayConfig() {
     checkoutMode: 'ProcessOrder',
     returnUrl: window.returnURL,
     addressDetails: {
-      name: document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_firstName',
-      ).value + ' ' + document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_lastName',
-      ).value,
-      addressLine1: document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_address1',
-      ).value,
-      city:  document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_city',
-      ).value,
-      stateOrRegion: document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_city',
-      ).value,
-      postalCode:  document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_postal',
-      ).value,
-      countryCode: document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_country',
-      ).value,
-      phoneNumber: document.querySelector(
-          '#dwfrm_billing_billingAddress_addressFields_phone',
-      ).value
+      name: paymentMethodsResponse.shippingAddress.firstName
+      + ' ' + paymentMethodsResponse.shippingAddress.lastName,
+      addressLine1: paymentMethodsResponse.shippingAddress.address1,
+      city:  paymentMethodsResponse.shippingAddress.city,
+      stateOrRegion: paymentMethodsResponse.shippingAddress.city,
+      postalCode:  paymentMethodsResponse.shippingAddress.postalCode,
+      countryCode: paymentMethodsResponse.shippingAddress.country,
+      phoneNumber: paymentMethodsResponse.shippingAddress.phone,
     },
     configuration: {
       merchantId: window.amazonMerchantID,
