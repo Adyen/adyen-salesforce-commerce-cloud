@@ -25,22 +25,20 @@ function handle(basket, paymentInformation) {
         ? AdyenHelper.getSFCCCardType(paymentInformation.cardType)
         : paymentInformation.cardType;
 
-      const tokenID = AdyenHelper.getCardToken(
-        paymentInformation.creditCardToken,
-        customer,
-      );
-
       paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
       paymentInstrument.setCreditCardType(sfccCardType);
+      paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
 
-      if (tokenID) {
+      if (paymentInformation.creditCardToken) {
         paymentInstrument.setCreditCardExpirationMonth(
-          paymentInformation.expirationMonth.value,
+          paymentInformation.expirationMonth,
         );
         paymentInstrument.setCreditCardExpirationYear(
-          paymentInformation.expirationYear.value,
+          paymentInformation.expirationYear,
         );
-        paymentInstrument.setCreditCardToken(tokenID);
+        paymentInstrument.setCreditCardToken(
+          paymentInformation.creditCardToken,
+        );
       }
     }
   });
