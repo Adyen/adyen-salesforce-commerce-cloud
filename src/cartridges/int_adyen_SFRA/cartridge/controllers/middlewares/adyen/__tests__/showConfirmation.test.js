@@ -1,15 +1,18 @@
 /* eslint-disable global-require */
 let showConfirmation;
+let adyenHelper;
 let res;
 let req;
 
 beforeEach(() => {
   const { adyen } = require('../../index');
+  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 
   req = {
@@ -22,6 +25,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetModules();
+  jest.clearAllMocks();
 });
 
 describe('Show Confirmation', () => {
@@ -38,18 +42,33 @@ describe('Show Confirmation', () => {
     expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
   });
   test.each(['Authorised', 'Pending', 'Received'])(
-    'should handle successful payment: %p',
+    'should handle successful payment: %p for SFRA6',
     (a) => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-      const URLUtils = require('dw/web/URLUtils');
+      adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
       adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
         resultCode: a,
         paymentMethod: [],
         merchantReference: 'mocked_merchantReference',
       }));
       showConfirmation(req, res, jest.fn());
-      expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
+      expect(res.render.mock.calls[0][0]).toBe('orderConfirmForm');
     },
+  );
+  test.each(['Authorised', 'Pending', 'Received'])(
+  'should handle successful payment: %p for SFRA5',
+      (a) => {
+        const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+        adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(false);
+        const URLUtils = require('dw/web/URLUtils');
+        adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+          resultCode: a,
+          paymentMethod: [],
+          merchantReference: 'mocked_merchantReference',
+        }));
+        showConfirmation(req, res, jest.fn());
+        expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
+      },
   );
   it('should fail if resultCode is Received with Alipay payment', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');

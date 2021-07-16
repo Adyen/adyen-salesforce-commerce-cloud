@@ -105,6 +105,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_merchantCode');
   },
 
+  getAdyenSFRA6Compatibility() {
+    return adyenHelperObj.getCustomPreference('Adyen_SFRA6_Compatibility');
+  },
+
   getAdyenUrl() {
     let returnValue = '';
     switch (adyenHelperObj.getAdyenEnvironment()) {

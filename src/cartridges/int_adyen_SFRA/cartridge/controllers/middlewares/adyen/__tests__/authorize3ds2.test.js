@@ -3,8 +3,11 @@
 let req;
 let res;
 let authorize3ds2;
+let adyenHelper;
+
 beforeEach(() => {
   const { adyen } = require('../../index');
+  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
   authorize3ds2 = adyen.authorize3ds2;
 
   jest.clearAllMocks();
@@ -20,6 +23,7 @@ beforeEach(() => {
   };
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 });
 
@@ -98,7 +102,8 @@ describe('Authorize 3DS2', () => {
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
     expect(OrderMgr.failOrder).toBeCalledTimes(1);
   });
-  it('should complete authorization', () => {
+
+  it('should complete authorization for SFRA5', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
@@ -109,5 +114,17 @@ describe('Authorize 3DS2', () => {
     authorize3ds2(req, res, jest.fn());
 
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
+  });
+
+  it('should complete authorization for SFRA6', () => {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
+    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+      resultCode: 'Authorised',
+    }));
+
+    authorize3ds2(req, res, jest.fn());
+
+    expect(res.render.mock.calls).toMatchSnapshot();
   });
 });
