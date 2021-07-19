@@ -14,7 +14,7 @@ beforeEach(() => {
     adyenPaymentMethod: 'Credit Card',
     adyenIssuerName: null,
     stateData: 'mockedStateData',
-    storedPaymentUUID: null,
+    creditCardToken: 'mockedStoredCardToken',
     expirationMonth: { value: 'mockedMonth' },
     expirationYear: { value: 'mockedYear' },
   };
