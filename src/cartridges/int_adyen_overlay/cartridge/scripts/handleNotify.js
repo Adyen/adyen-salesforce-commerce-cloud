@@ -43,7 +43,7 @@ function notifyHttpParameterMap(hpm) {
   }
   const notificationData = {};
   for (const param in hpm.parameterNames) {
-    notificationData[param] = hpm[param].stringValue;
+    notificationData[param] = hpm.parameterNames[param]?.stringValue;
   }
 
   return notify(notificationData);
