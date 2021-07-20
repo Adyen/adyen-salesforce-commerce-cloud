@@ -23,6 +23,16 @@
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+function filterBlockedPaymentMethods(paymentMethods) {
+  const filteredPaymentMethods = [];
+  for(const paymentMethod of paymentMethods) {
+    if(!AdyenHelper.BLOCKED_PAYMENT_METHODS.includes(paymentMethod.type)) {
+      filteredPaymentMethods.push(paymentMethod);
+    }
+  }
+  return filteredPaymentMethods;
+}
+
 function getMethods(basket, customer, countryCode) {
   try {
     const service = AdyenHelper.getService(
@@ -95,7 +105,10 @@ function getMethods(basket, customer, countryCode) {
       throw new Error('No correct response from /paymentMethods call');
     }
 
-    return JSON.parse(resultObject.getText());
+    const parsedResults = JSON.parse(resultObject.getText())
+    return {
+      paymentMethods: filterBlockedPaymentMethods(parsedResults.paymentMethods)
+    };
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

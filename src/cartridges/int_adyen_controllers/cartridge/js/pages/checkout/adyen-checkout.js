@@ -357,22 +357,6 @@ function getFallback(paymentMethod) {
 }
 
 /**
- * checks if payment method is blocked and returns a boolean accordingly
- */
-function isMethodTypeBlocked(methodType) {
-  var blockedMethods = [
-    'bcmc_mobile_QR',
-    'applepay',
-    'cup',
-    'wechatpay',
-    'wechatpay_pos',
-    'wechatpaySdk',
-    'wechatpayQr',
-  ];
-  return blockedMethods.includes(methodType);
-}
-
-/**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
 async function renderGenericComponent() {
@@ -412,8 +396,7 @@ async function renderGenericComponent() {
   }
 
   paymentMethods.paymentMethods.forEach((pm) => {
-    !isMethodTypeBlocked(pm.type) &&
-      renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
+    renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
   });
 
   var firstPaymentMethod = document.querySelector(
