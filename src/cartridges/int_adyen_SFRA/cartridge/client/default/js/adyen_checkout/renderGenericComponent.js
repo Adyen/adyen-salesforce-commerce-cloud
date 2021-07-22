@@ -47,22 +47,6 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-/**
- * checks if payment method is blocked and returns a boolean accordingly
- */
-function isMethodTypeBlocked(methodType) {
-  const blockedMethods = [
-    'bcmc_mobile_QR',
-    'applepay',
-    'cup',
-    'wechatpay',
-    'wechatpay_pos',
-    'wechatpaySdk',
-    'wechatpayQr',
-  ];
-  return blockedMethods.includes(methodType);
-}
-
 function renderStoredPaymentMethod(data) {
   return (pm) => {
     if (pm.supportedShopperInteractions.includes('Ecommerce')) {
@@ -79,16 +63,14 @@ function renderStoredPaymentMethods(data) {
 }
 
 function renderPaymentMethods(data) {
-  data.AdyenPaymentMethods.paymentMethods.forEach(
-    (pm, i) =>
-      !isMethodTypeBlocked(pm.type) &&
-      renderPaymentMethod(
-        pm,
-        false,
-        data.ImagePath,
-        data.AdyenDescriptions[i].description,
-      ),
-  );
+  data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
+    renderPaymentMethod(
+      pm,
+      false,
+      data.ImagePath,
+      data.AdyenDescriptions[i].description,
+    );
+  });
 }
 
 function renderPosTerminals(data) {
