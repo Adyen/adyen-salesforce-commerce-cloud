@@ -41,9 +41,10 @@ function notifyHttpParameterMap(hpm) {
     );
     return PIPELET_NEXT;
   }
+
   const notificationData = {};
-  for (const param in hpm.parameterNames) {
-    notificationData[param] = hpm[param].stringValue;
+  for (const parameterName of  hpm.getParameterNames().toArray()) {
+    notificationData[parameterName] = hpm[parameterName].stringValue;
   }
 
   return notify(notificationData);
