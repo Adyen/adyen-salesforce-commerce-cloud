@@ -103,12 +103,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_Mode').value;
   },
 
-  // Get the adyen merchant account code
   getAdyenMerchantAccount() {
     return adyenHelperObj.getCustomPreference('Adyen_merchantCode');
   },
 
-  // Get the value for SFRA6 compatibility mode
   getAdyenSFRA6Compatibility() {
     return adyenHelperObj.getCustomPreference('Adyen_SFRA6_Compatibility');
   },
@@ -127,17 +125,14 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  // get the preference value for secured fields enabled
   getAdyenSecuredFieldsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenSecuredFieldsEnabled');
   },
 
-  // get the preference value for 3DS2 enabled
   getAdyen3DS2Enabled() {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
   },
 
-  // get the preference value for recurring payments enabled based on either the oneclick or recurring preference
   getAdyenRecurringPaymentsEnabled() {
     let returnValue = false;
     if (
@@ -150,7 +145,6 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  // gets the configuration for Adyen Giving based on the current order.
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     let adyenGivingAvailable = false;
@@ -184,53 +178,45 @@ var adyenHelperObj = {
     };
   },
 
-  // get the preference value for recurring enabled
   getAdyenRecurringEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
   },
 
-  // get the preference value for oneclick enabled
   getAdyenOneClickEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
 
-  // get the preference value for credit card installments
   getCreditCardInstallments() {
     return adyenHelperObj.getCustomPreference('AdyenCreditCardInstallments');
   },
 
-  // get the preference value for the system integrator name
   getSystemIntegratorName: function () {
     return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
   },
 
-  // get the preference value for the Paypal merchant ID
   getPaypalMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
   },
 
-  // get the preference value for the Google merchant ID
   getGoogleMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_GooglePayMerchantID');
   },
 
-  // get the preference value for the store ID
   getAdyenStoreId() {
     return adyenHelperObj.getCustomPreference('Adyen_StoreId');
   },
 
-  // get the preference value for the Adyen API key
   getAdyenApiKey() {
     return adyenHelperObj.getCustomPreference('Adyen_API_Key');
   },
 
-  // get the URL for the checkout component based on the current component version
+  // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
     return `${checkoutUrl}sdk/${adyenHelperObj.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
   },
 
-  // get the URL for the checkout component css based on the current component version
+  // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
     return `${checkoutCSS}sdk/${adyenHelperObj.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
@@ -261,52 +247,42 @@ var adyenHelperObj = {
     return signature;
   },
 
-  // get the preference value for basket fields enabled
   getAdyenBasketFieldsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
-  // get the preference value for cardholder name enabled
   getAdyenCardholderNameEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenCardHolderName_enabled');
   },
 
-  // get the preference value for Paypal intent
   getAdyenPayPalIntent: function () {
     return adyenHelperObj.getCustomPreference('AdyenPayPalIntent');
   },
 
-  // get the preference value for level 2/3 data enabled
   getAdyenLevel23DataEnabled: function () {
     return adyenHelperObj.getCustomPreference('AdyenLevel23DataEnabled');
   },
 
-  // get the preference value for level 2.3 commodity code
   getAdyenLevel23CommodityCode: function () {
     return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
-  // get the preference value for Adyen Giving enabled
   getAdyenGivingEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_enabled');
   },
 
-  // get the preference value for the Adyen Giving charity account
   getAdyenGivingCharityAccount() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_charityAccount');
   },
 
-  // get the preference value for the Adyen Giving charity name
   getAdyenGivingCharityName() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_charityName');
   },
 
-  // get the preference value for the Adyen Giving charity description
   getAdyenGivingCharityDescription() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_charityDescription');
   },
 
-  // get the preference value for the Adyen Giving charity URL
   getAdyenGivingCharityWebsite() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_charityUrl');
   },
@@ -350,7 +326,7 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl').getAbsURL();
   },
 
-  // checks whether adyen giving is available for the selected payment method
+  // checks whether Adyen giving is available for the selected payment method
   isAdyenGivingAvailable(paymentMethod) {
     const availablePaymentMethods = [
       'visa',
@@ -388,7 +364,6 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  // checks whether the selected payment method is an open invoice method
   isOpenInvoiceMethod(paymentMethod) {
     if (
       paymentMethod.indexOf('afterpay') > -1 ||
@@ -404,7 +379,6 @@ var adyenHelperObj = {
     return false;
   },
 
-  // checks if the currebnt payment method is molpay
   isMolpayMethod(paymentMethod) {
     if (paymentMethod.indexOf('molpay') > -1) {
       return true;
@@ -413,7 +387,7 @@ var adyenHelperObj = {
     return false;
   },
 
-  // Get saved card token of customer saved card based on matched cardUUID
+  // Get stored card token of customer saved card based on matched cardUUID
   getCardToken(cardUUID, customer) {
     let token = '';
     if (customer && customer.authenticated && cardUUID) {
@@ -436,7 +410,7 @@ var adyenHelperObj = {
     return token;
   },
 
-  // populates and returns the args with shopper information using the order contains in the args object itself
+  // populates and returns the args paymentRequest with shopper information using the order contains in the args object itself
   createShopperObject(args) {
     let gender = 'UNKNOWN';
     if (
@@ -761,7 +735,6 @@ var adyenHelperObj = {
     return format;
   },
 
-  // get the Cartridge's application info
   getApplicationInfo(isEcom) {
     let externalPlatformVersion = '';
     const applicationInfo = {};
