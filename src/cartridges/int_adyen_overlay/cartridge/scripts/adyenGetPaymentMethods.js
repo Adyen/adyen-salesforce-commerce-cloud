@@ -76,6 +76,8 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
 
+    paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+
     const xapikey = AdyenHelper.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
@@ -95,7 +97,8 @@ function getMethods(basket, customer, countryCode) {
       throw new Error('No correct response from /paymentMethods call');
     }
 
-    return JSON.parse(resultObject.getText());
+    const {paymentMethods} = JSON.parse(resultObject.getText())
+    return { paymentMethods };
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
