@@ -68,12 +68,16 @@ $('button[value="submit-payment"]').on('click', () => {
     document.querySelector('#terminalId').value = document.querySelector(
       '#terminalList',
     ).value;
-    return true;
   }
 
-  assignPaymentMethodValue();
-  validateComponents();
-  return showValidation();
+  if (
+      document.querySelector('#selectedPaymentOption').value === 'AdyenComponent'
+  ) {
+    assignPaymentMethodValue();
+    validateComponents();
+    return showValidation();
+  }
+  return true;
 });
 
 /**
