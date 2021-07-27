@@ -21,6 +21,7 @@ function initializeBillingEvents() {
     var isAdyenPOS = document.querySelector('.payment-method-options :checked').value
         === 'AdyenPOS';
     var isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
+
     if (isAdyenPOS) {
       document.querySelector(
           '#dwfrm_adyPaydata_terminalId',
