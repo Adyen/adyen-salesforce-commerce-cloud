@@ -1,6 +1,6 @@
 const Transaction = require('dw/system/Transaction');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const URLUtils = require('dw/web/URLUtils');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { clearForms } = require('../../../utils/index');
 const { handlePlaceOrderError } = require('./errorHandler');
@@ -20,7 +20,7 @@ function handleOrderConfirm(
   clearForms.clearForms();
 
   // determines SFRA version for backwards compatibility
-  if(AdyenHelper.getAdyenSFRA6Compatibility() === true) {
+  if (AdyenHelper.getAdyenSFRA6Compatibility() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken,
