@@ -4,10 +4,17 @@ var OrderMgr = require('dw/order/OrderMgr');
 
 var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper'); // order-confirm is POST in SFRA v6.0.0. orderID is contained in form.
+// This was a GET call with a querystring containing ID in earlier versions.
+
+
+function getOrderId(req) {
+  return req.form && req.form.orderID ? req.form.orderID : req.querystring.ID;
+}
 
 function confirm(req, res, next) {
-  var order = OrderMgr.getOrder(req.querystring.ID);
+  var orderId = getOrderId(req);
+  var order = OrderMgr.getOrder(orderId);
   var paymentMethod = order.custom.Adyen_paymentMethod;
 
   if (AdyenHelper.getAdyenGivingEnabled() && AdyenHelper.isAdyenGivingAvailable(paymentMethod)) {

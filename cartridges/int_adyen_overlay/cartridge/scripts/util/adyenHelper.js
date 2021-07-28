@@ -1,7 +1,22 @@
 "use strict";
 
 /**
- *
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  */
 var dwsvc = require('dw/svc');
 
@@ -43,8 +58,8 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE: 'https://checkoutshopper-live.adyen.com/checkoutshopper/',
   CHECKOUT_COMPONENT_VERSION: '3.18.2',
   VERSION: '21.1.0',
+  // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService: function getService(service) {
-    // Create the service config (used for all services)
     var adyenService = null;
 
     try {
@@ -72,6 +87,7 @@ var adyenHelperObj = {
 
     return adyenService;
   },
+  // Retrieve a custom preference
   getCustomPreference: function getCustomPreference(field) {
     var customPreference = null;
 
@@ -81,12 +97,17 @@ var adyenHelperObj = {
 
     return customPreference;
   },
+  // Get the current adyen environment mode (live or test)
   getAdyenEnvironment: function getAdyenEnvironment() {
     return adyenHelperObj.getCustomPreference('Adyen_Mode').value;
   },
   getAdyenMerchantAccount: function getAdyenMerchantAccount() {
     return adyenHelperObj.getCustomPreference('Adyen_merchantCode');
   },
+  getAdyenSFRA6Compatibility: function getAdyenSFRA6Compatibility() {
+    return adyenHelperObj.getCustomPreference('Adyen_SFRA6_Compatibility');
+  },
+  // get the Adyen Url based on which environment is configured (live or test)
   getAdyenUrl: function getAdyenUrl() {
     var returnValue = '';
 
@@ -171,14 +192,17 @@ var adyenHelperObj = {
   getAdyenApiKey: function getAdyenApiKey() {
     return adyenHelperObj.getCustomPreference('Adyen_API_Key');
   },
+  // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl: function getCheckoutUrl() {
     var checkoutUrl = this.getLoadingContext();
     return "".concat(checkoutUrl, "sdk/").concat(adyenHelperObj.CHECKOUT_COMPONENT_VERSION, "/adyen.js");
   },
+  // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS: function getCheckoutCSS() {
     var checkoutCSS = this.getLoadingContext();
     return "".concat(checkoutCSS, "sdk/").concat(adyenHelperObj.CHECKOUT_COMPONENT_VERSION, "/adyen.css");
   },
+  // get the loading context based on the current environment (live or test)
   getLoadingContext: function getLoadingContext() {
     var returnValue = '';
 
@@ -194,6 +218,7 @@ var adyenHelperObj = {
 
     return returnValue;
   },
+  // get the hash used to verify redirect requests
   getAdyenHash: function getAdyenHash(value, salt) {
     var data = value + salt;
     var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
@@ -230,6 +255,7 @@ var adyenHelperObj = {
   getAdyenGivingCharityWebsite: function getAdyenGivingCharityWebsite() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_charityUrl');
   },
+  // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
   getDonationAmounts: function getDonationAmounts() {
     var returnValue = [];
 
@@ -251,16 +277,20 @@ var adyenHelperObj = {
 
     return returnValue;
   },
+  // get the preference value for the Adyen Giving charity background image URL
   getAdyenGivingBackgroundUrl: function getAdyenGivingBackgroundUrl() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_backgroundUrl').getAbsURL();
   },
+  // get the preference value for the Adyen Giving charity logo image URL
   getAdyenGivingLogoUrl: function getAdyenGivingLogoUrl() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl').getAbsURL();
   },
+  // checks whether Adyen giving is available for the selected payment method
   isAdyenGivingAvailable: function isAdyenGivingAvailable(paymentMethod) {
     var availablePaymentMethods = ['visa', 'mc', 'amex', 'cup', 'jcb', 'diners', 'discover', 'cartebancaire', 'bcmc', 'ideal', 'giropay', 'directEbanking', 'vipps', 'sepadirectdebit', 'directdebit_GB'];
     return availablePaymentMethods.indexOf(paymentMethod) !== -1;
   },
+  // gets the ID for ratePay using the custom preference and the encoded session ID
   getRatePayID: function getRatePayID() {
     var returnValue = {};
 
@@ -269,7 +299,7 @@ var adyenHelperObj = {
     }
 
     if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint === null) {
-      var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_256);
+      var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
       returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
       session.privacy.ratePayFingerprint = returnValue.sessionID;
     }
@@ -290,7 +320,7 @@ var adyenHelperObj = {
 
     return false;
   },
-  // Get saved card token of customer saved card based on matched cardUUID
+  // Get stored card token of customer saved card based on matched cardUUID
   getCardToken: function getCardToken(cardUUID, customer) {
     var token = '';
 
@@ -312,6 +342,7 @@ var adyenHelperObj = {
 
     return token;
   },
+  // populates and returns the args paymentRequest with shopper information using the order contains in the args object itself
   createShopperObject: function createShopperObject(args) {
     var gender = 'UNKNOWN';
 
@@ -360,6 +391,7 @@ var adyenHelperObj = {
 
     return args.paymentRequest;
   },
+  // populates the paymentRequest with address information using the order and payment method and returns it
   createAddressObjects: function createAddressObjects(order, paymentMethod, paymentRequest) {
     var shippingAddress = order.defaultShipment.shippingAddress;
     paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
@@ -418,6 +450,7 @@ var adyenHelperObj = {
     };
     return paymentRequest;
   },
+  // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject: function createAdyenRequestObject(order, paymentInstrument) {
     var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
     var filteredJson = adyenHelperObj.validateStateData(jsonObject);
@@ -438,6 +471,7 @@ var adyenHelperObj = {
     stateData.additionalData = {};
     return stateData;
   },
+  // adds 3DS2 fields to an Adyen Checkout payments Request
   add3DS2Data: function add3DS2Data(jsonObject) {
     jsonObject.additionalData.allow3DS2 = true;
     jsonObject.channel = 'web';
@@ -448,6 +482,7 @@ var adyenHelperObj = {
     };
     return jsonObject;
   },
+  // gets the SFCC card type name based on the Adyen card type name
   getAdyenCardType: function getAdyenCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
@@ -499,6 +534,7 @@ var adyenHelperObj = {
 
     return cardType;
   },
+  // gets the Adyen card type name based on the SFCC card type name
   getSFCCCardType: function getSFCCCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
@@ -549,6 +585,7 @@ var adyenHelperObj = {
 
     throw new Error('cardType argument is not passed to getSFCCCardType function');
   },
+  // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
     if (result.pspReference) {
       paymentInstrument.paymentTransaction.transactionID = result.pspReference;
@@ -567,6 +604,7 @@ var adyenHelperObj = {
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
     return true;
   },
+  // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi: function getCurrencyValueForApi(amount) {
     var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
     var digitsNumber = adyenHelperObj.getFractionDigits(currencyCode.toString());
@@ -574,6 +612,7 @@ var adyenHelperObj = {
 
     return new dw.value.Money(value, currencyCode);
   },
+  // get the fraction digits based on the currency code used to convert amounts of currency for the Adyen Checkout API
   getFractionDigits: function getFractionDigits(currencyCode) {
     var format;
 
@@ -646,6 +685,7 @@ var adyenHelperObj = {
 
     return applicationInfo;
   },
+  // validates all fields in a state data object. Filters out all invalid fields
   validateStateData: function validateStateData(stateData) {
     var validFields = ['paymentMethod', 'billingAddress', ' deliveryAddress', 'riskData', 'shopperName', 'dateOfBirth', 'telephoneNumber', 'shopperEmail', 'countryCode', 'socialSecurityNumber', 'browserInfo', 'installments', 'storePaymentMethod', 'conversionId'];
     var invalidFields = [];

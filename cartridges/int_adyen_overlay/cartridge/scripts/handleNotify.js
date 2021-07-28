@@ -1,6 +1,23 @@
 "use strict";
 
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * save Adyen Notification
  * see page 22 of Adyen Integration manual
  *
@@ -8,8 +25,6 @@
  * v2 110325 :
  * v3 110408 : pass on OrderNo, Paymentresult for update
  * v4 130422 : Merged adyen_notify and update_order into single script
- *
- * @input CurrentHttpParameterMap : Object
  *
  */
 var Logger = require('dw/system/Logger');

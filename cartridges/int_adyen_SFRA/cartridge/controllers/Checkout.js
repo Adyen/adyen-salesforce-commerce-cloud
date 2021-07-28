@@ -10,5 +10,9 @@ var _require = require('./middlewares/index'),
     checkout = _require.checkout;
 
 server.extend(module.superModule);
+/*
+ * Prepends Checkout's 'Begin' function with Adyen-specific configuration.
+ */
+
 server.prepend('Begin', server.middleware.https, consentTracking.consent, csrfProtection.generateToken, checkout.begin);
 module.exports = server.exports();

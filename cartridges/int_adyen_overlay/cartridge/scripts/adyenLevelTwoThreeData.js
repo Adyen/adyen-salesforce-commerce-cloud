@@ -6,6 +6,26 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Add all product and shipping line items to request
+ */
 require('dw/crypto');
 
 require('dw/system');
@@ -26,8 +46,7 @@ var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems(_ref) {
   var order = _ref.Order;
-  if (!order) return null; // Add all product and shipping line items to request
-
+  if (!order) return null;
   var allLineItems = order.getProductLineItems();
   var shopperReference = getShopperReference(order);
   return allLineItems.toArray().reduce(function (acc, lineItem, index) {

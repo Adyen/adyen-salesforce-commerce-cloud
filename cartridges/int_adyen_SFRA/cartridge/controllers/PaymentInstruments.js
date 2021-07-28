@@ -19,6 +19,10 @@ var _require = require('*/cartridge/scripts/updateSavedCards'),
 
 var _require2 = require('./middlewares/index'),
     paymentInstruments = _require2.paymentInstruments;
+/*
+ * Prepends PaymentInstruments' 'List' function to list saved cards.
+ */
+
 
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
   updateSavedCards({
@@ -26,6 +30,10 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
   });
   next();
 });
+/*
+ * Prepends PaymentInstruments' 'AddPayment' function to pass Adyen-specific configurations.
+ */
+
 server.prepend('AddPayment', csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
   var protocol = req.https ? 'https' : 'http';
   var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
@@ -38,6 +46,16 @@ server.prepend('AddPayment', csrfProtection.generateToken, consentTracking.conse
   res.setViewData(viewData);
   next();
 });
+/*
+ * Prepends PaymentInstruments' 'SavePayment' function to handle saving a payment instrument
+ *  when the selected payment processor is Adyen.
+ */
+
 server.prepend('SavePayment', csrfProtection.validateAjaxRequest, paymentInstruments.savePayment);
+/*
+ * Prepends PaymentInstruments' 'DeletePayment' function to handle deleting a payment instrument
+ *  when the selected payment processor is Adyen.
+ */
+
 server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, paymentInstruments.deletePayment);
 module.exports = server.exports();

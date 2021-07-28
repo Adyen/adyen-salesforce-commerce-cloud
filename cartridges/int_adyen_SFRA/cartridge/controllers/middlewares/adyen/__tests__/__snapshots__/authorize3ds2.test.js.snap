@@ -12,7 +12,19 @@ Array [
 ]
 `;
 
-exports[`Authorize 3DS2 should complete authorization 1`] = `
+exports[`Authorize 3DS2 should complete authorization for SFRA6 1`] = `
+Array [
+  Array [
+    "orderConfirmForm",
+    Object {
+      "orderID": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+    },
+  ],
+]
+`;
+
+exports[`Authorize 3DS2 should complete authorization for SFRA5 1`] = `
 Array [
   Array [
     "Order-Confirm",

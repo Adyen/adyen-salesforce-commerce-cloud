@@ -198,8 +198,7 @@ function setCheckoutConfiguration() {
         personalDetails: {
           firstName: document.querySelector('#shippingFirstNamedefault').value,
           lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
-          shopperEmail: document.querySelector('#email').value
+          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault').value
         }
       }
     },
@@ -213,8 +212,7 @@ function setCheckoutConfiguration() {
         personalDetails: {
           firstName: document.querySelector('#shippingFirstNamedefault').value,
           lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
-          shopperEmail: document.querySelector('#email').value
+          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault').value
         }
       }
     },

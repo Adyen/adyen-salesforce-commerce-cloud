@@ -10,5 +10,9 @@ var _require = require('./middlewares/index'),
     order = _require.order;
 
 server.extend(module.superModule);
+/*
+ * Prepends Order's 'Confirm' function to support Adyen Giving.
+ */
+
 server.prepend('Confirm', server.middleware.https, consentTracking.consent, csrfProtection.generateToken, order.confirm);
 module.exports = server.exports();

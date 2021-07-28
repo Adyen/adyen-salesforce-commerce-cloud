@@ -5,6 +5,10 @@ var URLUtils = require('dw/web/URLUtils');
 var Logger = require('dw/system/Logger');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+/**
+ * Initiates a 3DS1 payment
+ */
+
 
 function adyen3d(req, res, next) {
   var IssuerURL = req.querystring.IssuerURL;

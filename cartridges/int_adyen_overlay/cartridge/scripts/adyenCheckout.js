@@ -7,31 +7,26 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * Passes on credit card details to Adyen using the Adyen PAL adapter
  * Receives a response and sets the order status accordingly
  * created on 23dec2014
- *
- * @input Order : dw.order.Order
- * @input Amount : dw.value.Money The amount to authorize
- * @input PaymentInstrument : dw.order.PaymentInstrument
- * @input CurrentSession : dw.system.Session
- * @input CurrentRequest : dw.system.Request
- * @input CreditCardForm : dw.web.Form
- * @input SaveCreditCard : Boolean
- *
- * @output Decision : String
- * @output PaymentStatus : String
- * @output AuthorizationCode :  String
- * @output AuthorizationAmount : String
- * @output PaRequest : String
- * @output PspReference : String
- * @output MD : String
- * @output ResultCode : String
- * @output IssuerUrl : String
- * @output AVSResultCode : String
- * @output AdyenErrorMessage : String
- * @output AdyenAmount : String
- * @output AdyenCardType : String
  *
  */
 
@@ -95,6 +90,12 @@ function createPaymentRequest(args) {
 
 
     if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
+      args.addTaxPercentage = true;
+
+      if (paymentRequest.paymentMethod.type.indexOf('klarna') > -1) {
+        args.addTaxPercentage = false;
+      }
+
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
 
       if (paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 && session.privacy.ratePayFingerprint) {

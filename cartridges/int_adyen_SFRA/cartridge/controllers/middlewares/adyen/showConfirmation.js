@@ -16,6 +16,11 @@ var _require = require('../../utils/index'),
     clearForms = _require.clearForms;
 
 var handleAuthorised = require('./showConfirmation/authorise');
+/*
+ * Makes a payment details call to Adyen and calls for the order confirmation to be shown
+ * if the payment was accepted.
+ */
+
 
 function showConfirmation(req, res, next) {
   var options = {

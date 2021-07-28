@@ -19,6 +19,10 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var constants = require('*/cartridge/adyenConstants/constants');
 
 var collections = require('*/cartridge/scripts/util/collections');
+/**
+ * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
+ */
+
 
 function paymentFromComponent(req, res, next) {
   var reqDataObj = JSON.parse(req.form.data);

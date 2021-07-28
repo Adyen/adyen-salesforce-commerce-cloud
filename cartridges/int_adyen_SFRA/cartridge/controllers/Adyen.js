@@ -16,7 +16,7 @@ var EXTERNAL_PLATFORM_VERSION = 'SFRA';
  * Complete a 3DS payment
  */
 
-server.get('Adyen3D', csrfProtection.generateToken, server.middleware.https, adyen.adyen3d);
+server.use('Adyen3D', csrfProtection.generateToken, server.middleware.https, adyen.adyen3d);
 /**
  * Make /payments/details call to 3d verification system to complete authorization
  */
@@ -26,7 +26,7 @@ server.post('AuthorizeWithForm', csrfProtection.generateToken, server.middleware
  * Complete a 3DS2 payment
  */
 
-server.get('Adyen3DS2', consentTracking.consent, csrfProtection.generateToken, server.middleware.https, adyen.adyen3ds2);
+server.use('Adyen3DS2', consentTracking.consent, csrfProtection.generateToken, server.middleware.https, adyen.adyen3ds2);
 /**
  * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
  *
@@ -38,7 +38,7 @@ server.post('Authorize3DS2', csrfProtection.generateToken, csrfProtection.valida
  * Redirect to Adyen after saving order etc.
  */
 
-server.get('Redirect', server.middleware.https, adyen.redirect);
+server.use('Redirect', server.middleware.https, adyen.redirect);
 /**
  * Show confirmation after return from Adyen
  */

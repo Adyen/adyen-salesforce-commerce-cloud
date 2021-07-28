@@ -17,9 +17,33 @@
     "id": "it_IT",
     "currencyCode": "EUR"
 }, {
+    "id": "pl_PL",
+    "currencyCode": "PLN"
+}, {
     "id": "pt_BR",
     "currencyCode": "BRL"
 }, {
+    "id": "sv_SE",
+    "currencyCode": "SEK"
+}, {
+    "id": "en_AU",
+    "currencyCode": "AUD"
+}, {
+    "id": "ms_MY",
+    "currencyCode": "MYR"
+}, {
+    "id": "ko_KR",
+    "currencyCode": "KRW"
+}, {
+    "id": "es_MX",
+    "currencyCode": "MXN"
+}, {
     "id": "en_CA",
     "currencyCode": "CAD"
+}, {
+    "id": "hi_IN",
+    "currencyCode": "INR"
+}, {
+    "id": "en_PH",
+    "currencyCode": "PHP"
 }]
