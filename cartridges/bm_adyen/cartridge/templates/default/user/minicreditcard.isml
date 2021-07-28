@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!-- Start: user/minicreditcard -->
+
+<!---
+	Creates a mini credit card display.
+	If p_card is given the second parameter is ignored.
+	
+	Parameter: 
+	p_card	       : the PaymentInstrument object to display
+	p_cc_formfield : a credit card formfield element
+ --->
+ 	<isscript>
+		var ccType   : String;
+		var ccNumber : String;
+		var ccMonth  : Integer;
+		var ccYear   : Integer;
+		var ccOwner  : String;
+
+		if( pdict.p_card != null )
+		{
+			ccType   = pdict.p_card.creditCardType;
+			ccNumber = pdict.p_card.maskedCreditCardNumber;
+			ccMonth  = pdict.p_card.creditCardExpirationMonth;
+			ccYear   = pdict.p_card.creditCardExpirationYear;
+			ccOwner  = pdict.p_card.creditCardHolder;
+		}
+		else
+		{
+			ccType   = pdict.p_cc_formfield.type.htmlValue;
+			ccNumber = pdict.p_cc_formfield.number.htmlValue;
+			ccMonth  = pdict.p_cc_formfield.month.value;
+			ccYear   = pdict.p_cc_formfield.year.value;
+			ccOwner  = pdict.p_cc_formfield.owner.htmlValue;
+		}
+ 	</isscript>
+
+<div class="minicreditcard">
+	<div class="type">
+		<isprint value="${ccType}">
+	</div>
+	<div class="number">
+		<isprint value="${ccNumber}">
+	</div>
+	<div class="expiration">
+		<span class="month"><isprint value="${ccMonth}" formatter="#00.#"></span>/<span class="year"><isprint value="${ccYear}" formatter="#"></span>
+	</div>
+	<div class="owner">
+		<isprint value="${ccOwner}">
+	</div>
+</div>
+<!-- End: user/minicreditcard -->

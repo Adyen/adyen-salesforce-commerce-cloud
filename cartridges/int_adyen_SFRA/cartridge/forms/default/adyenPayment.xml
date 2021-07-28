@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <!--Issuer details-->
+    <field formid="issuer" type="string" mandatory="false"/>
+
+    <!--Open Invoice details-->
+    <field formid="dateOfBirth" label="Date of Birth" type="string" mandatory="false"/>
+    <field formid="telephoneNumber" label="telephoneNumber" type="string" mandatory="false"/>
+    <field formid="gender" label="Gender" type="string" mandatory="false"/>
+    <field formid="socialSecurityNumber" label="Social Security Number" type="string" mandatory="false"/>
+    <field formid="adyenFingerprint" label="Fingerprint" type="string" mandatory="false"/>
+
+    <!--ACH details-->
+    <field formid="bankAccountOwnerName" type="string" mandatory="false"/>
+    <field formid="bankAccountNumber" type="string" mandatory="false"/>
+    <field formid="bankLocationId" type="string" mandatory="false"/>
+
+    <!--POS terminal-->
+    <field formid="terminalId" type="string" mandatory="false" />
+
+    <!--Generic Component-->
+    <field formid="adyenStateData" type="string" mandatory="false" />
+</form>

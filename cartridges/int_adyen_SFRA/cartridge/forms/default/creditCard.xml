@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="paymentMethod" type="string" mandatory="true"/>
+
+    <field formid="cardType" label="profile.cardtype" type="string" mandatory="false" binding="cardType"
+           max-length="16" missing-error="error.message.required"/>
+
+    <field formid="cardNumber" label="label.input.creditcard.number" type="string" mandatory="false"
+           binding="cardNumber"
+           max-length="20" missing-error="error.message.required" parse-error="error.message.required"/>
+
+    <field formid="cardOwner" label="label.input.creditcard.owner" type="string" mandatory="false" binding="cardOwner"
+           missing-error="error.message.required"/>
+
+    <field formid="expirationMonth" label="label.input.payment.expirationmonth" type="integer" mandatory="false"
+           binding="expirationMonth" missing-error="error.message.required"
+           value-error="address.field.invalid">
+        <options>
+            <option optionid="" label="select.default.month" value=""/>
+            <option optionid="01" label="01" value="01"/>
+            <option optionid="02" label="02" value="02"/>
+            <option optionid="03" label="03" value="03"/>
+            <option optionid="04" label="04" value="04"/>
+            <option optionid="05" label="05" value="05"/>
+            <option optionid="06" label="06" value="06"/>
+            <option optionid="07" label="07" value="07"/>
+            <option optionid="08" label="08" value="08"/>
+            <option optionid="09" label="09" value="09"/>
+            <option optionid="10" label="10" value="10"/>
+            <option optionid="11" label="11" value="11"/>
+            <option optionid="12" label="12" value="12"/>
+        </options>
+    </field>
+
+    <field formid="expirationYear" label="label.input.payment.expirationyear" type="integer" mandatory="false"
+           missing-error="error.message.required">
+        <options>
+            <option optionid="" label="select.default.year" value=""/>
+        </options>
+    </field>
+
+    <field formid="securityCode" label="profile.securitycode" type="string" mandatory="false" binding="securityCode"
+           max-length="4" missing-error="error.card.info.missing.securityCode"/>
+
+    <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false"
+           checked="false"/>
+    <field formid="saveCardAdyen" label="label.save.card" binding="saveCardAdyen" type="boolean" mandatory="false"
+           checked="false"/>
+
+    <field formid="adyenStateData" label="adyenStateData" type="string" mandatory="false"
+           binding="adyenStateData"/>
+
+    <!--  field  for  credit  card  recurring  payments  /  tokenization  -->
+    <field formid="selectedCardID" mandatory="false" type="string"/>
+</form>

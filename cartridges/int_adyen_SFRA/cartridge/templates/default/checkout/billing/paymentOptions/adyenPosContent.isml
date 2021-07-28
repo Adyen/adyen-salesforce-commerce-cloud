@@ -1,0 +1,12 @@
+<!--- Adyen Point of Sale--->
+<div class="tab-pane adyen-pos-content" id="adyen-pos-content" role="tabpanel">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control"
+               name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+               value="AdyenPOS"
+        >
+        <fieldset class="">
+            <isinclude template="checkout/billing/adyenPosForm" />
+        </fieldset>
+    </fieldset>
+</div>
