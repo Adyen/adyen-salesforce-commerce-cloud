@@ -64,6 +64,47 @@ function redirect(order, redirectUrl) {
   response.redirect(redirectUrl);
 }
 
+
+function zeroAuth() {
+  Logger.getLogger('Adyen').error('inside zeroAuth controller');
+  const app = require('app_storefront_controllers/cartridge/scripts/app');
+  const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+  const paymentInformation = app.getForm('adyPaydata');
+  const wallet = customer.getProfile().getWallet();
+  const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
+
+  let paymentInstrument;
+  Transaction.wrap(() => {
+    paymentInstrument = wallet.createPaymentInstrument(
+        constants.METHOD_ADYEN_COMPONENT,
+    );
+    paymentInstrument.custom.adyenPaymentData = stateDataStr;
+  });
+
+  Transaction.begin();
+  const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
+      customer,
+      paymentInstrument,
+  );
+  Logger.getLogger('Adyen').error('zeroAuthResult ' + JSON.stringify(zeroAuthResult));
+
+  // if(zeroAuthResult.action) {
+  //   Logger.getLogger('Adyen').error('there is action');
+  // }
+  //
+  // if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+  if (zeroAuthResult.error) {
+      Transaction.rollback();
+      return false;
+  }
+  // Logger.getLogger('Adyen').error('it is true');
+
+  Transaction.commit();
+  const responseUtils = require('*/cartridge/scripts/util/Response');
+  responseUtils.renderJSON({zeroAuthResult});
+  // return true;
+}
+
 /**
  * Show confirmation after return from Adyen
  */
@@ -718,6 +759,11 @@ exports.getExternalPlatformVersion = getExternalPlatformVersion();
 exports.PaymentFromComponent = guard.ensure(
   ['https', 'post'],
     paymentFromComponent,
+);
+
+exports.zeroAuth = guard.ensure(
+    ['https', 'post'],
+    zeroAuth,
 );
 
 exports.Donate = guard.ensure(['https', 'post'], donate);

@@ -9,6 +9,7 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.zeroAuthURL = "${URLUtils.https('Adyen-zeroAuth')}";
 </script>
 
 <div>
@@ -27,5 +28,7 @@
             ${Resource.msg('global.cancel', 'locale', null)}
         </button>
     </div>
-
+    <div id="modal" type="hidden" class="ui-widget-overlay ui-front" style="z-index: 100; display:none;">
+        <div id="action-container"></div>
+    </div>
 </div>
