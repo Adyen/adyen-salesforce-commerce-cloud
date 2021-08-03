@@ -56,7 +56,6 @@
 <iselse>
     <script>
          window.installments = '${pdict.adyen.installments}';
-         window.paypalMerchantID = '${pdict.adyen.paypalMerchantID}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.paypalIntent = '${pdict.adyen.paypalIntent}';

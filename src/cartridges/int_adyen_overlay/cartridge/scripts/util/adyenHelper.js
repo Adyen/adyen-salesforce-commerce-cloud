@@ -182,10 +182,6 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
   },
 
-  getPaypalMerchantID() {
-    return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
-  },
-
   getAmazonMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_AmazonMerchantID');
   },
