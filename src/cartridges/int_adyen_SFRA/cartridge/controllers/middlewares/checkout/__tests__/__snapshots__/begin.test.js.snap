@@ -16,7 +16,6 @@ Array [
         "installments": true,
         "merchantAccount": "mocked_merchant_account",
         "paypalIntent": "mocked_intent",
-        "paypalMerchantID": "mocked_paypal_merchant_id",
       },
     },
   ],

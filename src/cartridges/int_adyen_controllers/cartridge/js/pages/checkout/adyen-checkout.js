@@ -237,10 +237,6 @@ function initializeBillingEvents() {
       checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier =
         window.googleMerchantID;
     }
-    if (window.paypalMerchantID !== 'null') {
-      checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
-        window.paypalMerchantID;
-    }
     if(window.cardholderNameBool !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
       checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;

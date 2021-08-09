@@ -50,10 +50,6 @@ if (
     id
   ] = window.googleMerchantID;
 }
-if (window.paypalMerchantID !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
-    window.paypalMerchantID;
-}
 
 // Submit the payment
 $('button[value="submit-payment"]').on('click', () => {
