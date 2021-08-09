@@ -1,0 +1,27 @@
+<div>
+    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+    <isset name="BasketMgr" value="${require('dw/order/BasketMgr')}" scope="pdict"/>
+    <isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
+    <isif condition="${pdict.BasketMgr.getCurrentBasket().getCustomer().registered}">
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+            assets.addJs('/js/bundle.js');
+            assets.addCss('/css/adyenCss.css');
+            assets.addCss('/css/adyenCSS.css');
+            assets.addJs('/js/adyenExpress.js');
+        </isscript>
+        <script type="text/javascript">
+            window.amount = {
+                currency: '${pdict.BasketMgr.getCurrentBasket().currencyCode}',
+                value: '${pdict.AdyenHelper.getCurrencyValueForApi(pdict.BasketMgr.getCurrentBasket().getTotalGrossPrice()).value}'
+            };
+            window.environment = '${pdict.AdyenHelper.getAdyenEnvironment()}';
+            window.paymentFromComponentURL = "${URLUtils.https('Adyen-ExpressPaymentFromComponent')}";
+            window.showConfirmationURL = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+        </script>
+        <div id="paymentError" class="card-error">
+            <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+        </div>
+        <div id="expressComponent"></div>
+    </isif>
+</div>

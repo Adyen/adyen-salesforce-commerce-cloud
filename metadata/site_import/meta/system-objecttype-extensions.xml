@@ -358,6 +358,18 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenExpressPaymentMethods">
+                <display-name xml:lang="x-default">Enabled express paymentmethods</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple>true</select-multiple>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>paypal</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenPayPalIntent">
                 <display-name xml:lang="x-default">PayPal auto capture</display-name>
                 <type>enum-of-string</type>
@@ -595,6 +607,7 @@
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
                 <attribute attribute-id="AdyenCardHolderName_enabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
+                <attribute attribute-id="AdyenExpressPaymentMethods"/>
 
                 <attribute attribute-id="AdyenGiving_enabled"/>
                 <attribute attribute-id="AdyenGiving_charityName"/>

@@ -106,12 +106,66 @@ function createPaymentRequest(args) {
     }
 
   // make API call
+    Logger.getLogger('Adyen').error(JSON.stringify(paymentRequest));
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `error processing payment. Error message: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
+    );
+    return { error: true };
+  }
+}
+
+// TODO: Dedupe this and createPaymentRequest
+function createExpressPaymentRequest(args) {
+  try {
+    const basket = args.Basket;
+    const paymentInstrument = args.PaymentInstrument;
+
+    // Create request object with payment details
+    let paymentRequest = AdyenHelper.createAdyenRequestObject(
+        null,
+        paymentInstrument,
+    );
+
+    // Add Risk data
+    if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+      paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
+          basket.getProductLineItems(),
+      );
+    }
+
+    // Get 3DS2 data
+    if (AdyenHelper.getAdyen3DS2Enabled()) {
+      paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    }
+
+    // L2/3 Data
+    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(basket.getProductLineItems()) };
+    }
+
+    const myAmount = AdyenHelper.getCurrencyValueForApi(
+        paymentInstrument.paymentTransaction.amount,
+    ).getValueOrNull(); // args.Amount * 100;
+    paymentRequest.amount = {
+      currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+      value: myAmount,
+    };
+
+    if (session.privacy.adyenFingerprint) {
+      paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
+    }
+
+    // make API call
+    return doPaymentsCall(null, paymentInstrument, paymentRequest);
+  } catch (e) {
+    Logger.getLogger('Adyen').error(
+        `error processing express payment. Error message: ${
+            e.message
+        } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return { error: true };
   }
@@ -295,4 +349,5 @@ module.exports = {
   createPaymentRequest,
   doPaymentsCall,
   doPaymentsDetailsCall,
+  createExpressPaymentRequest,
 };

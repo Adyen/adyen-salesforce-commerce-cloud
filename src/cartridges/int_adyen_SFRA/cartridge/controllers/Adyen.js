@@ -121,6 +121,15 @@ server.post(
 );
 
 /**
+ * Make a payment from inside an express component (paypal)
+ */
+server.post(
+    'ExpressPaymentFromComponent',
+    server.middleware.https,
+    adyen.expressPaymentFromComponent,
+);
+
+/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);
