@@ -6,9 +6,13 @@
             <input type="hidden" name="MD" value="${pdict.md}">
         </form>
         <script language="javascript">
-            function load(){
+            var loaded = false;
+
+            function load() {
                 document.getElementById('3dform').submit();
+                loaded = true;
             }
+
             load();
         </script>
     </div>
