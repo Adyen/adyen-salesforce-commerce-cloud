@@ -16,6 +16,7 @@
                 value: '${pdict.AdyenHelper.getCurrencyValueForApi(pdict.BasketMgr.getCurrentBasket().getTotalGrossPrice()).value}'
             };
             window.environment = '${pdict.AdyenHelper.getAdyenEnvironment()}';
+            window.isPayPalExpressEnabled = ${pdict.AdyenHelper.getAdyenPaypalExpressEnabled()};
             window.paymentFromComponentURL = "${URLUtils.https('Adyen-ExpressPaymentFromComponent')}";
             window.showConfirmationURL = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
         </script>

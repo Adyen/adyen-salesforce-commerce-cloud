@@ -10,6 +10,7 @@ function createFormField(fieldKey, fieldValue) {
   formField.value = fieldValue;
   return formField;
 }
+
 // Store configuration
 store.checkoutConfiguration.amount = window.amount;
 store.checkoutConfiguration.environment = window.environment;
@@ -66,4 +67,6 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
 // card and checkout component creation
 const expressCheckoutNode = document.getElementById('expressComponent');
 checkout = new AdyenCheckout(store.checkoutConfiguration);
-checkout.create('paypal').mount(expressCheckoutNode);
+if(window.isPayPalExpressEnabled) {
+  checkout.create('paypal').mount(expressCheckoutNode);
+}

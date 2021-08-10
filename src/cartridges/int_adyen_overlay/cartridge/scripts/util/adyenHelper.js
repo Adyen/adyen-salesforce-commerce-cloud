@@ -247,6 +247,18 @@ var adyenHelperObj = {
     return signature;
   },
 
+  getAdyenExpressPaymentMethods() {
+    const paymentMethods = [];
+    for (const expressPaymentMethod of adyenHelperObj.getCustomPreference('AdyenExpressPaymentMethods')) {
+      paymentMethods.push(expressPaymentMethod.displayValue);
+    }
+    return paymentMethods;
+  },
+
+  getAdyenPaypalExpressEnabled() {
+    return this.getAdyenExpressPaymentMethods().indexOf('paypal') !== -1;
+  },
+
   getAdyenBasketFieldsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenBasketFieldsEnabled');
   },
@@ -463,7 +475,9 @@ var adyenHelperObj = {
   },
 
   createAddressObjects(order, paymentMethod, paymentRequest) {
-    const { shippingAddress } = order.defaultShipment;
+    const {
+
+    } = order.defaultShipment;
     paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
 
     let shippingStreet = '';

@@ -363,9 +363,12 @@
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <select-multiple>true</select-multiple>
+                <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
                     <value-definition default="true">
+                        <value>none</value>
+                    </value-definition>
+                    <value-definition>
                         <value>paypal</value>
                     </value-definition>
                 </value-definitions>
