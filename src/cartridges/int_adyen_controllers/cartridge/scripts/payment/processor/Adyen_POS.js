@@ -13,7 +13,7 @@ require('app_storefront_controllers/cartridge/scripts/app');
 function handle(args) {
   const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     const result = adyenRemovePreviousPI.removePaymentInstruments(args.Basket);
     if (result.error) {
       return result;
@@ -31,7 +31,8 @@ function handle(args) {
 
 /**
  * Authorizes a payment using a POS terminal.
- * The payment is authorized by using the Adyen_POS processor only and setting the order no as the transaction ID.
+ * The payment is authorized by using the Adyen_POS processor only
+ * and setting the order no as the transaction ID.
  */
 function authorize(args) {
   let errors;
@@ -43,7 +44,7 @@ function authorize(args) {
     paymentInstrument.getPaymentMethod(),
   ).getPaymentProcessor();
 
-  Transaction.wrap(function () {
+  Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.transactionID = orderNo;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });

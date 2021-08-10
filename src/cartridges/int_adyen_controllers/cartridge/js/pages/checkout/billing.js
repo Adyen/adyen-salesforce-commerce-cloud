@@ -6,7 +6,8 @@ const adyenCheckout = require('../../adyen-checkout');
 
 /**
  * @function
- * @description Fills the Credit Card form with the passed data-parameter and clears the former cvn input
+ * @description Fills the Credit Card form with the passed data-parameter
+ * and clears the former cvn input
  * @param {Object} data The Credit Card data (holder, type, masked number, expiration month/year)
  */
 function setCCFields(data) {
@@ -48,8 +49,8 @@ function populateCreditCardForm(cardID) {
     cardID,
   );
   ajax.getJson({
-    url: url,
-    callback: function (data) {
+    url,
+    callback(data) {
       if (!data) {
         window.alert(Resources.CC_LOAD_ERROR);
         return false;
@@ -68,7 +69,8 @@ $('input[name="brandCode"]').on('change', function () {
 /**
  * @function
  * @description Changes the payment method form depending on the passed paymentMethodID
- * @param {String} paymentMethodID the ID of the payment method, to which the payment method form should be changed to
+ * @param {String} paymentMethodID the ID of the payment method, to which the payment
+ * method form should be changed to
  */
 function updatePaymentMethod(paymentMethodID) {
   const $paymentMethods = $('.payment-method');
@@ -92,7 +94,8 @@ function updatePaymentMethod(paymentMethodID) {
 /**
  * @function
  * @description Changes the payment type or issuerId of the selected payment method
- * @param {String, Boolean} value of payment type or issuerId and a test value to see which one it is, to which the payment type or issuerId should be changed to
+ * @param {String, Boolean} value of payment type or issuerId and a test value to see
+ * which one it is, to which the payment type or issuerId should be changed to
  */
 function updatePaymentType(selectedPayType, issuerType) {
   if (issuerType) {
@@ -131,17 +134,12 @@ exports.init = function () {
   });
 
   // default payment method to 'CREDIT_CARD'
-  updatePaymentMethod(
-    selectedPaymentMethod || 'CREDIT_CARD',
-  );
+  updatePaymentMethod(selectedPaymentMethod || 'CREDIT_CARD');
   $selectPaymentMethod.on('click', 'input[type="radio"]', function () {
     updatePaymentMethod($(this).val());
     if ($(this).val() === 'Adyen' && $payType.length > 0) {
       // set payment type of Adyen to the first one
-      updatePaymentType(
-        selectedPayType || $payType[0].value,
-        false,
-      );
+      updatePaymentType(selectedPayType || $payType[0].value, false);
     } else {
       $payType.removeAttr('checked');
     }
@@ -175,7 +173,7 @@ exports.init = function () {
     $('.error-message').remove();
   });
 
-  $('#check-giftcert').on('click', function (e) {
+  $('#check-giftcert').on('click', (e) => {
     e.preventDefault();
     const $balance = $('.balance');
     if ($giftCertCode.length === 0 || $giftCertCode.val().length === 0) {
@@ -187,7 +185,7 @@ exports.init = function () {
       return;
     }
 
-    giftcard.checkBalance($giftCertCode.val(), function (data) {
+    giftcard.checkBalance($giftCertCode.val(), (data) => {
       if (!data || !data.giftCertificate) {
         $balance
           .html(Resources.GIFT_CERT_INVALID)
@@ -202,7 +200,7 @@ exports.init = function () {
     });
   });
 
-  $addGiftCert.on('click', function (e) {
+  $addGiftCert.on('click', (e) => {
     e.preventDefault();
     const code = $giftCertCode.val();
     const $error = $checkoutForm.find('.giftcert-error');
@@ -215,7 +213,7 @@ exports.init = function () {
       giftCertCode: code,
       format: 'ajax',
     });
-    $.getJSON(url, function (data) {
+    $.getJSON(url, (data) => {
       let fail = false;
       let msg = '';
       if (!data) {
@@ -233,7 +231,7 @@ exports.init = function () {
     });
   });
 
-  $addCoupon.on('click', function (e) {
+  $addCoupon.on('click', (e) => {
     e.preventDefault();
     const $error = $checkoutForm.find('.coupon-error');
     const code = $couponCode.val();
@@ -246,7 +244,7 @@ exports.init = function () {
       couponCode: code,
       format: 'ajax',
     });
-    $.getJSON(url, function (data) {
+    $.getJSON(url, (data) => {
       let fail = false;
       let msg = '';
       if (!data) {
@@ -261,8 +259,9 @@ exports.init = function () {
         return;
       }
 
-      // basket check for displaying the payment section, if the adjusted total of the basket is 0 after applying the coupon
-      // this will force a page refresh to display the coupon message based on a parameter message
+      // basket check for displaying the payment section, if the adjusted total of
+      // the basket is 0 after applying the coupon this will force a page refresh to
+      // display the coupon message based on a parameter message
       if (data.success && data.baskettotal === 0) {
         window.location.assign(Urls.billing);
       }
@@ -270,13 +269,13 @@ exports.init = function () {
   });
 
   // trigger events on enter
-  $couponCode.on('keydown', function (e) {
+  $couponCode.on('keydown', (e) => {
     if (e.which === 13) {
       e.preventDefault();
       $addCoupon.click();
     }
   });
-  $giftCertCode.on('keydown', function (e) {
+  $giftCertCode.on('keydown', (e) => {
     if (e.which === 13) {
       e.preventDefault();
       $addGiftCert.click();

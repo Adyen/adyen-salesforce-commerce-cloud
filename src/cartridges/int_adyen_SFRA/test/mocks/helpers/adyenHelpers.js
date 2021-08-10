@@ -1,31 +1,31 @@
-const proxyquire = require('proxyquire').noCallThru().noPreserveCache();
-const basketMgr = require('../dw/order/BasketMgr');
+const proxyquire = require("proxyquire").noCallThru().noPreserveCache();
+const basketMgr = require("../dw/order/BasketMgr");
 
 const server = {
   forms: {
-    getForm: function (formName) {
+    getForm(formName) {
       return {
-        formName: formName,
-        clear: function () {},
+        formName,
+        clear() {},
       };
     },
   },
 };
 
 const transaction = {
-  wrap: function (callBack) {
+  wrap(callBack) {
     return callBack.call();
   },
-  begin: function () {},
-  commit: function () {},
+  begin() {},
+  commit() {},
 };
 
 const hookMgr = {
-  callHook: function () {},
+  callHook() {},
 };
 
 const resource = {
-  msg: function (param1) {
+  msg(param1) {
     return param1;
   },
 };
@@ -36,89 +36,89 @@ const status = {
 };
 
 const orderMgr = {
-  createOrder: function () {
-    return { order: 'new order' };
+  createOrder() {
+    return { order: "new order" };
   },
-  placeOrder: function () {
+  placeOrder() {
     return status.OK;
   },
-  failOrder: function () {
-    return { order: 'failed order' };
+  failOrder() {
+    return { order: "failed order" };
   },
 };
 
 const order = {
-  CONFIRMATION_STATUS_NOTCONFIRMED: 'CONFIRMATION_STATUS_NOTCONFIRMED',
-  CONFIRMATION_STATUS_CONFIRMED: 'CONFIRMATION_STATUS_CONFIRMED',
-  EXPORT_STATUS_READY: 'order export status is ready',
+  CONFIRMATION_STATUS_NOTCONFIRMED: "CONFIRMATION_STATUS_NOTCONFIRMED",
+  CONFIRMATION_STATUS_CONFIRMED: "CONFIRMATION_STATUS_CONFIRMED",
+  EXPORT_STATUS_READY: "order export status is ready",
 };
 
 const paymentInstrument = {
-  METHOD_GIFT_CERTIFICATE: new String('METHOD_GIFT_CERTIFICATE'),
-  METHOD_CREDIT_CARD: new String('CREDIT_CARD'),
+  METHOD_GIFT_CERTIFICATE: new String("METHOD_GIFT_CERTIFICATE"),
+  METHOD_CREDIT_CARD: new String("CREDIT_CARD"),
 };
 
 function proxyModel() {
-  return proxyquire('../../../cartridge/scripts/checkout/adyenHelpers', {
-    server: server,
-    'dw/order/BasketMgr': basketMgr,
-    'dw/util/HashMap': {},
-    'dw/system/HookMgr': hookMgr,
-    'dw/net/Mail': {},
-    'dw/order/OrderMgr': orderMgr,
-    'dw/order/PaymentInstrument': paymentInstrument,
-    'dw/order/PaymentMgr': {
-      getApplicablePaymentMethods: function () {
+  return proxyquire("../../../cartridge/scripts/checkout/adyenHelpers", {
+    server,
+    "dw/order/BasketMgr": basketMgr,
+    "dw/util/HashMap": {},
+    "dw/system/HookMgr": hookMgr,
+    "dw/net/Mail": {},
+    "dw/order/OrderMgr": orderMgr,
+    "dw/order/PaymentInstrument": paymentInstrument,
+    "dw/order/PaymentMgr": {
+      getApplicablePaymentMethods() {
         return [
           {
-            ID: 'GIFT_CERTIFICATE',
-            name: 'Gift Certificate',
+            ID: "GIFT_CERTIFICATE",
+            name: "Gift Certificate",
           },
           {
-            ID: 'CREDIT_CARD',
-            name: 'Credit Card',
+            ID: "CREDIT_CARD",
+            name: "Credit Card",
           },
         ];
       },
-      getPaymentMethod: function () {
+      getPaymentMethod() {
         return {
-          getApplicablePaymentCards: function () {
+          getApplicablePaymentCards() {
             return [
               {
-                cardType: 'Visa',
-                name: 'Visa',
-                UUID: 'some UUID',
+                cardType: "Visa",
+                name: "Visa",
+                UUID: "some UUID",
               },
               {
-                cardType: 'Amex',
-                name: 'American Express',
-                UUID: 'some UUID',
+                cardType: "Amex",
+                name: "American Express",
+                UUID: "some UUID",
               },
               {
-                cardType: 'Master Card',
-                name: 'MasterCard',
+                cardType: "Master Card",
+                name: "MasterCard",
               },
               {
-                cardType: 'Discover',
-                name: 'Discover',
+                cardType: "Discover",
+                name: "Discover",
               },
             ];
           },
         };
       },
-      getApplicablePaymentCards: function () {
-        return ['Visa'];
+      getApplicablePaymentCards() {
+        return ["Visa"];
       },
-      getPaymentCard: function () {
-        return 'Visa';
+      getPaymentCard() {
+        return "Visa";
       },
     },
-    'dw/order/Order': order,
-    'dw/system/Status': status,
-    'dw/web/Resource': resource,
-    'dw/system/Site': {},
-    'dw/util/Template': {},
-    'dw/system/Transaction': transaction,
+    "dw/order/Order": order,
+    "dw/system/Status": status,
+    "dw/web/Resource": resource,
+    "dw/system/Site": {},
+    "dw/util/Template": {},
+    "dw/system/Transaction": transaction,
   });
 }
 

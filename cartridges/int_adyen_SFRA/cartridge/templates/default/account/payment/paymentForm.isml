@@ -1,0 +1,56 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<div>
+    <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+            assets.addJs('/js/bundle.js');
+            assets.addJs('/js/adyenAccount.js');
+        </isscript>
+        <script type="text/javascript">
+            window.Configuration = {
+                locale: '${request.locale}',
+                originKey: '${pdict.adyen.originKey}',
+                environment: '${pdict.adyen.environment}'
+            };
+        </script>
+        <form
+                action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+                class="payment-form"
+                method="POST"
+                name="payment-form" ${pdict.paymentForm.attributes}>
+
+            <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
+            <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
+            <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
+            <span id="errorLoadComponent"></span>
+            <div id="card"></div>
+
+            <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
+            <!-- Cancel and Save Buttons -->
+            <div class="row">
+                <div class="col">
+                    <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+                </div>
+                <div class="col">
+                    <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">
+                        ${Resource.msg('button.save','account',null)}
+                    </button>
+                </div>
+            </div>
+        </form>
+        <iselse>
+            <span>${Resource.msg('myAccount.SaveCard','adyen',null)}</span>
+            <br/><br/>
+            <div class="row">
+                <div class="col">
+                    <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+                </div>
+                <div class="col"></div>
+            </div>
+        </iselse>
+    </isif>
+</div>
+
+

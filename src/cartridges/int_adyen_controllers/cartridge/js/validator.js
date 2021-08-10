@@ -1,4 +1,4 @@
-// const naPhone = /^\(?([2-9][0-8][0-9])\)?[\-\. ]?([2-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$/;
+// const naPhone = /^\(?([2-9][0-8][0-9])\)?[\-\. ]?([2-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$/
 const regex = {
   phone: {},
   postal: {},
@@ -9,7 +9,7 @@ const settings = {
   errorClass: 'error',
   errorElement: 'span',
   onkeyup: false,
-  onfocusout: function (element) {
+  onfocusout(element) {
     if (!this.checkable(element)) {
       this.element(element);
     }
@@ -24,9 +24,9 @@ const settings = {
 const validatePhone = function (value, el) {
   const country = $(el).closest('form').find('.country');
   if (
-    country.length === 0
-    || country.val().length === 0
-    || !regex.phone[country.val().toLowerCase()]
+    country.length === 0 ||
+    country.val().length === 0 ||
+    !regex.phone[country.val().toLowerCase()]
   ) {
     return true;
   }
@@ -69,8 +69,8 @@ $.validator.addMethod(
   'gift-cert-amount',
   function (value, el) {
     const isOptional = this.optional(el);
-    // eslint-disable-next-line no-restricted-globals
-    const isValid = !isNaN(value) && parseFloat(value) >= 5 && parseFloat(value) <= 5000;
+    const isValid =
+      !isNaN(value) && parseFloat(value) >= 5 && parseFloat(value) <= 5000;
     return isOptional || isValid;
   },
   Resources.GIFT_CERT_AMOUNT_INVALID,
@@ -82,11 +82,10 @@ $.validator.addMethod(
  */
 $.validator.addMethod(
   'positivenumber',
-  function (value) {
+  (value) => {
     if ($.trim(value).length === 0) {
       return true;
     }
-    // eslint-disable-next-line no-restricted-globals
     return !isNaN(value) && Number(value) >= 0;
   },
   '',
@@ -112,15 +111,15 @@ $.extend($.validator.messages, {
 });
 
 const validator = {
-  regex: regex,
-  settings: settings,
-  init: function () {
+  regex,
+  settings,
+  init() {
     const self = this;
     $('form:not(.suppress)').each(function () {
       $(this).validate(self.settings);
     });
   },
-  initForm: function (f) {
+  initForm(f) {
     $(f).validate(this.settings);
   },
 };

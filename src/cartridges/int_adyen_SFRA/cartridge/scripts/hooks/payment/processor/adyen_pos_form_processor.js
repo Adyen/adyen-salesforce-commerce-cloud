@@ -14,16 +14,14 @@ function processForm(req, paymentForm, viewFormData) {
 
   return {
     error: false,
-    viewData: viewData,
+    viewData,
   };
 }
 
 /**
  * By default no save payment information is supported
  */
-function savePaymentInformation() {
-
-}
+function savePaymentInformation() {}
 
 exports.processForm = processForm;
 exports.savePaymentInformation = savePaymentInformation;

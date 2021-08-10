@@ -1,4 +1,21 @@
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * save Adyen Notification
  * see page 22 of Adyen Integration manual
  *
@@ -6,8 +23,6 @@
  * v2 110325 :
  * v3 110408 : pass on OrderNo, Paymentresult for update
  * v4 130422 : Merged adyen_notify and update_order into single script
- *
- * @input CurrentHttpParameterMap : Object
  *
  */
 const Logger = require('dw/system/Logger');
@@ -46,9 +61,7 @@ function notify(notificationData) {
     const msg = createLogMessage(notificationData);
     Logger.getLogger('Adyen').debug(msg);
     const calObj = new Calendar();
-    const keyValue = `${notificationData.merchantReference
-    }-${
-      StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
+    const keyValue = `${notificationData.merchantReference}-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
     const customObj = CustomObjectMgr.createCustomObject(
       'adyenNotification',
       keyValue,
@@ -95,11 +108,8 @@ function notify(notificationData) {
     };
   } catch (e) {
     Logger.getLogger('Adyen', 'adyen').error(
-      `Notification failed: ${
-        JSON.stringify(notificationData)
-      }\n`
-        + `Error message: ${
-          e.message}`,
+      `Notification failed: ${JSON.stringify(notificationData)}\n` +
+        `Error message: ${e.message}`,
     );
     return {
       success: false,
@@ -112,8 +122,7 @@ function createLogMessage(notificationData) {
   const VERSION = '4d';
   let msg = '';
   msg = `AdyenNotification v ${VERSION}`;
-  msg
-    += '\n================================================================\n';
+  msg += '\n================================================================\n';
   msg = `${msg}reason : ${notificationData.reason}`;
   msg = `${msg}\neventDate : ${notificationData.eventDate}`;
   msg = `${msg}\nmerchantReference : ${notificationData.merchantReference}`;
@@ -130,7 +139,7 @@ function createLogMessage(notificationData) {
 }
 
 module.exports = {
-  execute: execute,
-  notify: notify,
-  notifyHttpParameterMap: notifyHttpParameterMap,
+  execute,
+  notify,
+  notifyHttpParameterMap,
 };

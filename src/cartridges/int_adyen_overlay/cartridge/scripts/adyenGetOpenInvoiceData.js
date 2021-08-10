@@ -1,28 +1,23 @@
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * Generate the parameters needed for the redirect to the Adyen Hosted Payment Page.
  * A signature is calculated based on the configured HMAC code
- *
- * @input Order : dw.order.Order
- * @input OrderNo : String The order no
- * @input CurrentSession : dw.system.Session
- * @input CurrentUser : dw.customer.Customer
- * @input PaymentInstrument : dw.order.PaymentInstrument
- * @input brandCode : String
- * @input issuerId : String
- * @input dob : String
- * @input gender : String
- * @input telephoneNumber : String
- * @input houseNumber : String
- * @input houseExtension : String
- * @input socialSecurityNumber : String
- *
- * @output merchantSig : String;
- * @output Amount100 : String;
- * @output shopperEmail : String;
- * @output shopperReference : String;
- * @output paramsMap : dw.util.SortedMap;
- * @output sessionValidity : String;
- *
  */
 require('dw/crypto');
 require('dw/system');
@@ -49,12 +44,12 @@ function getLineItems(args) {
   for (const item in allLineItems) {
     const lineItem = allLineItems[item];
     if (
-      (lineItem instanceof dw.order.ProductLineItem
-        && !lineItem.bonusProductLineItem)
-      || lineItem instanceof dw.order.ShippingLineItem
-      || (lineItem instanceof dw.order.PriceAdjustment
-        && lineItem.promotion.promotionClass
-          === dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+      (lineItem instanceof dw.order.ProductLineItem &&
+        !lineItem.bonusProductLineItem) ||
+      lineItem instanceof dw.order.ShippingLineItem ||
+      (lineItem instanceof dw.order.PriceAdjustment &&
+        lineItem.promotion.promotionClass ===
+          dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
     ) {
       const lineItemObject = {};
       const description = LineItemHelper.getDescription(lineItem);
@@ -70,9 +65,9 @@ function getLineItems(args) {
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
-      lineItemObject.taxPercentage = (
-        new Number(vatPercentage) * 10000 // eslint-disable-line no-new-wrappers
-      ).toFixed();
+      lineItemObject.taxPercentage = args.addTaxPercentage ? (
+        new Number(vatPercentage) * 10000
+      ).toFixed() : 0;
 
       lineItems.push(lineItemObject);
     }
@@ -82,5 +77,5 @@ function getLineItems(args) {
 }
 
 module.exports = {
-  getLineItems: getLineItems,
+  getLineItems,
 };

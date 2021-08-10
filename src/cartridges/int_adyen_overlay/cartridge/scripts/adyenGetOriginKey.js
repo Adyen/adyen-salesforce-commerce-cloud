@@ -1,8 +1,22 @@
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * Gets recurring payment list from Adyen
- *
- * @input Customer : dw.customer.Customer
- *
  */
 
 /* API Includes */
@@ -32,14 +46,9 @@ function getOriginKey(origin) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        `/originKeys Call error code${
-          callResult.getError().toString()
-        } Error => ResponseStatus: ${
-          callResult.getStatus()
-        } | ResponseErrorText: ${
-          callResult.getErrorMessage()
-        } | ResponseText: ${
-          callResult.getMsg()}`,
+        `/originKeys Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
     }
 
@@ -50,6 +59,7 @@ function getOriginKey(origin) {
 
     return JSON.parse(resultObject.getText());
   } catch (e) {
+    Logger.getLogger('Adyen').error(`It seems your API key is incorrect ... Please make sure API key is configured`);
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
@@ -64,6 +74,6 @@ function getOriginKeyFromRequest(protocol, host) {
 }
 
 module.exports = {
-  getOriginKey: getOriginKey,
-  getOriginKeyFromRequest: getOriginKeyFromRequest,
+  getOriginKey,
+  getOriginKeyFromRequest,
 };

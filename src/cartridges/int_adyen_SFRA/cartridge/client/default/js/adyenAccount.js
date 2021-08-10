@@ -1,41 +1,32 @@
+const { onFieldValid, onBrand } = require('./commons/index');
+const store = require('../../../store');
+
 const cardNode = document.getElementById('card');
-let maskedCardNumber;
-let isValid = false;
-let componentState;
-const MASKED_CC_PREFIX = '************';
-const checkoutConfiguration = window.Configuration;
-checkoutConfiguration.amount = {
+store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
 };
-checkoutConfiguration.paymentMethodsConfiguration = {
+store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
     hasHolderName: true,
     installments: [],
-    onBrand: function (brandObject) {
-      $('#cardType').val(brandObject.brand);
-    },
-    onFieldValid: function (data) {
-      if (data.endDigits) {
-        maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-        $('#cardNumber').val(maskedCardNumber);
-      }
-    },
-    onChange: function (state) {
-      isValid = state.isValid;
-      componentState = state;
+    onBrand,
+    onFieldValid,
+    onChange(state) {
+      store.isValid = state.isValid;
+      store.componentState = state;
     },
   },
 };
 
-const checkout = new AdyenCheckout(checkoutConfiguration);
+const checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
-$('button[value="add-new-payment"]').on('click', function () {
-  if (isValid) {
+$('button[value="add-new-payment"]').on('click', () => {
+  if (store.isValid) {
     document.querySelector('#adyenStateData').value = JSON.stringify(
-      componentState.data,
+      store.componentState.data,
     );
     return true;
   }

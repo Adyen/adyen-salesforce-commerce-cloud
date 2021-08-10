@@ -1,8 +1,22 @@
 /**
- * Deletes recurring payment instrument from Adyen
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  *
- * @input RecurringDetailReference : String
- * @input Customer : dw.customer.Customer
+ * Deletes recurring payment instrument from Adyen
  */
 
 /* API Includes */
@@ -21,9 +35,10 @@ function deleteRecurringPayment(args) {
     }
 
     const customer = args.Customer ? args.Customer : null;
-    const profile = customer && customer.registered && customer.getProfile()
-      ? customer.getProfile()
-      : null;
+    const profile =
+      customer && customer.registered && customer.getProfile()
+        ? customer.getProfile()
+        : null;
     let customerID = null;
     const recurringDetailReference = args.RecurringDetailReference
       ? args.RecurringDetailReference
@@ -40,7 +55,7 @@ function deleteRecurringPayment(args) {
     const requestObject = {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       shopperReference: customerID,
-      recurringDetailReference: recurringDetailReference,
+      recurringDetailReference,
       contract: 'ONECLICK',
     };
 
@@ -53,14 +68,9 @@ function deleteRecurringPayment(args) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        `/disable Call error code${
-          callResult.getError().toString()
-        } Error => ResponseStatus: ${
-          callResult.getStatus()
-        } | ResponseErrorText: ${
-          callResult.getErrorMessage()
-        } | ResponseText: ${
-          callResult.getMsg()}`,
+        `/disable Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
     }
   } catch (e) {
@@ -71,5 +81,5 @@ function deleteRecurringPayment(args) {
 }
 
 module.exports = {
-  deleteRecurringPayment: deleteRecurringPayment,
+  deleteRecurringPayment,
 };

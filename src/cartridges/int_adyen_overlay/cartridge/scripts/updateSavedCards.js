@@ -1,7 +1,22 @@
 /**
- * Deletes expired payment instruments, syncs cards with Adyen recurring payments card list
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  *
- * @input CurrentCustomer : dw.customer.Customer
+ * Deletes expired payment instruments, syncs cards with Adyen recurring payments card list
  */
 
 /* API Includes */
@@ -27,7 +42,8 @@ function updateSavedCards(args) {
 
     if (AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
       const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
-      // To make it compatible with upgrade from older versions (<= 19.2.2), first delete payment instruments with METHOD_CREDIT_CARD
+      // To make it compatible with upgrade from older versions (<= 19.2.2),
+      // first delete payment instruments with METHOD_CREDIT_CARD
       const savedCreditCards = customer
         .getProfile()
         .getWallet()
@@ -37,7 +53,7 @@ function updateSavedCards(args) {
         .getWallet()
         .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
 
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         // remove all current METHOD_CREDIT_CARD PaymentInstruments
         for (let i = 0; i < savedCreditCards.length; i++) {
           const creditCard = savedCreditCards[i];
@@ -64,12 +80,12 @@ function updateSavedCards(args) {
 
           // if we have everything we need, create a new payment instrument
           if (
-            expiryMonth
-            && expiryYear
-            && number
-            && token
-            && cardType
-            && holderName
+            expiryMonth &&
+            expiryYear &&
+            number &&
+            token &&
+            cardType &&
+            holderName
           ) {
             const newCreditCard = customer
               .getProfile()
@@ -97,22 +113,27 @@ function updateSavedCards(args) {
 
 function getOneClickPaymentMethods(customer) {
   const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-  const storedPaymentMethods = getPaymentMethods.getMethods(null, customer, '')
-    .storedPaymentMethods;
+  const { storedPaymentMethods } = getPaymentMethods.getMethods(
+    null,
+    customer,
+    '',
+  );
   const oneClickPaymentMethods = [];
-  for (let i = 0; i < storedPaymentMethods.length; i++) {
-    if (
-      storedPaymentMethods[i].supportedShopperInteractions
-      && storedPaymentMethods[i].supportedShopperInteractions.indexOf(
-        'Ecommerce',
-      ) > -1
-    ) {
-      oneClickPaymentMethods.push(storedPaymentMethods[i]);
+  if(storedPaymentMethods) {
+    for (let i = 0; i < storedPaymentMethods.length; i++) {
+      if (
+          storedPaymentMethods[i].supportedShopperInteractions &&
+          storedPaymentMethods[i].supportedShopperInteractions.indexOf(
+              'Ecommerce',
+          ) > -1
+      ) {
+        oneClickPaymentMethods.push(storedPaymentMethods[i]);
+      }
     }
   }
   return oneClickPaymentMethods;
 }
 
 module.exports = {
-  updateSavedCards: updateSavedCards,
+  updateSavedCards,
 };

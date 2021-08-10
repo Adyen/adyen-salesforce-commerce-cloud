@@ -144,7 +144,7 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="value">
-                <display-name xml:lang="x-default">Reason</display-name>
+                <display-name xml:lang="x-default">Amount</display-name>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>

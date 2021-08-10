@@ -1,3 +1,25 @@
+/**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Send request to adyen to get connected terminals based on merchant account and storeId
+ * Make a terminal payment for given order, payment instrument and terminal(id)
+ */
+
 // script include
 const Logger = require('dw/system/Logger');
 const StringUtils = require('dw/util/StringUtils');
@@ -20,12 +42,7 @@ function getTerminals() {
     return executeCall(AdyenHelper.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-      `Adyen getTerminals: ${
-        e.toString()
-      } in ${
-        e.fileName
-      }:${
-        e.lineNumber}`,
+      `Adyen getTerminals: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return { error: true, response: '{}' };
   }
@@ -37,14 +54,13 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     const terminalRequestObject = {};
     if (!order || !paymentInstrument) {
       throw new Error(
-        `Could not retrieve payment data, order = ${
-          JSON.stringify(order)
-        }, paymentInstrument = ${
-          JSON.stringify(paymentInstrument)}`,
+        `Could not retrieve payment data, order = ${JSON.stringify(
+          order,
+        )}, paymentInstrument = ${JSON.stringify(paymentInstrument)}`,
       );
     }
 
-    const amount = paymentInstrument.paymentTransaction.amount;
+    const { amount } = paymentInstrument.paymentTransaction;
 
     // serviceId should be a unique string
     const date = new Date();
@@ -99,7 +115,9 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     );
     if (paymentResult.error) {
       throw new Error(
-        `Error in POS payment result: ${JSON.stringify(paymentResult.response)}`,
+        `Error in POS payment result: ${JSON.stringify(
+          paymentResult.response,
+        )}`,
       );
     } else {
       const terminalResponse = JSON.parse(paymentResult.response);
@@ -115,8 +133,9 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
                 .AcquirerTransactionID.TransactionID,
             )
           ) {
-            pspReference = paymentResponse.PaymentResult.PaymentAcquirerData
-              .AcquirerTransactionID.TransactionID;
+            pspReference =
+              paymentResponse.PaymentResult.PaymentAcquirerData
+                .AcquirerTransactionID.TransactionID;
           } else if (
             !empty(paymentResponse.POIData.POITransactionID.TransactionID)
           ) {
@@ -197,24 +216,18 @@ function executeCall(serviceType, requestObject) {
       return { error: true, response: `Request aborted: ${abortResult}` };
     }
     throw new Error(
-      `Call error code${
-        callResult.getError().toString()
-      } Error => ResponseStatus: ${
-        callResult.getStatus()
-      } | ResponseErrorText: ${
-        callResult.getErrorMessage()
-      } | ResponseText: ${
-        callResult.getMsg()}`,
+      `Call error code${callResult
+        .getError()
+        .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
     );
   }
 
   const resultObject = callResult.object;
   if (!resultObject || !resultObject.getText()) {
     throw new Error(
-      `No correct response from ${
-        serviceType
-      }, result: ${
-        JSON.stringify(resultObject)}`,
+      `No correct response from ${serviceType}, result: ${JSON.stringify(
+        resultObject,
+      )}`,
     );
   }
 
@@ -222,6 +235,6 @@ function executeCall(serviceType, requestObject) {
 }
 
 module.exports = {
-  getTerminals: getTerminals,
-  createTerminalPayment: createTerminalPayment,
+  getTerminals,
+  createTerminalPayment,
 };

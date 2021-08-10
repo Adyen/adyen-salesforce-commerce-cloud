@@ -1,6 +1,22 @@
 /**
- * Send request to adyen to get connected terminals based on merchant account and storeId
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  *
+ * Make a donation to Adyen giving
  */
 
 // script include
@@ -20,9 +36,8 @@ function donate(donationReference, donationAmount, originalReference) {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
       modificationAmount: donationAmount,
-      reference:
-        `${AdyenHelper.getAdyenMerchantAccount()}-${donationReference}`,
-      originalReference: originalReference,
+      reference: `${AdyenHelper.getAdyenMerchantAccount()}-${donationReference}`,
+      originalReference,
     };
 
     const xapikey = AdyenHelper.getAdyenApiKey();
@@ -33,14 +48,9 @@ function donate(donationReference, donationAmount, originalReference) {
 
     if (!callResult.isOk()) {
       throw new Error(
-        `Call error code${
-          callResult.getError().toString()
-        } Error => ResponseStatus: ${
-          callResult.getStatus()
-        } | ResponseErrorText: ${
-          callResult.getErrorMessage()
-        } | ResponseText: ${
-          callResult.getMsg()}`,
+        `Call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
     }
 
@@ -50,7 +60,7 @@ function donate(donationReference, donationAmount, originalReference) {
       throw new Error('No correct response from adyenGiving call');
     }
 
-    Transaction.wrap(function () {
+    Transaction.wrap(() => {
       const order = OrderMgr.getOrder(donationReference);
       order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
     });
@@ -63,5 +73,5 @@ function donate(donationReference, donationAmount, originalReference) {
 }
 
 module.exports = {
-  donate: donate,
+  donate,
 };

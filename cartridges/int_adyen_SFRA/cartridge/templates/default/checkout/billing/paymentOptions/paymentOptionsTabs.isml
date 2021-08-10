@@ -1,0 +1,9 @@
+<isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
+    <isif condition="${paymentOption.ID === 'AdyenComponent'}">
+        <isinclude template="checkout/billing/paymentOptions/adyenComponentTab"/>
+    </isif>
+    <isif condition="${paymentOption.ID === 'AdyenPOS'}">
+        <isinclude template="checkout/billing/paymentOptions/adyenPosTab"/>
+    </isif>
+</isloop>
+

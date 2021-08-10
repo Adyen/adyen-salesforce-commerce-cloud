@@ -1,11 +1,23 @@
 /**
-* Send request to adyen to get payment methods based on country code and currency
-*
-
-* @input Basket : dw.order.Basket
-* @input countryCode : String
-* @output customer : Customer
-*/
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Send request to adyen to get payment methods based on country code and currency
+ */
 
 // script include
 const Logger = require('dw/system/Logger');
@@ -25,19 +37,21 @@ function getMethods(basket, customer, countryCode) {
 
     // paymentMethods call from checkout
     if (basket) {
-      paymentAmount = basket.getTotalGrossPrice()
-        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).getValueOrNull()
-        : 1000;
       currencyCode = basket.currencyCode;
-    } else { // paymentMethods call from My Account
-      paymentAmount = 1000;
+      paymentAmount = basket.getTotalGrossPrice().isAvailable()
+        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
+        : new dw.value.Money(1000, currencyCode);
+    } else {
+      // paymentMethods call from My Account
       currencyCode = session.currency.currencyCode;
+      paymentAmount = new dw.value.Money(1000, currencyCode);
     }
+
     const paymentMethodsRequest = {
       merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
       amount: {
         currency: currencyCode,
-        value: paymentAmount,
+        value: paymentAmount.value,
       },
     };
 
@@ -45,10 +59,15 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.countryCode = countryCode;
     }
 
+    if(request.getLocale()){
+      paymentMethodsRequest.shopperLocale = request.getLocale();
+    }
+
     // check logged in shopper for oneClick
-    const profile = customer && customer.registered && customer.getProfile()
-      ? customer.getProfile()
-      : null;
+    const profile =
+      customer && customer.registered && customer.getProfile()
+        ? customer.getProfile()
+        : null;
     let customerID = null;
     if (profile && profile.getCustomerNo()) {
       customerID = profile.getCustomerNo();
@@ -65,14 +84,9 @@ function getMethods(basket, customer, countryCode) {
     const callResult = service.call(JSON.stringify(paymentMethodsRequest));
     if (!callResult.isOk()) {
       throw new Error(
-        `/paymentMethods call error code${
-          callResult.getError().toString()
-        } Error => ResponseStatus: ${
-          callResult.getStatus()
-        } | ResponseErrorText: ${
-          callResult.getErrorMessage()
-        } | ResponseText: ${
-          callResult.getMsg()}`,
+        `/paymentMethods call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
     }
 
@@ -90,5 +104,5 @@ function getMethods(basket, customer, countryCode) {
 }
 
 module.exports = {
-  getMethods: getMethods,
+  getMethods,
 };

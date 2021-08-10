@@ -1,4 +1,21 @@
-/*
+/**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ * 
  * Script to run Adyen notification related jobs
  */
 
@@ -21,7 +38,8 @@ function execute(pdict) {
 }
 
 /**
- * ProcessNotifications - search for custom objects that need to be processed and handle them to place or fail order
+ * ProcessNotifications - search for custom objects that need
+ *  to be processed and handle them to place or fail order
  */
 function processNotifications(/* pdict */) {
   const objectsHandler = require('*/cartridge/scripts/handleCustomObject');
@@ -32,32 +50,34 @@ function processNotifications(/* pdict */) {
   );
   logger.info('Process notifications start with count {0}', searchQuery.count);
 
-  let customObj; let handlerResult; let
-    order;
+  let customObj;
+  let handlerResult;
+  let order;
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
-    Transaction.wrap(function () { // eslint-disable-line no-loop-func
+    Transaction.wrap(() => {
       handlerResult = objectsHandler.handle(customObj);
     });
 
     /*
-			Sometimes order cannot be found in DWRE DB even if it exists there,
-			in that case we shouldn't reply to Adyen that all was ok in order to get a new notification
-		*/
+      Sometimes order cannot be found in DWRE DB even if it exists there,
+      in that case we shouldn't reply to Adyen that all was ok in order to get a new notification
+    */
 
     order = handlerResult.Order;
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
       if (
-        order === null
-        || order.status !== dw.order.Order.ORDER_STATUS_CREATED
-        || handlerResult.RefusedHpp
+        order === null ||
+        order.status !== dw.order.Order.ORDER_STATUS_CREATED ||
+        handlerResult.RefusedHpp
       ) {
         continue;
       }
-      // Refused payments which are made with using Adyen payment method are handled when user is redirected back from Adyen HPP.
+      // Refused payments which are made with using Adyen payment method are
+      // handled when user is redirected back from Adyen HPP.
       // Here we shouldn't fail an order and send a notification
-      Transaction.wrap(function () { // eslint-disable-line no-loop-func
+      Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       continue;
@@ -105,7 +125,7 @@ function clearNotifications(/* pdict */) {
   let customObj;
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
-    Transaction.wrap(function () { // eslint-disable-line no-loop-func
+    Transaction.wrap(() => {
       deleteCustomObjects.remove(customObj);
     });
   }
@@ -119,23 +139,20 @@ function clearNotifications(/* pdict */) {
 }
 
 /**
- * Submits an order, original function located in OrderModel, but we need to manage triggering of email
+ * Submits an order, original function located in OrderModel, but we need to
+ *  manage triggering of email
  * @param order {dw.order.Order} The order object to be submitted.
  * @transactional
- * @return {Object} object If order cannot be placed, object.error is set to true. Ortherwise, object.order_created is true, and object.Order is set to the order.
+ * @return {Object} object If order cannot be placed, object.error is set to true.
+ * Ortherwise, object.order_created is true, and object.Order is set to the order.
  */
 function submitOrder(order) {
   const adyenService = require('*/cartridge/scripts/adyenService');
-  adyenService.submit(order);
-
-  return {
-    Order: order,
-    order_created: true,
-  };
+  return adyenService.submit(order);
 }
 
 module.exports = {
-  execute: execute,
-  processNotifications: processNotifications,
-  clearNotifications: clearNotifications,
+  execute,
+  processNotifications,
+  clearNotifications,
 };

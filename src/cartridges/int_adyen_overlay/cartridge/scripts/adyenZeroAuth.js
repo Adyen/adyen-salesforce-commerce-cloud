@@ -1,5 +1,22 @@
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  *
+ * Make a zeroAuth payment
  */
 
 /* API Includes */
@@ -37,17 +54,12 @@ function zeroAuthPayment(customer, paymentInstrument) {
     Logger.getLogger('Adyen').error(
       `error processing zero auth payment. Error message: ${
         e.message
-      } more details: ${
-        e.toString()
-      } in ${
-        e.fileName
-      }:${
-        e.lineNumber}`,
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return { error: true };
   }
 }
 
 module.exports = {
-  zeroAuthPayment: zeroAuthPayment,
+  zeroAuthPayment,
 };
