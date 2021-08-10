@@ -71,7 +71,7 @@ $('button[value="submit-payment"]').on('click', () => {
   }
 
   if (
-      document.querySelector('#selectedPaymentOption').value === 'AdyenComponent'
+    document.querySelector('#selectedPaymentOption').value === 'AdyenComponent'
   ) {
     assignPaymentMethodValue();
     validateComponents();
