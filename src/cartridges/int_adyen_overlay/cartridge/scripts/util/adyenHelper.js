@@ -475,9 +475,7 @@ var adyenHelperObj = {
   },
 
   createAddressObjects(order, paymentMethod, paymentRequest) {
-    const {
-
-    } = order.defaultShipment;
+    const { shippingAddress } = order.defaultShipment;
     paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
 
     let shippingStreet = '';

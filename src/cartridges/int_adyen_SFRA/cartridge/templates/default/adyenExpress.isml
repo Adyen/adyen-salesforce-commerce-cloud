@@ -19,7 +19,12 @@
             window.isPayPalExpressEnabled = ${pdict.AdyenHelper.getAdyenPaypalExpressEnabled()};
             window.paymentFromComponentURL = "${URLUtils.https('Adyen-ExpressPaymentFromComponent')}";
             window.showConfirmationURL = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+            window.checkoutBeginURL = "${URLUtils.https('Checkout-Begin')}";
         </script>
+        <div>
+          <input type="checkbox" id="acceptShipping" name="acceptShipping" style="vertical-align:middle"/>
+          <label for="acceptShipping">I agree to use my account address for shipping/billing</label>
+        </div>
         <div id="paymentError" class="card-error">
             <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
         </div>

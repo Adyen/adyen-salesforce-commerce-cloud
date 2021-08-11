@@ -18,7 +18,6 @@ function setAddressDetails(address, addressDetails) {
   address.setTitle(addressDetails.title);
 }
 
-
 module.exports = {
   setAddressDetails,
-}
+};

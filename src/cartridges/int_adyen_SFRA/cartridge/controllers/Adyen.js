@@ -124,9 +124,9 @@ server.post(
  * Make a payment from inside an express component (paypal)
  */
 server.post(
-    'ExpressPaymentFromComponent',
-    server.middleware.https,
-    adyen.expressPaymentFromComponent,
+  'ExpressPaymentFromComponent',
+  server.middleware.https,
+  adyen.expressPaymentFromComponent,
 );
 
 /**

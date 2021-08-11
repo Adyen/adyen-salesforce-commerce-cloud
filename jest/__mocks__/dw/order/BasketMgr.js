@@ -1,9 +1,34 @@
 export const getCountryCode = jest.fn(() => ({ value: 'NL' }));
+export const address = {
+  setAddress1: jest.fn(),
+  setAddress2: jest.fn(),
+  setCity: jest.fn(),
+  setCompanyName: jest.fn(),
+  setCountryCode: jest.fn(),
+  setFirstName: jest.fn(),
+  setLastName: jest.fn(),
+  setPhone: jest.fn(),
+  setPostalCode: jest.fn(),
+  setPostBox: jest.fn(),
+  setSalutation: jest.fn(),
+  setSecondName: jest.fn(),
+  setStateCode: jest.fn(),
+  setSuffix: jest.fn(),
+  setSuite: jest.fn(),
+  setTitle: jest.fn(),
+};
+
+export const getShipment = jest.fn(() => {
+  return {
+    createShippingAddress: jest.fn( () =>address),
+  }
+});
+
 export const getShipments = jest.fn(() => [
   {
     shippingAddress: {
       getCountryCode,
-    },
+    }
   },
 ]);
 
@@ -38,15 +63,19 @@ export const getPaymentInstruments = jest.fn(() => ({ toArray }));
 export const getDefaultShipment = jest.fn(() => ({
   shippingAddress: 'mocked_shipping_address',
 }));
-export const getBillingAddress = jest.fn(() => 'mocked_billing_address');
+export const getBillingAddress = jest.fn(() => {
+  return address
+});
 export const getCurrentBasket = jest.fn(() => ({
   getShipments,
+  getShipment,
   getTotalGrossPrice,
   getPaymentInstruments,
   removePaymentInstrument: jest.fn(),
   createPaymentInstrument: jest.fn(() => toArray()[0]),
   defaultShipment: getDefaultShipment(),
   billingAddress: getBillingAddress(),
+  createBillingAddress: getBillingAddress,
   totalGrossPrice: { value: 'mockedValue' },
   paymentInstruments: {
     toArray: jest.fn(() => [
