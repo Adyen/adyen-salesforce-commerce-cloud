@@ -303,15 +303,15 @@ function initializeAccountEvents() {
   var adyenStateData;
   var isValid = false;
   var node = checkout
-      .create('card', {
-        hasHolderName: true,
-        holderNameRequired: true,
-        onChange: function (state) {
-          adyenStateData = state.data;
-          isValid = state.isValid;
-        },
-      })
-      .mount(newCard);
+     .create('card', {
+       hasHolderName: true,
+       holderNameRequired: true,
+       onChange: function (state) {
+         adyenStateData = state.data;
+         isValid = state.isValid;
+       },
+     })
+     .mount(newCard);
 
   $('#applyBtn').on('click', function (e) {
     e.preventDefault();
@@ -320,7 +320,7 @@ function initializeAccountEvents() {
       return false;
     }
     document.querySelector('#adyenStateData').value = JSON.stringify(
-        adyenStateData,
+       adyenStateData,
     );
     zeroAuth(adyenStateData, checkout);
   });

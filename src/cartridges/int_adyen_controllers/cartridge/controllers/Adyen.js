@@ -71,7 +71,6 @@ function zeroAuth() {
   const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
   const wallet = customer.getProfile().getWallet();
   const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
-
   let paymentInstrument;
   Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
@@ -85,7 +84,6 @@ function zeroAuth() {
       customer,
       paymentInstrument,
   );
-
   if (zeroAuthResult.error) {
       Transaction.rollback();
       return false;
@@ -106,7 +104,6 @@ function Redirect3DS1Response() {
         redirectResult: redirectResult,
       },
     };
-
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
     if (result.resultCode === 'Authorised') {
