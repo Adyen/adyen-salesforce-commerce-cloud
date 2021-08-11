@@ -320,7 +320,7 @@ function initializeAccountEvents() {
       return false;
     }
     document.querySelector('#adyenStateData').value = JSON.stringify(
-       adyenStateData,
+      adyenStateData,
     );
     zeroAuth(adyenStateData, checkout);
   });
