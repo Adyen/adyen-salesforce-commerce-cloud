@@ -26,7 +26,6 @@
     window.amazonStoreID = "${AdyenHelper.getAmazonStoreID()}";
     window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
-        window.zeroAuthURL = "${URLUtils.https('Adyen-zeroAuth')}";
     var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
 </script>
 

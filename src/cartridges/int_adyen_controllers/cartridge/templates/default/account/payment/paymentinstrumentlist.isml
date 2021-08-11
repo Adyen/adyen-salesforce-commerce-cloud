@@ -17,8 +17,6 @@
 		</div>
 
 		<isif condition="${pdict.PaymentInstruments.size() > 0}">
-		    <script type="text/javascript">
-		    </script>
 			<ul class="payment-list">
 				<isloop items="${pdict.CurrentForms.paymentinstruments.creditcards.storedcards}" var="creditcard" status="loopstate">
 				<li class="<isif condition="${loopstate.first}">first <iselseif condition="${loopstate.last}">last </isif>${pdict.PaymentInstruments[loopstate.count - 1].creditCardType}">
