@@ -249,35 +249,80 @@ function initializeBillingEvents() {
   }
 }
 
+function zeroAuth(data, checkout) {
+  $.ajax({
+    url: window.zeroAuthURL,
+    type: 'POST',
+    contentType: 'application/; charset=utf-8',
+    data: JSON.stringify(data),
+    async: false,
+    success: function (data) {
+      if(data.zeroAuthResult.action) {
+        document.querySelector('#buttonsContainer').style.display = 'none';
+        checkout.createFromAction(data.zeroAuthResult.action).mount('#newCard');
+      }
+      if(data.zeroAuthResult.resultCode === 'Authorised') {
+        window.location.href = window.paymentInstrumentsList;
+      } else if(data.zeroAuthResult.resultCode === 'Refused') {
+        window.location.href = window.paymentInstrumentsListError;
+      }
+    },
+  });
+}
+
+function paymentsDetails(state) {
+  $.ajax({
+    type: 'post',
+    url: window.paymentsDetails,
+    data: JSON.stringify(state.data),
+    contentType: 'application/; charset=utf-8',
+    async: false,
+    success(data) {
+      if (data.response.isSuccessful) {
+        window.location.href = window.paymentInstrumentsList;
+      } else if (!data.response.isFinal && typeof data.response.action === 'object') {
+        checkout.createFromAction(data.action).mount('#action-container');
+      } else {
+        window.location.href = window.paymentInstrumentsListError;
+      }
+    },
+  });
+}
+
 /**
  * @function
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
   checkoutConfiguration = window.Configuration;
+  checkoutConfiguration.onAdditionalDetails = function(state) {
+    paymentsDetails(state);
+  };
   checkout = new AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
   var isValid = false;
   var node = checkout
-    .create('card', {
-      hasHolderName: true,
-      holderNameRequired: true,
-      onChange: function (state) {
-        adyenStateData = state.data;
-        isValid = state.isValid;
-      },
-    })
-    .mount(newCard);
+      .create('card', {
+        hasHolderName: true,
+        holderNameRequired: true,
+        onChange: function (state) {
+          adyenStateData = state.data;
+          isValid = state.isValid;
+        },
+      })
+      .mount(newCard);
 
-  $('#applyBtn').on('click', function () {
+  $('#applyBtn').on('click', function (e) {
+    e.preventDefault();
     if (!isValid) {
       node.showValidation();
       return false;
     }
     document.querySelector('#adyenStateData').value = JSON.stringify(
-      adyenStateData,
+        adyenStateData,
     );
+    zeroAuth(adyenStateData, checkout);
   });
 }
 
