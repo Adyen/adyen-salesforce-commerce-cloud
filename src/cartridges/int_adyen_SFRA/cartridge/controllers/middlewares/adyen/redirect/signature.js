@@ -28,12 +28,11 @@ function getCurrentSignature(order) {
     constants.METHOD_ADYEN_COMPONENT,
   );
   const adyenPaymentInstrument = paymentInstruments[0];
-  const paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
   const redirectUrl = adyenPaymentInstrument.custom.adyenRedirectURL;
 
   return AdyenHelper.getAdyenHash(
     redirectUrl.substr(redirectUrl.length - 25),
-    paymentData.substr(1, 25),
+    order.orderNo,
   );
 }
 

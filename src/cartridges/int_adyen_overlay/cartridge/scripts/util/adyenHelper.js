@@ -23,6 +23,8 @@ const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
+const CustomerMgr = require('dw/customer/CustomerMgr');
+const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
@@ -53,6 +55,7 @@ var adyenHelperObj = {
 
   CHECKOUT_COMPONENT_VERSION: '4.5.0',
   VERSION: '21.1.0',
+  BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
   getService(service) {
     // Create the service config (used for all services)
@@ -86,6 +89,15 @@ var adyenHelperObj = {
       // e.message
     }
     return adyenService;
+  },
+
+  getCustomer(currentCustomer) {
+    if (currentCustomer.profile) {
+      return CustomerMgr.getCustomerByCustomerNumber(
+          currentCustomer.profile.customerNo,
+      );
+    }
+    return null;
   },
 
   getCustomPreference(field) {
@@ -814,7 +826,7 @@ var adyenHelperObj = {
       };
     }
 
-    Logger.getLogger('Adyen').error(
+    dwsystem.Logger.getLogger('Adyen').error(
         `Unknown resultCode: ${checkoutresponse.resultCode}.`,
     );
     return {

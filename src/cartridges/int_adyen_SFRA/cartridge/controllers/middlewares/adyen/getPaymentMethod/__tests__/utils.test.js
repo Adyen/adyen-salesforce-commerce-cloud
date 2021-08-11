@@ -1,5 +1,4 @@
 const {
-  getCustomer,
   getCountryCode,
   getConnectedTerminals,
 } = require('../utils');
@@ -15,18 +14,6 @@ beforeEach(() => {
 });
 
 describe('Utils', () => {
-  it('should get customer', () => {
-    const customer = { profile: { customerNo: 'mocked_customerNo' } };
-    const result = getCustomer(customer);
-    expect(result).toMatchSnapshot();
-    expect(
-      CustomerMgr.getCustomerByCustomerNumber.mock.calls,
-    ).toMatchSnapshot();
-  });
-  it('should return null if there is no customer profile', () => {
-    const result = getCustomer({ currentCustomer: null });
-    expect(result).toBeFalsy();
-  });
   it('should get country code from shipping address', () => {
     const currentBasket = BasketMgr.getCurrentBasket();
     const countryCode = getCountryCode(currentBasket, { id: 'NL' });

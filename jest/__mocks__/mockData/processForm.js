@@ -24,11 +24,12 @@ export const getPaymentForm = jest.fn(() => ({
   },
 }));
 
-export const getPaymentInstrument = jest.fn((UUID = 'mocked_uuid') => ({
+export const getPaymentInstruments = jest.fn((UUID = 'mocked_uuid') => ([{
   UUID,
   creditCardNumber: 'mocked_cc_number',
   creditCardType: 'mocked_cc_type',
   creditCardExpirationMonth: 'mocked_cc_exp_month',
   creditCardExpirationYear: 'mocked_cc_exp_year',
-  raw: { creditCardToken: 'mocked_raw_cc_token ' },
-}));
+  creditCardToken: 'mocked_raw_cc_token ',
+  getCreditCardToken: () => 'mocked_id'
+}]));

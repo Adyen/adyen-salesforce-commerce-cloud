@@ -23,7 +23,7 @@
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>
 
-<isif condition="${request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
+<isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
@@ -61,7 +61,7 @@
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.paypalIntent = '${pdict.adyen.paypalIntent}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
-         var showStoreDetails = ${customer.authenticated && adyenOneClickEnabled};
+         var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
          window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
      </script>
 
