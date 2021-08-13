@@ -67,6 +67,7 @@ export const getBillingAddress = jest.fn(() => {
   return address
 });
 export const getCurrentBasket = jest.fn(() => ({
+  getCustomer: jest.fn(() => { return { profile: { email: 'mock@mail.tst'}}}),
   getShipments,
   getShipment,
   getTotalGrossPrice,

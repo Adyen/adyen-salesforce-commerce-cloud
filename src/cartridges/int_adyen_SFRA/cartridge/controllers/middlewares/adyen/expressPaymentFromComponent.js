@@ -2,7 +2,6 @@ const BasketMgr = require('dw/order/BasketMgr');
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
-const CustomerMgr = require('dw/customer/CustomerMgr');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const {
   getProcessedPaymentInstrument,
@@ -48,10 +47,7 @@ function expressPaymentFromComponent(req, res, next) {
 
   Transaction.wrap(() => {
     // Set customer email on basket
-    const customer = CustomerMgr.getCustomerByCustomerNumber(
-      req.currentCustomer.profile?.customerNo,
-    );
-    currentBasket.setCustomerEmail(customer.profile?.email);
+    currentBasket.setCustomerEmail(currentBasket.getCustomer().profile?.email);
 
     // Set default address on basket billing address
     const billingAddress = currentBasket.createBillingAddress();

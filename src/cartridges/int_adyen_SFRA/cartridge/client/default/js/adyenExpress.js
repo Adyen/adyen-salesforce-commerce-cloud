@@ -12,14 +12,14 @@ function createFormField(fieldKey, fieldValue) {
 // handles payments API call and processes the response action
 function doPaymentFromComponent(state, component) {
   $.ajax({
-    url: window.paymentFromComponentURL,
+    url: window.configuration.paymentFromComponentURL,
     type: 'post',
     data: {
       data: JSON.stringify(state.data),
       paymentMethod: 'PayPal',
     },
     success(response) {
-      window.merchantReference = response.orderNo;
+      window.configuration.merchantReference = response.orderNo;
       if (response.fullResponse && response.fullResponse.action) {
         component.handleAction(response.fullResponse.action);
       } else {
@@ -63,19 +63,19 @@ function shippingAgreementUpdated() {
 }
 
 // store configuration
-store.checkoutConfiguration.amount = window.amount;
-store.checkoutConfiguration.environment = window.environment;
+store.checkoutConfiguration.amount = window.configuration.amount;
+store.checkoutConfiguration.environment = window.configuration.environment;
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   paypal: {
     onAdditionalDetails: (state) => {
       const onAdditionalDetailsForm = document.createElement('form');
       onAdditionalDetailsForm.method = 'POST';
-      onAdditionalDetailsForm.action = window.showConfirmationURL;
+      onAdditionalDetailsForm.action = window.configuration.showConfirmationURL;
       onAdditionalDetailsForm.appendChild(
         createFormField('additionalDetailsHidden', JSON.stringify(state.data)),
       );
       onAdditionalDetailsForm.appendChild(
-        createFormField('merchantReference', window.merchantReference),
+        createFormField('merchantReference', window.configuration.merchantReference),
       );
       document.body.appendChild(onAdditionalDetailsForm);
       onAdditionalDetailsForm.submit();
@@ -85,12 +85,12 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
     },
     onCancel: () => {
       $.ajax({
-        url: window.paymentFromComponentURL,
+        url: window.configuration.paymentFromComponentURL,
         type: 'post',
         data: {
           data: JSON.stringify({
             cancelTransaction: true,
-            merchantReference: window.merchantReference,
+            merchantReference: window.configuration.merchantReference,
           }),
         },
         complete() {
@@ -116,7 +116,7 @@ $(document).ready(() => {
     expressCheckoutNodesIndex < expressCheckoutNodes.length;
     expressCheckoutNodesIndex += 1
   ) {
-    if (window.isPayPalExpressEnabled) {
+    if (window.configuration.isPayPalExpressEnabled) {
       checkout
         .create('paypal')
         .mount(expressCheckoutNodes[expressCheckoutNodesIndex]);
