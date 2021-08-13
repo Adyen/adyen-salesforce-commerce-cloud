@@ -76,6 +76,7 @@ export const getCurrentBasket = jest.fn(() => ({
   defaultShipment: getDefaultShipment(),
   billingAddress: getBillingAddress(),
   createBillingAddress: getBillingAddress,
+  setCustomerEmail: jest.fn(),
   totalGrossPrice: { value: 'mockedValue' },
   paymentInstruments: {
     toArray: jest.fn(() => [

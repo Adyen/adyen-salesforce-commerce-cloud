@@ -1,5 +1,6 @@
 const store = require('../../../store');
 
+// creates a hidden form used post to order confirmation
 function createFormField(fieldKey, fieldValue) {
   const formField = document.createElement('input');
   formField.type = 'hidden';
@@ -8,6 +9,7 @@ function createFormField(fieldKey, fieldValue) {
   return formField;
 }
 
+// handles payments API call and processes the response action
 function doPaymentFromComponent(state, component) {
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -29,7 +31,38 @@ function doPaymentFromComponent(state, component) {
   });
 }
 
-// Store configuration
+// updates all checkboxes to the same checked state and enables/disables the express checkout components
+function shippingAgreementUpdated() {
+  // set all input checkboxes to enabled/disabled
+  const agreementCheckboxes = document.getElementsByClassName('acceptShipping');
+  for (
+      let agreementCheckboxesIndex = 0;
+      agreementCheckboxesIndex < agreementCheckboxes.length;
+      agreementCheckboxesIndex += 1
+  ) {
+    agreementCheckboxes[agreementCheckboxesIndex].checked = this.checked;
+  }
+  // set all express components to enabled/disabled
+  const expressComponents = document.getElementsByClassName('expressComponent');
+  const disabledOverlayClass = 'disabled';
+  for (
+    let expressComponentsIndex = 0;
+    expressComponentsIndex < expressComponents.length;
+    expressComponentsIndex += 1
+  ) {
+    if (this.checked) {
+      expressComponents[expressComponentsIndex].classList.remove(
+        disabledOverlayClass,
+      );
+    } else {
+      expressComponents[expressComponentsIndex].classList.add(
+        disabledOverlayClass,
+      );
+    }
+  }
+}
+
+// store configuration
 store.checkoutConfiguration.amount = window.amount;
 store.checkoutConfiguration.environment = window.environment;
 store.checkoutConfiguration.paymentMethodsConfiguration = {
@@ -68,29 +101,25 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
   },
 };
 
-$( document ).ready(function() {
+// initial page setup run when the page has fully loaded
+$(document).ready(() => {
   // address consent checkbox handling
-  $(".acceptShipping").change(function() {
-    const disabledOverlayClass = 'disabled';
-    const expressComponents = document.getElementsByClassName("expressComponent");
-    if(this.checked) {
-      for( const expressComponent of expressComponents) {
-        expressComponent.classList.remove(disabledOverlayClass);
-      }
-    } else {
-      for( const expressComponent of expressComponents) {
-        expressComponent.classList.add(disabledOverlayClass);
-      }
-    }
-  });
+  $('.acceptShipping').change(shippingAgreementUpdated);
 
   // card and checkout component creation
-  const expressCheckoutNodes = document.getElementsByClassName('expressComponent');
+  const expressCheckoutNodes = document.getElementsByClassName(
+    'expressComponent',
+  );
   const checkout = new AdyenCheckout(store.checkoutConfiguration);
-  for( const expressCheckoutNode of expressCheckoutNodes) {
+  for (
+    let expressCheckoutNodesIndex = 0;
+    expressCheckoutNodesIndex < expressCheckoutNodes.length;
+    expressCheckoutNodesIndex += 1
+  ) {
     if (window.isPayPalExpressEnabled) {
-      checkout.create('paypal').mount(expressCheckoutNode);
+      checkout
+        .create('paypal')
+        .mount(expressCheckoutNodes[expressCheckoutNodesIndex]);
     }
   }
 });
-

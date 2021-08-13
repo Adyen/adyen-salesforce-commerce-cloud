@@ -9,6 +9,9 @@ beforeEach(() => {
   jest.clearAllMocks();
   req = {
     currentCustomer: {
+      profile: {
+        customerNo: '12321',
+      },
       addressBook: {
         preferredAddress: {
           countryCode: {},
