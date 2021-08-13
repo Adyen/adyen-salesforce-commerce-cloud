@@ -31,14 +31,14 @@ function doPaymentFromComponent(state, component) {
   });
 }
 
-// updates all checkboxes to the same checked state and enables/disables the express checkout components
+// updates all checkboxes to the same checked state. Enable/disable the express checkout components
 function shippingAgreementUpdated() {
   // set all input checkboxes to enabled/disabled
   const agreementCheckboxes = document.getElementsByClassName('acceptShipping');
   for (
-      let agreementCheckboxesIndex = 0;
-      agreementCheckboxesIndex < agreementCheckboxes.length;
-      agreementCheckboxesIndex += 1
+    let agreementCheckboxesIndex = 0;
+    agreementCheckboxesIndex < agreementCheckboxes.length;
+    agreementCheckboxesIndex += 1
   ) {
     agreementCheckboxes[agreementCheckboxesIndex].checked = this.checked;
   }
@@ -75,7 +75,10 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
         createFormField('additionalDetailsHidden', JSON.stringify(state.data)),
       );
       onAdditionalDetailsForm.appendChild(
-        createFormField('merchantReference', window.configuration.merchantReference),
+        createFormField(
+          'merchantReference',
+          window.configuration.merchantReference,
+        ),
       );
       document.body.appendChild(onAdditionalDetailsForm);
       onAdditionalDetailsForm.submit();
