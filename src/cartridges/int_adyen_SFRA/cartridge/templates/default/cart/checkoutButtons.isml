@@ -1,0 +1,7 @@
+<isinclude template="adyenExpress" />
+<div class="mb-sm-3">
+    <a href="${URLUtils.https('Checkout-Login')}"
+        class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
+        ${Resource.msg('button.checkout', 'cart', null)}
+    </a>
+</div>

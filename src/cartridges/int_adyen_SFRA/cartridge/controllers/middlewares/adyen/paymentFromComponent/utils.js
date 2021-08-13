@@ -21,6 +21,7 @@ function getProcessedPaymentInstrument(basket, requestForm) {
     paymentInstrument.custom.adyenPaymentData = requestForm.data;
     paymentInstrument.custom.adyenPaymentMethod = requestForm.paymentMethod;
   });
+  return paymentInstrument;
 }
 
 function handlePayment(response, order, paymentInstrument) {

@@ -68,9 +68,29 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
   },
 };
 
-// card and checkout component creation
-const expressCheckoutNode = document.getElementById('expressComponent');
-const checkout = new AdyenCheckout(store.checkoutConfiguration);
-if (window.isPayPalExpressEnabled) {
-  checkout.create('paypal').mount(expressCheckoutNode);
-}
+$( document ).ready(function() {
+  // address consent checkbox handling
+  $(".acceptShipping").change(function() {
+    const disabledOverlayClass = 'disabled';
+    const expressComponents = document.getElementsByClassName("expressComponent");
+    if(this.checked) {
+      for( const expressComponent of expressComponents) {
+        expressComponent.classList.remove(disabledOverlayClass);
+      }
+    } else {
+      for( const expressComponent of expressComponents) {
+        expressComponent.classList.add(disabledOverlayClass);
+      }
+    }
+  });
+
+  // card and checkout component creation
+  const expressCheckoutNodes = document.getElementsByClassName('expressComponent');
+  const checkout = new AdyenCheckout(store.checkoutConfiguration);
+  for( const expressCheckoutNode of expressCheckoutNodes) {
+    if (window.isPayPalExpressEnabled) {
+      checkout.create('paypal').mount(expressCheckoutNode);
+    }
+  }
+});
+
