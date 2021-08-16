@@ -3,17 +3,14 @@
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
 	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-	<isset  name="Adyen3DS2Enabled"  value="${pdict.AdyenHelper.getAdyen3DS2Enabled()}" scope="page"   />
 	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
 
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
 	<div class="paymentslist">
 		<h1>${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
-		<isif condition="${!Adyen3DS2Enabled}">
 		<a class="section-header-note add-card button" href="${URLUtils.url('PaymentInstruments-Add')}" title="${Resource.msg('account.paymentinstrumentlist.addcard.label','account',null)}">
 			${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}
 		</a>
-		</isif>
 
 		<div id="cardError" class="card-error">
 			<span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>

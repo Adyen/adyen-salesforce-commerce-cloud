@@ -22,6 +22,11 @@ function create() {
     customer,
     paymentInstrument,
   );
+
+  if(zeroAuthResult.action) {
+    return zeroAuthResult.action;
+  }
+
   if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
     Transaction.rollback();
     return false;

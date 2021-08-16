@@ -9,6 +9,10 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
+    window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
+    window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";
+    window.paymentInstrumentsListError = "${URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed')}";
 </script>
 
 <div>
@@ -19,7 +23,7 @@
 
     <div id="newCard"></div>
 
-    <div class="form-row form-row-button">
+    <div id="buttonsContainer" class="form-row form-row-button">
         <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
             ${Resource.msg('global.apply', 'locale', null)}
         </button>
@@ -27,5 +31,4 @@
             ${Resource.msg('global.cancel', 'locale', null)}
         </button>
     </div>
-
 </div>
