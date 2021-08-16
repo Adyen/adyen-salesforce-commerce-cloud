@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Show Confirmation should have payload 1`] = `
+Array [
+  Array [
+    Object {
+      "details": Object {
+        "payload": "mocked_payload_result",
+      },
+      "paymentData": "mocked_adyen_payment_data",
+    },
+  ],
+]
+`;
+
+exports[`Show Confirmation should have redirectResult 1`] = `
+Array [
+  Array [
+    Object {
+      "details": Object {
+        "redirectResult": "mocked_redirect_result",
+      },
+      "paymentData": "mocked_adyen_payment_data",
+    },
+  ],
+]
+`;

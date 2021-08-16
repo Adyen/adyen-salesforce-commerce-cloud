@@ -1,0 +1,32 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isif condition="${pdict.AdyenGivingConfig.adyenGivingAvailable}">
+    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+    <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+    <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+    <script>
+        window.Configuration = {
+            locale: "${request.locale}",
+            clientKey: "${AdyenHelper.getAdyenClientKey}",
+            environment: "${AdyenHelper.getAdyenEnvironment().toLowerCase()}"
+        };
+        window.adyenGivingAvailable = "${pdict.AdyenGivingConfig.adyenGivingAvailable}";
+        window.orderNo = '${pdict.Order.orderNo}';
+        window.donationAmounts = '${pdict.AdyenGivingConfig.donationAmounts}'.replace(/&quot;/g, '\"');;
+        window.pspReference = '${pdict.AdyenGivingConfig.pspReference}';
+        window.charityName = '${pdict.AdyenGivingConfig.charityName}';
+        window.charityWebsite = '${pdict.AdyenGivingConfig.charityWebsite}';
+        window.charityDescription = '${pdict.AdyenGivingConfig.charityDescription}';
+        window.adyenGivingBackgroundUrl = '${pdict.AdyenGivingConfig.adyenGivingBackgroundUrl}';
+        window.adyenGivingLogoUrl = '${pdict.AdyenGivingConfig.adyenGivingLogoUrl}';
+        window.donateURL = "${URLUtils.https('Adyen-Donate')}";
+    </script>
+    <div id="adyenGiving" class="card confirm-details">
+        <div class="card-header">
+            <h2 class="card-header-custom">${Resource.msg('title.adyenGiving', 'adyen', null)}</h2>
+        </div>
+        <div class="card-body">
+            <div id="donate-container"></div>
+        </div>
+    </div>
+</isif>
