@@ -1,7 +1,7 @@
-Feature("Credit card");
-const config = require("../config");
+Feature('Credit card');
+const config = require('../config');
 
-Scenario("Logged in Credit card success", (I) => {
+Scenario('Logged in Credit card success', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -11,10 +11,10 @@ Scenario("Logged in Credit card success", (I) => {
   I.setCardDetails(config.cardSuccess);
   I.submitPayment();
   I.placeOrder();
-  I.see("Thank you");
+  I.see('Thank you');
 });
 
-Scenario("Logged in Credit card 3d success", (I) => {
+Scenario('Logged in Credit card 3d success', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -26,10 +26,10 @@ Scenario("Logged in Credit card 3d success", (I) => {
   I.placeOrder();
   I.set3dDetails(config.threeds2DetailsSuccess);
   I.switchTo();
-  I.see("Thank you");
+  I.see('Thank you');
 });
 
-Scenario("Logged in Credit card failed", (I) => {
+Scenario('Logged in Credit card failed', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -39,10 +39,10 @@ Scenario("Logged in Credit card failed", (I) => {
   I.setCardDetails(config.cardFail);
   I.submitPayment();
   I.placeOrder();
-  I.dontSee("Thank you");
+  I.dontSee('Thank you');
 });
 
-Scenario("Logged in Credit card 3d failed", (I) => {
+Scenario('Logged in Credit card 3d failed', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -53,10 +53,10 @@ Scenario("Logged in Credit card 3d failed", (I) => {
   I.submitPayment();
   I.placeOrder();
   I.set3dDetails(config.threeds2DetailsFail);
-  I.dontSee("Thank you");
+  I.dontSee('Thank you');
 });
 
-Scenario("Logged in Credit card store details and subsequent payment", (I) => {
+Scenario('Logged in Credit card store details and subsequent payment', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -66,19 +66,19 @@ Scenario("Logged in Credit card store details and subsequent payment", (I) => {
   I.setStoreDetails();
   I.submitPayment();
   I.placeOrder();
-  I.see("Thank you");
+  I.see('Thank you');
   I.amOnPage(config.Storefront.url);
   I.addProductToCart();
   I.amOnPage(config.Storefront.login);
-  I.click(".submit-shipping");
-  I.fillField("#email", config.userAccount.username);
+  I.click('.submit-shipping');
+  I.fillField('#email', config.userAccount.username);
   I.setOneclickCVC(config.cardSuccess);
   I.submitPayment();
   I.placeOrder();
-  I.see("Thank you");
+  I.see('Thank you');
 });
 
-Scenario("Logged in Credit card Oneclick success", (I) => {
+Scenario('Logged in Credit card Oneclick success', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -87,10 +87,10 @@ Scenario("Logged in Credit card Oneclick success", (I) => {
   I.setOneclickCVC(config.cardSuccess);
   I.submitPayment();
   I.placeOrder();
-  I.see("Thank you");
+  I.see('Thank you');
 });
 
-Scenario("Logged in Credit card Oneclick fail", (I) => {
+Scenario('Logged in Credit card Oneclick fail', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -99,10 +99,10 @@ Scenario("Logged in Credit card Oneclick fail", (I) => {
   I.setOneclickCVC(config.cardFail);
   I.submitPayment();
   I.placeOrder();
-  I.dontSee("Thank you");
+  I.dontSee('Thank you');
 });
 
-Scenario("iDeal success", (I) => {
+Scenario('iDeal success', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -114,10 +114,10 @@ Scenario("iDeal success", (I) => {
   I.placeOrder();
   I.wait(5);
   I.continueOnHppIdeal();
-  I.see("Thank you");
+  I.see('Thank you');
 });
 
-Scenario("iDeal fail", (I) => {
+Scenario('iDeal fail', (I) => {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();
   I.addProductToCart();
@@ -129,5 +129,5 @@ Scenario("iDeal fail", (I) => {
   I.placeOrder();
   I.wait(5);
   I.continueOnHppIdeal();
-  I.dontSee("Thank you");
+  I.dontSee('Thank you');
 });

@@ -16,15 +16,23 @@ function handleOrderConfirm(
   });
 
   clearForms.clearForms();
-  res.redirect(
-    URLUtils.url(
-      'Order-Confirm',
-      'ID',
-      order.orderNo,
-      'token',
-      order.orderToken,
-    ).toString(),
-  );
+  // determines SFRA version for backwards compatibility
+  if (AdyenHelper.getAdyenSFRA6Compatibility() === true) {
+    res.render('orderConfirmForm', {
+      orderID: order.orderNo,
+      orderToken: order.orderToken,
+    });
+  } else {
+    res.redirect(
+      URLUtils.url(
+        'Order-Confirm',
+        'ID',
+        order.orderNo,
+        'token',
+        order.orderToken,
+      ).toString(),
+    );
+  }
   return next();
 }
 
