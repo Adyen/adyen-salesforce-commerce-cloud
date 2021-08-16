@@ -239,7 +239,6 @@ function setCheckoutConfiguration() {
           lastName: document.querySelector('#shippingLastNamedefault').value,
           telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
             .value,
-          shopperEmail: document.querySelector('#email').value,
         },
       },
     },
@@ -255,7 +254,6 @@ function setCheckoutConfiguration() {
           lastName: document.querySelector('#shippingLastNamedefault').value,
           telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
             .value,
-          shopperEmail: document.querySelector('#email').value,
         },
       },
     },

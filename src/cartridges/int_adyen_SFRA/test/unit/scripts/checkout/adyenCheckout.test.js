@@ -1,5 +1,5 @@
-window.jQuery = window.$ = require("jquery");
+window.jQuery = window.$ = require('jquery');
 
-describe("rendering components", () => {
-  it("", () => {});
+describe('rendering components', () => {
+  it('', () => {});
 });
