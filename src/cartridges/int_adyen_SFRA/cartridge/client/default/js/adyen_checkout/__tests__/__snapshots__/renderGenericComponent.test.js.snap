@@ -4,11 +4,19 @@ exports[`Render Generic Component should render 1`] = `
 Object {
   "amount": "mocked_amount",
   "countryCode": "mocked_country",
+  "paymentMethodsConfiguration": Object {
+    "amazonpay": Object {
+      "configuration": undefined,
+    },
+  },
   "paymentMethodsResponse": Object {
     "paymentMethods": Array [
       Object {
         "name": "Card",
         "type": "scheme",
+      },
+      Object {
+        "type": "amazonpay",
       },
     ],
     "storedPaymentMethods": true,
