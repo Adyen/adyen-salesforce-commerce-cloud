@@ -6,7 +6,6 @@
             var assets = require('*/cartridge/scripts/assets.js');
             assets.addJs('/js/bundle.js');
             assets.addCss('/css/adyenCss.css');
-            assets.addCss('/css/adyenCSS.css');
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">
