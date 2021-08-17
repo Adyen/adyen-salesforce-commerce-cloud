@@ -504,30 +504,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonMerchantID">
-                <display-name xml:lang="x-default">Your Amazon MerchantID to accept live payments</display-name>
-                <description xml:lang="x-default">Amazon Pay merchant account identifier.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonPublicKeyID">
-                <display-name xml:lang="x-default">Your Amazon public key ID</display-name>
-                <description xml:lang="x-default">The publicKeyId from https://docs.adyen.com/payment-methods/amazon-pay/web-component#step-3 </description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonStoreID">
-                <display-name xml:lang="x-default">Your Amazon store ID to accept live payments</display-name>
-                <description xml:lang="x-default">Retrieve this value from Amazon Pay: https://sellercentral-europe.amazon.com/external-payments/amazon-pay/integration-central/lwa</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_ClientKey">
                 <display-name xml:lang="x-default">Your Adyen Client Key. Required to accept both live and test payments</display-name>
                 <description xml:lang="x-default">Retrieve this value from Customer Area</description>
@@ -569,10 +545,6 @@
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
 
                 <attribute attribute-id="AdyenRatePayID"/>
-
-                <attribute attribute-id="Adyen_AmazonPublicKeyID"/>
-                <attribute attribute-id="Adyen_AmazonMerchantID"/>
-                <attribute attribute-id="Adyen_AmazonStoreID"/>
 
                 <attribute attribute-id="Adyen_IntegratorName"/>
                 <attribute attribute-id="Adyen_StoreId"/>
