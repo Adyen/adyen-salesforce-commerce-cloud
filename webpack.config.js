@@ -6,11 +6,7 @@
 require("shelljs/make");
 const path = require("path");
 const webpack = require("sgmf-scripts").webpack;
-const ExtractTextPlugin = require("sgmf-scripts")[
-  "extract-text-webpack-plugin"
-];
 const jsFiles = require("sgmf-scripts").createJsPath();
-const scssFiles = require("sgmf-scripts").createScssPath();
 
 const bootstrapPackages = {
   Alert: "exports-loader?Alert!bootstrap/js/src/alert",
@@ -51,48 +47,5 @@ module.exports = [
       ],
     },
     plugins: [new webpack.ProvidePlugin(bootstrapPackages)],
-  },
-  {
-    mode: "none",
-    name: "scss",
-    entry: scssFiles,
-    output: {
-      path: path.resolve("./cartridges/int_adyen_SFRA/cartridge/static"),
-      filename: "[name].css",
-    },
-    module: {
-      rules: [
-        {
-          test: /\.scss$/,
-          use: ExtractTextPlugin.extract({
-            use: [
-              {
-                loader: "css-loader",
-                options: {
-                  url: false,
-                  minimize: true,
-                },
-              },
-              {
-                loader: "postcss-loader",
-                options: {
-                  plugins: [require("autoprefixer")()],
-                },
-              },
-              {
-                loader: "sass-loader",
-                options: {
-                  includePaths: [
-                    path.resolve("node_modules"),
-                    path.resolve("node_modules/flag-icon-css/sass"),
-                  ],
-                },
-              },
-            ],
-          }),
-        },
-      ],
-    },
-    plugins: [new ExtractTextPlugin({ filename: "[name].css" })],
   },
 ];

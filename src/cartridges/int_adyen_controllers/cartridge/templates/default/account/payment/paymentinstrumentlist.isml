@@ -3,7 +3,7 @@
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
 	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
 	<div class="paymentslist">

@@ -1,7 +1,7 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isset name="adyenRecurringPaymentsEnabled" value="${AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
