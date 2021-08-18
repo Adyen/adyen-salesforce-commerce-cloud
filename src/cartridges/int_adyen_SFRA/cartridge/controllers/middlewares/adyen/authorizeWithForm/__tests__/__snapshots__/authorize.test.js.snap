@@ -30,7 +30,6 @@ Array [
               "0": Object {
                 "custom": Object {
                   "adyenMD": "mocked_md",
-                  "adyenPaymentData": "Authorised",
                 },
               },
               "iterator": [Function],
@@ -46,7 +45,6 @@ Array [
                       Object {
                         "custom": Object {
                           "adyenMD": "mocked_md",
-                          "adyenPaymentData": "Authorised",
                         },
                       },
                     ],
@@ -133,8 +131,7 @@ Array [
             "value": Object {
               "0": Object {
                 "custom": Object {
-                  "adyenMD": "mocked_md",
-                  "adyenPaymentData": "Not_Authorised",
+                  "adyenMD": "unauthorised_mocked_md",
                 },
               },
               "iterator": [Function],
@@ -149,8 +146,7 @@ Array [
                     "value": Array [
                       Object {
                         "custom": Object {
-                          "adyenMD": "mocked_md",
-                          "adyenPaymentData": "Not_Authorised",
+                          "adyenMD": "unauthorised_mocked_md",
                         },
                       },
                     ],
@@ -183,7 +179,7 @@ Array [
       "next": [MockFunction],
       "req": Object {
         "form": Object {
-          "MD": "mocked_md",
+          "MD": "unauthorised_mocked_md",
         },
         "querystring": Object {
           "merchantReference": "mocked_merchantReference",
@@ -217,7 +213,6 @@ Array [
               "0": Object {
                 "custom": Object {
                   "adyenMD": "mocked_md",
-                  "adyenPaymentData": "Authorised",
                 },
               },
               "iterator": [Function],
@@ -233,7 +228,6 @@ Array [
                       Object {
                         "custom": Object {
                           "adyenMD": "mocked_md",
-                          "adyenPaymentData": "Authorised",
                         },
                       },
                     ],

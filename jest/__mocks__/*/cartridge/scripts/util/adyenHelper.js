@@ -34,3 +34,4 @@ export const getCardToken = jest.fn(() => 'mocked_token');
 export const getSFCCCardType = jest.fn(() => 'mocked_cardType');
 export const createAdyenCheckoutResponse = jest.fn(() => ({isFinal: true, isSuccessful: false}));
 export const getCustomer = jest.fn(() => {});
+export const getAdyenSFRA6Compatibility = jest.fn(() => false);
