@@ -16,9 +16,6 @@
           environment: '${pdict.adyen.environment}',
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
-      window.amazonMerchantID = '${pdict.adyen.amazonMerchantID}';
-      window.amazonStoreID = '${pdict.adyen.amazonStoreID}';
-      window.amazonPublicKeyID = '${pdict.adyen.amazonPublicKeyID}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>

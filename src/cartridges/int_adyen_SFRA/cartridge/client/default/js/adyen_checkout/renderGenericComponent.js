@@ -108,7 +108,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
       data.AdyenPaymentMethods;
     setCheckoutConfiguration(data);
     const amazonpayConfig = data.AdyenPaymentMethods.paymentMethods.find(
-      (elm) => elm.type === 'amazonpay',
+      (paymentMethod) => paymentMethod.type === 'amazonpay',
     ).configuration;
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpayConfig; // eslint-disable-line max-len
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);

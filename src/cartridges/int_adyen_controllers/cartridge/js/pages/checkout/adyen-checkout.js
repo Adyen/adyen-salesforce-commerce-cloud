@@ -672,7 +672,7 @@ function getAmazonpayConfig() {
       phoneNumber: paymentMethodsResponse.shippingAddress.phone,
     },
     configuration: window.getPaymentMethodsResponse.adyenPaymentMethods.paymentMethods.find(
-        (elm) => elm.type === 'amazonpay').configuration,
+        (paymentMethod) => paymentMethod.type === 'amazonpay').configuration,
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');
       if (formErrorsExist) {

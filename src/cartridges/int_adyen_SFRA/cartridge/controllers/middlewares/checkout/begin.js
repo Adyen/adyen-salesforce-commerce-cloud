@@ -11,10 +11,7 @@ function begin(req, res, next) {
   const clientKey = AdyenHelper.getAdyenClientKey();
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const installments = AdyenHelper.getCreditCardInstallments();
-  const amazonMerchantID = AdyenHelper.getAmazonMerchantID();
-  const amazonStoreID = AdyenHelper.getAmazonStoreID();
   const adyenClientKey = AdyenHelper.getAdyenClientKey();
-  const amazonPublicKeyID = AdyenHelper.getAmazonPublicKeyID();
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
   const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
@@ -25,9 +22,6 @@ function begin(req, res, next) {
     clientKey,
     environment,
     installments,
-    amazonMerchantID,
-    amazonStoreID,
-    amazonPublicKeyID,
     googleMerchantID,
     merchantAccount,
     cardholderNameBool,
