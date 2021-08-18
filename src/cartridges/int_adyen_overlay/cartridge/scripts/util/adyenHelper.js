@@ -775,12 +775,6 @@ var adyenHelperObj = {
       integrator: this.getSystemIntegratorName(),
     };
 
-    if (isEcom) {
-      applicationInfo.adyenPaymentSource = {
-        name: 'adyen-salesforce-commerce-cloud',
-        version: adyenHelperObj.VERSION,
-      };
-    }
     return applicationInfo;
   },
 
