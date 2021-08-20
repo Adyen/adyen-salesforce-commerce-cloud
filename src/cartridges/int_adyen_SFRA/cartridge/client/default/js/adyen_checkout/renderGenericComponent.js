@@ -96,6 +96,15 @@ function setCheckoutConfiguration(data) {
   };
 }
 
+function setAmazonPayConfig(adyenPaymentMethods) {
+  const amazonpay = adyenPaymentMethods.paymentMethods.find(
+      (paymentMethod) => paymentMethod.type === 'amazonpay',
+  );
+  if(amazonpay) {
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration; // eslint-disable-line max-len
+  }
+}
+
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
@@ -107,10 +116,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     store.checkoutConfiguration.paymentMethodsResponse =
       data.AdyenPaymentMethods;
     setCheckoutConfiguration(data);
-    const amazonpayConfig = data.AdyenPaymentMethods.paymentMethods.find(
-      (paymentMethod) => paymentMethod.type === 'amazonpay',
-    ).configuration;
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpayConfig; // eslint-disable-line max-len
+    setAmazonPayConfig(data.AdyenPaymentMethods);
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
     document.querySelector('#paymentMethodsList').innerHTML = '';
