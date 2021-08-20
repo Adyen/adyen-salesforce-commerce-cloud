@@ -97,8 +97,7 @@ function getMethods(basket, customer, countryCode) {
       throw new Error('No correct response from /paymentMethods call');
     }
 
-    const {paymentMethods} = JSON.parse(resultObject.getText())
-    return { paymentMethods };
+    return JSON.parse(resultObject.getText());
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
