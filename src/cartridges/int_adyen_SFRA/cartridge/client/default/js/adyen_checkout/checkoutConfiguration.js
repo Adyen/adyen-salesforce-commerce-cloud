@@ -169,6 +169,7 @@ function getAmazonpayConfig() {
     showPayButton: true,
     productType: 'PayAndShip',
     checkoutMode: 'ProcessOrder',
+    locale: window.Configuration.locale,
     returnUrl: window.returnURL,
     addressDetails: {
       name: `${document.querySelector('#shippingFirstNamedefault').value} ${
@@ -181,11 +182,6 @@ function getAmazonpayConfig() {
       postalCode: document.querySelector('#shippingZipCodedefault').value,
       countryCode: document.querySelector('#shippingCountrydefault').value,
       phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
-    },
-    configuration: {
-      merchantId: window.amazonMerchantID,
-      storeId: window.amazonStoreID,
-      publicKeyId: window.amazonPublicKeyID,
     },
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');

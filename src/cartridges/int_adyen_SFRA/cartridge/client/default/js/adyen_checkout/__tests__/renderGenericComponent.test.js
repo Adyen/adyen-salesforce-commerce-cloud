@@ -39,15 +39,16 @@ describe('Render Generic Component', () => {
       countryCode: 'mocked_country',
       AdyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
       AdyenPaymentMethods: {
-        paymentMethods: [{ type: 'scheme', name: 'Card' }],
+        paymentMethods: [{ type: 'scheme', name: 'Card' }, {type: 'amazonpay'}],
         storedPaymentMethods: true,
       },
       ImagePath: 'example.com',
-      AdyenDescriptions: [{ description: 'mocked_description' }],
+      AdyenDescriptions: [{ description: 'mocked_description' }, { description: 'mocked_description2' }],
     };
 
     $.ajax = jest.fn(({ success }) => success(mockedSuccessResponse));
     store.componentsObj = { foo: 'bar', bar: 'baz' };
+    store.checkoutConfiguration.paymentMethodsConfiguration = {amazonpay: {}};
     await renderGenericComponent();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(

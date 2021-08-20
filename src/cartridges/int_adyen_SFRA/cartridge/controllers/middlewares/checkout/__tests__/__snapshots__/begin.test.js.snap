@@ -6,9 +6,6 @@ Array [
     Object {
       "adyen": Object {
         "adyenClientKey": "mocked_client_key",
-        "amazonMerchantID": "mocked_amazon_merchant_id",
-        "amazonPublicKeyID": "mocked_amazon_public_key_id",
-        "amazonStoreID": "mocked_amazon_store_id",
         "cardholderNameBool": true,
         "clientKey": "mocked_client_key",
         "environment": "test",
