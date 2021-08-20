@@ -68,9 +68,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     const serviceId = dateString.substr(dateString.length - 10);
 
     const applicationInfoObject = {};
-    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(
-      false,
-    );
+    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo();
     const applicationInfoBase64 = StringUtils.encodeBase64(
       JSON.stringify(applicationInfoObject),
     );
