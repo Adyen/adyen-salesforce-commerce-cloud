@@ -562,7 +562,7 @@ var adyenHelperObj = {
         'orderToken',
         orderToken
     ).toString();
-    stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
+    stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
     stateData.additionalData = {};
     return stateData;
@@ -740,7 +740,7 @@ var adyenHelperObj = {
     return format;
   },
 
-  getApplicationInfo(isEcom) {
+  getApplicationInfo() {
     let externalPlatformVersion = '';
     const applicationInfo = {};
     try {
@@ -763,12 +763,6 @@ var adyenHelperObj = {
       integrator: this.getSystemIntegratorName(),
     };
 
-    if (isEcom) {
-      applicationInfo.adyenPaymentSource = {
-        name: 'adyen-salesforce-commerce-cloud',
-        version: adyenHelperObj.VERSION,
-      };
-    }
     return applicationInfo;
   },
 
