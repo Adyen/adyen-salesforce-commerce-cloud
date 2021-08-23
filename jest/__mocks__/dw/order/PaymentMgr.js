@@ -4,6 +4,9 @@ export const getPaymentMethod = jest.fn(() => ({
   paymentProcessor: {ID: "mockedPaymentProcessor"},
   getApplicablePaymentCards: jest.fn(() => ({
     contains: jest.fn(() => true)
+  })),
+  getPaymentProcessor: jest.fn(() => ({
+    getID: jest.fn(() => 'mocked_method')
   }))
 }));
 export const getApplicablePaymentMethods = jest.fn(() => ({

@@ -16,10 +16,15 @@ afterEach(() => {
 });
 
 describe('Save Payment', () => {
-  it('should do nothing if adyen secured fields is not enabled', () => {
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+  it('should do nothing if payment processor is not Adyen', () => {
+    const PaymentMgr = require('dw/order/PaymentMgr');
     const server = require('server');
-    AdyenHelper.getAdyenSecuredFieldsEnabled.mockImplementation(() => false);
+    PaymentMgr.getPaymentMethod.mockImplementation(() => ({
+      getPaymentProcessor: jest.fn(() => ({
+        getID: jest.fn(() => 'notAdyen')
+      }))
+    }));
+
     savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(server.forms.getForm).toBeCalledTimes(0);
   });
