@@ -44,9 +44,12 @@ function getResponseBody(action) {
 }
 
 function savePayment(req, res, next) {
-  if([constants.METHOD_ADYEN_COMPONENT, 'ADYEN_CREDIT']
-      .indexOf(PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) === -1) {
-      return next();
+  if (
+    [constants.METHOD_ADYEN_COMPONENT, 'ADYEN_CREDIT'].indexOf(
+      PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID(),
+    ) === -1
+  ) {
+    return next();
   }
   const customer = CustomerMgr.getCustomerByCustomerNumber(
     req.currentCustomer.profile.customerNo,
