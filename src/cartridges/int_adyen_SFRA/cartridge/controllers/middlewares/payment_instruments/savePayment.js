@@ -44,7 +44,7 @@ function getResponseBody(action) {
 }
 
 function savePayment(req, res, next) {
-  if([constants.METHOD_ADYEN_POS, constants.METHOD_ADYEN_COMPONENT, 'ADYEN_CREDIT']
+  if([constants.METHOD_ADYEN_COMPONENT, 'ADYEN_CREDIT']
       .indexOf(PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) === -1) {
       return next();
   }
