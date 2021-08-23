@@ -208,12 +208,6 @@ function setCheckoutConfiguration() {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off
       showEmailAddress: false, // allow shopper to specify their email address
-
-      // Optionally prefill some fields, here all fields are filled:
-      data: {
-        firstName: document.getElementById('shippingFirstNamedefault').value,
-        lastName: document.getElementById('shippingLastNamedefault').value,
-      },
     },
     paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
@@ -229,14 +223,6 @@ function setCheckoutConfiguration() {
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
       },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
-      },
     },
     facilypay_3x: {
       visibility: {
@@ -244,26 +230,12 @@ function setCheckoutConfiguration() {
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
       },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
-      },
     },
     ratepay: {
       visibility: {
         personalDetails: 'editable',
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-        },
       },
     },
   };

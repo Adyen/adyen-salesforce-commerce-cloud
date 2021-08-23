@@ -4,7 +4,14 @@ const store = require('../../../../../store');
 let mount;
 describe('Render Payment Method', () => {
   beforeEach(() => {
+
     document.body.innerHTML = `
+      <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
+      <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
+      <input id="shippingPhoneNumberdefault" value="shippingPhoneNumberdefaultMock" />
+      <input id="billingAddressCity" value="billingAddressCityMock" />
+      <input id="billingZipCode" value="billingZipCodeMock" />
+      <input id="billingCountry" value="billingCountryMock" />
       <ul id="paymentMethodsList"></ul>
     `;
     store.componentsObj = {

@@ -10,13 +10,30 @@ function getFallback(paymentMethod) {
   return fallback[paymentMethod];
 }
 
+function getPersonalDetails() {
+  return {
+    firstName: document.querySelector('#shippingFirstNamedefault').value,
+    lastName: document.querySelector('#shippingLastNamedefault').value,
+    telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
+      .value,
+    billingAddress: {
+      city: document.querySelector('#billingAddressCity'),
+      postalCode: document.querySelector('#billingZipCode'),
+      country: document.querySelector('#billingCountry'),
+    },
+  };
+}
+
 function setNode(paymentMethodID) {
   const createNode = (...args) => {
     if (!store.componentsObj[paymentMethodID]) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      const node = store.checkout.create(...args);
+      // ALl nodes created for the checkout component are enriched with shopper personal details
+      const node = store.checkout.create(...args, {
+        data: getPersonalDetails(),
+      });
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
       /* No component for payment method */
@@ -136,6 +153,8 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
+
+  paymentMethod.data = getPersonalDetails();
 
   const options = {
     container,

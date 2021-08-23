@@ -98,10 +98,11 @@ function setCheckoutConfiguration(data) {
 
 function setAmazonPayConfig(adyenPaymentMethods) {
   const amazonpay = adyenPaymentMethods.paymentMethods.find(
-      (paymentMethod) => paymentMethod.type === 'amazonpay',
+    (paymentMethod) => paymentMethod.type === 'amazonpay',
   );
-  if(amazonpay) {
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration; // eslint-disable-line max-len
+  if (amazonpay) {
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
+      amazonpay.configuration; // eslint-disable-line max-len
   }
 }
 
