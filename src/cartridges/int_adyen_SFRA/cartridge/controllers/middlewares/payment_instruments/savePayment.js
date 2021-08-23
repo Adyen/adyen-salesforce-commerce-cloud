@@ -8,7 +8,6 @@ const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
-const Logger = require('dw/system/Logger');
 
 function containsValidResultCode(req) {
   return (
