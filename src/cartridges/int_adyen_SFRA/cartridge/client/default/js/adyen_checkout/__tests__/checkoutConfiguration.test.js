@@ -4,7 +4,6 @@ const {
   getGooglePayConfig,
   getMbwayConfig,
   getQRCodeConfig,
-  setCheckoutConfiguration,
 } = require('../checkoutConfiguration');
 const store = require('../../../../../store');
 

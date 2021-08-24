@@ -5,17 +5,6 @@ let mount;
 describe('Render Payment Method', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
-      <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
-      <input id="shippingPhoneNumberdefault" value="shippingPhoneNumberdefaultMock" />
-      <input id="shippingAddressCitydefault" value="shippingAddressCitydefaultMock" />
-      <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
-      <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
-      
-      <input id="billingAddressCity" value="billingAddressCityMock" />
-      <input id="billingZipCode" value="billingZipCodeMock" />
-      <input id="billingCountry" value="billingCountryMock" />
-      <span class="customer-summary-email">test@user.com</span>
       <ul id="paymentMethodsList"></ul>
     `;
     store.componentsObj = {
@@ -27,7 +16,7 @@ describe('Render Payment Method', () => {
       create: jest.fn(() => ({ mount })),
     };
   });
-  it('should render stored payment method', () => {
+  it('should render stored payment method with missing shopper information fields', () => {
     const paymentMethod = {
       id: 'mocked_id',
       brand: 'mocked_brand',
@@ -44,7 +33,21 @@ describe('Render Payment Method', () => {
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
   });
-  it('should render payment method', () => {
+
+  it('should render payment method with shopper information fields', () => {
+    document.body.innerHTML += `
+    <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
+      <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
+      <input id="shippingPhoneNumberdefault" value="shippingPhoneNumberdefaultMock" />
+      <input id="shippingAddressCitydefault" value="shippingAddressCitydefaultMock" />
+      <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
+      <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
+      
+      <input id="billingAddressCity" value="billingAddressCityMock" />
+      <input id="billingZipCode" value="billingZipCodeMock" />
+      <input id="billingCountry" value="billingCountryMock" />
+      <span class="customer-summary-email">test@user.com</span>
+    `
     const paymentMethod = {
       type: 'scheme',
       name: 'mocked_name',
@@ -93,10 +96,6 @@ describe('Render Payment Method', () => {
       }
     });
   });
-
-  if('should handle missing fields correctly', () => {
-
-  })
 
   it('should handle input onChange for paypal', () => {
     document.body.innerHTML += `
