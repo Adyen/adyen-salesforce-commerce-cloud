@@ -231,8 +231,8 @@ function setPersonalDetails(paymentMethodsConfiguration) {
     ].data = getPersonalDetails();
 
     paymentMethodsConfigurationValues[
-        paymentMethodConfigurationIndex
-        ].data.personalDetails = getPersonalDetails();
+      paymentMethodConfigurationIndex
+    ].data.personalDetails = getPersonalDetails();
   }
 }
 
