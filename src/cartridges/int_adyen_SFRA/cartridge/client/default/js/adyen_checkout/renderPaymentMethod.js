@@ -22,11 +22,13 @@ function getPersonalDetails() {
       city: document.querySelector('#billingAddressCity')?.value,
       postalCode: document.querySelector('#billingZipCode')?.value,
       country: document.querySelector('#billingCountry')?.value,
+      stateOrProvince: document.querySelector('#billingState')?.value,
     },
     deliveryAddress: {
       city: document.querySelector('#shippingAddressCitydefault')?.value,
       postalCode: document.querySelector('#shippingZipCodedefault')?.value,
       country: document.querySelector('#shippingCountrydefault')?.value,
+      stateOrProvince: document.querySelector('#shippingStatedefault')?.value,
     },
   };
 }

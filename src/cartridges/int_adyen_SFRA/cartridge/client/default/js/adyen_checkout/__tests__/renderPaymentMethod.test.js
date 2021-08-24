@@ -42,10 +42,12 @@ describe('Render Payment Method', () => {
       <input id="shippingAddressCitydefault" value="shippingAddressCitydefaultMock" />
       <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
       <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
-      
+      <input id="shippingStatedefault" value="shippingStatedefaultMock" />
+            
       <input id="billingAddressCity" value="billingAddressCityMock" />
       <input id="billingZipCode" value="billingZipCodeMock" />
       <input id="billingCountry" value="billingCountryMock" />
+      <input id="billingState" value="billingStateMock" />
       <span class="customer-summary-email">test@user.com</span>
     `
     const paymentMethod = {
@@ -72,11 +74,13 @@ describe('Render Payment Method', () => {
             city: 'billingAddressCityMock',
             postalCode: 'billingZipCodeMock',
             country: 'billingCountryMock',
+            stateOrProvince: 'billingStateMock',
           },
           deliveryAddress: {
             city: 'shippingAddressCitydefaultMock',
             postalCode: 'shippingZipCodedefaultMock',
             country: 'shippingCountrydefaultMock',
+            stateOrProvince: 'shippingStatedefaultMock',
           }
         },
         firstName: 'shippingFirstNamedefaultMock',
@@ -87,11 +91,13 @@ describe('Render Payment Method', () => {
           city: 'billingAddressCityMock',
           postalCode: 'billingZipCodeMock',
           country: 'billingCountryMock',
+          stateOrProvince: 'billingStateMock',
         },
         deliveryAddress: {
           city: 'shippingAddressCitydefaultMock',
           postalCode: 'shippingZipCodedefaultMock',
           country: 'shippingCountrydefaultMock',
+          stateOrProvince: 'shippingStatedefaultMock',
         }
       }
     });
