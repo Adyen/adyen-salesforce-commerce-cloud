@@ -43,11 +43,16 @@ describe('Render Payment Method', () => {
       <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
       <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
       <input id="shippingStatedefault" value="shippingStatedefaultMock" />
+      <input id="shippingAddressOnedefault" value="shippingAddressOnedefaultMock" />
+      <input id="shippingAddressTwodefault" value="shippingAddressTwodefaultMock" />
             
       <input id="billingAddressCity" value="billingAddressCityMock" />
       <input id="billingZipCode" value="billingZipCodeMock" />
       <input id="billingCountry" value="billingCountryMock" />
       <input id="billingState" value="billingStateMock" />
+      <input id="billingAddressOne" value="billingAddressOneMock" />
+      <input id="billingAddressTwo" value="billingAddressTwoMock" />
+      
       <span class="customer-summary-email">test@user.com</span>
     `
     const paymentMethod = {
@@ -75,12 +80,16 @@ describe('Render Payment Method', () => {
             postalCode: 'billingZipCodeMock',
             country: 'billingCountryMock',
             stateOrProvince: 'billingStateMock',
+            street: 'billingAddressOneMock',
+            houseNumberOrName: 'billingAddressTwoMock',
           },
           deliveryAddress: {
             city: 'shippingAddressCitydefaultMock',
             postalCode: 'shippingZipCodedefaultMock',
             country: 'shippingCountrydefaultMock',
             stateOrProvince: 'shippingStatedefaultMock',
+            street: 'shippingAddressOnedefaultMock',
+            houseNumberOrName: 'shippingAddressTwodefaultMock',
           }
         },
         firstName: 'shippingFirstNamedefaultMock',
@@ -92,12 +101,16 @@ describe('Render Payment Method', () => {
           postalCode: 'billingZipCodeMock',
           country: 'billingCountryMock',
           stateOrProvince: 'billingStateMock',
+          street: 'billingAddressOneMock',
+          houseNumberOrName: 'billingAddressTwoMock',
         },
         deliveryAddress: {
           city: 'shippingAddressCitydefaultMock',
           postalCode: 'shippingZipCodedefaultMock',
           country: 'shippingCountrydefaultMock',
           stateOrProvince: 'shippingStatedefaultMock',
+          street: 'shippingAddressOnedefaultMock',
+          houseNumberOrName: 'shippingAddressTwodefaultMock',
         }
       }
     });
