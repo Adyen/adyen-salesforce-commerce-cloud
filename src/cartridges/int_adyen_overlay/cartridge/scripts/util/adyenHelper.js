@@ -138,10 +138,6 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  getAdyenSecuredFieldsEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenSecuredFieldsEnabled');
-  },
-
   getAdyen3DS2Enabled() {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
   },
