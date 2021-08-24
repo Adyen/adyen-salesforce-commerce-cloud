@@ -6,7 +6,7 @@ export const getPaymentMethod = jest.fn(() => ({
     contains: jest.fn(() => true)
   })),
   getPaymentProcessor: jest.fn(() => ({
-    getID: jest.fn(() => 'mocked_method')
+    getID: jest.fn(() => 'Adyen_Component')
   }))
 }));
 export const getApplicablePaymentMethods = jest.fn(() => ({

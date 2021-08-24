@@ -8,6 +8,7 @@ const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const { paymentProcessorIDs } = require('./paymentProcessorIDs');
 
 function containsValidResultCode(req) {
   return (
@@ -45,7 +46,7 @@ function getResponseBody(action) {
 
 function savePayment(req, res, next) {
   if (
-    [constants.METHOD_ADYEN_COMPONENT, 'ADYEN_CREDIT'].indexOf(
+      paymentProcessorIDs.indexOf(
       PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID(),
     ) === -1
   ) {
