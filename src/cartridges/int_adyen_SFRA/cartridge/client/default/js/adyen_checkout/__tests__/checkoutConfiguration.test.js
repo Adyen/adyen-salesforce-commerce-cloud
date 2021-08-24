@@ -142,9 +142,54 @@ describe('Checkout Configuration', () => {
         expect(paymentMethodConfiguration.data.billingAddress.postalCode).toBe('billingZipCodeMock');
         expect(paymentMethodConfiguration.data.billingAddress.country).toBe('billingCountryMock');
 
-        expect(paymentMethodConfiguration.data.deliveryAddress.city).toBe('shippingAddressCitydefaultMock');
-        expect(paymentMethodConfiguration.data.deliveryAddress.postalCode).toBe('shippingZipCodedefaultMock');
-        expect(paymentMethodConfiguration.data.deliveryAddress.country).toBe('shippingCountrydefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.city).toBe('shippingAddressCitydefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.postalCode).toBe('shippingZipCodedefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.country).toBe('shippingCountrydefaultMock');
+
+        expect(paymentMethodConfiguration.data.personalDetails.firstName).toBe('shippingFirstNamedefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.lastName).toBe('shippingLastNamedefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.telephoneNumber).toBe('shippingPhoneNumberdefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.shopperEmail).toBe('test@user.com');
+
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.city).toBe('billingAddressCityMock');
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.postalCode).toBe('billingZipCodeMock');
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.country).toBe('billingCountryMock');
+
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.city).toBe('shippingAddressCitydefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.postalCode).toBe('shippingZipCodedefaultMock');
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.country).toBe('shippingCountrydefaultMock');
+      }
+    })
+
+    it('should not fail when fields are missing', () => {
+      document.body.innerHTML = '';
+      setCheckoutConfiguration();
+      for(const paymentMethodConfiguration of Object.values(store.checkoutConfiguration.paymentMethodsConfiguration)) {
+        expect(paymentMethodConfiguration.data.firstName).toBeUndefined();
+        expect(paymentMethodConfiguration.data.lastName).toBeUndefined();
+        expect(paymentMethodConfiguration.data.telephoneNumber).toBeUndefined();
+        expect(paymentMethodConfiguration.data.shopperEmail).toBeUndefined();
+
+        expect(paymentMethodConfiguration.data.billingAddress.city).toBeUndefined();
+        expect(paymentMethodConfiguration.data.billingAddress.postalCode).toBeUndefined();
+        expect(paymentMethodConfiguration.data.billingAddress.country).toBeUndefined();
+
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.city).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.postalCode).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.country).toBeUndefined();
+
+        expect(paymentMethodConfiguration.data.personalDetails.firstName).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.lastName).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.telephoneNumber).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.shopperEmail).toBeUndefined();
+
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.city).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.postalCode).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.billingAddress.country).toBeUndefined();
+
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.city).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.postalCode).toBeUndefined();
+        expect(paymentMethodConfiguration.data.personalDetails.deliveryAddress.country).toBeUndefined();
       }
     })
   })

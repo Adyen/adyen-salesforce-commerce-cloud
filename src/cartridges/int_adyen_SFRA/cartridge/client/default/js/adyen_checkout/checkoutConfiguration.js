@@ -172,16 +172,16 @@ function getAmazonpayConfig() {
     locale: window.Configuration.locale,
     returnUrl: window.returnURL,
     addressDetails: {
-      name: `${document.querySelector('#shippingFirstNamedefault').value} ${
-        document.querySelector('#shippingLastNamedefault').value
+      name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
+        document.querySelector('#shippingLastNamedefault')?.value
       }`,
-      addressLine1: document.querySelector('#shippingFirstNamedefault').value,
-      city: document.querySelector('#shippingAddressCitydefault').value,
+      addressLine1: document.querySelector('#shippingFirstNamedefault')?.value,
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
       stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-        .value,
-      postalCode: document.querySelector('#shippingZipCodedefault').value,
-      countryCode: document.querySelector('#shippingCountrydefault').value,
-      phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
+        ?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      countryCode: document.querySelector('#shippingCountrydefault')?.value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault')?.value,
     },
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');
@@ -229,6 +229,10 @@ function setPersonalDetails(paymentMethodsConfiguration) {
     paymentMethodsConfigurationValues[
       paymentMethodConfigurationIndex
     ].data = getPersonalDetails();
+
+    paymentMethodsConfigurationValues[
+        paymentMethodConfigurationIndex
+        ].data.personalDetails = getPersonalDetails();
   }
 }
 
