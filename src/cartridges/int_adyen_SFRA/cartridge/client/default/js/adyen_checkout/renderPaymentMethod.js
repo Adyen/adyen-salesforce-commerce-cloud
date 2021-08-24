@@ -10,30 +10,13 @@ function getFallback(paymentMethod) {
   return fallback[paymentMethod];
 }
 
-function getPersonalDetails() {
-  return {
-    firstName: document.querySelector('#shippingFirstNamedefault').value,
-    lastName: document.querySelector('#shippingLastNamedefault').value,
-    telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-      .value,
-    billingAddress: {
-      city: document.querySelector('#billingAddressCity'),
-      postalCode: document.querySelector('#billingZipCode'),
-      country: document.querySelector('#billingCountry'),
-    },
-  };
-}
-
 function setNode(paymentMethodID) {
   const createNode = (...args) => {
     if (!store.componentsObj[paymentMethodID]) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      // ALl nodes created for the checkout component are enriched with shopper personal details
-      const node = store.checkout.create(...args, {
-        data: getPersonalDetails(),
-      });
+      const node = store.checkout.create(...args);
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
       /* No component for payment method */
@@ -53,8 +36,8 @@ function getImage(isStored, paymentMethod) {
 
 function getLabel(isStored, paymentMethod) {
   const label = isStored
-    ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
-    : '';
+      ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
+      : '';
   return `${paymentMethod.name}${label}`;
 }
 
@@ -66,14 +49,14 @@ function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
     container.append(template.content);
   };
   return fallback
-    ? createTemplate()
-    : setNode(paymentMethod.type)(paymentMethodID);
+      ? createTemplate()
+      : setNode(paymentMethod.type)(paymentMethodID);
 }
 
 function handlePayment(options) {
   return options.isStored
-    ? setNode(options.paymentMethodID)('card', options.paymentMethod)
-    : handleFallbackPayment(options);
+      ? setNode(options.paymentMethodID)('card', options.paymentMethod)
+      : handleFallbackPayment(options);
 }
 
 function getListContents({ imagePath, isStored, paymentMethod, description }) {
@@ -99,8 +82,8 @@ function hasNoChildNodes({ paymentMethodID, container }) {
 
 function setValid({ paymentMethodID, container }) {
   if (
-    hasNoChildNodes({ paymentMethodID, container }) &&
-    ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
+      hasNoChildNodes({ paymentMethodID, container }) &&
+      ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
   ) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
@@ -116,8 +99,8 @@ function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = async (event) => {
     if (
-      document.querySelector('.adyen-checkout__qr-loader') &&
-      qrCodeMethods.indexOf(store.selectedMethod) > -1
+        document.querySelector('.adyen-checkout__qr-loader') &&
+        qrCodeMethods.indexOf(store.selectedMethod) > -1
     ) {
       const compName = store.selectedMethod;
       const qrComponent = store.componentsObj[compName];
@@ -142,10 +125,10 @@ function handleInput({ paymentMethodID }) {
 }
 
 module.exports.renderPaymentMethod = function renderPaymentMethod(
-  paymentMethod,
-  isStored,
-  path,
-  description = null,
+    paymentMethod,
+    isStored,
+    path,
+    description = null,
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
@@ -153,8 +136,6 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
-
-  paymentMethod.data = getPersonalDetails();
 
   const options = {
     container,

@@ -4,6 +4,7 @@ const {
   getGooglePayConfig,
   getMbwayConfig,
   getQRCodeConfig,
+  setCheckoutConfiguration,
 } = require('../checkoutConfiguration');
 const store = require('../../../../../store');
 
@@ -113,4 +114,38 @@ describe('Checkout Configuration', () => {
       );
     });
   });
+
+  describe('personalDetails', () => {
+    it('should enrich payment methods with personal details', () => {
+      document.body.innerHTML = `
+      <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
+      <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
+      <input id="shippingPhoneNumberdefault" value="shippingPhoneNumberdefaultMock" />
+      <input id="shippingAddressCitydefault" value="shippingAddressCitydefaultMock" />
+      <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
+      <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
+      
+      <input id="billingAddressCity" value="billingAddressCityMock" />
+      <input id="billingZipCode" value="billingZipCodeMock" />
+      <input id="billingCountry" value="billingCountryMock" />
+      <span class="customer-summary-email">test@user.com</span>
+    `;
+
+      setCheckoutConfiguration()
+      for(const paymentMethodConfiguration of Object.values(store.checkoutConfiguration.paymentMethodsConfiguration)) {
+        expect(paymentMethodConfiguration.data.firstName).toBe('shippingFirstNamedefaultMock');
+        expect(paymentMethodConfiguration.data.lastName).toBe('shippingLastNamedefaultMock');
+        expect(paymentMethodConfiguration.data.telephoneNumber).toBe('shippingPhoneNumberdefaultMock');
+        expect(paymentMethodConfiguration.data.shopperEmail).toBe('test@user.com');
+
+        expect(paymentMethodConfiguration.data.billingAddress.city).toBe('billingAddressCityMock');
+        expect(paymentMethodConfiguration.data.billingAddress.postalCode).toBe('billingZipCodeMock');
+        expect(paymentMethodConfiguration.data.billingAddress.country).toBe('billingCountryMock');
+
+        expect(paymentMethodConfiguration.data.deliveryAddress.city).toBe('shippingAddressCitydefaultMock');
+        expect(paymentMethodConfiguration.data.deliveryAddress.postalCode).toBe('shippingZipCodedefaultMock');
+        expect(paymentMethodConfiguration.data.deliveryAddress.country).toBe('shippingCountrydefaultMock');
+      }
+    })
+  })
 });
