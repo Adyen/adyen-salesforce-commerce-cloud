@@ -198,27 +198,37 @@ function getAmazonpayConfig() {
 
 function getPersonalDetails() {
   return {
-    firstName: document.querySelector('#shippingFirstNamedefault').value,
-    lastName: document.querySelector('#shippingLastNamedefault').value,
+    firstName: document.querySelector('#shippingFirstNamedefault')?.value,
+    lastName: document.querySelector('#shippingLastNamedefault')?.value,
     telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-        .value,
-    shopperEmail: document.querySelector('.customer-summary-email').textContent,
+      ?.value,
+    shopperEmail: document.querySelector('.customer-summary-email')
+      ?.textContent,
     billingAddress: {
-      city: document.querySelector('#billingAddressCity').value,
-      postalCode: document.querySelector('#billingZipCode').value,
-      country: document.querySelector('#billingCountry').value,
+      city: document.querySelector('#billingAddressCity')?.value,
+      postalCode: document.querySelector('#billingZipCode')?.value,
+      country: document.querySelector('#billingCountry')?.value,
     },
     deliveryAddress: {
-      city: document.querySelector('#shippingAddressCitydefault').value,
-      postalCode: document.querySelector('#shippingZipCodedefault').value,
-      country: document.querySelector('#shippingCountrydefault').value,
-    }
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      country: document.querySelector('#shippingCountrydefault')?.value,
+    },
   };
 }
 
-function  setPersonalDetails(paymentMethodsConfiguration) {
-  for(const paymentMethodConfiguration of Object.values(paymentMethodsConfiguration)) {
-    paymentMethodConfiguration.data = getPersonalDetails();
+function setPersonalDetails(paymentMethodsConfiguration) {
+  const paymentMethodsConfigurationValues = Object.values(
+    paymentMethodsConfiguration,
+  );
+  for (
+    let paymentMethodConfigurationIndex = 0;
+    paymentMethodConfigurationIndex < paymentMethodsConfigurationValues.length;
+    paymentMethodConfigurationIndex += 1
+  ) {
+    paymentMethodsConfigurationValues[
+      paymentMethodConfigurationIndex
+    ].data = getPersonalDetails();
   }
 }
 
