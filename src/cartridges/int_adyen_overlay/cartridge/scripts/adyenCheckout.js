@@ -32,6 +32,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function createPaymentRequest(args) {
   try {
@@ -183,11 +184,29 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
+    const challengeResultCodes = [
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER
+    ];
+
+    const acceptedResultCodes = [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+      constants.RESULTCODES.REDIRECTSHOPPER
+    ];
+
+    const presentToShopperResultCodes = [constants.RESULTCODES.PRESENTTOSHOPPER];
+
+    const refusedResultCodes = [
+      constants.RESULTCODES.CANCELLED,
+      constants.RESULTCODES.ERROR,
+      constants.RESULTCODES.REFUSED
+    ];
+
+    const {resultCode} = paymentResponse;
     // Check the response object from /payment call
-    if (
-      paymentResponse.resultCode === 'IdentifyShopper' ||
-      paymentResponse.resultCode === 'ChallengeShopper'
-    ) {
+    if (challengeResultCodes.indexOf(resultCode) !== -1) {
       if (responseObject.action) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
             responseObject.action,
@@ -198,18 +217,15 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
       paymentResponse.token3ds2 = responseObject.action.token;
       paymentResponse.paymentData = responseObject.paymentData;
-    } else if (
-      paymentResponse.resultCode === 'Authorised' ||
-      paymentResponse.resultCode === 'RedirectShopper'
-    ) {
+    } else if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       // if 3D Secure is used, the statuses will be updated later
-      if (paymentResponse.resultCode === 'Authorised') {
+      if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
         Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
-    } else if (paymentResponse.resultCode === 'PresentToShopper') {
+    } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       if (responseObject.action) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
@@ -220,8 +236,13 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.decision = 'REFUSED';
       order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
       order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+      if(refusedResultCodes.indexOf(resultCode) !== -1) {
 
-      errorMessage = Resource.msg('confirm.error.declined', 'checkout', null);
+      }
+      errorMessage = refusedResultCodes.indexOf(resultCode) !== -1 ?
+        Resource.msg('confirm.error.declined', 'checkout', null):
+        Resource.msg('confirm.error.unknown', 'checkout', null);
+
       if (responseObject.refusalReason) {
         errorMessage += ` (${responseObject.refusalReason})`;
       }

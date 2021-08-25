@@ -46,7 +46,7 @@ function getResponseBody(action) {
 
 function savePayment(req, res, next) {
   if (
-      paymentProcessorIDs.indexOf(
+    paymentProcessorIDs.indexOf(
       PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID(),
     ) === -1
   ) {
