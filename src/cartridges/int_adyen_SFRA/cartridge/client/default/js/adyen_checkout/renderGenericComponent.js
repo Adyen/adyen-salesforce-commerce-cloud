@@ -98,10 +98,23 @@ function setCheckoutConfiguration(data) {
 
 function setAmazonPayConfig(adyenPaymentMethods) {
   const amazonpay = adyenPaymentMethods.paymentMethods.find(
-      (paymentMethod) => paymentMethod.type === 'amazonpay',
+    (paymentMethod) => paymentMethod.type === 'amazonpay',
   );
-  if(amazonpay) {
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration; // eslint-disable-line max-len
+  if (amazonpay) {
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
+      amazonpay.configuration; // eslint-disable-line max-len
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
+      name: `${document.querySelector('#shippingFirstNamedefault').value} ${
+        document.querySelector('#shippingLastNamedefault').value
+      }`,
+      addressLine1: document.querySelector('#shippingAddressOnedefault').value,
+      city: document.querySelector('#shippingAddressCitydefault').value,
+      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
+        .value,
+      postalCode: document.querySelector('#shippingZipCodedefault').value,
+      countryCode: document.querySelector('#shippingCountrydefault').value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
+    };
   }
 }
 
