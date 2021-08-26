@@ -5,7 +5,7 @@ const amazonPayNode = document.getElementById('amazon-container');
 function handleAmazonResponse(response, component) {
   if (response.fullResponse?.action) {
     component.handleAction(response.fullResponse.action);
-  } else if (response.resultCode === 'Authorised') {
+  } else if (response.resultCode === window.resultCodeAuthorised) {
     document.querySelector('#result').value = JSON.stringify({
       pspReference: response.fullResponse.pspReference,
       resultCode: response.fullResponse.resultCode,

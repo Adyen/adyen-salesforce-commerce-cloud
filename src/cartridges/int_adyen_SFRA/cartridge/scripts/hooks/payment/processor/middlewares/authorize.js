@@ -5,6 +5,7 @@ const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const paymentResponseHandler = require('./authorize/paymentResponse');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function errorHandler() {
   const serverErrors = [
@@ -20,7 +21,7 @@ function errorHandler() {
 }
 
 function check3DS2(result) {
-  return result.threeDS2 || result.resultCode === 'RedirectShopper';
+  return result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER;
 }
 
 function paymentErrorHandler(result) {

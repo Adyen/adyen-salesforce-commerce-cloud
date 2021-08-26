@@ -5,6 +5,7 @@
 <isset name="adyenRecurringPaymentsEnabled" value="${AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
+<isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 
@@ -23,6 +24,7 @@
     window.returnURL = "${URLUtils.https('COBilling-Start')}";
     window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+    window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
     var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
 </script>
 

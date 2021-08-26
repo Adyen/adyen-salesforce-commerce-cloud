@@ -27,7 +27,7 @@ function create() {
     return zeroAuthResult.action;
   }
 
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+  if (zeroAuthResult.error || zeroAuthResult.resultCode !== constants.RESULTCODES.AUTHORISED) {
     Transaction.rollback();
     return false;
   }

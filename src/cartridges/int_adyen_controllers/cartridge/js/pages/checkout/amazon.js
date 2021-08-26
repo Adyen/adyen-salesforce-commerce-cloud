@@ -4,7 +4,7 @@ if(window.amazonCheckoutSessionId) {
     function handleAmazonResponse(response, component) {
         if (response.fullResponse && response.fullResponse.action) {
             component.handleAction(response.fullResponse.action);
-        } else if (response.resultCode === 'Authorised') {
+        } else if (response.resultCode === window.resultCodeAuthorised) {
             document.querySelector('#result').value = JSON.stringify({
                 pspReference: response.fullResponse.pspReference,
                 resultCode: response.fullResponse.resultCode,
