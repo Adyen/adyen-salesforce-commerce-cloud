@@ -184,7 +184,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
-    const challengeResultCodes = [
+    const ThreeDS2ResultCodes = [
       constants.RESULTCODES.IDENTIFYSHOPPER,
       constants.RESULTCODES.CHALLENGESHOPPER
     ];
@@ -206,7 +206,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
     const {resultCode} = paymentResponse;
     // Check the response object from /payment call
-    if (challengeResultCodes.indexOf(resultCode) !== -1) {
+    if (ThreeDS2ResultCodes.indexOf(resultCode) !== -1) {
       if (responseObject.action) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
             responseObject.action,
