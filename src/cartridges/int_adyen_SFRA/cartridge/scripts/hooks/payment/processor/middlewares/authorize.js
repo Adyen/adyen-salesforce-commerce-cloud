@@ -21,7 +21,10 @@ function errorHandler() {
 }
 
 function check3DS2(result) {
-  return result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER;
+  return (
+    result.threeDS2 ||
+    result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER
+  );
 }
 
 function paymentErrorHandler(result) {

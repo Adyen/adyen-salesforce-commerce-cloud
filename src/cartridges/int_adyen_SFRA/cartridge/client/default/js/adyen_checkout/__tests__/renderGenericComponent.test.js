@@ -26,6 +26,16 @@ describe('Render Generic Component', () => {
       <div id="adyenPosTerminals">
         <span>Child #1</span>
       </div>
+      <div>
+        <input type="text" id="shippingFirstNamedefault" value="test">
+        <input type="text" id="shippingLastNamedefault" value="test">
+        <input type="text" id="shippingAddressOnedefault" value="test">
+        <input type="text" id="shippingAddressCitydefault" value="test">
+        <input type="text" id="shippingZipCodedefault" value="test">
+        <input type="text" id="shippingCountrydefault" value="test">
+        <input type="text" id="shippingPhoneNumberdefault" value="test">
+        <input type="text" id="shippingZipCodedefault" value="test">  
+      </div>
     `;
     window.AdyenCheckout = jest.fn(() => ({
       create: jest.fn(),
@@ -52,7 +62,7 @@ describe('Render Generic Component', () => {
     await renderGenericComponent();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
-      document.querySelector('input[type=radio][name=brandCode]').value,
+        document.querySelector('input[type=radio][name=brandCode]').value,
     ).toBeTruthy();
   });
 });

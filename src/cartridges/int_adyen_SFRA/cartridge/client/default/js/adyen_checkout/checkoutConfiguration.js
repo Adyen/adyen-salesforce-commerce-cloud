@@ -171,18 +171,6 @@ function getAmazonpayConfig() {
     checkoutMode: 'ProcessOrder',
     locale: window.Configuration.locale,
     returnUrl: window.returnURL,
-    addressDetails: {
-      name: `${document.querySelector('#shippingFirstNamedefault').value} ${
-        document.querySelector('#shippingLastNamedefault').value
-      }`,
-      addressLine1: document.querySelector('#shippingFirstNamedefault').value,
-      city: document.querySelector('#shippingAddressCitydefault').value,
-      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-        .value,
-      postalCode: document.querySelector('#shippingZipCodedefault').value,
-      countryCode: document.querySelector('#shippingCountrydefault').value,
-      phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
-    },
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');
       if (store.formErrorsExist) {
@@ -208,12 +196,6 @@ function setCheckoutConfiguration() {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off
       showEmailAddress: false, // allow shopper to specify their email address
-
-      // Optionally prefill some fields, here all fields are filled:
-      data: {
-        firstName: document.getElementById('shippingFirstNamedefault').value,
-        lastName: document.getElementById('shippingLastNamedefault').value,
-      },
     },
     paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
@@ -229,14 +211,6 @@ function setCheckoutConfiguration() {
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
       },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
-      },
     },
     facilypay_3x: {
       visibility: {
@@ -244,26 +218,12 @@ function setCheckoutConfiguration() {
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
       },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
-      },
     },
     ratepay: {
       visibility: {
         personalDetails: 'editable',
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-        },
       },
     },
   };

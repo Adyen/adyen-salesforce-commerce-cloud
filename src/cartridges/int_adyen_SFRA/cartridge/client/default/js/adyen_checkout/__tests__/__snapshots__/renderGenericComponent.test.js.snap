@@ -6,6 +6,15 @@ Object {
   "countryCode": "mocked_country",
   "paymentMethodsConfiguration": Object {
     "amazonpay": Object {
+      "addressDetails": Object {
+        "addressLine1": "test",
+        "city": "test",
+        "countryCode": "test",
+        "name": "test test",
+        "phoneNumber": "test",
+        "postalCode": "test",
+        "stateOrRegion": "test",
+      },
       "configuration": undefined,
     },
   },

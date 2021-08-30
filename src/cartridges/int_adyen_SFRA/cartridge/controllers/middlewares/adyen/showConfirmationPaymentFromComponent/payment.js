@@ -118,7 +118,7 @@ function handlePayment(stateData, order, options) {
     [
       constants.RESULTCODES.AUTHORISED,
       constants.RESULTCODES.PENDING,
-      constants.RESULTCODES.RECEIVED
+      constants.RESULTCODES.RECEIVED,
     ].indexOf(finalResult.resultCode) > -1
   ) {
     return handleAuthorisedPayment(
