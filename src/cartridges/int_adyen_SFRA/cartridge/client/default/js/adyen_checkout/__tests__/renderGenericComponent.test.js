@@ -62,7 +62,7 @@ describe('Render Generic Component', () => {
     await renderGenericComponent();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
-      document.querySelector('input[type=radio][name=brandCode]').value,
+        document.querySelector('input[type=radio][name=brandCode]').value,
     ).toBeTruthy();
   });
 });
