@@ -236,9 +236,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.decision = 'REFUSED';
       order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
       order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-      if(refusedResultCodes.indexOf(resultCode) !== -1) {
-
-      }
       errorMessage = refusedResultCodes.indexOf(resultCode) !== -1 ?
         Resource.msg('confirm.error.declined', 'checkout', null):
         Resource.msg('confirm.error.unknown', 'checkout', null);
