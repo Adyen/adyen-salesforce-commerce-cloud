@@ -90,7 +90,7 @@ function Authorize(args) {
     order.custom.Adyen_pspReference = result.pspReference;
   }
 
-  if (result.threeDS2 || result.resultCode === 'RedirectShopper') {
+  if (result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER) {
     paymentInstrument.custom.adyenPaymentData = result.paymentData;
     Transaction.commit();
 

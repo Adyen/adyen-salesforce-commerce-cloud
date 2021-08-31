@@ -13,10 +13,10 @@ const { paymentProcessorIDs } = require('./paymentProcessorIDs');
 function containsValidResultCode(req) {
   return (
     [
-      'Authorised',
-      'IdentifyShopper',
-      'ChallengeShopper',
-      'RedirectShopper',
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER,
+      constants.RESULTCODES.REDIRECTSHOPPER,
     ].indexOf(req.resultCode) !== -1
   );
 }

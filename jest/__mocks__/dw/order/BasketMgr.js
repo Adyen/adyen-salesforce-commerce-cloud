@@ -31,7 +31,7 @@ export const toArray = jest.fn(() => [
     setCreditCardExpirationMonth,
     setCreditCardExpirationYear,
     setCreditCardToken,
-    paymentMethod: 'mocked_method',
+    paymentMethod: 'AdyenComponent',
   },
 ]);
 export const getPaymentInstruments = jest.fn(() => ({ toArray }));

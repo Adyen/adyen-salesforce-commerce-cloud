@@ -25,7 +25,7 @@ const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
-
+const constants = require('*/cartridge/adyenConstants/constants');
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
@@ -797,23 +797,23 @@ var adyenHelperObj = {
 
   createAdyenCheckoutResponse(checkoutresponse) {
     if (
-        ['Authorised', 'Refused', 'Error', 'Cancelled'].indexOf(
+        [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.REFUSED, constants.RESULTCODES.ERROR, constants.RESULTCODES.CANCELLED].indexOf(
             checkoutresponse.resultCode,
         ) !== -1
     ) {
       return {
         isFinal: true,
-        isSuccessful: checkoutresponse.resultCode === 'Authorised',
+        isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
       }
     }
 
     if (
         [
-          'RedirectShopper',
-          'IdentifyShopper',
-          'ChallengeShopper',
-          'PresentToShopper',
-          'Pending',
+          constants.RESULTCODES.REDIRECTSHOPPER,
+          constants.RESULTCODES.IDENTIFYSHOPPER,
+          constants.RESULTCODES.CHALLENGESHOPPER,
+          constants.RESULTCODES.PRESENTTOSHOPPER,
+          constants.RESULTCODES.PENDING,
         ].indexOf(checkoutresponse.resultCode) !== -1
     ) {
       return {

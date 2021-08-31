@@ -115,7 +115,11 @@ function handlePayment(stateData, order, options) {
 
   // Authorised: The payment authorisation was successfully completed.
   if (
-    ['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(finalResult.resultCode) > -1
   ) {
     return handleAuthorisedPayment(
       order,

@@ -5,8 +5,10 @@ const { toggle3DS2Error } = require('./errorHandler');
 
 function contains3ds2Action({ req }) {
   return (
-    ['IdentifyShopper', 'ChallengeShopper'].indexOf(req.form.resultCode) !==
-      -1 || req.form.challengeResult
+    [
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER,
+    ].indexOf(req.form.resultCode) !== -1 || req.form.challengeResult
   );
 }
 

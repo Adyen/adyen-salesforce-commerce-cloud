@@ -39,7 +39,13 @@ function showConfirmation(req, res, next) {
       return response.redirect(URLUtils.httpHome());
     }
     // Authorised: The payment authorisation was successfully completed.
-    if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
+    if (
+      [
+        constants.RESULTCODES.AUTHORISED,
+        constants.RESULTCODES.PENDING,
+        constants.RESULTCODES.RECEIVED,
+      ].indexOf(result.resultCode) > -1
+    ) {
       const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
       return handleAuthorised(
         merchantRefOrder,

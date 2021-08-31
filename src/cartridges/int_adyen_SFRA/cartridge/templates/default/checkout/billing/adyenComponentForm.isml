@@ -1,6 +1,7 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
+<isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
@@ -18,6 +19,7 @@
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+      window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
