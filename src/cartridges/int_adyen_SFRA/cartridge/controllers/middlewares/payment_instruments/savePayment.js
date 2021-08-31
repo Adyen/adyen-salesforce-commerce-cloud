@@ -44,12 +44,19 @@ function getResponseBody(action) {
   };
 }
 
-function savePayment(req, res, next) {
-  if (
+function isAdyen() {
+  return (
     paymentProcessorIDs.indexOf(
-      PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID(),
-    ) === -1
-  ) {
+      PaymentMgr.getPaymentMethod('CREDIT_CARD')
+        ?.getPaymentProcessor()
+        ?.getID(),
+    ) > -1 ||
+    PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_COMPONENT).isActive()
+  );
+}
+
+function savePayment(req, res, next) {
+  if (!isAdyen()) {
     return next();
   }
   const customer = CustomerMgr.getCustomerByCustomerNumber(

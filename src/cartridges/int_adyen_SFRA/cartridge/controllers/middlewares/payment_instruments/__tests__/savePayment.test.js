@@ -22,7 +22,8 @@ describe('Save Payment', () => {
     PaymentMgr.getPaymentMethod.mockImplementation(() => ({
       getPaymentProcessor: jest.fn(() => ({
         getID: jest.fn(() => 'notAdyen')
-      }))
+      })),
+      isActive: jest.fn(() => false)
     }));
 
     savePayment.call({ emit: jest.fn() }, req, res, jest.fn());
