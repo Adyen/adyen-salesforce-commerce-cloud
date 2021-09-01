@@ -55,6 +55,8 @@ const cardNode = document.getElementById('card');
 checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
+let formErrorsExist = false;
+
 function submitAddCard() {
   const form = $(document.getElementById('payment-form'));
   $.ajax({
@@ -68,22 +70,24 @@ function submitAddCard() {
       } else if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else if (data.error) {
-        const errorDiv = $(document.getElementById('form-error'));
-        errorDiv.removeAttr('hidden');
-        errorDiv.text(data.error);
+        formErrorsExist = true;
       }
     },
   });
 }
 
+/* eslint-disable consistent-return */
 // Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
-  event.preventDefault();
   if (store.isValid) {
     document.querySelector('#adyenStateData').value = JSON.stringify(
       store.componentState.data,
     );
     submitAddCard();
+    if (formErrorsExist) {
+      return true;
+    }
+    event.preventDefault();
   } else {
     card.showValidation();
   }
