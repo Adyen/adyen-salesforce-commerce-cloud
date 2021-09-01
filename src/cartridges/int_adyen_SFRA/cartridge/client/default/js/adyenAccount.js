@@ -76,7 +76,6 @@ function submitAddCard() {
   });
 }
 
-/* eslint-disable consistent-return */
 // Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
   if (store.isValid) {
@@ -85,7 +84,7 @@ $('button[value="add-new-payment"]').on('click', (event) => {
     );
     submitAddCard();
     if (formErrorsExist) {
-      return true;
+      return;
     }
     event.preventDefault();
   } else {
