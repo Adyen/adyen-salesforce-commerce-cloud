@@ -68,7 +68,7 @@ server.post('PaymentsDetails', server.middleware.https, adyen.paymentsDetails);
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */
-server.post(
+server.get(
   'Redirect3DS1Response',
   server.middleware.https,
   adyen.redirect3ds1Response,

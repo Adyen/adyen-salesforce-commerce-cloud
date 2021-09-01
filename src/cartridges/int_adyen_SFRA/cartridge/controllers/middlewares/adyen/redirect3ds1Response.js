@@ -8,10 +8,11 @@ const constants = require('*/cartridge/adyenConstants/constants');
  */
 function redirect(req, res, next) {
   try {
+    const redirectResult = req.httpParameterMap.get('redirectResult')
+      .stringValue;
     const jsonRequest = {
       details: {
-        MD: req.form?.MD,
-        PaRes: req.form?.PaRes,
+        redirectResult,
       },
     };
     const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
