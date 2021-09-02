@@ -15,7 +15,13 @@ beforeEach(() => {
   };
 
   req = {
-    form: {},
+    httpParameterMap: {
+      get: jest.fn(() => {
+        return {
+          stringValue: 'mockedRedirectresult',
+        };
+      }),
+    }
   };
 });
 
@@ -29,9 +35,8 @@ describe('Redirect 3DS1 Response', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
 
-    req.form = {
-      MD: 'MOCK_MD',
-      PaRes: 'MOCK_PaRes'
+    req.querystring = {
+      redirectResult: 'mockedRedirectresult',
     };
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
@@ -49,9 +54,8 @@ describe('Redirect 3DS1 Response', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
 
-    req.form = {
-      MD: 'MOCK_MD',
-      PaRes: 'MOCK_PaRes'
+    req.querystring = {
+      redirectResult: 'mockedRedirectresult',
     };
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
@@ -65,11 +69,11 @@ describe('Redirect 3DS1 Response', () => {
     expect(URLUtils.url.mock.calls[0]).toEqual(['PaymentInstruments-AddPayment', 'isAuthorised', 'false']);
   });
 
-  it('should handle invalid form/missing form contents.', () => {
+  it('should handle missing querystring contents.', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
 
-    req.form = null;
+    req.querystring = null;
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode:'Cancelled',
