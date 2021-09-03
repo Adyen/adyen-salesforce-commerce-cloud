@@ -59,10 +59,12 @@ function displaySelectedMethod(type) {
     ).value)
     : type;
   resetPaymentMethod();
+
   document.querySelector('button[value="submit-payment"]').disabled =
     ['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(
       type,
     ) > -1;
+
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');
@@ -71,9 +73,6 @@ function displaySelectedMethod(type) {
     ?.value;
   if (giftcardBrand) {
     store.brand = giftcardBrand;
-    store.selectedMethod = document.querySelector(
-      `#component_${type} .type`,
-    )?.value;
   }
 }
 
