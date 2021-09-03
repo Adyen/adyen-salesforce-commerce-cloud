@@ -67,11 +67,7 @@ function displaySelectedMethod(type) {
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');
   // set brand for giftcards if hidden inputfield is present
-  const giftcardBrand = document.querySelector(`#component_${type} .brand`)
-    ?.value;
-  if (giftcardBrand) {
-    store.brand = giftcardBrand;
-  }
+  store.brand = document.querySelector(`#component_${type} .brand`)?.value;
 }
 
 function displayValidationErrors() {
