@@ -46,7 +46,7 @@ module.exports = {
     "window": "readonly",
     "location": "readonly",
   },
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
@@ -61,7 +61,7 @@ module.exports = {
     "*.ds"
   ],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": "warn",
     "no-var": "error",
     "prefer-const": "warn",
     "complexity": [
