@@ -61,7 +61,7 @@ module.exports = {
     "*.ds"
   ],
   "rules": {
-    "prettier/prettier": "warn",
+    "prettier/prettier": "error",
     "no-var": "error",
     "prefer-const": "warn",
     "complexity": [

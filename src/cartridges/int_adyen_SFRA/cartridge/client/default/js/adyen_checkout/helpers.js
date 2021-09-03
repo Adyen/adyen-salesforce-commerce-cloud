@@ -54,9 +54,7 @@ function resetPaymentMethod() {
 function displaySelectedMethod(type) {
   // If 'type' input field is present use this as type, otherwise default to function input param
   store.selectedMethod = document.querySelector(`#component_${type} .type`)
-    ? (store.selectedMethod = document.querySelector(
-      `#component_${type} .type`,
-    ).value)
+    ? document.querySelector(`#component_${type} .type`).value
     : type;
   resetPaymentMethod();
 
