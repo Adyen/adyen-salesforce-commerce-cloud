@@ -53,7 +53,7 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '4.5.0',
+  CHECKOUT_COMPONENT_VERSION: '4.7.4',
   VERSION: '21.1.0',
   BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
