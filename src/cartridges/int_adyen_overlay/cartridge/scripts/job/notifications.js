@@ -20,20 +20,14 @@
  */
 
 /* API Includes */
-// eslint-disable-next-line no-unused-vars
-const Order = require('dw/order/Order');
 const OrderMgr = require('dw/order/OrderMgr');
-// eslint-disable-next-line no-unused-vars
-const Resource = require('dw/web/Resource');
-// eslint-disable-next-line no-unused-vars
-const Status = require('dw/system/Status');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
 
-function execute(pdict) {
-  processNotifications(pdict);
-  clearNotifications(pdict);
+function execute() {
+  processNotifications();
+  clearNotifications();
   return PIPELET_NEXT;
 }
 

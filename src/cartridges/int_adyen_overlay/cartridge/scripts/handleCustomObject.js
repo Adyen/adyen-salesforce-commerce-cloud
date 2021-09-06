@@ -37,7 +37,6 @@
  *
  */
 
-/* eslint no-var: off */
 const Logger = require('dw/system/Logger');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
@@ -56,6 +55,38 @@ function execute(args) {
 
   return result.status;
 }
+
+// If payment was refused and was used Adyen payment method, the fields
+// are changed when user is redirected back from Adyen HPP
+// Add received information to order
+function handleHPPRefused(order, customObj) {
+  /*
+    PSP Reference must be persistent.
+    Some modification requests (Capture, Cancel) send identificators of the operations,
+    we mustn't overwrite the original value by the new ones
+  */
+  if (
+      empty(order.custom.Adyen_pspReference) &&
+      !empty(customObj.custom.pspReference)
+  ) {
+    order.custom.Adyen_pspReference = customObj.custom.pspReference;
+  }
+
+  order.custom.Adyen_eventCode = customObj.custom.eventCode;
+
+  // Payment Method must be persistent. When payment is cancelled,
+  // Adyen sends an empty string here
+  if (
+      empty(order.custom.Adyen_paymentMethod) &&
+      !empty(customObj.custom.paymentMethod)
+  ) {
+    order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
+  }
+
+  // Add a note with all details
+  order.addNote('Adyen Payment Notification', createLogMessage(customObj));
+}
+
 function handle(customObj) {
   const OrderMgr = require('dw/order/OrderMgr');
   const Transaction = require('dw/system/Transaction');
@@ -103,8 +134,8 @@ function handle(customObj) {
   if (orderCreateDateDelay < currentDate) {
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
-        var paymentInstruments = order.getPaymentInstruments();
-        var adyenPaymentInstrument = null;
+        const paymentInstruments = order.getPaymentInstruments();
+        let adyenPaymentInstrument = null;
         // Move adyen log request to order payment transaction
         for (const pi in paymentInstruments) {
           if (
@@ -163,7 +194,7 @@ function handle(customObj) {
             (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) &&
             isAdyen
           ) {
-            refusedHpp = true;
+            handleHPPRefused(order, customObj);
           } else if (order.status === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
@@ -267,39 +298,6 @@ function handle(customObj) {
           customObj.custom.eventCode,
         );
     }
-
-    // If payment was refused and was used Adyen payment method, the fields
-    // are changed when user is redirected back from Adyen HPP
-    if (!refusedHpp) {
-      // Add received information to order
-
-      /*
-        PSP Reference must be persistent.
-        Some modification requests (Capture, Cancel) send identificators of the operations,
-        we mustn't overwrite the original value by the new ones
-      */
-      if (
-        empty(order.custom.Adyen_pspReference) &&
-        !empty(customObj.custom.pspReference)
-      ) {
-        order.custom.Adyen_pspReference = customObj.custom.pspReference;
-      }
-
-      order.custom.Adyen_eventCode = customObj.custom.eventCode;
-
-      // Payment Method must be persistent. When payment is cancelled,
-      // Adyen sends an empty string here
-      if (
-        empty(order.custom.Adyen_paymentMethod) &&
-        !empty(customObj.custom.paymentMethod)
-      ) {
-        order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
-      }
-
-      // Add a note with all details
-      order.addNote('Adyen Payment Notification', createLogMessage(customObj));
-    }
-
     setProcessedCOInfo(customObj);
   } else {
     Logger.getLogger('Adyen', 'adyen').debug('Order date > current Date.');
