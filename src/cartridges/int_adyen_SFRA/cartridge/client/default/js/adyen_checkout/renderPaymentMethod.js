@@ -3,11 +3,15 @@ const helpers = require('./helpers');
 const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
-  const fallback = {};
-  if (fallback[paymentMethod]) {
-    store.componentsObj[paymentMethod] = {};
+  const fallback = {
+    giftcard: `
+        <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
+        <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
+  };
+  if (fallback[paymentMethod.type]) {
+    store.componentsObj[paymentMethod.type] = {};
   }
-  return fallback[paymentMethod];
+  return fallback[paymentMethod.type];
 }
 
 function getPersonalDetails() {
@@ -61,7 +65,14 @@ function setNode(paymentMethodID) {
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
-  return isStored ? `storedCard${paymentMethod.id}` : paymentMethod.type;
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
 }
 
 function getImage(isStored, paymentMethod) {
@@ -76,7 +87,7 @@ function getLabel(isStored, paymentMethod) {
 }
 
 function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
-  const fallback = getFallback(paymentMethod.type);
+  const fallback = getFallback(paymentMethod);
   const createTemplate = () => {
     const template = document.createElement('template');
     template.innerHTML = fallback;
