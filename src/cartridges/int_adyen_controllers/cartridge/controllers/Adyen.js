@@ -694,7 +694,6 @@ function authorizeWithForm() {
     Transaction.begin();
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const jsonRequest = {
-      paymentData: paymentInstrument.custom.adyenPaymentData,
       details: {
         MD,
         PaRes,
