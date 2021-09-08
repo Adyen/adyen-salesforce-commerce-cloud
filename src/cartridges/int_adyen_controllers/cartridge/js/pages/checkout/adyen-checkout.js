@@ -396,8 +396,15 @@ function validateComponents() {
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  var fallback = { };
-  return fallback[paymentMethod];
+  const fallback = {
+    giftcard: `
+        <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
+        <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
+  };
+  if (fallback[paymentMethod.type]) {
+    store.componentsObj[paymentMethod.type] = {};
+  }
+  return fallback[paymentMethod.type];
 }
 
 /**
@@ -452,12 +459,21 @@ async function renderGenericComponent() {
   displaySelectedMethod(firstPaymentMethod.value);
 }
 
+function getPaymentMethodID(isStored, paymentMethod) {
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
+}
+
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   var paymentMethodsUI = document.querySelector('#paymentMethodsList');
   var li = document.createElement('li');
-  var paymentMethodID = storedPaymentMethodBool
-    ? `storedCard${paymentMethod.id}`
-    : paymentMethod.type;
+  var paymentMethodID = getPaymentMethodID(storedPaymentMethodBool, paymentMethod);
   var isSchemeNotStored =
     paymentMethod.type === 'scheme' && !storedPaymentMethodBool;
   var paymentMethodImage = storedPaymentMethodBool
@@ -545,7 +561,7 @@ function renderCheckoutComponent(
       paymentMethodID,
     );
   }
-  var fallback = getFallback(paymentMethod.type);
+  var fallback = getFallback(paymentMethod);
   if (fallback) {
     var template = document.createElement('template');
     template.innerHTML = fallback;
