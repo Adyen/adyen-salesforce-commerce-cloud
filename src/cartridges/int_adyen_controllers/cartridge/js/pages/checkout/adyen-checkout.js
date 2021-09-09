@@ -393,7 +393,7 @@ function validateComponents() {
     stateData = {
       paymentMethod: {
         type,
-        ...(this.brand ? { brand: this.brand } : undefined),
+        ...(brand ? { brand } : undefined),
       }
     };
   }
