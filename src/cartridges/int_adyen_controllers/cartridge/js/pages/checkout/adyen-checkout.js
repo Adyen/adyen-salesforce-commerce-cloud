@@ -235,7 +235,7 @@ function initializeBillingEvents() {
       window.Configuration.environment === 'live'
     ) {
       checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier =
-      window.googleMerchantID;
+        window.googleMerchantID;
     }
     if(window.cardholderNameBool !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
@@ -316,7 +316,7 @@ function initializeAccountEvents() {
       return false;
     }
     document.querySelector('#adyenStateData').value = JSON.stringify(
-        adyenStateData,
+      adyenStateData,
     );
     zeroAuth(adyenStateData, checkout);
   });
@@ -459,7 +459,7 @@ async function renderGenericComponent() {
   });
 
   var firstPaymentMethod = document.querySelector(
-      'input[type=radio][name=brandCode]',
+    'input[type=radio][name=brandCode]',
   );
   firstPaymentMethod.checked = true;
   displaySelectedMethod(firstPaymentMethod.value);
@@ -622,7 +622,7 @@ function paymentFromComponent(data, component) {
         component.handleAction(data.result.fullResponse.action);
       } else {
         document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
-            'null',
+          'null',
         );
         $('#dwfrm_billing').trigger('submit');
       }
