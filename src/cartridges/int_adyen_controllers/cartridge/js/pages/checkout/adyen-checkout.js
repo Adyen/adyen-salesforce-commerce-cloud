@@ -392,10 +392,13 @@ function validateComponents() {
     var brand = document.querySelector(`#component_${selectedMethod} .brand`)?.value;
     stateData = {
       paymentMethod: {
-        type,
-        ...(brand ? { brand } : undefined),
+        type
       }
     };
+    
+    if(brand) {
+      stateData.paymentMethod.brand = brand;
+    }
   }
 
   document.querySelector('#adyenStateData').value = JSON.stringify(stateData);
