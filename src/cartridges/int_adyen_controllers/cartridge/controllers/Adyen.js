@@ -2,8 +2,6 @@ const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
-// eslint-disable-next-line no-unused-vars
-const Site = require('dw/system/Site');
 const Status = require('dw/system/Status');
 const Transaction = require('dw/system/Transaction');
 const PaymentMgr = require('dw/order/PaymentMgr');

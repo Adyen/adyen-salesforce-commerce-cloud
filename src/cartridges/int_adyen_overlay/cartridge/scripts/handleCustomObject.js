@@ -37,7 +37,6 @@
  *
  */
 
-/* eslint no-var: off */
 const Logger = require('dw/system/Logger');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
@@ -103,8 +102,8 @@ function handle(customObj) {
   if (orderCreateDateDelay < currentDate) {
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
-        var paymentInstruments = order.getPaymentInstruments();
-        var adyenPaymentInstrument = null;
+        const paymentInstruments = order.getPaymentInstruments();
+        let adyenPaymentInstrument = null;
         // Move adyen log request to order payment transaction
         for (const pi in paymentInstruments) {
           if (
