@@ -408,7 +408,7 @@ function validateComponents() {
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  const fallback = {
+  var fallback = {
     giftcard: `
       <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
       <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
