@@ -1,11 +1,11 @@
 bundle.js
 .eslintrc.js
 /cartridges
-src/cartridges/int_adyen_controllers/cartridge/js/pages/checkout/bundle.js
-src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
-src/cartridges/int_adyen_SFRA/test
+src/cartridges/int_adyen_sg/cartridge/js/pages/checkout/bundle.js
+src/cartridges/int_adyen_sfra/cartridge/client/default/js/bundle.js
+src/cartridges/int_adyen_sfra/test
 *.test.js
 
 # remove lines below from ignore after refactor
 src/cartridges/int_adyen_overlay
-src/cartridges/int_adyen_controllers
+src/cartridges/int_adyen_sg
