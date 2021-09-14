@@ -182,13 +182,13 @@ function initializeBillingEvents() {
               '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-                '#dwfrm_billing_billingAddress_addressFields_lastName',
+              '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-               '#dwfrm_billing_billingAddress_addressFields_phone',
+              '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-               '#dwfrm_billing_billingAddress_email_emailAddress',
+              '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
@@ -299,15 +299,15 @@ function initializeAccountEvents() {
   var adyenStateData;
   var isValid = false;
   var node = checkout
-     .create('card', {
-       hasHolderName: true,
-       holderNameRequired: true,
-       onChange: function (state) {
-         adyenStateData = state.data;
-         isValid = state.isValid;
-       },
-     })
-     .mount(newCard);
+    .create('card', {
+      hasHolderName: true,
+      holderNameRequired: true,
+      onChange: function (state) {
+        adyenStateData = state.data;
+        isValid = state.isValid;
+      },
+    })
+    .mount(newCard);
 
   $('#applyBtn').on('click', function (e) {
     e.preventDefault();
@@ -386,7 +386,19 @@ function validateComponents() {
   ) {
     stateData = componentsObj[selectedMethod].stateData;
   } else {
-    stateData = { paymentMethod: { type: selectedMethod } };
+    var type = document.querySelector(`#component_${selectedMethod} .type`)
+      ? document.querySelector(`#component_${selectedMethod} .type`).value
+      : selectedMethod;
+    var brand = document.querySelector(`#component_${selectedMethod} .brand`)?.value;
+    stateData = {
+      paymentMethod: {
+        type
+      }
+    };
+    
+    if(brand) {
+      stateData.paymentMethod.brand = brand;
+    }
   }
 
   document.querySelector('#adyenStateData').value = JSON.stringify(stateData);
@@ -396,8 +408,12 @@ function validateComponents() {
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  var fallback = { };
-  return fallback[paymentMethod];
+  var fallback = {
+    giftcard: `
+      <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
+      <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
+  };
+  return fallback[paymentMethod.type];
 }
 
 /**
@@ -416,7 +432,7 @@ async function renderGenericComponent() {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
-        paymentMethodsResponse.amount;
+      paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -452,12 +468,21 @@ async function renderGenericComponent() {
   displaySelectedMethod(firstPaymentMethod.value);
 }
 
+function getPaymentMethodID(isStored, paymentMethod) {
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
+}
+
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   var paymentMethodsUI = document.querySelector('#paymentMethodsList');
   var li = document.createElement('li');
-  var paymentMethodID = storedPaymentMethodBool
-    ? `storedCard${paymentMethod.id}`
-    : paymentMethod.type;
+  var paymentMethodID = getPaymentMethodID(storedPaymentMethodBool, paymentMethod);
   var isSchemeNotStored =
     paymentMethod.type === 'scheme' && !storedPaymentMethodBool;
   var paymentMethodImage = storedPaymentMethodBool
@@ -545,7 +570,7 @@ function renderCheckoutComponent(
       paymentMethodID,
     );
   }
-  var fallback = getFallback(paymentMethod.type);
+  var fallback = getFallback(paymentMethod);
   if (fallback) {
     var template = document.createElement('template');
     template.innerHTML = fallback;
@@ -611,7 +636,7 @@ function paymentFromComponent(data, component) {
 $('#dwfrm_billing').submit(function (e) {
   if (
       ['paypal', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
-    !document.querySelector('#paymentFromComponentStateData').value
+      !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
     var form = $(this);
@@ -663,7 +688,7 @@ function getAmazonpayConfig() {
     returnUrl: window.returnURL,
     addressDetails: {
       name: paymentMethodsResponse.shippingAddress.firstName
-      + ' ' + paymentMethodsResponse.shippingAddress.lastName,
+        + ' ' + paymentMethodsResponse.shippingAddress.lastName,
       addressLine1: paymentMethodsResponse.shippingAddress.address1,
       city:  paymentMethodsResponse.shippingAddress.city,
       stateOrRegion: paymentMethodsResponse.shippingAddress.city,
