@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Payment should successfully handle payment 1`] = `
-Array [
-  Array [
-    "[\\"Order-Confirm\\",\\"ID\\",\\"mocked_orderNo\\",\\"token\\",\\"mocked_orderToken\\"]",
-  ],
-]
-`;

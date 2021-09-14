@@ -28,7 +28,7 @@ module.exports = [
     name: "js",
     entry: jsFiles,
     output: {
-      path: path.resolve("./cartridges/int_adyen_SFRA/cartridge/static"),
+      path: path.resolve("./cartridges/int_adyen_sfra/cartridge/static"),
       filename: "[name].js",
     },
     module: {

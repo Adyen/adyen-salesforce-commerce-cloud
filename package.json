@@ -1,5 +1,5 @@
 {
-  "name": "int_adyen_SFRA",
+  "name": "int_adyen_sfra",
   "version": "21.1.0",
   "description": "SFRA cartridge",
   "main": "index.js",
@@ -7,12 +7,12 @@
     "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
   },
   "scripts": {
-    "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
+    "unitTest": "sgmf-scripts --test cartridges/int_adyen_sfra/test/unit/**/*.js",
     "lint": "eslint --ext js src",
     "lint:fix": "eslint --fix src",
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_sfra && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_sg",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
