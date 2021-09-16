@@ -21,8 +21,8 @@
             class="payment-form"
             method="POST"
             id="payment-form" ${pdict.paymentForm.attributes}>
-            <div id="cardError" class="card-error">
-                <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+            <div id="cardError" class="alert alert-danger">
+                <span>${Resource.msg('error.card.information.error', 'creditCard', null)}</span>
             </div>
             <script type="text/javascript">
                 if(window.location.href.indexOf("isAuthorised") > -1){
