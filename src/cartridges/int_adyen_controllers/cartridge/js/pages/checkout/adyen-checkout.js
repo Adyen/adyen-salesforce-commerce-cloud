@@ -437,6 +437,12 @@ async function renderGenericComponent() {
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
   }
+  var amazonpay = window.getPaymentMethodsResponse.adyenPaymentMethods.paymentMethods.find(
+      (paymentMethod) => paymentMethod.type === 'amazonpay');
+  if(amazonpay) {
+    checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
+  }
+
   checkout = new AdyenCheckout(checkoutConfiguration);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
@@ -696,8 +702,6 @@ function getAmazonpayConfig() {
       countryCode: paymentMethodsResponse.shippingAddress.country,
       phoneNumber: paymentMethodsResponse.shippingAddress.phone,
     },
-    configuration: window.getPaymentMethodsResponse.adyenPaymentMethods.paymentMethods.find(
-        (paymentMethod) => paymentMethod.type === 'amazonpay').configuration,
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');
       if (formErrorsExist) {
