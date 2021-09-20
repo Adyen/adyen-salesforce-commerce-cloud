@@ -10,4 +10,5 @@ module.exports.validateComponents = function validateComponents() {
   document.querySelector('#adyenStateData').value = JSON.stringify(
     store.stateData,
   );
+  console.log(document.querySelector('#adyenStateData').value);
 };

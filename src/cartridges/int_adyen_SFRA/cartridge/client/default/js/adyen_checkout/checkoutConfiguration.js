@@ -4,8 +4,9 @@ const store = require('../../../../store');
 
 function getComponentName(data) {
   return data.paymentMethod.storedPaymentMethodId
-    ? `storedCard${data.paymentMethod.storedPaymentMethodId}`
-    : data.paymentMethod.type;
+    // ? `storedCard${data.paymentMethod.storedPaymentMethodId}`
+      ? `${data.paymentMethod.storedPaymentMethodId}`
+          : data.paymentMethod.type;
 }
 
 function getCardConfig() {
