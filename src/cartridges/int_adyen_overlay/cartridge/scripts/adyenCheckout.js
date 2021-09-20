@@ -106,7 +106,6 @@ function createPaymentRequest(args) {
       paymentRequest.browserInfo = {};
     }
 
-    Logger.getLogger('Adyen').error('paymentRequest ' + JSON.stringify(paymentRequest));
   // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {

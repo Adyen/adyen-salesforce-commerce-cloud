@@ -36,14 +36,11 @@ class Store {
   }
 
   @computed get stateData() {
-    console.log(this.selectedMethod);
     return (
       this.selectedPayment?.stateData || {
         paymentMethod: {
           type: this.selectedMethod,
           ...(this.brand ? { brand: this.brand } : undefined),
-          // type: 'scheme',
-          // storedPaymentMethodId: this.selectedMethod,
         },
       }
     );

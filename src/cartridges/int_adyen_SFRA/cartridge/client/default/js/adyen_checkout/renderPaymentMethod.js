@@ -66,8 +66,7 @@ function setNode(paymentMethodID) {
 
 function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
-    // return `storedCard${paymentMethod.id}`;
-    return `${paymentMethod.id}`;
+    return `storedCard${paymentMethod.id}`;
   }
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
@@ -165,9 +164,7 @@ function handleInput({ paymentMethodID }) {
         merchantReference: document.querySelector('#merchantReference').value,
       });
     }
-    console.log(event);
-    console.log(event.target);
-    console.log(paymentMethodID)
+
     helpers.displaySelectedMethod(event.target.value);
   };
 }

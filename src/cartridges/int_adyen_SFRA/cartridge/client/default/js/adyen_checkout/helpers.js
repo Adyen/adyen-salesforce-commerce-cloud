@@ -10,7 +10,6 @@ function assignPaymentMethodValue() {
   adyenPaymentMethod.value = document.querySelector(
     paymentMethodlabelId,
   ).innerHTML;
-  console.log(adyenPaymentMethod.value);
 }
 
 /**
@@ -58,7 +57,6 @@ function displaySelectedMethod(type) {
     ? document.querySelector(`#component_${type} .type`).value
     : type;
   resetPaymentMethod();
-  console.log(store.selectedMethod);
 
   document.querySelector('button[value="submit-payment"]').disabled =
     ['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(

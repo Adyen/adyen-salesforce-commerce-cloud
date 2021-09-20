@@ -115,10 +115,7 @@ function processForm(req, paymentForm, viewFormData) {
 
   setSessionPrivacy(paymentForm);
   const { adyenPaymentMethod = null, adyenIssuerName = null } = req.form;
-  Logger.getLogger('Adyen').error(paymentForm.adyenPaymentFields?.adyenStateData?.value);
   const paymentMethod = getPaymentMethodFromForm(paymentForm);
-  Logger.getLogger('Adyen').error('adyenPaymentMethod is ' + adyenPaymentMethod);
-  Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
   const viewData = getViewData(
     viewFormData,
     paymentForm,
