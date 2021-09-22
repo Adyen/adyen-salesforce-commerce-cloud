@@ -54,7 +54,7 @@ function paymentFromComponent(req, res, next) {
     });
   });
 
-  if(result.resultCode == constants.RESULTCODES.REFUSED) {
+  if(result.resultCode === constants.RESULTCODES.REFUSED) {
     Logger.getLogger('Adyen').error(`Payment refused for order ${order.orderNo}`);
     result.paymentError = true;
   }
