@@ -586,6 +586,8 @@ var adyenHelperObj = {
         case 'Master':
         case 'MasterCard':
         case 'Mastercard':
+        case 'Master Card':
+        case 'Master card':
           cardType = 'mc';
           break;
         case 'Amex':
