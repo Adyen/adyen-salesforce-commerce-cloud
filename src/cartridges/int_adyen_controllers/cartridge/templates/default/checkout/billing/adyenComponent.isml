@@ -53,11 +53,11 @@
       </form>
 <iselse>
     <script>
-         window.installments = '${pdict.adyen.installments}';
-         window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
-         window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
-         window.paypalIntent = '${pdict.adyen.paypalIntent}';
-         window.merchantAccount = '${pdict.adyen.merchantAccount}';
+         window.installments = "${AdyenHelper.getCreditCardInstallments()}";
+         window.googleMerchantID = "${AdyenHelper.getGoogleMerchantID()}";
+         window.cardholderNameBool = "${AdyenHelper.getAdyenCardholderNameEnabled()}";
+         window.paypalIntent = "${AdyenHelper.getAdyenPayPalIntent()}";
+         window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
      </script>
 
     <isset name="ratePayValues" value="${AdyenHelper.getRatePayID()}" scope="page"/>

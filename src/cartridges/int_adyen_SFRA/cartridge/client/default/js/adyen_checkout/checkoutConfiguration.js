@@ -114,17 +114,19 @@ function getMbwayConfig() {
     onSubmit: (state, component) => {
       $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
-      if (!store.formErrorsExist) {
-        if (document.getElementById('component_mbway')) {
-          document
-            .getElementById('component_mbway')
-            .querySelector('button').disabled = true;
-        }
-        helpers.paymentFromComponent(state.data, component);
-        document.querySelector('#adyenStateData').value = JSON.stringify(
-          store.selectedPayment.stateData,
-        );
+      if (store.formErrorsExist) {
+        component.setStatus('ready');
+        return;
       }
+      if (document.getElementById('component_mbway')) {
+        document
+          .getElementById('component_mbway')
+          .querySelector('button').disabled = true;
+      }
+      helpers.paymentFromComponent(state.data, component);
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        store.selectedPayment.stateData,
+      );
     },
     onError: (/* error, component */) => {
       document.querySelector('#showConfirmationForm').submit();
