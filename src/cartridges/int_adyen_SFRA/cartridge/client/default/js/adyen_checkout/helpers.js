@@ -51,6 +51,20 @@ function resetPaymentMethod() {
   $('.additionalFields').hide();
 }
 
+function setCustomStateDataOneClick(type){
+  const type_oneClick = type.split('_storedCard_')[0]
+  if(['bcmc', 'maestro'].indexOf(type_oneClick) > -1 && !store.selectedPayment?.stateData){
+    const customStateData = {
+      paymentMethod: {
+        type: type_oneClick,
+        storedPaymentMethodId: type.split('_storedCard_')[1],
+      }
+    }
+    store.updateSelectedPayment('isValid', true);
+    store.updateSelectedPayment('stateData', customStateData);
+  }
+}
+
 /**
  * Changes the "display" attribute of the selected method from hidden to visible
  */
@@ -74,20 +88,6 @@ function displaySelectedMethod(type) {
 
   setCustomStateDataOneClick(type);
 
-}
-
-function setCustomStateDataOneClick(type){
-  const type_oneClick = type.split('_storedCard_')[0]
-  if(['bcmc', 'maestro'].indexOf(type_oneClick) > -1 && !store.selectedPayment?.stateData){
-    const customStateData = {
-      paymentMethod: {
-        type: type_oneClick,
-        storedPaymentMethodId: type.split('_storedCard_')[1],
-      }
-    }
-    store.updateSelectedPayment('isValid', true);
-    store.updateSelectedPayment('stateData', customStateData);
-  }
 }
 
 function displayValidationErrors() {
