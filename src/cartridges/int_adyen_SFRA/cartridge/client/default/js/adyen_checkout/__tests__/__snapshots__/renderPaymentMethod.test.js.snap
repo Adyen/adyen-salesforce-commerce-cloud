@@ -86,10 +86,10 @@ exports[`Render Payment Method should render stored payment method with missing 
     
     
     <input
-      id="rb_storedCardmocked_id"
+      id="rb_mocked_brand_storedCard_mocked_id"
       name="brandCode"
       type="radio"
-      value="storedCardmocked_id"
+      value="mocked_brand_storedCard_mocked_id"
     />
     
     
@@ -100,8 +100,8 @@ exports[`Render Payment Method should render stored payment method with missing 
     
     
     <label
-      for="rb_storedCardmocked_id"
-      id="lb_storedCardmocked_id"
+      for="rb_mocked_brand_storedCard_mocked_id"
+      id="lb_mocked_brand_storedCard_mocked_id"
     >
       mocked_name ************1234
     </label>
@@ -112,7 +112,7 @@ exports[`Render Payment Method should render stored payment method with missing 
     </p>
     <div
       class="additionalFields"
-      id="component_storedCardmocked_id"
+      id="component_mocked_brand_storedCard_mocked_id"
       style="display:none"
     />
   </li>
@@ -121,14 +121,7 @@ exports[`Render Payment Method should render stored payment method with missing 
 
 exports[`Render Payment Method should render stored payment method with missing shopper information fields 2`] = `
 Object {
-  "mocked_id": Object {
-    "node": Object {
-      "mocked_node": Object {
-        "foo": "bar",
-      },
-    },
-  },
-  "storedCardmocked_id": Object {
+  "mocked_brand_storedCard_mocked_id": Object {
     "isValid": true,
     "node": Object {
       "mount": [MockFunction] {
@@ -136,7 +129,7 @@ Object {
           Array [
             <div
               class="additionalFields"
-              id="component_storedCardmocked_id"
+              id="component_mocked_brand_storedCard_mocked_id"
               style="display:none"
             />,
           ],
@@ -147,6 +140,13 @@ Object {
             "value": undefined,
           },
         ],
+      },
+    },
+  },
+  "mocked_id": Object {
+    "node": Object {
+      "mocked_node": Object {
+        "foo": "bar",
       },
     },
   },
