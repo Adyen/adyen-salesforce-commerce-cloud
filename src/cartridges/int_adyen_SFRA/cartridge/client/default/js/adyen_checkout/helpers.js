@@ -71,6 +71,23 @@ function displaySelectedMethod(type) {
     .setAttribute('style', 'display:block');
   // set brand for giftcards if hidden inputfield is present
   store.brand = document.querySelector(`#component_${type} .brand`)?.value;
+
+  setCustomStateDataOneClick(type);
+
+}
+
+function setCustomStateDataOneClick(type){
+  const type_oneclick = type.split('_storedCard_')[0]
+  if(['bcmc', 'maestro'].indexOf(type_oneclick) > -1 && !store.selectedPayment?.stateData){
+    const customStateData = {
+      paymentMethod: {
+        type: type_oneclick,
+        storedPaymentMethodId: type.split('_storedCard_')[1],
+      }
+    }
+    store.updateSelectedPayment('isValid', true);
+    store.updateSelectedPayment('stateData', customStateData);
+  }
 }
 
 function displayValidationErrors() {

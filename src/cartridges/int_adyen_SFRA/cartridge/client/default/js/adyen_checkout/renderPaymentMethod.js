@@ -66,7 +66,7 @@ function setNode(paymentMethodID) {
 
 function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
-    return `storedCard${paymentMethod.id}`;
+    return `${paymentMethod.brand}_storedCard_${paymentMethod.id}`;
   }
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
