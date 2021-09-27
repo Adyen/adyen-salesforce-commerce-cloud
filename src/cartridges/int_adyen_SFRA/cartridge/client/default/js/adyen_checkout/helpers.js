@@ -52,11 +52,11 @@ function resetPaymentMethod() {
 }
 
 function setCustomStateDataOneClick(type){
-  const type_oneClick = type.split('_storedCard_')[0]
-  if(['bcmc', 'maestro'].indexOf(type_oneClick) > -1 && !store.selectedPayment?.stateData){
+  const typeOneClick = type.split('_storedCard_')[0]
+  if(['bcmc', 'maestro'].indexOf(typeOneClick) > -1 && !store.selectedPayment?.stateData){
     const customStateData = {
       paymentMethod: {
-        type: type_oneClick,
+        type: typeOneClick,
         storedPaymentMethodId: type.split('_storedCard_')[1],
       }
     }
