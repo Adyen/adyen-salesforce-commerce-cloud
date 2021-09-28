@@ -371,7 +371,7 @@ function validateComponents() {
 
     stateData = {
       paymentMethod: {
-        type
+        type: type
       }
     };
     var brandElm = document.querySelector(`#component_${selectedMethod} .brand`);
