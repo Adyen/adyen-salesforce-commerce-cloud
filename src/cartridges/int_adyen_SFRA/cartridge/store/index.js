@@ -46,8 +46,8 @@ class Store {
     );
   }
 
-  updateSelectedPayment(key, val) {
-    this.selectedPayment[key] = val;
+  updateSelectedPayment(method, key, val) {
+    this.componentsObj[method][key] = val;
   }
 }
 

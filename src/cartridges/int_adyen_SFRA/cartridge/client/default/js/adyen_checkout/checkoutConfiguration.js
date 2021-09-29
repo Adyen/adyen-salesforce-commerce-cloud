@@ -8,6 +8,10 @@ function getComponentName(data) {
     : data.paymentMethod.type;
 }
 
+function isbcmc(pm) {
+  return store.selectedMethod === 'bcmc' || pm?.brand === 'bcmc';
+}
+
 function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
@@ -15,10 +19,14 @@ function getCardConfig() {
       store.isValid = state.isValid;
       const isSelected =
         getComponentName(state.data) === store.selectedMethod ||
-        store.selectedMethod === 'bcmc';
+        isbcmc(state.data.paymentMethod);
       if (isSelected) {
-        store.updateSelectedPayment('isValid', store.isValid);
-        store.updateSelectedPayment('stateData', state.data);
+        const method =
+          state.data.paymentMethod.brand === 'bcmc'
+            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+            : store.selectedMethod;
+        store.updateSelectedPayment(method, 'isValid', store.isValid);
+        store.updateSelectedPayment(method, 'stateData', state.data);
       }
     },
     onFieldValid,
