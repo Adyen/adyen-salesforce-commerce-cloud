@@ -2,32 +2,16 @@ const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
 
-function getComponentName(data) {
-  return data.paymentMethod.storedPaymentMethodId
-    ? `storedCard${data.paymentMethod.storedPaymentMethodId}`
-    : data.paymentMethod.type;
-}
-
-function isbcmc(pm) {
-  return store.selectedMethod === 'bcmc' || pm?.brand === 'bcmc';
-}
-
 function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
       store.isValid = state.isValid;
-      const isSelected =
-        getComponentName(state.data) === store.selectedMethod ||
-        isbcmc(state.data.paymentMethod);
-      if (isSelected) {
-        const method =
-          state.data.paymentMethod.brand === 'bcmc'
-            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-            : store.selectedMethod;
-        store.updateSelectedPayment(method, 'isValid', store.isValid);
-        store.updateSelectedPayment(method, 'stateData', state.data);
-      }
+      const method = state.data.paymentMethod.storedPaymentMethodId
+        ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+        : store.selectedMethod;
+      store.updateSelectedPayment(method, 'isValid', store.isValid);
+      store.updateSelectedPayment(method, 'stateData', state.data);
     },
     onFieldValid,
     onBrand,
