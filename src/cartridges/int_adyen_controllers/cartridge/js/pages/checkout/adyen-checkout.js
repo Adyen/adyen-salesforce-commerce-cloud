@@ -55,29 +55,8 @@ function initializeBillingEvents() {
     };
     checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
-      card: {
-        enableStoreDetails: showStoreDetails,
-        onBrand: function (brandObject) {
-          $('#cardType').val(brandObject.brand);
-        },
-        onFieldValid: function (data) {
-          if (data.endDigits) {
-            maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-            $('#cardNumber').val(maskedCardNumber);
-          }
-        },
-        onChange: function (state) {
-          isValid = state.isValid;
-          var componentName = state.data.paymentMethod.storedPaymentMethodId
-            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-            : state.data.paymentMethod.type;
-          if (componentName === selectedMethod || selectedMethod === 'bcmc') {
-            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-            componentsObj[selectedMethod].isValid = isValid;
-            componentsObj[selectedMethod].stateData = state.data;
-          }
-        },
-      },
+      card: getCardConfig(),
+      storedCard: getCardConfig(),
       boletobancario: {
         personalDetailsRequired: true, // turn personalDetails section on/off
         billingAddressRequired: false, // turn billingAddress section on/off
@@ -389,15 +368,15 @@ function validateComponents() {
     var type = document.querySelector(`#component_${selectedMethod} .type`)
       ? document.querySelector(`#component_${selectedMethod} .type`).value
       : selectedMethod;
-    var brand = document.querySelector(`#component_${selectedMethod} .brand`)?.value;
+
     stateData = {
       paymentMethod: {
-        type
+        type: type
       }
     };
-    
-    if(brand) {
-      stateData.paymentMethod.brand = brand;
+    var brandElm = document.querySelector(`#component_${selectedMethod} .brand`);
+    if(brandElm && brandElm.value) {
+      stateData.paymentMethod.brand = brandElm.value;
     }
   }
 
@@ -683,6 +662,32 @@ function getQRCodeConfig() {
       $('#dwfrm_billing').trigger('submit');
     },
   };
+}
+
+function getCardConfig() {
+  return {
+    enableStoreDetails: showStoreDetails,
+    onBrand: function (brandObject) {
+      $('#cardType').val(brandObject.brand);
+    },
+    onFieldValid: function (data) {
+      if (data.endDigits) {
+        maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
+        $('#cardNumber').val(maskedCardNumber);
+      }
+    },
+    onChange: function (state) {
+      isValid = state.isValid;
+      var componentName = state.data.paymentMethod.storedPaymentMethodId
+          ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+          : state.data.paymentMethod.type;
+      if (componentName === selectedMethod || selectedMethod === 'bcmc') {
+        $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+        componentsObj[selectedMethod].isValid = isValid;
+        componentsObj[selectedMethod].stateData = state.data;
+      }
+    },
+  }
 }
 
 function getAmazonpayConfig() {

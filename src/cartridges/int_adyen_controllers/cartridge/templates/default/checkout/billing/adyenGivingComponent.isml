@@ -1,5 +1,6 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
-<isif condition="${pdict.AdyenGivingConfig.adyenGivingAvailable}">
+<isset name="Order" value="${pdict.order}" scope="page"/>
+<isif condition="${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
@@ -10,15 +11,15 @@
             clientKey: "${AdyenHelper.getAdyenClientKey}",
             environment: "${AdyenHelper.getAdyenEnvironment().toLowerCase()}"
         };
-        window.adyenGivingAvailable = "${pdict.AdyenGivingConfig.adyenGivingAvailable}";
+        window.adyenGivingAvailable = "${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}"
         window.orderNo = '${pdict.Order.orderNo}';
-        window.donationAmounts = '${pdict.AdyenGivingConfig.donationAmounts}'.replace(/&quot;/g, '\"');;
-        window.pspReference = '${pdict.AdyenGivingConfig.pspReference}';
-        window.charityName = '${pdict.AdyenGivingConfig.charityName}';
-        window.charityWebsite = '${pdict.AdyenGivingConfig.charityWebsite}';
-        window.charityDescription = '${pdict.AdyenGivingConfig.charityDescription}';
-        window.adyenGivingBackgroundUrl = '${pdict.AdyenGivingConfig.adyenGivingBackgroundUrl}';
-        window.adyenGivingLogoUrl = '${pdict.AdyenGivingConfig.adyenGivingLogoUrl}';
+        window.donationAmounts = '${AdyenHelper.getAdyenGivingConfig(Order).donationAmounts}'.replace(/&quot;/g, '\"');;
+        window.pspReference = '${AdyenHelper.getAdyenGivingConfig(Order).pspReference}';
+        window.charityName = '${AdyenHelper.getAdyenGivingConfig(Order).charityName}';
+        window.charityWebsite = '${AdyenHelper.getAdyenGivingConfig(Order).charityWebsite}';
+        window.charityDescription = '${AdyenHelper.getAdyenGivingConfig(Order).charityDescription}';
+        window.adyenGivingBackgroundUrl = '${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingBackgroundUrl}';
+        window.adyenGivingLogoUrl = '${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingLogoUrl}';
         window.donateURL = "${URLUtils.https('Adyen-Donate')}";
     </script>
     <div id="adyenGiving" class="card confirm-details">
