@@ -53,8 +53,8 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '4.7.4',
-  VERSION: '21.1.0',
+  CHECKOUT_COMPONENT_VERSION: '4.7.2',
+  VERSION: '21.2.0',
   BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
