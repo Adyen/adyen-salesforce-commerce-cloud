@@ -678,14 +678,11 @@ function getCardConfig() {
     },
     onChange: function (state) {
       isValid = state.isValid;
-      var componentName = state.data.paymentMethod.storedPaymentMethodId
-          ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-          : state.data.paymentMethod.type;
-      if (componentName === selectedMethod || selectedMethod === 'bcmc') {
+        var methodToUpdate = state.data.paymentMethod.storedPaymentMethodId ?
+            `storedCard${state.data.paymentMethod.storedPaymentMethodId}` : selectedMethod;
         $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-        componentsObj[selectedMethod].isValid = isValid;
-        componentsObj[selectedMethod].stateData = state.data;
-      }
+        componentsObj[methodToUpdate].isValid = isValid;
+        componentsObj[methodToUpdate].stateData = state.data;
     },
   }
 }
