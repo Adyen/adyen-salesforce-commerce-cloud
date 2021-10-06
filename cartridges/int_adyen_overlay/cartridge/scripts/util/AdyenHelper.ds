@@ -174,7 +174,7 @@ var __AdyenHelper: Object = {
 
     getAdyenHash: function(value, salt){
         var data = value + salt;
-        var signature = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digest(data);
+        var signature = dw.crypto.Encoding.toHex(new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512).digestBytes(new dw.util.Bytes(data))); 
         return signature;
     },
 
@@ -245,7 +245,7 @@ var __AdyenHelper: Object = {
             returnValue = adyenCurrentSite.getCustomPreferenceValue('AdyenRatePayID');
         }
         if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint == null) {
-            var sessionID = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_MD5).digest(session.sessionID);
+            var sessionID = dw.crypto.Encoding.toHex(new dw.crypto.WeakMessageDigest(dw.crypto.WeakMessageDigest.DIGEST_MD5).digestBytes(new dw.util.Bytes(session.sessionID)));
             session.privacy.ratePayFingerprint = sessionID;
         }
         return returnValue;
