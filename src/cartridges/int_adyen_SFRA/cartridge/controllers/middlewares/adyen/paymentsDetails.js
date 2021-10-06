@@ -9,12 +9,25 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
  */
 function paymentsDetails(req, res, next) {
   try {
+    const request = JSON.parse(req.body);
+    const isAmazonpay = request.paymentMethod === 'amazonpay';
+    request.paymentMethod = undefined;
+
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-      JSON.parse(req.body),
+      request,
     );
+
     const response = AdyenHelper.createAdyenCheckoutResponse(
       paymentsDetailsResponse,
     );
+
+    if (isAmazonpay) {
+      response.fullResponse = {
+        pspReference: paymentsDetailsResponse.pspReference,
+        paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
+        resultCode: paymentsDetailsResponse.resultCode,
+      };
+    }
 
     res.json(response);
     return next();

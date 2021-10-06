@@ -34,12 +34,12 @@
         var amazonCheckoutSessionId = queryString[queryString.length - 1];
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
     </script>
-    <div id="amazon-container"></div>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 
      <div class="modal fade" id="action-modal" role="dialog">
          <div class="modal-dialog" id="adyenModalDialog">
              <div id="action-container"></div>
+             <div id="amazon-container"></div>
          </div>
      </div>
 
