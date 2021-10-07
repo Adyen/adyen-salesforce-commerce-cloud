@@ -16,6 +16,11 @@ var _require = require('../../utils/index'),
     clearForms = _require.clearForms;
 
 var handleAuthorised = require('./showConfirmation/authorise');
+/*
+ * Makes a payment details call to Adyen and calls for the order confirmation to be shown
+ * if the payment was accepted.
+ */
+
 
 function showConfirmation(req, res, next) {
   var options = {
@@ -38,7 +43,7 @@ function showConfirmation(req, res, next) {
       details: details,
       paymentData: paymentData
     };
-    var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    var result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearForms.clearAdyenData(adyenPaymentInstrument);
 
     if (result.invalidRequest) {
@@ -47,7 +52,7 @@ function showConfirmation(req, res, next) {
     } // Authorised: The payment authorisation was successfully completed.
 
 
-    if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
+    if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf(result.resultCode) > -1) {
       var merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
       return handleAuthorised(merchantRefOrder, result, adyenPaymentInstrument, options);
     }

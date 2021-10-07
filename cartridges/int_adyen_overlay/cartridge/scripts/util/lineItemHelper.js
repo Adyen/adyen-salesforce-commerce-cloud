@@ -1,7 +1,22 @@
 "use strict";
 
 /**
- *
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  */
 require('dw/order');
 
@@ -14,7 +29,7 @@ var __LineItemHelper = {
     }
 
     if (lineItem instanceof dw.order.ProductLineItem) {
-      return lineItem.product.name;
+      return lineItem.productName;
     }
 
     if (lineItem instanceof dw.order.PriceAdjustment) {
@@ -29,7 +44,7 @@ var __LineItemHelper = {
     }
 
     if (lineItem instanceof dw.order.ProductLineItem) {
-      return lineItem.product.ID;
+      return lineItem.productID;
     }
 
     return null;

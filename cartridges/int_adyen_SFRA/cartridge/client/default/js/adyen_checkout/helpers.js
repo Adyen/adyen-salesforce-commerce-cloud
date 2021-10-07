@@ -18,8 +18,10 @@ var _require = require('./qrCodeMethods'),
     qrCodeMethods = _require.qrCodeMethods;
 
 function assignPaymentMethodValue() {
-  var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
-  adyenPaymentMethod.value = document.querySelector("#lb_".concat(store.selectedMethod)).innerHTML;
+  var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName'); // if currently selected paymentMethod contains a brand it will be part of the label ID
+
+  var paymentMethodlabelId = store.brand ? "#lb_".concat(store.selectedMethod, "_").concat(store.brand) : "#lb_".concat(store.selectedMethod);
+  adyenPaymentMethod.value = document.querySelector(paymentMethodlabelId).innerHTML;
 }
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
@@ -45,6 +47,10 @@ function paymentFromComponent(data, component) {
       if ((_response$fullRespons = response.fullResponse) !== null && _response$fullRespons !== void 0 && _response$fullRespons.action) {
         component.handleAction(response.fullResponse.action);
       }
+
+      if (response.paymentError) {
+        component.handleError();
+      }
     }
   }).fail(function () {});
 }
@@ -67,10 +73,15 @@ function resetPaymentMethod() {
 
 
 function displaySelectedMethod(type) {
-  store.selectedMethod = type;
+  var _document$querySelect;
+
+  // If 'type' input field is present use this as type, otherwise default to function input param
+  store.selectedMethod = document.querySelector("#component_".concat(type, " .type")) ? document.querySelector("#component_".concat(type, " .type")).value : type;
   resetPaymentMethod();
-  document.querySelector('button[value="submit-payment"]').disabled = ['paypal', 'paywithgoogle', 'mbway'].concat(_toConsumableArray(qrCodeMethods)).indexOf(type) > -1;
-  document.querySelector("#component_".concat(type)).setAttribute('style', 'display:block');
+  document.querySelector('button[value="submit-payment"]').disabled = ['paypal', 'paywithgoogle', 'mbway', 'amazonpay'].concat(_toConsumableArray(qrCodeMethods)).indexOf(type) > -1;
+  document.querySelector("#component_".concat(type)).setAttribute('style', 'display:block'); // set brand for giftcards if hidden inputfield is present
+
+  store.brand = (_document$querySelect = document.querySelector("#component_".concat(type, " .brand"))) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value;
 }
 
 function displayValidationErrors() {

@@ -9,6 +9,7 @@ var handlePlaceOrder;
 var COHelpers;
 var req;
 var res;
+var adyenHelper;
 beforeEach(function () {
   jest.clearAllMocks();
   req = {
@@ -17,16 +18,19 @@ beforeEach(function () {
     }
   };
   res = {
-    redirect: jest.fn()
+    redirect: jest.fn(),
+    render: jest.fn()
   };
   handlePlaceOrder = require("../order");
   COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 });
 describe('Order', function () {
   it('should handle place order error', function () {
     var _require = require('../errorHandler'),
         handlePlaceOrderError = _require.handlePlaceOrderError;
 
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
     COHelpers.placeOrder.mockReturnValue({
       error: true
     });
@@ -34,14 +38,9 @@ describe('Order', function () {
     expect(handlePlaceOrderError).toBeCalledTimes(1);
   });
   it('should handle place order error', function () {
-    COHelpers.placeOrder.mockReturnValue({
-      error: false
-    });
-
     var OrderMgr = require('dw/order/OrderMgr');
 
-    var URLUtils = require('dw/web/URLUtils');
-
+    adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
     var order = OrderMgr.getOrder(session.privacy.orderNo);
     var paymentInstrument = order.getPaymentInstruments()[0];
     handlePlaceOrder(paymentInstrument, order, {}, {
@@ -49,6 +48,6 @@ describe('Order', function () {
       res: res,
       next: jest.fn()
     });
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+    expect(res.render.mock.calls).toMatchSnapshot();
   });
 });

@@ -26,7 +26,7 @@ function getRedirectResponse(result, orderNumber, paymentInstrument) {
 
 
   var getPaymentDataSignature = function getPaymentDataSignature() {
-    return createHash(result.paymentData.substr(1, 25));
+    return createHash(orderNumber);
   };
 
   var hasMD = !!((_result$redirectObjec = result.redirectObject) !== null && _result$redirectObjec !== void 0 && (_result$redirectObjec2 = _result$redirectObjec.data) !== null && _result$redirectObjec2 !== void 0 && _result$redirectObjec2.MD); // If the response has MD, then it is a 3DS transaction

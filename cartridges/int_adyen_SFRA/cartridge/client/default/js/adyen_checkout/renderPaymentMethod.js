@@ -4,15 +4,15 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var store = require('../../../../store');
 
@@ -22,13 +22,42 @@ var _require = require('./qrCodeMethods'),
     qrCodeMethods = _require.qrCodeMethods;
 
 function getFallback(paymentMethod) {
-  var fallback = {};
+  var fallback = {
+    giftcard: "\n        <input type=\"hidden\" class=\"brand\" name=\"brand\" value=\"".concat(paymentMethod.brand, "\"/>\n        <input type=\"hidden\" class=\"type\" name=\"type\" value=\"").concat(paymentMethod.type, "\"/>")
+  };
 
-  if (fallback[paymentMethod]) {
-    store.componentsObj[paymentMethod] = {};
+  if (fallback[paymentMethod.type]) {
+    store.componentsObj[paymentMethod.type] = {};
   }
 
-  return fallback[paymentMethod];
+  return fallback[paymentMethod.type];
+}
+
+function getPersonalDetails() {
+  var _document$querySelect, _document$querySelect2, _document$querySelect3, _document$querySelect4, _document$querySelect5, _document$querySelect6, _document$querySelect7, _document$querySelect8, _document$querySelect9, _document$querySelect10, _document$querySelect11, _document$querySelect12, _document$querySelect13, _document$querySelect14, _document$querySelect15, _document$querySelect16;
+
+  return {
+    firstName: (_document$querySelect = document.querySelector('#shippingFirstNamedefault')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value,
+    lastName: (_document$querySelect2 = document.querySelector('#shippingLastNamedefault')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.value,
+    telephoneNumber: (_document$querySelect3 = document.querySelector('#shippingPhoneNumberdefault')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.value,
+    shopperEmail: (_document$querySelect4 = document.querySelector('.customer-summary-email')) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.textContent,
+    billingAddress: {
+      city: (_document$querySelect5 = document.querySelector('#billingAddressCity')) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.value,
+      postalCode: (_document$querySelect6 = document.querySelector('#billingZipCode')) === null || _document$querySelect6 === void 0 ? void 0 : _document$querySelect6.value,
+      country: (_document$querySelect7 = document.querySelector('#billingCountry')) === null || _document$querySelect7 === void 0 ? void 0 : _document$querySelect7.value,
+      stateOrProvince: (_document$querySelect8 = document.querySelector('#billingState')) === null || _document$querySelect8 === void 0 ? void 0 : _document$querySelect8.value,
+      street: (_document$querySelect9 = document.querySelector('#billingAddressOne')) === null || _document$querySelect9 === void 0 ? void 0 : _document$querySelect9.value,
+      houseNumberOrName: (_document$querySelect10 = document.querySelector('#billingAddressTwo')) === null || _document$querySelect10 === void 0 ? void 0 : _document$querySelect10.value
+    },
+    deliveryAddress: {
+      city: (_document$querySelect11 = document.querySelector('#shippingAddressCitydefault')) === null || _document$querySelect11 === void 0 ? void 0 : _document$querySelect11.value,
+      postalCode: (_document$querySelect12 = document.querySelector('#shippingZipCodedefault')) === null || _document$querySelect12 === void 0 ? void 0 : _document$querySelect12.value,
+      country: (_document$querySelect13 = document.querySelector('#shippingCountrydefault')) === null || _document$querySelect13 === void 0 ? void 0 : _document$querySelect13.value,
+      stateOrProvince: (_document$querySelect14 = document.querySelector('#shippingStatedefault')) === null || _document$querySelect14 === void 0 ? void 0 : _document$querySelect14.value,
+      street: (_document$querySelect15 = document.querySelector('#shippingAddressOnedefault')) === null || _document$querySelect15 === void 0 ? void 0 : _document$querySelect15.value,
+      houseNumberOrName: (_document$querySelect16 = document.querySelector('#shippingAddressTwodefault')) === null || _document$querySelect16 === void 0 ? void 0 : _document$querySelect16.value
+    }
+  };
 }
 
 function setNode(paymentMethodID) {
@@ -40,7 +69,16 @@ function setNode(paymentMethodID) {
     try {
       var _store$checkout;
 
-      var node = (_store$checkout = store.checkout).create.apply(_store$checkout, arguments);
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      // ALl nodes created for the checkout component are enriched with shopper personal details
+      var node = (_store$checkout = store.checkout).create.apply(_store$checkout, args.concat([{
+        data: _objectSpread(_objectSpread({}, getPersonalDetails()), {}, {
+          personalDetails: getPersonalDetails()
+        })
+      }]));
 
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
@@ -52,7 +90,16 @@ function setNode(paymentMethodID) {
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
-  return isStored ? "storedCard".concat(paymentMethod.id) : paymentMethod.type;
+  if (isStored) {
+    return "storedCard".concat(paymentMethod.id);
+  }
+
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return "".concat(paymentMethod.type, "_").concat(paymentMethod.brand);
+  }
+
+  return paymentMethod.type;
 }
 
 function getImage(isStored, paymentMethod) {
@@ -68,7 +115,7 @@ function handleFallbackPayment(_ref) {
   var paymentMethod = _ref.paymentMethod,
       container = _ref.container,
       paymentMethodID = _ref.paymentMethodID;
-  var fallback = getFallback(paymentMethod.type);
+  var fallback = getFallback(paymentMethod);
 
   var createTemplate = function createTemplate() {
     var template = document.createElement('template');

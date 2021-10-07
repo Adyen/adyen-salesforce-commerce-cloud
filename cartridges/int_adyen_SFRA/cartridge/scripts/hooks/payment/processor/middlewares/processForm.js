@@ -6,9 +6,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var Logger = require('dw/system/Logger');
+
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 var array = require('*/cartridge/scripts/util/array');
+
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {
   if (!req.form.storedPaymentUUID && isCreditCard) {
@@ -24,24 +28,25 @@ function setSessionPrivacy(_ref) {
   session.privacy.adyenFingerprint = adyenPaymentFields.adyenFingerprint.value;
 }
 
-function getPaymentInstrument(req, storedPaymentUUID) {
-  var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
+function getPaymentInstrument(req, storedPaymentMethodId) {
+  var currentCustomer = req.currentCustomer;
 
   var findById = function findById(item) {
-    return storedPaymentUUID === item.UUID;
+    return storedPaymentMethodId === item.getCreditCardToken();
   };
 
+  var paymentInstruments = AdyenHelper.getCustomer(currentCustomer).getProfile().getWallet().getPaymentInstruments();
   return array.find(paymentInstruments, findById);
 } // process payment information
 
 
-function getProcessFormResult(storedPaymentUUID, req, viewData) {
+function getProcessFormResult(paymentMethod, req, viewData) {
   var _req$currentCustomer$ = req.currentCustomer.raw,
       authenticated = _req$currentCustomer$.authenticated,
       registered = _req$currentCustomer$.registered;
 
-  if (storedPaymentUUID && authenticated && registered) {
-    var paymentInstrument = getPaymentInstrument(req, storedPaymentUUID);
+  if (paymentMethod.storedPaymentMethodId && authenticated && registered) {
+    var paymentInstrument = getPaymentInstrument(req, paymentMethod.storedPaymentMethodId);
     return {
       error: false,
       viewData: _objectSpread(_objectSpread({}, viewData), {}, {
@@ -51,7 +56,7 @@ function getProcessFormResult(storedPaymentUUID, req, viewData) {
           securityCode: req.form.securityCode,
           expirationMonth: paymentInstrument.creditCardExpirationMonth,
           expirationYear: paymentInstrument.creditCardExpirationYear,
-          creditCardToken: paymentInstrument.raw.creditCardToken
+          creditCardToken: paymentInstrument.creditCardToken
         })
       })
     };
@@ -63,28 +68,33 @@ function getProcessFormResult(storedPaymentUUID, req, viewData) {
   };
 }
 
-function getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod, adyenIssuerName, storedPaymentUUID) {
-  return _objectSpread(_objectSpread(_objectSpread({}, viewFormData), {}, {
+function getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod, adyenIssuerName) {
+  return _objectSpread(_objectSpread({}, viewFormData), {}, {
     paymentMethod: {
       value: paymentForm.paymentMethod.value,
       htmlName: paymentForm.paymentMethod.value
     },
-    paymentInformation: _objectSpread({
+    paymentInformation: {
       isCreditCard: isCreditCard,
       cardType: paymentForm.creditCardFields.cardType.value,
       cardNumber: paymentForm.creditCardFields.cardNumber.value,
       adyenPaymentMethod: adyenPaymentMethod,
       adyenIssuerName: adyenIssuerName,
       stateData: paymentForm.adyenPaymentFields.adyenStateData.value
-    }, storedPaymentUUID)
-  }, storedPaymentUUID), {}, {
+    },
     saveCard: paymentForm.creditCardFields.saveCard.checked
   });
 }
 
-function getStoredPaymentUUID(paymentForm) {
-  var selectedCardID = paymentForm.creditCardFields.selectedCardID;
-  return selectedCardID ? paymentForm.creditCardFields.selectedCardID.value : null;
+function getPaymentMethodFromForm(paymentForm) {
+  try {
+    var _paymentForm$adyenPay, _paymentForm$adyenPay2;
+
+    return JSON.parse((_paymentForm$adyenPay = paymentForm.adyenPaymentFields) === null || _paymentForm$adyenPay === void 0 ? void 0 : (_paymentForm$adyenPay2 = _paymentForm$adyenPay.adyenStateData) === null || _paymentForm$adyenPay2 === void 0 ? void 0 : _paymentForm$adyenPay2.value).paymentMethod;
+  } catch (error) {
+    Logger.getLogger('Adyen').error('Failed to parse payment form stateData');
+    return {};
+  }
 }
 /**
  * Verifies the required information for billing form is provided.
@@ -113,9 +123,9 @@ function processForm(req, paymentForm, viewFormData) {
       adyenPaymentMethod = _req$form$adyenPaymen === void 0 ? null : _req$form$adyenPaymen,
       _req$form$adyenIssuer = _req$form.adyenIssuerName,
       adyenIssuerName = _req$form$adyenIssuer === void 0 ? null : _req$form$adyenIssuer;
-  var storedPaymentUUID = getStoredPaymentUUID(paymentForm);
-  var viewData = getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod, adyenIssuerName, storedPaymentUUID);
-  return getProcessFormResult(storedPaymentUUID, req, viewData);
+  var paymentMethod = getPaymentMethodFromForm(paymentForm);
+  var viewData = getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod, adyenIssuerName);
+  return getProcessFormResult(paymentMethod, req, viewData);
 }
 
 module.exports = processForm;

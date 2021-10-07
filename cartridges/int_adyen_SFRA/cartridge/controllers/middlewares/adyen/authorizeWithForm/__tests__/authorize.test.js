@@ -40,7 +40,6 @@ describe('Authorize', function () {
     OrderMgr.toArray.mockImplementation(function () {
       return [{
         custom: {
-          adyenPaymentData: 'Authorised',
           adyenMD: 'mocked_md'
         }
       }];
@@ -62,11 +61,11 @@ describe('Authorize', function () {
     expect(handleError.mock.calls).toMatchSnapshot();
   });
   it('should handle invalid payment when result code is not Authorised', function () {
+    req.form.MD = 'unauthorised_mocked_md';
     OrderMgr.toArray.mockImplementation(function () {
       return [{
         custom: {
-          adyenPaymentData: 'Not_Authorised',
-          adyenMD: 'mocked_md'
+          adyenMD: 'unauthorised_mocked_md'
         }
       }];
     });
@@ -81,7 +80,6 @@ describe('Authorize', function () {
     OrderMgr.toArray.mockImplementation(function () {
       return [{
         custom: {
-          adyenPaymentData: 'Authorised',
           adyenMD: 'mocked_md'
         }
       }];

@@ -1,13 +1,25 @@
 "use strict";
 
 /**
-* Send request to adyen to get payment methods based on country code and currency
-*
-
-* @input Basket : dw.order.Basket
-* @input countryCode : String
-* @output customer : Customer
-*/
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Send request to adyen to get payment methods based on country code and currency
+ */
 // script include
 var Logger = require('dw/system/Logger');
 
@@ -61,6 +73,7 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
 
+    paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
     var xapikey = AdyenHelper.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');

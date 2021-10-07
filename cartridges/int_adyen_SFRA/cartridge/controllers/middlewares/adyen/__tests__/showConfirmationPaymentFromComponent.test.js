@@ -18,7 +18,8 @@ beforeEach(function () {
       additionalDetailsHidden: JSON.stringify({
         paymentData: 'mocked_paymentData',
         details: 'mocked_details'
-      })
+      }),
+      result: null
     },
     locale: {
       id: 'nl_NL'
@@ -34,7 +35,7 @@ describe('Show Confirmation Payment From Component', function () {
 
     var URLUtils = require('dw/web/URLUtils');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: a
       };
@@ -49,7 +50,7 @@ describe('Show Confirmation Payment From Component', function () {
 
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: 'Authorised'
       };
@@ -67,7 +68,7 @@ describe('Show Confirmation Payment From Component', function () {
 
     var URLUtils = require('dw/web/URLUtils');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: 'Not_Authorised'
       };

@@ -11,7 +11,7 @@ var _require = require('./errorHandler'),
 
 function contains3ds2Action(_ref) {
   var req = _ref.req;
-  return ['IdentifyShopper', 'ChallengeShopper'].indexOf(req.form.resultCode) !== -1 || req.form.challengeResult;
+  return [constants.RESULTCODES.IDENTIFYSHOPPER, constants.RESULTCODES.CHALLENGESHOPPER].indexOf(req.form.resultCode) !== -1 || req.form.challengeResult;
 }
 
 function handle3DS2Authentication(options) {

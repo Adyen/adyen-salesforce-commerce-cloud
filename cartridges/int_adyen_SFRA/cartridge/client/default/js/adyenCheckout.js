@@ -48,10 +48,6 @@ if (window.installments) {
 if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
   var id = 'merchantIdentifier';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
-}
-
-if (window.paypalMerchantID !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
 } // Submit the payment
 
 
@@ -66,12 +62,15 @@ $('button[value="submit-payment"]').on('click', function () {
 
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
     document.querySelector('#terminalId').value = document.querySelector('#terminalList').value;
-    return true;
   }
 
-  assignPaymentMethodValue();
-  validateComponents();
-  return showValidation();
+  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent') {
+    assignPaymentMethodValue();
+    validateComponents();
+    return showValidation();
+  }
+
+  return true;
 });
 /**
  * Assigns stateData value to the hidden stateData input field

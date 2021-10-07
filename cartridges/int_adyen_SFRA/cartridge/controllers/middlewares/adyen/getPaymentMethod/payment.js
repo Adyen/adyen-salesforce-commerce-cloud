@@ -10,8 +10,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var _require = require('./utils'),
     getConnectedTerminals = _require.getConnectedTerminals,
-    getCountryCode = _require.getCountryCode,
-    getCustomer = _require.getCustomer;
+    getCountryCode = _require.getCountryCode;
 
 function handlePaymentMethod(_ref) {
   var req = _ref.req,
@@ -19,7 +18,7 @@ function handlePaymentMethod(_ref) {
       next = _ref.next;
   var currentBasket = BasketMgr.getCurrentBasket();
   var countryCode = getCountryCode(currentBasket, req.locale);
-  var response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), getCustomer(req.currentCustomer), countryCode);
+  var response = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), AdyenHelper.getCustomer(req.currentCustomer), countryCode);
   var paymentMethodDescriptions = response.paymentMethods.map(function (method) {
     return {
       brandCode: method.type,

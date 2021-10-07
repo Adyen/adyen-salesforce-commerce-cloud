@@ -5,14 +5,14 @@ Array [
   Array [
     Object {
       "adyen": Object {
+        "adyenClientKey": "mocked_client_key",
         "cardholderNameBool": true,
+        "clientKey": "mocked_client_key",
         "environment": "test",
         "googleMerchantID": "mocked_google_merchant_id",
         "installments": true,
         "merchantAccount": "mocked_merchant_account",
-        "originKey": "mocked_origin_key",
         "paypalIntent": "mocked_intent",
-        "paypalMerchantID": "mocked_paypal_merchant_id",
       },
     },
   ],

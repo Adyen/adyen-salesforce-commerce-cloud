@@ -12,10 +12,7 @@ var URLUtils = require('dw/web/URLUtils');
 
 var OrderMgr = require('dw/order/OrderMgr');
 
-var BasketMgr = require('dw/order/BasketMgr'); // eslint-disable-next-line no-unused-vars
-
-
-var Site = require('dw/system/Site');
+var BasketMgr = require('dw/order/BasketMgr');
 
 var Status = require('dw/system/Status');
 
@@ -84,6 +81,65 @@ function redirect(order, redirectUrl) {
   response.redirect(redirectUrl);
 }
 /**
+ * Performs a zero auth transaction to add a card to an account
+ */
+
+
+function zeroAuth() {
+  var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+
+  var wallet = customer.getProfile().getWallet();
+  var stateDataStr = request.httpParameterMap.getRequestBodyAsString();
+  var paymentInstrument;
+  Transaction.wrap(function () {
+    paymentInstrument = wallet.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
+    paymentInstrument.custom.adyenPaymentData = stateDataStr;
+  });
+  Transaction.begin();
+  var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, paymentInstrument);
+
+  if (zeroAuthResult.error) {
+    Transaction.rollback();
+    return false;
+  }
+
+  Transaction.commit();
+
+  var responseUtils = require('*/cartridge/scripts/util/Response');
+
+  responseUtils.renderJSON({
+    zeroAuthResult: zeroAuthResult
+  });
+}
+/**
+ * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
+ */
+
+
+function Redirect3DS1Response() {
+  try {
+    var redirectResult = request.httpParameterMap.get('redirectResult').stringValue;
+    var jsonRequest = {
+      details: {
+        redirectResult: redirectResult
+      }
+    };
+
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+
+    var result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
+
+    if (result.resultCode === 'Authorised') {
+      return response.redirect(URLUtils.https('PaymentInstruments-List'));
+    } else {
+      return response.redirect(URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'));
+    }
+  } catch (e) {
+    Logger.getLogger('Adyen').error("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    return response.redirect(URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'));
+  }
+}
+/**
  * Show confirmation after return from Adyen
  */
 
@@ -110,7 +166,7 @@ function showConfirmation() {
       details: getDetails(),
       paymentData: paymentData
     };
-    var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    var result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearAdyenData(adyenPaymentInstrument);
 
     if (result.invalidRequest) {
@@ -159,6 +215,40 @@ function showConfirmation() {
   }
 
   return {};
+}
+/**
+ *  Confirm payment status after receiving redirectResult from Adyen
+ */
+
+
+function paymentsDetails() {
+  try {
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+
+    var requestBody = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
+    var isAmazonpay = requestBody.paymentMethod === 'amazonpay';
+    requestBody.paymentMethod = undefined;
+    var paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(requestBody);
+
+    var _response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
+
+    if (isAmazonpay) {
+      _response.fullResponse = {
+        pspReference: paymentsDetailsResponse.pspReference,
+        paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
+        resultCode: paymentsDetailsResponse.resultCode
+      };
+    }
+
+    var responseUtils = require('*/cartridge/scripts/util/Response');
+
+    responseUtils.renderJSON({
+      response: _response
+    });
+  } catch (e) {
+    Logger.getLogger('Adyen').error("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    return response.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+  }
 }
 
 function getDetails() {
@@ -237,6 +327,7 @@ function showConfirmationPaymentFromComponent() {
   var paymentInformation = app.getForm('adyPaydata');
   var orderNumber = paymentInformation.get('merchantReference').value();
   var orderToken = paymentInformation.get('orderToken').value();
+  var result = paymentInformation.get('result').value();
   var order = OrderMgr.getOrder(orderNumber, orderToken);
   var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
   var adyenPaymentInstrument;
@@ -247,17 +338,22 @@ function showConfirmationPaymentFromComponent() {
   }
 
   var stateData = JSON.parse(paymentInformation.get('paymentFromComponentStateData').value());
+  var finalResult;
   var hasStateData = stateData && stateData.details && stateData.paymentData;
 
   if (!hasStateData) {
-    // The billing step is fulfilled, but order will be failed
-    app.getForm('billing').object.fulfilled.value = true; // fail order if no stateData available
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      // The billing step is fulfilled, but order will be failed
+      app.getForm('billing').object.fulfilled.value = true; // fail order if no stateData available
 
-    Transaction.wrap(function () {
-      OrderMgr.failOrder(order, true);
-    });
-    app.getController('COBilling').Start();
-    return {};
+      Transaction.wrap(function () {
+        OrderMgr.failOrder(order, true);
+      });
+      app.getController('COBilling').Start();
+      return {};
+    }
   }
 
   var details = stateData.details;
@@ -269,16 +365,16 @@ function showConfirmationPaymentFromComponent() {
     details: details,
     paymentData: paymentData
   };
-  var result = adyenCheckout.doPaymentDetailsCall(requestObject);
   var paymentProcessor = PaymentMgr.getPaymentMethod(adyenPaymentInstrument.getPaymentMethod()).getPaymentProcessor();
   Transaction.wrap(function () {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
+  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
 
-  if (result.resultCode === 'Authorised') {
+  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
     Transaction.wrap(function () {
-      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
     OrderModel.submit(order);
     clearForms();
@@ -391,6 +487,16 @@ function getPaymentMethods(cart, customer) {
 
   var currency = currentBasket.getTotalGrossPrice().currencyCode;
   var paymentAmount = currentBasket.getTotalGrossPrice().isAvailable() ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()) : new dw.value.Money(1000, currency);
+  var shippingForm = session.forms.singleshipping;
+  var shippingAddress = {
+    firstName: shippingForm.shippingAddress.addressFields.firstName.value,
+    lastName: shippingForm.shippingAddress.addressFields.lastName.value,
+    address1: shippingForm.shippingAddress.addressFields.address1.value,
+    city: shippingForm.shippingAddress.addressFields.city.value,
+    country: shippingForm.shippingAddress.addressFields.country.value,
+    phone: shippingForm.shippingAddress.addressFields.phone.value,
+    postalCode: shippingForm.shippingAddress.addressFields.postal.value
+  };
   var jsonResponse = {
     adyenPaymentMethods: response,
     adyenConnectedTerminals: connectedTerminals,
@@ -400,15 +506,14 @@ function getPaymentMethods(cart, customer) {
       value: paymentAmount.value,
       currency: currency
     },
-    countryCode: countryCode
+    countryCode: countryCode,
+    shippingAddress: shippingAddress
   };
   return jsonResponse;
 }
 
 function redirect3ds2() {
-  var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-
-  var originKey = adyenGetOriginKey.getOriginKeyFromRequest(request.httpProtocol, request.httpHost);
+  var clientKey = AdyenHelper.getAdyenClientKey();
   var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   var locale = request.getLocale();
   var orderNo = request.httpParameterMap.get('merchantReference').stringValue;
@@ -421,7 +526,7 @@ function redirect3ds2() {
   });
   app.getView({
     locale: locale,
-    originKey: originKey,
+    clientKey: clientKey,
     environment: environment,
     resultCode: request.httpParameterMap.get('resultCode').stringValue,
     action: action,
@@ -472,7 +577,7 @@ function authorize3ds2() {
       paymentData: paymentInstrument.custom.adyenPaymentData,
       details: details
     };
-    var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+    var result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
 
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error("Invalid request for order ".concat(orderNo));
@@ -547,13 +652,12 @@ function authorizeWithForm() {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
     var jsonRequest = {
-      paymentData: paymentInstrument.custom.adyenPaymentData,
       details: {
         MD: MD,
         PaRes: PaRes
       }
     };
-    var result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+    var result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
 
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error("Invalid request for order ".concat(orderNo));
@@ -635,8 +739,11 @@ exports.Notify = guard.ensure(['post'], notify);
 exports.Redirect = redirect;
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 exports.ShowConfirmationPaymentFromComponent = guard.ensure(['https'], showConfirmationPaymentFromComponent);
+exports.Redirect3DS1Response = guard.ensure(['https'], Redirect3DS1Response);
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 exports.GetPaymentMethods = getPaymentMethods;
 exports.getExternalPlatformVersion = getExternalPlatformVersion();
 exports.PaymentFromComponent = guard.ensure(['https', 'post'], paymentFromComponent);
+exports.ZeroAuth = guard.ensure(['https', 'post'], zeroAuth);
+exports.PaymentsDetails = guard.ensure(['https', 'post'], paymentsDetails);
 exports.Donate = guard.ensure(['https', 'post'], donate);

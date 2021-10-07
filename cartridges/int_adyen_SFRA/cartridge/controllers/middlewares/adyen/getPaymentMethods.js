@@ -3,6 +3,10 @@
 var Logger = require('dw/system/Logger');
 
 var handlePaymentMethod = require('./getPaymentMethod/payment');
+/**
+ * Make a request to Adyen to get available payment methods
+ */
+
 
 function getPMs(req, res, next) {
   try {

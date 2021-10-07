@@ -27,7 +27,7 @@ describe('Render Payment Method', function () {
       })
     };
   });
-  it('should render stored payment method', function () {
+  it('should render stored payment method with missing shopper information fields', function () {
     var paymentMethod = {
       id: 'mocked_id',
       brand: 'mocked_brand',
@@ -39,7 +39,8 @@ describe('Render Payment Method', function () {
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
   });
-  it('should render payment method', function () {
+  it('should render payment method with shopper information fields', function () {
+    document.body.innerHTML += "\n    <input id=\"shippingFirstNamedefault\" value=\"shippingFirstNamedefaultMock\" />\n      <input id=\"shippingLastNamedefault\" value=\"shippingLastNamedefaultMock\" />\n      <input id=\"shippingPhoneNumberdefault\" value=\"shippingPhoneNumberdefaultMock\" />\n      <input id=\"shippingAddressCitydefault\" value=\"shippingAddressCitydefaultMock\" />\n      <input id=\"shippingZipCodedefault\" value=\"shippingZipCodedefaultMock\" />\n      <input id=\"shippingCountrydefault\" value=\"shippingCountrydefaultMock\" />\n      <input id=\"shippingStatedefault\" value=\"shippingStatedefaultMock\" />\n      <input id=\"shippingAddressOnedefault\" value=\"shippingAddressOnedefaultMock\" />\n      <input id=\"shippingAddressTwodefault\" value=\"shippingAddressTwodefaultMock\" />\n            \n      <input id=\"billingAddressCity\" value=\"billingAddressCityMock\" />\n      <input id=\"billingZipCode\" value=\"billingZipCodeMock\" />\n      <input id=\"billingCountry\" value=\"billingCountryMock\" />\n      <input id=\"billingState\" value=\"billingStateMock\" />\n      <input id=\"billingAddressOne\" value=\"billingAddressOneMock\" />\n      <input id=\"billingAddressTwo\" value=\"billingAddressTwoMock\" />\n      \n      <span class=\"customer-summary-email\">test@user.com</span>\n    ";
     var paymentMethod = {
       type: 'scheme',
       name: 'mocked_name',
@@ -48,6 +49,52 @@ describe('Render Payment Method', function () {
     renderPaymentMethod(paymentMethod, false, '/mocked_path/', 'mocked_description');
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
+    expect(store.checkout.create.mock.calls[0][1]).toEqual({
+      data: {
+        personalDetails: {
+          firstName: 'shippingFirstNamedefaultMock',
+          lastName: 'shippingLastNamedefaultMock',
+          telephoneNumber: 'shippingPhoneNumberdefaultMock',
+          shopperEmail: 'test@user.com',
+          billingAddress: {
+            city: 'billingAddressCityMock',
+            postalCode: 'billingZipCodeMock',
+            country: 'billingCountryMock',
+            stateOrProvince: 'billingStateMock',
+            street: 'billingAddressOneMock',
+            houseNumberOrName: 'billingAddressTwoMock'
+          },
+          deliveryAddress: {
+            city: 'shippingAddressCitydefaultMock',
+            postalCode: 'shippingZipCodedefaultMock',
+            country: 'shippingCountrydefaultMock',
+            stateOrProvince: 'shippingStatedefaultMock',
+            street: 'shippingAddressOnedefaultMock',
+            houseNumberOrName: 'shippingAddressTwodefaultMock'
+          }
+        },
+        firstName: 'shippingFirstNamedefaultMock',
+        lastName: 'shippingLastNamedefaultMock',
+        telephoneNumber: 'shippingPhoneNumberdefaultMock',
+        shopperEmail: 'test@user.com',
+        billingAddress: {
+          city: 'billingAddressCityMock',
+          postalCode: 'billingZipCodeMock',
+          country: 'billingCountryMock',
+          stateOrProvince: 'billingStateMock',
+          street: 'billingAddressOneMock',
+          houseNumberOrName: 'billingAddressTwoMock'
+        },
+        deliveryAddress: {
+          city: 'shippingAddressCitydefaultMock',
+          postalCode: 'shippingZipCodedefaultMock',
+          country: 'shippingCountrydefaultMock',
+          stateOrProvince: 'shippingStatedefaultMock',
+          street: 'shippingAddressOnedefaultMock',
+          houseNumberOrName: 'shippingAddressTwodefaultMock'
+        }
+      }
+    });
   });
   it('should handle input onChange for paypal', function () {
     document.body.innerHTML += "\n      <button value=\"submit-payment\"></button>\n      <div id=\"component_paypal\"></div>\n    ";

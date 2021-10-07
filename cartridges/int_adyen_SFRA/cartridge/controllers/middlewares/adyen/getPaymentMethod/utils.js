@@ -1,7 +1,5 @@
 "use strict";
 
-var CustomerMgr = require('dw/customer/CustomerMgr');
-
 var Locale = require('dw/util/Locale');
 
 var PaymentMgr = require('dw/order/PaymentMgr');
@@ -9,14 +7,6 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 
 var constants = require('*/cartridge/adyenConstants/constants');
-
-function getCustomer(currentCustomer) {
-  if (currentCustomer.profile) {
-    return CustomerMgr.getCustomerByCustomerNumber(currentCustomer.profile.customerNo);
-  }
-
-  return null;
-}
 
 function getCountryCode(currentBasket, locale) {
   var _currentBasket$getShi;
@@ -40,7 +30,6 @@ function getConnectedTerminals() {
 }
 
 module.exports = {
-  getCustomer: getCustomer,
   getCountryCode: getCountryCode,
   getConnectedTerminals: getConnectedTerminals
 };

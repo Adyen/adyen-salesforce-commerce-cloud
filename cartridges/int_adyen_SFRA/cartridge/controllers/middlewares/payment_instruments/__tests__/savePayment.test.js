@@ -25,13 +25,24 @@ afterEach(function () {
   jest.resetModules();
 });
 describe('Save Payment', function () {
-  it('should do nothing if adyen secured fields is not enabled', function () {
-    var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+  it('should do nothing if payment processor is not Adyen', function () {
+    var PaymentMgr = require('dw/order/PaymentMgr');
 
     var server = require('server');
 
-    AdyenHelper.getAdyenSecuredFieldsEnabled.mockImplementation(function () {
-      return false;
+    PaymentMgr.getPaymentMethod.mockImplementation(function () {
+      return {
+        getPaymentProcessor: jest.fn(function () {
+          return {
+            getID: jest.fn(function () {
+              return 'notAdyen';
+            })
+          };
+        }),
+        isActive: jest.fn(function () {
+          return false;
+        })
+      };
     });
     savePayment.call({
       emit: jest.fn()
@@ -65,6 +76,28 @@ describe('Save Payment', function () {
     expect(res.json.mock.calls).toMatchSnapshot();
   });
   it('should succeed', function () {
+    savePayment.call({
+      emit: jest.fn()
+    }, req, res, jest.fn());
+    expect(res.json.mock.calls).toMatchSnapshot();
+  });
+  it('should return redirectAction and succeed', function () {
+    var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+
+    adyenZeroAuth.zeroAuthPayment.mockReturnValue({
+      resultCode: 'RedirectShopper',
+      action: {
+        paymentMethodType: "scheme",
+        url: "https://checkoutshopper-test.adyen.com/checkoutshopper/threeDS2.shtml",
+        data: {
+          MD: "mockMD",
+          PaReq: "mockPaReq",
+          TermUrl: "https://checkoutshopper-test.adyen.com/checkoutshopMock"
+        },
+        method: "POST",
+        type: "redirect"
+      }
+    });
     savePayment.call({
       emit: jest.fn()
     }, req, res, jest.fn());

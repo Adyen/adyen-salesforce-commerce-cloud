@@ -14,6 +14,8 @@ var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 var paymentResponseHandler = require('./authorize/paymentResponse');
 
+var constants = require('*/cartridge/adyenConstants/constants');
+
 function errorHandler() {
   var serverErrors = [Resource.msg('error.payment.processor.not.supported', 'checkout', null)];
   return {
@@ -25,7 +27,7 @@ function errorHandler() {
 }
 
 function check3DS2(result) {
-  return result.threeDS2 || result.resultCode === 'RedirectShopper';
+  return result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER;
 }
 
 function paymentErrorHandler(result) {

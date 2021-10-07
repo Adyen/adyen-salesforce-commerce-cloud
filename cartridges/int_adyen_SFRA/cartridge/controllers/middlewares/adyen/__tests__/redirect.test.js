@@ -12,7 +12,7 @@ beforeEach(function () {
   jest.clearAllMocks();
   req = {
     querystring: {
-      signature: 'some_mocked_url/signature __ ocked_adyen_payment_data',
+      signature: 'some_mocked_url/signature __ mocked_orderNo',
       merchantReference: 'mocked_merchantReference'
     }
   };
