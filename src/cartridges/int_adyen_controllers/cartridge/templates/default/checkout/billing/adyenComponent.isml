@@ -35,7 +35,7 @@
         var queryString = '${request.getHttpQueryString()}'.split("=");
         var amazonCheckoutSessionId = queryString[queryString.length - 1];
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
-        window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
+        window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
     </script>
     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
     <div class="ui-widget-overlay ui-front" id="amazonModal">

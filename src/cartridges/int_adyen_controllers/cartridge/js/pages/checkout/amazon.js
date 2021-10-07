@@ -67,7 +67,7 @@ if(window.amazonCheckoutSessionId) {
             state.data.paymentMethod = 'amazonpay';
             $.ajax({
                 type: 'post',
-                url: window.paymentsDetails,
+                url: window.paymentsDetailsURL,
                 data: JSON.stringify(state.data),
                 contentType: 'application/; charset=utf-8',
                 success(data) {

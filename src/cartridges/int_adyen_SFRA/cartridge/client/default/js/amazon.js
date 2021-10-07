@@ -69,11 +69,10 @@ const amazonConfig = {
   onAdditionalDetails: (state) => {
     state.data.paymentMethod = 'amazonpay';
     $.ajax({
-      type: 'POST',
-      url: 'Adyen-PaymentsDetails',
+      type: 'post',
+      url: window.paymentsDetailsURL,
       data: JSON.stringify(state.data),
       contentType: 'application/json; charset=utf-8',
-      async: false,
       success(data) {
         if (data.isSuccessful) {
           handleAuthorised(data);
