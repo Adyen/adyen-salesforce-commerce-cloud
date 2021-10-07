@@ -267,7 +267,7 @@ exports.init = function () {
     }
   });
 
-  if (SitePreferences.ADYEN_SF_ENABLED) {
+  if (SitePreferences.ADYEN_SF_ENABLED && !window.amazonCheckoutSessionId) {
     adyenCheckout.initBilling();
   }
 };

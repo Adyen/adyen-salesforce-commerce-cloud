@@ -83,15 +83,6 @@ function unmountComponents() {
   });
   return Promise.all(promises);
 }
-/**
- * checks if payment method is blocked and returns a boolean accordingly
- */
-
-
-function isMethodTypeBlocked(methodType) {
-  var blockedMethods = ['bcmc_mobile_QR', 'applepay', 'cup', 'wechatpay', 'wechatpay_pos', 'wechatpaySdk', 'wechatpayQr'];
-  return blockedMethods.includes(methodType);
-}
 
 function renderStoredPaymentMethod(data) {
   return function (pm) {
@@ -110,7 +101,7 @@ function renderStoredPaymentMethods(data) {
 
 function renderPaymentMethods(data) {
   data.AdyenPaymentMethods.paymentMethods.forEach(function (pm, i) {
-    return !isMethodTypeBlocked(pm.type) && renderPaymentMethod(pm, false, data.ImagePath, data.AdyenDescriptions[i].description);
+    renderPaymentMethod(pm, false, data.ImagePath, data.AdyenDescriptions[i].description);
   });
 }
 
@@ -138,6 +129,28 @@ function setCheckoutConfiguration(data) {
 
   store.checkoutConfiguration = _objectSpread(_objectSpread(_objectSpread({}, store.checkoutConfiguration), setField('amount', data.amount)), setField('countryCode', data.countryCode));
 }
+
+function setAmazonPayConfig(adyenPaymentMethods) {
+  var amazonpay = adyenPaymentMethods.paymentMethods.find(function (paymentMethod) {
+    return paymentMethod.type === 'amazonpay';
+  });
+
+  if (amazonpay) {
+    var _document$querySelect, _document$querySelect2, _document$querySelect3, _document$querySelect4, _document$querySelect5, _document$querySelect6, _document$querySelect7, _document$querySelect8;
+
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration; // eslint-disable-line max-len
+
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
+      name: "".concat((_document$querySelect = document.querySelector('#shippingFirstNamedefault')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value, " ").concat((_document$querySelect2 = document.querySelector('#shippingLastNamedefault')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.value),
+      addressLine1: (_document$querySelect3 = document.querySelector('#shippingAddressOnedefault')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.value,
+      city: (_document$querySelect4 = document.querySelector('#shippingAddressCitydefault')) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.value,
+      stateOrRegion: (_document$querySelect5 = document.querySelector('#shippingAddressCitydefault')) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.value,
+      postalCode: (_document$querySelect6 = document.querySelector('#shippingZipCodedefault')) === null || _document$querySelect6 === void 0 ? void 0 : _document$querySelect6.value,
+      countryCode: (_document$querySelect7 = document.querySelector('#shippingCountrydefault')) === null || _document$querySelect7 === void 0 ? void 0 : _document$querySelect7.value,
+      phoneNumber: (_document$querySelect8 = document.querySelector('#shippingPhoneNumberdefault')) === null || _document$querySelect8 === void 0 ? void 0 : _document$querySelect8.value
+    };
+  }
+}
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
@@ -161,6 +174,7 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             getPaymentMethods(function (data) {
               store.checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
               setCheckoutConfiguration(data);
+              setAmazonPayConfig(data.AdyenPaymentMethods);
               store.checkout = new AdyenCheckout(store.checkoutConfiguration);
               document.querySelector('#paymentMethodsList').innerHTML = '';
               renderStoredPaymentMethods(data);

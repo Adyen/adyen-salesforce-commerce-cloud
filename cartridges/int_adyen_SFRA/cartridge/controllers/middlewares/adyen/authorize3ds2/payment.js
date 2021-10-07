@@ -16,9 +16,11 @@ var _require2 = require('./errorHandler'),
 
 var handlePlaceOrder = require('./order');
 
+var constants = require('*/cartridge/adyenConstants/constants');
+
 function checkForSuccessfulPayment(result) {
   var hasError = result.error;
-  var isAuthorised = result.resultCode === 'Authorised';
+  var isAuthorised = result.resultCode === constants.RESULTCODES.AUTHORISED;
   var authorisedSuccessfully = !hasError && isAuthorised;
   var isAction = result.action;
   return authorisedSuccessfully || isAction;
@@ -53,7 +55,7 @@ function checkForValidRequest(result, order, paymentInstrument, options) {
 
 
 function handlePaymentsDetailsCall(paymentDetailsRequest, order, paymentInstrument, options) {
-  var result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+  var result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
   var isValid = checkForValidRequest(result, order, paymentInstrument, options);
 
   if (isValid) {

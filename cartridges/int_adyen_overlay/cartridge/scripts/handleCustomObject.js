@@ -1,6 +1,23 @@
 "use strict";
 
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * Demandware Script File
  * where
  *   <paramUsageType> can be either 'input' or 'output'
@@ -21,8 +38,6 @@
  * order creation date > current date
  *
  */
-
-/* eslint no-var: off */
 var Logger = require('dw/system/Logger');
 
 var PaymentMgr = require('dw/order/PaymentMgr');

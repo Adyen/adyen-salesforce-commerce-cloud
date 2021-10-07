@@ -1,9 +1,24 @@
 "use strict";
 
 /**
- * Deletes expired payment instruments, syncs cards with Adyen recurring payments card list
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
  *
- * @input CurrentCustomer : dw.customer.Customer
+ * Deletes expired payment instruments, syncs cards with Adyen recurring payments card list
  */
 
 /* API Includes */
@@ -71,10 +86,11 @@ function updateSavedCards(args) {
           }
         }
       });
-      return {
-        error: false
-      };
     }
+
+    return {
+      error: false
+    };
   } catch (ex) {
     Logger.getLogger('Adyen').error("".concat(ex.toString(), " in ").concat(ex.fileName, ":").concat(ex.lineNumber));
     return {

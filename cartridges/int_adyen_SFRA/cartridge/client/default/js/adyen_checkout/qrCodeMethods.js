@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports.qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile'];
+module.exports.qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];

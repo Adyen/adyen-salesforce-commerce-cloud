@@ -18,7 +18,6 @@ beforeEach(function () {
   PaymentMgr = require('dw/order/PaymentMgr');
   adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
   BasketMgr = require('dw/order/BasketMgr');
-  CustomerMgr = require('dw/customer/CustomerMgr');
   jest.clearAllMocks();
   res = {
     json: jest.fn()
@@ -41,7 +40,7 @@ describe('Get Payment Methods', function () {
   });
   it('should get customer by customer number', function () {
     getPaymentMethods(req, res, jest.fn());
-    expect(CustomerMgr.getCustomerByCustomerNumber).toHaveBeenCalledWith(req.currentCustomer.profile.customerNo);
+    expect(adyenHelper.getCustomer).toHaveBeenCalledWith(req.currentCustomer);
   });
   it('should call get terminals if isActive', function () {
     getPaymentMethods(req, res, jest.fn());

@@ -11,6 +11,10 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var _require = require('./redirect/signature'),
     getCurrentSignature = _require.getCurrentSignature,
     handleIncorrectSignature = _require.handleIncorrectSignature;
+/*
+ * Redirect to Adyen after saving order etc.
+ */
+
 
 function redirect(req, res, next) {
   var _req$querystring = req.querystring,

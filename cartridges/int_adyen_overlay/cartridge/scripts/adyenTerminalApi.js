@@ -1,5 +1,26 @@
 "use strict";
 
+/**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
+ * Send request to adyen to get connected terminals based on merchant account and storeId
+ * Make a terminal payment for given order, payment instrument and terminal(id)
+ */
 // script include
 var Logger = require('dw/system/Logger');
 
@@ -47,7 +68,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     var dateString = date.getTime().toString();
     var serviceId = dateString.substr(dateString.length - 10);
     var applicationInfoObject = {};
-    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(false);
+    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo();
     var applicationInfoBase64 = StringUtils.encodeBase64(JSON.stringify(applicationInfoObject));
     terminalRequestObject.request = {
       SaleToPOIRequest: {
