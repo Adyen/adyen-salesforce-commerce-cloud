@@ -1,24 +1,34 @@
 if(window.amazonCheckoutSessionId) {
     const amazonPayNode = document.getElementById('amazon-container');
 
+    function handleAuthorised(response) {
+        document.querySelector('#result').value = JSON.stringify({
+            pspReference: response.fullResponse.pspReference,
+            resultCode: response.fullResponse.resultCode,
+            paymentMethod: response.fullResponse.paymentMethod ? response.fullResponse.paymentMethod : response.fullResponse.additionalData.paymentMethod,
+        });
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+            response,
+        );
+        document.querySelector('#showConfirmationForm').submit();
+    }
+
+    function handleError() {
+        document.querySelector('#result').value = JSON.stringify({
+            error: true,
+        });
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify({error: true});
+        document.querySelector('#showConfirmationForm').submit();
+    }
+
     function handleAmazonResponse(response, component) {
         if (response.fullResponse && response.fullResponse.action) {
+            document.querySelector('.ui-widget-overlay').style.visibility = 'hidden';
             component.handleAction(response.fullResponse.action);
         } else if (response.resultCode === window.resultCodeAuthorised) {
-            document.querySelector('#result').value = JSON.stringify({
-                pspReference: response.fullResponse.pspReference,
-                resultCode: response.fullResponse.resultCode,
-                paymentMethod: response.fullResponse.additionalData.paymentMethod,
-            });
-            document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
-                response,
-            );
-            document.querySelector('#showConfirmationForm').submit();
+            handleAuthorised(response);
         } else if (response.error) {
-            document.querySelector('#result').value = JSON.stringify({
-                error: true,
-            });
-            $('#dwfrm_billing').trigger('submit');
+            handleError();
         }
     }
 
@@ -52,6 +62,24 @@ if(window.amazonCheckoutSessionId) {
                 state.data,
             );
             paymentFromComponent(state.data, component);
+        },
+        onAdditionalDetails: (state) => {
+            state.data.paymentMethod = 'amazonpay';
+            $.ajax({
+                type: 'post',
+                url: window.paymentsDetails,
+                data: JSON.stringify(state.data),
+                contentType: 'application/; charset=utf-8',
+                success(data) {
+                    if (data.response.isSuccessful) {
+                        handleAuthorised(data.response);
+                    } else if (!data.response.isFinal && typeof data.response.action === 'object') {
+                        checkout.createFromAction(data.action).mount('#amazon-container');
+                    } else {
+                        handleError();
+                    }
+                },
+            });
         },
     };
 
