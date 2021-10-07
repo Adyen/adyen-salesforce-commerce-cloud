@@ -146,3 +146,14 @@
 #adyenModalDialog {
     pointer-events: auto;
 }
+
+#amazonModal {
+    opacity: 0.95;
+}
+
+#amazonContainerSG {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

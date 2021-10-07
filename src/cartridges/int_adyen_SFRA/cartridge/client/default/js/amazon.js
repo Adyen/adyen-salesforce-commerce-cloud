@@ -1,22 +1,33 @@
 const store = require('../../../store');
 
 const amazonPayNode = document.getElementById('amazon-container');
+const checkout = new AdyenCheckout(window.Configuration);
+
+function handleAuthorised(response) {
+  document.querySelector('#result').value = JSON.stringify({
+    pspReference: response.fullResponse?.pspReference,
+    resultCode: response.fullResponse?.resultCode,
+    paymentMethod: response.fullResponse?.paymentMethod
+      ? response.fullResponse.paymentMethod
+      : response.fullResponse?.additionalData?.paymentMethod,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleError() {
+  document.querySelector('#result').value = JSON.stringify({
+    error: true,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
 
 function handleAmazonResponse(response, component) {
   if (response.fullResponse?.action) {
     component.handleAction(response.fullResponse.action);
   } else if (response.resultCode === window.resultCodeAuthorised) {
-    document.querySelector('#result').value = JSON.stringify({
-      pspReference: response.fullResponse.pspReference,
-      resultCode: response.fullResponse.resultCode,
-      paymentMethod: response.fullResponse.additionalData.paymentMethod,
-    });
-    document.querySelector('#showConfirmationForm').submit();
+    handleAuthorised(response);
   } else if (response.error) {
-    document.querySelector('#result').value = JSON.stringify({
-      error: true,
-    });
-    document.querySelector('#showConfirmationForm').submit();
+    handleError();
   }
 }
 
@@ -55,9 +66,27 @@ const amazonConfig = {
     );
     paymentFromComponent(state.data, component);
   },
+  onAdditionalDetails: (state) => {
+    state.data.paymentMethod = 'amazonpay';
+    $.ajax({
+      type: 'post',
+      url: window.paymentsDetailsURL,
+      data: JSON.stringify(state.data),
+      contentType: 'application/json; charset=utf-8',
+      success(data) {
+        if (data.isSuccessful) {
+          handleAuthorised(data);
+        } else if (!data.isFinal && typeof data.action === 'object') {
+          checkout.createFromAction(data.action).mount('#amazon-container');
+        } else {
+          $('#action-modal').modal('hide');
+          handleError();
+        }
+      },
+    });
+  },
 };
 
-const checkout = new AdyenCheckout(window.Configuration);
 const amazonPayComponent = checkout
   .create('amazonpay', amazonConfig)
   .mount(amazonPayNode);

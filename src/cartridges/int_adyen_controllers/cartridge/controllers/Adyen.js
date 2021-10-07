@@ -229,12 +229,24 @@ function showConfirmation() {
 function paymentsDetails() {
   try {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const requestBody = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
+    const isAmazonpay = requestBody.paymentMethod === 'amazonpay';
+    requestBody.paymentMethod = undefined;
+
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-        JSON.parse(request.httpParameterMap.getRequestBodyAsString()),
+        requestBody
     );
     const response = AdyenHelper.createAdyenCheckoutResponse(
         paymentsDetailsResponse,
     );
+    if (isAmazonpay) {
+      response.fullResponse = {
+        pspReference: paymentsDetailsResponse.pspReference,
+        paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
+        resultCode: paymentsDetailsResponse.resultCode,
+      };
+    }
+
     const responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({response});
   } catch (e) {
@@ -345,6 +357,7 @@ function showConfirmationPaymentFromComponent() {
   let finalResult;
 
   const hasStateData = stateData && stateData.details && stateData.paymentData;
+
   if (!hasStateData) {
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
       finalResult = JSON.parse(result);
