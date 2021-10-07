@@ -50,16 +50,6 @@
         <user-id></user-id>
         <password/>
     </service-credential>
-    <service-credential service-credential-id="AdyenOriginKeys">
-        <url>https://checkout-test.adyen.com/v1/originKeys</url>
-        <user-id></user-id>
-        <password/>
-    </service-credential>
-    <service-credential service-credential-id="AdyenOriginKeysLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v1/originKeys</url>
-        <user-id></user-id>
-        <password/>
-    </service-credential>
     <service-credential service-credential-id="AdyenConnectedTerminals">
         <url>https://terminal-api-test.adyen.com/connectedTerminals</url>
         <user-id></user-id>
@@ -143,15 +133,6 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>AdyenPOS</profile-id>
         <credential-id>AdyenPosPayment</credential-id>
-    </service>
-    <service service-id="AdyenOriginKeys">
-        <service-type>HTTP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>adyen</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
-        <credential-id>AdyenOriginKeys</credential-id>
     </service>
     <service service-id="AdyenConnectedTerminals">
         <service-type>HTTP</service-type>
