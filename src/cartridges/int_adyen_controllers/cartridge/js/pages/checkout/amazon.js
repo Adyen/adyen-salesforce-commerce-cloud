@@ -1,5 +1,5 @@
 if(window.amazonCheckoutSessionId) {
-    const amazonPayNode = document.getElementById('amazon-container');
+    const amazonPayNode = document.getElementById('amazonContainerSG');
 
     function handleAuthorised(response) {
         document.querySelector('#result').value = JSON.stringify({
@@ -74,7 +74,7 @@ if(window.amazonCheckoutSessionId) {
                     if (data.response.isSuccessful) {
                         handleAuthorised(data.response);
                     } else if (!data.response.isFinal && typeof data.response.action === 'object') {
-                        checkout.createFromAction(data.action).mount('#amazon-container');
+                        checkout.createFromAction(data.action).mount('#amazonContainerSG');
                     } else {
                         handleError();
                     }

@@ -38,8 +38,8 @@
         window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
     </script>
     <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
-    <div id="amazon-container" style=" position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
-    <div class="ui-widget-overlay ui-front">
+    <div class="ui-widget-overlay ui-front" id="amazonModal">
+        <div id="amazonContainerSG"></div>
     </div>
 
       </form>
