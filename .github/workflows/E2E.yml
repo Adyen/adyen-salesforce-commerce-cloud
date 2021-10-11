@@ -13,7 +13,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}", \
             "password": "${{ secrets.SFCC_PASSWORD }}", \
             "hostname": "${{ secrets.SFCC_HOSTNAME }}", \
-            "code-version: "${{ secrests.CODE_VERSION }}" \
+            "code-version: "${{ secrets.CODE_VERSION }}" \
             }' >> dw.json
           cat ./dw.json
           npm run build
