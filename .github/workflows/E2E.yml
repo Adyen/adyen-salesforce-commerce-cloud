@@ -9,9 +9,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          path: main
-
       - name: Checkout SFRA code
         uses: actions/checkout@v2
         with:
