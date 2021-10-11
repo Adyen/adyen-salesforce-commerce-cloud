@@ -19,4 +19,6 @@ jobs:
           "code-version: "${{ secrets.CODE_VERSION }}" \
           }' >> dw.json
       - name: push cartridge code
-        run: npm run build
+        run: |
+          cat dw.json
+          npm run build
