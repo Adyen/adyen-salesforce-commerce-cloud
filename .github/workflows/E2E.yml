@@ -12,11 +12,11 @@ jobs:
       - run: npm install
       - name: create dw.json file
         run: |
-          echo '{ \
-          "username": "${{ secrets.SFCC_USERNAME }}", \
-          "password": "${{ secrets.SFCC_PASSWORD }}", \
-          "hostname": "${{ secrets.SFCC_HOSTNAME }}", \
-          "code-version: "${{ secrets.CODE_VERSION }}" \
+          echo '{
+          "username": "${{ secrets.SFCC_USERNAME }}",
+          "password": "${{ secrets.SFCC_PASSWORD }}",
+          "hostname": "${{ secrets.SFCC_HOSTNAME }}",
+          "code-version: "${{ secrets.CODE_VERSION }}" 
           }' >> dw.json
       - name: push cartridge code
         run: |
