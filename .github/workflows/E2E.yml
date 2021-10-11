@@ -7,8 +7,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: main
+
+      - name: Checkout SFRA code
+        uses: actions/checkout@v2
+        with:
+          repository: git@github.com:SalesforceCommerceCloud/storefront-reference-architecture.git
+          ref: 'v6.0.0'
+          path: storefront-reference-architecture
       - run: npm install
       - name: create dw.json file
         run: |
@@ -19,6 +28,4 @@ jobs:
             "code-version": "${{ secrets.CODE_VERSION }}"
           }' >> dw.json
       - name: push cartridge code
-        run: |
-          cat dw.json
-          npm run build
+        run: npm run build
