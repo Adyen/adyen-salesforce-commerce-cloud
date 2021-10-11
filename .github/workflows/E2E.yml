@@ -9,7 +9,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: push cartridge code
+      - run: npm install
+      - name: create dw.json file
         run: |
           npm install
           echo '{ \
@@ -18,6 +19,5 @@ jobs:
             "hostname": "${{ secrets.SFCC_HOSTNAME }}", \
             "code-version: "${{ secrets.CODE_VERSION }}" \
             }' >> dw.json
-          cat ./dw.json
-          npm run build
-
+        - name: push cartridge code
+          run: npm run build
