@@ -17,6 +17,7 @@ jobs:
         with:
           repository: git@github.com:SalesforceCommerceCloud/storefront-reference-architecture.git
           ref: 'v6.0.0'
+          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - run: npm install
       - name: create dw.json file
