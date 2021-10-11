@@ -15,8 +15,8 @@ jobs:
       - name: Checkout SFRA code
         uses: actions/checkout@v2
         with:
-          repository: git@github.com:SalesforceCommerceCloud/storefront-reference-architecture.git
-          ref: 'v6.0.0'
+          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          ref: v6.0.0
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - run: npm install
