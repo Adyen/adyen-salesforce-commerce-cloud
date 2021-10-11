@@ -1,0 +1,20 @@
+name: E2E
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: push cartridge code
+        run: |
+          echo '{ \
+            "username": "${{ secrets.SFCC_USERNAME }}", \
+            "password": "${{ secrets.SFCC_PASSWORD }}", \
+            "hostname": "${{ secrets.SFCC_HOSTNAME }}", \
+            "code-version: "${{ secrests.CODE_VERSION }}" \
+            }' >> dw.json
+          cat ./dw.json
+          npm run build
+
