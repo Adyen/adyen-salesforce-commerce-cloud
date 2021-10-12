@@ -36,3 +36,6 @@ jobs:
       - name: push cartridge code
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run build
+      - name: run e2e tests
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run e2e
