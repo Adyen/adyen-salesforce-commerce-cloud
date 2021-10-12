@@ -21,6 +21,7 @@ jobs:
       - run: npm install
         working-directory: adyen-salesforce-commerce-cloud
       - name: create dw.json file
+        working-directory: adyen-salesforce-commerce-cloud
         run: |
           echo '{
             "username": "${{ secrets.SFCC_USERNAME }}",
@@ -28,7 +29,6 @@ jobs:
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
             "code-version": "${{ secrets.CODE_VERSION }}"
           }' >> dw.json
-          working-directory: adyen-salesforce-commerce-cloud
       - name: push cartridge code
-        run: npm run build
         working-directory: adyen-salesforce-commerce-cloud
+        run: npm run build
