@@ -8,5 +8,10 @@ fixture `My first fixtures`
     });
 
 test('Hello world', async t => {
+  await t.click('.affirm btn btn-primary');
+  const header = Selector('div')
+      .classNames(['hero', 'main-callout'])
+      .child('h1');
+  await t.expect(header.value).toEqual('Summer Style');
 
 })
