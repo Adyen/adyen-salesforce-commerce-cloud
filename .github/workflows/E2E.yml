@@ -38,4 +38,7 @@ jobs:
         run: npm run build
       - name: run e2e tests
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run e2e
+        run: npm run test:e2e
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ SANDBOX_HTTP_AUTH_PASSWORD }}
