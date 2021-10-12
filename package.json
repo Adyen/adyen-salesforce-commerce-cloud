@@ -20,7 +20,7 @@
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
-    "test:e2e": "testcafe chrome:headless e2e/test"
+    "test:e2e": "testcafe chrome:headless e2e"
   },
   "engines": {
     "node": ">=4.0"
