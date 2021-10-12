@@ -18,11 +18,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: adyen-salesforce-commerce-cloud
-      - run: pwd
-        working-directory: adyen-salesforce-commerce-cloud
-      - run: ls
-        working-directory: adyen-salesforce-commerce-cloud
       - run: npm install
+        working-directory: adyen-salesforce-commerce-cloud
       - name: create dw.json file
         run: |
           echo '{
@@ -31,5 +28,7 @@ jobs:
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
             "code-version": "${{ secrets.CODE_VERSION }}"
           }' >> dw.json
+          working-directory: adyen-salesforce-commerce-cloud
       - name: push cartridge code
         run: npm run build
+        working-directory: adyen-salesforce-commerce-cloud
