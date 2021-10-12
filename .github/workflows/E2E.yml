@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: adyen-salesforce-commerce-cloud
       - name: Checkout SFRA code
         uses: actions/checkout@v2
         with:
@@ -16,6 +18,7 @@ jobs:
           ref: v6.0.0
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
+      - run: cd adyen-salesforce-commerce-cloud
       - run: npm install
       - name: create dw.json file
         run: |
