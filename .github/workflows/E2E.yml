@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout SFRA code
@@ -38,9 +38,7 @@ jobs:
         run: npm run build
       - name: run e2e tests
         working-directory: adyen-salesforce-commerce-cloud
-        uses: DevExpress/testcafe-action@latest
-        with:
-          args: "chrome tests"
+        run: npm run test:e2e
         env:
-          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
-          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ SANDBOX_HTTP_AUTH_PASSWORD }}
