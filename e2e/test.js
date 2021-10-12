@@ -7,11 +7,10 @@ fixture `My first fixtures`
       password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
     });
 
-test('Hello world', async t => {
-  await t.click('.affirm btn btn-primary');
+test('Summer Style', async t => {
+  await t.click('.affirm.btn.btn-primary');
   const header = Selector('div')
-      .classNames(['hero', 'main-callout'])
+      .child('.hero.main-callout')
       .child('h1');
-  await t.expect(header.value).toEqual('Summer Style');
-
+  await t.expect(header.textContent).eql('Summer Style');
 })
