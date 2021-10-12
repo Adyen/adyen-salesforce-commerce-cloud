@@ -41,4 +41,4 @@ jobs:
         run: npm run test:e2e
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
-          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrests.SANDBOX_HTTP_AUTH_PASSWORD }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
