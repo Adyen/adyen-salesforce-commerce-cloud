@@ -18,9 +18,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: adyen-salesforce-commerce-cloud
-      - run: cd adyen-salesforce-commerce-cloud
       - run: pwd
+        working-directory: adyen-salesforce-commerce-cloud
       - run: ls
+        working-directory: adyen-salesforce-commerce-cloud
       - run: npm install
       - name: create dw.json file
         run: |
