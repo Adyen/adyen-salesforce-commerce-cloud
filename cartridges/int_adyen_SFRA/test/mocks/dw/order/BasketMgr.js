@@ -4,17 +4,17 @@ function getCurrentBasket() {
   return {
     defaultShipment: {
       shippingAddress: {
-        firstName: "Amanda",
-        lastName: "Jones",
-        address1: "65 May Lane",
-        address2: "",
-        city: "Allston",
-        postalCode: "02135",
+        firstName: 'Amanda',
+        lastName: 'Jones',
+        address1: '65 May Lane',
+        address2: '',
+        city: 'Allston',
+        postalCode: '02135',
         countryCode: {
-          value: "us"
+          value: 'us'
         },
-        phone: "617-555-1234",
-        stateCode: "MA",
+        phone: '617-555-1234',
+        stateCode: 'MA',
         setFirstName: function setFirstName(firstNameInput) {
           this.firstName = firstNameInput;
         },

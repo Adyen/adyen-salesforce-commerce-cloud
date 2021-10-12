@@ -35,20 +35,20 @@ describe('Show Confirmation', function () {
 
     req.querystring.redirectResult = 'mocked_redirect_result';
     showConfirmation(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
   it('should have payload', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
     req.querystring.payload = 'mocked_payload_result';
     showConfirmation(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
   test.each(['Authorised', 'Pending', 'Received'])('should handle successful payment: %p for SFRA6', function (a) {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
     adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: a,
         paymentMethod: [],
@@ -65,7 +65,7 @@ describe('Show Confirmation', function () {
 
     var URLUtils = require('dw/web/URLUtils');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: a,
         paymentMethod: [],
@@ -74,19 +74,5 @@ describe('Show Confirmation', function () {
     });
     showConfirmation(req, res, jest.fn());
     expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
-  });
-  it('should fail if resultCode is Received with Alipay payment', function () {
-    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
-    var URLUtils = require('dw/web/URLUtils');
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
-      return {
-        resultCode: 'Received',
-        paymentMethod: ['alipay_hk']
-      };
-    });
-    showConfirmation(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
   });
 });

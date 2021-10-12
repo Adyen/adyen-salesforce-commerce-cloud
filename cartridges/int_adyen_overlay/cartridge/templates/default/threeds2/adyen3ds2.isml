@@ -17,7 +17,7 @@
     var threeDS2Element = document.getElementById('threeDS2');
     var configuration = {
         locale: '${pdict.locale}',
-        originKey: '${pdict.originKey}',
+        clientKey: '${pdict.clientKey}',
         environment: '${pdict.environment}',
         onAdditionalDetails: handleOnAdditionalDetails
     }

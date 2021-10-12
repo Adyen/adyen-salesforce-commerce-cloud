@@ -1,6 +1,10 @@
 "use strict";
 
-var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -43,12 +47,14 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
     _initializerDefineProperty(this, "paypalTerminatedEarly", _descriptor8, this);
 
     _initializerDefineProperty(this, "componentState", _descriptor9, this);
+
+    _initializerDefineProperty(this, "brand", _descriptor10, this);
   }
 
   _createClass(Store, [{
     key: "updateSelectedPayment",
-    value: function updateSelectedPayment(key, val) {
-      this.selectedPayment[key] = val;
+    value: function updateSelectedPayment(method, key, val) {
+      this.componentsObj[method][key] = val;
     }
   }, {
     key: "maskedCardNumber",
@@ -73,9 +79,11 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
       var _this$selectedPayment2;
 
       return ((_this$selectedPayment2 = this.selectedPayment) === null || _this$selectedPayment2 === void 0 ? void 0 : _this$selectedPayment2.stateData) || {
-        paymentMethod: {
+        paymentMethod: _objectSpread({
           type: this.selectedMethod
-        }
+        }, this.brand ? {
+          brand: this.brand
+        } : undefined)
       };
     }
   }]);
@@ -136,5 +144,10 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
   initializer: function initializer() {
     return {};
   }
+}), _descriptor10 = _applyDecoratedDescriptor(_class.prototype, "brand", [observable], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: null
 }), _applyDecoratedDescriptor(_class.prototype, "maskedCardNumber", [computed], Object.getOwnPropertyDescriptor(_class.prototype, "maskedCardNumber"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectedPayment", [computed], Object.getOwnPropertyDescriptor(_class.prototype, "selectedPayment"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectedPaymentIsValid", [computed], Object.getOwnPropertyDescriptor(_class.prototype, "selectedPaymentIsValid"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "stateData", [computed], Object.getOwnPropertyDescriptor(_class.prototype, "stateData"), _class.prototype)), _class);
 module.exports = new Store();

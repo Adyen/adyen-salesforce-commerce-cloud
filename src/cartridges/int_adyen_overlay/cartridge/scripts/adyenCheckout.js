@@ -32,6 +32,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function createPaymentRequest(args) {
   try {
@@ -62,7 +63,7 @@ function createPaymentRequest(args) {
     }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
-      paymentInstrument.paymentTransaction.amount,
+        paymentInstrument.paymentTransaction.amount,
     ).getValueOrNull(); // args.Amount * 100;
     paymentRequest.amount = {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
@@ -77,7 +78,6 @@ function createPaymentRequest(args) {
       paymentMethodType,
       paymentRequest,
     );
-
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
       order,
@@ -107,7 +107,7 @@ function createPaymentRequest(args) {
     }
 
   // make API call
-    return doPaymentCall(order, paymentInstrument, paymentRequest);
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `error processing payment. Error message: ${
@@ -118,7 +118,7 @@ function createPaymentRequest(args) {
   }
 }
 
-function doPaymentCall(order, paymentInstrument, paymentRequest) {
+function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
@@ -167,8 +167,8 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
     }
 
     paymentResponse.fullResponse = responseObject;
-    paymentResponse.redirectObject = responseObject.redirect
-      ? responseObject.redirect
+    paymentResponse.redirectObject = responseObject.action
+      ? responseObject.action
       : '';
     paymentResponse.resultCode = responseObject.resultCode;
     paymentResponse.pspReference = responseObject.pspReference
@@ -184,11 +184,29 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
+    const threeDS2ResultCodes = [
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER
+    ];
+
+    const acceptedResultCodes = [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+      constants.RESULTCODES.REDIRECTSHOPPER
+    ];
+
+    const presentToShopperResultCodes = [constants.RESULTCODES.PRESENTTOSHOPPER];
+
+    const refusedResultCodes = [
+      constants.RESULTCODES.CANCELLED,
+      constants.RESULTCODES.ERROR,
+      constants.RESULTCODES.REFUSED
+    ];
+
+    const {resultCode} = paymentResponse;
     // Check the response object from /payment call
-    if (
-      paymentResponse.resultCode === 'IdentifyShopper' ||
-      paymentResponse.resultCode === 'ChallengeShopper'
-    ) {
+    if (threeDS2ResultCodes.indexOf(resultCode) !== -1) {
       if (responseObject.action) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
             responseObject.action,
@@ -196,93 +214,32 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
       }
       paymentResponse.decision = 'ACCEPT';
       paymentResponse.threeDS2 = true;
-      let token3ds2;
-      if (responseObject.authentication['threeds2.fingerprintToken']) {
-        token3ds2 = responseObject.authentication['threeds2.fingerprintToken'];
-      } else if (responseObject.authentication['threeds2.challengeToken']) {
-        token3ds2 = responseObject.authentication['threeds2.challengeToken'];
-      }
-      paymentResponse.token3ds2 = token3ds2;
+
+      paymentResponse.token3ds2 = responseObject.action.token;
       paymentResponse.paymentData = responseObject.paymentData;
-    } else if (
-      paymentResponse.resultCode === 'Authorised' ||
-      paymentResponse.resultCode === 'RedirectShopper'
-    ) {
+    } else if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
-      paymentResponse.paymentData = responseObject.paymentData;
       // if 3D Secure is used, the statuses will be updated later
-      if (paymentResponse.resultCode === 'Authorised') {
+      if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
         Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
-    } else if (paymentResponse.resultCode === 'PresentToShopper') {
+    } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       if (responseObject.action) {
         paymentInstrument.custom.adyenAction = JSON.stringify(
           responseObject.action,
         );
       }
-
-      if (responseObject.outputDetails) {
-        const outputDetailsData = [];
-        for (const data in responseObject.outputDetails) {
-          outputDetailsData.push({
-            key: data,
-            value: responseObject.outputDetails[data],
-          });
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          outputDetailsData,
-        );
-      }
-    } else if (paymentResponse.resultCode === 'Received') {
-      paymentResponse.decision = 'ACCEPT';
-      if (responseObject.additionalData['bankTransfer.owner']) {
-        const bankTransferData = [
-          {
-            key: 'bankTransfer.description',
-            value: 'bankTransfer.description',
-          },
-        ];
-        for (const data in responseObject.additionalData) {
-          if (data.indexOf('bankTransfer.') !== -1) {
-            bankTransferData.push({
-              key: data,
-              value: responseObject.additionalData[data],
-            });
-          }
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          bankTransferData,
-        );
-      }
-
-      if (responseObject.additionalData['comprafacil.entity']) {
-        const multiBancoData = [
-          { key: 'comprafacil.description', value: 'comprafacil.description' },
-        ];
-        for (const data in responseObject.additionalData) {
-          if (data.indexOf('comprafacil.') !== -1) {
-            multiBancoData.push({
-              key: data,
-              value: responseObject.additionalData[data],
-            });
-          }
-        }
-        paymentInstrument.custom.adyenAdditionalPaymentData = JSON.stringify(
-          multiBancoData,
-        );
-      }
-
-      order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-      order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
     } else {
       paymentResponse.decision = 'REFUSED';
       order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
       order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+      errorMessage = refusedResultCodes.indexOf(resultCode) !== -1 ?
+        Resource.msg('confirm.error.declined', 'checkout', null):
+        Resource.msg('confirm.error.unknown', 'checkout', null);
 
-      errorMessage = Resource.msg('confirm.error.declined', 'checkout', null);
       if (responseObject.refusalReason) {
         errorMessage += ` (${responseObject.refusalReason})`;
       }
@@ -298,7 +255,7 @@ function doPaymentCall(order, paymentInstrument, paymentRequest) {
   }
 }
 
-function doPaymentDetailsCall(paymentDetailsRequest) {
+function doPaymentsDetailsCall(paymentDetailsRequest) {
   const callResult = executeCall(
     AdyenHelper.SERVICE.PAYMENTDETAILS,
     paymentDetailsRequest,
@@ -354,6 +311,6 @@ function executeCall(serviceType, requestObject) {
 
 module.exports = {
   createPaymentRequest,
-  doPaymentCall,
-  doPaymentDetailsCall,
+  doPaymentsCall,
+  doPaymentsDetailsCall,
 };

@@ -26,7 +26,7 @@ beforeEach(function () {
 });
 describe('Payment', function () {
   it('should handle invalid request', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       invalidRequest: true
     });
     URLUtils.httpHome = jest.fn();
@@ -43,7 +43,7 @@ describe('Payment', function () {
     expect(Logger.error).toHaveBeenCalledWith("Invalid request for order ".concat(order.orderNo));
   });
   it('should handle invalid payment', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       error: true
     });
     handlePaymentsDetailsCall({}, {}, {}, {
@@ -53,7 +53,7 @@ describe('Payment', function () {
     expect(handlePaymentError).toBeCalledTimes(1);
   });
   it('should handle challengeShopper', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'ChallengeShopper',
       action: 'mocked_action',
       merchantReference: 'mocked_merchantReference'
@@ -68,7 +68,7 @@ describe('Payment', function () {
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
   });
   it('should place order', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Authorised',
       error: false,
       merchantReference: 'mocked_merchantReference'

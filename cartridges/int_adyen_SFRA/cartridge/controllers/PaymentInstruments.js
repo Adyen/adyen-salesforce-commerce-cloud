@@ -10,8 +10,6 @@ var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
-var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var _require = require('*/cartridge/scripts/updateSavedCards'),
@@ -35,12 +33,11 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
  */
 
 server.prepend('AddPayment', csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
-  var protocol = req.https ? 'https' : 'http';
-  var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
+  var clientKey = AdyenHelper.getAdyenClientKey();
   var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   var viewData = res.getViewData();
   viewData.adyen = {
-    originKey: originKey,
+    clientKey: clientKey,
     environment: environment
   };
   res.setViewData(viewData);

@@ -22,7 +22,12 @@ function create() {
     customer,
     paymentInstrument,
   );
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+
+  if(zeroAuthResult.action) {
+    return zeroAuthResult.action;
+  }
+
+  if (zeroAuthResult.error || zeroAuthResult.resultCode !== constants.RESULTCODES.AUTHORISED) {
     Transaction.rollback();
     return false;
   }

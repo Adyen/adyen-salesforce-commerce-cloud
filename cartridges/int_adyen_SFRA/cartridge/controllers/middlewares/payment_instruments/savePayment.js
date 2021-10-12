@@ -1,5 +1,11 @@
 "use strict";
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var server = require('server');
 
 var Resource = require('dw/web/Resource');
@@ -10,7 +16,7 @@ var Transaction = require('dw/system/Transaction');
 
 var URLUtils = require('dw/web/URLUtils');
 
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+var PaymentMgr = require('dw/order/PaymentMgr');
 
 var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 
@@ -21,23 +27,49 @@ var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 var _require = require('*/cartridge/scripts/updateSavedCards'),
     updateSavedCards = _require.updateSavedCards;
 
-function savePayment(req, res, next) {
-  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
-    return next();
-  }
+var _require2 = require('./paymentProcessorIDs'),
+    paymentProcessorIDs = _require2.paymentProcessorIDs;
 
-  var paymentForm = server.forms.getForm('creditCard');
-  var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
+function containsValidResultCode(req) {
+  return [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.IDENTIFYSHOPPER, constants.RESULTCODES.CHALLENGESHOPPER, constants.RESULTCODES.REDIRECTSHOPPER].indexOf(req.resultCode) !== -1;
+}
+
+function createPaymentInstrument(customer) {
   var paymentInstrument;
+  var paymentForm = server.forms.getForm('creditCard');
   var wallet = customer.getProfile().getWallet();
   Transaction.wrap(function () {
     paymentInstrument = wallet.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
     paymentInstrument.custom.adyenPaymentData = paymentForm.adyenStateData.value;
   });
-  Transaction.begin();
-  var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, paymentInstrument);
+  return paymentInstrument;
+}
 
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+function getResponseBody(action) {
+  return _objectSpread({
+    success: true,
+    redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+  }, action && {
+    redirectAction: action
+  });
+}
+
+function isAdyen() {
+  var _PaymentMgr$getPaymen, _PaymentMgr$getPaymen2;
+
+  return paymentProcessorIDs.indexOf((_PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod('CREDIT_CARD')) === null || _PaymentMgr$getPaymen === void 0 ? void 0 : (_PaymentMgr$getPaymen2 = _PaymentMgr$getPaymen.getPaymentProcessor()) === null || _PaymentMgr$getPaymen2 === void 0 ? void 0 : _PaymentMgr$getPaymen2.getID()) > -1 || PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_COMPONENT).isActive();
+}
+
+function savePayment(req, res, next) {
+  if (!isAdyen()) {
+    return next();
+  }
+
+  var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
+  Transaction.begin();
+  var zeroAuthResult = adyenZeroAuth.zeroAuthPayment(customer, createPaymentInstrument(customer));
+
+  if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
     Transaction.rollback();
     res.json({
       success: false,
@@ -52,10 +84,7 @@ function savePayment(req, res, next) {
   }); // Send account edited email
 
   accountHelpers.sendAccountEditedEmail(customer.profile);
-  res.json({
-    success: true,
-    redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
-  });
+  res.json(getResponseBody(zeroAuthResult.action));
   return this.emit('route:Complete', req, res);
 }
 

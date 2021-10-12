@@ -19,14 +19,6 @@ beforeEach(function () {
   };
 });
 describe('Authorise', function () {
-  it('should handle alipay_hk', function () {
-    var result = {
-      resultCode: 'Received',
-      paymentMethod: ['alipay_hk']
-    };
-    handleAuthorised({}, result, {}, {});
-    expect(payment.handleReceived).toBeCalledTimes(1);
-  });
   it('should handle error', function () {
     COHelpers.placeOrder.mockReturnValue({
       error: true
@@ -47,7 +39,6 @@ describe('Authorise', function () {
     handleAuthorised({}, result, {}, {
       req: req
     });
-    expect(payment.handleReceived).toBeCalledTimes(0);
     expect(payment.handlePaymentError).toBeCalledTimes(0);
   });
 });

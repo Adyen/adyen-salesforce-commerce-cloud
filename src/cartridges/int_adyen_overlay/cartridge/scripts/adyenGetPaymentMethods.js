@@ -76,6 +76,8 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
 
+    paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+
     const xapikey = AdyenHelper.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');

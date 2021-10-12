@@ -1,7 +1,9 @@
 const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
-const cardNode = document.getElementById('card');
+let checkout;
+
+// Store configuration
 store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
@@ -10,6 +12,7 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
     hasHolderName: true,
+    holderNameRequired: true,
     installments: [],
     onBrand,
     onFieldValid,
@@ -20,16 +23,71 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
   },
 };
 
-const checkout = new AdyenCheckout(store.checkoutConfiguration);
+// Handle Payment action
+function handleAction(action) {
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+}
+
+// confirm onAdditionalDetails event and paymentsDetails response
+store.checkoutConfiguration.onAdditionalDetails = (state) => {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify(state.data),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(data) {
+      if (data.isSuccessful) {
+        window.location.href = window.redirectUrl;
+      } else if (!data.isFinal && typeof data.action === 'object') {
+        handleAction(data.action);
+      } else {
+        $('#action-modal').modal('hide');
+        document.getElementById('cardError').style.display = 'block';
+      }
+    },
+  });
+};
+
+// card and checkout component creation
+const cardNode = document.getElementById('card');
+checkout = new AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
-$('button[value="add-new-payment"]').on('click', () => {
+let formErrorsExist = false;
+
+function submitAddCard() {
+  const form = $(document.getElementById('payment-form'));
+  $.ajax({
+    type: 'POST',
+    url: form.attr('action'),
+    data: form.serialize(),
+    async: false,
+    success(data) {
+      if (data.redirectAction) {
+        handleAction(data.redirectAction);
+      } else if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      } else if (data.error) {
+        formErrorsExist = true;
+      }
+    },
+  });
+}
+
+// Add Payment Button event handler
+$('button[value="add-new-payment"]').on('click', (event) => {
   if (store.isValid) {
     document.querySelector('#adyenStateData').value = JSON.stringify(
       store.componentState.data,
     );
-    return true;
+    submitAddCard();
+    if (formErrorsExist) {
+      return;
+    }
+    event.preventDefault();
+  } else {
+    card.showValidation();
   }
-  card.showValidation();
-  return false;
 });

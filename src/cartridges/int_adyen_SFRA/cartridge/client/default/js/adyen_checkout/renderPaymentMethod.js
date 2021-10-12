@@ -3,11 +3,43 @@ const helpers = require('./helpers');
 const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
-  const fallback = {};
-  if (fallback[paymentMethod]) {
-    store.componentsObj[paymentMethod] = {};
+  const fallback = {
+    giftcard: `
+        <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
+        <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
+  };
+  if (fallback[paymentMethod.type]) {
+    store.componentsObj[paymentMethod.type] = {};
   }
-  return fallback[paymentMethod];
+  return fallback[paymentMethod.type];
+}
+
+function getPersonalDetails() {
+  return {
+    firstName: document.querySelector('#shippingFirstNamedefault')?.value,
+    lastName: document.querySelector('#shippingLastNamedefault')?.value,
+    telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
+      ?.value,
+    shopperEmail: document.querySelector('.customer-summary-email')
+      ?.textContent,
+    billingAddress: {
+      city: document.querySelector('#billingAddressCity')?.value,
+      postalCode: document.querySelector('#billingZipCode')?.value,
+      country: document.querySelector('#billingCountry')?.value,
+      stateOrProvince: document.querySelector('#billingState')?.value,
+      street: document.querySelector('#billingAddressOne')?.value,
+      houseNumberOrName: document.querySelector('#billingAddressTwo')?.value,
+    },
+    deliveryAddress: {
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      country: document.querySelector('#shippingCountrydefault')?.value,
+      stateOrProvince: document.querySelector('#shippingStatedefault')?.value,
+      street: document.querySelector('#shippingAddressOnedefault')?.value,
+      houseNumberOrName: document.querySelector('#shippingAddressTwodefault')
+        ?.value,
+    },
+  };
 }
 
 function setNode(paymentMethodID) {
@@ -16,7 +48,13 @@ function setNode(paymentMethodID) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      const node = store.checkout.create(...args);
+      // ALl nodes created for the checkout component are enriched with shopper personal details
+      const node = store.checkout.create(...args, {
+        data: {
+          ...getPersonalDetails(),
+          personalDetails: getPersonalDetails(),
+        },
+      });
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
       /* No component for payment method */
@@ -27,7 +65,14 @@ function setNode(paymentMethodID) {
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
-  return isStored ? `storedCard${paymentMethod.id}` : paymentMethod.type;
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
 }
 
 function getImage(isStored, paymentMethod) {
@@ -42,7 +87,7 @@ function getLabel(isStored, paymentMethod) {
 }
 
 function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
-  const fallback = getFallback(paymentMethod.type);
+  const fallback = getFallback(paymentMethod);
   const createTemplate = () => {
     const template = document.createElement('template');
     template.innerHTML = fallback;

@@ -38,8 +38,6 @@
  * order creation date > current date
  *
  */
-
-/* eslint no-var: off */
 var Logger = require('dw/system/Logger');
 
 var PaymentMgr = require('dw/order/PaymentMgr');

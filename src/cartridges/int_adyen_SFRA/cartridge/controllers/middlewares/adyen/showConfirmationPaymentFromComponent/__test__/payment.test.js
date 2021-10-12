@@ -29,7 +29,7 @@ const paymentErrorSnap = `
 
 describe('Payment', () => {
   it('should successfully handle payment', () => {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Authorised',
     });
     const stateData = {
@@ -41,7 +41,7 @@ describe('Payment', () => {
   });
 
   it('should handle payment error when not Authorised', () => {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Not_Authorised',
     });
     const stateData = {

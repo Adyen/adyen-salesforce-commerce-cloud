@@ -41,7 +41,7 @@ function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
     details: details,
     paymentData: paymentData
   };
-  var result = adyenCheckout.doPaymentDetailsCall(requestObject);
+  var result = adyenCheckout.doPaymentsDetailsCall(requestObject);
   return {
     result: result,
     adyenPaymentInstrument: adyenPaymentInstrument
@@ -87,26 +87,34 @@ function handleAuthorisedPayment(order, result, adyenPaymentInstrument, _ref2) {
   }
 
   return next();
-}
+} // eslint-disable-next-line complexity
+
 
 function handlePayment(stateData, order, options) {
+  var _options$req$form;
+
   var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+  var result = (_options$req$form = options.req.form) === null || _options$req$form === void 0 ? void 0 : _options$req$form.result;
   var adyenPaymentInstrument = paymentInstruments[0];
   var hasStateData = (stateData === null || stateData === void 0 ? void 0 : stateData.paymentData) && (stateData === null || stateData === void 0 ? void 0 : stateData.details);
+  var finalResult;
 
   if (!hasStateData) {
-    return handlePaymentError(order, options);
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      return handlePaymentError(order, options);
+    }
   }
 
-  var _handlePaymentsDetail = handlePaymentsDetailsCall(stateData, adyenPaymentInstrument),
-      result = _handlePaymentsDetail.result;
-
+  var detailsCall = handlePaymentsDetailsCall(stateData, adyenPaymentInstrument);
   Transaction.wrap(function () {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
-  }); // Authorised: The payment authorisation was successfully completed.
+  });
+  finalResult = finalResult || detailsCall.result; // Authorised: The payment authorisation was successfully completed.
 
-  if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
-    return handleAuthorisedPayment(order, result, adyenPaymentInstrument, options);
+  if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf(finalResult.resultCode) > -1) {
+    return handleAuthorisedPayment(order, finalResult, adyenPaymentInstrument, options);
   }
 
   return handlePaymentError(order, options);

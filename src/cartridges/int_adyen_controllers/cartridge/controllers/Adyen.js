@@ -2,8 +2,6 @@ const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
-// eslint-disable-next-line no-unused-vars
-const Site = require('dw/system/Site');
 const Status = require('dw/system/Status');
 const Transaction = require('dw/system/Transaction');
 const PaymentMgr = require('dw/order/PaymentMgr');
@@ -65,6 +63,66 @@ function redirect(order, redirectUrl) {
 }
 
 /**
+ * Performs a zero auth transaction to add a card to an account
+ */
+function zeroAuth() {
+  const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+  const wallet = customer.getProfile().getWallet();
+  const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
+  let paymentInstrument;
+  Transaction.wrap(() => {
+    paymentInstrument = wallet.createPaymentInstrument(
+        constants.METHOD_ADYEN_COMPONENT,
+    );
+    paymentInstrument.custom.adyenPaymentData = stateDataStr;
+  });
+
+  Transaction.begin();
+  const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
+      customer,
+      paymentInstrument,
+  );
+  if (zeroAuthResult.error) {
+      Transaction.rollback();
+      return false;
+  }
+  Transaction.commit();
+  const responseUtils = require('*/cartridge/scripts/util/Response');
+  responseUtils.renderJSON({zeroAuthResult});
+}
+
+/**
+ * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
+ */
+function Redirect3DS1Response() {
+  try {
+    const redirectResult = request.httpParameterMap.get('redirectResult').stringValue;
+    const jsonRequest = {
+      details: {
+        redirectResult: redirectResult,
+      },
+    };
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
+    if (result.resultCode === 'Authorised') {
+      return response.redirect(URLUtils.https('PaymentInstruments-List'));
+    } else {
+     return response.redirect(
+          URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'),
+      );
+    }
+
+  } catch (e) {
+    Logger.getLogger('Adyen').error(
+        `Error during 3ds1 response verification: ${e.toString()} in ${
+            e.fileName
+        }:${e.lineNumber}`,
+    );
+    return response.redirect(URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'));
+  }
+}
+
+/**
  * Show confirmation after return from Adyen
  */
 function showConfirmation() {
@@ -92,7 +150,7 @@ function showConfirmation() {
       details: getDetails(),
       paymentData,
     };
-    const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+    const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearAdyenData(adyenPaymentInstrument);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error('Invalid /payments/details call');
@@ -165,6 +223,42 @@ function showConfirmation() {
   return {};
 }
 
+/**
+ *  Confirm payment status after receiving redirectResult from Adyen
+ */
+function paymentsDetails() {
+  try {
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const requestBody = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
+    const isAmazonpay = requestBody.paymentMethod === 'amazonpay';
+    requestBody.paymentMethod = undefined;
+
+    const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
+        requestBody
+    );
+    const response = AdyenHelper.createAdyenCheckoutResponse(
+        paymentsDetailsResponse,
+    );
+    if (isAmazonpay) {
+      response.fullResponse = {
+        pspReference: paymentsDetailsResponse.pspReference,
+        paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
+        resultCode: paymentsDetailsResponse.resultCode,
+      };
+    }
+
+    const responseUtils = require('*/cartridge/scripts/util/Response');
+    responseUtils.renderJSON({response});
+  } catch (e) {
+    Logger.getLogger('Adyen').error(
+        `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+            e.lineNumber
+        }`,
+    );
+    return response.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+  }
+}
+
 function getDetails() {
   const { redirectResult, payload } = request.httpParameterMap;
   return {
@@ -203,6 +297,7 @@ function paymentFromComponent() {
         return result;
       }
       const stateDataStr = request.httpParameterMap.getRequestBodyAsString();
+
       paymentInstrument = currentBasket.createPaymentInstrument(
           constants.METHOD_ADYEN_COMPONENT,
           currentBasket.totalGrossPrice,
@@ -243,6 +338,7 @@ function showConfirmationPaymentFromComponent() {
   const paymentInformation = app.getForm('adyPaydata');
   const orderNumber = paymentInformation.get('merchantReference').value();
   const orderToken = paymentInformation.get('orderToken').value();
+  const result = paymentInformation.get('result').value();
   const order = OrderMgr.getOrder(orderNumber, orderToken);
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
@@ -258,17 +354,24 @@ function showConfirmationPaymentFromComponent() {
     paymentInformation.get('paymentFromComponentStateData').value(),
   );
 
-  const hasStateData = stateData && stateData.details && stateData.paymentData;
-  if (!hasStateData) {
-    // The billing step is fulfilled, but order will be failed
-    app.getForm('billing').object.fulfilled.value = true;
-    // fail order if no stateData available
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
-    app.getController('COBilling').Start();
+  let finalResult;
 
-    return {};
+  const hasStateData = stateData && stateData.details && stateData.paymentData;
+
+  if (!hasStateData) {
+    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+      finalResult = JSON.parse(result);
+    } else {
+      // The billing step is fulfilled, but order will be failed
+      app.getForm('billing').object.fulfilled.value = true;
+      // fail order if no stateData available
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+      app.getController('COBilling').Start();
+
+      return {};
+    }
   }
   const { details } = stateData;
   const { paymentData } = stateData;
@@ -279,7 +382,7 @@ function showConfirmationPaymentFromComponent() {
     details,
     paymentData,
   };
-  const result = adyenCheckout.doPaymentDetailsCall(requestObject);
+
   const paymentProcessor = PaymentMgr.getPaymentMethod(
     adyenPaymentInstrument.getPaymentMethod(),
   ).getPaymentProcessor();
@@ -288,9 +391,12 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  if (result.resultCode === 'Authorised') {
+
+  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
+
+  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
     Transaction.wrap(() => {
-      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+      AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
     OrderModel.submit(order);
     clearForms();
@@ -403,6 +509,17 @@ function getPaymentMethods(cart, customer) {
   const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
       ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
       : new dw.value.Money(1000, currency);
+
+  const shippingForm = session.forms.singleshipping;
+  const shippingAddress = {
+    firstName:  shippingForm.shippingAddress.addressFields.firstName.value,
+    lastName:  shippingForm.shippingAddress.addressFields.lastName.value,
+    address1:  shippingForm.shippingAddress.addressFields.address1.value,
+    city:  shippingForm.shippingAddress.addressFields.city.value,
+    country:  shippingForm.shippingAddress.addressFields.country.value,
+    phone:  shippingForm.shippingAddress.addressFields.phone.value,
+    postalCode:  shippingForm.shippingAddress.addressFields.postal.value,
+  };
   const jsonResponse = {
     adyenPaymentMethods: response,
     adyenConnectedTerminals: connectedTerminals,
@@ -410,17 +527,14 @@ function getPaymentMethods(cart, customer) {
     AdyenDescriptions: paymentMethodDescriptions,
     amount: { value: paymentAmount.value, currency: currency },
     countryCode: countryCode,
+    shippingAddress:shippingAddress,
   };
 
   return jsonResponse;
 }
 
 function redirect3ds2() {
-  const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-  const originKey = adyenGetOriginKey.getOriginKeyFromRequest(
-    request.httpProtocol,
-    request.httpHost,
-  );
+  const clientKey = AdyenHelper.getAdyenClientKey();
   const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
   const locale = request.getLocale();
 
@@ -438,7 +552,7 @@ function redirect3ds2() {
   app
     .getView({
       locale,
-      originKey,
+      clientKey,
       environment,
       resultCode: request.httpParameterMap.get('resultCode').stringValue,
       action: action,
@@ -507,7 +621,7 @@ function authorize3ds2() {
       details,
     };
 
-    const result = adyenCheckout.doPaymentDetailsCall(paymentDetailsRequest);
+    const result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
       clearAdyenData(paymentInstrument);
@@ -591,14 +705,13 @@ function authorizeWithForm() {
     Transaction.begin();
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const jsonRequest = {
-      paymentData: paymentInstrument.custom.adyenPaymentData,
       details: {
         MD,
         PaRes,
       },
     };
 
-    const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+    const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
     if (result.invalidRequest) {
       Logger.getLogger('Adyen').error(`Invalid request for order ${orderNo}`);
       return response.redirect(URLUtils.httpHome());
@@ -690,6 +803,11 @@ exports.ShowConfirmationPaymentFromComponent = guard.ensure(
   showConfirmationPaymentFromComponent,
 );
 
+exports.Redirect3DS1Response = guard.ensure(
+    ['https'],
+    Redirect3DS1Response,
+);
+
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
@@ -699,6 +817,16 @@ exports.getExternalPlatformVersion = getExternalPlatformVersion();
 exports.PaymentFromComponent = guard.ensure(
   ['https', 'post'],
     paymentFromComponent,
+);
+
+exports.ZeroAuth = guard.ensure(
+    ['https', 'post'],
+    zeroAuth,
+);
+
+exports.PaymentsDetails = guard.ensure(
+    ['https', 'post'],
+    paymentsDetails,
 );
 
 exports.Donate = guard.ensure(['https', 'post'], donate);

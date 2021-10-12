@@ -32,6 +32,13 @@ var MessageDigest = require('dw/crypto/MessageDigest');
 
 var Encoding = require('dw/crypto/Encoding');
 
+var CustomerMgr = require('dw/customer/CustomerMgr');
+
+var _require = require('*/cartridge/scripts/config/blockedPaymentMethods.json'),
+    blockedPaymentMethods = _require.blockedPaymentMethods;
+
+var constants = require('*/cartridge/adyenConstants/constants');
+
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 /* eslint no-var: off */
 
@@ -43,7 +50,6 @@ var adyenHelperObj = {
     RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     POSPAYMENT: 'AdyenPosPayment',
-    ORIGINKEYS: 'AdyenOriginKeys',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving'
@@ -56,8 +62,9 @@ var adyenHelperObj = {
   ADYEN_TEST_URL: 'https://test.adyen.com/',
   LOADING_CONTEXT_TEST: 'https://checkoutshopper-test.adyen.com/checkoutshopper/',
   LOADING_CONTEXT_LIVE: 'https://checkoutshopper-live.adyen.com/checkoutshopper/',
-  CHECKOUT_COMPONENT_VERSION: '3.18.2',
-  VERSION: '21.1.0',
+  CHECKOUT_COMPONENT_VERSION: '4.7.2',
+  VERSION: '21.2.0',
+  BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService: function getService(service) {
     var adyenService = null;
@@ -86,6 +93,15 @@ var adyenHelperObj = {
     }
 
     return adyenService;
+  },
+  // returns SFCC customer object based on currentCustomer object
+  // as retrieved from controller endpoint calls
+  getCustomer: function getCustomer(currentCustomer) {
+    if (currentCustomer.profile) {
+      return CustomerMgr.getCustomerByCustomerNumber(currentCustomer.profile.customerNo);
+    }
+
+    return null;
   },
   // Retrieve a custom preference
   getCustomPreference: function getCustomPreference(field) {
@@ -123,20 +139,8 @@ var adyenHelperObj = {
 
     return returnValue;
   },
-  getAdyenSecuredFieldsEnabled: function getAdyenSecuredFieldsEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenSecuredFieldsEnabled');
-  },
   getAdyen3DS2Enabled: function getAdyen3DS2Enabled() {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
-  },
-  getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
-    var returnValue = false;
-
-    if (!empty(adyenCurrentSite) && (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') || adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))) {
-      returnValue = true;
-    }
-
-    return returnValue;
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
     var paymentMethod = order.custom.Adyen_paymentMethod;
@@ -168,10 +172,7 @@ var adyenHelperObj = {
       pspReference: order.custom.Adyen_pspReference
     };
   },
-  getAdyenRecurringEnabled: function getAdyenRecurringEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
-  },
-  getAdyenOneClickEnabled: function getAdyenOneClickEnabled() {
+  getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
   getCreditCardInstallments: function getCreditCardInstallments() {
@@ -180,8 +181,8 @@ var adyenHelperObj = {
   getSystemIntegratorName: function getSystemIntegratorName() {
     return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
   },
-  getPaypalMerchantID: function getPaypalMerchantID() {
-    return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
+  getAdyenClientKey: function getAdyenClientKey() {
+    return adyenHelperObj.getCustomPreference('Adyen_ClientKey');
   },
   getGoogleMerchantID: function getGoogleMerchantID() {
     return adyenHelperObj.getCustomPreference('Adyen_GooglePayMerchantID');
@@ -452,6 +453,8 @@ var adyenHelperObj = {
   },
   // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject: function createAdyenRequestObject(order, paymentInstrument) {
+    var _stateData$paymentMet;
+
     var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
     var filteredJson = adyenHelperObj.validateStateData(jsonObject);
     var stateData = filteredJson.stateData;
@@ -463,11 +466,17 @@ var adyenHelperObj = {
       orderToken = order.getOrderToken();
     }
 
+    if ((_stateData$paymentMet = stateData.paymentMethod) !== null && _stateData$paymentMet !== void 0 && _stateData$paymentMet.storedPaymentMethodId) {
+      stateData.recurringProcessingModel = 'CardOnFile';
+      stateData.shopperInteraction = 'ContAuth';
+    } else {
+      stateData.shopperInteraction = 'Ecommerce';
+    }
+
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
     stateData.returnUrl = URLUtils.https('Adyen-ShowConfirmation', 'merchantReference', reference, 'orderToken', orderToken).toString();
-    stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
-    stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
+    stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
     stateData.additionalData = {};
     return stateData;
   },
@@ -652,7 +661,7 @@ var adyenHelperObj = {
 
     return format;
   },
-  getApplicationInfo: function getApplicationInfo(isEcom) {
+  getApplicationInfo: function getApplicationInfo() {
     var externalPlatformVersion = '';
     var applicationInfo = {};
 
@@ -675,14 +684,6 @@ var adyenHelperObj = {
       version: externalPlatformVersion,
       integrator: this.getSystemIntegratorName()
     };
-
-    if (isEcom) {
-      applicationInfo.adyenPaymentSource = {
-        name: 'adyen-salesforce-commerce-cloud',
-        version: adyenHelperObj.VERSION
-      };
-    }
-
     return applicationInfo;
   },
   // validates all fields in a state data object. Filters out all invalid fields
@@ -706,6 +707,33 @@ var adyenHelperObj = {
     return {
       stateData: filteredStateData,
       invalidFields: invalidFields
+    };
+  },
+  createAdyenCheckoutResponse: function createAdyenCheckoutResponse(checkoutresponse) {
+    if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.REFUSED, constants.RESULTCODES.ERROR, constants.RESULTCODES.CANCELLED].indexOf(checkoutresponse.resultCode) !== -1) {
+      return {
+        isFinal: true,
+        isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED
+      };
+    }
+
+    if ([constants.RESULTCODES.REDIRECTSHOPPER, constants.RESULTCODES.IDENTIFYSHOPPER, constants.RESULTCODES.CHALLENGESHOPPER, constants.RESULTCODES.PRESENTTOSHOPPER, constants.RESULTCODES.PENDING].indexOf(checkoutresponse.resultCode) !== -1) {
+      return {
+        isFinal: false,
+        action: checkoutresponse.action
+      };
+    }
+
+    if (checkoutresponse.resultCode === 'Received') {
+      return {
+        isFinal: false
+      };
+    }
+
+    dwsystem.Logger.getLogger('Adyen').error("Unknown resultCode: ".concat(checkoutresponse.resultCode, "."));
+    return {
+      isFinal: true,
+      isSuccessful: false
     };
   }
 };

@@ -48,10 +48,6 @@ if (window.installments) {
 if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
   var id = 'merchantIdentifier';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
-}
-
-if (window.paypalMerchantID !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId = window.paypalMerchantID;
 } // Submit the payment
 
 

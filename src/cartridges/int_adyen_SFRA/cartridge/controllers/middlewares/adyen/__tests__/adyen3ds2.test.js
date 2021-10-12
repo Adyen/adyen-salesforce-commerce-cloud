@@ -27,17 +27,4 @@ describe('Adyen 3DS2', () => {
     adyen3ds2(req, res, next);
     expect(res.render.mock.calls).toMatchSnapshot();
   });
-  it('should throw', () => {
-    const adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
-    const Logger = require('dw/system/Logger');
-    const URLUtils = require('dw/web/URLUtils');
-
-    adyenGetOriginKey.getOriginKeyFromRequest.mockImplementation(() => {
-      throw Error('some_error');
-    });
-
-    adyen3ds2(req, res, next);
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
-    expect(Logger.error.mock.calls).toMatchSnapshot();
-  });
 });

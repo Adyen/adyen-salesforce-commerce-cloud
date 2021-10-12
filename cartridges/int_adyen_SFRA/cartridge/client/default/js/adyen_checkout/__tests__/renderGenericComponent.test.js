@@ -2,7 +2,7 @@
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -54,7 +54,7 @@ describe('Render Generic Component', function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            document.body.innerHTML = "\n      <div id=\"paymentMethodsList\"></div>\n      <input type=\"radio\" name=\"brandCode\" value=\"card\" />\n      <button value=\"submit-payment\">Submit</button>\n      <div id=\"component_card\"></div>\n      <div id=\"adyenPosTerminals\">\n        <span>Child #1</span>\n      </div>\n    ";
+            document.body.innerHTML = "\n      <div id=\"paymentMethodsList\"></div>\n      <input type=\"radio\" name=\"brandCode\" value=\"card\" />\n      <button value=\"submit-payment\">Submit</button>\n      <div id=\"component_card\"></div>\n      <div id=\"adyenPosTerminals\">\n        <span>Child #1</span>\n      </div>\n      <div>\n        <input type=\"text\" id=\"shippingFirstNamedefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingLastNamedefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingAddressOnedefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingAddressCitydefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingZipCodedefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingCountrydefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingPhoneNumberdefault\" value=\"test\">\n        <input type=\"text\" id=\"shippingZipCodedefault\" value=\"test\">  \n      </div>\n    ";
             window.AdyenCheckout = jest.fn(function () {
               return {
                 create: jest.fn(),
@@ -75,12 +75,16 @@ describe('Render Generic Component', function () {
                 paymentMethods: [{
                   type: 'scheme',
                   name: 'Card'
+                }, {
+                  type: 'amazonpay'
                 }],
                 storedPaymentMethods: true
               },
               ImagePath: 'example.com',
               AdyenDescriptions: [{
                 description: 'mocked_description'
+              }, {
+                description: 'mocked_description2'
               }]
             };
             $.ajax = jest.fn(function (_ref3) {
@@ -91,14 +95,17 @@ describe('Render Generic Component', function () {
               foo: 'bar',
               bar: 'baz'
             };
-            _context2.next = 7;
+            store.checkoutConfiguration.paymentMethodsConfiguration = {
+              amazonpay: {}
+            };
+            _context2.next = 8;
             return renderGenericComponent();
 
-          case 7:
+          case 8:
             expect(store.checkoutConfiguration).toMatchSnapshot();
             expect(document.querySelector('input[type=radio][name=brandCode]').value).toBeTruthy();
 
-          case 9:
+          case 10:
           case "end":
             return _context2.stop();
         }

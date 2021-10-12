@@ -9,18 +9,14 @@ var OrderMgr = require('dw/order/OrderMgr');
 var constants = require('*/cartridge/adyenConstants/constants');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
-var adyenGetOriginKey = require('*/cartridge/scripts/adyenGetOriginKey');
 /**
  * Initiates a 3DS2 payment
  */
 
 
 function adyen3ds2(req, res, next) {
-  var protocol = req.https ? 'https' : 'http';
-
   try {
-    var originKey = adyenGetOriginKey.getOriginKeyFromRequest(protocol, req.host);
+    var clientKey = AdyenHelper.getAdyenClientKey();
     var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
     var resultCode = req.querystring.resultCode;
     var orderNo = req.querystring.orderNo;
@@ -29,7 +25,7 @@ function adyen3ds2(req, res, next) {
     var action = paymentInstrument.custom.adyenAction;
     res.render('/threeds2/adyen3ds2', {
       locale: request.getLocale(),
-      originKey: originKey,
+      clientKey: clientKey,
       environment: environment,
       resultCode: resultCode,
       action: action,

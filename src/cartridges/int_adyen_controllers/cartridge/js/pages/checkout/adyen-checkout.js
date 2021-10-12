@@ -1,7 +1,8 @@
 require('./bundle');
 require('./adyen-giving');
+require('./amazon');
 
-var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile'];
+var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];
 var maskedCardNumber;
 var MASKED_CC_PREFIX = '************';
 var selectedMethod;
@@ -21,6 +22,7 @@ function initializeBillingEvents() {
     var isAdyenPOS = document.querySelector('.payment-method-options :checked').value
         === 'AdyenPOS';
     var isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
+
     if (isAdyenPOS) {
       document.querySelector(
           '#dwfrm_adyPaydata_terminalId',
@@ -53,29 +55,8 @@ function initializeBillingEvents() {
     };
     checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
-      card: {
-        enableStoreDetails: showStoreDetails,
-        onBrand: function (brandObject) {
-          $('#cardType').val(brandObject.brand);
-        },
-        onFieldValid: function (data) {
-          if (data.endDigits) {
-            maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
-            $('#cardNumber').val(maskedCardNumber);
-          }
-        },
-        onChange: function (state) {
-          isValid = state.isValid;
-          var componentName = state.data.paymentMethod.storedPaymentMethodId
-            ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-            : state.data.paymentMethod.type;
-          if (componentName === selectedMethod || selectedMethod === 'bcmc') {
-            $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
-            componentsObj[selectedMethod].isValid = isValid;
-            componentsObj[selectedMethod].stateData = state.data;
-          }
-        },
-      },
+      card: getCardConfig(),
+      storedCard: getCardConfig(),
       boletobancario: {
         personalDetailsRequired: true, // turn personalDetails section on/off
         billingAddressRequired: false, // turn billingAddress section on/off
@@ -166,6 +147,8 @@ function initializeBillingEvents() {
       swish: getQRCodeConfig(),
       bcmc_mobile: getQRCodeConfig(),
       wechatpayQR: getQRCodeConfig(),
+      pix: getQRCodeConfig(),
+      amazonpay: getAmazonpayConfig(),
       afterpay_default: {
         visibility: {
           personalDetails: 'editable',
@@ -178,13 +161,13 @@ function initializeBillingEvents() {
               '#dwfrm_billing_billingAddress_addressFields_firstName',
             ).value,
             lastName: document.querySelector(
-               '#dwfrm_billing_billingAddress_addressFields_lastName',
+              '#dwfrm_billing_billingAddress_addressFields_lastName',
             ).value,
             telephoneNumber: document.querySelector(
-               '#dwfrm_billing_billingAddress_addressFields_phone',
+              '#dwfrm_billing_billingAddress_addressFields_phone',
             ).value,
             shopperEmail: document.querySelector(
-               '#dwfrm_billing_billingAddress_email_emailAddress',
+              '#dwfrm_billing_billingAddress_email_emailAddress',
             ).value,
           },
         },
@@ -233,10 +216,6 @@ function initializeBillingEvents() {
       checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier =
         window.googleMerchantID;
     }
-    if (window.paypalMerchantID !== 'null') {
-      checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
-        window.paypalMerchantID;
-    }
     if(window.cardholderNameBool !== 'null') {
       checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
       checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
@@ -245,12 +224,55 @@ function initializeBillingEvents() {
   }
 }
 
+function zeroAuth(data, checkout) {
+  $.ajax({
+    url: window.zeroAuthURL,
+    type: 'POST',
+    contentType: 'application/; charset=utf-8',
+    data: JSON.stringify(data),
+    async: false,
+    success: function (data) {
+      if(data.zeroAuthResult.action) {
+        document.querySelector('#buttonsContainer').style.display = 'none';
+        checkout.createFromAction(data.zeroAuthResult.action).mount('#newCard');
+      }
+      if(data.zeroAuthResult.resultCode === 'Authorised') {
+        window.location.href = window.paymentInstrumentsList;
+      } else if(data.zeroAuthResult.resultCode === 'Refused') {
+        window.location.href = window.paymentInstrumentsListError;
+      }
+    },
+  });
+}
+
+function paymentsDetails(state) {
+  $.ajax({
+    type: 'post',
+    url: window.paymentsDetails,
+    data: JSON.stringify(state.data),
+    contentType: 'application/; charset=utf-8',
+    async: false,
+    success(data) {
+      if (data.response.isSuccessful) {
+        window.location.href = window.paymentInstrumentsList;
+      } else if (!data.response.isFinal && typeof data.response.action === 'object') {
+        checkout.createFromAction(data.action).mount('#action-container');
+      } else {
+        window.location.href = window.paymentInstrumentsListError;
+      }
+    },
+  });
+}
+
 /**
  * @function
  * @description Initializes Adyen Checkout My Account events
  */
 function initializeAccountEvents() {
   checkoutConfiguration = window.Configuration;
+  checkoutConfiguration.onAdditionalDetails = function(state) {
+    paymentsDetails(state);
+  };
   checkout = new AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
@@ -266,7 +288,8 @@ function initializeAccountEvents() {
     })
     .mount(newCard);
 
-  $('#applyBtn').on('click', function () {
+  $('#applyBtn').on('click', function (e) {
+    e.preventDefault();
     if (!isValid) {
       node.showValidation();
       return false;
@@ -274,6 +297,7 @@ function initializeAccountEvents() {
     document.querySelector('#adyenStateData').value = JSON.stringify(
       adyenStateData,
     );
+    zeroAuth(adyenStateData, checkout);
   });
 }
 
@@ -307,7 +331,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -341,7 +365,19 @@ function validateComponents() {
   ) {
     stateData = componentsObj[selectedMethod].stateData;
   } else {
-    stateData = { paymentMethod: { type: selectedMethod } };
+    var type = document.querySelector(`#component_${selectedMethod} .type`)
+      ? document.querySelector(`#component_${selectedMethod} .type`).value
+      : selectedMethod;
+
+    stateData = {
+      paymentMethod: {
+        type: type
+      }
+    };
+    var brandElm = document.querySelector(`#component_${selectedMethod} .brand`);
+    if(brandElm && brandElm.value) {
+      stateData.paymentMethod.brand = brandElm.value;
+    }
   }
 
   document.querySelector('#adyenStateData').value = JSON.stringify(stateData);
@@ -351,24 +387,12 @@ function validateComponents() {
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
 function getFallback(paymentMethod) {
-  var fallback = { };
-  return fallback[paymentMethod];
-}
-
-/**
- * checks if payment method is blocked and returns a boolean accordingly
- */
-function isMethodTypeBlocked(methodType) {
-  var blockedMethods = [
-    'bcmc_mobile_QR',
-    'applepay',
-    'cup',
-    'wechatpay',
-    'wechatpay_pos',
-    'wechatpaySdk',
-    'wechatpayQr',
-  ];
-  return blockedMethods.includes(methodType);
+  var fallback = {
+    giftcard: `
+      <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
+      <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
+  };
+  return fallback[paymentMethod.type];
 }
 
 /**
@@ -386,10 +410,18 @@ async function renderGenericComponent() {
   if (paymentMethodsResponse.amount) {
     checkoutConfiguration.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
+      paymentMethodsResponse.amount;
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
   }
+  var amazonpay = window.getPaymentMethodsResponse.adyenPaymentMethods.paymentMethods.find(
+      (paymentMethod) => paymentMethod.type === 'amazonpay');
+  if(amazonpay) {
+    checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
+  }
+
   checkout = new AdyenCheckout(checkoutConfiguration);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
@@ -411,8 +443,7 @@ async function renderGenericComponent() {
   }
 
   paymentMethods.paymentMethods.forEach((pm) => {
-    !isMethodTypeBlocked(pm.type) &&
-      renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
+    renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
   });
 
   var firstPaymentMethod = document.querySelector(
@@ -422,12 +453,21 @@ async function renderGenericComponent() {
   displaySelectedMethod(firstPaymentMethod.value);
 }
 
+function getPaymentMethodID(isStored, paymentMethod) {
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.brand) {
+    // gift cards all share the same type. Brand is used to differentiate between them
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
+}
+
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   var paymentMethodsUI = document.querySelector('#paymentMethodsList');
   var li = document.createElement('li');
-  var paymentMethodID = storedPaymentMethodBool
-    ? `storedCard${paymentMethod.id}`
-    : paymentMethod.type;
+  var paymentMethodID = getPaymentMethodID(storedPaymentMethodBool, paymentMethod);
   var isSchemeNotStored =
     paymentMethod.type === 'scheme' && !storedPaymentMethodBool;
   var paymentMethodImage = storedPaymentMethodBool
@@ -515,7 +555,7 @@ function renderCheckoutComponent(
       paymentMethodID,
     );
   }
-  var fallback = getFallback(paymentMethod.type);
+  var fallback = getFallback(paymentMethod);
   if (fallback) {
     var template = document.createElement('template');
     template.innerHTML = fallback;
@@ -580,8 +620,8 @@ function paymentFromComponent(data, component) {
 
 $('#dwfrm_billing').submit(function (e) {
   if (
-      ['paypal', 'mbway', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
-    !document.querySelector('#paymentFromComponentStateData').value
+      ['paypal', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(selectedMethod) > -1 &&
+      !document.querySelector('#paymentFromComponentStateData').value
   ) {
     e.preventDefault();
     var form = $(this);
@@ -621,6 +661,59 @@ function getQRCodeConfig() {
       );
       $('#dwfrm_billing').trigger('submit');
     },
+  };
+}
+
+function getCardConfig() {
+  return {
+    enableStoreDetails: showStoreDetails,
+    onBrand: function (brandObject) {
+      $('#cardType').val(brandObject.brand);
+    },
+    onFieldValid: function (data) {
+      if (data.endDigits) {
+        maskedCardNumber = MASKED_CC_PREFIX + data.endDigits;
+        $('#cardNumber').val(maskedCardNumber);
+      }
+    },
+    onChange: function (state) {
+      isValid = state.isValid;
+        var methodToUpdate = state.data.paymentMethod.storedPaymentMethodId ?
+            `storedCard${state.data.paymentMethod.storedPaymentMethodId}` : selectedMethod;
+        $('#browserInfo').val(JSON.stringify(state.data.browserInfo));
+        componentsObj[methodToUpdate].isValid = isValid;
+        componentsObj[methodToUpdate].stateData = state.data;
+    },
+  }
+}
+
+function getAmazonpayConfig() {
+  return {
+    showPayButton: true,
+    productType: 'PayAndShip',
+    checkoutMode: 'ProcessOrder',
+    locale: window.Configuration.locale,
+    returnUrl: window.returnURL,
+    addressDetails: {
+      name: paymentMethodsResponse.shippingAddress.firstName
+        + ' ' + paymentMethodsResponse.shippingAddress.lastName,
+      addressLine1: paymentMethodsResponse.shippingAddress.address1,
+      city:  paymentMethodsResponse.shippingAddress.city,
+      stateOrRegion: paymentMethodsResponse.shippingAddress.city,
+      postalCode:  paymentMethodsResponse.shippingAddress.postalCode,
+      countryCode: paymentMethodsResponse.shippingAddress.country,
+      phoneNumber: paymentMethodsResponse.shippingAddress.phone,
+    },
+    onClick: (resolve, reject) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (formErrorsExist) {
+        reject();
+      } else {
+        assignPaymentMethodValue();
+        resolve();
+      }
+    },
+    onError: () => {},
   };
 }
 

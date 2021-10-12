@@ -3,8 +3,12 @@ const { qrCodeMethods } = require('./qrCodeMethods');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
+  // if currently selected paymentMethod contains a brand it will be part of the label ID
+  const paymentMethodlabelId = store.brand
+    ? `#lb_${store.selectedMethod}_${store.brand}`
+    : `#lb_${store.selectedMethod}`;
   adyenPaymentMethod.value = document.querySelector(
-    `#lb_${store.selectedMethod}`,
+    paymentMethodlabelId,
   ).innerHTML;
 }
 
@@ -27,6 +31,9 @@ function paymentFromComponent(data, component) {
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
       }
+      if (response.paymentError) {
+        component.handleError();
+      }
     },
   }).fail(() => {});
 }
@@ -48,13 +55,22 @@ function resetPaymentMethod() {
  * Changes the "display" attribute of the selected method from hidden to visible
  */
 function displaySelectedMethod(type) {
-  store.selectedMethod = type;
+  // If 'type' input field is present use this as type, otherwise default to function input param
+  store.selectedMethod = document.querySelector(`#component_${type} .type`)
+    ? document.querySelector(`#component_${type} .type`).value
+    : type;
   resetPaymentMethod();
+
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'mbway', ...qrCodeMethods].indexOf(type) > -1;
+    ['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(
+      type,
+    ) > -1;
+
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');
+  // set brand for giftcards if hidden inputfield is present
+  store.brand = document.querySelector(`#component_${type} .brand`)?.value;
 }
 
 function displayValidationErrors() {

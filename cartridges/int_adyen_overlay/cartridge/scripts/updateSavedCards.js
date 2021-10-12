@@ -86,10 +86,11 @@ function updateSavedCards(args) {
           }
         }
       });
-      return {
-        error: false
-      };
     }
+
+    return {
+      error: false
+    };
   } catch (ex) {
     Logger.getLogger('Adyen').error("".concat(ex.toString(), " in ").concat(ex.fileName, ":").concat(ex.lineNumber));
     return {

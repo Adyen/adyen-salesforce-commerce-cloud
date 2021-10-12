@@ -8,6 +8,8 @@ const getPaymentMethods = require('./getPaymentMethods');
 const paymentFromComponent = require('./paymentFromComponent');
 const notify = require('./notify');
 const showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
+const paymentsDetails = require('./paymentsDetails');
+const redirect3ds1Response = require('./redirect3ds1Response');
 
 module.exports = {
   adyen3d,
@@ -20,4 +22,6 @@ module.exports = {
   paymentFromComponent,
   notify,
   showConfirmationPaymentFromComponent,
+  paymentsDetails,
+  redirect3ds1Response,
 };

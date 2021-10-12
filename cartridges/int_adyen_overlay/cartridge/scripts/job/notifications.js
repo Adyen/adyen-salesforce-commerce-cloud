@@ -22,16 +22,7 @@
  */
 
 /* API Includes */
-// eslint-disable-next-line no-unused-vars
-var Order = require('dw/order/Order');
-
-var OrderMgr = require('dw/order/OrderMgr'); // eslint-disable-next-line no-unused-vars
-
-
-var Resource = require('dw/web/Resource'); // eslint-disable-next-line no-unused-vars
-
-
-var Status = require('dw/system/Status');
+var OrderMgr = require('dw/order/OrderMgr');
 
 var Transaction = require('dw/system/Transaction');
 
@@ -39,9 +30,9 @@ var CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
 
-function execute(pdict) {
-  processNotifications(pdict);
-  clearNotifications(pdict);
+function execute() {
+  processNotifications();
+  clearNotifications();
   return PIPELET_NEXT;
 }
 /**

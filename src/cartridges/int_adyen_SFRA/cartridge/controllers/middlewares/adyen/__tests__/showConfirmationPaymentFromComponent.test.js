@@ -15,6 +15,7 @@ beforeEach(() => {
         paymentData: 'mocked_paymentData',
         details: 'mocked_details',
       }),
+      result: null
     },
     locale: { id: 'nl_NL' },
   };
@@ -31,7 +32,7 @@ describe('Show Confirmation Payment From Component', () => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
       const URLUtils = require('dw/web/URLUtils');
 
-      adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+      adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
         resultCode: a,
       }));
       showConfirmationPaymentFromComponent(req, res, jest.fn());
@@ -42,7 +43,7 @@ describe('Show Confirmation Payment From Component', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
     const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Authorised',
     }));
     COHelpers.placeOrder.mockImplementation(() => ({ error: true }));
@@ -52,7 +53,7 @@ describe('Show Confirmation Payment From Component', () => {
   it('should redirect on unsuccessful payment', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Not_Authorised',
     }));
     showConfirmationPaymentFromComponent(req, res, jest.fn());

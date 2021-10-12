@@ -9,7 +9,7 @@
     <script>
         window.Configuration = {
                 locale: '${request.locale}',
-                originKey: '${pdict.adyen.originKey}',
+                clientKey: '${pdict.adyen.clientKey}',
                 environment: '${pdict.adyen.environment}'
         };
         window.donateURL = "${URLUtils.https('Adyen-Donate')}";

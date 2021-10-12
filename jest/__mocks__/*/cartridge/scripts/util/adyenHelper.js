@@ -7,6 +7,10 @@ export const getCurrencyValueForApi = jest.fn(() => ({
     value: 1000,
 }));
 export const getPaypalMerchantID = jest.fn(() => 'mocked_paypal_merchant_id');
+export const getAmazonMerchantID = jest.fn(() => 'mocked_amazon_merchant_id');
+export const getAmazonStoreID = jest.fn(() => 'mocked_amazon_store_id');
+export const getAmazonPublicKeyID = jest.fn(() => 'mocked_amazon_public_key_id');
+export const getAdyenClientKey = jest.fn(() => 'mocked_client_key');
 export const getGoogleMerchantID = jest.fn(() => 'mocked_google_merchant_id');
 export const getAdyenCardholderNameEnabled = jest.fn(() => true);
 export const getAdyenPayPalIntent = jest.fn(() => 'mocked_intent');
@@ -25,7 +29,8 @@ export const getAdyenGivingBackgroundUrl = jest.fn(
   () => 'mocked_background_url',
 );
 export const getAdyenGivingLogoUrl = jest.fn(() => 'mocked_logo_url');
-export const getAdyenSecuredFieldsEnabled = jest.fn(() => true);
 export const getCardToken = jest.fn(() => 'mocked_token');
 export const getSFCCCardType = jest.fn(() => 'mocked_cardType');
+export const createAdyenCheckoutResponse = jest.fn(() => ({isFinal: true, isSuccessful: false}));
+export const getCustomer = jest.fn(() => {});
 export const getAdyenSFRA6Compatibility = jest.fn(() => false);

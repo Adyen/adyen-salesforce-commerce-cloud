@@ -1,4 +1,4 @@
-export const doPaymentDetailsCall = jest.fn((payload) => {
+export const doPaymentsDetailsCall = jest.fn((payload) => {
   let resultCode;
   if(payload.paymentData) {
     resultCode = payload.paymentData;

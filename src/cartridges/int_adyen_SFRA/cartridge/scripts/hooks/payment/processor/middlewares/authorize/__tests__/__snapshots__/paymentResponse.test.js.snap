@@ -17,7 +17,7 @@ Object {
     "custom": Object {
       "adyenPaymentData": "mocked_payment_data",
     },
-    "paymentMethod": "mocked_method",
+    "paymentMethod": "AdyenComponent",
     "paymentTransaction": Object {
       "paymentProcessor": "mocked_payment_processor",
     },
@@ -46,7 +46,7 @@ Object {
     "custom": Object {
       "adyenPaymentData": "mocked_payment_data",
     },
-    "paymentMethod": "mocked_method",
+    "paymentMethod": "AdyenComponent",
     "paymentTransaction": Object {
       "paymentProcessor": "mocked_payment_processor",
     },
@@ -59,6 +59,6 @@ Object {
   "redirectObject": Object {
     "url": "mocked_redirect_url",
   },
-  "signature": "ct_url __ ocked_payment_data",
+  "signature": "ct_url __ mocked_order_number",
 }
 `;

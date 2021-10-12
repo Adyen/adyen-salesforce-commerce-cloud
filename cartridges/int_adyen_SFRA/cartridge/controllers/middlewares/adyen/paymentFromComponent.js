@@ -55,10 +55,19 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   var order = COHelpers.createOrder(currentBasket);
-  var result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument
+  var result;
+  Transaction.wrap(function () {
+    result = adyenCheckout.createPaymentRequest({
+      Order: order,
+      PaymentInstrument: paymentInstrument
+    });
   });
+
+  if (result.resultCode === constants.RESULTCODES.REFUSED) {
+    Logger.getLogger('Adyen').error("Payment refused for order ".concat(order.orderNo));
+    result.paymentError = true;
+  }
+
   result.orderNo = order.orderNo;
   res.json(result);
   return next();

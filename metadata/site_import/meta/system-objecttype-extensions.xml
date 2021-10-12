@@ -314,13 +314,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenSecuredFieldsEnabled">
-                <display-name xml:lang="x-default">Secured Fields enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
@@ -328,14 +321,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <default-value>oj9GsQ</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenRecurringEnabled">
-                <display-name xml:lang="x-default">Store shopper details: recurring</display-name>
-                <description xml:lang="x-default">Tokenize shopper details for recurring payments</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
@@ -512,11 +497,11 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_PaypalMerchantID">
-                <display-name xml:lang="x-default">Your PayPal MerchantID to accept live payments</display-name>
-                <description xml:lang="x-default">https://docs.adyen.com/payment-methods/paypal/web-component#show-paypal-in-your-payment-form</description>
+            <attribute-definition attribute-id="Adyen_ClientKey">
+                <display-name xml:lang="x-default">Your Adyen Client Key. Required to accept both live and test payments</display-name>
+                <description xml:lang="x-default">Retrieve this value from Customer Area</description>
                 <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
+                <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
@@ -549,26 +534,32 @@
             <attribute-group group-id="Adyen">
                 <display-name xml:lang="x-default">Adyen Account Settings</display-name>
                 <attribute attribute-id="Adyen_merchantCode"/>
-                <attribute attribute-id="Adyen_Mode"/>
                 <attribute attribute-id="Adyen_API_Key"/>
+                <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_ClientKey"/>
                 <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
-                <attribute attribute-id="AdyenSecuredFieldsEnabled"/>
+
+                <attribute attribute-id="Adyen_notification_user"/>
+                <attribute attribute-id="Adyen_notification_password"/>
+
+                <attribute attribute-id="AdyenPayPalIntent"/>
+
+                <attribute attribute-id="Adyen_GooglePayMerchantID"/>
+
+                <attribute attribute-id="AdyenRatePayID"/>
+
+                <attribute attribute-id="Adyen_IntegratorName"/>
+                <attribute attribute-id="Adyen_StoreId"/>
+
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
-	            <attribute attribute-id="Adyen_notification_user"/>
-                <attribute attribute-id="Adyen_notification_password"/>
-                <attribute attribute-id="Adyen_PaypalMerchantID"/>
-                <attribute attribute-id="Adyen_IntegratorName"/>
-                <attribute attribute-id="Adyen_GooglePayMerchantID"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
                 <attribute attribute-id="AdyenCardHolderName_enabled"/>
-                <attribute attribute-id="AdyenPayPalIntent"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
-                <attribute attribute-id="AdyenRatePayID"/>
-                <attribute attribute-id="Adyen_StoreId"/>
+
                 <attribute attribute-id="AdyenGiving_enabled"/>
                 <attribute attribute-id="AdyenGiving_charityName"/>
                 <attribute attribute-id="AdyenGiving_charityAccount"/>

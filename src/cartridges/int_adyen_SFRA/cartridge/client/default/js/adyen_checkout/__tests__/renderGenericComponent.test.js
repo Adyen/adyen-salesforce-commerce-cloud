@@ -26,6 +26,16 @@ describe('Render Generic Component', () => {
       <div id="adyenPosTerminals">
         <span>Child #1</span>
       </div>
+      <div>
+        <input type="text" id="shippingFirstNamedefault" value="test">
+        <input type="text" id="shippingLastNamedefault" value="test">
+        <input type="text" id="shippingAddressOnedefault" value="test">
+        <input type="text" id="shippingAddressCitydefault" value="test">
+        <input type="text" id="shippingZipCodedefault" value="test">
+        <input type="text" id="shippingCountrydefault" value="test">
+        <input type="text" id="shippingPhoneNumberdefault" value="test">
+        <input type="text" id="shippingZipCodedefault" value="test">  
+      </div>
     `;
     window.AdyenCheckout = jest.fn(() => ({
       create: jest.fn(),
@@ -39,19 +49,20 @@ describe('Render Generic Component', () => {
       countryCode: 'mocked_country',
       AdyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
       AdyenPaymentMethods: {
-        paymentMethods: [{ type: 'scheme', name: 'Card' }],
+        paymentMethods: [{ type: 'scheme', name: 'Card' }, {type: 'amazonpay'}],
         storedPaymentMethods: true,
       },
       ImagePath: 'example.com',
-      AdyenDescriptions: [{ description: 'mocked_description' }],
+      AdyenDescriptions: [{ description: 'mocked_description' }, { description: 'mocked_description2' }],
     };
 
     $.ajax = jest.fn(({ success }) => success(mockedSuccessResponse));
     store.componentsObj = { foo: 'bar', bar: 'baz' };
+    store.checkoutConfiguration.paymentMethodsConfiguration = {amazonpay: {}};
     await renderGenericComponent();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
-      document.querySelector('input[type=radio][name=brandCode]').value,
+        document.querySelector('input[type=radio][name=brandCode]').value,
     ).toBeTruthy();
   });
 });

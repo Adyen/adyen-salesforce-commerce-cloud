@@ -20,14 +20,16 @@
  */
 
 /* API Includes */
-const Logger = require('dw/system/Logger');
+const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const Logger = require('dw/system/Logger');
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
+
     let zeroAuthRequest = AdyenHelper.createAdyenRequestObject(
       null,
       paymentInstrument,
@@ -36,16 +38,19 @@ function zeroAuthPayment(customer, paymentInstrument) {
     if (AdyenHelper.getAdyen3DS2Enabled()) {
       zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
     }
+
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
       value: 0,
     };
 
+    zeroAuthRequest.returnUrl = URLUtils.https('Adyen-Redirect3DS1Response').toString();
+
     zeroAuthRequest.storePaymentMethod = true;
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 
-    return adyenCheckout.doPaymentCall(
+    return adyenCheckout.doPaymentsCall(
       null,
       paymentInstrument,
       zeroAuthRequest,

@@ -43,13 +43,13 @@ describe('Authorize 3DS2', () => {
   it('should do payments call with resultcode IdentifyShopper', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     authorize3ds2(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
   it('should do payments call with resultcode ChallengeShopper', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     req.form.resultCode = 'ChallengeShopper';
     authorize3ds2(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
   it('should redirect if form resultCode is invalid', () => {
     const URLUtils = require('dw/web/URLUtils');
@@ -65,7 +65,7 @@ describe('Authorize 3DS2', () => {
     const OrderMgr = require('dw/order/OrderMgr');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       error: true,
     }));
 
@@ -77,7 +77,7 @@ describe('Authorize 3DS2', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'ChallengeShopper',
       action: 'mocked_action',
     }));
@@ -90,7 +90,7 @@ describe('Authorize 3DS2', () => {
     const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Authorised',
     }));
 
@@ -107,7 +107,7 @@ describe('Authorize 3DS2', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Authorised',
     }));
 
@@ -119,7 +119,7 @@ describe('Authorize 3DS2', () => {
   it('should complete authorization for SFRA6', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(() => ({
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode: 'Authorised',
     }));
 

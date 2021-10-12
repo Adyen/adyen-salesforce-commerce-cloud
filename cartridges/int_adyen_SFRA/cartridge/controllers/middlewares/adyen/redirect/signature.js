@@ -28,9 +28,8 @@ function handleIncorrectSignature(order, _ref) {
 function getCurrentSignature(order) {
   var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
   var adyenPaymentInstrument = paymentInstruments[0];
-  var paymentData = adyenPaymentInstrument.custom.adyenPaymentData;
   var redirectUrl = adyenPaymentInstrument.custom.adyenRedirectURL;
-  return AdyenHelper.getAdyenHash(redirectUrl.substr(redirectUrl.length - 25), paymentData.substr(1, 25));
+  return AdyenHelper.getAdyenHash(redirectUrl.substr(redirectUrl.length - 25), order.orderNo);
 }
 
 module.exports = {

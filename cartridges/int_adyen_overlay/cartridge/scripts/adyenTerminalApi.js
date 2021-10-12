@@ -68,7 +68,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     var dateString = date.getTime().toString();
     var serviceId = dateString.substr(dateString.length - 10);
     var applicationInfoObject = {};
-    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(false);
+    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo();
     var applicationInfoBase64 = StringUtils.encodeBase64(JSON.stringify(applicationInfoObject));
     terminalRequestObject.request = {
       SaleToPOIRequest: {

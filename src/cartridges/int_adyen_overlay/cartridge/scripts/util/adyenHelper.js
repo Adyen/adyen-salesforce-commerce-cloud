@@ -23,7 +23,9 @@ const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
-
+const CustomerMgr = require('dw/customer/CustomerMgr');
+const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
+const constants = require('*/cartridge/adyenConstants/constants');
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
@@ -35,7 +37,6 @@ var adyenHelperObj = {
     RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     POSPAYMENT: 'AdyenPosPayment',
-    ORIGINKEYS: 'AdyenOriginKeys',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
@@ -52,8 +53,9 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '3.18.2',
-  VERSION: '21.1.0',
+  CHECKOUT_COMPONENT_VERSION: '4.7.2',
+  VERSION: '21.2.0',
+  BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service) {
@@ -87,6 +89,17 @@ var adyenHelperObj = {
       // e.message
     }
     return adyenService;
+  },
+
+  // returns SFCC customer object based on currentCustomer object
+  // as retrieved from controller endpoint calls
+  getCustomer(currentCustomer) {
+    if (currentCustomer.profile) {
+      return CustomerMgr.getCustomerByCustomerNumber(
+          currentCustomer.profile.customerNo,
+      );
+    }
+    return null;
   },
 
   // Retrieve a custom preference
@@ -125,24 +138,8 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  getAdyenSecuredFieldsEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenSecuredFieldsEnabled');
-  },
-
   getAdyen3DS2Enabled() {
     return adyenHelperObj.getCustomPreference('Adyen3DS2Enabled');
-  },
-
-  getAdyenRecurringPaymentsEnabled() {
-    let returnValue = false;
-    if (
-      !empty(adyenCurrentSite) &&
-      (adyenCurrentSite.getCustomPreferenceValue('AdyenRecurringEnabled') ||
-        adyenCurrentSite.getCustomPreferenceValue('AdyenOneClickEnabled'))
-    ) {
-      returnValue = true;
-    }
-    return returnValue;
   },
 
   getAdyenGivingConfig(order) {
@@ -178,11 +175,7 @@ var adyenHelperObj = {
     };
   },
 
-  getAdyenRecurringEnabled() {
-    return adyenHelperObj.getCustomPreference('AdyenRecurringEnabled');
-  },
-
-  getAdyenOneClickEnabled() {
+  getAdyenRecurringPaymentsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
   },
 
@@ -194,8 +187,8 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('Adyen_IntegratorName');
   },
 
-  getPaypalMerchantID() {
-    return adyenHelperObj.getCustomPreference('Adyen_PaypalMerchantID');
+  getAdyenClientKey() {
+    return adyenHelperObj.getCustomPreference('Adyen_ClientKey');
   },
 
   getGoogleMerchantID() {
@@ -538,6 +531,7 @@ var adyenHelperObj = {
   // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
@@ -546,6 +540,13 @@ var adyenHelperObj = {
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
+    }
+
+    if(stateData.paymentMethod?.storedPaymentMethodId) {
+      stateData.recurringProcessingModel = 'CardOnFile';
+      stateData.shopperInteraction = 'ContAuth';
+    } else {
+        stateData.shopperInteraction = 'Ecommerce';
     }
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
@@ -557,8 +558,8 @@ var adyenHelperObj = {
         'orderToken',
         orderToken
     ).toString();
-    stateData.applicationInfo = adyenHelperObj.getApplicationInfo(true);
-    stateData.enableRecurring = adyenHelperObj.getAdyenRecurringEnabled();
+    stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
+
     stateData.additionalData = {};
     return stateData;
   },
@@ -735,7 +736,7 @@ var adyenHelperObj = {
     return format;
   },
 
-  getApplicationInfo(isEcom) {
+  getApplicationInfo() {
     let externalPlatformVersion = '';
     const applicationInfo = {};
     try {
@@ -758,12 +759,6 @@ var adyenHelperObj = {
       integrator: this.getSystemIntegratorName(),
     };
 
-    if (isEcom) {
-      applicationInfo.adyenPaymentSource = {
-        name: 'adyen-salesforce-commerce-cloud',
-        version: adyenHelperObj.VERSION,
-      };
-    }
     return applicationInfo;
   },
 
@@ -798,6 +793,48 @@ var adyenHelperObj = {
       }
     }
     return { stateData: filteredStateData, invalidFields };
+  },
+
+  createAdyenCheckoutResponse(checkoutresponse) {
+    if (
+        [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.REFUSED, constants.RESULTCODES.ERROR, constants.RESULTCODES.CANCELLED].indexOf(
+            checkoutresponse.resultCode,
+        ) !== -1
+    ) {
+      return {
+        isFinal: true,
+        isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
+      }
+    }
+
+    if (
+        [
+          constants.RESULTCODES.REDIRECTSHOPPER,
+          constants.RESULTCODES.IDENTIFYSHOPPER,
+          constants.RESULTCODES.CHALLENGESHOPPER,
+          constants.RESULTCODES.PRESENTTOSHOPPER,
+          constants.RESULTCODES.PENDING,
+        ].indexOf(checkoutresponse.resultCode) !== -1
+    ) {
+      return {
+        isFinal: false,
+        action: checkoutresponse.action,
+      };
+    }
+
+    if (checkoutresponse.resultCode === 'Received') {
+      return {
+        isFinal: false,
+      };
+    }
+
+    dwsystem.Logger.getLogger('Adyen').error(
+        `Unknown resultCode: ${checkoutresponse.resultCode}.`,
+    );
+    return {
+      isFinal: true,
+      isSuccessful: false,
+    };
   },
 };
 

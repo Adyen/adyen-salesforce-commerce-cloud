@@ -3,23 +3,27 @@ const Resource = require('dw/web/Resource');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const PaymentMgr = require('dw/order/PaymentMgr');
 const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const { paymentProcessorIDs } = require('./paymentProcessorIDs');
 
-function savePayment(req, res, next) {
-  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
-    return next();
-  }
-
-  const paymentForm = server.forms.getForm('creditCard');
-  const customer = CustomerMgr.getCustomerByCustomerNumber(
-    req.currentCustomer.profile.customerNo,
+function containsValidResultCode(req) {
+  return (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER,
+      constants.RESULTCODES.REDIRECTSHOPPER,
+    ].indexOf(req.resultCode) !== -1
   );
+}
 
+function createPaymentInstrument(customer) {
   let paymentInstrument;
+  const paymentForm = server.forms.getForm('creditCard');
   const wallet = customer.getProfile().getWallet();
   Transaction.wrap(() => {
     paymentInstrument = wallet.createPaymentInstrument(
@@ -29,12 +33,43 @@ function savePayment(req, res, next) {
       paymentForm.adyenStateData.value;
   });
 
+  return paymentInstrument;
+}
+
+function getResponseBody(action) {
+  return {
+    success: true,
+    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
+    ...(action && { redirectAction: action }),
+  };
+}
+
+function isAdyen() {
+  return (
+    paymentProcessorIDs.indexOf(
+      PaymentMgr.getPaymentMethod('CREDIT_CARD')
+        ?.getPaymentProcessor()
+        ?.getID(),
+    ) > -1 ||
+    PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_COMPONENT).isActive()
+  );
+}
+
+function savePayment(req, res, next) {
+  if (!isAdyen()) {
+    return next();
+  }
+  const customer = CustomerMgr.getCustomerByCustomerNumber(
+    req.currentCustomer.profile.customerNo,
+  );
+
   Transaction.begin();
   const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
     customer,
-    paymentInstrument,
+    createPaymentInstrument(customer),
   );
-  if (zeroAuthResult.error || zeroAuthResult.resultCode !== 'Authorised') {
+
+  if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
     Transaction.rollback();
     res.json({
       success: false,
@@ -42,6 +77,7 @@ function savePayment(req, res, next) {
     });
     return this.emit('route:Complete', req, res);
   }
+
   Transaction.commit();
 
   updateSavedCards({
@@ -51,10 +87,7 @@ function savePayment(req, res, next) {
   // Send account edited email
   accountHelpers.sendAccountEditedEmail(customer.profile);
 
-  res.json({
-    success: true,
-    redirectUrl: URLUtils.url('PaymentInstruments-List').toString(),
-  });
+  res.json(getResponseBody(zeroAuthResult.action));
   return this.emit('route:Complete', req, res);
 }
 

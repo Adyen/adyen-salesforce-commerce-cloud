@@ -19,7 +19,7 @@ module.exports.updateCheckoutView = function updateCheckoutView() {
     });
     var currentStage = window.location.search.substring(window.location.search.indexOf('=') + 1);
 
-    if (currentStage === 'shipping') {
+    if (currentStage === ('shipping' || 'payment')) {
       adyenCheckout.methods.renderGenericComponent();
     }
 

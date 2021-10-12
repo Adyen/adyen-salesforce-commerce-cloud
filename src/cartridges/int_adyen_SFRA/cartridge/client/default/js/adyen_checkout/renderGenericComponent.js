@@ -47,22 +47,6 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-/**
- * checks if payment method is blocked and returns a boolean accordingly
- */
-function isMethodTypeBlocked(methodType) {
-  const blockedMethods = [
-    'bcmc_mobile_QR',
-    'applepay',
-    'cup',
-    'wechatpay',
-    'wechatpay_pos',
-    'wechatpaySdk',
-    'wechatpayQr',
-  ];
-  return blockedMethods.includes(methodType);
-}
-
 function renderStoredPaymentMethod(data) {
   return (pm) => {
     if (pm.supportedShopperInteractions.includes('Ecommerce')) {
@@ -79,16 +63,14 @@ function renderStoredPaymentMethods(data) {
 }
 
 function renderPaymentMethods(data) {
-  data.AdyenPaymentMethods.paymentMethods.forEach(
-    (pm, i) =>
-      !isMethodTypeBlocked(pm.type) &&
-      renderPaymentMethod(
-        pm,
-        false,
-        data.ImagePath,
-        data.AdyenDescriptions[i].description,
-      ),
-  );
+  data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
+    renderPaymentMethod(
+      pm,
+      false,
+      data.ImagePath,
+      data.AdyenDescriptions[i].description,
+    );
+  });
 }
 
 function renderPosTerminals(data) {
@@ -114,6 +96,28 @@ function setCheckoutConfiguration(data) {
   };
 }
 
+function setAmazonPayConfig(adyenPaymentMethods) {
+  const amazonpay = adyenPaymentMethods.paymentMethods.find(
+    (paymentMethod) => paymentMethod.type === 'amazonpay',
+  );
+  if (amazonpay) {
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
+      amazonpay.configuration; // eslint-disable-line max-len
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
+      name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
+        document.querySelector('#shippingLastNamedefault')?.value
+      }`,
+      addressLine1: document.querySelector('#shippingAddressOnedefault')?.value,
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
+      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
+        ?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      countryCode: document.querySelector('#shippingCountrydefault')?.value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault')?.value,
+    };
+  }
+}
+
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
@@ -125,6 +129,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     store.checkoutConfiguration.paymentMethodsResponse =
       data.AdyenPaymentMethods;
     setCheckoutConfiguration(data);
+    setAmazonPayConfig(data.AdyenPaymentMethods);
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
     document.querySelector('#paymentMethodsList').innerHTML = '';

@@ -2,24 +2,16 @@ const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
 
-function getComponentName(data) {
-  return data.paymentMethod.storedPaymentMethodId
-    ? `storedCard${data.paymentMethod.storedPaymentMethodId}`
-    : data.paymentMethod.type;
-}
-
 function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
     onChange(state) {
       store.isValid = state.isValid;
-      const isSelected =
-        getComponentName(state.data) === store.selectedMethod ||
-        store.selectedMethod === 'bcmc';
-      if (isSelected) {
-        store.updateSelectedPayment('isValid', store.isValid);
-        store.updateSelectedPayment('stateData', state.data);
-      }
+      const method = state.data.paymentMethod.storedPaymentMethodId
+        ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+        : store.selectedMethod;
+      store.updateSelectedPayment(method, 'isValid', store.isValid);
+      store.updateSelectedPayment(method, 'stateData', state.data);
     },
     onFieldValid,
     onBrand,
@@ -114,17 +106,19 @@ function getMbwayConfig() {
     onSubmit: (state, component) => {
       $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
-      if (!store.formErrorsExist) {
-        if (document.getElementById('component_mbway')) {
-          document
-            .getElementById('component_mbway')
-            .querySelector('button').disabled = true;
-        }
-        helpers.paymentFromComponent(state.data, component);
-        document.querySelector('#adyenStateData').value = JSON.stringify(
-          store.selectedPayment.stateData,
-        );
+      if (store.formErrorsExist) {
+        component.setStatus('ready');
+        return;
       }
+      if (document.getElementById('component_mbway')) {
+        document
+          .getElementById('component_mbway')
+          .querySelector('button').disabled = true;
+      }
+      helpers.paymentFromComponent(state.data, component);
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        store.selectedPayment.stateData,
+      );
     },
     onError: (/* error, component */) => {
       document.querySelector('#showConfirmationForm').submit();
@@ -164,22 +158,38 @@ function handleOnChange(state) {
   store.componentsObj[type].stateData = state.data;
 }
 
+function getAmazonpayConfig() {
+  return {
+    showPayButton: true,
+    productType: 'PayAndShip',
+    checkoutMode: 'ProcessOrder',
+    locale: window.Configuration.locale,
+    returnUrl: window.returnURL,
+    onClick: (resolve, reject) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        reject();
+      } else {
+        helpers.assignPaymentMethodValue();
+        resolve();
+      }
+    },
+    onError: () => {},
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.showPayButton = false;
+  store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),
+    storedCard: getCardConfig(),
     boletobancario: {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off
       showEmailAddress: false, // allow shopper to specify their email address
-
-      // Optionally prefill some fields, here all fields are filled:
-      data: {
-        firstName: document.getElementById('shippingFirstNamedefault').value,
-        lastName: document.getElementById('shippingLastNamedefault').value,
-      },
     },
     paywithgoogle: getGooglePayConfig(),
     paypal: getPaypalConfig(),
@@ -187,19 +197,13 @@ function setCheckoutConfiguration() {
     swish: getQRCodeConfig(),
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
+    amazonpay: getAmazonpayConfig(),
+    pix: getQRCodeConfig(),
     afterpay_default: {
       visibility: {
         personalDetails: 'editable',
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
       },
     },
     facilypay_3x: {
@@ -208,26 +212,12 @@ function setCheckoutConfiguration() {
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
       },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-        },
-      },
     },
     ratepay: {
       visibility: {
         personalDetails: 'editable',
         billingAddress: 'hidden',
         deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-        },
       },
     },
   };

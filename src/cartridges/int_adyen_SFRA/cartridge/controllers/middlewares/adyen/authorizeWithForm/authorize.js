@@ -21,7 +21,7 @@ function checkForValidRequest(result, order, merchantRefOrder, options) {
   }
 
   // if error, return to checkout page
-  if (result.error || result.resultCode !== 'Authorised') {
+  if (result.error || result.resultCode !== constants.RESULTCODES.AUTHORISED) {
     return handleInvalidPayment(merchantRefOrder, 'payment', options);
   }
   return true;
@@ -36,7 +36,7 @@ function authorize(paymentInstrument, order, options) {
       PaRes: req.form.PaRes,
     },
   };
-  const result = adyenCheckout.doPaymentDetailsCall(jsonRequest);
+  const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
   clearForms.clearAdyenData(paymentInstrument);
 
   const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);

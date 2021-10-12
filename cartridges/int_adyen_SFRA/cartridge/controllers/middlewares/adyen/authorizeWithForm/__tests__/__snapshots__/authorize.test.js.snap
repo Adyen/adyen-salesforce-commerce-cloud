@@ -20,7 +20,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            "mocked_method",
+            "AdyenComponent",
           ],
         ],
         "results": Array [
@@ -122,7 +122,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            "mocked_method",
+            "AdyenComponent",
           ],
         ],
         "results": Array [
@@ -203,7 +203,7 @@ Array [
       "getPaymentInstruments": [MockFunction] {
         "calls": Array [
           Array [
-            "mocked_method",
+            "AdyenComponent",
           ],
         ],
         "results": Array [
