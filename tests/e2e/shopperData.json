@@ -1,0 +1,17 @@
+{
+  "NL": {
+    "shopperName": {
+      "firstName": "Jan",
+      "lastName": "Janssen"
+    },
+    "telephone": "0612345678",
+    "shopperEmail": "jan@janssen.nl",
+    "address": {
+      "city": "Amsterdam",
+      "country": "NL",
+      "stateOrProvince": "",
+      "postalCode": "1011DJ",
+      "houseNumberOrName": "37"
+    }
+  }
+}
