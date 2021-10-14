@@ -9,7 +9,7 @@ export default class checkout {
     sizeOption = this.selectSize.find('option');
     addToCartButton = Selector('.add-to-cart');
     successMessage = Selector('.add-to-cart-messages');
-    checkoutUrl = '/on/demandware.store/Sites-RefArch-Site/default/Checkout-Login';
+    checkoutUrl = '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
     checkoutGuest = Selector('.checkout-as-guest')
 
     loginUrl = '/customer/account';
@@ -41,7 +41,8 @@ export default class checkout {
         await this.successMessage();
 
         await t
-            .navigateTo(this.checkoutUrl);
+            .navigateTo(this.checkoutUrl)
+            .click(this.checkoutGuest);
     }
 
     addProductToCart = async () => {
@@ -66,19 +67,17 @@ export default class checkout {
             .click(this.checkoutPageUserCountrySelect)
             .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
             .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone)
-            .click(this.checkoutPageUserStateSelect)
-            .click(this.checkoutPageUserStateSelectOption.sibling(1));
+            // .click(this.checkoutPageUserStateSelect)
+            // .click(this.checkoutPageUserStateSelectOption.sibling(1));
     }
 
     goToPaymentsPage = async () => {
         await t
-            .wait(3000)
             .click(this.shippingSubmit);
     }
 
     expectSuccess = async () => {
         await t
-            .wait(5000)
             .expect(this.getLocation()).contains('Order-Confirm');
     }
 
