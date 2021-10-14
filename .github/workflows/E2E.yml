@@ -3,7 +3,7 @@ name: E2E
 on: [push]
 
 jobs:
-  build:
+  deploy-and-run:
     runs-on: ubuntu-latest
 
     steps:
