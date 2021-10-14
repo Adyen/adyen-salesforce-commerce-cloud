@@ -1,0 +1,44 @@
+name: E2E
+
+on: [push]
+
+jobs:
+  deploy-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout SFRA code
+        uses: actions/checkout@v2
+        with:
+          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          ref: v6.0.0
+          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+          path: storefront-reference-architecture
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: npm install storefront-reference-architecture
+        working-directory: storefront-reference-architecture
+        run: npm install
+      - name: npm install adyen-salesforce-commerce-cloud
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm install
+      - name: create dw.json file
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          echo '{
+            "username": "${{ secrets.SFCC_USERNAME }}",
+            "password": "${{ secrets.SFCC_PASSWORD }}",
+            "hostname": "${{ secrets.SFCC_HOSTNAME }}",
+            "code-version": "${{ secrets.CODE_VERSION }}"
+          }' >> dw.json
+      - name: push cartridge code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run build
+      - name: run e2e tests
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run test:e2e
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
