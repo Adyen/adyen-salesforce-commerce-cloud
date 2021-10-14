@@ -9,7 +9,7 @@ module.exports = () => {
         //TODO extract this step to add product to cart
         const checkout = new Checkout();
         await checkout.goToCheckoutPageWithFullCart();
-        await checkout.checkoutAsGuest();
+        // await checkout.checkoutAsGuest();
 
         //Step 2: Create user from specific country
         //TODO map only NL shopper data from JSON
