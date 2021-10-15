@@ -1,4 +1,4 @@
-import checkout from "../pages/checkout";
+import checkout from "../pages/CheckoutPage";
 import NL from "./countriesEUR/NL";
 //TODO check if we want to move URL
 fixture`EUR`

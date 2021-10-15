@@ -1,6 +1,7 @@
 import {ClientFunction, Selector, t} from "testcafe";
 
-export default class checkout {
+export default class CheckoutPage {
+
     consentButton = Selector('.affirm');
     categoryLink = Selector('.home-main-categories .category-tile');
     productCard = Selector('.product .image-container a');
@@ -36,13 +37,23 @@ export default class checkout {
 
     shippingSubmit = Selector('.submit-shipping');
 
-    goToCheckoutPageWithFullCart = async () => {
+    submitPaymentButton = Selector('.submit-payment');
+    placeOrderButton = Selector('.place-order');
+    checkoutPageUserEmailInput = Selector('#email');
+
+    errorMessage = Selector('.error-message-text');
+
+    goToCheckoutPageWithFullCart = async (locale) => {
         await this.addProductToCart();
         await this.successMessage();
 
         await t
-            .navigateTo(this.checkoutUrl)
+            .navigateTo(this.getCheckoutUrl(locale))
             .click(this.checkoutGuest);
+    }
+
+    getCheckoutUrl(locale){
+        return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
     }
 
     addProductToCart = async () => {
@@ -69,16 +80,37 @@ export default class checkout {
             .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone)
             // .click(this.checkoutPageUserStateSelect)
             // .click(this.checkoutPageUserStateSelectOption.sibling(1));
+            .click(this.shippingSubmit);
     }
 
-    goToPaymentsPage = async () => {
+    setEmail = async () => {
         await t
-            .click(this.shippingSubmit);
+            .typeText(this.checkoutPageUserEmailInput, 'wally@bizzle.com');
+    }
+
+    submitPayment = async () => {
+        await t
+            .click(this.submitPaymentButton);
+    }
+    placeOrder = async () => {
+        await t
+            .click(this.placeOrderButton);
+    }
+
+    completeCheckout = async () => {
+        await this.setEmail();
+        await this.submitPayment();
+        await this.placeOrder();
     }
 
     expectSuccess = async () => {
         await t
             .expect(this.getLocation()).contains('Order-Confirm');
+    }
+
+    expectRefusal = async () => {
+        await t
+            .expect(this.errorMessage.innerText).notEql('');
     }
 
     getLocation = ClientFunction(() => document.location.href);
