@@ -31,7 +31,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
           }' >> dw.json
       - name: push cartridge code
         working-directory: adyen-salesforce-commerce-cloud
