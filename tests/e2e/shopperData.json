@@ -11,6 +11,23 @@
       "country": "NL",
       "stateOrProvince": "",
       "postalCode": "1011DJ",
+      "street": "Kalverstraat",
+      "houseNumberOrName": "37"
+    }
+  },
+  "FR": {
+    "shopperName": {
+      "firstName": "Jean",
+      "lastName": "Dubois"
+    },
+    "telephone": "0612345678",
+    "shopperEmail": "jean@dubois.fr",
+    "address": {
+      "city": "Paris",
+      "country": "FR",
+      "stateOrProvince": "",
+      "postalCode": "12345",
+      "street": "Rue des Fleurs",
       "houseNumberOrName": "37"
     }
   }
