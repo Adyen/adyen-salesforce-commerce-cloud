@@ -21,7 +21,7 @@ jobs:
 #      - name: npm install storefront-reference-architecture
 #        working-directory: storefront-reference-architecture
 #        run: npm install
-#      - name: npm install adyen-salesforce-commerce-cloud
+      - name: npm install adyen-salesforce-commerce-cloud
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
       - name: create dw.json file
