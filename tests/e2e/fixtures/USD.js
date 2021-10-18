@@ -23,6 +23,8 @@ fixture`USD`
 
         // create user from specific country
         await checkoutPage.setShopperDetails(shopperData.US);
+
+        await t.maximizeWindow()
     });
 
 
