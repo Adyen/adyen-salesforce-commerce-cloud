@@ -18,4 +18,34 @@ export default class PaymentMethodsPage {
         await t
             .click(Selector('input[type="submit"]'));
     }
+
+    initiateCardPayment = async (cardInput) => {
+        await t
+            .click(Selector('#rb_scheme'))
+            .typeText(Selector('.adyen-checkout__card__holderName__input'), cardInput.holderName)
+            .switchToIframe('.adyen-checkout__card__cardNumber__input iframe')
+            .typeText('#encryptedCardNumber', cardInput.cardNumber)
+            .switchToMainWindow()
+            .switchToIframe('.adyen-checkout__card__exp-date__input iframe')
+            .typeText('#encryptedExpiryDate', cardInput.expirationDate)
+            .switchToMainWindow()
+            .switchToIframe('.adyen-checkout__card__cvc__input iframe')
+            .typeText('#encryptedSecurityCode', cardInput.cvc)
+            .switchToMainWindow();
+    }
+
+    do3Ds1Verification = async () => {
+        await t.
+            typeText('#username', 'user')
+            .typeText('#password', 'password')
+            .click('.paySubmit');
+    }
+
+    do3Ds2Verification = async () => {
+        await t.
+            switchToIframe('.adyen-checkout__iframe')
+            .typeText('.input-field', 'password')
+            .click('.button--primary')
+            .switchToMainWindow();
+    }
 }

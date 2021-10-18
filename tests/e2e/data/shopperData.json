@@ -30,5 +30,21 @@
       "street": "Rue des Fleurs",
       "houseNumberOrName": "37"
     }
+  },
+  "US": {
+    "shopperName": {
+      "firstName": "John",
+      "lastName": "Johnson"
+    },
+    "telephone": "3031234567",
+    "shopperEmail": "john@johnson.com",
+    "address": {
+      "city": "Boulder",
+      "country": "US",
+      "stateOrProvince": "CO",
+      "postalCode": "80302",
+      "street": "Arapahoe",
+      "houseNumberOrName": "1001"
+    }
   }
 }
