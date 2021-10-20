@@ -105,7 +105,7 @@ test('Card logged in user 3DS2 oneClick test success', async () => {
   await checkoutPage.expectSuccess();
 })
 
-test.only('Card logged in user 3DS2 oneClick test failure', async () => {
+test('Card logged in user 3DS2 oneClick test failure', async () => {
   const cardDataInvalid = cardData.threeDs2;
   cardDataInvalid.cvc = '123';
   await goToBillingWithFullCartLoggedInUser();
@@ -114,7 +114,7 @@ test.only('Card logged in user 3DS2 oneClick test failure', async () => {
   await checkoutPage.expectRefusal();
 })
 
-test.only('Card logged in user co-branded BCMC oneClick test success', async () => {
+test('Card logged in user co-branded BCMC oneClick test success', async () => {
   await goToBillingWithFullCartLoggedInUser();
   await doCardPaymentOneclick(cardData.coBrandedBCMC);
   await checkoutPage.expectSuccess();
