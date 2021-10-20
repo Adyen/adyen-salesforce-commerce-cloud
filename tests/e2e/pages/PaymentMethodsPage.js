@@ -28,10 +28,26 @@ export default class PaymentMethodsPage {
             .switchToMainWindow()
             .switchToIframe('.adyen-checkout__card__exp-date__input iframe')
             .typeText('#encryptedExpiryDate', cardInput.expirationDate)
-            .switchToMainWindow()
-            .switchToIframe('.adyen-checkout__card__cvc__input iframe')
-            .typeText('#encryptedSecurityCode', cardInput.cvc)
             .switchToMainWindow();
+        if(cardInput.cvc !== "") {
+            await t
+                .switchToIframe('.adyen-checkout__card__cvc__input iframe')
+                .typeText('#encryptedSecurityCode', cardInput.cvc)
+                .switchToMainWindow();
+        }
+
+    }
+
+    initiateOneClickPayment = async (oneClickCardInput) => {
+        const cardLabelRegex = new RegExp(oneClickCardInput.oneClickLabel.replace(/[*]/g, '\\$&'));
+        const oneClickLi = Selector('label').withText(cardLabelRegex).parent();
+        await t.click(oneClickLi.child('input[name="brandCode"]'));
+        if(oneClickCardInput.cvc !== "") {
+            await t
+                .switchToIframe(oneClickLi.find('iframe'))
+                .typeText('#encryptedSecurityCode', oneClickCardInput.cvc)
+                .switchToMainWindow();
+        }
     }
 
     do3Ds1Verification = async () => {

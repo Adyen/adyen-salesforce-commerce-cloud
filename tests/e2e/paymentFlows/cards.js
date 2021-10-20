@@ -17,8 +17,18 @@ const do3Ds2Verification = async () => {
   await paymentMethodsPage.do3Ds2Verification();
 }
 
+const doCardPaymentOneclick = async (cardData) => {
+  const oneClickLabel = `************${cardData.cardNumber.substring(cardData.cardNumber.length - 4)}`;
+  await paymentMethodsPage.initiateOneClickPayment({
+    oneClickLabel,
+    cvc: cardData.cvc,
+  });
+  await checkoutPage.completeCheckout();
+}
+
 module.exports = {
   doCardPayment,
   do3Ds1Verification,
   do3Ds2Verification,
+  doCardPaymentOneclick,
 }
