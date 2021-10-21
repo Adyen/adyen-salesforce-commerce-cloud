@@ -105,7 +105,7 @@ export default class CheckoutPage {
 
     expectSuccess = async () => {
         await t
-            .expect(this.getLocation()).contains('Order-Confirm');
+            .expect(Selector('.order-thank-you-msg').exists).ok();
     }
 
     expectRefusal = async () => {

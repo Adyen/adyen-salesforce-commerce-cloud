@@ -1,4 +1,5 @@
 import { regionsEnum } from "../data/enums";
+import { doAffirmPayment } from "../paymentFlows/redirectShopper";
 
 fixture`USD`
     .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home?lang=${regionsEnum.US}`)
@@ -16,9 +17,11 @@ test('PayPal Fail', async t => {
 });
 
 test('Affirm Success', async t => {
-
+    await doAffirmPayment(true);
+    await checkoutPage.expectSuccess();
 });
 
 test('Affirm Fail', async t => {
-
+    await doAffirmPayment(false);
+    await checkoutPage.expectRefusal();
 });

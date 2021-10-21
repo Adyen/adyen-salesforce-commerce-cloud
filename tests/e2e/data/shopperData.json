@@ -4,6 +4,7 @@
       "firstName": "Jan",
       "lastName": "Janssen"
     },
+    "dateOfBirth": "1990-01-01",
     "telephone": "0612345678",
     "shopperEmail": "jan@janssen.nl",
     "address": {
@@ -20,14 +21,49 @@
       "firstName": "Jean",
       "lastName": "Dubois"
     },
+    "dateOfBirth": "1990-01-01",
     "telephone": "0612345678",
     "shopperEmail": "jean@dubois.fr",
     "address": {
       "city": "Paris",
       "country": "FR",
       "stateOrProvince": "",
-      "postalCode": "12345",
+      "postalCode": "32300",
       "street": "Rue des Fleurs",
+      "houseNumberOrName": "37"
+    }
+  },
+  "DE": {
+    "shopperName": {
+      "firstName": "Jan",
+      "lastName": "Muller"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "jan@muller.de",
+    "address": {
+      "city": "Berlin",
+      "country": "DE",
+      "stateOrProvince": "",
+      "postalCode": "11179",
+      "street": "Lansstrasse",
+      "houseNumberOrName": "37"
+    }
+  },
+  "AT": {
+    "shopperName": {
+      "firstName": "Anton",
+      "lastName": "Muller"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "anton@muller.at",
+    "address": {
+      "city": "Tirol",
+      "country": "AT",
+      "stateOrProvince": "",
+      "postalCode": "1010",
+      "street": "Bremschlstrasse",
       "houseNumberOrName": "37"
     }
   }
