@@ -3,6 +3,7 @@ const regionsEnum = {
     "US": "en_US",
     "NO": "nb_NO",
     "DK": "da_DK",
+    "SE": "sv_SK",
 };
 
 module.exports = {

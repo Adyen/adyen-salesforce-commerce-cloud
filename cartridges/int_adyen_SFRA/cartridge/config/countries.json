@@ -25,4 +25,7 @@
 }, {
     "id": "da_DK",
     "currencyCode": "DKK"
+}, {
+    "id": "sv_SE",
+    "currencyCode": "SEK"
 }]

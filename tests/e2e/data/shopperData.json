@@ -100,5 +100,22 @@
       "street": "Rådhuspladsen",
       "houseNumberOrName": "1"
     }
+  },
+  "SE": {
+    "shopperName": {
+      "firstName": "Astrid",
+      "lastName": "lindgren"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "astrid@lindgren.se ",
+    "address": {
+      "city": "Stockholm",
+      "country": "SE",
+      "stateOrProvince": "",
+      "postalCode": "115 21",
+      "street": "Galärvarvsvägen",
+      "houseNumberOrName": "14"
+    }
   }
 }
