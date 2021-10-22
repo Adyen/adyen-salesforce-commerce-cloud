@@ -51,17 +51,24 @@ export default class PaymentMethodsPage {
     }
 
     do3Ds1Verification = async () => {
-        await t.
-            typeText('#username', 'user')
+        await t
+            .typeText('#username', 'user')
             .typeText('#password', 'password')
             .click('.paySubmit');
     }
 
     do3Ds2Verification = async () => {
-        await t.
-            switchToIframe('.adyen-checkout__iframe')
+        await t
+            .switchToIframe('.adyen-checkout__iframe')
             .typeText('.input-field', 'password')
             .click('.button--primary')
             .switchToMainWindow();
+    }
+
+    selectInstallments = async (nrInstallments) => {
+        const installmentsDiv = Selector('.adyen-checkout__installments');
+        await t
+            .click(installmentsDiv.find('button'))
+            .click(`li[data-value="${nrInstallments}"]`);
     }
 }
