@@ -29,7 +29,7 @@ fixture`NOK`
     await checkoutPage.expectRefusal();
   });
 
-  test.only('Trustly Success', async () => {
+  test('Trustly Success', async () => {
     await doTrustlyPayment(shopperData.NO);
     await checkoutPage.expectSuccess();
   });
