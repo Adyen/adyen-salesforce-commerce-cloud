@@ -78,8 +78,8 @@
     "address": {
       "city": "Oslo",
       "country": "NO",
-      "stateOrProvince": "CO",
-      "postalCode": "00373",
+      "stateOrProvince": "",
+      "postalCode": "0373",
       "street": "Rådhusplassen",
       "houseNumberOrName": "1"
     }
@@ -95,8 +95,8 @@
     "address": {
       "city": "København",
       "country": "DK",
-      "stateOrProvince": "CO",
-      "postalCode": "15500",
+      "stateOrProvince": "",
+      "postalCode": "1550",
       "street": "Rådhuspladsen",
       "houseNumberOrName": "1"
     }

@@ -15,7 +15,7 @@
            max-length="50" missing-error="address.city.missing" range-error="error.message.between2and50"/>
 
     <!--  postal code -->
-    <field formid="postalCode" label="label.input.zipcode" type="string" mandatory="true" min-length="5" max-length="10"
+    <field formid="postalCode" label="label.input.zipcode" type="string" mandatory="true" min-length="4" max-length="10"
            binding="postalCode"
            range-error="error.message.between5and10"
            missing-error="address.zipcode.missing"
@@ -32,6 +32,8 @@
             <option optionid="NL" label="Netherlands" value="NL"/>
             <option optionid="FR" label="France" value="FR"/>
             <option optionid="UK" label="United Kingdom" value="UK"/>
+            <option optionid="NO" label="Norway" value="NO"/>
+            <option optionid="DK" label="Denmark" value="DK"/>
 
         </options>
     </field>
