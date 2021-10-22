@@ -77,10 +77,15 @@ export default class CheckoutPage {
             .typeText(this.checkoutPageUserPostCodeInput, shopperDetails.address.postalCode)
             .click(this.checkoutPageUserCountrySelect)
             .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
-            .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone)
-            // .click(this.checkoutPageUserStateSelect)
-            // .click(this.checkoutPageUserStateSelectOption.sibling(1));
-            .click(this.shippingSubmit);
+            .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone);
+
+        if(shopperDetails.address.stateOrProvince !== "") {
+            await t
+                .click(this.checkoutPageUserStateSelect)
+                .click(this.checkoutPageUserStateSelectOption.withAttribute('id', shopperDetails.address.stateOrProvince));
+        }
+
+        await t.click(this.shippingSubmit);
     }
 
     setEmail = async () => {

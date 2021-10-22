@@ -66,5 +66,39 @@
       "street": "Bremschlstrasse",
       "houseNumberOrName": "37"
     }
+  },
+  "NO": {
+    "shopperName": {
+      "firstName": "Bjørn",
+      "lastName": "Hansen"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "bjorn@hansen.no",
+    "address": {
+      "city": "Oslo",
+      "country": "NO",
+      "stateOrProvince": "CO",
+      "postalCode": "00373",
+      "street": "Rådhusplassen",
+      "houseNumberOrName": "1"
+    }
+  },
+  "DK": {
+    "shopperName": {
+      "firstName": "Anders",
+      "lastName": "Pedersen"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "anders@pedersen.dk",
+    "address": {
+      "city": "København",
+      "country": "DK",
+      "stateOrProvince": "CO",
+      "postalCode": "15500",
+      "street": "Rådhuspladsen",
+      "houseNumberOrName": "1"
+    }
   }
 }
