@@ -26,6 +26,12 @@ const doCardPaymentInstallments = async (cardData, nrInstallments) => {
   await paymentMethodsPage.selectInstallments(nrInstallments);
 }
 
+const doCardPaymentInstallments = async (cardData, nrInstallments) => {
+  await paymentMethodsPage.initiateCardPayment(cardData);
+  await paymentMethodsPage.selectInstallments(nrInstallments);
+  await checkoutPage.completeCheckout();
+}
+
 module.exports = {
   doCardPayment,
   do3Ds1Verification,
