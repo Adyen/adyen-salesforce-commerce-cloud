@@ -20,7 +20,7 @@ fixture`DKK`
     });
 
 test('MobilePay', async () => {
-  await doMobilePayPayment(shopperData.DK);
+  await doMobilePayPayment();
   // can only be tested up to redirect. No success assertion
 });
 

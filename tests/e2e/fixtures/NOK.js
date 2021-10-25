@@ -20,7 +20,7 @@ fixture`NOK`
     });
 
   test('Vipps Success', async () => {
-    await doVippsPayment(shopperData.NO);
+    await doVippsPayment(true);
     // can only be tested up to redirect. No success assertion
   });
 
@@ -30,7 +30,7 @@ fixture`NOK`
   });
 
   test('Trustly Success', async () => {
-    await doTrustlyPayment(shopperData.NO);
+    await doTrustlyPayment(true);
     await checkoutPage.expectSuccess();
   });
 
