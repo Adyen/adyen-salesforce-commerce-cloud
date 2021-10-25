@@ -45,7 +45,7 @@ export default class PaymentMethodsPage {
             .click(klarnaSelector)
     }
 
-    confirmKlarnaAccountPayment = async () => {
+    confirmKlarnaPayment = async () => {
         await Selector('#payment-method-selector')();
         await t
             .click(Selector('#buy-button'))
@@ -53,14 +53,6 @@ export default class PaymentMethodsPage {
             .typeText(Selector('input[name="dateOfBirth"]'), '01011991')
             .click(Selector('button').withAttribute('id', /continue/))
             .switchToMainWindow()
-    }
-
-    confirmKlarnaPayNowPayment = async () => {
-        //confirm
-    }
-
-    confirmKlarnaPayment = async () => {
-        //confirm
     }
 
     cancelKlarnaPayment = async () => {
