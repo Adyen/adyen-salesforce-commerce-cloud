@@ -113,7 +113,6 @@ const doMobilePayPayment = async () => {
     paymentMethodsPage.confirmMobilePayPayment();
 }
 
-
 module.exports = {
     doIdealPayment,
     doOneyPayment,

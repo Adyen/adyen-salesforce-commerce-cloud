@@ -1,5 +1,4 @@
 import CheckoutPage from "../pages/CheckoutPage";
-import { doMobilePayPayment } from "../paymentFlows/redirectShopper"
 import {regionsEnum} from "../data/enums";
 
 const shopperData = require("../data/shopperData.json");
@@ -19,9 +18,8 @@ fixture`SEK`
       await checkoutPage.setShopperDetails(shopperData.DK);
     });
 
-test('MobilePay', async () => {
-  await doMobilePayPayment(shopperData.DK);
-  // can only be tested up to redirect. No success assertion
+test('Swish', async () => {
+
 });
 
 
