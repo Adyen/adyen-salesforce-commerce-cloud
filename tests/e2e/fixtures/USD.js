@@ -1,10 +1,10 @@
 import { regionsEnum } from "../data/enums";
 
 fixture`USD`
-    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home?lang=${regionsEnum.US}`)
+    .page(`https://zzft-010.sandbox.us01.dx.commercecloud.salesforce.com/s/RefArch/home?lang=${regionsEnum.US}`)
     .httpAuth({
-        username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-        password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
+        username: 'storefront',
+        password: 'fGMxsfjLwb3XtZ2gqKyZ3m4h7J',
     });
 
 test('PayPal Success', async t => {

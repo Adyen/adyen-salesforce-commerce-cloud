@@ -67,7 +67,7 @@ export default class CheckoutPage {
             .click(this.addToCartButton);
     }
 
-    setShopperDetails = async (shopperDetails) => {
+    setShopperDetails = async (shopperDetails, withState) => {
         await t
             .typeText(this.checkoutPageUserFirstNameInput, shopperDetails.shopperName.firstName)
             .typeText(this.checkoutPageUserLastNameInput, shopperDetails.shopperName.lastName)
@@ -78,9 +78,13 @@ export default class CheckoutPage {
             .click(this.checkoutPageUserCountrySelect)
             .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
             .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone)
-            // .click(this.checkoutPageUserStateSelect)
-            // .click(this.checkoutPageUserStateSelectOption.sibling(1));
-            .click(this.shippingSubmit);
+            if(shopperDetails.address.stateOrProvince !== "") {
+                await t
+                    .click(this.checkoutPageUserStateSelect)
+                    .click(this.checkoutPageUserStateSelectOption.withAttribute('id', shopperDetails.address.stateOrProvince));
+
+            }
+            await t.click(this.shippingSubmit);
     }
 
     setEmail = async () => {
@@ -111,6 +115,12 @@ export default class CheckoutPage {
     expectRefusal = async () => {
         await t
             .expect(this.errorMessage.innerText).notEql('');
+    }
+
+    expectVoucher = async () => {
+        const voucherExists = Selector('#voucherResult').exists;
+        await t
+            .expect(voucherExists).ok();
     }
 
     getLocation = ClientFunction(() => document.location.href);

@@ -30,5 +30,38 @@
       "street": "Rue des Fleurs",
       "houseNumberOrName": "37"
     }
+  },
+  "PT": {
+    "shopperName": {
+      "firstName": "Cristiano",
+      "lastName": "Ronaldo"
+    },
+    "telephone": "+351234567890",
+    "shopperEmail": "cris@ronaldo.pt",
+    "address": {
+      "city": "Lisbon",
+      "country": "PT",
+      "stateOrProvince": "",
+      "postalCode": "12345",
+      "street": "Rue des Fleurs",
+      "houseNumberOrName": "37"
+    }
+  }, "BR": {
+  "shopperName": {
+    "firstName": "Marcos",
+    "lastName": "Silva"
+  },
+  "telephone": "+351234567890",
+  "shopperEmail": "cris@ronaldo.br",
+  "address": {
+    "city": "Sao Paulo",
+    "country": "BR",
+    "stateOrProvince": "Sao Paulo",
+    "postalCode": "04386040",
+    "street": "Rua Funcionarios",
+    "houseNumberOrName": "37",
+    "ssn": "56861752509",
+    "stateOrProvince": "SP"
   }
+}
 }
