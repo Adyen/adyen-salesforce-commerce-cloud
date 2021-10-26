@@ -43,13 +43,16 @@ export default class CheckoutPage {
 
     errorMessage = Selector('.error-message-text');
 
+    navigateToCheckout = async (locale) => {
+        await t.navigateTo(this.getCheckoutUrl(locale));
+    }
+
     goToCheckoutPageWithFullCart = async (locale) => {
         await this.addProductToCart();
         await this.successMessage();
 
-        await t
-            .navigateTo(this.getCheckoutUrl(locale))
-            .click(this.checkoutGuest);
+        await this.navigateToCheckout(locale);
+        await t.click(this.checkoutGuest);
     }
 
     getCheckoutUrl(locale){
@@ -77,15 +80,24 @@ export default class CheckoutPage {
             .typeText(this.checkoutPageUserPostCodeInput, shopperDetails.address.postalCode)
             .click(this.checkoutPageUserCountrySelect)
             .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
-            .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone)
-            // .click(this.checkoutPageUserStateSelect)
-            // .click(this.checkoutPageUserStateSelectOption.sibling(1));
-            .click(this.shippingSubmit);
+            .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone);
+        if(shopperDetails.address.stateOrProvince !== "") {
+            await t
+                .click(this.checkoutPageUserStateSelect)
+                .click(this.checkoutPageUserStateSelectOption.withAttribute('id', shopperDetails.address.stateOrProvince));
+
+        }
+        await t.click(this.shippingSubmit);
     }
 
     setEmail = async () => {
         await t
             .typeText(this.checkoutPageUserEmailInput, 'wally@bizzle.com');
+    }
+
+    submitShipping =  async () => {
+        await t
+            .click(this.shippingSubmit);
     }
 
     submitPayment = async () => {
@@ -105,7 +117,8 @@ export default class CheckoutPage {
 
     expectSuccess = async () => {
         await t
-            .expect(this.getLocation()).contains('Order-Confirm');
+            .expect(this.getLocation()).contains('Order-Confirm')
+            .expect(Selector('.order-thank-you-msg').exists).ok();
     }
 
     expectRefusal = async () => {
@@ -114,5 +127,13 @@ export default class CheckoutPage {
     }
 
     getLocation = ClientFunction(() => document.location.href);
+
+    loginUser = async (credentials) => {
+        await t
+            .click('.fa-sign-in')
+            .typeText('#login-form-email', credentials.shopperEmail)
+            .typeText('#login-form-password', credentials.password)
+            .click('.login button[type="submit"]')
+    }
 
 }

@@ -30,5 +30,38 @@
       "street": "Rue des Fleurs",
       "houseNumberOrName": "37"
     }
+  },
+  "US": {
+    "shopperName": {
+      "firstName": "John",
+      "lastName": "Johnson"
+    },
+    "telephone": "3031234567",
+    "shopperEmail": "john@johnson.com",
+    "address": {
+      "city": "Boulder",
+      "country": "US",
+      "stateOrProvince": "CO",
+      "postalCode": "80302",
+      "street": "Arapahoe",
+      "houseNumberOrName": "1001"
+    },
+    "password": "12qw!@QW"
+  },
+  "BR": {
+    "shopperName": {
+      "firstName": "João",
+      "lastName": "Silva"
+    },
+    "telephone": "0612345678",
+    "shopperEmail": "joao@silva.br",
+    "address": {
+      "city": "São Paulo",
+      "country": "BR",
+      "stateOrProvince": "SP",
+      "postalCode": "01310-200",
+      "street": "Av. Paulista",
+      "houseNumberOrName": "1578"
+    }
   }
 }
