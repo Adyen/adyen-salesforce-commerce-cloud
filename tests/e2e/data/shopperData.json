@@ -66,5 +66,56 @@
       "street": "Bremschlstrasse",
       "houseNumberOrName": "37"
     }
+  },
+  "NO": {
+    "shopperName": {
+      "firstName": "Bjørn",
+      "lastName": "Hansen"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "bjorn@hansen.no",
+    "address": {
+      "city": "Oslo",
+      "country": "NO",
+      "stateOrProvince": "",
+      "postalCode": "0373",
+      "street": "Rådhusplassen",
+      "houseNumberOrName": "1"
+    }
+  },
+  "DK": {
+    "shopperName": {
+      "firstName": "Anders",
+      "lastName": "Pedersen"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "anders@pedersen.dk",
+    "address": {
+      "city": "København",
+      "country": "DK",
+      "stateOrProvince": "",
+      "postalCode": "1550",
+      "street": "Rådhuspladsen",
+      "houseNumberOrName": "1"
+    }
+  },
+  "SE": {
+    "shopperName": {
+      "firstName": "Astrid",
+      "lastName": "lindgren"
+    },
+    "dateOfBirth": "01-01-1990",
+    "telephone": "0612345678",
+    "shopperEmail": "astrid@lindgren.se ",
+    "address": {
+      "city": "Stockholm",
+      "country": "SE",
+      "stateOrProvince": "",
+      "postalCode": "115 21",
+      "street": "Galärvarvsvägen",
+      "houseNumberOrName": "14"
+    }
   }
 }
