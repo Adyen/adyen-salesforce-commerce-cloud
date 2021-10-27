@@ -87,6 +87,31 @@ const doAffirmPayment = async (success) => {
     }
 }
 
+const doVippsPayment = async (success) => {
+    await t.click('#rb_vipps');
+    await checkoutPage.completeCheckout();
+    if(success) {
+        await paymentMethodsPage.confirmVippsPayment();
+    } else {
+        await paymentMethodsPage.cancelVippsPayment();
+    }
+}
+
+const doTrustlyPayment = async (success) => {
+    await t.click('#rb_trustly');
+    await checkoutPage.completeCheckout();
+    if(success) {
+        await paymentMethodsPage.confirmTrustlyPayment();
+    } else {
+        await paymentMethodsPage.cancelTrustlyPayment();
+    }
+}
+
+const doMobilePayPayment = async () => {
+    await t.click('#rb_mobilepay');
+    await checkoutPage.completeCheckout();
+    paymentMethodsPage.confirmMobilePayPayment();
+}
 
 module.exports = {
     doIdealPayment,
@@ -96,6 +121,8 @@ module.exports = {
     doKlarnaPayNowPayment,
     doGiropayPayment,
     doEPSPayment,
-    doAffirmPayment
-
+    doAffirmPayment,
+    doVippsPayment,
+    doTrustlyPayment,
+    doMobilePayPayment,
 }

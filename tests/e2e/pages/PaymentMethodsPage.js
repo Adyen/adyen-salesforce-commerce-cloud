@@ -1,6 +1,8 @@
-import {Selector, t} from "testcafe";
+import {Selector, t, ClientFunction} from "testcafe";
 
 export default class PaymentMethodsPage {
+
+    getLocation = ClientFunction(() => document.location.href);
 
     initiateIdealPayment = async (testSuccess) => {
         const iDealInput = Selector('input[value="ideal"]');
@@ -86,4 +88,39 @@ export default class PaymentMethodsPage {
 
     }
 
+    confirmVippsPayment = async () => {
+        await t.expect(this.getLocation()).contains('apitest.vipps.no');
+    }
+
+    cancelVippsPayment = async () => {
+        await t.click('.cancel-link');
+    }
+
+    confirmTrustlyPayment = async () => {
+        await t
+            .click('img[alt="DNB"]')
+            .click('.button_next')
+            .typeText('input[name="loginid"', 'idabarese51')
+            .click('.button_next');
+        const oneTimeCode = await Selector('.message_value').innerText;
+        await t
+            .typeText('input[type="password"]', oneTimeCode)
+            .click('.button_next')
+            .click('.button_next');
+        const secondOneTimeCode = await Selector('.message_value').innerText;
+        await t
+            .typeText('input[type="password"]', secondOneTimeCode)
+            .click('.button_next');
+
+    }
+
+    cancelTrustlyPayment = async () => {
+        await t
+            .click('#core_order_cancel')
+            .click('.prompt-yes')
+    }
+
+    confirmMobilePayPayment = async () => {
+        await t.expect(this.getLocation()).contains('sandprod-products.mobilepay.dk');
+    }
 }
