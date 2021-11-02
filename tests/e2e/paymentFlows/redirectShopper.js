@@ -51,12 +51,14 @@ const doKlarnaAccountPayment = async (success) => {
     }
 }
 
-const doGiropayPayment = async (success) => {
+const doGiropayPayment = async (paymentData, success) => {
+    const giroPay = Selector('#rb_giropay');
+    await giroPay()
     await t
-        .click(Selector('#rb_giropay'))
+        .click(giroPay)
     await checkoutPage.completeCheckout();
     if(success){
-        await paymentMethodsPage.confirmGiropayPayment();
+        await paymentMethodsPage.confirmGiropayPayment(paymentData);
     }
     else {
         await paymentMethodsPage.cancelGiropayPayment();
@@ -64,20 +66,19 @@ const doGiropayPayment = async (success) => {
 }
 
 const doEPSPayment = async (success) => {
-    await t
-        .click(Selector('#rb_eps'))
+    await paymentMethodsPage.initiateEPSPayment(success);
     await checkoutPage.completeCheckout();
+
     if(success){
-        await paymentMethodsPage.confirmEPSPayment();
+        await paymentMethodsPage.confirmSimulator();
     }
     else {
-        await paymentMethodsPage.cancelEPSPayment();
+        await paymentMethodsPage.cancelSimulator();
     }
 }
 
-const doAffirmPayment = async (success) => {
-    await t
-        .click(Selector('#rb_affirm'))
+const doAffirmPayment = async (shopper, success) => {
+    await paymentMethodsPage.initiateAffirmPayment(shopper);
     await checkoutPage.completeCheckout();
     if(success){
         await paymentMethodsPage.confirmAffirmPayment();

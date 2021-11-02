@@ -57,31 +57,69 @@ export default class PaymentMethodsPage {
             .switchToMainWindow()
     }
 
-    cancelKlarnaPayment = async () => {
-        //click return button
+    cancelKlarnaDirectEBankingPayment = async () => {
+        await t
+            .click(Selector('.back-to-merchant cancel-transaction'))
+            .click(Selector('#CancelTransaction'))
     }
 
-    confirmGiropayPayment = async () => {
+    cancelKlarnaPayment = async () => {
+        await t
+            .click(Selector('#back-button'))
+    }
 
+    confirmGiropayPayment = async (giroPayData) => {
+        const giroBank = Selector('#ui-id-1 li a');
+        const giroBankDropdown = Selector('#tags');
+        await giroBankDropdown()
+        await t
+            .typeText(giroBankDropdown, giroPayData.bankName)
+        await giroBank()
+        await t
+            .click(giroBank)
+            .click('input[name="continueBtn"]')
+            .click('#yes')
+            .typeText('input[name="sc"]', giroPayData.sc)
+            .typeText('input[name="extensionSc"]', giroPayData.extensionSc)
+            .typeText('input[name="customerName1"]', giroPayData.customerName)
+            .typeText('input[name="customerIBAN"]', giroPayData.customerIban)
+            .click('input[value="Absenden"]')
     }
 
     cancelGiropayPayment = async () => {
-        //verify selectors
         await t
             .click(Selector('#backUrl'))
-            .click(Selector('modal #confirm'))
+            .click(Selector('.modal-dialog #yes'))
     }
 
-    confirmEPSPayment = async () => {
+    initiateEPSPayment = async () => {
+        const epsInput = Selector('input[value="eps"]');
+        const epsDropDown = Selector('#component_eps .adyen-checkout__dropdown__button');
+        const epsIssuer =  Selector('#component_eps .adyen-checkout__dropdown__list li');
 
+        await t
+            .click(Selector('#rb_eps'))
+            .click(epsInput)
+            .click(epsDropDown)
+            .click(epsIssuer)
     }
 
-    cancelEPSPayment = async () => {
+    initiateAffirmPayment = async (shopper) => {
+        const affirmEmail = Selector('#component_affirm input[name="shopperEmail"]');
+        await t
+            .click(Selector('#rb_affirm'))
+            .typeText(affirmEmail, shopper.shopperEmail)
+    }
 
+    confirmSimulator = async () => {
+        //Confirm the simulator
+    }
+
+    cancelSimulator = async () => {
+        //Cancel the simulator
     }
 
     confirmAffirmPayment = async () => {
-
     }
 
     cancelAffirmPayment = async () => {

@@ -2,6 +2,8 @@ import CheckoutPage from "../../pages/CheckoutPage";
 import { doKlarnaAccountPayment, doKlarnaPayment, doKlarnaPayNowPayment, doGiropayPayment } from "../../paymentFlows/redirectShopper"
 
 const shopperData = require("../../data/shopperData.json");
+const paymentData = require("../../data/paymentData.json");
+
 const checkoutPage = new CheckoutPage();
 module.exports = () => {
     test('Klarna Success', async t => {
@@ -37,9 +39,9 @@ module.exports = () => {
         await doKlarnaAccountPayment(false);
         await checkoutPage.expectRefusal();
     });
-    test('Giropay Success', async t => {
+    test.only('Giropay Success', async t => {
         await checkoutPage.setShopperDetails(shopperData.DE);
-        await doGiropayPayment(true);
+        await doGiropayPayment(paymentData.GiroPay, true);
         await checkoutPage.expectSuccess();
     });
 
