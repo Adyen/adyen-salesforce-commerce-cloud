@@ -35,13 +35,13 @@ const goToBillingWithFullCartLoggedInUser = async () => {
 
 }
 
-test.only('Card payment no 3DS success', async () => {
+test('Card payment no 3DS success', async () => {
   await goToBillingWithFullCartGuestUser();
   await doCardPayment(cardData.noThreeDs);
   await checkoutPage.expectSuccess();
 });
 
-test.only('Card payment no 3DS failure', async () => {
+test('Card payment no 3DS failure', async () => {
   await goToBillingWithFullCartGuestUser();
   const cardDataInvalid = cardData.noThreeDs;
   cardDataInvalid.expirationDate = '0150';
