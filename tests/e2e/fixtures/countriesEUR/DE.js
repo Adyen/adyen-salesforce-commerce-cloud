@@ -39,7 +39,7 @@ module.exports = () => {
         await doKlarnaAccountPayment(false);
         await checkoutPage.expectRefusal();
     });
-    test.only('Giropay Success', async t => {
+    test('Giropay Success', async t => {
         await checkoutPage.setShopperDetails(shopperData.DE);
         await doGiropayPayment(paymentData.GiroPay, true);
         await checkoutPage.expectSuccess();
