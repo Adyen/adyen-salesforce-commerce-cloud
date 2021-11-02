@@ -105,8 +105,8 @@ export default class PaymentMethodsPage {
         await t
             .click(Selector('#buy-button'))
             .switchToIframe('#klarna-hpp-instance-fullscreen')
-            .typeText(Selector('input[name="dateOfBirth"]'), '01011991')
-            .click(Selector('button').withAttribute('id', /continue/))
+            .typeText(Selector('#addressCollector-date_of_birth'), '01011991')
+            .click(Selector('#dd-identification-dialog__footer-button-wrapper button'))
             .switchToMainWindow()
     }
 
