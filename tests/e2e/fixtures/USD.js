@@ -5,7 +5,7 @@ import CheckoutPage from "../pages/CheckoutPage";
 const shopperData = require("../data/shopperData.json");
 
 fixture`USD`
-    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home?lang=${regionsEnum.US}`)
+    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
     .httpAuth({
         username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
         password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
