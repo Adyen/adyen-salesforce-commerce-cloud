@@ -20,7 +20,7 @@ module.exports = () => {
         await t.expect(voucher).ok();
     });
 
-    test('MBWay Success', async t => {
+    test.only('MBWay Success', async t => {
         //Step 1: creating full cart and go to checkout
         const checkoutPage = new CheckoutPage();
         //TODO map currency and locale with Enum
@@ -31,7 +31,7 @@ module.exports = () => {
 
         //Step 3: initiate the payment method test
         await doMBWayPayment();
-        await t.wait(30000); //TODO deal with this wait
+        await t.wait(60000); //TODO deal with this wait
         await checkoutPage.expectSuccess();
     });
 }

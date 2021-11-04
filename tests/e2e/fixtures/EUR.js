@@ -1,6 +1,8 @@
 import checkout from "../pages/CheckoutPage";
 import NL from "./countriesEUR/NL";
 import PT from "./countriesEUR/PT";
+import BE from "./countriesEUR/BE";
+
 import { regionsEnum } from "../data/enums"
 //TODO check if we want to move URL
 fixture`EUR`
@@ -16,4 +18,6 @@ fixture`EUR`
 //Do FR tests
 
 //Do PT tests
-PT();
+// PT();
+
+// BE();
