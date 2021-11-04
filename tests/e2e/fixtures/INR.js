@@ -1,16 +1,15 @@
 import { regionsEnum } from "../data/enums";
 import CheckoutPage from "../pages/CheckoutPage";
-import {doQRCodePayment} from "../paymentFlows/pending";
-import {doIdealPayment, doBillDeskPayment} from "../paymentFlows/redirectShopper";
+import { doBillDeskPayment } from "../paymentFlows/redirectShopper";
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
 
 fixture`INR`
-    .page(`https://zzft-010.sandbox.us01.dx.commercecloud.salesforce.com/s/RefArch/home?lang=${regionsEnum.IN}`)
+    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
     .httpAuth({
-        username: 'storefront',
-        password: 'fGMxsfjLwb3XtZ2gqKyZ3m4h7J',
+        username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
+        password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
     })
     .beforeEach( async t => {
         await t.maximizeWindow()

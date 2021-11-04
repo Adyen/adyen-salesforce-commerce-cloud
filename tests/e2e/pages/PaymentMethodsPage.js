@@ -1,7 +1,7 @@
 import {Selector, t, ClientFunction} from "testcafe";
 
 const shopperData = require("../data/shopperData.json");
-const cardData = require("../data/cardData.json");
+const paymentData = require("../data/paymentData.json");
 
 export default class PaymentMethodsPage {
 
@@ -285,8 +285,8 @@ export default class PaymentMethodsPage {
 
         await t
             .click(Selector('#rb_sepadirectdebit'))
-            .typeText(nameInput, cardData.sepaUser.accountName)
-            .typeText(ibanInput, cardData.sepaUser.iban)
+            .typeText(nameInput, paymentData.sepaUser.accountName)
+            .typeText(ibanInput, paymentData.sepaUser.iban)
     }
 
     initiateBankTransferPayment = async () => {

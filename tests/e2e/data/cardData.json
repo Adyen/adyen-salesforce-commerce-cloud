@@ -22,10 +22,5 @@
     "cardNumber": "6703444444444449",
     "expirationDate": "0330",
     "cvc": ""
-  },
-  "sepaUser": {
-    "accountName": "A. Klaassen",
-    "iban": "NL13TEST0123456789",
-    "country": "NL"
   }
 }

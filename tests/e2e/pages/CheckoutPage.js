@@ -4,7 +4,6 @@ export default class CheckoutPage {
 
     consentButton = Selector('.affirm');
     categoryLink = Selector('.home-main-categories .category-tile');
-    jewleryLink = Selector('.womens-jewelry');
     productCard = Selector('.product .image-container a');
     colourSelector = Selector('.color-attribute');
     selectSize = Selector('.select-size');
@@ -63,7 +62,6 @@ export default class CheckoutPage {
     addProductToCart = async (locale) => {
         await t
             .click(this.consentButton)
-            // .click(this.jewleryLink)
             // .click(this.productCard)
             // .click(this.colourSelector)
             // .click(this.selectSize)
