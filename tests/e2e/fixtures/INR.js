@@ -28,7 +28,7 @@ test('UPI Failure', async t => {
     await checkoutPage.expectRefusal();
 });
 
-test.only('Wallet Success', async t => {
+test('Wallet Success', async t => {
     await doBillDeskPayment("billdesk_wallet", "Success");
     await checkoutPage.expectSuccess();
 });
@@ -43,7 +43,7 @@ test('Billdesk Online Success', async t => {
     await checkoutPage.expectSuccess();
 });
 
-test.only('Billdesk Online Failure', async t => {
+test('Billdesk Online Failure', async t => {
     await doBillDeskPayment("billdesk_online", "Failure");
     await checkoutPage.expectRefusal();
 });

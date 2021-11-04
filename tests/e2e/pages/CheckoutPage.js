@@ -62,6 +62,7 @@ export default class CheckoutPage {
     addProductToCart = async (locale) => {
         await t
             .click(this.consentButton)
+            // .click(this.categoryLink)
             // .click(this.productCard)
             // .click(this.colourSelector)
             // .click(this.selectSize)

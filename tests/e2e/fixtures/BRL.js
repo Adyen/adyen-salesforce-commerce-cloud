@@ -4,7 +4,7 @@ import {
   doCardPaymentInstallments,
   do3Ds2Verification,
 } from "../paymentFlows/cards";
-import {doBoletoPayment} from "../paymentFlows/presentToShopper";
+import { doBoletoPayment } from "../paymentFlows/presentToShopper";
 const shopperData = require("../data/shopperData.json");
 const cardData = require("../data/cardData.json") ;
 

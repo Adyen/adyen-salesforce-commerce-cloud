@@ -13,7 +13,6 @@ const doMultiBancoPayment = async () => {
 const doBoletoPayment = async () => {
     await paymentMethodsPage.initiateBoletoPayment();
     await checkoutPage.completeCheckout();
-    // return await paymentMethodsPage.MultiBancoVoucherExists();
 }
 
 module.exports = {
