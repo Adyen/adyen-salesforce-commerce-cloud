@@ -127,13 +127,13 @@ test('PayPal Fail', async t => {
 
 });
 
-test('Affirm Success', async t => {
+test.skip('Affirm Success', async t => {
     await goToBillingWithFullCartGuestUser();
     await doAffirmPayment(shopperData.US, true);
     await checkoutPage.expectSuccess();
 });
 
-test('Affirm Fail', async t => {
+test.skip('Affirm Fail', async t => {
     await goToBillingWithFullCartGuestUser();
     await doAffirmPayment(shopperData.US,false);
     await checkoutPage.expectRefusal();
