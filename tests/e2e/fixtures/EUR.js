@@ -1,23 +1,28 @@
-import checkout from "../pages/CheckoutPage";
-import NL from "./countriesEUR/NL";
-import PT from "./countriesEUR/PT";
-import BE from "./countriesEUR/BE";
-
+import CheckoutPage from "../pages/CheckoutPage";
+import testNetherlands from "./countriesEUR/NL";
+import testFrance from "./countriesEUR/FR";
+import testGermany from "./countriesEUR/DE";
+import testAustria from "./countriesEUR/AT";
+import testPortugal from "./countriesEUR/PT";
+import testBelgium from "./countriesEUR/BE";
 import { regionsEnum } from "../data/enums"
-//TODO check if we want to move URL
+
 fixture`EUR`
-    .page(`https://zzft-010.sandbox.us01.dx.commercecloud.salesforce.com/s/RefArch/home?lang=${regionsEnum.EU}`)
+    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
     .httpAuth({
-        username: 'storefront',
-        password: 'fGMxsfjLwb3XtZ2gqKyZ3m4h7J',
+        username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
+        password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
+    })
+    .beforeEach( async t => {
+        // create full cart and go to checkout
+        const checkoutPage = new CheckoutPage();
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
+
     });
 
-// Do NL tests
-// NL();
-
-//Do FR tests
-
-//Do PT tests
-// PT();
-
-// BE();
+testNetherlands();
+testFrance();
+testGermany();
+testAustria();
+testPortugal();
+testBelgium();

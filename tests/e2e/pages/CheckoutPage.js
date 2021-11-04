@@ -94,7 +94,7 @@ export default class CheckoutPage {
 
     setEmail = async () => {
         await t
-            .typeText(this.checkoutPageUserEmailInput, 'wally@bizzle.com');
+            .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
     }
 
     submitShipping =  async () => {

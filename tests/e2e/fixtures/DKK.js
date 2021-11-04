@@ -1,11 +1,12 @@
-import { regionsEnum } from "../data/enums";
 import CheckoutPage from "../pages/CheckoutPage";
-import {doQRCodePayment} from "../paymentFlows/pending";
+import { doMobilePayPayment } from "../paymentFlows/redirectShopper"
+import {regionsEnum} from "../data/enums";
+
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
 
-fixture`SEK`
+fixture`DKK`
     .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
     .httpAuth({
       username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
@@ -14,13 +15,14 @@ fixture`SEK`
     .beforeEach( async t => {
       await t.maximizeWindow()
       checkoutPage = new CheckoutPage();
-      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.SE);
-      await checkoutPage.setShopperDetails(shopperData.SE);
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DK);
+      await checkoutPage.setShopperDetails(shopperData.DK);
     });
 
-test.skip('Swish success', async () => {
-    await doQRCodePayment("swish");
-    await checkoutPage.expectQRcode();
+test('MobilePay', async () => {
+  await doMobilePayPayment();
+  // can only be tested up to redirect. No success assertion
 });
+
 
 
