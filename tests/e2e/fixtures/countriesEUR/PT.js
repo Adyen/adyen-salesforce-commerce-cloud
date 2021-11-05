@@ -7,8 +7,6 @@ const shopperData = require("../../data/shopperData.json");
 module.exports = () => {
     test('MultiBanco Success', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.PT);
 
         const voucher = await doMultiBancoPayment();
@@ -17,8 +15,6 @@ module.exports = () => {
 
     test.skip('MBWay Success', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.PT);
 
         await doMBWayPayment();

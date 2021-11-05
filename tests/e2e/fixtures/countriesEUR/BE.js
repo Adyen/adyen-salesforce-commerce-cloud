@@ -6,8 +6,6 @@ const shopperData = require("../../data/shopperData.json");
 module.exports = () => {
     test('bcmc mobile renders', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.BE);
 
         await doQRCodePayment("bcmc_mobile");

@@ -62,11 +62,6 @@ export default class CheckoutPage {
     addProductToCart = async (locale) => {
         await t
             .click(this.consentButton)
-            // .click(this.categoryLink)
-            // .click(this.productCard)
-            // .click(this.colourSelector)
-            // .click(this.selectSize)
-            // .click(this.sizeOption.withText('4'))
             .navigateTo(`/s/RefArch/25720033M.html?lang=${locale}`)
             .click(this.addToCartButton);
     }

@@ -23,8 +23,6 @@ module.exports = () => {
 
     test('SEPA Success', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.NL);
 
         await doSEPAPayment();
@@ -33,8 +31,6 @@ module.exports = () => {
 
     test('bankTransfer_IBAN Success', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.NL);
 
         await doBankTransferPayment();
@@ -43,8 +39,6 @@ module.exports = () => {
 
     test.skip('Google Pay Success', async t => {
         const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
         await checkoutPage.setShopperDetails(shopperData.NL);
 
         await doGooglePayPayment();
