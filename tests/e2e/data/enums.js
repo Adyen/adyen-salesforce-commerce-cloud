@@ -5,7 +5,9 @@ const regionsEnum = {
     "NO": "nb_NO",
     "DK": "da_DK",
     "SE": "sv_SK",
-};
+    "IN": "hi_IN",
+    "JP": "ja_JP"
+}
 
 module.exports = {
     regionsEnum,

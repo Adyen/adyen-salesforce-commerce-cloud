@@ -3,6 +3,8 @@ import testNetherlands from "./countriesEUR/NL";
 import testFrance from "./countriesEUR/FR";
 import testGermany from "./countriesEUR/DE";
 import testAustria from "./countriesEUR/AT";
+import testPortugal from "./countriesEUR/PT";
+import testBelgium from "./countriesEUR/BE";
 import { regionsEnum } from "../data/enums"
 
 fixture`EUR`
@@ -22,3 +24,5 @@ testNetherlands();
 testFrance();
 testGermany();
 testAustria();
+testPortugal();
+testBelgium();

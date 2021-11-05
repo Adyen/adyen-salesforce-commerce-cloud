@@ -146,9 +146,70 @@
       "city": "São Paulo",
       "country": "BR",
       "stateOrProvince": "SP",
-      "postalCode": "01310-200",
-      "street": "Av. Paulista",
-      "houseNumberOrName": "1578"
+      "postalCode": "04386040",
+      "street": "Rua Funcionarios",
+      "houseNumberOrName": "1578",
+      "ssn": "56861752509"
     }
+  }, "PT": {
+  "shopperName": {
+    "firstName": "Cristiano",
+    "lastName": "Ronaldo"
+  },
+  "telephone": "+351234567890",
+  "shopperEmail": "cris@ronaldo.pt",
+  "address": {
+    "city": "Lisbon",
+    "country": "PT",
+    "stateOrProvince": "",
+    "postalCode": "12345",
+    "street": "Rue des Fleurs",
+    "houseNumberOrName": "37"
   }
+}, "BE": {
+  "shopperName": {
+    "firstName": "Edin",
+    "lastName": "Hazard"
+  },
+  "telephone": "+32234567890",
+  "shopperEmail": "edin@hazard.be",
+  "address": {
+    "city": "Liege",
+    "country": "BE",
+    "stateOrProvince": "",
+    "postalCode": "12345",
+    "street": "Rue des Fleurs",
+    "houseNumberOrName": "37"
+  }
+}, "IN": {
+  "shopperName": {
+    "firstName": "Shubham",
+    "lastName": "Vijaivargiya"
+  },
+  "telephone": "+91234567890",
+  "shopperEmail": "Shubham@Vijaivargiya.in",
+  "address": {
+    "city": "New Delhi",
+    "country": "IN",
+    "stateOrProvince": "",
+    "postalCode": "12345",
+    "street": "Kungsgatan",
+    "houseNumberOrName": "37"
+  }
+}, "JP": {
+  "shopperName": {
+    "firstName": "Kisoki",
+    "lastName": "Honda"
+  },
+  "telephone": "+81234567890",
+  "shopperEmail": "Kisoki@Honda.jp",
+  "address": {
+    "city": "Tokyo",
+    "country": "JP",
+    "stateOrProvince": "",
+    "postalCode": "12345",
+    "street": "Kungsgatan",
+    "houseNumberOrName": "37"
+  }
+}
 }

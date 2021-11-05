@@ -48,7 +48,7 @@ export default class CheckoutPage {
     }
 
     goToCheckoutPageWithFullCart = async (locale) => {
-        await this.addProductToCart();
+        await this.addProductToCart(locale);
         await this.successMessage();
 
         await this.navigateToCheckout(locale);
@@ -59,14 +59,10 @@ export default class CheckoutPage {
         return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
     }
 
-    addProductToCart = async () => {
+    addProductToCart = async (locale) => {
         await t
             .click(this.consentButton)
-            .click(this.categoryLink)
-            .click(this.productCard)
-            .click(this.colourSelector)
-            .click(this.selectSize)
-            .click(this.sizeOption.withText('4'))
+            .navigateTo(`/s/RefArch/25720033M.html?lang=${locale}`)
             .click(this.addToCartButton);
     }
 
@@ -124,6 +120,20 @@ export default class CheckoutPage {
     expectRefusal = async () => {
         await t
             .expect(this.errorMessage.innerText).notEql('');
+    }
+
+    expectVoucher = async () => {
+        const voucherExists = Selector('#voucherResult').exists;
+        await t
+            .expect(voucherExists).ok();
+    }
+
+    expectQRcode = async () => {
+        const amount = Selector('.adyen-checkout__qr-loader__payment_amount').exists;
+        const img = Selector('img').exists;
+        await t
+            .expect(amount).ok()
+            .expect(img).ok()
     }
 
     getLocation = ClientFunction(() => document.location.href);
