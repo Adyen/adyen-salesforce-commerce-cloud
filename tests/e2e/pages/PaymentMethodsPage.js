@@ -34,9 +34,10 @@ export default class PaymentMethodsPage {
             .click(issuer);
     }
 
-    billdeskSimulator = async (result) => {
+    billdeskSimulator = async (success) => {
         const select = Selector('#BankStatus');
         const option = select.find("option");
+        const result = success ? "Success" : "Failure";
             await t
                 .click(select)
                 .click(option.withText(`${result}`))
@@ -285,8 +286,8 @@ export default class PaymentMethodsPage {
 
         await t
             .click(Selector('#rb_sepadirectdebit'))
-            .typeText(nameInput, paymentData.sepaUser.accountName)
-            .typeText(ibanInput, paymentData.sepaUser.iban)
+            .typeText(nameInput, paymentData.SepaDirectDebit.accountName)
+            .typeText(ibanInput, paymentData.SepaDirectDebit.iban)
     }
 
     initiateBankTransferPayment = async () => {

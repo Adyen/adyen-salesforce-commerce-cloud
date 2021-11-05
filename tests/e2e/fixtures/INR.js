@@ -19,32 +19,32 @@ fixture`INR`
     });
 
 test('UPI Success', async t => {
-    await doBillDeskPayment("billdesk_upi", "Success");
+    await doBillDeskPayment("billdesk_upi", true);
     await checkoutPage.expectSuccess();
 });
 
 test('UPI Failure', async t => {
-    await doBillDeskPayment("billdesk_upi", "Failure");
+    await doBillDeskPayment("billdesk_upi", false);
     await checkoutPage.expectRefusal();
 });
 
 test('Wallet Success', async t => {
-    await doBillDeskPayment("billdesk_wallet", "Success");
+    await doBillDeskPayment("billdesk_wallet", true);
     await checkoutPage.expectSuccess();
 });
 
 test('Wallet Failure', async t => {
-    await doBillDeskPayment("billdesk_wallet", "Failure");
+    await doBillDeskPayment("billdesk_wallet", false);
     await checkoutPage.expectRefusal();
 });
 
 test('Billdesk Online Success', async t => {
-    await doBillDeskPayment("billdesk_online", "Success");
+    await doBillDeskPayment("billdesk_online", true);
     await checkoutPage.expectSuccess();
 });
 
 test('Billdesk Online Failure', async t => {
-    await doBillDeskPayment("billdesk_online", "Failure");
+    await doBillDeskPayment("billdesk_online", false);
     await checkoutPage.expectRefusal();
 });
 

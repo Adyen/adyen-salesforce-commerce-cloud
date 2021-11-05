@@ -11,10 +11,10 @@ const doIdealPayment = async (testSuccess) => {
     await paymentMethodsPage.submitSimulator();
 }
 
-const doBillDeskPayment = async (paymentMethod, result) => {
+const doBillDeskPayment = async (paymentMethod, success) => {
     await paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
     await checkoutPage.completeCheckout();
-    await paymentMethodsPage.billdeskSimulator(result);
+    await paymentMethodsPage.billdeskSimulator(success);
 }
 
 const doOneyPayment = async (shopper) => {
