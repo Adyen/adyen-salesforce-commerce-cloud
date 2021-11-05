@@ -34,7 +34,7 @@ test('Card payment 3DS2 installments failure', async () => {
   cardDataInvalid.expirationDate = '0150';
   await doCardPaymentInstallments(cardDataInvalid, 2);
   await do3Ds2Verification();
-  await checkoutPage.expectFailure();
+  await checkoutPage.expectRefusal();
 });
 
 test('Boleto Success', async t => {

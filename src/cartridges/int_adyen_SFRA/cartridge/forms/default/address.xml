@@ -37,6 +37,7 @@
             <option optionid="SE" label="Sweden" value="SE"/>
             <option optionid="IN" label="India" value="IN"/>
             <option optionid="JP" label="Japan" value="JP"/>
+            <option optionid="BE" label="Belgium" value="BE"/>
 
         </options>
     </field>
