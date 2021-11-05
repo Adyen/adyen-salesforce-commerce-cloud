@@ -128,13 +128,41 @@ export default class PaymentMethodsPage {
             .click(klarnaSelector)
     }
 
+    confirmKlarnaPayNowPayment = async () => {
+        const ibanSelector = Selector('#iban');
+        await Selector('#payment-method-selector')();
+        await t
+            .click('#buy-button')
+            .switchToIframe('#klarna-hpp-instance-fullscreen')
+            .typeText('#addressCollector-date_of_birth', '01011991')
+            .click('#dd-identification-dialog__footer-button-wrapper button');
+        if(await ibanSelector.exists) {
+            await t
+                .typeText(ibanSelector, 'DE11520513735120710131')
+                .click('#aligned-content__button__0');
+        }
+        await t
+            .click('#aligned-content__button__0')
+            .switchToMainWindow();
+    }
+
+    confirmKlarnaAccountPayment = async () => {
+        await Selector('#payment-method-selector')();
+        await t
+            .click('#buy-button')
+            .switchToIframe('#klarna-hpp-instance-fullscreen')
+            .typeText('#baseaccount_kp-purchase-approval-form-date-of-birth', '01011991')
+            .click('#baseaccount_kp-purchase-approval__bottom')
+            .switchToMainWindow()
+    }
+
     confirmKlarnaPayment = async () => {
         await Selector('#payment-method-selector')();
         await t
             .click(Selector('#buy-button'))
             .switchToIframe('#klarna-hpp-instance-fullscreen')
-            .typeText(Selector('#addressCollector-date_of_birth'), '01011991')
-            .click(Selector('#dd-identification-dialog__footer-button-wrapper button'))
+            .typeText(Selector('#invoice_kp-purchase-approval-form-date-of-birth'), '01011991')
+            .click(Selector('#invoice_kp-purchase-approval-form-continue-button'))
             .switchToMainWindow()
     }
 
