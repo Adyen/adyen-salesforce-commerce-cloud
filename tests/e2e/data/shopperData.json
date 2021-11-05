@@ -181,21 +181,6 @@
     "street": "Rue des Fleurs",
     "houseNumberOrName": "37"
   }
-}, "SE": {
-  "shopperName": {
-    "firstName": "Zlatan",
-    "lastName": "Ibrahimovic"
-  },
-  "telephone": "+46234567890",
-  "shopperEmail": "zlatan@ibra.se",
-  "address": {
-    "city": "Stockholm",
-    "country": "SE",
-    "stateOrProvince": "",
-    "postalCode": "12345",
-    "street": "Kungsgatan",
-    "houseNumberOrName": "37"
-  }
 }, "IN": {
   "shopperName": {
     "firstName": "Shubham",
