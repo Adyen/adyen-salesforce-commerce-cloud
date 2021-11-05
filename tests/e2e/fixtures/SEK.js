@@ -1,6 +1,6 @@
+import { regionsEnum } from "../data/enums";
 import CheckoutPage from "../pages/CheckoutPage";
-import {regionsEnum} from "../data/enums";
-
+import {doQRCodePayment} from "../paymentFlows/pending";
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
@@ -14,12 +14,13 @@ fixture`SEK`
     .beforeEach( async t => {
       await t.maximizeWindow()
       checkoutPage = new CheckoutPage();
-      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DK);
-      await checkoutPage.setShopperDetails(shopperData.DK);
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.SE);
+      await checkoutPage.setShopperDetails(shopperData.SE);
     });
 
-test('Swish', async () => {
-
+test.skip('Swish success', async () => {
+    await doQRCodePayment("swish");
+    await checkoutPage.expectQRcode();
 });
 
 

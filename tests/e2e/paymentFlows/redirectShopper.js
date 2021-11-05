@@ -8,7 +8,13 @@ const checkoutPage = new CheckoutPage();
 const doIdealPayment = async (testSuccess) => {
     await paymentMethodsPage.initiateIdealPayment(testSuccess);
     await checkoutPage.completeCheckout();
-    await paymentMethodsPage.submitIdealSimulator();
+    await paymentMethodsPage.submitSimulator();
+}
+
+const doBillDeskPayment = async (paymentMethod, success) => {
+    await paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
+    await checkoutPage.completeCheckout();
+    await paymentMethodsPage.billdeskSimulator(success);
 }
 
 const doOneyPayment = async (shopper) => {
@@ -126,4 +132,5 @@ module.exports = {
     doVippsPayment,
     doTrustlyPayment,
     doMobilePayPayment,
+    doBillDeskPayment,
 }

@@ -1,5 +1,8 @@
 import {Selector, t, ClientFunction} from "testcafe";
 
+const shopperData = require("../data/shopperData.json");
+const paymentData = require("../data/paymentData.json");
+
 export default class PaymentMethodsPage {
 
     getLocation = ClientFunction(() => document.location.href);
@@ -16,7 +19,32 @@ export default class PaymentMethodsPage {
             .click(issuer);
     }
 
-    submitIdealSimulator = async () => {
+    initiateBillDeskPayment = async (paymentMethod) => {
+        await t
+            .click(Selector(`#rb_${paymentMethod}`))
+        if(paymentMethod === "billdesk_upi") {
+            return;
+        }
+        const input = Selector(`input[value="${paymentMethod}"]`);
+        const dropDown = Selector(`#component_${paymentMethod} .adyen-checkout__dropdown__button`);
+        const issuer = Selector(`#component_${paymentMethod} .adyen-checkout__dropdown__list li`);
+        await t
+            .click(input)
+            .click(dropDown)
+            .click(issuer);
+    }
+
+    billdeskSimulator = async (success) => {
+        const select = Selector('#BankStatus');
+        const option = select.find("option");
+        const result = success ? "Success" : "Failure";
+            await t
+                .click(select)
+                .click(option.withText(`${result}`))
+                .click(Selector('#SubmitForm'))
+    }
+
+    submitSimulator = async () => {
         await t
             .click(Selector('input[type="submit"]'));
     }
@@ -212,5 +240,64 @@ export default class PaymentMethodsPage {
 
     confirmMobilePayPayment = async () => {
         await t.expect(this.getLocation()).contains('sandprod-products.mobilepay.dk');
+    }
+
+    initiateMultiBancoPayment = async () => {
+        const multibancoInput = Selector('input[value="multibanco"]');
+        await t
+            .click(multibancoInput)
+    }
+
+    initiateMBWayPayment = async () => {
+        const mbwayInput = Selector('input[value="mbway"]');
+        const mbwayButton = Selector('#component_mbway button');
+        await t
+            .click(mbwayInput)
+            .click(mbwayButton)
+    }
+
+    initiateGooglePayPayment = async () => {
+        const gButton = Selector('#component_paywithgoogle button');
+        await t
+            .click(Selector(`#rb_paywithgoogle`))
+            .click(gButton)
+    }
+
+    initiateQRCode = async (paymentMethod) => {
+        await t
+            .click(Selector(`#rb_${paymentMethod}`))
+            .click(Selector(`#component_${paymentMethod} button`))
+    }
+
+    initiateBoletoPayment = async () => {
+        const socialSecurityInput = Selector('input[name="socialSecurityNumber"]');
+        await t
+            .click(Selector('#rb_boletobancario'))
+            .typeText(socialSecurityInput, "56861752509")
+    }
+
+    MultiBancoVoucherExists = async () => {
+        return Selector('.adyen-checkout__voucher-result--multibanco').exists;
+    }
+
+    initiateSEPAPayment = async () => {
+        const nameInput = Selector('input[name="sepa.ownerName"]');
+        const ibanInput = Selector('input[name="sepa.ibanNumber"]');
+
+        await t
+            .click(Selector('#rb_sepadirectdebit'))
+            .typeText(nameInput, paymentData.SepaDirectDebit.accountName)
+            .typeText(ibanInput, paymentData.SepaDirectDebit.iban)
+    }
+
+    initiateBankTransferPayment = async () => {
+        await t
+            .click(Selector('#rb_bankTransfer_NL'))
+    }
+
+    initiateKonbiniPayment = async () => {
+        await t
+            .click(Selector('#rb_econtext_stores'))
+            .typeText(Selector('input[name="econtext.shopperEmail"]'), shopperData.JP.shopperEmail);
     }
 }
