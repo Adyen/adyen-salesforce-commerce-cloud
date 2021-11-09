@@ -144,4 +144,5 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
   });
+  helpers.createShowConfirmationForm();
 };
