@@ -21,6 +21,7 @@
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+      window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
