@@ -93,14 +93,12 @@ function showValidation() {
 }
 
 function createShowConfirmationForm() {
-  if(document.querySelector("#showConfirmationForm")) {
+  if (document.querySelector('#showConfirmationForm')) {
     return;
   }
   const template = document.createElement('template');
-  const form = `<form method="post"
-        id="showConfirmationForm"
-        name="showConfirmationForm"
-        action="${ShowConfirmationPaymentFromComponent}">
+  // eslint-disable-next-line no-undef
+  const form = `<form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${ShowConfirmationPaymentFromComponent}">
     <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
     <input type="hidden" id="merchantReference" name="merchantReference"/>
     <input type="hidden" id="result" name="result" value="null"/>
