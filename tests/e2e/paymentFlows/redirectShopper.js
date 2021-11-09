@@ -1,31 +1,36 @@
 import PaymentMethodsPage from "../pages/PaymentMethodsPage";
-import CheckoutPage from "../pages/CheckoutPage";
 import {Selector, t} from "testcafe";
-
 const paymentMethodsPage = new PaymentMethodsPage();
-const checkoutPage = new CheckoutPage();
 
 const doIdealPayment = async (testSuccess) => {
     await paymentMethodsPage.initiateIdealPayment(testSuccess);
-    await checkoutPage.completeCheckout();
+}
+
+const completeIdealRedirect = async () => {
     await paymentMethodsPage.submitSimulator();
 }
 
-const doBillDeskPayment = async (paymentMethod, success) => {
+const doBillDeskPayment = async (paymentMethod) => {
     await paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
-    await checkoutPage.completeCheckout();
+}
+
+const completeBillDeskRedirect = async (success) => {
     await paymentMethodsPage.billdeskSimulator(success);
 }
 
 const doOneyPayment = async (shopper) => {
     await paymentMethodsPage.initiateOneyPayment(shopper);
-    await checkoutPage.completeCheckout();
+}
+
+const completeOneyRedirect = async (shopper) => {
     await paymentMethodsPage.confirmOneyPayment();
 }
 
-const doKlarnaPayment = async (success) => {
+const doKlarnaPayment = async () => {
     await paymentMethodsPage.initiateKlarnaPayment(null);
-    await checkoutPage.completeCheckout();
+}
+
+const completeKlarnaRedirect = async (success) => {
     if(success){
         await paymentMethodsPage.confirmKlarnaPayment();
     }
@@ -34,9 +39,11 @@ const doKlarnaPayment = async (success) => {
     }
 }
 
-const doKlarnaPayNowPayment = async (success) => {
+const doKlarnaPayNowPayment = async () => {
     await paymentMethodsPage.initiateKlarnaPayment('paynow');
-    await checkoutPage.completeCheckout();
+}
+
+const completeKlarnaPayNowRedirect = async (success) => {
     if(success){
         await paymentMethodsPage.confirmKlarnaPayNowPayment();
     }
@@ -46,9 +53,11 @@ const doKlarnaPayNowPayment = async (success) => {
 
 }
 
-const doKlarnaAccountPayment = async (success) => {
+const doKlarnaAccountPayment = async () => {
     await paymentMethodsPage.initiateKlarnaPayment('account');
-    await checkoutPage.completeCheckout();
+}
+
+const completeKlarnaAccountRedirect = async (success) => {
     if(success){
         await paymentMethodsPage.confirmKlarnaAccountPayment();
     }
@@ -57,12 +66,14 @@ const doKlarnaAccountPayment = async (success) => {
     }
 }
 
-const doGiropayPayment = async (paymentData, success) => {
+const doGiropayPayment = async () => {
     const giroPay = Selector('#rb_giropay');
     await giroPay()
     await t
         .click(giroPay)
-    await checkoutPage.completeCheckout();
+}
+
+const completeGiropayRedirect = async (paymentData, success) => {
     if(success){
         await paymentMethodsPage.confirmGiropayPayment(paymentData);
     }
@@ -71,10 +82,11 @@ const doGiropayPayment = async (paymentData, success) => {
     }
 }
 
-const doEPSPayment = async (success) => {
+const doEPSPayment = async () => {
     await paymentMethodsPage.initiateEPSPayment(success);
-    await checkoutPage.completeCheckout();
+}
 
+const completeEPSRedirect = async (success) => {
     if(success){
         await paymentMethodsPage.confirmSimulator();
     }
@@ -85,7 +97,6 @@ const doEPSPayment = async (success) => {
 
 const doAffirmPayment = async (shopper, success) => {
     await paymentMethodsPage.initiateAffirmPayment(shopper);
-    await checkoutPage.completeCheckout();
     if(success){
         await paymentMethodsPage.confirmAffirmPayment();
     }
@@ -94,9 +105,21 @@ const doAffirmPayment = async (shopper, success) => {
     }
 }
 
-const doVippsPayment = async (success) => {
+const completeAffirmRedirect = async (shopper, success) => {
+    if(success){
+        await paymentMethodsPage.confirmAffirmPayment();
+    }
+    else {
+        await paymentMethodsPage.cancelAffirmPayment();
+    }
+}
+
+const doVippsPayment = async () => {
     await t.click('#rb_vipps');
-    await checkoutPage.completeCheckout();
+
+}
+
+const completeVippsRedirect = async (success)  => {
     if(success) {
         await paymentMethodsPage.confirmVippsPayment();
     } else {
@@ -104,9 +127,11 @@ const doVippsPayment = async (success) => {
     }
 }
 
-const doTrustlyPayment = async (success) => {
+const doTrustlyPayment = async () => {
     await t.click('#rb_trustly');
-    await checkoutPage.completeCheckout();
+}
+
+const completeTrustlyRedirect = async (success) => {
     if(success) {
         await paymentMethodsPage.confirmTrustlyPayment();
     } else {
@@ -116,21 +141,35 @@ const doTrustlyPayment = async (success) => {
 
 const doMobilePayPayment = async () => {
     await t.click('#rb_mobilepay');
-    await checkoutPage.completeCheckout();
-    paymentMethodsPage.confirmMobilePayPayment();
+}
+
+const completeMobilePayRedirect = async () => {
+    await paymentMethodsPage.confirmMobilePayPayment();
 }
 
 module.exports = {
     doIdealPayment,
+    completeIdealRedirect,
     doOneyPayment,
+    completeOneyRedirect,
     doKlarnaPayment,
+    completeKlarnaRedirect,
     doKlarnaAccountPayment,
+    completeKlarnaAccountRedirect,
     doKlarnaPayNowPayment,
+    completeKlarnaPayNowRedirect,
     doGiropayPayment,
+    completeGiropayRedirect,
     doEPSPayment,
+    completeEPSRedirect,
     doAffirmPayment,
+    completeAffirmRedirect,
     doVippsPayment,
+    completeVippsRedirect,
     doTrustlyPayment,
+    completeTrustlyRedirect,
     doMobilePayPayment,
+    completeMobilePayRedirect,
     doBillDeskPayment,
+    completeBillDeskRedirect,
 }
