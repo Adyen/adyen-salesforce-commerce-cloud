@@ -14,10 +14,10 @@ fixture`EUR`
         password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
     })
     .beforeEach( async t => {
-        // create full cart and go to checkout
-        const checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-
+      // create full cart and go to checkout
+      const checkoutPage = new CheckoutPage();
+      await t.maximizeWindow();
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     });
 
 testNetherlands();

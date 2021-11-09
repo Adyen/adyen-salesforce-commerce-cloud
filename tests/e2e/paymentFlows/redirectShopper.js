@@ -38,7 +38,7 @@ const doKlarnaPayNowPayment = async (success) => {
     await paymentMethodsPage.initiateKlarnaPayment('paynow');
     await checkoutPage.completeCheckout();
     if(success){
-        await paymentMethodsPage.confirmKlarnaPayment();
+        await paymentMethodsPage.confirmKlarnaPayNowPayment();
     }
     else{
         await paymentMethodsPage.cancelKlarnaPayment();
@@ -50,7 +50,7 @@ const doKlarnaAccountPayment = async (success) => {
     await paymentMethodsPage.initiateKlarnaPayment('account');
     await checkoutPage.completeCheckout();
     if(success){
-        await paymentMethodsPage.confirmKlarnaPayment();
+        await paymentMethodsPage.confirmKlarnaAccountPayment();
     }
     else {
         await paymentMethodsPage.cancelKlarnaPayment();
