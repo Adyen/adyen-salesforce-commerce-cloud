@@ -4,7 +4,7 @@ const regionsEnum = {
     "BR": "pt_BR",
     "NO": "nb_NO",
     "DK": "da_DK",
-    "SE": "sv_SK",
+    "SE": "sv_SE",
     "IN": "hi_IN",
     "JP": "ja_JP"
 }
