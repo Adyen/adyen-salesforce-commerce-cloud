@@ -1,5 +1,5 @@
 const store = require('../../../store');
-const helpers = require("./adyen_checkout/helpers");
+const helpers = require('./adyen_checkout/helpers');
 
 const amazonPayNode = document.getElementById('amazon-container');
 const checkout = new AdyenCheckout(window.Configuration);
