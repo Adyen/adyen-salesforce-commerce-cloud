@@ -9,7 +9,7 @@ const shopperData = require("../data/shopperData.json");
 let checkoutPage;
 
 for(const environment of environments) {
-    fixture`INR ${environment.name}`
+    fixture`${environment.name} INR`
         .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
         .httpAuth({
             username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
