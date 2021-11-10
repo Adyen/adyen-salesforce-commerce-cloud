@@ -16,7 +16,7 @@ const cardData = require("../data/cardData.json") ;
 let checkoutPage;
 
 for(const environment of environments) {
-  fixture`USD ${environment.name}`
+  fixture`${environment.name} USD`
       .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
       .httpAuth({
         username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
