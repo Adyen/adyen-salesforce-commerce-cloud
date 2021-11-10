@@ -18,5 +18,3 @@ global.session = {
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
 
 global.customer = { profile: { customerNo: 'mocked_customerNo' } };
-
-global.ShowConfirmationPaymentFromComponent = "mocked_path";

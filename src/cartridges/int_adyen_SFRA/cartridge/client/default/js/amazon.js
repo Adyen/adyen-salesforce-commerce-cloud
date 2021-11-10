@@ -92,7 +92,7 @@ const amazonPayComponent = checkout
   .create('amazonpay', amazonConfig)
   .mount(amazonPayNode);
 
-helpers.createShowConfirmationForm();
+helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
 
 $('#dwfrm_billing').submit(function apiRequest(e) {
   e.preventDefault();
