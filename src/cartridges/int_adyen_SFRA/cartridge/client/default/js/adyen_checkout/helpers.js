@@ -97,7 +97,6 @@ function createShowConfirmationForm(action) {
     return;
   }
   const template = document.createElement('template');
-  // eslint-disable-next-line no-undef
   const form = `<form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${action}">
     <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
     <input type="hidden" id="merchantReference" name="merchantReference"/>
