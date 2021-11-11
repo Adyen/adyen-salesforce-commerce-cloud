@@ -42,7 +42,7 @@ test('my account add card no 3DS success', async () => {
   await checkoutPage.loginUser(shopperData.US);
   await accountPage.addCard(cardData.noThreeDs);
   await accountPage.expectSuccess(cardData.noThreeDs);
-  await accountPage.removeCard(regionsEnum.US);
+  await accountPage.removeCard();
 })
 
 test('my account add card no 3DS failure', async () => {
@@ -90,6 +90,14 @@ test('my account add card 3DS2 failure', async () => {
   await accountPage.addCard(cardDataInvalid);
   await do3Ds2Verification();
   await accountPage.expectFailure(cardData.threeDs2);
+})
+
+test('my account remove card success', async () => {
+  await checkoutPage.addProductToCart();
+  await checkoutPage.loginUser(shopperData.US);
+  await accountPage.addCard(cardData.noThreeDs);
+  await accountPage.removeCard();
+  await accountPage.expectCardRemoval(cardData.noThreeDs);
 })
 
 test('Card payment no 3DS success', async () => {

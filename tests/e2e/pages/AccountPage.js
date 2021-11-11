@@ -52,4 +52,10 @@ export default class AccountPage {
             .expect(this.savedCard.innerText).notContains(last4);
     }
 
+    expectCardRemoval = async (cardData) => {
+        const last4 = cardData.cardNumber.slice(-4);
+        await t
+            .expect(this.savedCard.innerText).notContains(last4);
+    }
+
 }
