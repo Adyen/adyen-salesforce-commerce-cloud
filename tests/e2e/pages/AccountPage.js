@@ -2,8 +2,12 @@ import {ClientFunction, Selector, t} from "testcafe";
 
 export default class AccountPage {
     consentButton = Selector('.affirm');
-    categoryLink = Selector('.home-main-categories .category-tile');
     savedCard = Selector('.card p:nth-child(2)');
+
+    consent = async () => {
+        await t
+            .click(this.consentButton)
+    }
 
     initiateCardPayment = async (cardInput) => {
         await t

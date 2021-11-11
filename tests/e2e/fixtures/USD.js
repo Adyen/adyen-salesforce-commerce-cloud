@@ -38,7 +38,7 @@ const goToBillingWithFullCartLoggedInUser = async () => {
 }
 
 test('my account add card no 3DS success', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   await accountPage.addCard(cardData.noThreeDs);
   await accountPage.expectSuccess(cardData.noThreeDs);
@@ -46,7 +46,7 @@ test('my account add card no 3DS success', async () => {
 })
 
 test('my account add card no 3DS failure', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   const cardDataInvalid = cardData.noThreeDs;
   cardDataInvalid.expirationDate = '0150';
@@ -55,7 +55,7 @@ test('my account add card no 3DS failure', async () => {
 })
 
 test('my account add card 3DS1 success', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   await accountPage.addCard(cardData.threeDs1);
   await do3Ds1Verification();
@@ -64,7 +64,7 @@ test('my account add card 3DS1 success', async () => {
 })
 
 test('my account add card 3DS1 failure', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   const cardDataInvalid = cardData.threeDs1;
   cardDataInvalid.expirationDate = '0150';
@@ -74,7 +74,7 @@ test('my account add card 3DS1 failure', async () => {
 })
 
 test('my account add card 3DS2 success', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   await accountPage.addCard(cardData.threeDs2);
   await do3Ds2Verification();
@@ -83,7 +83,7 @@ test('my account add card 3DS2 success', async () => {
 })
 
 test('my account add card 3DS2 failure', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   const cardDataInvalid = cardData.threeDs2;
   cardDataInvalid.expirationDate = '0150';
@@ -93,7 +93,7 @@ test('my account add card 3DS2 failure', async () => {
 })
 
 test('my account remove card success', async () => {
-  await checkoutPage.addProductToCart();
+  await accountPage.consent();
   await checkoutPage.loginUser(shopperData.US);
   await accountPage.addCard(cardData.noThreeDs);
   await accountPage.removeCard();
