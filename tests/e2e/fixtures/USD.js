@@ -48,7 +48,7 @@ for(const environment of environments) {
 
   test('Card payment no 3DS failure', async () => {
     await goToBillingWithFullCartGuestUser();
-    const cardDataInvalid = cardData.noThreeDs;
+    const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
     cardDataInvalid.expirationDate = '0150';
     await doCardPayment(cardDataInvalid);
     await checkoutPage.completeCheckout();

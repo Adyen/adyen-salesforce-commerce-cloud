@@ -77,7 +77,7 @@ export default class CheckoutPageSFRA {
         .typeText(this.checkoutPageUserCityInput, shopperDetails.address.city)
         .typeText(this.checkoutPageUserPostCodeInput, shopperDetails.address.postalCode)
         .click(this.checkoutPageUserCountrySelect)
-        .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country.toLowerCase()))
+        .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
         .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone);
     if(shopperDetails.address.stateOrProvince !== "") {
       await t
@@ -116,9 +116,7 @@ export default class CheckoutPageSFRA {
   }
 
   expectSuccess = async () => {
-    await t
-        .expect(this.getLocation()).contains('orderconfirmation')
-        .expect(Selector('.confirmation-message').exists).ok();
+    await t.expect(Selector('.confirmation-message').exists).ok();
   }
 
   expectRefusal = async () => {
