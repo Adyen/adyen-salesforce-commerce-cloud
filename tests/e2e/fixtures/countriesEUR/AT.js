@@ -1,18 +1,20 @@
-import CheckoutPage from "../../pages/CheckoutPage";
-import { doEPSPayment } from "../../paymentFlows/redirectShopper"
-
+import { doEPSPayment, completeEPSRedirect } from "../../paymentFlows/redirectShopper"
 const shopperData = require("../../data/shopperData.json");
-const checkoutPage = new CheckoutPage();
-module.exports = () => {
-    test.skip('EPS Success', async t => {
+
+module.exports = (checkoutPage) => {
+    test.skip('EPS Success', async () => {
         await checkoutPage.setShopperDetails(shopperData.AT);
-        await doEPSPayment(true);
+        await doEPSPayment();
+        await checkoutPage.completeCheckout();
+        await completeEPSRedirect(true);
         await checkoutPage.expectSuccess();
     });
 
-    test.skip('EPS Fail', async t => {
+    test.skip('EPS Fail', async () => {
         await checkoutPage.setShopperDetails(shopperData.AT);
-        await doEPSPayment(false);
+        await doEPSPayment();
+        await checkoutPage.completeCheckout();
+        await completeEPSRedirect(false);
         await checkoutPage.expectRefusal();
     });
 }

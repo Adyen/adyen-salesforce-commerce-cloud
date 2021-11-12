@@ -1,42 +1,61 @@
-import CheckoutPage from "../pages/CheckoutPage";
-import { doVippsPayment, doTrustlyPayment } from "../paymentFlows/redirectShopper"
+import {
+  doVippsPayment,
+  doTrustlyPayment,
+  completeVippsRedirect,
+  completeTrustlyRedirect,
+} from "../paymentFlows/redirectShopper"
 import {regionsEnum} from "../data/enums";
-
+import { environments } from "../data/environments"
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
 
-fixture`NOK`
-    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
-    .httpAuth({
-      username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-      password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach( async t => {
-      await t.maximizeWindow()
-      checkoutPage = new CheckoutPage();
-      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO);
-      await checkoutPage.setShopperDetails(shopperData.NO);
-    });
+for(const environment of environments) {
+  fixture`${environment.name} NOK`
+      .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
+      .httpAuth({
+        username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
+        password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
+      })
+      .beforeEach(async t => {
+        await t.maximizeWindow()
+        // Set manual timeout due to slow redirect for Trustly
+        checkoutPage = new environment.CheckoutPage();
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO);
+        await checkoutPage.setShopperDetails(shopperData.NO);
+      });
 
   test('Vipps Success', async () => {
-    await doVippsPayment(true);
+    await doVippsPayment();
+    await checkoutPage.completeCheckout();
+    await completeVippsRedirect(true);
     // can only be tested up to redirect. No success assertion
   });
 
   test('Vipps Fail', async t => {
-    await doVippsPayment(false);
+    await doVippsPayment();
+    await checkoutPage.completeCheckout();
+    await completeVippsRedirect(false);
     await checkoutPage.expectRefusal();
   });
 
-  test('Trustly Success', async () => {
-    await doTrustlyPayment(true);
-    await checkoutPage.expectSuccess();
-  });
+  test
+    .timeouts({
+      ajaxRequestTimeout: 30000,
+    })
+    ('Trustly Success', async () => {
+      await doTrustlyPayment();
+      await checkoutPage.completeCheckout();
+      await completeTrustlyRedirect(true);
+      await checkoutPage.expectSuccess();
+    });
 
   test('Trustly Fail', async () => {
-    await doTrustlyPayment(false);
+    await doTrustlyPayment();
+    await checkoutPage.completeCheckout();
+    await completeTrustlyRedirect(false);
     await checkoutPage.expectRefusal();
   });
+}
 
 

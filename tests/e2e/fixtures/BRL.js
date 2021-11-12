@@ -1,5 +1,5 @@
 import { regionsEnum } from "../data/enums";
-import CheckoutPage from "../pages/CheckoutPage";
+import { environments } from "../data/environments"
 import {
   doCardPaymentInstallments,
   do3Ds2Verification,
@@ -10,34 +10,39 @@ const cardData = require("../data/cardData.json") ;
 
 let checkoutPage;
 
-fixture`BRL`
-    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
-    .httpAuth({
+for(const environment of environments) {
+  fixture`${environment.name} BRL`
+      .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
+      .httpAuth({
         username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
         password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach( async t => {
+      })
+      .beforeEach( async t => {
         await t.maximizeWindow()
-        checkoutPage = new CheckoutPage();
+        checkoutPage = new environment.CheckoutPage();
         await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.BR);
         await checkoutPage.setShopperDetails(shopperData.BR);
-    });
+      });
 
-test('Card payment 3DS2 installments success', async () => {
-  await doCardPaymentInstallments(cardData.threeDs2 , 4);
-  await do3Ds2Verification();
-  await checkoutPage.expectSuccess();
-});
+  test('Card payment 3DS2 installments success', async () => {
+    await doCardPaymentInstallments(cardData.threeDs2 , 4);
+    await checkoutPage.completeCheckout();
+    await do3Ds2Verification();
+    await checkoutPage.expectSuccess();
+  });
 
-test('Card payment 3DS2 installments failure', async () => {
-  const cardDataInvalid = cardData.threeDs2;
-  cardDataInvalid.expirationDate = '0150';
-  await doCardPaymentInstallments(cardDataInvalid, 2);
-  await do3Ds2Verification();
-  await checkoutPage.expectRefusal();
-});
+  test('Card payment 3DS2 installments failure', async () => {
+    const cardDataInvalid = Object.assign({}, cardData.threeDs2);
+    cardDataInvalid.expirationDate = '0150';
+    await doCardPaymentInstallments(cardDataInvalid, 2);
+    await checkoutPage.completeCheckout();
+    await do3Ds2Verification();
+    await checkoutPage.expectRefusal();
+  });
 
-test('Boleto Success', async t => {
+  test('Boleto Success', async t => {
     await doBoletoPayment();
+    await checkoutPage.completeCheckout();
     await checkoutPage.expectVoucher();
-});
+  });
+}
