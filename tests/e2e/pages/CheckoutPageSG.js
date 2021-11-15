@@ -30,7 +30,6 @@ export default class CheckoutPageSFRA {
   placeOrderButton = Selector('button[name="submit"]');
   submitPaymentButton = Selector('button[id="billing-submit"]');
   successMessage = Selector('.minicart-quantity').withText('1');
-  checkoutUrl = '/s/SiteGenesis/checkout?lang=en_US';
 
   checkoutPageUserFirstNameInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_firstName');
   checkoutPageUserLastNameInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_lastName');
@@ -92,7 +91,7 @@ export default class CheckoutPageSFRA {
 
   setEmail = async () => {
     await t
-        .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
+        .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com', {replace: true});
   }
 
   submitShipping =  async () => {
@@ -107,6 +106,12 @@ export default class CheckoutPageSFRA {
   placeOrder = async () => {
     await t
         .click(this.placeOrderButton);
+  }
+
+  completeCheckoutLoggedInUser = async () => {
+    await this.setEmail();
+    await this.submitPayment();
+    await this.placeOrder();
   }
 
   completeCheckout = async () => {
@@ -141,11 +146,12 @@ export default class CheckoutPageSFRA {
   getLocation = ClientFunction(() => document.location.href);
 
   loginUser = async (credentials) => {
+    const inputEmail = Selector('input').withAttribute('id', /dwfrm_login_username_.*/);
+    const inputPassword = Selector('input').withAttribute('id', /dwfrm_login_password_.*/)
     await t
-        .click('.fa-sign-in')
-        .typeText('#login-form-email', credentials.shopperEmail)
-        .typeText('#login-form-password', credentials.password)
-        .click('.login button[type="submit"]')
+        .navigateTo('/s/SiteGenesis/account')
+        .typeText(inputEmail, credentials.shopperEmail)
+        .typeText(inputPassword, credentials.password)
+        .click('button[name="dwfrm_login_login"]')
   }
-
 }
