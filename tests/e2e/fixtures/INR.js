@@ -1,51 +1,68 @@
 import { regionsEnum } from "../data/enums";
-import CheckoutPage from "../pages/CheckoutPage";
-import { doBillDeskPayment } from "../paymentFlows/redirectShopper";
+import { environments } from "../data/environments";
+import {
+    doBillDeskPayment,
+    completeBillDeskRedirect,
+} from "../paymentFlows/redirectShopper";
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
 
-fixture`INR`
-    .page(`https://${process.env.SFCC_HOSTNAME}/s/RefArch/home`)
-    .httpAuth({
-        username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-        password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach( async t => {
-        await t.maximizeWindow()
-        checkoutPage = new CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.IN);
-        await checkoutPage.setShopperDetails(shopperData.IN);
+for(const environment of environments) {
+    fixture`${environment.name} INR`
+        .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
+        .httpAuth({
+            username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
+            password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
+        })
+        .beforeEach(async t => {
+            await t.maximizeWindow()
+            checkoutPage = new environment.CheckoutPage();
+            await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.IN);
+            await checkoutPage.setShopperDetails(shopperData.IN);
+        });
+
+    test('UPI Success', async t => {
+        await doBillDeskPayment("billdesk_upi");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(true);
+        await checkoutPage.expectSuccess();
     });
 
-test('UPI Success', async t => {
-    await doBillDeskPayment("billdesk_upi", true);
-    await checkoutPage.expectSuccess();
-});
+    test('UPI Failure', async t => {
+        await doBillDeskPayment("billdesk_upi");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(false);
+        await checkoutPage.expectRefusal();
+    });
 
-test('UPI Failure', async t => {
-    await doBillDeskPayment("billdesk_upi", false);
-    await checkoutPage.expectRefusal();
-});
+    test('Wallet Success', async t => {
+        await doBillDeskPayment("billdesk_wallet");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(true);
+        await checkoutPage.expectSuccess();
+    });
 
-test('Wallet Success', async t => {
-    await doBillDeskPayment("billdesk_wallet", true);
-    await checkoutPage.expectSuccess();
-});
+    test('Wallet Failure', async t => {
+        await doBillDeskPayment("billdesk_wallet");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(false);
+        await checkoutPage.expectRefusal();
+    });
 
-test('Wallet Failure', async t => {
-    await doBillDeskPayment("billdesk_wallet", false);
-    await checkoutPage.expectRefusal();
-});
+    test('Billdesk Online Success', async t => {
+        await doBillDeskPayment("billdesk_online");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(true);
+        await checkoutPage.expectSuccess();
+    });
 
-test('Billdesk Online Success', async t => {
-    await doBillDeskPayment("billdesk_online", true);
-    await checkoutPage.expectSuccess();
-});
-
-test('Billdesk Online Failure', async t => {
-    await doBillDeskPayment("billdesk_online", false);
-    await checkoutPage.expectRefusal();
-});
+    test('Billdesk Online Failure', async t => {
+        await doBillDeskPayment("billdesk_online");
+        await checkoutPage.completeCheckout();
+        await completeBillDeskRedirect(false);
+        await checkoutPage.expectRefusal();
+    });
+}
 
 
