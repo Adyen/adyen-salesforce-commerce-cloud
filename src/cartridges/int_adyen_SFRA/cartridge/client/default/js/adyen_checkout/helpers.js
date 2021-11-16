@@ -92,10 +92,26 @@ function showValidation() {
     : displayValidationErrors();
 }
 
+function createShowConfirmationForm(action) {
+  if (document.querySelector('#showConfirmationForm')) {
+    return;
+  }
+  const template = document.createElement('template');
+  const form = `<form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${action}">
+    <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
+    <input type="hidden" id="merchantReference" name="merchantReference"/>
+    <input type="hidden" id="result" name="result" value="null"/>
+  </form>`;
+
+  template.innerHTML = form;
+  document.querySelector('body').appendChild(template.content);
+}
+
 module.exports = {
   assignPaymentMethodValue,
   paymentFromComponent,
   resetPaymentMethod,
   displaySelectedMethod,
   showValidation,
+  createShowConfirmationForm,
 };

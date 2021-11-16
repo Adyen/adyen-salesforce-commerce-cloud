@@ -1,4 +1,5 @@
 const store = require('../../../store');
+const helpers = require('./adyen_checkout/helpers');
 
 const amazonPayNode = document.getElementById('amazon-container');
 const checkout = new AdyenCheckout(window.Configuration);
@@ -90,6 +91,8 @@ const amazonConfig = {
 const amazonPayComponent = checkout
   .create('amazonpay', amazonConfig)
   .mount(amazonPayNode);
+
+helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
 
 $('#dwfrm_billing').submit(function apiRequest(e) {
   e.preventDefault();
