@@ -1,5 +1,6 @@
 import CheckoutPageSFRA from "../pages/CheckoutPageSFRA";
 import CheckoutPageSG from "../pages/CheckoutPageSG";
+import AccountPage from "../pages/AccountPage";
 
 const environments = [
   {
@@ -11,6 +12,7 @@ const environments = [
     name: 'SG',
     CheckoutPage: CheckoutPageSG,
     urlExtension: '/on/demandware.store/Sites-SiteGenesis-Site',
+    AccountPage: AccountPage,
   }
 ]
 

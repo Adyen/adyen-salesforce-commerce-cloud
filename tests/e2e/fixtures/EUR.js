@@ -9,7 +9,7 @@ import { environments } from "../data/environments"
 
 for(const environment of environments) {
   const checkoutPage = new environment.CheckoutPage();
-  fixture`EUR ${environment.name}`
+  fixture`${environment.name} EUR`
       .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
       .httpAuth({
         username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
