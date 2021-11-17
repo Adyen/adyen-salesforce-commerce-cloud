@@ -67,8 +67,10 @@ function handle(customObj) {
   result.SubmitOrder = false;
   result.SkipOrder = false;
 
-  const orderId = customObj.custom.orderId.split('-', 1);
-  const order = OrderMgr.getOrder(orderId[0]);
+  // split order ID by - and remove last split (which is the date)
+  const orderIdSplit = customObj.custom.orderId.split('-').slice(0, -1);
+  const orderId = orderIdSplit.join('-');
+  const order = OrderMgr.getOrder(orderId);
   result.Order = order;
 
   if (order === null) {
