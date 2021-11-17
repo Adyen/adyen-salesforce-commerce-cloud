@@ -1,5 +1,5 @@
 import { regionsEnum } from "../data/enums";
-import { environments } from "../data/environments"
+import { environments } from "../data/environments";
 import {
   doAffirmPayment,
   completeAffirmRedirect,
@@ -14,6 +14,7 @@ const shopperData = require("../data/shopperData.json");
 const cardData = require("../data/cardData.json") ;
 
 let checkoutPage;
+let accountPage;
 
 for(const environment of environments) {
   fixture`${environment.name} USD`
@@ -25,6 +26,7 @@ for(const environment of environments) {
       .beforeEach(async t => {
         await t.maximizeWindow();
         checkoutPage = new environment.CheckoutPage();
+        accountPage = new environment.AccountPage();
       });
 
   const goToBillingWithFullCartGuestUser = async () => {
@@ -38,6 +40,69 @@ for(const environment of environments) {
     await checkoutPage.navigateToCheckout(regionsEnum.US);
     await checkoutPage.submitShipping();
   }
+
+test('my account add card no 3DS success', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  await accountPage.addCard(cardData.noThreeDs);
+  await accountPage.expectSuccess(cardData.noThreeDs);
+  await accountPage.removeCard();
+})
+
+test('my account add card no 3DS failure', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  const cardDataInvalid = cardData.noThreeDs;
+  cardDataInvalid.expirationDate = '0150';
+  await accountPage.addCard(cardDataInvalid);
+  await accountPage.expectFailure(cardData.noThreeDs);
+})
+
+test('my account add card 3DS1 success', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  await accountPage.addCard(cardData.threeDs1);
+  await do3Ds1Verification();
+  await accountPage.expectSuccess(cardData.threeDs1);
+  await accountPage.removeCard();
+})
+
+test('my account add card 3DS1 failure', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  const cardDataInvalid = Object.assign({}, cardData.threeDs1);
+  cardDataInvalid.expirationDate = '0150';
+  await accountPage.addCard(cardDataInvalid);
+  await do3Ds1Verification();
+  await accountPage.expectFailure(cardData.threeDs1);
+})
+
+test('my account add card 3DS2 success', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  await accountPage.addCard(cardData.threeDs2);
+  await do3Ds2Verification();
+  await accountPage.expectSuccess(cardData.threeDs2);
+  await accountPage.removeCard();
+})
+
+test('my account add card 3DS2 failure', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  const cardDataInvalid = Object.assign({}, cardData.threeDs2);
+  cardDataInvalid.expirationDate = '0150';
+  await accountPage.addCard(cardDataInvalid);
+  await do3Ds2Verification();
+  await accountPage.expectFailure(cardData.threeDs2);
+})
+
+test('my account remove card success', async () => {
+  await accountPage.consent();
+  await checkoutPage.loginUser(shopperData.US);
+  await accountPage.addCard(cardData.noThreeDs);
+  await accountPage.removeCard();
+  await accountPage.expectCardRemoval(cardData.noThreeDs);
+})
 
   test('Card payment no 3DS success', async () => {
     await goToBillingWithFullCartGuestUser();
