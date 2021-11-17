@@ -168,7 +168,7 @@
   }
 }, "BE": {
   "shopperName": {
-    "firstName": "Edin",
+    "firstName": "Eden",
     "lastName": "Hazard"
   },
   "telephone": "+32234567890",
@@ -198,16 +198,16 @@
   }
 }, "JP": {
   "shopperName": {
-    "firstName": "Kisoki",
+    "firstName": "Keisuke",
     "lastName": "Honda"
   },
-  "telephone": "+81234567890",
-  "shopperEmail": "Kisoki@Honda.jp",
+  "telephone": "01-1234-1234",
+  "shopperEmail": "keisuke@honda.jp",
   "address": {
     "city": "Tokyo",
     "country": "JP",
-    "stateOrProvince": "",
-    "postalCode": "12345",
+    "stateOrProvince": "兵庫県",
+    "postalCode": "123-1234",
     "street": "Kungsgatan",
     "houseNumberOrName": "37"
   }
