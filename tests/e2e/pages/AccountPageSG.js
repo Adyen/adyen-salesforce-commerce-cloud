@@ -30,6 +30,7 @@ export default class AccountPageSG {
   addCard = async (cardData) => {
     await t
         .navigateTo(`/s/SiteGenesis/wallet`)
+        .expect(Selector('.card-error').visible).notOk()
         .click('.add-card')
     await this.initiateCardPayment(cardData);
   }
@@ -48,12 +49,8 @@ export default class AccountPageSG {
 
   getLocation = ClientFunction(() => document.location.href);
 
-  expectFailure = async (cardData) => {
-    const last4 = cardData.cardNumber.slice(-4);
-    await t.
-    expect(this.getLocation()).notContains('wallet')
-        .navigateTo(`/s/RefArch/wallet`)
-        .expect(this.savedCard.withText(last4).exists).notOk();
+  expectFailure = async () => {
+    await t.expect(Selector('.card-error').visible).ok();
   }
 
   expectCardRemoval = async (cardData) => {
