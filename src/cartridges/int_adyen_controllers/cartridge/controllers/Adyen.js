@@ -166,29 +166,6 @@ function showConfirmation() {
         result.resultCode,
       ) > -1
     ) {
-      if (
-        result.resultCode === 'Received' &&
-        result.paymentMethod.indexOf('alipay_hk') > -1
-      ) {
-        Transaction.wrap(() => {
-          OrderMgr.failOrder(merchantRefOrder, true);
-        });
-        Logger.getLogger('Adyen').error(
-          `Did not complete Alipay transaction, result: ${JSON.stringify(
-            result,
-          )}`,
-        );
-        const errorStatus = new dw.system.Status(
-          dw.system.Status.ERROR,
-          'confirm.error.declined',
-        );
-
-        app.getController('COSummary').Start({
-          PlaceOrderError: errorStatus,
-        });
-        return {};
-      }
-
       Transaction.wrap(() => {
         AdyenHelper.savePaymentDetails(paymentInstrument, merchantRefOrder, result);
       });
