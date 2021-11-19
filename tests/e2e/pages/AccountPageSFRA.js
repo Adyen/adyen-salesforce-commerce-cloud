@@ -1,12 +1,11 @@
 import {ClientFunction, Selector, t} from "testcafe";
 
-export default class AccountPage {
+export default class AccountPageSFRA {
     consentButton = Selector('.affirm');
     savedCard = Selector('.card p:nth-child(2)');
 
     consent = async () => {
-        await t
-            .click(this.consentButton)
+        await t.click(this.consentButton)
     }
 
     initiateCardPayment = async (cardInput) => {
@@ -28,8 +27,7 @@ export default class AccountPage {
     }
 
     addCard = async (cardData) => {
-        await t
-            .click('a[href$="PaymentInstruments-AddPayment"]')
+        await t.click('a[href$="PaymentInstruments-AddPayment"]')
         await this.initiateCardPayment(cardData);
     }
 
@@ -48,18 +46,13 @@ export default class AccountPage {
 
     getLocation = ClientFunction(() => document.location.href);
 
-    expectFailure = async (cardData) => {
-        const last4 = cardData.cardNumber.slice(-4);
-        await t.
-            expect(this.getLocation()).notContains('wallet')
-            .navigateTo(`/s/RefArch/wallet`)
-            .expect(this.savedCard.innerText).notContains(last4);
+    expectFailure = async () => {
+        await t.expect(Selector('.card-error').visible).ok();
     }
 
     expectCardRemoval = async (cardData) => {
         const last4 = cardData.cardNumber.slice(-4);
-        await t
-            .expect(this.savedCard.innerText).notContains(last4);
+        await t.expect(this.savedCard.innerText).notContains(last4);
     }
 
 }

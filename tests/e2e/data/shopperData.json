@@ -123,7 +123,7 @@
       "firstName": "John",
       "lastName": "Johnson"
     },
-    "telephone": "3031234567",
+    "telephone": "3333333333",
     "shopperEmail": "john@johnson.com",
     "address": {
       "city": "Boulder",
@@ -132,6 +132,23 @@
       "postalCode": "80302",
       "street": "Arapahoe",
       "houseNumberOrName": "1001"
+    },
+    "password": "12qw!@QW"
+  },
+  "USAccountTestUser": {
+    "shopperName": {
+      "firstName": "Shaw",
+      "lastName": "Accountman"
+    },
+    "telephone": "3333333333",
+    "shopperEmail": "shaw@accountman.com",
+    "address": {
+      "city": "Catherine",
+      "country": "US",
+      "stateOrProvince": "AL",
+      "postalCode": "36728",
+      "street": "AL-5",
+      "houseNumberOrName": "18285"
     },
     "password": "12qw!@QW"
   },
@@ -168,7 +185,7 @@
   }
 }, "BE": {
   "shopperName": {
-    "firstName": "Edin",
+    "firstName": "Eden",
     "lastName": "Hazard"
   },
   "telephone": "+32234567890",
@@ -198,16 +215,16 @@
   }
 }, "JP": {
   "shopperName": {
-    "firstName": "Kisoki",
+    "firstName": "Keisuke",
     "lastName": "Honda"
   },
-  "telephone": "+81234567890",
-  "shopperEmail": "Kisoki@Honda.jp",
+  "telephone": "01-1234-1234",
+  "shopperEmail": "keisuke@honda.jp",
   "address": {
     "city": "Tokyo",
     "country": "JP",
-    "stateOrProvince": "",
-    "postalCode": "12345",
+    "stateOrProvince": "兵庫県",
+    "postalCode": "123-1234",
     "street": "Kungsgatan",
     "houseNumberOrName": "37"
   }
