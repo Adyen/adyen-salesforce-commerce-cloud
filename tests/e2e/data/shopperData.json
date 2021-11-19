@@ -135,6 +135,23 @@
     },
     "password": "12qw!@QW"
   },
+  "USAccountTestUser": {
+    "shopperName": {
+      "firstName": "Shaw",
+      "lastName": "Accountman"
+    },
+    "telephone": "3333333333",
+    "shopperEmail": "shaw@accountman.com",
+    "address": {
+      "city": "Catherine",
+      "country": "US",
+      "stateOrProvince": "AL",
+      "postalCode": "36728",
+      "street": "AL-5",
+      "houseNumberOrName": "18285"
+    },
+    "password": "12qw!@QW"
+  },
   "BR": {
     "shopperName": {
       "firstName": "João",
