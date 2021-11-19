@@ -5,8 +5,7 @@ export default class AccountPageSFRA {
     savedCard = Selector('.card p:nth-child(2)');
 
     consent = async () => {
-        await t
-            .click(this.consentButton)
+        await t.click(this.consentButton)
     }
 
     initiateCardPayment = async (cardInput) => {
@@ -28,9 +27,7 @@ export default class AccountPageSFRA {
     }
 
     addCard = async (cardData) => {
-        await t
-            .expect(Selector('.card-error').visible).notOk()
-            .click('a[href$="PaymentInstruments-AddPayment"]')
+        await t.click('a[href$="PaymentInstruments-AddPayment"]')
         await this.initiateCardPayment(cardData);
     }
 
@@ -55,8 +52,7 @@ export default class AccountPageSFRA {
 
     expectCardRemoval = async (cardData) => {
         const last4 = cardData.cardNumber.slice(-4);
-        await t
-            .expect(this.savedCard.innerText).notContains(last4);
+        await t.expect(this.savedCard.innerText).notContains(last4);
     }
 
 }

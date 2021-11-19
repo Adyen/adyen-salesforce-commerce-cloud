@@ -5,8 +5,7 @@ export default class AccountPageSG {
   savedCard = Selector('.cc-number');
 
   consent = async () => {
-    await t
-        .click(this.consentButton)
+    await t.click(this.consentButton)
   }
 
   initiateCardPayment = async (cardInput) => {
@@ -55,8 +54,7 @@ export default class AccountPageSG {
 
   expectCardRemoval = async (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    await t
-        .expect(this.savedCard.withText(last4).exists).notOk();;
+    await t .expect(this.savedCard.withText(last4).exists).notOk();;
   }
 
 }
