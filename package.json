@@ -20,7 +20,7 @@
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
-    "test:e2e": "testcafe chrome:headless e2e"
+    "test:e2e": "testcafe chrome:headless tests --skip-js-errors"
   },
   "engines": {
     "node": ">=4.0"
@@ -28,6 +28,7 @@
   "dependencies": {
     "cleave.js": "^1.0.1",
     "mobx": "^5.15.4",
+    "testcafe": "^1.16.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
