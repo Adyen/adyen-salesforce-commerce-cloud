@@ -552,7 +552,6 @@
                 <attribute attribute-id="Adyen_StoreId"/>
 
                 <attribute attribute-id="Adyen3DS2Enabled"/>
-                <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
