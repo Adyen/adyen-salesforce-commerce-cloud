@@ -232,7 +232,9 @@ export default class PaymentMethodsPage {
     }
 
     cancelAffirmPayment = async () => {
-
+        await t
+            .setNativeDialogHandler(() => true)
+            .click('#close-button');
     }
 
     confirmVippsPayment = async () => {

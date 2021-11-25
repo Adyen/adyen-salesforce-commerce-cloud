@@ -199,11 +199,11 @@ test('my account remove card success', async () => {
     await checkoutPage.expectSuccess();
   })
 
-  test('PayPal Success', async t => {
+  test.skip('PayPal Success', async t => {
 
   });
 
-  test('PayPal Fail', async t => {
+  test.skip('PayPal Fail', async t => {
 
   });
 
@@ -215,9 +215,9 @@ test('my account remove card success', async () => {
     await checkoutPage.expectSuccess();
   });
 
-  test.skip('Affirm Fail', async t => {
+  test.only('Affirm Fail', async t => {
     await goToBillingWithFullCartGuestUser();
-    await doAffirmPayment(shopperData.US, false);
+    await doAffirmPayment(shopperData.US);
     await checkoutPage.completeCheckout();
     await completeAffirmRedirect(false);
     await checkoutPage.expectRefusal();
