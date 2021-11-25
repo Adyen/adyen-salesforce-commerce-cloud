@@ -75,44 +75,17 @@ describe('Render Payment Method', () => {
           lastName: 'shippingLastNamedefaultMock',
           telephoneNumber: 'shippingPhoneNumberdefaultMock',
           shopperEmail: 'test@user.com',
-          billingAddress: {
-            city: 'billingAddressCityMock',
-            postalCode: 'billingZipCodeMock',
-            country: 'billingCountryMock',
-            stateOrProvince: 'billingStateMock',
-            street: 'billingAddressOneMock',
-            houseNumberOrName: 'billingAddressTwoMock',
-          },
-          deliveryAddress: {
-            city: 'shippingAddressCitydefaultMock',
-            postalCode: 'shippingZipCodedefaultMock',
-            country: 'shippingCountrydefaultMock',
-            stateOrProvince: 'shippingStatedefaultMock',
-            street: 'shippingAddressOnedefaultMock',
-            houseNumberOrName: 'shippingAddressTwodefaultMock',
-          }
         },
         firstName: 'shippingFirstNamedefaultMock',
         lastName: 'shippingLastNamedefaultMock',
         telephoneNumber: 'shippingPhoneNumberdefaultMock',
         shopperEmail: 'test@user.com',
-        billingAddress: {
-          city: 'billingAddressCityMock',
-          postalCode: 'billingZipCodeMock',
-          country: 'billingCountryMock',
-          stateOrProvince: 'billingStateMock',
-          street: 'billingAddressOneMock',
-          houseNumberOrName: 'billingAddressTwoMock',
-        },
-        deliveryAddress: {
-          city: 'shippingAddressCitydefaultMock',
-          postalCode: 'shippingZipCodedefaultMock',
-          country: 'shippingCountrydefaultMock',
-          stateOrProvince: 'shippingStatedefaultMock',
-          street: 'shippingAddressOnedefaultMock',
-          houseNumberOrName: 'shippingAddressTwodefaultMock',
-        }
-      }
+      },
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
+      },
     });
   });
 
