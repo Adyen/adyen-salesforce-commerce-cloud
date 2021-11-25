@@ -127,7 +127,7 @@ function handle(customObj) {
         if (customObj.custom.success === 'true') {
           const amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
           const totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
-          if (order.paymentStatus === Order.PAYMENT_STATUS_PAID) {
+          if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
             Logger.getLogger('Adyen', 'adyen').info(
               'Duplicate callback received for order {0}.',
               order.orderNo,
@@ -165,7 +165,7 @@ function handle(customObj) {
             isAdyen
           ) {
             refusedHpp = true;
-          } else if (order.status === Order.ORDER_STATUS_FAILED) {
+          } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
