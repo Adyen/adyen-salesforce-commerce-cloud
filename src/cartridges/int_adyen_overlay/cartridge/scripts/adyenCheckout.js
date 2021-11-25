@@ -102,7 +102,7 @@ function createPaymentRequest(args) {
       }
     }
     // Add empty browserInfo for GooglePay
-    if (paymentMethodType === 'paywithgoogle') {
+    if (paymentMethodType === 'paywithgoogle' || paymentMethodType === 'googlepay') {
       paymentRequest.browserInfo = {};
     }
 

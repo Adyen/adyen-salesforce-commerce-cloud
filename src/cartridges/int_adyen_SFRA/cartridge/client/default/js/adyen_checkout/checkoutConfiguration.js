@@ -149,7 +149,10 @@ function getGooglePayConfig() {
 }
 
 function handleOnChange(state) {
-  const { type } = state.data.paymentMethod;
+  let { type } = state.data.paymentMethod;
+  if(store.selectedMethod === "googlepay" && type === "paywithgoogle") {
+    type = "googlepay";
+  }
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
@@ -192,6 +195,7 @@ function setCheckoutConfiguration() {
       showEmailAddress: false, // allow shopper to specify their email address
     },
     paywithgoogle: getGooglePayConfig(),
+    googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     mbway: getMbwayConfig(),
     swish: getQRCodeConfig(),
