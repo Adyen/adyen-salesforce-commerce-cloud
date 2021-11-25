@@ -91,7 +91,7 @@ export default class PaymentMethodsPage {
         await t
             .switchToIframe('.adyen-checkout__iframe')
             .typeText('.input-field', 'password')
-            .click('.button--primary')
+            .click('button[type="submit"]')
             .switchToMainWindow();
     }
 
