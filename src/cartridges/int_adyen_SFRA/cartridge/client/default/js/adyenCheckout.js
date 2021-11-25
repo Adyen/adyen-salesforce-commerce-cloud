@@ -52,7 +52,6 @@ if (
   store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[
     id
   ] = window.googleMerchantID;
-
 }
 
 // Submit the payment

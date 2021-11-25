@@ -150,8 +150,8 @@ function getGooglePayConfig() {
 
 function handleOnChange(state) {
   let { type } = state.data.paymentMethod;
-  if(store.selectedMethod === "googlepay" && type === "paywithgoogle") {
-    type = "googlepay";
+  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
+    type = 'googlepay';
   }
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
