@@ -570,6 +570,21 @@ function renderCheckoutComponent(
   );
 }
 
+function getQuerySelectorValue(querySelector) {
+  if(querySelector && querySelector.value) {
+    return querySelector.value;
+  }
+  return null;
+}
+
+function getPersonalDetails() {
+  return {
+    firstName: getQuerySelectorValue(document.querySelector('#shippingFirstNamedefault')),
+    lastName: getQuerySelectorValue(document.querySelector('#shippingLastNamedefault')),
+    telephoneNumber: getQuerySelectorValue(document.querySelector('#shippingPhoneNumberdefault')),
+  };
+}
+
 function createCheckoutComponent(
   checkout,
   paymentMethod,
@@ -577,7 +592,17 @@ function createCheckoutComponent(
   paymentMethodID,
 ) {
   try {
-    var node = checkout.create(paymentMethod.type, paymentMethod);
+    var nodeData = Object.assign(
+        paymentMethod,
+        {
+          data: Object.assign(getPersonalDetails(),{personalDetails: getPersonalDetails()}),
+          visibility: {
+            personalDetails: 'editable',
+            billingAddress: 'hidden',
+            deliveryAddress: 'hidden',
+          },
+        });
+    var node = checkout.create(paymentMethod.type, nodeData);
     if (!componentsObj[paymentMethodID]) {
       componentsObj[paymentMethodID] = {};
     }
