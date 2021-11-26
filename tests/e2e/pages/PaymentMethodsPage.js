@@ -228,9 +228,6 @@ export default class PaymentMethodsPage {
         //Cancel the simulator
     }
 
-    confirmAffirmPayment = async () => {
-    }
-
     cancelAffirmPayment = async () => {
         await t
             .setNativeDialogHandler(() => true)

@@ -99,13 +99,8 @@ const doAffirmPayment = async (shopper) => {
     await paymentMethodsPage.initiateAffirmPayment(shopper);
 }
 
-const completeAffirmRedirect = async (success) => {
-    if(success){
-        await paymentMethodsPage.confirmAffirmPayment();
-    }
-    else {
-        await paymentMethodsPage.cancelAffirmPayment();
-    }
+const completeAffirmRedirect = async () => {
+    await paymentMethodsPage.cancelAffirmPayment();
 }
 
 const doVippsPayment = async () => {

@@ -207,15 +207,7 @@ test('my account remove card success', async () => {
 
   });
 
-  test.skip('Affirm Success', async t => {
-    await goToBillingWithFullCartGuestUser();
-    await doAffirmPayment(shopperData.US, true);
-    await checkoutPage.completeCheckout();
-    await completeAffirmRedirect(true);
-    await checkoutPage.expectSuccess();
-  });
-
-  test.only('Affirm Fail', async t => {
+  test('Affirm Fail', async t => {
     await goToBillingWithFullCartGuestUser();
     await doAffirmPayment(shopperData.US);
     await checkoutPage.completeCheckout();
