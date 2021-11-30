@@ -37,6 +37,7 @@ export const getOrder = jest.fn((/* orderNo */) => ({
   orderNo: 'mocked_orderNo',
   orderToken: 'mocked_orderToken',
   custom: { Adyen_pspReference: 'mocked_pspRef' },
+  status: { value: 4}
 }));
 
 export const failOrder = jest.fn((orderNo, bool) => ({
