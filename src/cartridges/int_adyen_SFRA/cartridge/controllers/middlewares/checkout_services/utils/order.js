@@ -105,6 +105,9 @@ function createOrder(currentBasket, { res, req, next }, emit) {
 
     saveAddresses(req, order);
 
+    // Cache order number in order to be able to restore cart later
+    req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+
     const isOrderCreated = handleCreateOrder(order);
     if (isOrderCreated) {
       COHelpers.sendConfirmationEmail(order, req.locale.id);
@@ -120,6 +123,7 @@ function createOrder(currentBasket, { res, req, next }, emit) {
       });
       return emit('route:Complete');
     }
+
   }
   return undefined;
 }

@@ -1,4 +1,5 @@
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const Locale = require('dw/util/Locale');
@@ -103,6 +104,12 @@ function handlePayment(stateData, order, options) {
       return handlePaymentError(order, options);
     }
   }
+
+  if(order.status.value == Order.ORDER_STATUS_FAILED ) {
+    Logger.getLogger('Adyen').error(`Could not call payment/details for failed order ${order.orderNo}`);
+    return handlePaymentError(order, options);
+  }
+
   const detailsCall = handlePaymentsDetailsCall(
     stateData,
     adyenPaymentInstrument,

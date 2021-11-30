@@ -1,6 +1,7 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('./showConfirmation/payment');
@@ -31,6 +32,11 @@ function showConfirmation(req, res, next) {
       paymentData,
     };
 
+    if(order.status.value == Order.ORDER_STATUS_FAILED ) {
+      Logger.getLogger('Adyen').error(`Could not call payment/details for failed order ${order.orderNo}`);
+      return payment.handlePaymentError(order, 'placeOrder', options);
+      return next();
+    }
     const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearForms.clearAdyenData(adyenPaymentInstrument);
 
