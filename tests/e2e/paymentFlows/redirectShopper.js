@@ -95,23 +95,12 @@ const completeEPSRedirect = async (success) => {
     }
 }
 
-const doAffirmPayment = async (shopper, success) => {
+const doAffirmPayment = async (shopper) => {
     await paymentMethodsPage.initiateAffirmPayment(shopper);
-    if(success){
-        await paymentMethodsPage.confirmAffirmPayment();
-    }
-    else {
-        await paymentMethodsPage.cancelAffirmPayment();
-    }
 }
 
-const completeAffirmRedirect = async (shopper, success) => {
-    if(success){
-        await paymentMethodsPage.confirmAffirmPayment();
-    }
-    else {
-        await paymentMethodsPage.cancelAffirmPayment();
-    }
+const completeAffirmRedirect = async () => {
+    await paymentMethodsPage.cancelAffirmPayment();
 }
 
 const doVippsPayment = async () => {
