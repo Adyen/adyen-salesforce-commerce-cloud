@@ -178,7 +178,9 @@ var adyenHelperObj = {
     for (var config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if(givingConfigs[config] === null) {
-          Logger.getLogger('Adyen').error("Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly");
+          Logger.getLogger('Adyen').error(
+              'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
+          );
           return null;
         }
       }
