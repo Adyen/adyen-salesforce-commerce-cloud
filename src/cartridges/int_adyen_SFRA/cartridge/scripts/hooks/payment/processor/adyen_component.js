@@ -1,7 +1,7 @@
 /**
  *
  */
-const middlewares = require('./middlewares/index');
+const middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
 
 function Handle(basket, paymentInformation) {
   return middlewares.handle(basket, paymentInformation);

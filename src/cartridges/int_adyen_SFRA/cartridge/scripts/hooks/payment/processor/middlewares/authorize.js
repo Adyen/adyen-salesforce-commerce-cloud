@@ -4,7 +4,7 @@ const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const paymentResponseHandler = require('./authorize/paymentResponse');
+const paymentResponseHandler = require('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/paymentResponse');
 const constants = require('*/cartridge/adyenConstants/constants');
 
 function errorHandler() {

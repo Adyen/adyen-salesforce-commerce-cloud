@@ -1,6 +1,6 @@
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
-const { getPayments } = require('./utils/index');
+const { getPayments } = require('*/cartridge/scripts/checkout/utils/index');
 
 /**
  * handles the payment authorization for each payment instrument

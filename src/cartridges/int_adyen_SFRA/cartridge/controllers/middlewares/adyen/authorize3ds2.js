@@ -1,6 +1,6 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
-const createAuthorization = require('./authorize3ds2/auth');
+const createAuthorization = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/auth');
 
 /**
  * Continues a 3DS2 payment.

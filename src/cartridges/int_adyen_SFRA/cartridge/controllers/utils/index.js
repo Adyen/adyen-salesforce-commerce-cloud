@@ -1,1 +1,1 @@
-module.exports.clearForms = require('./clearForms');
+module.exports.clearForms = require('*/cartridges/controllers/utils/clearForms');

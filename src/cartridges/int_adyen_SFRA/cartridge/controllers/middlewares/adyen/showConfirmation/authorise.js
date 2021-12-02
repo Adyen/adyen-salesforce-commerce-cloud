@@ -1,8 +1,8 @@
 const Locale = require('dw/util/Locale');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
-const handleOrderConfirm = require('./order');
-const payment = require('./payment');
+const handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
+const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 
 function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   const { req } = options;

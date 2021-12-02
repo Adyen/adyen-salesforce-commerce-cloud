@@ -1,7 +1,9 @@
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const { clearForms } = require('../../../utils/index');
+const {
+  clearForms,
+} = require('*/cartridge/controllers/middlewares/utils/index');
 
 function handleOrderConfirm(
   order,

@@ -2,7 +2,9 @@ const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-const { checkForErrors } = require('../helpers/index');
+const {
+  checkForErrors,
+} = require('*/cartridge/controllers/middlewares/checkout_services/helpers/index');
 
 const handleTransaction = (currentBasket, { res, req }, emit) => {
   const calculatePaymentTransaction = () => {

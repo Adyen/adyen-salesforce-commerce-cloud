@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const {
   adyen: { adyen3ds2 },
 } = require('../../index');

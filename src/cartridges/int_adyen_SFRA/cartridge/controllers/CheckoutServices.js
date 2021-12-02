@@ -1,5 +1,7 @@
 const server = require('server');
-const { checkoutServices } = require('./middlewares/index');
+const {
+  checkoutServices,
+} = require('*/cartridge/controllers/middlewares/index');
 
 server.extend(module.superModule);
 

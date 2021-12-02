@@ -1,6 +1,5 @@
-const handleAuthorize = require('./authorizeWithForm/authorize');
-const handleError = require('./authorizeWithForm/error');
-
+const handleAuthorize = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/authorize');
+const handleError = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/error');
 /**
  * Continues a 3DS1 payment.
  * Makes /payments/details call to 3d verification system to complete authorization.
