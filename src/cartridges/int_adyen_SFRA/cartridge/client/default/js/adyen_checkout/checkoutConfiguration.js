@@ -203,27 +203,6 @@ function setCheckoutConfiguration() {
     wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
     pix: getQRCodeConfig(),
-    afterpay_default: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
-    facilypay_3x: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
-    ratepay: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
   };
 }
 

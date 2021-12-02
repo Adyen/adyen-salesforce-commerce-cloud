@@ -24,10 +24,10 @@ describe('Render Payment Method', () => {
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      true,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        true,
+        '/mocked_path/',
+        'mocked_description',
     );
     expect(mount).toBeCalledTimes(1);
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
@@ -61,10 +61,10 @@ describe('Render Payment Method', () => {
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      false,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        false,
+        '/mocked_path/',
+        'mocked_description',
     );
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
@@ -75,44 +75,17 @@ describe('Render Payment Method', () => {
           lastName: 'shippingLastNamedefaultMock',
           telephoneNumber: 'shippingPhoneNumberdefaultMock',
           shopperEmail: 'test@user.com',
-          billingAddress: {
-            city: 'billingAddressCityMock',
-            postalCode: 'billingZipCodeMock',
-            country: 'billingCountryMock',
-            stateOrProvince: 'billingStateMock',
-            street: 'billingAddressOneMock',
-            houseNumberOrName: 'billingAddressTwoMock',
-          },
-          deliveryAddress: {
-            city: 'shippingAddressCitydefaultMock',
-            postalCode: 'shippingZipCodedefaultMock',
-            country: 'shippingCountrydefaultMock',
-            stateOrProvince: 'shippingStatedefaultMock',
-            street: 'shippingAddressOnedefaultMock',
-            houseNumberOrName: 'shippingAddressTwodefaultMock',
-          }
         },
         firstName: 'shippingFirstNamedefaultMock',
         lastName: 'shippingLastNamedefaultMock',
         telephoneNumber: 'shippingPhoneNumberdefaultMock',
         shopperEmail: 'test@user.com',
-        billingAddress: {
-          city: 'billingAddressCityMock',
-          postalCode: 'billingZipCodeMock',
-          country: 'billingCountryMock',
-          stateOrProvince: 'billingStateMock',
-          street: 'billingAddressOneMock',
-          houseNumberOrName: 'billingAddressTwoMock',
-        },
-        deliveryAddress: {
-          city: 'shippingAddressCitydefaultMock',
-          postalCode: 'shippingZipCodedefaultMock',
-          country: 'shippingCountrydefaultMock',
-          stateOrProvince: 'shippingStatedefaultMock',
-          street: 'shippingAddressOnedefaultMock',
-          houseNumberOrName: 'shippingAddressTwodefaultMock',
-        }
-      }
+      },
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
+      },
     });
   });
 
@@ -127,15 +100,15 @@ describe('Render Payment Method', () => {
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      false,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        false,
+        '/mocked_path/',
+        'mocked_description',
     );
     const input = document.getElementById('rb_paypal');
     input.onchange({ target: { value: 'paypal' } });
     expect(
-      document.querySelector('button[value="submit-payment"]').disabled,
+        document.querySelector('button[value="submit-payment"]').disabled,
     ).toBeTruthy();
     expect(store.selectedMethod).toBe('paypal');
   });
