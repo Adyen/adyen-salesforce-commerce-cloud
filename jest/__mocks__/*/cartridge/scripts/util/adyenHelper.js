@@ -17,6 +17,7 @@ export const getAdyenPayPalIntent = jest.fn(() => 'mocked_intent');
 export const getAdyenMerchantAccount = jest.fn(() => 'mocked_merchant_account');
 export const getAdyenGivingEnabled = jest.fn(() => true);
 export const isAdyenGivingAvailable = jest.fn(() => true);
+export const getAdyenGivingConfig = jest.fn(() => true);
 export const getDonationAmounts = jest.fn(() => [10, 20, 30]);
 export const getAdyenGivingCharityName = jest.fn(() => 'mocked_charity_name');
 export const getAdyenGivingCharityWebsite = jest.fn(

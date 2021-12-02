@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+
 let confirm;
 let req;
 let res;
@@ -18,7 +19,7 @@ afterEach(() => {
 describe('Confirm', () => {
   it('should do nothing if giving is not enabled', () => {
     const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-    AdyenHelper.getAdyenGivingEnabled.mockImplementation(() => false);
+    AdyenHelper.getAdyenGivingConfig.mockImplementation(() => null);
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);
   });
