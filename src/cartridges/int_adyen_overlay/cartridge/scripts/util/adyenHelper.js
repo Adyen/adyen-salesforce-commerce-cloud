@@ -163,7 +163,7 @@ var adyenHelperObj = {
         values: configuredAmounts,
       };
     }
-    var givingConfigs = {
+    const givingConfigs = {
       adyenGivingAvailable,
       configuredAmounts,
       charityName,
