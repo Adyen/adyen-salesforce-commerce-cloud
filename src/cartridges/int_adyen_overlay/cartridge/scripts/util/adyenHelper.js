@@ -175,7 +175,7 @@ var adyenHelperObj = {
       pspReference: order.custom.Adyen_pspReference,
     };
 
-    for (let config in givingConfigs) {
+    for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if(givingConfigs[config] === null) {
           Logger.getLogger('Adyen').error(
