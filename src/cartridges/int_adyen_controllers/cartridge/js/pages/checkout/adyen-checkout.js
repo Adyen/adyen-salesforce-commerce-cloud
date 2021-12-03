@@ -46,6 +46,9 @@ function initializeBillingEvents() {
     checkoutConfiguration = window.Configuration;
     checkoutConfiguration.onChange = function (state /* , component */) {
       var type = state.data.paymentMethod.type;
+      if(selectedMethod === "googlepay" && type === "paywithgoogle") {
+        type = "googlepay";
+      }
       isValid = state.isValid;
       if (!componentsObj[type]) {
         componentsObj[type] = {};
@@ -62,19 +65,8 @@ function initializeBillingEvents() {
         billingAddressRequired: false, // turn billingAddress section on/off
         showEmailAddress: false, // allow shopper to specify their email address
       },
-      paywithgoogle: {
-        environment: window.Configuration.environment,
-        onSubmit: () => {
-          assignPaymentMethodValue();
-          document.querySelector('#billing-submit').disabled = false;
-          document.querySelector('#billing-submit').click();
-        },
-        configuration: {
-          gatewayMerchantId: window.merchantAccount,
-        },
-        showPayButton: true,
-        buttonColor: 'white',
-      },
+      paywithgoogle: getGooglePayConfig(),
+      googlepay: getGooglePayConfig(),
       paypal: {
         environment: window.Configuration.environment,
         intent: window.paypalIntent,
@@ -161,6 +153,8 @@ function initializeBillingEvents() {
         window.Configuration.environment === 'live'
     ) {
       checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier =
+        window.googleMerchantID;
+      checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration.merchantIdentifier =
           window.googleMerchantID;
     }
     if(window.cardholderNameBool !== 'null') {
@@ -278,7 +272,7 @@ function resolveUnmount(key, val) {
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-  if (['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'googlepay', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -650,6 +644,22 @@ function getCardConfig() {
       componentsObj[methodToUpdate].isValid = isValid;
       componentsObj[methodToUpdate].stateData = state.data;
     },
+  }
+}
+
+function getGooglePayConfig() {
+  return {
+    environment: window.Configuration.environment,
+    onSubmit: () => {
+      assignPaymentMethodValue();
+      document.querySelector('#billing-submit').disabled = false;
+      document.querySelector('#billing-submit').click();
+    },
+    configuration: {
+      gatewayMerchantId: window.merchantAccount,
+    },
+    showPayButton: true,
+    buttonColor: 'white',
   }
 }
 

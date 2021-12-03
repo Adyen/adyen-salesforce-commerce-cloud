@@ -101,10 +101,6 @@ function createPaymentRequest(args) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
     }
-    // Add empty browserInfo for GooglePay
-    if (paymentMethodType === 'paywithgoogle') {
-      paymentRequest.browserInfo = {};
-    }
 
   // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);

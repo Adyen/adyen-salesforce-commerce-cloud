@@ -49,6 +49,9 @@ if (
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[
     id
   ] = window.googleMerchantID;
+  store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[
+    id
+  ] = window.googleMerchantID;
 }
 
 // Submit the payment
