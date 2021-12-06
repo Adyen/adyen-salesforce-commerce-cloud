@@ -85,10 +85,8 @@
     ]
   },
   "jest": {
-    "setupFiles": [
-      "./jest/globals.js"
-    ],
     "setupFilesAfterEnv": [
+      "./jest/globals.js",
       "./jest/sfccPathSetup.js",
       "./jest/sfccCartridgeMocks"
     ]
