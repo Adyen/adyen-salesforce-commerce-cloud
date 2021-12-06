@@ -58,6 +58,7 @@
     "postcss-loader": "^3.0.0",
     "prettier": "2.0.5",
     "prettier-eslint-cli": "^5.0.0",
+    "proxyquire": "1.7.4",
     "regenerator-runtime": "^0.13.5",
     "resolve-url-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
