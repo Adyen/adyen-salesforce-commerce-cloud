@@ -40,9 +40,10 @@ function paymentResponseHandler(paymentInstrument, result, orderNumber) {
   paymentInstrument.custom.adyenPaymentData = result.paymentData;
   Transaction.commit();
 
-  return result.threeDS2
-    ? get3DS2Response(result)
-    : getRedirectResponse(result, orderNumber, paymentInstrument);
+  return AdyenHelper.createAdyenCheckoutResponse(result);
+  // return result.threeDS2
+  //   ? get3DS2Response(result)
+  //   : getRedirectResponse(result, orderNumber, paymentInstrument);
 }
 
 module.exports = paymentResponseHandler;
