@@ -1,6 +1,6 @@
 "use strict";
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
@@ -178,20 +178,6 @@ function showConfirmation() {
     var paymentInstrument = merchantRefOrder.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
 
     if (['Authorised', 'Pending', 'Received', 'PresentToShopper'].indexOf(result.resultCode) > -1) {
-      if (result.resultCode === 'Received' && result.paymentMethod.indexOf('alipay_hk') > -1) {
-        Transaction.wrap(function () {
-          OrderMgr.failOrder(merchantRefOrder, true);
-        });
-        Logger.getLogger('Adyen').error("Did not complete Alipay transaction, result: ".concat(JSON.stringify(result)));
-
-        var _errorStatus = new dw.system.Status(dw.system.Status.ERROR, 'confirm.error.declined');
-
-        app.getController('COSummary').Start({
-          PlaceOrderError: _errorStatus
-        });
-        return {};
-      }
-
       Transaction.wrap(function () {
         AdyenHelper.savePaymentDetails(paymentInstrument, merchantRefOrder, result);
       });

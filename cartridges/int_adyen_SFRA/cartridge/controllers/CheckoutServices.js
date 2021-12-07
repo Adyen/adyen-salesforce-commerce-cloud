@@ -2,7 +2,7 @@
 
 var server = require('server');
 
-var _require = require('./middlewares/index'),
+var _require = require('*/cartridge/controllers/middlewares/index'),
     checkoutServices = _require.checkoutServices;
 
 server.extend(module.superModule);

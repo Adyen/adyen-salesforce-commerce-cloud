@@ -8,13 +8,13 @@ var Logger = require('dw/system/Logger');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-var _require = require('../../../utils/index'),
+var _require = require('*/cartridge/controllers/utils/index'),
     clearForms = _require.clearForms;
 
-var _require2 = require('./errorHandler'),
+var _require2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler'),
     handlePaymentError = _require2.handlePaymentError;
 
-var handlePlaceOrder = require('./order');
+var handlePlaceOrder = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/order');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 

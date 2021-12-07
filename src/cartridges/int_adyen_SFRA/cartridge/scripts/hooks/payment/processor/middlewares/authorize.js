@@ -4,8 +4,6 @@ const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const paymentResponseHandler = require('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/paymentResponse');
-const constants = require('*/cartridge/adyenConstants/constants');
 
 function errorHandler() {
   const serverErrors = [
@@ -18,13 +16,6 @@ function errorHandler() {
     serverErrors,
     error: true,
   };
-}
-
-function check3DS2(result) {
-  return (
-    result.threeDS2 ||
-    result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER
-  );
 }
 
 function paymentErrorHandler(result) {
@@ -59,13 +50,16 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
   if (result.error) {
     return errorHandler();
   }
-  // Trigger 3DS2 flow
-  if (check3DS2(result)) {
-    return paymentResponseHandler(paymentInstrument, result, orderNumber);
+
+  const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
+  if(!checkoutResponse.isFinal) {
+    return checkoutResponse;
   }
-  if (result.decision !== 'ACCEPT') {
+
+  if(!checkoutResponse.isSuccessful) {
     return paymentErrorHandler(result);
   }
+
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
   Transaction.commit();
   return { authorized: true, error: false };

@@ -8,7 +8,7 @@ var Transaction = require('dw/system/Transaction');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var _require = require('./redirect/signature'),
+var _require = require('*/cartridge/controllers/middlewares/adyen/redirect/signature'),
     getCurrentSignature = _require.getCurrentSignature,
     handleIncorrectSignature = _require.handleIncorrectSignature;
 /*

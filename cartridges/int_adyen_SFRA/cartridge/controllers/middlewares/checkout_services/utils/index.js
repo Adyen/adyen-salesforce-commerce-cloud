@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports.createOrder = require('./order');
+module.exports.createOrder = require('*/cartridge/controllers/middlewares/checkout_services/utils/order');

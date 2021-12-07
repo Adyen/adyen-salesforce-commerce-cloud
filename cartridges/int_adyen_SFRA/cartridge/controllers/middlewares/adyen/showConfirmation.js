@@ -10,12 +10,12 @@ var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var payment = require('./showConfirmation/payment');
+var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 
-var _require = require('../../utils/index'),
+var _require = require('*/cartridge/controllers/utils/index'),
     clearForms = _require.clearForms;
 
-var handleAuthorised = require('./showConfirmation/authorise');
+var handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
  * if the payment was accepted.

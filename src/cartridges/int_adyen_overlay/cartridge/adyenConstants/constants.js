@@ -18,4 +18,7 @@ module.exports = {
     REDIRECTSHOPPER: 'RedirectShopper',
     REFUSED: 'Refused',
   },
+  ACTIONTYPES: {
+    VOUCHER: 'voucher',
+  }
 };

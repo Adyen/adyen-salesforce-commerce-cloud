@@ -12,7 +12,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-var paymentResponseHandler = require('./authorize/paymentResponse');
+var paymentResponseHandler = require('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/paymentResponse');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 

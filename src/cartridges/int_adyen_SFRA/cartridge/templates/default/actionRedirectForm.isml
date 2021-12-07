@@ -1,0 +1,18 @@
+<div class="checkout">
+    <div class="payerauth">
+        <form action="${URLUtils.url('Checkout-Begin', 'stage', 'placeOrder')}" method="get" id="actionRedirectForm" name="actionRedirectForm">
+            <input type="hidden" name="orderID" value="${pdict.orderID}">
+            <input type="hidden" name="orderToken" value="${pdict.orderToken}">
+        </form>
+        <script language="javascript">
+            var loaded = false;
+
+            function load() {
+                document.getElementById('actionRedirectForm').submit();
+                loaded = true;
+            }
+
+            load();
+        </script>
+    </div>
+</div>
