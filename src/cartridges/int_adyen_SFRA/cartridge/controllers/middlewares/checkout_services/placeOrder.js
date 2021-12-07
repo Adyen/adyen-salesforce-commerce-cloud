@@ -1,6 +1,8 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const URLUtils = require('dw/web/URLUtils');
-const { createOrder } = require('./utils/index');
+const {
+  createOrder,
+} = require('*/cartridge/controllers/middlewares/checkout_services/utils/index');
 
 function placeOrder(req, res, next) {
   const cbEmitter = (route) => this.emit(route, req, res);

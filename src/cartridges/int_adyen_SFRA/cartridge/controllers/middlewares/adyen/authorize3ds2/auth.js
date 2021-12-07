@@ -1,7 +1,9 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const constants = require('*/cartridge/adyenConstants/constants');
-const handlePaymentsDetailsCall = require('./payment');
-const { toggle3DS2Error } = require('./errorHandler');
+const handlePaymentsDetailsCall = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/payment');
+const {
+  toggle3DS2Error,
+} = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler');
 
 function contains3ds2Action({ req }) {
   return (

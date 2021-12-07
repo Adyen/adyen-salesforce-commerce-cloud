@@ -8,7 +8,7 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
-const { clearForms } = require('../../../utils/index');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function handlePaymentError(order, { res, next }) {
   Transaction.wrap(() => {

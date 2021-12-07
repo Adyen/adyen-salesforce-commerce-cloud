@@ -2,9 +2,11 @@ const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 const Logger = require('dw/system/Logger');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const { clearForms } = require('../../../utils/index');
-const { handlePaymentError } = require('./errorHandler');
-const handlePlaceOrder = require('./order');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
+const {
+  handlePaymentError,
+} = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler');
+const handlePlaceOrder = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/order');
 const constants = require('*/cartridge/adyenConstants/constants');
 
 function checkForSuccessfulPayment(result) {

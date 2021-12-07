@@ -1,5 +1,5 @@
 const Logger = require('dw/system/Logger');
-const handlePaymentMethod = require('./getPaymentMethod/payment');
+const handlePaymentMethod = require('*/cartridge/controllers/middlewares/adyen/getPaymentMethod/payment');
 
 /**
  * Make a request to Adyen to get available payment methods

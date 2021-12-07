@@ -2,7 +2,7 @@ const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const adyenGiving = require('*/cartridge/scripts/adyenGiving');
-const { adyen } = require('./middlewares/index');
+const { adyen } = require('*/cartridge/controllers/middlewares/index');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 

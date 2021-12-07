@@ -1,4 +1,4 @@
-const middlewares = require('./middlewares/index');
+const middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
 
 function Handle(basket) {
   return middlewares.posHandle(basket);

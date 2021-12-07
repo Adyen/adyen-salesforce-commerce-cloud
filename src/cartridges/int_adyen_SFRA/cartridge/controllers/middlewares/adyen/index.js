@@ -1,15 +1,15 @@
-const adyen3d = require('./adyen3d');
-const adyen3ds2 = require('./adyen3ds2');
-const authorizeWithForm = require('./authorizeWithForm');
-const authorize3ds2 = require('./authorize3ds2');
-const redirect = require('./redirect');
-const showConfirmation = require('./showConfirmation');
-const getPaymentMethods = require('./getPaymentMethods');
-const paymentFromComponent = require('./paymentFromComponent');
-const notify = require('./notify');
-const showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
-const paymentsDetails = require('./paymentsDetails');
-const redirect3ds1Response = require('./redirect3ds1Response');
+const adyen3d = require('*/cartridge/controllers/middlewares/adyen/adyen3d');
+const adyen3ds2 = require('*/cartridge/controllers/middlewares/adyen/adyen3ds2');
+const authorizeWithForm = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm');
+const authorize3ds2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2');
+const redirect = require('*/cartridge/controllers/middlewares/adyen/redirect');
+const showConfirmation = require('*/cartridge/controllers/middlewares/adyen/showConfirmation');
+const getPaymentMethods = require('*/cartridge/controllers/middlewares/adyen/getPaymentMethods');
+const paymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/paymentFromComponent');
+const notify = require('*/cartridge/controllers/middlewares/adyen/notify');
+const showConfirmationPaymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent');
+const paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
+const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
 
 module.exports = {
   adyen3d,

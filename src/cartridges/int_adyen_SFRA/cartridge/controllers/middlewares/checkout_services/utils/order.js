@@ -4,10 +4,12 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 const { fraudDetection } = require('*/cartridge/scripts/hooks/fraudDetection');
-const { hasAdyenPaymentMethod } = require('../helpers/index');
-const handleTransaction = require('./transaction');
-const handlePaymentAuthorization = require('./payment');
-const handleFraudDetection = require('./fraud');
+const {
+  hasAdyenPaymentMethod,
+} = require('*/cartridge/controllers/middlewares/checkout_services/helpers/index');
+const handleTransaction = require('*/cartridge/controllers/middlewares/checkout_services/utils/transaction');
+const handlePaymentAuthorization = require('*/cartridge/controllers/middlewares/checkout_services/utils/payment');
+const handleFraudDetection = require('*/cartridge/controllers/middlewares/checkout_services/utils/fraud');
 
 function createOrder(currentBasket, { res, req, next }, emit) {
   const validateOrder = (order) => {

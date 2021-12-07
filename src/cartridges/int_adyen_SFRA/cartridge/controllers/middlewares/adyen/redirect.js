@@ -6,7 +6,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const {
   getCurrentSignature,
   handleIncorrectSignature,
-} = require('./redirect/signature');
+} = require('*/cartridge/controllers/middlewares/adyen/redirect/signature');
 
 /*
  * Redirect to Adyen after saving order etc.

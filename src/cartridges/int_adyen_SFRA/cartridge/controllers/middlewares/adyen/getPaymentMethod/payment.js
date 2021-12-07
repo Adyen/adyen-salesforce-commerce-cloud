@@ -3,7 +3,10 @@ const BasketMgr = require('dw/order/BasketMgr');
 const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-const { getConnectedTerminals, getCountryCode } = require('./utils');
+const {
+  getConnectedTerminals,
+  getCountryCode,
+} = require('*/cartridge/controllers/middlewares/adyen/getPaymentMethod/utils');
 
 function handlePaymentMethod({ req, res, next }) {
   const currentBasket = BasketMgr.getCurrentBasket();

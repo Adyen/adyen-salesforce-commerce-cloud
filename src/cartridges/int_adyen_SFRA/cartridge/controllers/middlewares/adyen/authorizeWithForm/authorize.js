@@ -4,10 +4,10 @@ const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
-const { clearForms } = require('../../../utils/index');
-const handleError = require('./error');
-const handleInvalidPayment = require('./payment');
-const handleOrderConfirmation = require('./order');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
+const handleError = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/error');
+const handleInvalidPayment = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/payment');
+const handleOrderConfirmation = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/order');
 
 function checkForValidRequest(result, order, merchantRefOrder, options) {
   const { res, next } = options;

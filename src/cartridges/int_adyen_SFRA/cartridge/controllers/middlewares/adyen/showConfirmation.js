@@ -3,9 +3,9 @@ const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
-const payment = require('./showConfirmation/payment');
-const { clearForms } = require('../../utils/index');
-const handleAuthorised = require('./showConfirmation/authorise');
+const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
+const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
