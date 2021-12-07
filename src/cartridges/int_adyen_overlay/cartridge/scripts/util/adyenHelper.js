@@ -818,7 +818,7 @@ var adyenHelperObj = {
     ) {
       return {
         isFinal: false,
-        action: checkoutresponse.action,
+        action: checkoutresponse.action || checkoutresponse.fullResponse.action,
       };
     }
 
