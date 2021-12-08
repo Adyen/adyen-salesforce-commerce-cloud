@@ -4,8 +4,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 var store = require('../../../store');
 
-var helpers = require('./adyen_checkout/helpers');
-
 var amazonPayNode = document.getElementById('amazon-container');
 var checkout = new AdyenCheckout(window.Configuration);
 
@@ -92,7 +90,6 @@ var amazonConfig = {
   }
 };
 var amazonPayComponent = checkout.create('amazonpay', amazonConfig).mount(amazonPayNode);
-helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
 $('#dwfrm_billing').submit(function apiRequest(e) {
   e.preventDefault();
   var form = $(this);

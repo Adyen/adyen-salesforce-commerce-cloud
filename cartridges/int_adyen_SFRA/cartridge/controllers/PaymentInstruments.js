@@ -15,7 +15,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var _require = require('*/cartridge/scripts/updateSavedCards'),
     updateSavedCards = _require.updateSavedCards;
 
-var _require2 = require('*/cartridge/controllers/middlewares/index'),
+var _require2 = require('./middlewares/index'),
     paymentInstruments = _require2.paymentInstruments;
 /*
  * Prepends PaymentInstruments' 'List' function to list saved cards.

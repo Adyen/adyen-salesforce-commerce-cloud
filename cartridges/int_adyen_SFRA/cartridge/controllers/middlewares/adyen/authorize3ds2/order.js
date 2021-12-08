@@ -8,10 +8,10 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
-var _require2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler'),
+var _require2 = require('./errorHandler'),
     handlePlaceOrderError = _require2.handlePlaceOrderError;
 
 function handleOrderConfirm(paymentInstrument, order, result, _ref) {

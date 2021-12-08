@@ -13,14 +13,14 @@ var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 var _require = require('*/cartridge/scripts/hooks/fraudDetection'),
     fraudDetection = _require.fraudDetection;
 
-var _require2 = require('*/cartridge/controllers/middlewares/checkout_services/helpers/index'),
+var _require2 = require('../helpers/index'),
     hasAdyenPaymentMethod = _require2.hasAdyenPaymentMethod;
 
-var handleTransaction = require('*/cartridge/controllers/middlewares/checkout_services/utils/transaction');
+var handleTransaction = require('./transaction');
 
-var handlePaymentAuthorization = require('*/cartridge/controllers/middlewares/checkout_services/utils/payment');
+var handlePaymentAuthorization = require('./payment');
 
-var handleFraudDetection = require('*/cartridge/controllers/middlewares/checkout_services/utils/fraud');
+var handleFraudDetection = require('./fraud');
 
 function createOrder(currentBasket, _ref, emit) {
   var res = _ref.res,

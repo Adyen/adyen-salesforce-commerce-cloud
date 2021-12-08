@@ -20,7 +20,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
 function handlePaymentError(order, _ref) {

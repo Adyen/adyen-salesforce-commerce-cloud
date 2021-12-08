@@ -4,7 +4,7 @@ var BasketMgr = require('dw/order/BasketMgr');
 
 var URLUtils = require('dw/web/URLUtils');
 
-var _require = require('*/cartridge/controllers/middlewares/checkout_services/utils/index'),
+var _require = require('./utils/index'),
     createOrder = _require.createOrder;
 
 function placeOrder(req, res, next) {

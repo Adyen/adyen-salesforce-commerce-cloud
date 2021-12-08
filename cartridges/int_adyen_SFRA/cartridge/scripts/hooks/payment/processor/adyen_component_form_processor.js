@@ -1,6 +1,6 @@
 "use strict";
 
-var middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
+var middlewares = require('./middlewares/index');
 /**
  * Verifies the required information for billing form is provided.
  * @param {Object} req - The request object

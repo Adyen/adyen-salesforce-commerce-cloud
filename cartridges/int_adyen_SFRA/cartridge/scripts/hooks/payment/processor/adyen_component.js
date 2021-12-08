@@ -3,7 +3,7 @@
 /**
  *
  */
-var middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
+var middlewares = require('./middlewares/index');
 
 function Handle(basket, paymentInformation) {
   return middlewares.handle(basket, paymentInformation);

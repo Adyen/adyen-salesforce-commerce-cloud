@@ -1,8 +1,8 @@
 "use strict";
 
-var savePayment = require('*/cartridge/controllers/middlewares/payment_instruments/savePayment');
+var savePayment = require('./savePayment');
 
-var deletePayment = require('*/cartridge/controllers/middlewares/payment_instruments/deletePayment');
+var deletePayment = require('./deletePayment');
 
 module.exports = {
   savePayment: savePayment,

@@ -4,7 +4,7 @@ var Logger = require('dw/system/Logger');
 
 var URLUtils = require('dw/web/URLUtils');
 
-var createAuthorization = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/auth');
+var createAuthorization = require('./authorize3ds2/auth');
 /**
  * Continues a 3DS2 payment.
  * Makes second call to /payments/details with IdentifyShopper or ChallengeShopper token.

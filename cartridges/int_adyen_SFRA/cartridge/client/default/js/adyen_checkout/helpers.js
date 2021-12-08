@@ -6,7 +6,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -99,22 +99,10 @@ function showValidation() {
   return store.selectedPaymentIsValid ? doCustomValidation() : displayValidationErrors();
 }
 
-function createShowConfirmationForm(action) {
-  if (document.querySelector('#showConfirmationForm')) {
-    return;
-  }
-
-  var template = document.createElement('template');
-  var form = "<form method=\"post\" id=\"showConfirmationForm\" name=\"showConfirmationForm\" action=\"".concat(action, "\">\n    <input type=\"hidden\" id=\"additionalDetailsHidden\" name=\"additionalDetailsHidden\" value=\"null\"/>\n    <input type=\"hidden\" id=\"merchantReference\" name=\"merchantReference\"/>\n    <input type=\"hidden\" id=\"result\" name=\"result\" value=\"null\"/>\n  </form>");
-  template.innerHTML = form;
-  document.querySelector('body').appendChild(template.content);
-}
-
 module.exports = {
   assignPaymentMethodValue: assignPaymentMethodValue,
   paymentFromComponent: paymentFromComponent,
   resetPaymentMethod: resetPaymentMethod,
   displaySelectedMethod: displaySelectedMethod,
-  showValidation: showValidation,
-  createShowConfirmationForm: createShowConfirmationForm
+  showValidation: showValidation
 };

@@ -118,9 +118,9 @@ function getMbwayConfig() {
       helpers.paymentFromComponent(state.data, component);
       document.querySelector('#adyenStateData').value = JSON.stringify(store.selectedPayment.stateData);
     },
-    onError: function
-      /* error, component */
-    onError() {
+    onError: function onError()
+    /* error, component */
+    {
       document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: function onAdditionalDetails(state
@@ -203,7 +203,28 @@ function setCheckoutConfiguration() {
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
-    pix: getQRCodeConfig()
+    pix: getQRCodeConfig(),
+    afterpay_default: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    },
+    facilypay_3x: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    },
+    ratepay: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    }
   };
 }
 

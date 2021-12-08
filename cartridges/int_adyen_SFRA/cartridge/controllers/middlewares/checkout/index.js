@@ -1,6 +1,6 @@
 "use strict";
 
-var begin = require('*/cartridge/controllers/middlewares/checkout/begin');
+var begin = require('./begin');
 
 module.exports = {
   begin: begin

@@ -12,7 +12,7 @@
 			${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}
 		</a>
 
-		<div id="cardError" class="card-error alert alert-danger">
+		<div id="cardError" class="alert alert-danger">
             <span>${Resource.msg('error.card.information.error', 'creditCard', null)}</span>
 		</div>
 

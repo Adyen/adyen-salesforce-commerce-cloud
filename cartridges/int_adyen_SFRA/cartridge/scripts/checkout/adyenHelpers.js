@@ -4,7 +4,7 @@ var Transaction = require('dw/system/Transaction');
 
 var OrderMgr = require('dw/order/OrderMgr');
 
-var _require = require('*/cartridge/scripts/checkout/utils/index'),
+var _require = require('./utils/index'),
     getPayments = _require.getPayments;
 /**
  * handles the payment authorization for each payment instrument
