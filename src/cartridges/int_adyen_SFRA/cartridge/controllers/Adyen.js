@@ -27,6 +27,16 @@ server.post(
 );
 
 /**
+ * Render the Adyen action processing screen
+ */
+server.use(
+    'ActionProcessing',
+    consentTracking.consent,
+    server.middleware.https,
+    adyen.actionProcessing,
+)
+
+/**
  * Complete a 3DS2 payment
  */
 server.use(

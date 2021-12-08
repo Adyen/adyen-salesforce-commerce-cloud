@@ -31,10 +31,13 @@ function handlePaymentAuthorization(order, { res }, emit) {
     paymentInstrument.custom.adyenAction = handlePaymentResult.action;
   });
 
-  Logger.getLogger('Adyen').error('res.rendering! ' + order.orderNo);
-  res.render('actionRedirectForm', {
-    orderID: order.orderNo,
-    orderToken: order.orderToken,
+  res.json({
+    error: false,
+    continueUrl: URLUtils.url(
+        'Adyen-ActionProcessing',
+        'orderNo',
+        order.orderNo,
+    ).toString(),
   });
 
   emit('route:Complete');
