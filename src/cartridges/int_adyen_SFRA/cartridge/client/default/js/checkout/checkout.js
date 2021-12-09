@@ -71,8 +71,37 @@ var scrollAnimate = require('base/components/scrollAnimate');
         var stage = checkoutStages[members.currentStage];
         console.log(stage);
         var defer = $.Deferred(); // eslint-disable-line
-
-        if (stage === 'shipping') {
+        if (stage === 'customer') {
+          //
+          // Clear Previous Errors
+          //
+          customerHelpers.methods.clearErrors();
+          //
+          // Submit the Customer Form
+          //
+          var customerFormSelector = customerHelpers.methods.isGuestFormActive() ? customerHelpers.vars.GUEST_FORM : customerHelpers.vars.REGISTERED_FORM;
+          var customerForm = $(customerFormSelector);
+          $.ajax({
+            url: customerForm.attr('action'),
+            type: 'post',
+            data: customerForm.serialize(),
+            success: function (data) {
+              if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+              } else {
+                customerHelpers.methods.customerFormResponse(defer, data);
+              }
+            },
+            error: function (err) {
+              if (err.responseJSON && err.responseJSON.redirectUrl) {
+                window.location.href = err.responseJSON.redirectUrl;
+              }
+              // Server error submitting form
+              defer.reject(err.responseJSON);
+            }
+          });
+          return defer;
+        } if (stage === 'shipping') {
           //
           // Clear Previous Errors
           //
@@ -320,18 +349,28 @@ var scrollAnimate = require('base/components/scrollAnimate');
                 console.log(data.handleAction);
                 console.log(data.action);
               } else {
-                var continueUrl = data.continueUrl;
-                var urlParams = {
-                  ID: data.orderID,
-                  token: data.orderToken
-                };
+                var redirect = $('<form>')
+                    .appendTo(document.body)
+                    .attr({
+                      method: 'POST',
+                      action: data.continueUrl
+                    });
 
-                continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
-                    Object.keys(urlParams).map(function (key) {
-                      return key + '=' + encodeURIComponent(urlParams[key]);
-                    }).join('&');
+                $('<input>')
+                    .appendTo(redirect)
+                    .attr({
+                      name: 'orderID',
+                      value: data.orderID
+                    });
 
-                window.location.href = continueUrl;
+                $('<input>')
+                    .appendTo(redirect)
+                    .attr({
+                      name: 'orderToken',
+                      value: data.orderToken
+                    });
+
+                redirect.submit();
                 defer.resolve(data);
               }
             },

@@ -33,15 +33,11 @@ function handlePaymentAuthorization(order, { res }, emit) {
     res.json({
       error: false,
       handleAction: true,
-      action: JSON.stringify(handlePaymentResult.action)
     });
 
     emit('route:Complete');
-    return {
-      action: handlePaymentResult.action
-    };
+    return false;
   }
-  Logger.getLogger('Adyen').error('Return TRUE');
   return true;
 }
 

@@ -69,10 +69,10 @@ function createOrder(currentBasket, { res, req, next }, emit) {
       );
 
       //TODO BASZAID
-      if(isAuthorized.action) {
-        Logger.getLogger('Adyen').error('isAuthorized action');
-        return isAuthorized;
-      }
+      // if(isAuthorized.action) {
+      //   Logger.getLogger('Adyen').error('isAuthorized action');
+      //   return isAuthorized;
+      // }
 
       // Places the order
       return isSuccessful && handlePlaceOrder(order, fraudDetectionStatus);
@@ -119,16 +119,6 @@ function createOrder(currentBasket, { res, req, next }, emit) {
     const isOrderCreated = handleCreateOrder(order);
     Logger.getLogger('Adyen').error('isOrderCreated = ' + JSON.stringify(isOrderCreated));
     if (isOrderCreated) {
-      if(isOrderCreated.action){
-        Logger.getLogger('Adyen').error('Returning action');
-        res.json({
-          error: false,
-          handleAction: true,
-          action: JSON.stringify(isOrderCreated)
-        });
-        return emit('route:Complete');
-      }
-
       COHelpers.sendConfirmationEmail(order, req.locale.id);
       // Reset usingMultiShip after successful Order placement
       req.session.privacyCache.set('usingMultiShipping', false);
