@@ -18,30 +18,26 @@ function handlePaymentAuthorization(order, { res }, emit) {
     return false;
   }
 
-  //handle action types accordingly
-  if(handlePaymentResult?.action?.type === constants.ACTIONTYPES.VOUCHER) {
-    return true;
+  // if there is an action which is not a voucher
+  if(handlePaymentResult?.action?.type !== constants.ACTIONTYPES.VOUCHER) {
+    // Get the payment instrument and store the action
+    const paymentInstrument = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    Transaction.wrap(() => {
+      paymentInstrument.custom.adyenAction = handlePaymentResult.action;
+    });
+
+    res.json({
+      error: false,
+      handleAction: true,
+    });
+
+    emit('route:Complete');
+    return false;
   }
 
-  // Get the payment instrument and store the action
-  const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
-  )[0];
-  Transaction.wrap(() => {
-    paymentInstrument.custom.adyenAction = handlePaymentResult.action;
-  });
-
-  res.json({
-    error: false,
-    continueUrl: URLUtils.url(
-        'Adyen-ActionProcessing',
-        'orderNo',
-        order.orderNo,
-    ).toString(),
-  });
-
-  emit('route:Complete');
-  return false;
+  return true;
 }
 
 module.exports = handlePaymentAuthorization;

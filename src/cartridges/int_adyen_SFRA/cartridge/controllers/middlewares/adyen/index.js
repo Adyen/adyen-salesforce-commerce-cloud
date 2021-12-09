@@ -10,7 +10,6 @@ const notify = require('*/cartridge/controllers/middlewares/adyen/notify');
 const showConfirmationPaymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent');
 const paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
 const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
-const actionProcessing = require('*/cartridge/controllers/middlewares/adyen/actionProcessing');
 
 module.exports = {
   adyen3d,
@@ -25,5 +24,4 @@ module.exports = {
   showConfirmationPaymentFromComponent,
   paymentsDetails,
   redirect3ds1Response,
-  actionProcessing,
 };
