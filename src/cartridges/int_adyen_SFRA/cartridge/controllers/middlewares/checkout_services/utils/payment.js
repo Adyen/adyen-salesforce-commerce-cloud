@@ -21,18 +21,9 @@ function handlePaymentAuthorization(order, { res }, emit) {
   // if there is an action which is not a voucher
   Logger.getLogger('Adyen').error('handlePaymentResult = ' + JSON.stringify(handlePaymentResult));
   if(handlePaymentResult?.action?.type !== constants.ACTIONTYPES.VOUCHER) {
-    // Get the payment instrument and store the action
-    const paymentInstrument = order.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
-    )[0];
-    Transaction.wrap(() => {
-      paymentInstrument.custom.adyenAction = handlePaymentResult.action;
-    });
-
-    Logger.getLogger('Adyen').error('Return the Action here');
     res.json({
       error: false,
-      handleAction: true,
+      action: JSON.stringify(handlePaymentResult.action),
     });
 
     emit('route:Complete');

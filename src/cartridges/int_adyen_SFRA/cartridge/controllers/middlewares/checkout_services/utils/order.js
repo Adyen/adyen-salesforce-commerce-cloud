@@ -68,12 +68,6 @@ function createOrder(currentBasket, { res, req, next }, emit) {
         emit,
       );
 
-      //TODO BASZAID
-      // if(isAuthorized.action) {
-      //   Logger.getLogger('Adyen').error('isAuthorized action');
-      //   return isAuthorized;
-      // }
-
       // Places the order
       return isSuccessful && handlePlaceOrder(order, fraudDetectionStatus);
     }

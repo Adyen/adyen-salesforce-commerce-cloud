@@ -1,20 +1,36 @@
+const customerHelpers = require('base/checkout/customer');
+const addressHelpers = require('base/checkout/address');
 const shippingHelpers = require('base/checkout/shipping');
 const billingHelpers = require('base/checkout/billing');
 const summaryHelpers = require('base/checkout/summary');
+const formHelpers = require('base/checkout/formErrors');
+const scrollAnimate = require('base/components/scrollAnimate');
 const billing = require('./billing');
 const adyenCheckout = require('../adyenCheckout');
-var formHelpers = require('base/checkout/formErrors');
-var scrollAnimate = require('base/components/scrollAnimate');
 
+/**
+ * Create the jQuery Checkout Plugin.
+ *
+ * This jQuery plugin will be registered on the dom element in checkout.isml with the
+ * id of "checkout-main".
+ *
+ * The checkout plugin will handle the different state the user interface is in as the user
+ * progresses through the varying forms such as shipping and payment.
+ *
+ * Billing info and payment info are used a bit synonymously in this code.
+ *
+ */
 (function ($) {
-  $.fn.checkoutAdyen = function () { // eslint-disable-line
-    console.log('AdyenCheckout initialize');
+  $.fn.checkout = function () {
     var plugin = this;
 
     //
     // Collect form data from user input
     //
     var formData = {
+      // Customer Data
+      customer: {},
+
       // Shipping Address
       shipping: {},
 
@@ -32,6 +48,7 @@ var scrollAnimate = require('base/components/scrollAnimate');
     // The different states/stages of checkout
     //
     var checkoutStages = [
+      'customer',
       'shipping',
       'payment',
       'placeOrder',
@@ -67,10 +84,9 @@ var scrollAnimate = require('base/components/scrollAnimate');
        * @returns {Object} a promise
        */
       updateStage: function () {
-        console.log('updateStage Adyen');
         var stage = checkoutStages[members.currentStage];
-        console.log(stage);
         var defer = $.Deferred(); // eslint-disable-line
+
         if (stage === 'customer') {
           //
           // Clear Previous Errors
@@ -101,7 +117,7 @@ var scrollAnimate = require('base/components/scrollAnimate');
             }
           });
           return defer;
-        } if (stage === 'shipping') {
+        } else if (stage === 'shipping') {
           //
           // Clear Previous Errors
           //
@@ -128,7 +144,7 @@ var scrollAnimate = require('base/components/scrollAnimate');
                 $('body').trigger('checkout:enableButton', '.next-step-button button');
                 if (!data.error) {
                   $('body').trigger('checkout:updateCheckoutView',
-                      {order: data.order, customer: data.customer});
+                      { order: data.order, customer: data.customer });
                   defer.resolve();
                 } else if (data.message && $('.shipping-error .alert-danger').length < 1) {
                   var errorMsg = data.message;
@@ -297,7 +313,7 @@ var scrollAnimate = require('base/components/scrollAnimate');
                 // Populate the Address Summary
                 //
                 $('body').trigger('checkout:updateCheckoutView',
-                    {order: data.order, customer: data.customer});
+                    { order: data.order, customer: data.customer });
 
                 if (data.renderedPaymentInstruments) {
                   $('.stored-payments').empty().html(
@@ -332,7 +348,6 @@ var scrollAnimate = require('base/components/scrollAnimate');
             url: $('.place-order').data('action'),
             method: 'POST',
             success: function (data) {
-              console.log('placeOrder Data');
               console.log(JSON.stringify(data));
               // enable the placeOrder button here
               $('body').trigger('checkout:enableButton', '.next-step-button button');
@@ -344,10 +359,6 @@ var scrollAnimate = require('base/components/scrollAnimate');
                   // go to appropriate stage and display error message
                   defer.reject(data);
                 }
-              } else if (data.handleAction) { //### Adyen Cartridge
-                console.log('handleAction');
-                console.log(data.handleAction);
-                console.log(data.action);
               } else {
                 var redirect = $('<form>')
                     .appendTo(document.body)
@@ -395,10 +406,23 @@ var scrollAnimate = require('base/components/scrollAnimate');
        * TODO: update this to allow stage to be set from server?
        */
       initialize: function () {
+        console.log('initialize');
         // set the initial state of checkout
         members.currentStage = checkoutStages
             .indexOf($('.data-checkout-stage').data('checkout-stage'));
         $(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
+
+        $('body').on('click', '.submit-customer-login', function (e) {
+          e.preventDefault();
+
+          members.nextStage();
+        });
+
+        $('body').on('click', '.submit-customer', function (e) {
+          e.preventDefault();
+
+          members.nextStage();
+        });
 
         //
         // Handle Payment option selection
@@ -417,11 +441,14 @@ var scrollAnimate = require('base/components/scrollAnimate');
         //
         // Handle Edit buttons on shipping and payment summary cards
         //
+        $('.customer-summary .edit-button', plugin).on('click', function () {
+          members.gotoStage('customer');
+        });
+
         $('.shipping-summary .edit-button', plugin).on('click', function () {
           if (!$('#checkout-main').hasClass('multi-ship')) {
             $('body').trigger('shipping:selectSingleShipping');
           }
-
           members.gotoStage('shipping');
         });
 
@@ -465,6 +492,7 @@ var scrollAnimate = require('base/components/scrollAnimate');
 
         promise.done(function () {
           // Update UI with new stage
+          $('.error-message').hide();
           members.handleNextStage(true);
         });
 
@@ -547,12 +575,16 @@ var scrollAnimate = require('base/components/scrollAnimate');
   };
 }(jQuery));
 
-module.exports = {
-  initialize: function initialize(){
-    $('#checkout-main').checkoutAdyen();
-  },
-  updateCheckoutView: function updateCheckoutView() {
+const exports = {
+  // initialize: function () {
+  //   $('#checkout-main').checkout();
+  // },
+  updateCheckoutView: function() {
     $('body').on('checkout:updateCheckoutView', (e, data) => {
+      if (data.csrfToken) {
+        $("input[name*='csrf_token']").val(data.csrfToken);
+      }
+      customerHelpers.methods.updateCustomerInformation(data.customer, data.order);
       shippingHelpers.methods.updateMultiShipInformation(data.order);
       summaryHelpers.updateTotals(data.order.totals);
       data.order.shipping.forEach((shipping) => {
@@ -580,6 +612,28 @@ module.exports = {
           data.options,
       );
     });
-  }
-}
+  },
+  disableButton: function () {
+    $('body').on('checkout:disableButton', function (e, button) {
+      $(button).prop('disabled', true);
+    });
+  },
 
+  enableButton: function () {
+    $('body').on('checkout:enableButton', function (e, button) {
+      $(button).prop('disabled', false);
+    });
+  },
+};
+
+[customerHelpers, billingHelpers, shippingHelpers, addressHelpers].forEach(function (library) {
+  Object.keys(library).forEach(function (item) {
+    if (typeof library[item] === 'object') {
+      exports[item] = $.extend({}, exports[item], library[item]);
+    } else {
+      exports[item] = library[item];
+    }
+  });
+});
+
+module.exports = exports;
