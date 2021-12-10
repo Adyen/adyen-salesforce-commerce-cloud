@@ -79,8 +79,41 @@ $('button[value="submit-payment"]').on('click', () => {
   return true;
 });
 
+// confirm onAdditionalDetails event and paymentsDetails response
+store.checkoutConfiguration.onAdditionalDetails = (state) => {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify(state.data),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(data) {
+      if (data.isSuccessful) {
+        window.location.href = window.confirmationUrl;
+      } else if (!data.isFinal && typeof data.action === 'object') {
+        handleAction(data.action);
+      } else {
+        $('#action-modal').modal('hide');
+        document.getElementById('cardError').style.display = 'block';
+      }
+    },
+  });
+};
+
+const actionHandler = (action) => {
+  console.log(JSON.stringify(store.checkoutConfiguration));
+  const checkout = new AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
+
+
 /**
  * Assigns stateData value to the hidden stateData input field
  * so it's sent to the backend for processing
  */
-module.exports.methods = { renderGenericComponent };
+module.exports = {
+  renderGenericComponent,
+  actionHandler
+};

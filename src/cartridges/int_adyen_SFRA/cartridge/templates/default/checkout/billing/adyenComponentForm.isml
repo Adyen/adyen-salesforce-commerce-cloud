@@ -38,12 +38,7 @@
     </script>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 
-     <div class="modal fade" id="action-modal" role="dialog">
-         <div class="modal-dialog" id="adyenModalDialog">
-             <div id="action-container"></div>
-             <div id="amazon-container"></div>
-         </div>
-     </div>
+    <isinclude template="adyenActionModal" />
 
 <iselse>
     <script>

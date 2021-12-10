@@ -17,7 +17,7 @@ $(document).ready(function () { // eslint-disable-line
       $('.error-message').show();
       $('.error-message-text').text(decodeURIComponent(error[1]));
     }
-    adyenCheckout.methods.renderGenericComponent();
+    adyenCheckout.renderGenericComponent();
   }
 
   processInclude(baseCheckout);

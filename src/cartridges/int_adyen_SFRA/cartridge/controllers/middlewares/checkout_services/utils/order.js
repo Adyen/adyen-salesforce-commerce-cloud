@@ -53,7 +53,7 @@ function createOrder(currentBasket, { res, req, next }, emit) {
 
   const handleCreateOrder = (order) => {
     const isAuthorized = validateOrderAndAuthorize(order);
-    Logger.getLogger('isAuthorized = ' + JSON.stringify(isAuthorized));
+    Logger.getLogger('Adyen').error('isAuthorized = ' + JSON.stringify(isAuthorized));
     if (isAuthorized) {
       const fraudDetectionStatus = hooksHelper(
         'app.fraud.detection',

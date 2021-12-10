@@ -359,6 +359,8 @@ const adyenCheckout = require('../adyenCheckout');
                   // go to appropriate stage and display error message
                   defer.reject(data);
                 }
+              } else if (data.action) {
+                adyenCheckout.actionHandler(data.action);
               } else {
                 var redirect = $('<form>')
                     .appendTo(document.body)
@@ -406,7 +408,6 @@ const adyenCheckout = require('../adyenCheckout');
        * TODO: update this to allow stage to be set from server?
        */
       initialize: function () {
-        console.log('initialize');
         // set the initial state of checkout
         members.currentStage = checkoutStages
             .indexOf($('.data-checkout-stage').data('checkout-stage'));
@@ -575,7 +576,7 @@ const adyenCheckout = require('../adyenCheckout');
   };
 }(jQuery));
 
-const exports = {
+module.exports = {
   // initialize: function () {
   //   $('#checkout-main').checkout();
   // },
@@ -599,7 +600,7 @@ const exports = {
           window.location.search.indexOf('=') + 1,
       );
       if (currentStage === ('shipping' || 'payment')) {
-        adyenCheckout.methods.renderGenericComponent();
+        adyenCheckout.renderGenericComponent();
       }
       billingHelpers.methods.updateBillingInformation(
           data.order,
@@ -613,27 +614,27 @@ const exports = {
       );
     });
   },
-  disableButton: function () {
-    $('body').on('checkout:disableButton', function (e, button) {
-      $(button).prop('disabled', true);
-    });
-  },
-
-  enableButton: function () {
-    $('body').on('checkout:enableButton', function (e, button) {
-      $(button).prop('disabled', false);
-    });
-  },
+  // disableButton: function () {
+  //   $('body').on('checkout:disableButton', function (e, button) {
+  //     $(button).prop('disabled', true);
+  //   });
+  // },
+  //
+  // enableButton: function () {
+  //   $('body').on('checkout:enableButton', function (e, button) {
+  //     $(button).prop('disabled', false);
+  //   });
+  // },
 };
 
-[customerHelpers, billingHelpers, shippingHelpers, addressHelpers].forEach(function (library) {
-  Object.keys(library).forEach(function (item) {
-    if (typeof library[item] === 'object') {
-      exports[item] = $.extend({}, exports[item], library[item]);
-    } else {
-      exports[item] = library[item];
-    }
-  });
-});
+// [customerHelpers, billingHelpers, shippingHelpers, addressHelpers].forEach(function (library) {
+//   Object.keys(library).forEach(function (item) {
+//     if (typeof library[item] === 'object') {
+//       exports[item] = $.extend({}, exports[item], library[item]);
+//     } else {
+//       exports[item] = library[item];
+//     }
+//   });
+// });
 
-module.exports = exports;
+// module.exports = exports;

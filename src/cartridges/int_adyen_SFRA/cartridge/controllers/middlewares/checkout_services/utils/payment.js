@@ -20,10 +20,10 @@ function handlePaymentAuthorization(order, { res }, emit) {
 
   // if there is an action which is not a voucher
   Logger.getLogger('Adyen').error('handlePaymentResult = ' + JSON.stringify(handlePaymentResult));
-  if(handlePaymentResult?.action?.type !== constants.ACTIONTYPES.VOUCHER) {
+  if(handlePaymentResult.action && handlePaymentResult.action?.type !== constants.ACTIONTYPES.VOUCHER) {
     res.json({
       error: false,
-      action: JSON.stringify(handlePaymentResult.action),
+      action: handlePaymentResult.action,
     });
 
     emit('route:Complete');
