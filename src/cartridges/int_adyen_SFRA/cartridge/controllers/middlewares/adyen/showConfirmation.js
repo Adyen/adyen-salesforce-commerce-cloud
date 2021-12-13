@@ -13,12 +13,38 @@ const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/show
  */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
-
   try {
-    const merchantRefOrder = OrderMgr.getOrder(req.querystring.merchantReference);
+    const order = OrderMgr.getOrder(req.querystring.merchantReference);
+    // details is either redirectResult or payload
+    //TODO verify showConfirmation route
+    if (req.querystring.redirectResult) {
+      let details = {redirectResult: req.querystring.redirectResult};
+      if (req.querystring.payload) {
+        details = {payload: req.querystring.payload};
+      }
 
+      // redirect to payment/details
+      const requestObject = {
+        details,
+      };
+
+      const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
+      Logger.getLogger('Adyen').error('result payments details = ' + JSON.stringify(result));
+      if (
+          [
+            constants.RESULTCODES.AUTHORISED,
+            constants.RESULTCODES.PENDING,
+            constants.RESULTCODES.RECEIVED,
+          ].indexOf(result.resultCode) === -1
+      ) {
+        return payment.handlePaymentError(order, 'placeOrder', options);
+      }
+    }
+
+    // const merchantRefOrder = OrderMgr.getOrder(req.querystring.merchantReference);
+    //TODO currently only happy flow 3DS2, implement error flow
     return handleAuthorised(
-        merchantRefOrder,
+        order,
         options,
     );
     // return payment.handlePaymentError(order, 'placeOrder', options);

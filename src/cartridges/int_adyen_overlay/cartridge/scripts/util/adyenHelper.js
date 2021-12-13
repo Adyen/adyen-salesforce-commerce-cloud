@@ -553,10 +553,8 @@ var adyenHelperObj = {
     stateData.reference = reference;
     // This update will break SG
     stateData.returnUrl = URLUtils.https(
-      'Checkout-Begin',
-      'stage',
-      'placeOrder',
-      'orderId',
+      'Adyen-ShowConfirmation',
+      'merchantReference',
       reference,
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
