@@ -5,7 +5,6 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment
- * This is used to confirm 3DS2 payment status after (zeroAuth) challenge & authentication
  */
 function paymentsDetails(req, res, next) {
   try {

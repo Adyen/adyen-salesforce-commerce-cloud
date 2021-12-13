@@ -88,10 +88,11 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
+      console.log(data);
       if (data.isSuccessful) {
-        window.location.href = window.confirmationUrl;
+        // Do nothing 
       } else if (!data.isFinal && typeof data.action === 'object') {
-        handleAction(data.action);
+        actionHandler(data.action);
       } else {
         $('#action-modal').modal('hide');
         document.getElementById('cardError').style.display = 'block';
@@ -101,7 +102,6 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
 };
 
 const actionHandler = (action) => {
-  console.log(JSON.stringify(store.checkoutConfiguration));
   const checkout = new AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });

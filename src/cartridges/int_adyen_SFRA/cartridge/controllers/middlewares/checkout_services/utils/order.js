@@ -10,7 +10,6 @@ const {
 const handleTransaction = require('*/cartridge/controllers/middlewares/checkout_services/utils/transaction');
 const handlePaymentAuthorization = require('*/cartridge/controllers/middlewares/checkout_services/utils/payment');
 const handleFraudDetection = require('*/cartridge/controllers/middlewares/checkout_services/utils/fraud');
-const Logger = require('dw/system/Logger');
 
 function createOrder(currentBasket, { res, req, next }, emit) {
   const validateOrder = (order) => {
@@ -53,7 +52,6 @@ function createOrder(currentBasket, { res, req, next }, emit) {
 
   const handleCreateOrder = (order) => {
     const isAuthorized = validateOrderAndAuthorize(order);
-    Logger.getLogger('Adyen').error('isAuthorized = ' + JSON.stringify(isAuthorized));
     if (isAuthorized) {
       const fraudDetectionStatus = hooksHelper(
         'app.fraud.detection',
@@ -111,7 +109,6 @@ function createOrder(currentBasket, { res, req, next }, emit) {
     saveAddresses(req, order);
 
     const isOrderCreated = handleCreateOrder(order);
-    Logger.getLogger('Adyen').error('isOrderCreated = ' + JSON.stringify(isOrderCreated));
     if (isOrderCreated) {
       COHelpers.sendConfirmationEmail(order, req.locale.id);
       // Reset usingMultiShip after successful Order placement

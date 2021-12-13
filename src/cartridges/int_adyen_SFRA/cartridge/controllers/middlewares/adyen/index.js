@@ -1,6 +1,5 @@
 const adyen3d = require('*/cartridge/controllers/middlewares/adyen/adyen3d');
 const adyen3ds2 = require('*/cartridge/controllers/middlewares/adyen/adyen3ds2');
-const authorizeWithForm = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm');
 const authorize3ds2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2');
 const redirect = require('*/cartridge/controllers/middlewares/adyen/redirect');
 const showConfirmation = require('*/cartridge/controllers/middlewares/adyen/showConfirmation');
@@ -14,7 +13,6 @@ const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/
 module.exports = {
   adyen3d,
   adyen3ds2,
-  authorizeWithForm,
   authorize3ds2,
   redirect,
   showConfirmation,

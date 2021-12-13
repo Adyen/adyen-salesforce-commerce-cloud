@@ -348,7 +348,6 @@ const adyenCheckout = require('../adyenCheckout');
             url: $('.place-order').data('action'),
             method: 'POST',
             success: function (data) {
-              console.log(JSON.stringify(data));
               // enable the placeOrder button here
               $('body').trigger('checkout:enableButton', '.next-step-button button');
               if (data.error) {
@@ -360,6 +359,7 @@ const adyenCheckout = require('../adyenCheckout');
                   defer.reject(data);
                 }
               } else if (data.action) {
+                console.log(data.action);
                 adyenCheckout.actionHandler(data.action);
               } else {
                 var redirect = $('<form>')
@@ -580,7 +580,7 @@ module.exports = {
   // initialize: function () {
   //   $('#checkout-main').checkout();
   // },
-  updateCheckoutView: function() {
+  updateCheckoutView: function () {
     $('body').on('checkout:updateCheckoutView', (e, data) => {
       if (data.csrfToken) {
         $("input[name*='csrf_token']").val(data.csrfToken);
@@ -613,28 +613,5 @@ module.exports = {
           data.options,
       );
     });
-  },
-  // disableButton: function () {
-  //   $('body').on('checkout:disableButton', function (e, button) {
-  //     $(button).prop('disabled', true);
-  //   });
-  // },
-  //
-  // enableButton: function () {
-  //   $('body').on('checkout:enableButton', function (e, button) {
-  //     $(button).prop('disabled', false);
-  //   });
-  // },
+  }
 };
-
-// [customerHelpers, billingHelpers, shippingHelpers, addressHelpers].forEach(function (library) {
-//   Object.keys(library).forEach(function (item) {
-//     if (typeof library[item] === 'object') {
-//       exports[item] = $.extend({}, exports[item], library[item]);
-//     } else {
-//       exports[item] = library[item];
-//     }
-//   });
-// });
-
-// module.exports = exports;

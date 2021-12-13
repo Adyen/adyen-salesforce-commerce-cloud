@@ -7,26 +7,6 @@ const { adyen } = require('*/cartridge/controllers/middlewares/index');
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
 /**
- * Complete a 3DS payment
- */
-server.use(
-  'Adyen3D',
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.adyen3d,
-);
-
-/**
- * Make /payments/details call to 3d verification system to complete authorization
- */
-server.post(
-  'AuthorizeWithForm',
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.authorizeWithForm,
-);
-
-/**
  * Complete a 3DS2 payment
  */
 server.use(

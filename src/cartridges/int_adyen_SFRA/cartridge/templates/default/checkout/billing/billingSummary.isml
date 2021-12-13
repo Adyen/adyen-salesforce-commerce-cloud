@@ -21,10 +21,4 @@
     <span class="summary-section-label payment-info-label">${Resource.msg('label.order.payment.info', 'confirmation', null)}</span><br/>
     <isinclude template="checkout/billing/paymentOptions/paymentOptionsSummary" />
 </div>
-
-<script>
-    var orderNo = "${pdict.order.orderNo}";
-    var orderToken = "${pdict.order.orderToken}"
-    window.confirmationUrl = "${URLUtils.url('Order-Confirm', 'ID', orderNo, 'token', orderToken))}";
-</script
 <isinclude template="adyenActionModal" />

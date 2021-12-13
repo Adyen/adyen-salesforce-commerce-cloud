@@ -1,3 +1,4 @@
+6
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');

@@ -551,12 +551,11 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
+    // This update will break SG, but we could not care less
     stateData.returnUrl = URLUtils.https(
-      'Adyen-ShowConfirmation',
-      'merchantReference',
-      reference,
-        'orderToken',
-        orderToken
+      'Checkout-Begin',
+      'stage',
+      'placeOrder'
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
