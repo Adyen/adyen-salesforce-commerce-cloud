@@ -90,21 +90,23 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
     success(data) {
       console.log(data);
       if (data.isSuccessful) {
-        // Do nothing 
+        window.location.href = data.redirectUrl;
       } else if (!data.isFinal && typeof data.action === 'object') {
         actionHandler(data.action);
       } else {
-        $('#action-modal').modal('hide');
+        // $('#action-modal').modal('hide');
         document.getElementById('cardError').style.display = 'block';
       }
     },
   });
 };
 
+console.log('adyenCheckout loaded');
+
 const actionHandler = (action) => {
   const checkout = new AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
-  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+  // $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 };
 
 

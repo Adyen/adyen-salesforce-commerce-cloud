@@ -22,6 +22,7 @@ const adyenCheckout = require('../adyenCheckout');
  */
 (function ($) {
   $.fn.checkout = function () {
+    console.log('checkout loaded');
     var plugin = this;
 
     //

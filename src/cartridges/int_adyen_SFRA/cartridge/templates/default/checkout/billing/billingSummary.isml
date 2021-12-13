@@ -21,4 +21,8 @@
     <span class="summary-section-label payment-info-label">${Resource.msg('label.order.payment.info', 'confirmation', null)}</span><br/>
     <isinclude template="checkout/billing/paymentOptions/paymentOptionsSummary" />
 </div>
+<script>
+    window.showConfirmationUrl = "${URLUtils.url('Adyen-ShowConfirmation'}";
+    console.log(window.showConfirmationUrl);
+</script>
 <isinclude template="adyenActionModal" />

@@ -551,11 +551,13 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
-    // This update will break SG, but we could not care less
+    // This update will break SG
     stateData.returnUrl = URLUtils.https(
       'Checkout-Begin',
       'stage',
-      'placeOrder'
+      'placeOrder',
+      'orderId',
+      reference,
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
@@ -803,6 +805,7 @@ var adyenHelperObj = {
       return {
         isFinal: true,
         isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
+        merchantReference: checkoutresponse.merchantReference,
       }
     }
 

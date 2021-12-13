@@ -6,13 +6,11 @@ const { clearForms } = require('*/cartridge/controllers/utils/index');
 function handleOrderConfirm(
   order,
   orderModel,
-  adyenPaymentInstrument,
-  result,
   { res, next },
 ) {
   Transaction.wrap(() => {
     order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
-    AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+    // AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
   clearForms.clearForms();

@@ -15,46 +15,13 @@ function showConfirmation(req, res, next) {
   const options = { req, res, next };
 
   try {
-    const order = OrderMgr.getOrder(req.querystring.merchantReference);
-    const paymentInstruments = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
-    );
-    const {
-      details,
-      paymentData,
-      adyenPaymentInstrument,
-    } = payment.handlePaymentInstruments(paymentInstruments, options);
+    const merchantRefOrder = OrderMgr.getOrder(req.querystring.merchantReference);
 
-    // redirect to payment/details
-    const requestObject = {
-      details,
-      paymentData,
-    };
-
-    const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
-    clearForms.clearAdyenData(adyenPaymentInstrument);
-
-    if (result.invalidRequest) {
-      Logger.getLogger('Adyen').error('Invalid /payments/details call');
-      return response.redirect(URLUtils.httpHome());
-    }
-    // Authorised: The payment authorisation was successfully completed.
-    if (
-      [
-        constants.RESULTCODES.AUTHORISED,
-        constants.RESULTCODES.PENDING,
-        constants.RESULTCODES.RECEIVED,
-      ].indexOf(result.resultCode) > -1
-    ) {
-      const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
-      return handleAuthorised(
+    return handleAuthorised(
         merchantRefOrder,
-        result,
-        adyenPaymentInstrument,
         options,
-      );
-    }
-    return payment.handlePaymentError(order, 'placeOrder', options);
+    );
+    // return payment.handlePaymentError(order, 'placeOrder', options);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${

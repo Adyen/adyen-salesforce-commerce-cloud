@@ -3,8 +3,9 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+const Logger = require('dw/system/Logger');
 
-function handleAuthorised(order, result, adyenPaymentInstrument, options) {
+function handleAuthorised(order, options) {
   const { req } = options;
 
   // custom fraudDetection
@@ -12,6 +13,7 @@ function handleAuthorised(order, result, adyenPaymentInstrument, options) {
 
   // Places the order
   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+  Logger.getLogger('Adyen').error('Order placed Adyen');
   if (placeOrderResult.error) {
     return payment.handlePaymentError(order, 'placeOrder', options);
   }
@@ -24,8 +26,6 @@ function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   return handleOrderConfirm(
     order,
     orderModel,
-    adyenPaymentInstrument,
-    result,
     options,
   );
 }

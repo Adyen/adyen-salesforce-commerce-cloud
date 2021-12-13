@@ -27,7 +27,9 @@ function paymentsDetails(req, res, next) {
         resultCode: paymentsDetailsResponse.resultCode,
       };
     }
-
+    if(response.isSuccessful){
+      response.redirectUrl = URLUtils.url('Adyen-ShowConfirmation', 'merchantReference', response.merchantReference).toString();
+    }
     res.json(response);
     return next();
   } catch (e) {
