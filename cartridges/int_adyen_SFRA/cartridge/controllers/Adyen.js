@@ -360,8 +360,9 @@ server.get('GetPaymentMethods', server.middleware.https, function (req, res, nex
     var Locale = require('dw/util/Locale');
     var countryCode = Locale.getLocale(req.locale.id).country;
     var currentBasket = BasketMgr.getCurrentBasket();
-    if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
-        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+    var basketShipments = (currentBasket && currentBasket.getShipments()) || [];
+    if (basketShipments.length > 0 && basketShipments[0].shippingAddress) {
+        countryCode = basketShipments[0].shippingAddress.getCountryCode();
     }
     var paymentMethods;
     var descriptions = [];
