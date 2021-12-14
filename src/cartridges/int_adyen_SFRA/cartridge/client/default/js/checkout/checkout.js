@@ -359,6 +359,7 @@ const adyenCheckout = require('../adyenCheckout');
                   defer.reject(data);
                 }
               } else if (data.action) {
+                document.querySelector('#merchantReference').value = data.orderID;
                 adyenCheckout.actionHandler(data.action);
               } else {
                 var redirect = $('<form>')

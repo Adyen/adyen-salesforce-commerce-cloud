@@ -20,6 +20,8 @@ function handlePaymentAuthorization(order, { res }, emit) {
     res.json({
       error: false,
       action: handlePaymentResult.action,
+      orderID: order.orderNo,
+      orderToken: order.orderToken,
     });
 
     emit('route:Complete');

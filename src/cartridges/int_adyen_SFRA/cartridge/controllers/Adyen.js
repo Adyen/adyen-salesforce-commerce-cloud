@@ -38,7 +38,7 @@ server.use('Redirect', server.middleware.https, adyen.redirect);
 /**
  * Show confirmation after return from Adyen
  */
-server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
+server.use('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 
 /**
  *  Confirm payment status after receiving redirectResult from Adyen

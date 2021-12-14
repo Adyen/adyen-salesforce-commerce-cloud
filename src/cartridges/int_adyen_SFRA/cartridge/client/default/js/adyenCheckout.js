@@ -89,8 +89,8 @@ const actionHandler = (action) => {
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    url: 'Adyen-ShowConfirmation',
+    data: JSON.stringify({data: state.data}),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
