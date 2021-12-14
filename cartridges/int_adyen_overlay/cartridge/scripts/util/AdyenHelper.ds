@@ -364,7 +364,7 @@ var __AdyenHelper: Object = {
             if(params.Args.adyenForm.telephoneNumber.value){
                 shopperObject['telephoneNumber'] = params.Args.adyenForm.telephoneNumber.value;
             }
-            else if(params.Args.Order.defaultShipment.shippingAddress.phone){
+            else if(params.Args.Order && params.Args.Order.defaultShipment.shippingAddress.phone){
                 shopperObject['telephoneNumber']= params.Args.Order.defaultShipment.shippingAddress.phone
             }
 
