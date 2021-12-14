@@ -79,6 +79,12 @@ $('button[value="submit-payment"]').on('click', () => {
   return true;
 });
 
+const actionHandler = (action) => {
+  const checkout = new AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
 // confirm onAdditionalDetails event and paymentsDetails response
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
   $.ajax({
@@ -94,27 +100,13 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
       } else if (!data.isFinal && typeof data.action === 'object') {
         actionHandler(data.action);
       } else {
-        // $('#action-modal').modal('hide');
+        $('#action-modal').modal('hide');
         document.getElementById('cardError').style.display = 'block';
       }
     },
   });
 };
 
-console.log('adyenCheckout loaded');
-
-const actionHandler = (action) => {
-  const checkout = new AdyenCheckout(store.checkoutConfiguration);
-  checkout.createFromAction(action).mount('#action-container');
-  // $('#action-modal').modal({ backdrop: 'static', keyboard: false });
-};
-
-
-
-/**
- * Assigns stateData value to the hidden stateData input field
- * so it's sent to the backend for processing
- */
 module.exports = {
   renderGenericComponent,
   actionHandler

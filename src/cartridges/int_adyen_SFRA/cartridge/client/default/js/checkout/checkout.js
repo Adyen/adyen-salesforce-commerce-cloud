@@ -22,7 +22,6 @@ const adyenCheckout = require('../adyenCheckout');
  */
 (function ($) {
   $.fn.checkout = function () {
-    console.log('checkout loaded');
     var plugin = this;
 
     //
@@ -360,7 +359,6 @@ const adyenCheckout = require('../adyenCheckout');
                   defer.reject(data);
                 }
               } else if (data.action) {
-                console.log(data.action);
                 adyenCheckout.actionHandler(data.action);
               } else {
                 var redirect = $('<form>')
