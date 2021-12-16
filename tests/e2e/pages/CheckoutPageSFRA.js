@@ -114,7 +114,7 @@ export default class CheckoutPageSFRA {
     expectSuccess = async () => {
         await t
             .expect(this.getLocation()).contains('Order-Confirm')
-            .expect(Selector('.order-thank-you-msg').exists).ok();
+            .expect(Selector('.order-thank-you-msg', { timeout: 60000 }).exists).ok();
     }
 
     expectRefusal = async () => {

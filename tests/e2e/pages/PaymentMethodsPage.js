@@ -253,7 +253,7 @@ export default class PaymentMethodsPage {
             .typeText('input[type="password"]', oneTimeCode)
             .click('.button_next')
             .click('.button_next');
-        const secondOneTimeCode = await Selector('.message_value').innerText;
+        const secondOneTimeCode = await Selector('.message_value', { timeout: 60000 }).innerText;
         await t
             .typeText('input[type="password"]', secondOneTimeCode)
             .click('.button_next');

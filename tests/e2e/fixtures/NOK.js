@@ -39,11 +39,7 @@ for(const environment of environments) {
     await checkoutPage.expectRefusal();
   });
 
-  test
-    .timeouts({
-      ajaxRequestTimeout: 30000,
-    })
-    ('Trustly Success', async () => {
+  test('Trustly Success', async () => {
       await doTrustlyPayment();
       await checkoutPage.completeCheckout();
       await completeTrustlyRedirect(true);
