@@ -121,7 +121,7 @@ export default class CheckoutPageSFRA {
   }
 
   expectSuccess = async () => {
-    await t.expect(Selector('.confirmation-message').exists).ok();
+    await t.expect(Selector('.confirmation-message', { timeout: 60000 }).exists).ok();
   }
 
   expectRefusal = async () => {
