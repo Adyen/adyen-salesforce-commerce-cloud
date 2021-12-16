@@ -8,6 +8,9 @@ const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+const Resource = require('dw/web/Resource');
+const Transaction = require('dw/system/Transaction');
+
 function getPaymentDetailsPayload(querystring) {
   const requestObject = {details: {}};
   if (querystring.redirectResult) {
@@ -52,14 +55,28 @@ function showConfirmation(req, res, next) {
     }
 
     if(req.httpMethod === 'POST') {
+      Logger.getLogger('Adyen').error('req.body:');
       const body = JSON.parse(req.body);
+      Logger.getLogger('Adyen').error(JSON.stringify(body.data));
       const requestObject = body.data;
+      const order = OrderMgr.getOrder(body.merchantReference);
       const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(requestObject);
       const response = AdyenHelper.createAdyenCheckoutResponse(
           paymentsDetailsResponse,
       );
       if(response.isSuccessful){
         response.redirectUrl = URLUtils.url('Adyen-ShowConfirmation', 'merchantReference', response.merchantReference).toString();
+      } else {
+        Transaction.wrap(() => {
+          OrderMgr.failOrder(order, true);
+        });
+        response.redirectUrl = URLUtils.url(
+            'Checkout-Begin',
+            'stage',
+            'placeOrder',
+            'paymentError',
+            Resource.msg('error.payment.not.valid', 'checkout', null),
+        ).toString()
       }
       res.json(response);
       return next();

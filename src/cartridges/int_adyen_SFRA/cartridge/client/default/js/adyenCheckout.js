@@ -87,21 +87,22 @@ const actionHandler = (action) => {
 
 // confirm onAdditionalDetails event and paymentsDetails response
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
+  const payload = {
+    data: state.data,
+    merchantReference: document.querySelector('#merchantReference').value
+  };
   $.ajax({
     type: 'POST',
     url: 'Adyen-ShowConfirmation',
-    data: JSON.stringify({data: state.data}),
+    data: JSON.stringify(payload),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
       console.log(data);
-      if (data.isSuccessful) {
-        window.location.href = data.redirectUrl;
-      } else if (!data.isFinal && typeof data.action === 'object') {
+      if (!data.isFinal && typeof data.action === 'object') {
         actionHandler(data.action);
       } else {
-        $('#action-modal').modal('hide');
-        document.getElementById('cardError').style.display = 'block';
+        window.location.href = data.redirectUrl;
       }
     },
   });
