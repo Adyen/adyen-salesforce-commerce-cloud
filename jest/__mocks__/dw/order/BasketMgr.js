@@ -7,6 +7,8 @@ export const getShipments = jest.fn(() => [
   },
 ]);
 
+export const getAllProductLineItems = jest.fn( () => [1])
+
 export const isAvailable = jest.fn(() => true);
 export const getTotalGrossPrice = jest.fn(() => ({
   currencyCode: 'EUR',
@@ -41,6 +43,7 @@ export const getDefaultShipment = jest.fn(() => ({
 export const getBillingAddress = jest.fn(() => 'mocked_billing_address');
 export const getCurrentBasket = jest.fn(() => ({
   getShipments,
+  getAllProductLineItems,
   getTotalGrossPrice,
   getPaymentInstruments,
   removePaymentInstrument: jest.fn(),

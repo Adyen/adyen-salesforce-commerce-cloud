@@ -16,10 +16,7 @@ function begin(req, res, next) {
   // restore cart if order number was cached
   try {
   const cachedOrderNumber = req.session.privacyCache.get('currentOrderNumber');
-  Logger.getLogger('Adyen').error('Attempting restore basket');
-  if(req.session.privacyCache.get('currentOrderNumber')) {
-    Logger.getLogger('Adyen').error('Cached ordernr found');
-
+  if(cachedOrderNumber !== undefined) {
     const currentBasket = BasketMgr.getCurrentBasket();
     const currentOrder = OrderMgr.getOrder(cachedOrderNumber)
     // if current basket is null or empty

@@ -105,12 +105,14 @@ function createOrder(currentBasket, { res, req, next }, emit) {
 
     saveAddresses(req, order);
 
+    if(order) {
+      // Cache order number in order to be able to restore cart later
+      req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+    }
+
     const isOrderCreated = handleCreateOrder(order);
 
     if (isOrderCreated) {
-      // Cache order number in order to be able to restore cart later
-      req.session.privacyCache.set('currentOrderNumber', order.orderNo);
-
       COHelpers.sendConfirmationEmail(order, req.locale.id);
 
       // Reset usingMultiShip after successful Order placement
