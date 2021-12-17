@@ -358,9 +358,9 @@ const adyenCheckout = require('../adyenCheckout');
                   // go to appropriate stage and display error message
                   defer.reject(data);
                 }
-              } else if (data.action) {
+              } else if (data.adyenAction) {
                 document.querySelector('#merchantReference').value = data.orderID;
-                adyenCheckout.actionHandler(data.action);
+                adyenCheckout.actionHandler(data.adyenAction);
               } else {
                 var redirect = $('<form>')
                     .appendTo(document.body)

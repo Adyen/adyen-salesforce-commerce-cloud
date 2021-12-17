@@ -19,7 +19,7 @@ function handlePaymentAuthorization(order, { res }, emit) {
   if(handlePaymentResult.action && handlePaymentResult.action?.type !== constants.ACTIONTYPES.VOUCHER) {
     res.json({
       error: false,
-      action: handlePaymentResult.action,
+      adyenAction: handlePaymentResult.action,
       orderID: order.orderNo,
       orderToken: order.orderToken,
     });
