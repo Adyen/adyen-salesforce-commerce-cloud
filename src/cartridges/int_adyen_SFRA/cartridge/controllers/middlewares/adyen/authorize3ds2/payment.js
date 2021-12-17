@@ -50,7 +50,7 @@ function handlePaymentsDetailsCall(
     Logger.getLogger('Adyen').error(
       `Could not call payment/details for failed order ${order.orderNo}`,
     );
-    return handlePlaceOrderError(order, paymentInstrument, options);
+    return handlePaymentError(order, paymentInstrument, options);
   }
 
   const result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
