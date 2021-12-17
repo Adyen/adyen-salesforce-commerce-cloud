@@ -38,8 +38,10 @@ function authorize(paymentInstrument, order, options) {
     },
   };
 
-  if(order.status.value == Order.ORDER_STATUS_FAILED ) {
-    Logger.getLogger('Adyen').error(`Could not call payment/details for failed order ${order.orderNo}`);
+  if (order.status.value === Order.ORDER_STATUS_FAILED) {
+    Logger.getLogger('Adyen').error(
+      `Could not call payment/details for failed order ${order.orderNo}`,
+    );
     return handleInvalidPayment(order, 'placeOrder', options);
   }
   const result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);

@@ -32,10 +32,11 @@ function showConfirmation(req, res, next) {
       paymentData,
     };
 
-    if(order.status.value == Order.ORDER_STATUS_FAILED ) {
-      Logger.getLogger('Adyen').error(`Could not call payment/details for failed order ${order.orderNo}`);
+    if (order.status.value === Order.ORDER_STATUS_FAILED) {
+      Logger.getLogger('Adyen').error(
+        `Could not call payment/details for failed order ${order.orderNo}`,
+      );
       return payment.handlePaymentError(order, 'placeOrder', options);
-      return next();
     }
     const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearForms.clearAdyenData(adyenPaymentInstrument);
