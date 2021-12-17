@@ -44,7 +44,7 @@ function confirm(req, res, next) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
 
     if (
-      AdyenHelper.getAdyenGivingEnabled() &&
+      AdyenHelper.getAdyenGivingConfig(order) &&
       AdyenHelper.isAdyenGivingAvailable(paymentMethod)
     ) {
       handleAdyenGiving(req, res, order);
