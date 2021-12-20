@@ -21,6 +21,7 @@ const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
+const Logger = require('dw/system/Logger');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
@@ -162,7 +163,7 @@ var adyenHelperObj = {
         values: configuredAmounts,
       };
     }
-    return {
+    const givingConfigs = {
       adyenGivingAvailable,
       configuredAmounts,
       charityName,
@@ -173,6 +174,18 @@ var adyenHelperObj = {
       donationAmounts: JSON.stringify(donationAmounts),
       pspReference: order.custom.Adyen_pspReference,
     };
+
+    for (const config in givingConfigs) {
+      if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
+        if(givingConfigs[config] === null) {
+          Logger.getLogger('Adyen').error(
+              'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
+          );
+          return null;
+        }
+      }
+    }
+    return givingConfigs;
   },
 
   getAdyenRecurringPaymentsEnabled() {
@@ -310,13 +323,12 @@ var adyenHelperObj = {
   // get the preference value for the Adyen Giving charity background image URL
   getAdyenGivingBackgroundUrl() {
     return adyenHelperObj
-      .getCustomPreference('AdyenGiving_backgroundUrl')
-      .getAbsURL();
+      .getCustomPreference('AdyenGiving_backgroundUrl')?.getAbsURL();
   },
 
   // get the preference value for the Adyen Giving charity logo image URL
   getAdyenGivingLogoUrl() {
-    return adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl').getAbsURL();
+    return adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl')?.getAbsURL();
   },
 
   // checks whether Adyen giving is available for the selected payment method

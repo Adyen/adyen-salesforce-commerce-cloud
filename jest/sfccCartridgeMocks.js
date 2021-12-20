@@ -188,6 +188,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
     getAdyenMerchantAccount: jest.fn(() => 'mocked_merchant_account'),
     getAdyenGivingEnabled: jest.fn(() => true),
     isAdyenGivingAvailable: jest.fn(() => true),
+    getAdyenGivingConfig: jest.fn(() => true),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
     getAdyenGivingCharityName: jest.fn(() => 'mocked_charity_name'),
     getAdyenGivingCharityWebsite: jest.fn(
