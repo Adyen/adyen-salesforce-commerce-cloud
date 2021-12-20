@@ -26,6 +26,7 @@ const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const constants = require('*/cartridge/adyenConstants/constants');
+const Transaction = require('dw/system/Transaction');
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
@@ -534,13 +535,14 @@ var adyenHelperObj = {
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
-
     let reference = 'recurringPayment-account';
     let orderToken;
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
     }
+
+    const signature = adyenHelperObj.createSignature(paymentInstrument, order.getCreationDate().valueOf().toString(), reference);
 
     if(stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = 'CardOnFile';
@@ -556,11 +558,21 @@ var adyenHelperObj = {
       'Adyen-ShowConfirmation',
       'merchantReference',
       reference,
+      'signature',
+      signature
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
     stateData.additionalData = {};
     return stateData;
+  },
+
+  createSignature(paymentInstrument, value, salt){
+    const newSignature = adyenHelperObj.getAdyenHash(value, salt);
+    Transaction.wrap(function(){
+      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
+    })
+    return newSignature;
   },
 
   // adds 3DS2 fields to an Adyen Checkout payments Request

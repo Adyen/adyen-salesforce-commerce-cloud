@@ -13,7 +13,6 @@ function handleAuthorised(order, options) {
 
   // Places the order
   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-  Logger.getLogger('Adyen').error('Order placed Adyen');
   if (placeOrderResult.error) {
     return payment.handlePaymentError(order, 'placeOrder', options);
   }
