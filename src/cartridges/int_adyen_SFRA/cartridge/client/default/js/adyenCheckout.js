@@ -93,12 +93,11 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   };
   $.ajax({
     type: 'POST',
-    url: 'Adyen-ShowConfirmation',
+    url: 'Adyen-PaymentsDetails',
     data: JSON.stringify(payload),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
-      console.log(data);
       if (!data.isFinal && typeof data.action === 'object') {
         actionHandler(data.action);
       } else {
