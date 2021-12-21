@@ -25,7 +25,7 @@ describe('Payment', () => {
   it('should handle invalid request', () => {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({ invalidRequest: true })
     URLUtils.httpHome = jest.fn();
-    const order = { orderNo: 'mocked_orderNo'}
+    const order = { orderNo: 'mocked_orderNo', status: { value: 4}};
     handlePaymentsDetailsCall({}, order, {}, { res, next: jest.fn() })
     const Logger = require('dw/system/Logger');
     expect(Logger.error).toHaveBeenCalledWith(
@@ -34,19 +34,19 @@ describe('Payment', () => {
   })
   it('should handle invalid payment', () => {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({ error: true })
-    handlePaymentsDetailsCall({}, {}, {}, { res, next: jest.fn() })
+    handlePaymentsDetailsCall({},  { orderNo: 'mocked_orderNo', status: { value: 4}}, {}, { res, next: jest.fn() })
     expect(handlePaymentError).toBeCalledTimes(1)
   })
   it('should handle challengeShopper', () => {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({ resultCode: 'ChallengeShopper', action: 'mocked_action', merchantReference: 'mocked_merchantReference', })
     const paymentInstrument = { custom: {}, };
-    handlePaymentsDetailsCall({}, {}, paymentInstrument, { res, next: jest.fn() })
+    handlePaymentsDetailsCall({},  { status: { value: 4}}, paymentInstrument, { res, next: jest.fn() })
     expect(URLUtils.url.mock.calls).toMatchSnapshot()
   })
 
   it('should place order', () => {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({ resultCode: 'Authorised', error: false, merchantReference: 'mocked_merchantReference', })
-    handlePaymentsDetailsCall({}, 'mocked_order', { custom: {} }, { res, next: jest.fn() })
+    handlePaymentsDetailsCall({},  { orderNo: 'mocked_orderNo', status: { value: 4}}, { custom: {} }, { res, next: jest.fn() })
     expect(handlePlaceOrder.mock.calls).toMatchSnapshot()
   })
 })
