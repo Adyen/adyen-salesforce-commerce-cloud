@@ -23,6 +23,7 @@ function execute( args : PipelineDictionary ) : Number
 
 function notifyHttpParameterMap (hpm) {
     if (hpm == null) {
+        var Logger = require('*/cartridge/scripts/models/LoggerModel');
         Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");
         return PIPELET_NEXT;
     }
@@ -34,6 +35,7 @@ function notifyHttpParameterMap (hpm) {
     return notify(notificationData);
 }
 function notify (notificationData) {
+    var Logger = require('*/cartridge/scripts/models/LoggerModel');
     // Check the input parameters
     if (notificationData == null) {
         Logger.getLogger("Adyen", "adyen").fatal("Handling of Adyen notification has failed. No input parameters were provided.");

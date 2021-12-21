@@ -10,7 +10,7 @@
 */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 var Transaction = require('dw/system/Transaction');
 
 /* Script Modules */
@@ -95,7 +95,7 @@ function verify(args) {
         callResult = service.call(JSON.stringify(requestPOS));
         
         if (callResult.isOk() == false){
-            Logger.error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            Logger.getLogger('Adyen').error('Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
             args.AdyenErrorMessage = dw.web.Resource.msg('confirm.error.declined','checkout', null);
             var newDate = new Date();
             var newDateString = newDate.getTime().toString();
@@ -141,7 +141,7 @@ function verify(args) {
         try {
             responseObj = JSON.parse(resultText);
         } catch (ex) {
-            Logger.error('error parsing response object ' + ex.message);
+            Logger.getLogger('Adyen').error('error parsing response object ' + ex.message);
             return {error: true};
         }
 

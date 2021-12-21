@@ -6,7 +6,7 @@
 */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
@@ -53,7 +53,7 @@ function deleteRecurringPayment(args) {
         callResult = service.call(JSON.stringify(requestObject));
 
         if (callResult.isOk() == false) {
-            Logger.error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            Logger.getLogger('Adyen').error(THIS_SCRIPT + ' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
             return PIPELET_ERROR;
         }
 

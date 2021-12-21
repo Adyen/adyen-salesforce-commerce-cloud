@@ -8,7 +8,7 @@ var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Site = require('dw/system/Site');
-var Logger = require('dw/system/Logger');
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 

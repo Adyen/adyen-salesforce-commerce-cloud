@@ -6,7 +6,7 @@
 
 /* API Includes */
 var HashMap = require('dw/util/HashMap');
-var Logger = require('dw/system/Logger');
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Transaction = require('dw/system/Transaction');
 
@@ -102,7 +102,8 @@ function updateSavedCards(args) {
         deleteExpiredCards(customer);
 
     } catch (ex) {
-        Logger.error(ex.toString() + ' in ' + ex.fileName + ':' + ex.lineNumber);
+        var Logger = require('*/cartridge/scripts/models/LoggerModel');
+        Logger.getLogger().error(ex.toString() + ' in ' + ex.fileName + ':' + ex.lineNumber);
         return PIPELET_ERROR;
     }
 }

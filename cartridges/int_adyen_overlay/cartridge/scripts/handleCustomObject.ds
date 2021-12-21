@@ -39,6 +39,7 @@ function handle( customObj : CustomObject  ) : Object
 {
 	var OrderMgr = require('dw/order/OrderMgr');
 	var Transaction = require('dw/system/Transaction');
+	var Logger = require('*/cartridge/scripts/models/LoggerModel');
 	var refusedHpp : Boolean = false;
 	var pending : Boolean = false;
 	var result = {};

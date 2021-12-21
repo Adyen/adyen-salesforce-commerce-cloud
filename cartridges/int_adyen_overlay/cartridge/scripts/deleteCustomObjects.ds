@@ -12,10 +12,11 @@ function execute( args : PipelineDictionary ) : Number {
 }
 
 function handle( orderID : String ) : Object {
+	var Logger = require('*/cartridge/scripts/models/LoggerModel');
 	var queryString  : String = "custom.orderId LIKE '" + orderID + "*'";
 	var searchQuery : SeekableIterator = CustomObjectMgr.queryCustomObjects("adyenNotification", queryString, null);
 	if (searchQuery.count > 0) {
-		dw.system.Logger.getLogger("Adyen", "adyen").info("Removing related Custom Objects with merchantReference {0} with count {1}", orderID, searchQuery.count);
+		Logger.getLogger("Adyen", "adyen").info("Removing related Custom Objects with merchantReference {0} with count {1}", orderID, searchQuery.count);
 	}
 	while (searchQuery.hasNext()) {
 		var co : CustomObject = searchQuery.next();
@@ -26,12 +27,13 @@ function handle( orderID : String ) : Object {
 }
 
 function remove ( co ) {
-	dw.system.Logger.getLogger("Adyen", "adyen").info("Remove CO object with merchantReference {0} and pspReferenceNumber  {1}", co.custom.merchantReference, co.custom.pspReference);
+	var Logger = require('*/cartridge/scripts/models/LoggerModel');
+	Logger.getLogger("Adyen", "adyen").info("Remove CO object with merchantReference {0} and pspReferenceNumber  {1}", co.custom.merchantReference, co.custom.pspReference);
 	try {
 		CustomObjectMgr.remove(co);
 	} catch (e) {
 		var ex = e;
-		dw.system.Logger.getLogger("Adyen", "adyen").error("Error occured during delete CO, ID: {0}, erorr message {1}", co.custom.orderId, e.message);
+		Logger.getLogger("Adyen", "adyen").error("Error occured during delete CO, ID: {0}, erorr message {1}", co.custom.orderId, e.message);
 	}
 }
 

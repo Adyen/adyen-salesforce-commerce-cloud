@@ -36,6 +36,7 @@ var __AdyenHelper: Object = {
     getService: function (service: String): Object {
         // Create the service config (used for all services)
         var adyenService = null;
+        var Logger = require('*/cartridge/scripts/models/LoggerModel');
 
         try {
             var adyenService = dwsvc.LocalServiceRegistry.createService(service, {
@@ -54,11 +55,11 @@ var __AdyenHelper: Object = {
                     return msg;
                 }
             });
-            dwsystem.Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
+            Logger.getLogger("Adyen", "adyen").debug("Successfully retrive service with name {0}", service);
 
         } catch (e) {
             var ex = e;
-            dwsystem.Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", service);
+            Logger.getLogger("Adyen", "adyen").error("Can't get service instance with name {0}", service);
             //e.message
         }
         return adyenService;

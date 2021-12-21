@@ -28,10 +28,10 @@
 */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 var AdyenHelper = require('*/cartridge/scripts/util/AdyenHelper');
 var RiskDataHelper = require ("*/cartridge/scripts/util/RiskDataHelper");
 var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');

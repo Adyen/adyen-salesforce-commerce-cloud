@@ -89,6 +89,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     } else if (result.resultCode == 'Authorised' || result.resultCode == 'Received' || result.resultCode == 'PresentToShopper') {
         return {authorized: true, error: false};
     } else {
+        var Logger = require('*/cartridge/scripts/models/LoggerModel');
         Logger.getLogger("Adyen").error("Payment failed, result: " + JSON.stringify(result));
         return {
             authorized: false, error: true

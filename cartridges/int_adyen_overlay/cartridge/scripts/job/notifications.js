@@ -9,7 +9,6 @@ var Resource = require('dw/web/Resource');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
-var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
 
 function execute(pdict) {
 	processNotifications(pdict);
@@ -21,6 +20,7 @@ function execute(pdict) {
  * ProcessNotifications - search for custom objects that need to be processed and handle them to place or fail order
  */
 function processNotifications(pdict) {
+	var logger = require('*/cartridge/scripts/models/LoggerModel').getLogger('Adyen', 'adyen');
 	var	objectsHandler = require('*/cartridge/scripts/handleCustomObject');
 	var searchQuery = CustomObjectMgr.queryCustomObjects("adyenNotification", "custom.updateStatus = 'PROCESS'", null);
 	logger.info("Process notifications start with count {0}", searchQuery.count);
@@ -73,6 +73,7 @@ function processNotifications(pdict) {
  * cleanNotifications
  */
 function clearNotifications(pdict) {
+	var logger = require('*/cartridge/scripts/models/LoggerModel').getLogger('Adyen', 'adyen');
 	var	deleteCustomObjects = require('*/cartridge/scripts/deleteCustomObjects');
 	var searchQuery = CustomObjectMgr.queryCustomObjects("adyenNotification", "custom.processedStatus = 'SUCCESS'", null);
 	logger.info("Removing Processed Custom Objects start with count {0}", searchQuery.count);

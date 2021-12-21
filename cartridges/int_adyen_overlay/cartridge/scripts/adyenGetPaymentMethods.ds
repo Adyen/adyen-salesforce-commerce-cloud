@@ -13,7 +13,7 @@ importPackage(dw.order);
 
 //script include
 var AdyenHelper = require("*/cartridge/scripts/util/AdyenHelper");
-var Logger = require('dw/system/Logger');
+var Logger = require('*/cartridge/scripts/models/LoggerModel');
 
 function execute(args) {
     var result = getMethods(args.Basket, args.CountryCode);
@@ -57,7 +57,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
 
 
         if (callResult.isOk() == false) {
-            Logger.error(' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
+            Logger.getLogger('Adyen').error(' Adyen: Call error code' +  callResult.getError().toString() + ' Error => ResponseStatus: ' + callResult.getStatus()  + ' | ResponseErrorText: ' +  callResult.getErrorMessage() + ' | ResponseText: ' + callResult.getMsg());
             return PIPELET_ERROR;
         }
 
@@ -80,7 +80,7 @@ function getMethods (basket : dw.order.Basket, CountryCode) {
             return JSON.parse(resultText);
         }
         catch (ex) {
-            Logger.error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
+            Logger.getLogger('Adyen').error(THIS_SCRIPT + ' Adyen: error parsing response object ' + ex.message);
             return PIPELET_ERROR;
         }
     } catch (e) {
