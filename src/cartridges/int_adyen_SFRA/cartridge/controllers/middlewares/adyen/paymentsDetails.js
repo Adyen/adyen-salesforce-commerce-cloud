@@ -16,9 +16,8 @@ function paymentsDetails(req, res, next) {
     request.paymentMethod = undefined;
 
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-      request.data,
+      request,
     );
-    Logger.getLogger('Adyen').error(`paymentsDetailsResponse PD = ${paymentsDetailsResponse}`);
 
     const response = AdyenHelper.createAdyenCheckoutResponse(
       paymentsDetailsResponse,

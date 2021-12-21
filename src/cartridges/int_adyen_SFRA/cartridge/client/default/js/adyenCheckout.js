@@ -87,14 +87,10 @@ const actionHandler = (action) => {
 
 // confirm onAdditionalDetails event and paymentsDetails response
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
-  const payload = {
-    data: state.data,
-    merchantReference: document.querySelector('#merchantReference').value
-  };
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(payload),
+    data: JSON.stringify(state.data),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {

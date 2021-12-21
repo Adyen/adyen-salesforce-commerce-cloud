@@ -41,6 +41,7 @@ function showConfirmation(req, res, next) {
         const requestObject = getPaymentDetailsPayload(req.querystring);
         result = adyenCheckout.doPaymentsDetailsCall(requestObject);
       }
+      clearPaymentTransactionData(paymentInstruments[0]);
       if (
           [
             constants.RESULTCODES.AUTHORISED,
@@ -68,71 +69,12 @@ function showConfirmation(req, res, next) {
     return next();
   }
 
-  /// SOLUTION WOUTER
-  // const options = { req, res, next };
-  // let order;
-  // try {
-  //   if(req.httpMethod === 'GET') {
-  //     const querystring = options.req.querystring;
-  //     const order = OrderMgr.getOrder(querystring.merchantReference);
-  //     // redirect to payment/details
-  //     const requestObject = getPaymentDetailsPayload(querystring)
-  //
-  //     const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
-  //     Logger.getLogger('Adyen').error('result payments details = ' + JSON.stringify(result));
-  //     if (
-  //         [
-  //           constants.RESULTCODES.AUTHORISED,
-  //           constants.RESULTCODES.PENDING,
-  //           constants.RESULTCODES.RECEIVED,
-  //         ].indexOf(result.resultCode) === -1
-  //     ) {
-  //       return payment.handlePaymentError(order, 'placeOrder', options);
-  //     }
-  //     return handleAuthorised(
-  //         order,
-  //         options,
-  //     );
-  //
-  //   }
-  //
-  //   if(req.httpMethod === 'POST') {
-  //     Logger.getLogger('Adyen').error('req.body:');
-  //     const body = JSON.parse(req.body);
-  //     Logger.getLogger('Adyen').error(JSON.stringify(body.data));
-  //     const requestObject = body.data;
-  //     const order = OrderMgr.getOrder(body.merchantReference);
-  //     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(requestObject);
-  //     const response = AdyenHelper.createAdyenCheckoutResponse(
-  //         paymentsDetailsResponse,
-  //     );
-  //     if(response.isSuccessful){
-  //       response.redirectUrl = URLUtils.url('Adyen-ShowConfirmation', 'merchantReference', response.merchantReference).toString();
-  //     } else {
-  //       Transaction.wrap(() => {
-  //         OrderMgr.failOrder(order, true);
-  //       });
-  //       response.redirectUrl = URLUtils.url(
-  //           'Checkout-Begin',
-  //           'stage',
-  //           'placeOrder',
-  //           'paymentError',
-  //           Resource.msg('error.payment.not.valid', 'checkout', null),
-  //       ).toString()
-  //     }
-  //     res.json(response);
-  //     return next();
-  //   }
-  //
-  // } catch (e) {
-  //   Logger.getLogger('Adyen').error(
-  //     `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
-  //       e.lineNumber
-  //     }`,
-  //   );
-  //   res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
-  //   return next();
-  // }
+  function clearPaymentTransactionData(paymentInstrument){
+    Transaction.wrap(function(){
+      paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
+      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = null;
+    })
+  }
 }
 
 module.exports = showConfirmation;
