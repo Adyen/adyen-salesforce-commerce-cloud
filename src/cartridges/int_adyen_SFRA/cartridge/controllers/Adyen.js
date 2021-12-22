@@ -7,38 +7,9 @@ const { adyen } = require('*/cartridge/controllers/middlewares/index');
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
 /**
- * Complete a 3DS2 payment
- */
-server.use(
-  'Adyen3DS2',
-  consentTracking.consent,
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.adyen3ds2,
-);
-
-/**
- * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
- *
- * @returns rendering template or error
- */
-server.post(
-  'Authorize3DS2',
-  csrfProtection.generateToken,
-  csrfProtection.validateRequest,
-  server.middleware.https,
-  adyen.authorize3ds2,
-);
-
-/**
- * Redirect to Adyen after saving order etc.
- */
-server.use('Redirect', server.middleware.https, adyen.redirect);
-
-/**
  * Show confirmation after return from Adyen
  */
-server.use('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
+server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
