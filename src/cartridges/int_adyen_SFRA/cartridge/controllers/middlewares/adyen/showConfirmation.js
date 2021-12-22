@@ -1,6 +1,7 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
@@ -36,6 +37,12 @@ function showConfirmation(req, res, next) {
     );
     if(paymentInstruments[0].paymentTransaction.custom.Adyen_merchantSig === signature) {
       //Saved response from Adyen-PaymentsDetails
+      if (order.status.value === Order.ORDER_STATUS_FAILED) {
+        Logger.getLogger('Adyen').error(
+            `Could not call payment/details for failed order ${order.orderNo}`,
+        );
+        return payment.handlePaymentError(order, 'placeOrder', options);
+      }
       let result = JSON.parse(paymentInstruments[0].paymentTransaction.custom.Adyen_authResult);
       if (redirectResult || payload) {
         const requestObject = getPaymentDetailsPayload(req.querystring);
@@ -61,9 +68,9 @@ function showConfirmation(req, res, next) {
     throw new Error(`Incorrect signature for order ${merchantReference}`);
   } catch (e) {
     Logger.getLogger('Adyen').error(
-        `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
-            e.lineNumber
-        }`,
+      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();

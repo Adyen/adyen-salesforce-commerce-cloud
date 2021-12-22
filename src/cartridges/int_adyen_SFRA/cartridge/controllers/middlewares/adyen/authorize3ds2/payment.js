@@ -1,6 +1,7 @@
 const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 const Logger = require('dw/system/Logger');
+const Order = require('dw/order/Order');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const {
@@ -47,6 +48,13 @@ function handlePaymentsDetailsCall(
   paymentInstrument,
   options,
 ) {
+  if (order.status.value === Order.ORDER_STATUS_FAILED) {
+    Logger.getLogger('Adyen').error(
+      `Could not call payment/details for failed order ${order.orderNo}`,
+    );
+    return handlePaymentError(order, paymentInstrument, options);
+  }
+
   const result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
   const isValid = checkForValidRequest(
     result,
