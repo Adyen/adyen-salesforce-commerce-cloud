@@ -39,14 +39,14 @@ for(const environment of environments) {
     await checkoutPage.expectRefusal();
   });
 
-  test('Trustly Success', async () => {
+  test.skip('Trustly Success', async () => {
       await doTrustlyPayment();
       await checkoutPage.completeCheckout();
       await completeTrustlyRedirect(true);
       await checkoutPage.expectSuccess();
     });
 
-  test('Trustly Fail', async () => {
+  test.skip('Trustly Fail', async () => {
     await doTrustlyPayment();
     await checkoutPage.completeCheckout();
     await completeTrustlyRedirect(false);
