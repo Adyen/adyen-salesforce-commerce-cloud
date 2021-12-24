@@ -111,6 +111,24 @@ export default class CheckoutPageSFRA {
         await this.placeOrder();
     }
 
+    completeSubmitPayment = async () => {
+        await this.setEmail();
+        await this.submitPayment();
+    }
+
+    goBackAndReplaceOrderSameTab = async () => {
+        await this.navigateBack();
+        await this.placeOrder();
+    }
+
+    goBackAndReplaceOrderDifferentWindow = async () => {
+        const checkoutLocation = await this.getLocation();
+        await this.placeOrder();
+        await t
+            .openWindow(checkoutLocation)
+            .switchToPreviousWindow();
+    }
+
     expectSuccess = async () => {
         await t
             .expect(this.getLocation()).contains('Order-Confirm')
@@ -137,6 +155,7 @@ export default class CheckoutPageSFRA {
     }
 
     getLocation = ClientFunction(() => document.location.href);
+    navigateBack = ClientFunction( () => window.history.back());
 
     loginUser = async (credentials) => {
         await t
