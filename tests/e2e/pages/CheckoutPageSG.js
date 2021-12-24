@@ -120,6 +120,24 @@ export default class CheckoutPageSFRA {
     await this.placeOrder();
   }
 
+  completeSubmitPayment = async () => {
+    await this.setEmail();
+    await this.submitPayment();
+  }
+
+  goBackAndReplaceOrderSameTab = async () => {
+    await this.navigateBack();
+    await this.placeOrder();
+  }
+
+  goBackAndReplaceOrderDifferentWindow = async () => {
+    const checkoutLocation = await this.getLocation();
+    await this.placeOrder();
+    await t
+        .openWindow(checkoutLocation)
+        .switchToPreviousWindow();
+  }
+
   expectSuccess = async () => {
     await t.expect(Selector('.confirmation-message', { timeout: 60000 }).exists).ok();
   }
@@ -144,6 +162,7 @@ export default class CheckoutPageSFRA {
   }
 
   getLocation = ClientFunction(() => document.location.href);
+  navigateBack = ClientFunction( () => window.history.back());
 
   loginUser = async (credentials) => {
     const inputEmail = Selector('input').withAttribute('id', /dwfrm_login_username_.*/);
