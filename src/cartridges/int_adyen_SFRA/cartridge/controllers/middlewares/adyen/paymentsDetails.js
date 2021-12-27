@@ -52,7 +52,8 @@ function getSignature(paymentsDetailsResponse){
   const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
   );
-  const signature = AdyenHelper.createSignature(paymentInstruments[0], order.getCreationDate().valueOf().toString(), paymentsDetailsResponse.merchantReference);
+
+  const signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
   Transaction.wrap(function(){
     paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
   })

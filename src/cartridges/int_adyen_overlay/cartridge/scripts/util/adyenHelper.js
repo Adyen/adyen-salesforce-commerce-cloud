@@ -554,7 +554,7 @@ var adyenHelperObj = {
       orderToken = order.getOrderToken();
     }
 
-    const signature = adyenHelperObj.createSignature(paymentInstrument, order.getCreationDate().valueOf().toString(), reference);
+    const signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
 
     if(stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = 'CardOnFile';
