@@ -15,6 +15,21 @@ Installation, Usage and Configuration is explained in Adyen's [online documentat
 
 Apple Pay configuration can be found [here](https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-payment-methods/#set-up-apple-pay-on-the-web).
 
+## Testing
+End-to-End tests can be found in the `adyen-salesforce-commerce-cloud/tests/e2e` directory. 
+They are run automatically via Github Actions using the `E2E.yml` workflow.
+To run the tests locally use the following command:
+```
+`npm run test:e2e`
+```
+Note: Please make sure to fill in the environment variables in the `fixtures` directory before running the tests locally.
+
+As for Unit tests, they are currently only available for SFRA. Test files can be found next to the files they are testing. Mocks are kept in the `jest` directory.
+To run SFRA unit tests locally use the following command:
+```
+`npm run test`
+```
+
 ## Support
 If you have a feature request, or spotted a bug or a technical problem, create a GitHub issue. For other questions, contact our [support team](https://support.adyen.com/hc/en-us/requests/new?ticket_form_id=360000705420).
 
