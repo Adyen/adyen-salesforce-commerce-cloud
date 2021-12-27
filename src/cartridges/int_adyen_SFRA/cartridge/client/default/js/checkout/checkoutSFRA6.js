@@ -358,8 +358,7 @@ const adyenCheckout = require('../adyenCheckout');
                   // go to appropriate stage and display error message
                   defer.reject(data);
                 }
-              } else if (data.adyenAction) {
-                document.querySelector('#merchantReference').value = data.orderID;
+              } else if (data.adyenAction) { //Custom Adyen cartridge
                 adyenCheckout.actionHandler(data.adyenAction);
               } else {
                 var redirect = $('<form>')
@@ -577,9 +576,6 @@ const adyenCheckout = require('../adyenCheckout');
 }(jQuery));
 
 module.exports = {
-  // initialize: function () {
-  //   $('#checkout-main').checkout();
-  // },
   updateCheckoutView: function () {
     $('body').on('checkout:updateCheckoutView', (e, data) => {
       if (data.csrfToken) {

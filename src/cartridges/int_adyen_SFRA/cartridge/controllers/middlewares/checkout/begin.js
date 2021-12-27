@@ -49,6 +49,7 @@ function begin(req, res, next) {
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
   const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
   const paypalIntent = AdyenHelper.getAdyenPayPalIntent();
+  const SFRA6Enabled = AdyenHelper.getAdyenSFRA6Compatibility();
 
   const viewData = res.getViewData();
   viewData.adyen = {
@@ -60,6 +61,7 @@ function begin(req, res, next) {
     cardholderNameBool,
     paypalIntent,
     adyenClientKey,
+    SFRA6Enabled,
   };
 
   res.setViewData(viewData);
