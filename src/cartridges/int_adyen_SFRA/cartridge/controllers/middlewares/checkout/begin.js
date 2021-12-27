@@ -36,7 +36,7 @@ function begin(req, res, next) {
             OrderMgr.failOrder(currentOrder, true);
           });
           const emit = (route) => this.emit(route, req, res);
-          res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
+          res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
           emit('route:Complete');
           return true;
         }
