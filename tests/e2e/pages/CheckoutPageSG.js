@@ -125,9 +125,9 @@ export default class CheckoutPageSFRA {
     await this.submitPayment();
   }
 
-  goBackAndReplaceOrderSameTab = async () => {
+  goBackAndSubmitPayment = async () => {
     await this.navigateBack();
-    await this.placeOrder();
+    await this.submitPayment();
   }
 
   goBackAndReplaceOrderDifferentWindow = async () => {
