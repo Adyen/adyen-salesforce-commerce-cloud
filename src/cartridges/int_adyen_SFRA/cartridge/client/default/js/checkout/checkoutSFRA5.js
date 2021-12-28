@@ -326,8 +326,10 @@ var adyenCheckout = require('../adyenCheckout');
                                     // go to appropriate stage and display error message
                                     defer.reject(data);
                                 }
-                            } else if (data.adyenAction) { //Custom Adyen cartridge
+                                // ### BEGIN Custom Adyen cartridge ###
+                            } else if (data.adyenAction) {
                                 adyenCheckout.actionHandler(data.adyenAction);
+                                // ### END Custom Adyen cartridge ###
                             } else {
                                 var continueUrl = data.continueUrl;
                                 var urlParams = {
