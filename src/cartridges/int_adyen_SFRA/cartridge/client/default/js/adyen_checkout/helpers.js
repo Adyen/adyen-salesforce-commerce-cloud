@@ -66,9 +66,7 @@ function displaySelectedMethod(type) {
       'paypal',
       'paywithgoogle',
       'googlepay',
-      'mbway',
       'amazonpay',
-      ...qrCodeMethods,
     ].indexOf(type) > -1;
 
   document

@@ -85,24 +85,6 @@ const actionHandler = (action) => {
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 };
 
-// confirm onAdditionalDetails event and paymentsDetails response
-store.checkoutConfiguration.onAdditionalDetails = (state) => {
-  $.ajax({
-    type: 'POST',
-    url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
-    contentType: 'application/json; charset=utf-8',
-    async: false,
-    success(data) {
-      if (!data.isFinal && typeof data.action === 'object') {
-        actionHandler(data.action);
-      } else {
-        window.location.href = data.redirectUrl;
-      }
-    },
-  });
-};
-
 module.exports = {
   renderGenericComponent,
   actionHandler
