@@ -12,7 +12,7 @@ module.exports = (checkoutPage) => {
         await checkoutPage.expectSuccess();
     });
 
-    test.only('iDeal with restored cart success', async () => {
+    test('iDeal with restored cart success', async () => {
         await checkoutPage.setShopperDetails(shopperData.NL);
         await doIdealPayment(true);
         await checkoutPage.completeCheckout();
@@ -31,7 +31,7 @@ module.exports = (checkoutPage) => {
         await checkoutPage.expectRefusal();
     });
 
-    test.only('iDeal with restored cart Fail', async () => {
+    test('iDeal with restored cart Fail', async () => {
         await checkoutPage.setShopperDetails(shopperData.NL);
         await doIdealPayment(true);
         await checkoutPage.completeSubmitPayment();
