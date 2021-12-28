@@ -3,7 +3,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 
-function processPayment(order, handlePaymentResult, req, res, emit) {
+function processPayment(order, handlePaymentResult, req, res, cbEmitter) {
     Logger.getLogger('Adyen').error('handlePaymentResult ' + JSON.stringify(handlePaymentResult));
     const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
@@ -19,7 +19,7 @@ function processPayment(order, handlePaymentResult, req, res, emit) {
             continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'orderNo', order.orderNo,).toString(),
         });
         Logger.getLogger('Adyen').error('about to emit threeDS2 ');
-        emit();
+        cbEmitter('route:Complete');
         return;
     } else if (handlePaymentResult.redirectObject) {
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
@@ -44,7 +44,7 @@ function processPayment(order, handlePaymentResult, req, res, emit) {
                     handlePaymentResult.signature,
                 ).toString(),
             });
-            emit('route:Complete');
+            cbEmitter('route:Complete');
             return;
         } else {
             Transaction.wrap(() => {
@@ -61,7 +61,7 @@ function processPayment(order, handlePaymentResult, req, res, emit) {
                     handlePaymentResult.signature,
                 ).toString(),
             });
-            emit();
+            cbEmitter('route:Complete');
             return;
         }
     }

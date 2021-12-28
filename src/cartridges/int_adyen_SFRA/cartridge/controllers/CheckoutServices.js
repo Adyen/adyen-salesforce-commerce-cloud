@@ -51,6 +51,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
   });
 
   if (!isAdyen) {
+    Logger.getLogger('Adyen').error('about to return next')
     return next();
   }
 
@@ -175,8 +176,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
 
   // ************** ADYEN
   const cbEmitter = (route) => this.emit(route, req, res);
-  const _this = this;
-  processPayment(order, handlePaymentResult, req, res, x);
+  if(handlePaymentResult.threeDS2 || handlePaymentResult.redirectObject) {
+    return processPayment(order, handlePaymentResult, req, res, cbEmitter);
+  }
 // **************
 
   var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
@@ -198,6 +200,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
 
   // Places the order
   var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+
+  Logger.getLogger('Adyen').error('placed order');
+  Logger.getLogger('Adyen').error('placeOrderResult ' + JSON.stringify(placeOrderResult));
+
   if (placeOrderResult.error) {
     res.json({
       error: true,
@@ -232,8 +238,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     orderToken: order.orderToken,
     continueUrl: URLUtils.url('Order-Confirm').toString()
   });
-
-  return next();
+  this.emit('route:Complete', req, res);
 });
 
 module.exports = server.exports();
