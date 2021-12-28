@@ -18,7 +18,8 @@ module.exports = (checkoutPage) => {
         await checkoutPage.completeCheckout();
         await checkoutPage.goBackAndSubmitShipping();
         await doIdealPayment(true);
-        await checkoutPage.completeCheckout();
+        await checkoutPage.submitPayment();
+        await checkoutPage.placeOrder();
         await completeIdealRedirect();
         await checkoutPage.expectSuccess();
     })
@@ -34,7 +35,8 @@ module.exports = (checkoutPage) => {
     test('iDeal with restored cart Fail', async () => {
         await checkoutPage.setShopperDetails(shopperData.NL);
         await doIdealPayment(true);
-        await checkoutPage.completeSubmitPayment();
+        await checkoutPage.setEmail();
+        await checkoutPage.submitPayment();
         await checkoutPage.goBackAndReplaceOrderDifferentWindow();
         await completeIdealRedirect();
         await checkoutPage.expectRefusal();

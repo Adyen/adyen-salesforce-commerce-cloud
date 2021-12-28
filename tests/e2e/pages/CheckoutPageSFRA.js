@@ -88,7 +88,7 @@ export default class CheckoutPageSFRA {
 
     setEmail = async () => {
         await t
-            .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com', {replace: true});
+            .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
     }
 
     submitShipping =  async () => {
@@ -109,11 +109,6 @@ export default class CheckoutPageSFRA {
         await this.setEmail();
         await this.submitPayment();
         await this.placeOrder();
-    }
-
-    completeSubmitPayment = async () => {
-        await this.setEmail();
-        await this.submitPayment();
     }
 
     goBackAndSubmitShipping = async () => {

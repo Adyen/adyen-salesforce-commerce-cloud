@@ -134,7 +134,8 @@ test('my account remove card success', async () => {
     await checkoutPage.completeCheckout();
     await checkoutPage.goBackAndSubmitShipping();
     await doCardPayment(cardData.threeDs1);
-    await checkoutPage.completeCheckout();
+    await checkoutPage.submitPayment();
+    await checkoutPage.placeOrder();
     await do3Ds1Verification();
     await checkoutPage.expectSuccess();
   })
@@ -152,7 +153,8 @@ test('my account remove card success', async () => {
   test('Card payment 3DS1 with restored cart failure', async () => {
     await goToBillingWithFullCartGuestUser();
     await doCardPayment(cardData.threeDs1);
-    await checkoutPage.completeSubmitPayment();
+    await checkoutPage.setEmail();
+    await checkoutPage.submitPayment();
     await checkoutPage.goBackAndReplaceOrderDifferentWindow();
     await do3Ds1Verification();
     await checkoutPage.expectRefusal();
