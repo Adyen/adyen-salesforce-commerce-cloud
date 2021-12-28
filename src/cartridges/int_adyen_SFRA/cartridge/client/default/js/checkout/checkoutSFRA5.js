@@ -531,6 +531,12 @@ module.exports = {
                     data.options
                 );
             });
+            const currentStage = window.location.search.substring(
+                window.location.search.indexOf('=') + 1,
+            );
+            if (currentStage === ('shipping' || 'payment')) {
+                adyenCheckout.renderGenericComponent();
+            }
             billingHelpers.methods.updateBillingInformation(
                 data.order,
                 data.customer,
