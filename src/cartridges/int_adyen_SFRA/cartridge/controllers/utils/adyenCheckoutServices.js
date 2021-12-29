@@ -1,15 +1,12 @@
-const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 
-function processPayment(order, handlePaymentResult, req, res, cbEmitter) {
-    Logger.getLogger('Adyen').error('handlePaymentResult ' + JSON.stringify(handlePaymentResult));
+function processPayment(order, handlePaymentResult, req, res, emit) {
     const paymentInstrument = order.getPaymentInstruments(
         constants.METHOD_ADYEN_COMPONENT,
     )[0];
     if (handlePaymentResult.threeDS2) {
-        Logger.getLogger('Adyen').error('inside threeDS2 ');
         Transaction.wrap(() => {
             paymentInstrument.custom.adyenAction = handlePaymentResult.action;
         });
@@ -18,9 +15,7 @@ function processPayment(order, handlePaymentResult, req, res, cbEmitter) {
             order,
             continueUrl: URLUtils.url('Adyen-Adyen3DS2', 'resultCode', handlePaymentResult.resultCode, 'orderNo', order.orderNo,).toString(),
         });
-        Logger.getLogger('Adyen').error('about to emit threeDS2 ');
-        cbEmitter('route:Complete');
-        return;
+        emit('route:Complete');
     } else if (handlePaymentResult.redirectObject) {
         //If authorized3d, then redirectObject from credit card, hence it is 3D Secure
         if (handlePaymentResult.authorized3d) {
@@ -44,8 +39,7 @@ function processPayment(order, handlePaymentResult, req, res, cbEmitter) {
                     handlePaymentResult.signature,
                 ).toString(),
             });
-            cbEmitter('route:Complete');
-            return;
+            emit('route:Complete');
         } else {
             Transaction.wrap(() => {
                 paymentInstrument.custom.adyenRedirectURL =
@@ -61,8 +55,7 @@ function processPayment(order, handlePaymentResult, req, res, cbEmitter) {
                     handlePaymentResult.signature,
                 ).toString(),
             });
-            cbEmitter('route:Complete');
-            return;
+            emit('route:Complete');
         }
     }
 }

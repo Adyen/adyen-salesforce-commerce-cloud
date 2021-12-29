@@ -6,23 +6,21 @@ server.extend(module.superModule);
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 const processPayment = require('*/cartridge/controllers/utils/adyenCheckoutServices');
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
-  var BasketMgr = require('dw/order/BasketMgr');
-  var OrderMgr = require('dw/order/OrderMgr');
-  var Resource = require('dw/web/Resource');
-  var Transaction = require('dw/system/Transaction');
-  var URLUtils = require('dw/web/URLUtils');
-  var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-  var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-  var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-  var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
-  var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
-  let isAdyen = false;
+  const BasketMgr = require('dw/order/BasketMgr');
+  const OrderMgr = require('dw/order/OrderMgr');
+  const Resource = require('dw/web/Resource');
+  const Transaction = require('dw/system/Transaction');
+  const URLUtils = require('dw/web/URLUtils');
+  const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+  const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+  const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+  const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+  const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
-  var currentBasket = BasketMgr.getCurrentBasket();
+  const currentBasket = BasketMgr.getCurrentBasket();
 
   if (!currentBasket) {
     res.json({
@@ -35,7 +33,8 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
-  //**** Adyen
+  /* ### Custom Adyen cartridge ### */
+  let isAdyen = false;
   collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
     if (
         [
@@ -51,9 +50,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
   });
 
   if (!isAdyen) {
-    Logger.getLogger('Adyen').error('about to return next')
     return next();
   }
+  /* ### Custom Adyen cartridge ### */
 
   var validatedProducts = validationHelpers.validateProducts(currentBasket);
   if (validatedProducts.error) {
@@ -152,8 +151,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
+  /* ### Custom Adyen cartridge ### */
   // Handles payment authorization
   var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
+  /* ### Custom Adyen cartridge ### */
 
   // Handle custom processing post authorization
   var options = {
@@ -169,17 +170,18 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
   if (handlePaymentResult.error) {
     res.json({
       error: true,
-      errorMessage: Resource.msg('error.technical', 'checkout', null)
+      errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
     });
-    return next();
+    this.emit('route:Complete', req, res);
+    return;
   }
 
-  // ************** ADYEN
+  /* ### Custom Adyen cartridge ### */
   const cbEmitter = (route) => this.emit(route, req, res);
   if(handlePaymentResult.threeDS2 || handlePaymentResult.redirectObject) {
     return processPayment(order, handlePaymentResult, req, res, cbEmitter);
   }
-// **************
+  /* ### Custom Adyen cartridge ### */
 
   var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
   if (fraudDetectionStatus.status === 'fail') {
@@ -200,9 +202,6 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
 
   // Places the order
   var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-
-  Logger.getLogger('Adyen').error('placed order');
-  Logger.getLogger('Adyen').error('placeOrderResult ' + JSON.stringify(placeOrderResult));
 
   if (placeOrderResult.error) {
     res.json({
