@@ -1,5 +1,6 @@
 import { doIdealPayment, completeIdealRedirect } from "../../paymentFlows/redirectShopper";
 import { doSEPAPayment, doBankTransferPayment, completeBankTransferRedirect, doGooglePayPayment } from "../../paymentFlows/pending";
+import {do3Ds1Verification, doCardPayment} from "../../paymentFlows/cards";
 const shopperData = require("../../data/shopperData.json");
 
 module.exports = (checkoutPage) => {
@@ -11,6 +12,18 @@ module.exports = (checkoutPage) => {
         await checkoutPage.expectSuccess();
     });
 
+    test('iDeal with restored cart success', async () => {
+        await checkoutPage.setShopperDetails(shopperData.NL);
+        await doIdealPayment(true);
+        await checkoutPage.completeCheckout();
+        await checkoutPage.goBackAndSubmitShipping();
+        await doIdealPayment(true);
+        await checkoutPage.submitPayment();
+        await checkoutPage.placeOrder();
+        await completeIdealRedirect();
+        await checkoutPage.expectSuccess();
+    })
+
     test('iDeal Fail', async () => {
         await checkoutPage.setShopperDetails(shopperData.NL);
         await doIdealPayment(false);
@@ -18,6 +31,16 @@ module.exports = (checkoutPage) => {
         await completeIdealRedirect();
         await checkoutPage.expectRefusal();
     });
+
+    test('iDeal with restored cart Fail', async () => {
+        await checkoutPage.setShopperDetails(shopperData.NL);
+        await doIdealPayment(true);
+        await checkoutPage.setEmail();
+        await checkoutPage.submitPayment();
+        await checkoutPage.goBackAndReplaceOrderDifferentWindow();
+        await completeIdealRedirect();
+        await checkoutPage.expectRefusal();
+    })
 
     test('SEPA Success', async () => {
         await checkoutPage.setShopperDetails(shopperData.NL);

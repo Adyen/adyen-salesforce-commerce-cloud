@@ -91,7 +91,7 @@ export default class CheckoutPageSFRA {
 
   setEmail = async () => {
     await t
-        .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com', {replace: true});
+        .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
   }
 
   submitShipping =  async () => {
@@ -120,6 +120,19 @@ export default class CheckoutPageSFRA {
     await this.placeOrder();
   }
 
+  goBackAndSubmitPayment = async () => {
+    await this.navigateBack();
+    await this.submitPayment();
+  }
+
+  goBackAndReplaceOrderDifferentWindow = async () => {
+    const checkoutLocation = await this.getLocation();
+    await this.placeOrder();
+    await t
+        .openWindow(checkoutLocation)
+        .switchToPreviousWindow();
+  }
+
   expectSuccess = async () => {
     await t.expect(Selector('.confirmation-message', { timeout: 60000 }).exists).ok();
   }
@@ -144,6 +157,7 @@ export default class CheckoutPageSFRA {
   }
 
   getLocation = ClientFunction(() => document.location.href);
+  navigateBack = ClientFunction( () => window.history.back());
 
   loginUser = async (credentials) => {
     const inputEmail = Selector('input').withAttribute('id', /dwfrm_login_username_.*/);

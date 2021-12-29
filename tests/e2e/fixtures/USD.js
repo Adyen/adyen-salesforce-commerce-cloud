@@ -128,6 +128,18 @@ test('my account remove card success', async () => {
     await checkoutPage.expectSuccess();
   });
 
+  test('Card payment 3DS1 with restored cart success', async () => {
+    await goToBillingWithFullCartGuestUser();
+    await doCardPayment(cardData.threeDs1);
+    await checkoutPage.completeCheckout();
+    await checkoutPage.goBackAndSubmitShipping();
+    await doCardPayment(cardData.threeDs1);
+    await checkoutPage.submitPayment();
+    await checkoutPage.placeOrder();
+    await do3Ds1Verification();
+    await checkoutPage.expectSuccess();
+  })
+
   test('Card payment 3DS1 failure', async () => {
     await goToBillingWithFullCartGuestUser();
     const cardDataInvalid = Object.assign({}, cardData.threeDs1);
@@ -137,6 +149,16 @@ test('my account remove card success', async () => {
     await do3Ds1Verification();
     await checkoutPage.expectRefusal();
   });
+
+  test('Card payment 3DS1 with restored cart failure', async () => {
+    await goToBillingWithFullCartGuestUser();
+    await doCardPayment(cardData.threeDs1);
+    await checkoutPage.setEmail();
+    await checkoutPage.submitPayment();
+    await checkoutPage.goBackAndReplaceOrderDifferentWindow();
+    await do3Ds1Verification();
+    await checkoutPage.expectRefusal();
+  })
 
   test('Card payment 3DS2 success', async () => {
     await goToBillingWithFullCartGuestUser();
