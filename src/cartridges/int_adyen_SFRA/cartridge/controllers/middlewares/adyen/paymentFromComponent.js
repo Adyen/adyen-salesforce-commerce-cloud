@@ -59,8 +59,8 @@ function paymentFromComponent(req, res, next) {
     );
     result.paymentError = true;
 
-    // Decline flow for Amazon pay is handled different form other Component PMs
-    // Order needs to be failed here.
+    // Decline flow for Amazon pay is handled different from other Component PMs
+    // Order needs to be failed here to handle Amazon decline flow.
     if (reqDataObj.paymentMethod === 'amazonpay') {
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
