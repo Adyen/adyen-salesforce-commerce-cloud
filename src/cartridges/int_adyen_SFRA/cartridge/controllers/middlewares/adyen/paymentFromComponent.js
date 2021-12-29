@@ -14,7 +14,6 @@ const collections = require('*/cartridge/scripts/util/collections');
  */
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
-
   if (reqDataObj.cancelTransaction) {
     Logger.getLogger('Adyen').error(
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
@@ -59,6 +58,14 @@ function paymentFromComponent(req, res, next) {
       `Payment refused for order ${order.orderNo}`,
     );
     result.paymentError = true;
+
+    // Decline flow for Amazon pay is handled different form other Component PMs
+    // Order needs to be failed here.
+    if (reqDataObj.paymentMethod === 'amazonpay') {
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+    }
   }
 
   result.orderNo = order.orderNo;

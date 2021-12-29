@@ -18,16 +18,18 @@ function begin(req, res, next) {
     const cachedOrderNumber = req.session.privacyCache.get(
       'currentOrderNumber',
     );
-    if (cachedOrderNumber !== undefined) {
+
+    if (cachedOrderNumber !== null) {
       const currentBasket = BasketMgr.getCurrentBasket();
       const currentOrder = OrderMgr.getOrder(cachedOrderNumber);
+
       // if current basket is null or empty
       if (
         !currentBasket ||
         currentBasket.getAllProductLineItems().length === 0
       ) {
         // if order status is CREATED we can fail it and restore basket
-        if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
+        if (currentOrder?.status.value === Order.ORDER_STATUS_CREATED) {
           Transaction.wrap(() => {
             currentOrder.trackOrderChange(
               'Failing order so cart can be restored; Shopper navigated back to checkout during payment redirection',

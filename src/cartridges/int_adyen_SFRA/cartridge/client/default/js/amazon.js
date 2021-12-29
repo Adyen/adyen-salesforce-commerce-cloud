@@ -27,7 +27,10 @@ function handleAmazonResponse(response, component) {
     component.handleAction(response.fullResponse.action);
   } else if (response.resultCode === window.resultCodeAuthorised) {
     handleAuthorised(response);
-  } else if (response.error) {
+  } else if (response.paymentError) {
+    // first try the amazon decline flow
+    component.handleDeclineFlow();
+    // if this does not trigger a redirect, try te regular handleError flow
     handleError();
   }
 }
