@@ -544,7 +544,7 @@ module.exports = {
                 data.customer,
                 data.options
             );
-            billingHelpers.methods.updatePaymentInformation(data.order, data.options);
+            billing.methods.updatePaymentInformation(data.order, data.options);
             summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
         });
     }
