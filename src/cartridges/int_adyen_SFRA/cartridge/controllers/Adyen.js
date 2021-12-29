@@ -1,6 +1,5 @@
 const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const adyenGiving = require('*/cartridge/scripts/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
 
@@ -14,8 +13,7 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
  */
-server.post('PaymentsDetails', server.middleware.https, consentTracking.consent,
-    csrfProtection.validateRequest, adyen.paymentsDetails);
+server.post('PaymentsDetails', server.middleware.https, consentTracking.consent, adyen.paymentsDetails);
 
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account

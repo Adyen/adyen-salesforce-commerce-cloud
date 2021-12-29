@@ -3,7 +3,6 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
-const Logger = require('dw/system/Logger');
 
 function handleAuthorised(order, options) {
   const { req } = options;

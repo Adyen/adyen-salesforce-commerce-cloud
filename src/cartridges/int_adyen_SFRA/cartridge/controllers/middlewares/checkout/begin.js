@@ -70,6 +70,6 @@ function begin(req, res, next) {
   };
 
   res.setViewData(viewData);
-  next();
+  return next();
 }
 module.exports = begin;

@@ -19,6 +19,32 @@ function getPaymentDetailsPayload(querystring) {
   return requestObject;
 }
 
+function getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req){
+  //Saved response from Adyen-PaymentsDetails
+  let result = JSON.parse(paymentInstruments[0].paymentTransaction.custom.Adyen_authResult);
+  if (redirectResult || payload) {
+    const requestObject = getPaymentDetailsPayload(req.querystring);
+    result = adyenCheckout.doPaymentsDetailsCall(requestObject);
+  }
+  clearForms.clearPaymentTransactionData(paymentInstruments[0]);
+  return result;
+}
+
+function handlePaymentsDetailsResult(detailsResult, order, options){
+  if ([
+    constants.RESULTCODES.AUTHORISED,
+    constants.RESULTCODES.PENDING,
+    constants.RESULTCODES.RECEIVED,
+  ].indexOf(detailsResult.resultCode) > -1
+  ) {
+    return handleAuthorised(
+        order,
+        options,
+    );
+  }
+  return payment.handlePaymentError(order, 'placeOrder', options);
+}
+
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
  * if the payment was accepted.
@@ -32,33 +58,14 @@ function showConfirmation(req, res, next) {
         constants.METHOD_ADYEN_COMPONENT,
     );
     if(paymentInstruments[0].paymentTransaction.custom.Adyen_merchantSig === signature) {
-      //Saved response from Adyen-PaymentsDetails
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
         Logger.getLogger('Adyen').error(
             `Could not call payment/details for failed order ${order.orderNo}`,
         );
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
-      let result = JSON.parse(paymentInstruments[0].paymentTransaction.custom.Adyen_authResult);
-      if (redirectResult || payload) {
-        const requestObject = getPaymentDetailsPayload(req.querystring);
-        result = adyenCheckout.doPaymentsDetailsCall(requestObject);
-      }
-      clearForms.clearPaymentTransactionData(paymentInstruments[0]);
-      if (
-          [
-            constants.RESULTCODES.AUTHORISED,
-            constants.RESULTCODES.PENDING,
-            constants.RESULTCODES.RECEIVED,
-          ].indexOf(result.resultCode) > -1
-      ) {
-        return handleAuthorised(
-            order,
-            options,
-        );
-      }
-
-      return payment.handlePaymentError(order, 'placeOrder', options);
+      const detailsResult = getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req);
+      return handlePaymentsDetailsResult(detailsResult, order, options);
     }
 
     throw new Error(`Incorrect signature for order ${merchantReference}`);
