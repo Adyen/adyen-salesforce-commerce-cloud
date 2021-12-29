@@ -4,6 +4,7 @@ const Logger = require('dw/system/Logger');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const URLUtils = require('dw/web/URLUtils');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function begin(req, res, next) {
@@ -34,6 +35,10 @@ function begin(req, res, next) {
             );
             OrderMgr.failOrder(currentOrder, true);
           });
+          const emit = (route) => this.emit(route, req, res);
+          res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
+          emit('route:Complete');
+          return true;
         }
       }
     }
