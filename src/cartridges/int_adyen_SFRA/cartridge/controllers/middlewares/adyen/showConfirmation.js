@@ -9,20 +9,17 @@ const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 
 function getPaymentDetailsPayload(querystring) {
-  const requestObject = {details: {}};
-  if (querystring.redirectResult) {
-    requestObject.details = {redirectResult: querystring.redirectResult};
-  }
-  if (querystring.payload) {
-    requestObject.details = {payload: querystring.payload};
-  }
-  return requestObject;
+  const details = querystring.redirectResult ? {redirectResult: querystring.redirectResult} : {payload: querystring.payload};
+  return {
+    details,
+  };
 }
 
 function getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req){
+  const hasQuerystringDetails = !!(redirectResult || payload);
   //Saved response from Adyen-PaymentsDetails
   let result = JSON.parse(paymentInstruments[0].paymentTransaction.custom.Adyen_authResult);
-  if (redirectResult || payload) {
+  if (hasQuerystringDetails) {
     const requestObject = getPaymentDetailsPayload(req.querystring);
     result = adyenCheckout.doPaymentsDetailsCall(requestObject);
   }
@@ -67,7 +64,6 @@ function showConfirmation(req, res, next) {
       const detailsResult = getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req);
       return handlePaymentsDetailsResult(detailsResult, order, options);
     }
-
     throw new Error(`Incorrect signature for order ${merchantReference}`);
   } catch (e) {
     Logger.getLogger('Adyen').error(
