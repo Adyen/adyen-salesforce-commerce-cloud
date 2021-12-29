@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const { qrCodeMethods } = require('./qrCodeMethods');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');

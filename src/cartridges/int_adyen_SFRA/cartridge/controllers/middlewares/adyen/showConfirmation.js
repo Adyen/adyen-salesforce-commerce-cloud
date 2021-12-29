@@ -7,10 +7,6 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
-const Resource = require('dw/web/Resource');
-const Transaction = require('dw/system/Transaction');
 
 function getPaymentDetailsPayload(querystring) {
   const requestObject = {details: {}};
@@ -48,7 +44,7 @@ function showConfirmation(req, res, next) {
         const requestObject = getPaymentDetailsPayload(req.querystring);
         result = adyenCheckout.doPaymentsDetailsCall(requestObject);
       }
-      clearPaymentTransactionData(paymentInstruments[0]);
+      clearForms.clearPaymentTransactionData(paymentInstruments[0]);
       if (
           [
             constants.RESULTCODES.AUTHORISED,
@@ -74,13 +70,6 @@ function showConfirmation(req, res, next) {
     );
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
-  }
-
-  function clearPaymentTransactionData(paymentInstrument){
-    Transaction.wrap(function(){
-      paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
-      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = null;
-    })
   }
 }
 

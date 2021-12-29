@@ -6,6 +6,19 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const constants = require('*/cartridge/adyenConstants/constants');
 
+function getSignature(paymentsDetailsResponse){
+  const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+  const paymentInstruments = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+  );
+
+  const signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
+  Transaction.wrap(function(){
+    paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
+  })
+  return signature;
+}
+
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment
  */
@@ -45,19 +58,6 @@ function paymentsDetails(req, res, next) {
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }
-}
-
-function getSignature(paymentsDetailsResponse){
-  const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
-  const paymentInstruments = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
-  );
-
-  const signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
-  Transaction.wrap(function(){
-    paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
-  })
-  return signature;
 }
 
 module.exports = paymentsDetails;

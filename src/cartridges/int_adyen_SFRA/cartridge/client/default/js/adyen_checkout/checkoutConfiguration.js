@@ -1,6 +1,7 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
+const adyenCheckout = require('../adyenCheckout');
 
 function getCardConfig() {
   return {
@@ -113,7 +114,7 @@ function handleOnAdditionalDetails(state) {
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {
-        actionHandler(data.action);
+        adyenCheckout.actionHandler(data.action);
       } else {
         window.location.href = data.redirectUrl;
       }
