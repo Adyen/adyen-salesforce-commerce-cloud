@@ -87,5 +87,5 @@ const actionHandler = (action) => {
 
 module.exports = {
   renderGenericComponent,
-  actionHandler
+  actionHandler,
 };

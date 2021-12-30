@@ -36,11 +36,11 @@ function clearAdyenData(paymentInstrument) {
 /**
  * Clear Adyen transaction data
  */
-function clearPaymentTransactionData(paymentInstrument){
-  Transaction.wrap(function(){
+function clearPaymentTransactionData(paymentInstrument) {
+  Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
     paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = null;
-  })
+  });
 }
 
 module.exports = {

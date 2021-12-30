@@ -3,8 +3,8 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Logger = require('dw/system/Logger');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const URLUtils = require('dw/web/URLUtils');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function begin(req, res, next) {

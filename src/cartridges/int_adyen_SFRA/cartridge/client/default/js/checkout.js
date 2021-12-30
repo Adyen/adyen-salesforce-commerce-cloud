@@ -3,8 +3,11 @@ const baseCheckout = require('base/checkout/checkout');
 const adyenCheckout = require('./adyenCheckout');
 const billing = require('./checkout/billing');
 
-//Compatibility Adyen SFRA 5.x.x & 6.x.x
-const checkout = window.AdyenSFRA6Enabled !== 'null' ? require('./checkout/checkoutSFRA6') : require('./checkout/checkoutSFRA5');
+// Compatibility Adyen SFRA 5.x.x & 6.x.x
+const checkout =
+  window.AdyenSFRA6Enabled !== 'null'
+    ? require('./checkout/checkoutSFRA6')
+    : require('./checkout/checkoutSFRA5');
 
 $(document).ready(function () { // eslint-disable-line
   const name = 'paymentError';

@@ -9,16 +9,25 @@ const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 
 function getPaymentDetailsPayload(querystring) {
-  const details = querystring.redirectResult ? {redirectResult: querystring.redirectResult} : {payload: querystring.payload};
+  const details = querystring.redirectResult
+    ? { redirectResult: querystring.redirectResult }
+    : { payload: querystring.payload };
   return {
     details,
   };
 }
 
-function getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req){
+function getPaymentsDetailsResult(
+  paymentInstruments,
+  redirectResult,
+  payload,
+  req,
+) {
   const hasQuerystringDetails = !!(redirectResult || payload);
-  //Saved response from Adyen-PaymentsDetails
-  let result = JSON.parse(paymentInstruments[0].paymentTransaction.custom.Adyen_authResult);
+  // Saved response from Adyen-PaymentsDetails
+  let result = JSON.parse(
+    paymentInstruments[0].paymentTransaction.custom.Adyen_authResult,
+  );
   if (hasQuerystringDetails) {
     const requestObject = getPaymentDetailsPayload(req.querystring);
     result = adyenCheckout.doPaymentsDetailsCall(requestObject);
@@ -27,17 +36,15 @@ function getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, r
   return result;
 }
 
-function handlePaymentsDetailsResult(detailsResult, order, options){
-  if ([
-    constants.RESULTCODES.AUTHORISED,
-    constants.RESULTCODES.PENDING,
-    constants.RESULTCODES.RECEIVED,
-  ].indexOf(detailsResult.resultCode) > -1
+function handlePaymentsDetailsResult(detailsResult, order, options) {
+  if (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(detailsResult.resultCode) > -1
   ) {
-    return handleAuthorised(
-        order,
-        options,
-    );
+    return handleAuthorised(order, options);
   }
   return payment.handlePaymentError(order, 'placeOrder', options);
 }
@@ -48,20 +55,33 @@ function handlePaymentsDetailsResult(detailsResult, order, options){
  */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
-  const { redirectResult, payload, signature, merchantReference } = req.querystring;
+  const {
+    redirectResult,
+    payload,
+    signature,
+    merchantReference,
+  } = req.querystring;
   try {
     const order = OrderMgr.getOrder(merchantReference);
     const paymentInstruments = order.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
+      constants.METHOD_ADYEN_COMPONENT,
     );
-    if(paymentInstruments[0].paymentTransaction.custom.Adyen_merchantSig === signature) {
+    if (
+      paymentInstruments[0].paymentTransaction.custom.Adyen_merchantSig ===
+      signature
+    ) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
         Logger.getLogger('Adyen').error(
-            `Could not call payment/details for failed order ${order.orderNo}`,
+          `Could not call payment/details for failed order ${order.orderNo}`,
         );
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
-      const detailsResult = getPaymentsDetailsResult(paymentInstruments, redirectResult, payload, req);
+      const detailsResult = getPaymentsDetailsResult(
+        paymentInstruments,
+        redirectResult,
+        payload,
+        req,
+      );
       return handlePaymentsDetailsResult(detailsResult, order, options);
     }
     throw new Error(`Incorrect signature for order ${merchantReference}`);

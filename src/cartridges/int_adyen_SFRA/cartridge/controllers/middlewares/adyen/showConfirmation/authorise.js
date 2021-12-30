@@ -21,11 +21,7 @@ function handleAuthorised(order, options) {
   });
 
   // Save orderModel to custom object during session
-  return handleOrderConfirm(
-    order,
-    orderModel,
-    options,
-  );
+  return handleOrderConfirm(order, orderModel, options);
 }
 
 module.exports = handleAuthorised;

@@ -52,11 +52,11 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
   }
 
   const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
-  if(!checkoutResponse.isFinal) {
+  if (!checkoutResponse.isFinal) {
     return checkoutResponse;
   }
 
-  if(!checkoutResponse.isSuccessful) {
+  if (!checkoutResponse.isSuccessful) {
     return paymentErrorHandler(result);
   }
 
