@@ -20,7 +20,7 @@ function handlePaymentError(order, { res, next }) {
     URLUtils.url(
       'Checkout-Begin',
       'stage',
-      'placeOrder',
+      'payment',
       'paymentError',
       Resource.msg('error.payment.not.valid', 'checkout', null),
     ),
