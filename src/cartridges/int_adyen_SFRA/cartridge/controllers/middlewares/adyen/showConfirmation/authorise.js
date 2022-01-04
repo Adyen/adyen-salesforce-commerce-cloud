@@ -4,7 +4,12 @@ const OrderModel = require('*/cartridge/models/order');
 const handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 
-function handleAuthorised(order, options) {
+function handleAuthorised(
+  adyenPaymentInstrument,
+  detailsResult,
+  order,
+  options,
+) {
   const { req } = options;
 
   // custom fraudDetection
@@ -21,7 +26,13 @@ function handleAuthorised(order, options) {
   });
 
   // Save orderModel to custom object during session
-  return handleOrderConfirm(order, orderModel, options);
+  return handleOrderConfirm(
+    adyenPaymentInstrument,
+    detailsResult,
+    order,
+    orderModel,
+    options,
+  );
 }
 
 module.exports = handleAuthorised;

@@ -3,10 +3,16 @@ const URLUtils = require('dw/web/URLUtils');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 
-function handleOrderConfirm(order, orderModel, { res, next }) {
+function handleOrderConfirm(
+  adyenPaymentInstrument,
+  result,
+  order,
+  orderModel,
+  { res, next },
+) {
   Transaction.wrap(() => {
     order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
-    // AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+    AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
   clearForms.clearForms();
