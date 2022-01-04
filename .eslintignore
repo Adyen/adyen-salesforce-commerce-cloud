@@ -1,10 +1,18 @@
 bundle.js
 .eslintrc.js
+
+# Transpiled code
 /cartridges
+
+# Compiled web component bundle file
 src/cartridges/int_adyen_controllers/cartridge/js/pages/checkout/bundle.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
+
+# Extended SFRA core file
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA5.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA6.js
+
+# Test files
 src/cartridges/int_adyen_SFRA/test
 *.test.js
 
