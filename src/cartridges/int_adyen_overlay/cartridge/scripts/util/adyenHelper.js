@@ -153,29 +153,29 @@ var adyenHelperObj = {
     }
     const givingConfigs = {};
     const configuredAmounts = adyenHelperObj.getDonationAmounts();
-      givingConfigs.adyenGivingAvailable = true;
-      givingConfigs.configuredAmounts = configuredAmounts;
-      givingConfigs.charityName = adyenHelperObj.getAdyenGivingCharityName();
-      givingConfigs.charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
-      givingConfigs.charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
-      givingConfigs.adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
-      givingConfigs.adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
+    givingConfigs.adyenGivingAvailable = true;
+    givingConfigs.configuredAmounts = configuredAmounts;
+    givingConfigs.charityName = adyenHelperObj.getAdyenGivingCharityName();
+    givingConfigs.charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
+    givingConfigs.charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
+    givingConfigs.adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
+    givingConfigs.adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
 
-      givingConfigs.donationAmounts = JSON.stringify({
-        currency: session.currency.currencyCode,
-        values: configuredAmounts,
-      });
-      givingConfigs.pspReference = order.custom.Adyen_pspReference;
-      for (const config in givingConfigs) {
-        if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-          if (givingConfigs[config] === null) {
-            Logger.getLogger('Adyen').error(
-                'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
-            );
-            return null;
-          }
+    givingConfigs.donationAmounts = JSON.stringify({
+      currency: session.currency.currencyCode,
+      values: configuredAmounts,
+    });
+    givingConfigs.pspReference = order.custom.Adyen_pspReference;
+    for (const config in givingConfigs) {
+      if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
+        if (givingConfigs[config] === null) {
+          Logger.getLogger('Adyen').error(
+              'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
+          );
+          return null;
         }
       }
+    }
     return givingConfigs;
   },
 
