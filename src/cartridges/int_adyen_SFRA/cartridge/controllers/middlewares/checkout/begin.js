@@ -44,6 +44,7 @@ function begin(req, res, next) {
       CurrentCustomer: req.currentCustomer.raw,
     });
   }
+
   const cachedOrderNumber = req.session.privacyCache.get('currentOrderNumber');
   if (shouldRestoreBasket(cachedOrderNumber)) {
     if (restoreBasket(cachedOrderNumber)) {
