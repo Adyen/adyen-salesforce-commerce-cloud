@@ -1,8 +1,3 @@
-const adyen3d = require('*/cartridge/controllers/middlewares/adyen/adyen3d');
-const adyen3ds2 = require('*/cartridge/controllers/middlewares/adyen/adyen3ds2');
-const authorizeWithForm = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm');
-const authorize3ds2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2');
-const redirect = require('*/cartridge/controllers/middlewares/adyen/redirect');
 const showConfirmation = require('*/cartridge/controllers/middlewares/adyen/showConfirmation');
 const getPaymentMethods = require('*/cartridge/controllers/middlewares/adyen/getPaymentMethods');
 const paymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/paymentFromComponent');
@@ -12,11 +7,6 @@ const paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/payme
 const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
 
 module.exports = {
-  adyen3d,
-  adyen3ds2,
-  authorizeWithForm,
-  authorize3ds2,
-  redirect,
   showConfirmation,
   getPaymentMethods,
   paymentFromComponent,

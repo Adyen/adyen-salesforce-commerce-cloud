@@ -2,7 +2,12 @@ const processInclude = require('base/util');
 const baseCheckout = require('base/checkout/checkout');
 const adyenCheckout = require('./adyenCheckout');
 const billing = require('./checkout/billing');
-const checkout = require('./checkout/checkout');
+
+// Compatibility Adyen SFRA 5.x.x & 6.x.x
+const checkout =
+  window.AdyenSFRA6Enabled !== 'null'
+    ? require('./checkout/checkoutSFRA6')
+    : require('./checkout/checkoutSFRA5');
 
 $(document).ready(function () { // eslint-disable-line
   const name = 'paymentError';
@@ -17,7 +22,7 @@ $(document).ready(function () { // eslint-disable-line
       $('.error-message').show();
       $('.error-message-text').text(decodeURIComponent(error[1]));
     }
-    adyenCheckout.methods.renderGenericComponent();
+    adyenCheckout.renderGenericComponent();
   }
 
   processInclude(baseCheckout);

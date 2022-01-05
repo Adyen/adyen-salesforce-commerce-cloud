@@ -65,6 +65,7 @@ function createOrder(currentBasket, { res, req, next }, emit) {
         { req, res },
         emit,
       );
+
       // Places the order
       return isSuccessful && handlePlaceOrder(order, fraudDetectionStatus);
     }
@@ -116,7 +117,6 @@ function createOrder(currentBasket, { res, req, next }, emit) {
 
     if (isOrderCreated) {
       COHelpers.sendConfirmationEmail(order, req.locale.id);
-
       // Reset usingMultiShip after successful Order placement
       req.session.privacyCache.set('usingMultiShipping', false);
 

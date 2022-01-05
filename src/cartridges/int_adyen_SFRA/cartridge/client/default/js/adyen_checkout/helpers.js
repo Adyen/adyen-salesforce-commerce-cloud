@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const { qrCodeMethods } = require('./qrCodeMethods');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -62,14 +61,7 @@ function displaySelectedMethod(type) {
   resetPaymentMethod();
 
   document.querySelector('button[value="submit-payment"]').disabled =
-    [
-      'paypal',
-      'paywithgoogle',
-      'googlepay',
-      'mbway',
-      'amazonpay',
-      ...qrCodeMethods,
-    ].indexOf(type) > -1;
+    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
 
   document
     .querySelector(`#component_${type}`)
