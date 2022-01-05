@@ -551,7 +551,6 @@ var adyenHelperObj = {
     let orderToken;
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
-      orderToken = order.getOrderToken();
     }
 
     //Create signature to verify returnUrl
