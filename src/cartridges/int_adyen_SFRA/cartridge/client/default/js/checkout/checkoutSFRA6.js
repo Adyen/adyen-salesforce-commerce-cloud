@@ -6,7 +6,9 @@ const summaryHelpers = require('base/checkout/summary');
 const formHelpers = require('base/checkout/formErrors');
 const scrollAnimate = require('base/components/scrollAnimate');
 const billing = require('./billing');
+// ### BEGIN Custom Adyen cartridge ###
 const adyenCheckout = require('../adyenCheckout');
+// ### END Custom Adyen cartridge ###
 
 /**
  * Create the jQuery Checkout Plugin.

@@ -554,6 +554,7 @@ var adyenHelperObj = {
       orderToken = order.getOrderToken();
     }
 
+    //Create signature to verify returnUrl
     const signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
 
     if(stateData.paymentMethod?.storedPaymentMethodId) {

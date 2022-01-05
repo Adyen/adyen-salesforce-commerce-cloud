@@ -42,6 +42,7 @@ function paymentsDetails(req, res, next) {
       paymentsDetailsResponse,
     );
 
+    //Create signature to verify returnUrl
     const signature = getSignature(paymentsDetailsResponse);
 
     if (isAmazonpay) {
