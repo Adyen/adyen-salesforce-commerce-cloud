@@ -548,7 +548,6 @@ var adyenHelperObj = {
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
     let reference = 'recurringPayment-account';
-    let orderToken;
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
     }
