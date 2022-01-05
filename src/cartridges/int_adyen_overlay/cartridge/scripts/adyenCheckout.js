@@ -24,15 +24,26 @@
 
 /* API Includes */
 const Logger = require('dw/system/Logger');
-
-/* Script Modules */
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
+const Transaction = require('dw/system/Transaction');
+
+/* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
+
+//SALE payment methods require payment transaction type to be Capture
+function setPaymentTransactionType(paymentInstrument, paymentMethod) {
+  const salePaymentMethods = AdyenHelper.getAdyenSalePaymentMethods();
+  if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
+    Transaction.wrap(function () {
+      paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
+    });
+  }
+}
 
 function createPaymentRequest(args) {
   try {
@@ -102,7 +113,9 @@ function createPaymentRequest(args) {
       }
     }
 
-  // make API call
+    setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
+
+    // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(

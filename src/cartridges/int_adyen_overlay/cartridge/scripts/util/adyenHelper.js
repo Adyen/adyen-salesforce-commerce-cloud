@@ -274,6 +274,10 @@ var adyenHelperObj = {
     return adyenHelperObj.getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
+  getAdyenSalePaymentMethods: function () {
+    return adyenHelperObj.getCustomPreference('AdyenSalePaymentMethods') ? adyenHelperObj.getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
+  },
+
   getAdyenGivingEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenGiving_enabled');
   },
