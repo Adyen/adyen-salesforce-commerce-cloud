@@ -146,39 +146,30 @@ var adyenHelperObj = {
 
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
-    let adyenGivingAvailable = false;
     if (
-      adyenHelperObj.getAdyenGivingEnabled() &&
-      adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
+      !adyenHelperObj.getAdyenGivingEnabled() ||
+      !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
     ) {
-      adyenGivingAvailable = true;
-      var configuredAmounts = adyenHelperObj.getDonationAmounts();
-      var charityName = adyenHelperObj.getAdyenGivingCharityName();
-      var charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
-      var charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
-      var adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
-      var adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
-
-      var donationAmounts = {
-        currency: session.currency.currencyCode,
-        values: configuredAmounts,
-      };
+      return null;
     }
-    const givingConfigs = {
-      adyenGivingAvailable,
-      configuredAmounts,
-      charityName,
-      charityWebsite,
-      charityDescription,
-      adyenGivingBackgroundUrl,
-      adyenGivingLogoUrl,
-      donationAmounts: JSON.stringify(donationAmounts),
-      pspReference: order.custom.Adyen_pspReference,
-    };
+    const givingConfigs = {};
+    const configuredAmounts = adyenHelperObj.getDonationAmounts();
+    givingConfigs.adyenGivingAvailable = true;
+    givingConfigs.configuredAmounts = configuredAmounts;
+    givingConfigs.charityName = adyenHelperObj.getAdyenGivingCharityName();
+    givingConfigs.charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
+    givingConfigs.charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
+    givingConfigs.adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
+    givingConfigs.adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
 
+    givingConfigs.donationAmounts = JSON.stringify({
+      currency: session.currency.currencyCode,
+      values: configuredAmounts,
+    });
+    givingConfigs.pspReference = order.custom.Adyen_pspReference;
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-        if(givingConfigs[config] === null) {
+        if (givingConfigs[config] === null) {
           Logger.getLogger('Adyen').error(
               'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
           );
