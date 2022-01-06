@@ -53,7 +53,6 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
   /* ### Custom Adyen cartridge ### */
-
   var validatedProducts = validationHelpers.validateProducts(currentBasket);
   if (validatedProducts.error) {
     res.json({
@@ -151,6 +150,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
   }
 
+  // Cache order number in order to be able to restore cart later
+  req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+
   /* ### Custom Adyen cartridge ### */
   // Handles payment authorization
   var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
@@ -178,7 +180,10 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
 
   /* ### Custom Adyen cartridge ### */
   const cbEmitter = (route) => this.emit(route, req, res);
-  if(handlePaymentResult.threeDS2 || handlePaymentResult.redirectObject) {
+  if (
+      handlePaymentResult.action &&
+      handlePaymentResult.action?.type !== constants.ACTIONTYPES.VOUCHER
+  ) {
     return processPayment(order, handlePaymentResult, req, res, cbEmitter);
   }
   /* ### Custom Adyen cartridge ### */
