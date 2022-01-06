@@ -1,6 +1,6 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <isset name="Order" value="${pdict.order}" scope="page"/>
-<isif condition="${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}">
+<isif condition="${AdyenHelper.getAdyenGivingConfig(Order)}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>

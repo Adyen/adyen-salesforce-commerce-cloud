@@ -61,10 +61,4 @@
         </iselse>
     </isif>
 </div>
-<div class="modal fade" id="action-modal" role="dialog">
-    <div class="modal-dialog" id="adyenModalDialog">
-        <div id="action-container"></div>
-    </div>
-</div>
-
-
+<isinclude template="adyenActionModal" />

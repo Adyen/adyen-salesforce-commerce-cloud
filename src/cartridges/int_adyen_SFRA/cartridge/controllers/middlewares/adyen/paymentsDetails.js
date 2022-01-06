@@ -1,11 +1,32 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
+const OrderMgr = require('dw/order/OrderMgr');
+const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const constants = require('*/cartridge/adyenConstants/constants');
+
+function getSignature(paymentsDetailsResponse) {
+  const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+  const paymentInstruments = order.getPaymentInstruments(
+    constants.METHOD_ADYEN_COMPONENT,
+  );
+
+  const signature = AdyenHelper.createSignature(
+    paymentInstruments[0],
+    order.getUUID(),
+    paymentsDetailsResponse.merchantReference,
+  );
+  Transaction.wrap(() => {
+    paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
+      paymentsDetailsResponse,
+    );
+  });
+  return signature;
+}
 
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment
- * This is used to confirm 3DS2 payment status after (zeroAuth) challenge & authentication
  */
 function paymentsDetails(req, res, next) {
   try {
@@ -21,6 +42,9 @@ function paymentsDetails(req, res, next) {
       paymentsDetailsResponse,
     );
 
+    //Create signature to verify returnUrl
+    const signature = getSignature(paymentsDetailsResponse);
+
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
@@ -29,6 +53,13 @@ function paymentsDetails(req, res, next) {
       };
     }
 
+    response.redirectUrl = URLUtils.url(
+      'Adyen-ShowConfirmation',
+      'merchantReference',
+      response.merchantReference,
+      'signature',
+      signature,
+    ).toString();
     res.json(response);
     return next();
   } catch (e) {

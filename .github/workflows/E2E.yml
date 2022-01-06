@@ -11,9 +11,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
-          ref: v6.0.0
+          ref: v5.3.0
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -31,7 +35,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
           }' >> dw.json
       - name: push cartridge code
         working-directory: adyen-salesforce-commerce-cloud
@@ -42,3 +46,4 @@ jobs:
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}

@@ -180,11 +180,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
-    const threeDS2ResultCodes = [
-      constants.RESULTCODES.IDENTIFYSHOPPER,
-      constants.RESULTCODES.CHALLENGESHOPPER
-    ];
-
     const acceptedResultCodes = [
       constants.RESULTCODES.AUTHORISED,
       constants.RESULTCODES.PENDING,
@@ -202,18 +197,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
     const {resultCode} = paymentResponse;
     // Check the response object from /payment call
-    if (threeDS2ResultCodes.indexOf(resultCode) !== -1) {
-      if (responseObject.action) {
-        paymentInstrument.custom.adyenAction = JSON.stringify(
-            responseObject.action,
-        );
-      }
-      paymentResponse.decision = 'ACCEPT';
-      paymentResponse.threeDS2 = true;
-
-      paymentResponse.token3ds2 = responseObject.action.token;
-      paymentResponse.paymentData = responseObject.paymentData;
-    } else if (acceptedResultCodes.indexOf(resultCode) !== -1) {
+    if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       // if 3D Secure is used, the statuses will be updated later
       if (resultCode === constants.RESULTCODES.AUTHORISED) {

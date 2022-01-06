@@ -79,8 +79,13 @@ $('button[value="submit-payment"]').on('click', () => {
   return true;
 });
 
-/**
- * Assigns stateData value to the hidden stateData input field
- * so it's sent to the backend for processing
- */
-module.exports.methods = { renderGenericComponent };
+const actionHandler = (action) => {
+  const checkout = new AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
+module.exports = {
+  renderGenericComponent,
+  actionHandler,
+};

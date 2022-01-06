@@ -27,6 +27,7 @@ const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const constants = require('*/cartridge/adyenConstants/constants');
+const Transaction = require('dw/system/Transaction');
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
@@ -145,39 +146,30 @@ var adyenHelperObj = {
 
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
-    let adyenGivingAvailable = false;
     if (
-      adyenHelperObj.getAdyenGivingEnabled() &&
-      adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
+      !adyenHelperObj.getAdyenGivingEnabled() ||
+      !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
     ) {
-      adyenGivingAvailable = true;
-      var configuredAmounts = adyenHelperObj.getDonationAmounts();
-      var charityName = adyenHelperObj.getAdyenGivingCharityName();
-      var charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
-      var charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
-      var adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
-      var adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
-
-      var donationAmounts = {
-        currency: session.currency.currencyCode,
-        values: configuredAmounts,
-      };
+      return null;
     }
-    const givingConfigs = {
-      adyenGivingAvailable,
-      configuredAmounts,
-      charityName,
-      charityWebsite,
-      charityDescription,
-      adyenGivingBackgroundUrl,
-      adyenGivingLogoUrl,
-      donationAmounts: JSON.stringify(donationAmounts),
-      pspReference: order.custom.Adyen_pspReference,
-    };
+    const givingConfigs = {};
+    const configuredAmounts = adyenHelperObj.getDonationAmounts();
+    givingConfigs.adyenGivingAvailable = true;
+    givingConfigs.configuredAmounts = configuredAmounts;
+    givingConfigs.charityName = adyenHelperObj.getAdyenGivingCharityName();
+    givingConfigs.charityWebsite = adyenHelperObj.getAdyenGivingCharityWebsite();
+    givingConfigs.charityDescription = adyenHelperObj.getAdyenGivingCharityDescription();
+    givingConfigs.adyenGivingBackgroundUrl = adyenHelperObj.getAdyenGivingBackgroundUrl();
+    givingConfigs.adyenGivingLogoUrl = adyenHelperObj.getAdyenGivingLogoUrl();
 
+    givingConfigs.donationAmounts = JSON.stringify({
+      currency: session.currency.currencyCode,
+      values: configuredAmounts,
+    });
+    givingConfigs.pspReference = order.custom.Adyen_pspReference;
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-        if(givingConfigs[config] === null) {
+        if (givingConfigs[config] === null) {
           Logger.getLogger('Adyen').error(
               'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
           );
@@ -546,13 +538,13 @@ var adyenHelperObj = {
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
-
     let reference = 'recurringPayment-account';
-    let orderToken;
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
-      orderToken = order.getOrderToken();
     }
+
+    //Create signature to verify returnUrl
+    const signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
 
     if(stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = 'CardOnFile';
@@ -563,17 +555,26 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
+    // This update will break SG
     stateData.returnUrl = URLUtils.https(
       'Adyen-ShowConfirmation',
       'merchantReference',
       reference,
-        'orderToken',
-        orderToken
+      'signature',
+      signature
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
     stateData.additionalData = {};
     return stateData;
+  },
+
+  createSignature(paymentInstrument, value, salt){
+    const newSignature = adyenHelperObj.getAdyenHash(value, salt);
+    Transaction.wrap(function(){
+      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
+    })
+    return newSignature;
   },
 
   // adds 3DS2 fields to an Adyen Checkout payments Request
@@ -816,6 +817,7 @@ var adyenHelperObj = {
       return {
         isFinal: true,
         isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
+        merchantReference: checkoutresponse.merchantReference,
       }
     }
 
@@ -830,7 +832,7 @@ var adyenHelperObj = {
     ) {
       return {
         isFinal: false,
-        action: checkoutresponse.action,
+        action: checkoutresponse.action || checkoutresponse.fullResponse.action,
       };
     }
 

@@ -4,10 +4,10 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function handleOrderConfirm(
-  order,
-  orderModel,
   adyenPaymentInstrument,
   result,
+  order,
+  orderModel,
   { res, next },
 ) {
   Transaction.wrap(() => {

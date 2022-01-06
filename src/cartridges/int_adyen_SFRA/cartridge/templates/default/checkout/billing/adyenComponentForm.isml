@@ -22,6 +22,7 @@
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
+      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -38,12 +39,7 @@
     </script>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 
-     <div class="modal fade" id="action-modal" role="dialog">
-         <div class="modal-dialog" id="adyenModalDialog">
-             <div id="action-container"></div>
-             <div id="amazon-container"></div>
-         </div>
-     </div>
+    <isinclude template="adyenActionModal" />
 
 <iselse>
     <script>
