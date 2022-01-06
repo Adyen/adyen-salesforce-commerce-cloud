@@ -420,7 +420,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="AdyenSalePaymentMethods">
                 <display-name xml:lang="x-default">Payment methods with SALE flow</display-name>
-                <description xml:lang="x-default">Only applicable for Salesforce OMS. List the payment methods with Authorisation type SALE comma separated (e.g. ideal,klarna).</description>
+                <description xml:lang="x-default">Only applicable for Salesforce OMS. List the txvariants with Authorisation type SALE comma separated (e.g. ideal,sepadirectdebit,paypal).</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
