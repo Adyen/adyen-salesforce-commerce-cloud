@@ -10,6 +10,7 @@ const app = require(Resource.msg('scripts.app.js', 'require', null));
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
 
+const Logger = require('dw/system/Logger');
 /**
  * Creates a Adyen payment instrument for the given basket
  */
@@ -86,69 +87,18 @@ function Authorize(args) {
     };
   }
 
+  //TODO: Why is this here?
   if (result.pspReference) {
     order.custom.Adyen_pspReference = result.pspReference;
   }
 
-  if (result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER) {
-    paymentInstrument.custom.adyenPaymentData = result.paymentData;
-    Transaction.commit();
+  const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
 
-    if (result.threeDS2) {
-      Transaction.wrap(function () {
-        paymentInstrument.custom.adyenAction = JSON.stringify(result.fullResponse.action);
-      });
-      return {
-        authorized3d: true,
-        view: app.getView({
-          ContinueURL: URLUtils.https(
-            'Adyen-Redirect3DS2',
-            'merchantReference',
-            order.orderNo,
-              'orderToken',
-              order.getOrderToken(),
-            'utm_nooverride',
-            '1',
-          ),
-          resultCode: result.resultCode,
-          token3ds2: result.token3ds2,
-        }),
-      };
-    }
-
-    // If the response has MD, then it is a 3DS transaction
-    if (result.redirectObject?.data?.MD) {
-      Transaction.wrap(() => {
-        paymentInstrument.custom.adyenMD = result.redirectObject.data.MD;
-      });
-      return {
-        authorized3d: true,
-        view: app.getView({
-          ContinueURL: URLUtils.https(
-            'Adyen-AuthorizeWithForm',
-            'merchantReference',
-            order.orderNo,
-              'orderToken',
-              order.getOrderToken(),
-            'utm_nooverride',
-            '1',
-          ),
-          Basket: order,
-          issuerUrl: result.redirectObject.url,
-          paRequest: result.redirectObject.data.PaReq,
-          md: result.redirectObject.data.MD,
-        }),
-      };
-    }
-
-    return {
-      order,
-      paymentInstrument,
-      redirectObject: result.redirectObject,
-    };
+  if (!checkoutResponse.isFinal) {
+    return checkoutResponse;
   }
 
-  if (result.decision !== 'ACCEPT') {
+  if (!checkoutResponse.isSuccessful) {
     Transaction.rollback();
     return {
       error: true,
@@ -161,7 +111,6 @@ function Authorize(args) {
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
   Transaction.commit();
-
   return { authorized: true };
 }
 
