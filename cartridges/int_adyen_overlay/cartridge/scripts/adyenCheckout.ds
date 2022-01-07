@@ -127,7 +127,7 @@ function createPaymentRequest(args, paymentMethodObject, returnUrl) {
     //Specific attributes for cobranding cards
     if (!empty(paymentMethodObject.selectedBrand)) {
         paymentMethodObject['overwriteBrand'] = true;
-        paymentMethodObject['selectedBrand'] = paymentMethodObject.selectedBrand;
+        paymentMethodObject['brand'] = paymentMethodObject.selectedBrand;
     }
 
     //Create billing and delivery address objects for new orders, no address fields for credit cards through My Account
