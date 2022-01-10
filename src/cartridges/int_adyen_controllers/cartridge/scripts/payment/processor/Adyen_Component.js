@@ -93,7 +93,6 @@ function Authorize(args) {
   }
 
   const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
-
   if (!checkoutResponse.isFinal) {
     return checkoutResponse;
   }

@@ -830,6 +830,9 @@ var adyenHelperObj = {
       }
     }
 
+    Logger.getLogger('Adyen').error('resultcode:');
+
+    Logger.getLogger('Adyen').error(checkoutresponse.resultCode);
     if (
         [
           constants.RESULTCODES.REDIRECTSHOPPER,

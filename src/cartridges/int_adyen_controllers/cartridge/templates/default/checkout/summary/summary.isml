@@ -213,8 +213,7 @@
                 var loadingContext = "${AdyenHelper.getLoadingContext()}";
                 var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
                 var locale = "${request.locale}";
-                window.Configuration = {clientKey, loadingContext, environment, locale};
-                function handleOnAdditionalDetails(state) {
+                function onAdditionalDetails(state) {
                     $.ajax({
                         type: 'POST',
                         url: 'Adyen-PaymentsDetails',
@@ -230,6 +229,8 @@
                         },
                     });
                 }
+                window.Configuration = {clientKey, loadingContext, environment, locale, onAdditionalDetails};
+
                 window.addEventListener( "load", function () {
                     function placeOrder(formId) {
                         const form = $('#' + formId);
@@ -241,7 +242,7 @@
                                 console.log(data);
                                 const checkout = new AdyenCheckout(window.Configuration);
                                 const actionContainer = document.getElementById('action-container');
-                                checkout.createFromAction(data.AdyenAction).mount(actionContainer);
+                                checkout.createFromAction(data.action).mount(actionContainer);
                             }
                         });
                     }

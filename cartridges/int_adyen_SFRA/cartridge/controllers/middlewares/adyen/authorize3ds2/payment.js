@@ -6,15 +6,17 @@ var Transaction = require('dw/system/Transaction');
 
 var Logger = require('dw/system/Logger');
 
+var Order = require('dw/order/Order');
+
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
-var _require = require('../../../utils/index'),
+var _require = require('*/cartridge/controllers/utils/index'),
     clearForms = _require.clearForms;
 
-var _require2 = require('./errorHandler'),
+var _require2 = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler'),
     handlePaymentError = _require2.handlePaymentError;
 
-var handlePlaceOrder = require('./order');
+var handlePlaceOrder = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/order');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
@@ -55,6 +57,11 @@ function checkForValidRequest(result, order, paymentInstrument, options) {
 
 
 function handlePaymentsDetailsCall(paymentDetailsRequest, order, paymentInstrument, options) {
+  if (order.status.value === Order.ORDER_STATUS_FAILED) {
+    Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
+    return handlePaymentError(order, paymentInstrument, options);
+  }
+
   var result = adyenCheckout.doPaymentsDetailsCall(paymentDetailsRequest);
   var isValid = checkForValidRequest(result, order, paymentInstrument, options);
 

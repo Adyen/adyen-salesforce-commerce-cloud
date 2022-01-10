@@ -1,8 +1,8 @@
 "use strict";
 
-var handleAuthorize = require('./authorizeWithForm/authorize');
+var handleAuthorize = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/authorize');
 
-var handleError = require('./authorizeWithForm/error');
+var handleError = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/error');
 /**
  * Continues a 3DS1 payment.
  * Makes /payments/details call to 3d verification system to complete authorization.

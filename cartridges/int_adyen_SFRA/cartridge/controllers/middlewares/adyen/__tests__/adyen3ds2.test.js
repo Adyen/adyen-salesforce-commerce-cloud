@@ -1,6 +1,5 @@
 "use strict";
 
-/* eslint-disable global-require */
 var _require = require('../../index'),
     adyen3ds2 = _require.adyen.adyen3ds2;
 
