@@ -8,7 +8,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 var adyenGiving = require('*/cartridge/scripts/adyenGiving');
 
-var _require = require('./middlewares/index'),
+var _require = require('*/cartridge/controllers/middlewares/index'),
     adyen = _require.adyen;
 
 var EXTERNAL_PLATFORM_VERSION = 'SFRA';

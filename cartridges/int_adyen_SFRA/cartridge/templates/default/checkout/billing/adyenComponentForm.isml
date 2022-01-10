@@ -21,6 +21,7 @@
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+      window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -44,15 +45,6 @@
          </div>
      </div>
 
-      </form>
-      <form method="post"
-            id="showConfirmationForm"
-            name="showConfirmationForm"
-            action="${ShowConfirmationPaymentFromComponent}">
-            <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-            <input type="hidden" id="merchantReference" name="merchantReference"/>
-            <input type="hidden" id="result" name="result" value="null"/>
-      </form>
 <iselse>
     <script>
          window.installments = '${pdict.adyen.installments}';
@@ -94,13 +86,6 @@
      <script type="text/javascript">
          dfDo('adyenFingerprint');
      </script>
-     </form>
-     <form method="post"
 
-           id="showConfirmationForm"
-           action="${ShowConfirmationPaymentFromComponent}">
-           <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-           <input type="hidden" id="merchantReference" name="merchantReference"/>
-     </form>
 </iselse>
 </isif>

@@ -8,7 +8,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
-var _require = require('../../../utils/index'),
+var _require = require('*/cartridge/controllers/utils/index'),
     clearForms = _require.clearForms;
 
 function handleOrderConfirmation(paymentInstrument, result, order, _ref) {

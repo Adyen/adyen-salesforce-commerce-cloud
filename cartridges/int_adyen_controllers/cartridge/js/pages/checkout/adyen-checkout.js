@@ -16,11 +16,11 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 require('./bundle');
 
@@ -71,6 +71,11 @@ function initializeBillingEvents() {
     /* , component */
     ) {
       var type = state.data.paymentMethod.type;
+
+      if (selectedMethod === "googlepay" && type === "paywithgoogle") {
+        type = "googlepay";
+      }
+
       isValid = state.isValid;
 
       if (!componentsObj[type]) {
@@ -93,19 +98,8 @@ function initializeBillingEvents() {
         showEmailAddress: false // allow shopper to specify their email address
 
       },
-      paywithgoogle: {
-        environment: window.Configuration.environment,
-        onSubmit: function onSubmit() {
-          assignPaymentMethodValue();
-          document.querySelector('#billing-submit').disabled = false;
-          document.querySelector('#billing-submit').click();
-        },
-        configuration: {
-          gatewayMerchantId: window.merchantAccount
-        },
-        showPayButton: true,
-        buttonColor: 'white'
-      },
+      paywithgoogle: getGooglePayConfig(),
+      googlepay: getGooglePayConfig(),
       paypal: {
         environment: window.Configuration.environment,
         intent: window.paypalIntent,
@@ -140,9 +134,9 @@ function initializeBillingEvents() {
             merchantReference: document.querySelector('#merchantReference').value
           }, component);
         },
-        onError: function onError()
-        /* error, component */
-        {
+        onError: function
+          /* error, component */
+        onError() {
           paypalTerminatedEarly = false;
           $('#dwfrm_billing').trigger('submit');
         },
@@ -168,9 +162,9 @@ function initializeBillingEvents() {
           paymentFromComponent(state.data, component);
           document.querySelector('#adyenStateData').value = JSON.stringify(state.data);
         },
-        onError: function onError()
-        /* error, component */
-        {
+        onError: function
+          /* error, component */
+        onError() {
           $('#dwfrm_billing').trigger('submit');
         },
         onAdditionalDetails: function onAdditionalDetails(state
@@ -184,44 +178,7 @@ function initializeBillingEvents() {
       bcmc_mobile: getQRCodeConfig(),
       wechatpayQR: getQRCodeConfig(),
       pix: getQRCodeConfig(),
-      amazonpay: getAmazonpayConfig(),
-      afterpay_default: {
-        visibility: {
-          personalDetails: 'editable',
-          billingAddress: 'hidden',
-          deliveryAddress: 'hidden'
-        },
-        data: {
-          personalDetails: {
-            firstName: document.querySelector('#dwfrm_billing_billingAddress_addressFields_firstName').value,
-            lastName: document.querySelector('#dwfrm_billing_billingAddress_addressFields_lastName').value,
-            telephoneNumber: document.querySelector('#dwfrm_billing_billingAddress_addressFields_phone').value,
-            shopperEmail: document.querySelector('#dwfrm_billing_billingAddress_email_emailAddress').value
-          }
-        }
-      },
-      facilypay_3x: {
-        visibility: {
-          personalDetails: 'editable',
-          billingAddress: 'hidden',
-          deliveryAddress: 'hidden'
-        },
-        data: {
-          personalDetails: {
-            firstName: document.querySelector('#dwfrm_billing_billingAddress_addressFields_firstName').value,
-            lastName: document.querySelector('#dwfrm_billing_billingAddress_addressFields_lastName').value,
-            telephoneNumber: document.querySelector('#dwfrm_billing_billingAddress_addressFields_phone').value,
-            shopperEmail: document.querySelector('#dwfrm_billing_billingAddress_email_emailAddress').value
-          }
-        }
-      },
-      ratepay: {
-        visibility: {
-          personalDetails: 'editable',
-          billingAddress: 'hidden',
-          deliveryAddress: 'hidden'
-        }
-      }
+      amazonpay: getAmazonpayConfig()
     };
 
     if (window.installments) {
@@ -234,6 +191,7 @@ function initializeBillingEvents() {
 
     if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
       checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier = window.googleMerchantID;
+      checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration.merchantIdentifier = window.googleMerchantID;
     }
 
     if (window.cardholderNameBool !== 'null') {
@@ -357,7 +315,7 @@ function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
 
-  if (['paypal', 'paywithgoogle', 'mbway', 'amazonpay'].concat(qrCodeMethods).indexOf(type) > -1) {
+  if (['paypal', 'paywithgoogle', 'googlepay', 'mbway', 'amazonpay'].concat(qrCodeMethods).indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
@@ -590,9 +548,28 @@ function renderCheckoutComponent(storedPaymentMethodBool, checkout, paymentMetho
   return createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
 }
 
+function getPersonalDetails() {
+  var shippingAddress = window.getPaymentMethodsResponse.shippingAddress;
+  return {
+    firstName: shippingAddress.firstName,
+    lastName: shippingAddress.lastName,
+    telephoneNumber: shippingAddress.phone
+  };
+}
+
 function createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID) {
   try {
-    var node = checkout.create(paymentMethod.type, paymentMethod);
+    var nodeData = Object.assign(paymentMethod, {
+      data: Object.assign(getPersonalDetails(), {
+        personalDetails: getPersonalDetails()
+      }),
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    });
+    var node = checkout.create(paymentMethod.type, nodeData);
 
     if (!componentsObj[paymentMethodID]) {
       componentsObj[paymentMethodID] = {};
@@ -630,9 +607,9 @@ function paymentFromComponent(data, component) {
         $('#dwfrm_billing').trigger('submit');
       }
     }
-  }).fail(function ()
-  /* xhr, textStatus */
-  {});
+  }).fail(function
+    /* xhr, textStatus */
+  () {});
 }
 
 $('#dwfrm_billing').submit(function (e) {
@@ -694,6 +671,22 @@ function getCardConfig() {
       componentsObj[methodToUpdate].isValid = isValid;
       componentsObj[methodToUpdate].stateData = state.data;
     }
+  };
+}
+
+function getGooglePayConfig() {
+  return {
+    environment: window.Configuration.environment,
+    onSubmit: function onSubmit() {
+      assignPaymentMethodValue();
+      document.querySelector('#billing-submit').disabled = false;
+      document.querySelector('#billing-submit').click();
+    },
+    configuration: {
+      gatewayMerchantId: window.merchantAccount
+    },
+    showPayButton: true,
+    buttonColor: 'white'
   };
 }
 

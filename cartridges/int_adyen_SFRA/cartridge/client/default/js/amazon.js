@@ -1,8 +1,10 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 var store = require('../../../store');
+
+var helpers = require('./adyen_checkout/helpers');
 
 var amazonPayNode = document.getElementById('amazon-container');
 var checkout = new AdyenCheckout(window.Configuration);
@@ -32,7 +34,10 @@ function handleAmazonResponse(response, component) {
     component.handleAction(response.fullResponse.action);
   } else if (response.resultCode === window.resultCodeAuthorised) {
     handleAuthorised(response);
-  } else if (response.error) {
+  } else {
+    // first try the amazon decline flow
+    component.handleDeclineFlow(); // if this does not trigger a redirect, try the regular handleError flow
+
     handleError();
   }
 }
@@ -90,6 +95,7 @@ var amazonConfig = {
   }
 };
 var amazonPayComponent = checkout.create('amazonpay', amazonConfig).mount(amazonPayNode);
+helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
 $('#dwfrm_billing').submit(function apiRequest(e) {
   e.preventDefault();
   var form = $(this);

@@ -13,14 +13,14 @@ var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 var _require = require('*/cartridge/scripts/hooks/fraudDetection'),
     fraudDetection = _require.fraudDetection;
 
-var _require2 = require('../helpers/index'),
+var _require2 = require('*/cartridge/controllers/middlewares/checkout_services/helpers/index'),
     hasAdyenPaymentMethod = _require2.hasAdyenPaymentMethod;
 
-var handleTransaction = require('./transaction');
+var handleTransaction = require('*/cartridge/controllers/middlewares/checkout_services/utils/transaction');
 
-var handlePaymentAuthorization = require('./payment');
+var handlePaymentAuthorization = require('*/cartridge/controllers/middlewares/checkout_services/utils/payment');
 
-var handleFraudDetection = require('./fraud');
+var handleFraudDetection = require('*/cartridge/controllers/middlewares/checkout_services/utils/fraud');
 
 function createOrder(currentBasket, _ref, emit) {
   var res = _ref.res,
@@ -111,6 +111,12 @@ function createOrder(currentBasket, _ref, emit) {
   if (isValidTransaction) {
     var order = COHelpers.createOrder(currentBasket);
     saveAddresses(req, order);
+
+    if (order) {
+      // Cache order number in order to be able to restore cart later
+      req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+    }
+
     var isOrderCreated = handleCreateOrder(order);
 
     if (isOrderCreated) {

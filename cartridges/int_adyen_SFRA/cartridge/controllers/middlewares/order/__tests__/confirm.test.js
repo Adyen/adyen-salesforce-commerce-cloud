@@ -29,8 +29,8 @@ describe('Confirm', function () {
   it('should do nothing if giving is not enabled', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-    AdyenHelper.getAdyenGivingEnabled.mockImplementation(function () {
-      return false;
+    AdyenHelper.getAdyenGivingConfig.mockImplementation(function () {
+      return null;
     });
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);

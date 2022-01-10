@@ -58,6 +58,9 @@ Array [
       "orderToken": "mocked_orderToken",
       "setExportStatus": [MockFunction],
       "setPaymentStatus": [MockFunction],
+      "status": Object {
+        "value": 4,
+      },
     },
     Object {
       "custom": Object {
@@ -145,6 +148,9 @@ Array [
       "orderToken": "mocked_orderToken",
       "setExportStatus": [MockFunction],
       "setPaymentStatus": [MockFunction],
+      "status": Object {
+        "value": 4,
+      },
     },
     Object {
       "custom": Object {
