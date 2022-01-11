@@ -11,6 +11,7 @@ src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
 # Extended SFRA core file
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA5.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA6.js
+src/cartridges/int_adyen_SFRA/cartridge/controllers/CheckoutServices.js
 
 # Test files
 src/cartridges/int_adyen_SFRA/test
