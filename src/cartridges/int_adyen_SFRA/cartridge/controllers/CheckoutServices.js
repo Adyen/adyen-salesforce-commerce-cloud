@@ -4,9 +4,8 @@ const server = require('server');
 server.extend(module.superModule);
 
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const processPayment = require('*/cartridge/controllers/utils/adyenCheckoutServices');
+const { processPayment, isAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
   const BasketMgr = require('dw/order/BasketMgr');
@@ -34,24 +33,7 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
   }
 
   /* ### Custom Adyen cartridge ### */
-  let isAdyen = false;
-  collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
-    if (
-        [
-          constants.METHOD_ADYEN,
-          paymentInstrument.METHOD_CREDIT_CARD,
-          constants.METHOD_ADYEN_POS,
-          constants.METHOD_ADYEN_COMPONENT,
-        ].indexOf(paymentInstrument.paymentMethod) !== -1
-    ) {
-
-      isAdyen = true;
-    }
-  });
-
-  if (!isAdyen) {
-    return next();
-  }
+  isAdyen(currentBasket, next);
   /* ### Custom Adyen cartridge ### */
   var validatedProducts = validationHelpers.validateProducts(currentBasket);
   if (validatedProducts.error) {
