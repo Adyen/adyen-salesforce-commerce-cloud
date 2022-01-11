@@ -118,9 +118,9 @@ function getMbwayConfig() {
       helpers.paymentFromComponent(state.data, component);
       document.querySelector('#adyenStateData').value = JSON.stringify(store.selectedPayment.stateData);
     },
-    onError: function
-      /* error, component */
-    onError() {
+    onError: function onError()
+    /* error, component */
+    {
       document.querySelector('#showConfirmationForm').submit();
     },
     onAdditionalDetails: function onAdditionalDetails(state
@@ -150,11 +150,6 @@ function getGooglePayConfig() {
 
 function handleOnChange(state) {
   var type = state.data.paymentMethod.type;
-
-  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
-    type = 'googlepay';
-  }
-
   store.isValid = state.isValid;
 
   if (!store.componentsObj[type]) {
@@ -202,14 +197,34 @@ function setCheckoutConfiguration() {
 
     },
     paywithgoogle: getGooglePayConfig(),
-    googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     mbway: getMbwayConfig(),
     swish: getQRCodeConfig(),
     bcmc_mobile: getQRCodeConfig(),
     wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
-    pix: getQRCodeConfig()
+    pix: getQRCodeConfig(),
+    afterpay_default: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    },
+    facilypay_3x: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    },
+    ratepay: {
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden'
+      }
+    }
   };
 }
 

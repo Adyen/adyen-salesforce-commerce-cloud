@@ -4,9 +4,9 @@ var OrderMgr = require('dw/order/OrderMgr');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var handlePaymentsDetailsCall = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/payment');
+var handlePaymentsDetailsCall = require('./payment');
 
-var _require = require('*/cartridge/controllers/middlewares/adyen/authorize3ds2/errorHandler'),
+var _require = require('./errorHandler'),
     toggle3DS2Error = _require.toggle3DS2Error;
 
 function contains3ds2Action(_ref) {

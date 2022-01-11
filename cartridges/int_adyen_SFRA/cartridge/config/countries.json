@@ -28,10 +28,4 @@
 }, {
     "id": "sv_SE",
     "currencyCode": "SEK"
-}, {
-    "id": "hi_IN",
-    "currencyCode": "INR"
-}, {
-    "id": "ja_JP",
-    "currencyCode": "JPY"
 }]

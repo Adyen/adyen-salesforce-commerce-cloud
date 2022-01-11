@@ -1,6 +1,6 @@
 "use strict";
 
-var placeOrder = require('*/cartridge/controllers/middlewares/checkout_services/placeOrder');
+var placeOrder = require('./placeOrder');
 
 module.exports = {
   placeOrder: placeOrder

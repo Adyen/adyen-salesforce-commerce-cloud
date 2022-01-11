@@ -8,7 +8,7 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 
-var _require = require('*/cartridge/controllers/middlewares/checkout_services/helpers/index'),
+var _require = require('../helpers/index'),
     checkForErrors = _require.checkForErrors;
 
 var handleTransaction = function handleTransaction(currentBasket, _ref, emit) {

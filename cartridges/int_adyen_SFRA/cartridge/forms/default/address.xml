@@ -2,7 +2,7 @@
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
 
     <field formid="addressId" label="label.input.addressid" type="string" mandatory="true"
-           max-length="20" missing-error="error.message.required" range-error="error.message.20orless"/>
+    	   max-length="20" missing-error="error.message.required" range-error="error.message.20orless"/>
     <field formid="firstName" label="label.input.firstname.profile" type="string" mandatory="true" binding="firstName"
            max-length="50" missing-error="address.firstname.missing" range-error="error.message.50orless"/>
     <field formid="lastName" label="label.input.lastname.profile" type="string" mandatory="true" binding="lastName" max-length="50"
@@ -31,13 +31,10 @@
             <option optionid="DE" label="Germany" value="DE"/>
             <option optionid="NL" label="Netherlands" value="NL"/>
             <option optionid="FR" label="France" value="FR"/>
-            <option optionid="GB" label="United Kingdom" value="GB"/>
+            <option optionid="UK" label="United Kingdom" value="UK"/>
             <option optionid="NO" label="Norway" value="NO"/>
             <option optionid="DK" label="Denmark" value="DK"/>
             <option optionid="SE" label="Sweden" value="SE"/>
-            <option optionid="IN" label="India" value="IN"/>
-            <option optionid="JP" label="Japan" value="JP"/>
-            <option optionid="BE" label="Belgium" value="BE"/>
 
         </options>
     </field>

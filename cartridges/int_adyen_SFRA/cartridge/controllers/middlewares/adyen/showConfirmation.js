@@ -6,18 +6,16 @@ var URLUtils = require('dw/web/URLUtils');
 
 var OrderMgr = require('dw/order/OrderMgr');
 
-var Order = require('dw/order/Order');
-
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+var payment = require('./showConfirmation/payment');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../utils/index'),
     clearForms = _require.clearForms;
 
-var handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
+var handleAuthorised = require('./showConfirmation/authorise');
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
  * if the payment was accepted.
@@ -45,12 +43,6 @@ function showConfirmation(req, res, next) {
       details: details,
       paymentData: paymentData
     };
-
-    if (order.status.value === Order.ORDER_STATUS_FAILED) {
-      Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
-      return payment.handlePaymentError(order, 'placeOrder', options);
-    }
-
     var result = adyenCheckout.doPaymentsDetailsCall(requestObject);
     clearForms.clearAdyenData(adyenPaymentInstrument);
 

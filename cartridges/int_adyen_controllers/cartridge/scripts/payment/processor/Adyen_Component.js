@@ -18,8 +18,6 @@ var app = require(Resource.msg('scripts.app.js', 'require', null));
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
-
-var Logger = require('dw/system/Logger');
 /**
  * Creates a Adyen payment instrument for the given basket
  */
@@ -84,21 +82,57 @@ function Authorize(args) {
       error: true,
       PlaceOrderError: !empty(_args) && 'AdyenErrorMessage' in _args && !empty(_args.AdyenErrorMessage) ? _args.AdyenErrorMessage : ''
     };
-  } //TODO: Why is this here?
-
+  }
 
   if (result.pspReference) {
     order.custom.Adyen_pspReference = result.pspReference;
   }
 
-  var checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
-  Logger.getLogger('Adyen').error(JSON.stringify(checkoutResponse));
+  if (result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER) {
+    var _result$redirectObjec, _result$redirectObjec2;
 
-  if (!checkoutResponse.isFinal) {
-    return checkoutResponse;
+    paymentInstrument.custom.adyenPaymentData = result.paymentData;
+    Transaction.commit();
+
+    if (result.threeDS2) {
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenAction = JSON.stringify(result.fullResponse.action);
+      });
+      return {
+        authorized3d: true,
+        view: app.getView({
+          ContinueURL: URLUtils.https('Adyen-Redirect3DS2', 'merchantReference', order.orderNo, 'orderToken', order.getOrderToken(), 'utm_nooverride', '1'),
+          resultCode: result.resultCode,
+          token3ds2: result.token3ds2
+        })
+      };
+    } // If the response has MD, then it is a 3DS transaction
+
+
+    if ((_result$redirectObjec = result.redirectObject) !== null && _result$redirectObjec !== void 0 && (_result$redirectObjec2 = _result$redirectObjec.data) !== null && _result$redirectObjec2 !== void 0 && _result$redirectObjec2.MD) {
+      Transaction.wrap(function () {
+        paymentInstrument.custom.adyenMD = result.redirectObject.data.MD;
+      });
+      return {
+        authorized3d: true,
+        view: app.getView({
+          ContinueURL: URLUtils.https('Adyen-AuthorizeWithForm', 'merchantReference', order.orderNo, 'orderToken', order.getOrderToken(), 'utm_nooverride', '1'),
+          Basket: order,
+          issuerUrl: result.redirectObject.url,
+          paRequest: result.redirectObject.data.PaReq,
+          md: result.redirectObject.data.MD
+        })
+      };
+    }
+
+    return {
+      order: order,
+      paymentInstrument: paymentInstrument,
+      redirectObject: result.redirectObject
+    };
   }
 
-  if (!checkoutResponse.isSuccessful) {
+  if (result.decision !== 'ACCEPT') {
     Transaction.rollback();
     return {
       error: true,

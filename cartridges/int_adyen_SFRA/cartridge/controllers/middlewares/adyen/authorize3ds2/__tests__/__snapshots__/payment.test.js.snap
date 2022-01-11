@@ -20,12 +20,7 @@ Array [
         "adyenPaymentData": null,
       },
     },
-    Object {
-      "orderNo": "mocked_orderNo",
-      "status": Object {
-        "value": 4,
-      },
-    },
+    "mocked_order",
     Object {
       "error": false,
       "merchantReference": "mocked_merchantReference",

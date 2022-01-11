@@ -1,14 +1,14 @@
 "use strict";
 
-var adyen = require('*/cartridge/controllers/middlewares/adyen/index');
+var adyen = require('./adyen/index');
 
-var checkoutServices = require('*/cartridge/controllers/middlewares/checkout_services/index');
+var checkoutServices = require('./checkout_services/index');
 
-var checkout = require('*/cartridge/controllers/middlewares/checkout/index');
+var checkout = require('./checkout/index');
 
-var order = require('*/cartridge/controllers/middlewares/order/index');
+var order = require('./order/index');
 
-var paymentInstruments = require('*/cartridge/controllers/middlewares/payment_instruments/index');
+var paymentInstruments = require('./payment_instruments/index');
 
 module.exports = {
   adyen: adyen,

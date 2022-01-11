@@ -1,6 +1,6 @@
 "use strict";
 
-var confirm = require('*/cartridge/controllers/middlewares/order/confirm');
+var confirm = require('./confirm');
 
 module.exports = {
   confirm: confirm

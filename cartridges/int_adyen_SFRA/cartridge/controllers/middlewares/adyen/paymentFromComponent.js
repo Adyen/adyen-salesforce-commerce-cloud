@@ -65,14 +65,7 @@ function paymentFromComponent(req, res, next) {
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     Logger.getLogger('Adyen').error("Payment refused for order ".concat(order.orderNo));
-    result.paymentError = true; // Decline flow for Amazon pay is handled different from other Component PMs
-    // Order needs to be failed here to handle Amazon decline flow.
-
-    if (reqDataObj.paymentMethod === 'amazonpay') {
-      Transaction.wrap(function () {
-        OrderMgr.failOrder(order, true);
-      });
-    }
+    result.paymentError = true;
   }
 
   result.orderNo = order.orderNo;

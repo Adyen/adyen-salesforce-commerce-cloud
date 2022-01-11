@@ -241,13 +241,4 @@ describe('Place Order', function () {
     expect(COHelpers.sendConfirmationEmail).toBeCalledTimes(1);
     expect(res.json.mock.calls).toMatchSnapshot();
   });
-  it('should attempt to cache orderNumber after order creation', function () {
-    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-
-    placeOrder.call({
-      emit: jest.fn()
-    }, req, res, jest.fn());
-    expect(req.session.privacyCache.set.mock.calls[0][0]).toBe('currentOrderNumber');
-    expect(req.session.privacyCache.set.mock.calls[0][1]).toBe('mocked_orderNo');
-  });
 });

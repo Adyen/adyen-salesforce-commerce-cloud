@@ -8,7 +8,7 @@ var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var _require = require('*/cartridge/controllers/middlewares/adyen/getPaymentMethod/utils'),
+var _require = require('./utils'),
     getConnectedTerminals = _require.getConnectedTerminals,
     getCountryCode = _require.getCountryCode;
 

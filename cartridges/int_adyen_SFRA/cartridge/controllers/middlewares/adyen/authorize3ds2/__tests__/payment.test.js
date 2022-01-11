@@ -31,10 +31,7 @@ describe('Payment', function () {
     });
     URLUtils.httpHome = jest.fn();
     var order = {
-      orderNo: 'mocked_orderNo',
-      status: {
-        value: 4
-      }
+      orderNo: 'mocked_orderNo'
     };
     handlePaymentsDetailsCall({}, order, {}, {
       res: res,
@@ -49,12 +46,7 @@ describe('Payment', function () {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       error: true
     });
-    handlePaymentsDetailsCall({}, {
-      orderNo: 'mocked_orderNo',
-      status: {
-        value: 4
-      }
-    }, {}, {
+    handlePaymentsDetailsCall({}, {}, {}, {
       res: res,
       next: jest.fn()
     });
@@ -69,11 +61,7 @@ describe('Payment', function () {
     var paymentInstrument = {
       custom: {}
     };
-    handlePaymentsDetailsCall({}, {
-      status: {
-        value: 4
-      }
-    }, paymentInstrument, {
+    handlePaymentsDetailsCall({}, {}, paymentInstrument, {
       res: res,
       next: jest.fn()
     });
@@ -85,12 +73,7 @@ describe('Payment', function () {
       error: false,
       merchantReference: 'mocked_merchantReference'
     });
-    handlePaymentsDetailsCall({}, {
-      orderNo: 'mocked_orderNo',
-      status: {
-        value: 4
-      }
-    }, {
+    handlePaymentsDetailsCall({}, 'mocked_order', {
       custom: {}
     }, {
       res: res,

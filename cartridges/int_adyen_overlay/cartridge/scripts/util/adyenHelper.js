@@ -28,8 +28,6 @@ var URLUtils = require('dw/web/URLUtils');
 
 var Bytes = require('dw/util/Bytes');
 
-var Logger = require('dw/system/Logger');
-
 var MessageDigest = require('dw/crypto/MessageDigest');
 
 var Encoding = require('dw/crypto/Encoding');
@@ -162,7 +160,7 @@ var adyenHelperObj = {
       };
     }
 
-    var givingConfigs = {
+    return {
       adyenGivingAvailable: adyenGivingAvailable,
       configuredAmounts: configuredAmounts,
       charityName: charityName,
@@ -173,17 +171,6 @@ var adyenHelperObj = {
       donationAmounts: JSON.stringify(donationAmounts),
       pspReference: order.custom.Adyen_pspReference
     };
-
-    for (var config in givingConfigs) {
-      if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-        if (givingConfigs[config] === null) {
-          Logger.getLogger('Adyen').error('Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly');
-          return null;
-        }
-      }
-    }
-
-    return givingConfigs;
   },
   getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
     return adyenHelperObj.getCustomPreference('AdyenOneClickEnabled');
@@ -293,15 +280,11 @@ var adyenHelperObj = {
   },
   // get the preference value for the Adyen Giving charity background image URL
   getAdyenGivingBackgroundUrl: function getAdyenGivingBackgroundUrl() {
-    var _adyenHelperObj$getCu;
-
-    return (_adyenHelperObj$getCu = adyenHelperObj.getCustomPreference('AdyenGiving_backgroundUrl')) === null || _adyenHelperObj$getCu === void 0 ? void 0 : _adyenHelperObj$getCu.getAbsURL();
+    return adyenHelperObj.getCustomPreference('AdyenGiving_backgroundUrl').getAbsURL();
   },
   // get the preference value for the Adyen Giving charity logo image URL
   getAdyenGivingLogoUrl: function getAdyenGivingLogoUrl() {
-    var _adyenHelperObj$getCu2;
-
-    return (_adyenHelperObj$getCu2 = adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl')) === null || _adyenHelperObj$getCu2 === void 0 ? void 0 : _adyenHelperObj$getCu2.getAbsURL();
+    return adyenHelperObj.getCustomPreference('AdyenGiving_logoUrl').getAbsURL();
   },
   // checks whether Adyen giving is available for the selected payment method
   isAdyenGivingAvailable: function isAdyenGivingAvailable(paymentMethod) {
@@ -734,13 +717,10 @@ var adyenHelperObj = {
       };
     }
 
-    Logger.getLogger('Adyen').error('resultcode:');
-    Logger.getLogger('Adyen').error(checkoutresponse.resultCode);
-
     if ([constants.RESULTCODES.REDIRECTSHOPPER, constants.RESULTCODES.IDENTIFYSHOPPER, constants.RESULTCODES.CHALLENGESHOPPER, constants.RESULTCODES.PRESENTTOSHOPPER, constants.RESULTCODES.PENDING].indexOf(checkoutresponse.resultCode) !== -1) {
       return {
         isFinal: false,
-        action: checkoutresponse.action || checkoutresponse.fullResponse.action
+        action: checkoutresponse.action
       };
     }
 

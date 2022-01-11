@@ -41,9 +41,9 @@ function execute() {
  */
 
 
-function
-  /* pdict */
-processNotifications() {
+function processNotifications()
+/* pdict */
+{
   var objectsHandler = require('*/cartridge/scripts/handleCustomObject');
 
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.updateStatus = 'PROCESS'", null);
@@ -102,9 +102,9 @@ processNotifications() {
  */
 
 
-function
-  /* pdict */
-clearNotifications() {
+function clearNotifications()
+/* pdict */
+{
   var deleteCustomObjects = require('*/cartridge/scripts/deleteCustomObjects');
 
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.processedStatus = 'SUCCESS'", null);

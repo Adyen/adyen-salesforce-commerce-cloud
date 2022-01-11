@@ -6,7 +6,7 @@ var URLUtils = require('dw/web/URLUtils');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
 function handleOrderConfirm(order, orderModel, adyenPaymentInstrument, result, _ref) {

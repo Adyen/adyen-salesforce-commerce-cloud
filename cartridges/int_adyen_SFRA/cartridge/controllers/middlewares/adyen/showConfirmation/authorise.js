@@ -6,9 +6,9 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 var OrderModel = require('*/cartridge/models/order');
 
-var handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
+var handleOrderConfirm = require('./order');
 
-var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+var payment = require('./payment');
 
 function handleAuthorised(order, result, adyenPaymentInstrument, options) {
   var req = options.req; // custom fraudDetection

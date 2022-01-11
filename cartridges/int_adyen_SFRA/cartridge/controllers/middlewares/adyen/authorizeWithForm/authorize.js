@@ -8,13 +8,11 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var OrderMgr = require('dw/order/OrderMgr');
-
-var Order = require('dw/order/Order');
 
 var Logger = require('dw/system/Logger');
 
@@ -26,14 +24,14 @@ var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
-var handleError = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/error');
+var handleError = require('./error');
 
-var handleInvalidPayment = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/payment');
+var handleInvalidPayment = require('./payment');
 
-var handleOrderConfirmation = require('*/cartridge/controllers/middlewares/adyen/authorizeWithForm/order');
+var handleOrderConfirmation = require('./order');
 
 function checkForValidRequest(result, order, merchantRefOrder, options) {
   var res = options.res,
@@ -62,12 +60,6 @@ function authorize(paymentInstrument, order, options) {
       PaRes: req.form.PaRes
     }
   };
-
-  if (order.status.value === Order.ORDER_STATUS_FAILED) {
-    Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
-    return handleInvalidPayment(order, 'placeOrder', options);
-  }
-
   var result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
   clearForms.clearAdyenData(paymentInstrument);
   var merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
