@@ -138,11 +138,10 @@ function showConfirmation() {
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
 
-    if(true) {
-    // if (
-    //     adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
-    //     signature
-    // ) {
+    if (
+        adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
+        signature
+    ) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
         Logger.getLogger('Adyen').error(
             `Could not call payment/details for failed order ${order.orderNo}`,
@@ -160,7 +159,8 @@ function showConfirmation() {
       );
       if (hasQuerystringDetails) {
         const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-        detailsResult = adyenCheckout.doPaymentsDetailsCall(details);
+        detailsResult = adyenCheckout.doPaymentsDetailsCall({details});
+        clearAdyenData(adyenPaymentInstrument);
       }
 
       if (
@@ -178,20 +178,23 @@ function showConfirmation() {
         return app.getController('COSummary').ShowConfirmation(order);
       }
       // fail order
+      Logger.getLogger('Adyen').error(order.status.value);
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+      Logger.getLogger('Adyen').error(order.status.value);
+      Logger.getLogger('Adyen').error(
+          `Payment failed, result: ${JSON.stringify(detailsResult)}`,
+      );
+    } else {
+      // fail order
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
       Logger.getLogger('Adyen').error(
-          `Payment failed, result: ${JSON.stringify(detailsResult)}`,
+          `Payment failed, reason: invalid signature`,
       );
     }
-    // fail order
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
-    Logger.getLogger('Adyen').error(
-      `Payment failed, reason: invalid signature`,
-    );
 
     // should be assingned by previous calls or not
     const errorStatus = new dw.system.Status(
@@ -235,6 +238,28 @@ function paymentsDetails() {
         resultCode: paymentsDetailsResponse.resultCode,
       };
     }
+
+    const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+    const paymentInstruments = order.getPaymentInstruments(
+        constants.METHOD_ADYEN_COMPONENT,
+    );
+    const signature = AdyenHelper.createSignature(
+        paymentInstruments[0],
+        order.getUUID(),
+        paymentsDetailsResponse.merchantReference,
+    );
+    Transaction.wrap(() => {
+      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
+          paymentsDetailsResponse,
+      );
+    });
+    response.redirectUrl = URLUtils.url(
+        'Adyen-ShowConfirmation',
+        'merchantReference',
+        response.merchantReference,
+        'signature',
+        signature,
+    ).toString();
 
     const responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({response});
@@ -744,6 +769,7 @@ function clearAdyenData(paymentInstrument) {
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
     paymentInstrument.custom.adyenMD = null;
+    paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
   });
 }
 
