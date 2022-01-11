@@ -555,7 +555,6 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
-    // This update will break SG
     stateData.returnUrl = URLUtils.https(
       'Adyen-ShowConfirmation',
       'merchantReference',
@@ -821,9 +820,6 @@ var adyenHelperObj = {
       }
     }
 
-    Logger.getLogger('Adyen').error('resultcode:');
-
-    Logger.getLogger('Adyen').error(checkoutresponse.resultCode);
     if (
         [
           constants.RESULTCODES.REDIRECTSHOPPER,

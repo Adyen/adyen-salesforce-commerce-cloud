@@ -205,15 +205,15 @@
 		</table>
 
 		<isslot id="placeorder-slot" description="Slot next to Order Totals in the footer of the Place Order page." context="global"/>
-
 		<div class="order-summary-footer">
+		    <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 		    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 		    <script>
 		        var clientKey = "${AdyenHelper.getAdyenClientKey()}";
                 var loadingContext = "${AdyenHelper.getLoadingContext()}";
                 var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
                 var locale = "${request.locale}";
-                function onAdditionalDetails(state) {
+                var onAdditionalDetails = function (state) {
                     $.ajax({
                         type: 'POST',
                         url: 'Adyen-PaymentsDetails',
@@ -221,10 +221,12 @@
                         contentType: 'application/json; charset=utf-8',
                         async: false,
                         success(data) {
-                            if (!data.isFinal && typeof data.action === 'object') {
-                                adyenCheckout.actionHandler(data.action);
+                            if (!data.response.isFinal && typeof data.response.action === 'object') {
+                                const checkout = new AdyenCheckout(window.Configuration);
+                                const actionContainer = document.getElementById('action-container');
+                                checkout.createFromAction(data.response.action).mount(actionContainer);
                             } else {
-                                window.location.href = data.redirectUrl;
+                                window.location.href = data.response.redirectUrl;
                             }
                         },
                     });
@@ -239,10 +241,11 @@
                             url: "${URLUtils.https('COSummary-Submit')}",
                             data: $(form).serialize(),
                             success: (data) => {
-                                console.log(data);
                                 const checkout = new AdyenCheckout(window.Configuration);
                                 const actionContainer = document.getElementById('action-container');
+                                document.getElementById('action-modal-SG').style.display = "block";
                                 checkout.createFromAction(data.action).mount(actionContainer);
+
                             }
                         });
                     }
@@ -287,7 +290,10 @@
                     </isif>
 				</fieldset>
 			</form>
-
 		</div>
-        <div id="action-container"></div>
+    <div id="action-modal-SG" class="modal">
+        <div class="action-modal-content-SG">
+            <div id="action-container"/>
+        </div>
+    </div>
 </isdecorate>
