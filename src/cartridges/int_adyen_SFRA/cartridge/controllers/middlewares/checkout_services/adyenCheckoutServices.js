@@ -11,9 +11,8 @@ function processPayment(order, handlePaymentResult, req, res, emit) {
   emit('route:Complete');
 }
 
-function isAdyen(currentBasket, next) {
+function isNotAdyen(currentBasket) {
   let isAdyenBool = false;
-
   collections.forEach(
     currentBasket.getPaymentInstruments(),
     (paymentInstrument) => {
@@ -29,14 +28,10 @@ function isAdyen(currentBasket, next) {
       }
     },
   );
-
-  if (!isAdyenBool) {
-    return next();
-  }
-  return false;
+  return !isAdyenBool;
 }
 
 module.exports = {
   processPayment,
-  isAdyen,
+  isNotAdyen,
 };

@@ -3,9 +3,11 @@
 const server = require('server');
 server.extend(module.superModule);
 
+/* ### Custom Adyen cartridge ### */
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
-const { processPayment, isAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
+const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
+/* ### Custom Adyen cartridge ### */
 
 server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
   const BasketMgr = require('dw/order/BasketMgr');
@@ -33,7 +35,9 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
   }
 
   /* ### Custom Adyen cartridge ### */
-  isAdyen(currentBasket, next);
+  if(isNotAdyen(currentBasket)) {
+    return next();
+  }
   /* ### Custom Adyen cartridge ### */
   var validatedProducts = validationHelpers.validateProducts(currentBasket);
   if (validatedProducts.error) {
