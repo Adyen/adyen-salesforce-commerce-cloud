@@ -57,13 +57,6 @@ function notify() {
 }
 
 /**
- * Redirect to Adyen after saving order etc.
- */
-function redirect(order, redirectUrl) {
-  response.redirect(redirectUrl);
-}
-
-/**
  * Performs a zero auth transaction to add a card to an account
  */
 function zeroAuth() {
@@ -587,8 +580,6 @@ function getExternalPlatformVersion() {
 }
 
 exports.Notify = guard.ensure(['post'], notify);
-
-exports.Redirect = redirect;
 
 exports.ShowConfirmation = guard.httpsGet(showConfirmation);
 
