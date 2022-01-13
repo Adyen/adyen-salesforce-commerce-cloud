@@ -125,8 +125,26 @@ function showConfirmation() {
     const payload = request.httpParameterMap.get('payload').stringValue;
     const signature = request.httpParameterMap.get('signature').stringValue;
     const merchantReference = request.httpParameterMap.get('merchantReference').stringValue;
+    const authorized = request.httpParameterMap.get('authorized').stringValue;
+    const error = request.httpParameterMap.get('error').stringValue;
 
     const order = OrderMgr.getOrder(merchantReference);
+
+    // if the payment is authorized, we can navigate to order confirm
+    if(authorized === 'true') {
+      clearForms();
+      return app.getController('COSummary').ShowConfirmation(order);
+    }
+
+    //if there is an eror, we nagivate and display the erorr
+    if(error === 'true') {
+      const errorStatus = request.httpParameterMap.get('errorStatus').stringValue;
+
+      return app.getController('COSummary').Start({
+        PlaceOrderError: new Status(Status.ERROR, errorStatus),
+      });
+    }
+
     const adyenPaymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];

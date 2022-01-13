@@ -110,7 +110,7 @@ function Authorize(args) {
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
   Transaction.commit();
-  return { authorized: true };
+  return { authorized: true, error: false };
 }
 
 exports.Handle = Handle;
