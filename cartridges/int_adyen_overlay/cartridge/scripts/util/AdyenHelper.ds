@@ -704,6 +704,9 @@ var __AdyenHelper: Object = {
                 case 'cup':
                     cardType = 'CUP';
                     break;
+                case 'cartebancaire':
+                    cardType = 'cartebancaire';
+                    break;
                 default:
                     cardType = '';
                     break;
