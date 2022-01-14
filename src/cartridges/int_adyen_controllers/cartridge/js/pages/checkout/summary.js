@@ -1,5 +1,5 @@
 // This script is executed only on the checkout summary page
-if(window.location.pathname.includes('COBilling-Billing')) {
+if(window.location.pathname.includes('COBilling-Billing') && window.isAdyenPayment) {
 
   // onAdditionalDetails event handler to be included in Adyen Component configuration
   var onAdditionalDetails = function (state) {

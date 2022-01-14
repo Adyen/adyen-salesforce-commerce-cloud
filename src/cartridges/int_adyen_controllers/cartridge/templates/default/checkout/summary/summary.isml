@@ -19,12 +19,11 @@
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.summarySubmitUrl = "${URLUtils.https('COSummary-Submit')}";
+    window.isAdyenPayment = ${dw.order.PaymentMgr.getPaymentMethod('AdyenComponent').isActive()
+       || (dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD')
+       && ['Adyen_Component', 'ADYEN_CREDIT'].indexOf(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) > -1) }
 </script>
 <iscomment> ### Custom Adyen cartridge ### </iscomment>
-
-<div class="place-order-totals">
-    <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
-</div>
 
 <isreportcheckout checkoutstep="${5}" checkoutname="${'OrderSummary'}"/>
 	<isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
@@ -229,7 +228,7 @@
                 <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
             </div>
             <iscomment> ### Custom Adyen cartridge ### </iscomment>
-			<form id="submit-order-form" class="submit-order">
+			<form id="submit-order-form" action="${URLUtils.https('COSummary-Submit')}" method="post" class="submit-order">
 			    <iscomment> ### Custom Adyen cartridge ### </iscomment>
 				<fieldset>
 					<div class="form-row">
