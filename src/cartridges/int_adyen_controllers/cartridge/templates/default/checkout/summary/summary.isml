@@ -9,7 +9,7 @@
 	bonus products, redeemed coupons and gift certificate line items.
 </iscomment>
 
-
+<iscomment> ### Custom Adyen cartridge ### </iscomment>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <script>
@@ -19,12 +19,8 @@
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
 </script>
+<iscomment> ### Custom Adyen cartridge ### </iscomment>
 
-<div id="action-modal-SG" class="modal">
-    <div class="action-modal-content-SG">
-        <div id="action-container"/>
-    </div>
-</div>
 <div class="place-order-totals">
     <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
 </div>
@@ -226,10 +222,14 @@
 
 		<isslot id="placeorder-slot" description="Slot next to Order Totals in the footer of the Place Order page." context="global"/>
 		<div class="order-summary-footer">
+
 		    <div class="place-order-totals">
+
                 <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
             </div>
+            <iscomment> ### Custom Adyen cartridge ### </iscomment>
 			<form id="submit-order-form" class="submit-order">
+			    <iscomment> ### Custom Adyen cartridge ### </iscomment>
 				<fieldset>
 					<div class="form-row">
 						<a class="back-to-cart" href="${URLUtils.url('Cart-Show')}">
@@ -258,3 +258,11 @@
 			</form>
 		</div>
 </isdecorate>
+
+<iscomment> ### Custom Adyen cartridge ### </iscomment>
+<div id="action-modal-SG" class="modal">
+    <div class="action-modal-content-SG">
+        <div id="action-container" />
+    </div>
+</div>
+<iscomment> ### Custom Adyen cartridge ### </iscomment>
