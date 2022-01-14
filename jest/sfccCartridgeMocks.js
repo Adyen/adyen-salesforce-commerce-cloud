@@ -76,7 +76,7 @@ jest.mock('*/cartridge/scripts/updateSavedCards', () => {
 jest.mock('*/cartridge/scripts/checkout/adyenHelpers', () => {
   return {
     validatePayment: jest.fn(() => ({ error: false })),
-    handlePayments: jest.fn(() => ({ error: false }))
+    handlePayments: jest.fn(() => ({ error: false, action: {type: 'mockedAction'} }))
   };
 }, {virtual: true});
 
@@ -121,6 +121,7 @@ jest.mock('*/cartridge/scripts/checkout/checkoutHelpers', () => {
       orderNo: 'mocked_orderNo',
       orderToken: 'mocked_orderToken',
       getPaymentInstruments,
+      getCustomerEmail: jest.fn(() => true),
     })),
     calculatePaymentTransaction: jest.fn(() => ({ error: false })),
     validateCreditCard: jest.fn(() => ({
@@ -134,7 +135,8 @@ jest.mock('*/cartridge/scripts/checkout/checkoutHelpers', () => {
       creditCardExpirationYear: 'mockedExpirationYear',
       UUID: 'mockedUUID',
       creditCardNumber: 'mockedCardNumber',
-    }))
+    })),
+    validatePayment: jest.fn(() => ({ error: false })),
   };
 }, {virtual: true});
 
@@ -154,6 +156,12 @@ jest.mock('*/cartridge/scripts/helpers/addressHelpers', () => {
   };
 }, {virtual: true});
 
+jest.mock('*/cartridge/scripts/helpers/basketValidationHelpers', () => {
+  return {
+    validateProducts: jest.fn(() => ({ error: false })),
+  };
+}, {virtual: true});
+
 jest.mock('*/cartridge/scripts/helpers/basketCalculationHelpers', () => {
   return {calculateTotals:jest.fn()};
 }, {virtual: true});
@@ -165,7 +173,7 @@ jest.mock('*/cartridge/scripts/helpers/hooks', () => {
 // cartridge/scripts/hooks mocks
 jest.mock('*/cartridge/scripts/hooks/fraudDetection', () => { return {} }, {virtual: true})
 jest.mock('*/cartridge/scripts/hooks/validateOrder', () => { return {}} , {virtual: true})
-
+jest.mock('*/cartridge/scripts/hooks/postAuthorizationHandling', () => { return {}} , {virtual: true})
 // cartridge/scripts/util mocks
 jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
   return {
@@ -217,3 +225,9 @@ jest.mock('*/cartridge/scripts/util/collections', () => {
   return { forEach: (arr, cb) => arr.toArray().forEach(cb) };
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices', () => {
+  return {
+    processPayment: jest.fn(),
+    isNotAdyen: jest.fn(() => false),
+  };
+}, {virtual: true});
