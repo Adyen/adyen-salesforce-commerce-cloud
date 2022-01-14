@@ -18,6 +18,7 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.summarySubmitUrl = "${URLUtils.https('COSummary-Submit')}";
 </script>
 <iscomment> ### Custom Adyen cartridge ### </iscomment>
 

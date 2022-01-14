@@ -27,7 +27,7 @@ if(window.location.pathname.includes('COBilling-Billing')) {
     const form = $('#' + formId);
     $.ajax({
       method:'POST',
-      url: "${URLUtils.https('COSummary-Submit')}",
+      url: window.summarySubmitUrl,
       data: $(form).serialize(),
       success: (data) => {
         if (data.action) {
