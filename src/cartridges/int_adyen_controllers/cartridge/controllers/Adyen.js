@@ -6,7 +6,6 @@ const Status = require('dw/system/Status');
 const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const PaymentMgr = require('dw/order/PaymentMgr');
-const CSRFProtection = require('dw/web/CSRFProtection');
 
 /* Script Modules */
 const app = require('app_storefront_controllers/cartridge/scripts/app');
@@ -282,14 +281,6 @@ function paymentsDetails() {
     );
     return response.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
   }
-}
-
-function getDetails() {
-  const { redirectResult, payload } = request.httpParameterMap;
-  return {
-    ...(redirectResult.value && { redirectResult: redirectResult.value }),
-    ...(payload.value && { payload: payload.value }),
-  };
 }
 
 /**
