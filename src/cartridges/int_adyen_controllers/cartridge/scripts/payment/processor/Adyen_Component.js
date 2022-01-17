@@ -62,6 +62,7 @@ function Authorize(args) {
       OrderMgr.failOrder(order, true);
     });
     return {
+      isAdyen: true,
       error: true,
       PlaceOrderError: 'orderCustomer is not the same as the sessionCustomer',
     };
@@ -77,6 +78,7 @@ function Authorize(args) {
     const args = 'args' in result ? result.args : null;
 
     return {
+      isAdyen: true,
       error: true,
       PlaceOrderError:
         !empty(args) &&
@@ -94,12 +96,14 @@ function Authorize(args) {
 
   const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
   if (!checkoutResponse.isFinal) {
+    checkoutResponse.isAdyen = true;
     return checkoutResponse;
   }
 
   if (!checkoutResponse.isSuccessful) {
     Transaction.rollback();
     return {
+      isAdyen: true,
       error: true,
       PlaceOrderError:
         'AdyenErrorMessage' in result && !empty(result.adyenErrorMessage)
@@ -110,7 +114,7 @@ function Authorize(args) {
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result);
   Transaction.commit();
-  return { authorized: true, error: false };
+  return { isAdyen: true, authorized: true, error: false };
 }
 
 exports.Handle = Handle;
