@@ -1,18 +1,9 @@
 const server = require('server');
-const {
-  checkoutServices,
-} = require('*/cartridge/controllers/middlewares/index');
 
 server.extend(module.superModule);
 
-/*
- * Prepends CheckoutServices' 'PlaceOrder' function to handle payment authorisation
- * when the selected payment processor is Adyen.
- */
-server.prepend(
-  'PlaceOrder',
-  server.middleware.https,
-  checkoutServices.placeOrder,
-);
+const placeOrder = require('*/cartridge/controllers/middlewares/checkout_services/placeOrder');
+
+server.prepend('PlaceOrder', server.middleware.https, placeOrder);
 
 module.exports = server.exports();
