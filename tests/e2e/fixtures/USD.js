@@ -196,7 +196,7 @@ test('my account remove card success', async () => {
     await checkoutPage.expectRefusal();
   })
 
-  test.only('Card logged in user 3DS2 oneClick test success', async () => {
+  test('Card logged in user 3DS2 oneClick test success', async () => {
     await goToBillingWithFullCartLoggedInUser();
     await doCardPaymentOneclick(cardData.threeDs2);
     await checkoutPage.completeCheckout();

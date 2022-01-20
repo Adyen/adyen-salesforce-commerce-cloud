@@ -188,11 +188,9 @@ function showConfirmation() {
         return app.getController('COSummary').ShowConfirmation(order);
       }
       // fail order
-      Logger.getLogger('Adyen').error(order.status.value);
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
-      Logger.getLogger('Adyen').error(order.status.value);
       Logger.getLogger('Adyen').error(
           `Payment failed, result: ${JSON.stringify(detailsResult)}`,
       );
