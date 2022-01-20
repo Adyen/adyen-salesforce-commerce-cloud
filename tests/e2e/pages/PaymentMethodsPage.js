@@ -325,6 +325,7 @@ export default class PaymentMethodsPage {
     initiateKonbiniPayment = async () => {
         await t
             .click(Selector('#rb_econtext_stores'))
-            .typeText(Selector('input[name="econtext.shopperEmail"]'), shopperData.JP.shopperEmail);
+            .typeText(Selector('input[name="econtext.shopperEmail"]'), shopperData.JP.shopperEmail)
+            .typeText(Selector('input[name="econtext.telephoneNumber"]'), '3333333333', {replace: true});
     }
 }

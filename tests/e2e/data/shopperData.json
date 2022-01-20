@@ -223,7 +223,7 @@
   "address": {
     "city": "Tokyo",
     "country": "JP",
-    "stateOrProvince": "兵庫県",
+    "stateOrProvince": "",
     "postalCode": "123-1234",
     "street": "Kungsgatan",
     "houseNumberOrName": "37"
