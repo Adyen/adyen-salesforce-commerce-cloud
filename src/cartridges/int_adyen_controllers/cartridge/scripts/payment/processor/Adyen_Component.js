@@ -88,7 +88,6 @@ function Authorize(args) {
     };
   }
 
-  //TODO: Why is this here?
   if (result.pspReference) {
     order.custom.Adyen_pspReference = result.pspReference;
   }
