@@ -30,10 +30,11 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
-function getLineItems({ Order: order }) {
-    if (!order) return null;
-    const allLineItems = order.getProductLineItems();
-    const shopperReference = getShopperReference(order);
+function getLineItems({ Order: order, Basket: basket }) {
+    if (!(order || basket)) return null;
+    const orderOrBasket = order || basket;
+    const allLineItems = orderOrBasket.getProductLineItems();
+    const shopperReference = getShopperReference(orderOrBasket);
 
     return allLineItems.toArray().reduce((acc, lineItem, index) => {
         const description = LineItemHelper.getDescription(lineItem);
@@ -60,12 +61,12 @@ function getLineItems({ Order: order }) {
     }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) });
 }
 
-function getShopperReference(order) {
-    const customer = order.getCustomer();
+function getShopperReference(orderOrBasket) {
+    const customer = orderOrBasket.getCustomer();
     const isRegistered = customer && customer.registered;
     const profile = isRegistered && customer.getProfile();
     const profileCustomerNo = profile && profile.getCustomerNo();
-    const orderNo = profileCustomerNo || order.getCustomerNo();
+    const orderNo = profileCustomerNo || orderOrBasket.getCustomerNo();
     return orderNo || customer.getID() || 'no-unique-ref';
 }
 

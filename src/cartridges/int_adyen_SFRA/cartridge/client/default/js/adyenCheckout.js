@@ -79,8 +79,8 @@ $('button[value="submit-payment"]').on('click', () => {
   return true;
 });
 
-const actionHandler = (action) => {
-  const checkout = new AdyenCheckout(store.checkoutConfiguration);
+const actionHandler = async (action) => {
+  const checkout = await AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 };

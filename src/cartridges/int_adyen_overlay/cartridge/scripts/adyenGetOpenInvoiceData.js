@@ -31,25 +31,27 @@ require('dw/web');
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 function getLineItems(args) {
-  let order;
+  let orderOrBasket;
   if (args.Order) {
-    order = args.Order;
+    orderOrBasket = args.Order;
+  } else if (args.Basket) {
+    orderOrBasket = args.Basket;
   } else {
     return null;
   }
 
   // Add all product and shipping line items to request
   const lineItems = [];
-  const allLineItems = order.getAllLineItems();
+  const allLineItems = orderOrBasket.getAllLineItems();
   for (const item in allLineItems) {
     const lineItem = allLineItems[item];
     if (
-      (lineItem instanceof dw.order.ProductLineItem &&
-        !lineItem.bonusProductLineItem) ||
-      lineItem instanceof dw.order.ShippingLineItem ||
-      (lineItem instanceof dw.order.PriceAdjustment &&
-        lineItem.promotion.promotionClass ===
-          dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+        (lineItem instanceof dw.order.ProductLineItem &&
+            !lineItem.bonusProductLineItem) ||
+        lineItem instanceof dw.order.ShippingLineItem ||
+        (lineItem instanceof dw.order.PriceAdjustment &&
+            lineItem.promotion.promotionClass ===
+            dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
     ) {
       const lineItemObject = {};
       const description = LineItemHelper.getDescription(lineItem);
@@ -66,7 +68,7 @@ function getLineItems(args) {
       lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
       lineItemObject.taxPercentage = args.addTaxPercentage ? (
-        new Number(vatPercentage) * 10000
+          new Number(vatPercentage) * 10000
       ).toFixed() : 0;
 
       lineItems.push(lineItemObject);
