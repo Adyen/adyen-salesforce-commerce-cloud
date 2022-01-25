@@ -15,9 +15,9 @@ function callCreateSession(req, res, next) {
     const currentBasket = BasketMgr.getCurrentBasket();
     const countryCode = getCountryCode(currentBasket, req.locale);
     const response = createSession(
-        currentBasket,
-        AdyenHelper.getCustomer(req.currentCustomer),
-        countryCode,
+      currentBasket,
+      AdyenHelper.getCustomer(req.currentCustomer),
+      countryCode,
     );
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
     const connectedTerminals = getConnectedTerminals();

@@ -14,6 +14,15 @@ function addPosTerminals(terminals) {
   document.querySelector('#adyenPosTerminals').append(ddTerminals);
 }
 
+function setCheckoutConfiguration(checkoutOptions) {
+  const setField = (key, val) => val && { [key]: val };
+  store.checkoutConfiguration = {
+    ...store.checkoutConfiguration,
+    ...setField('amount', checkoutOptions.amount),
+    ...setField('countryCode', checkoutOptions.countryCode),
+  };
+}
+
 function resolveUnmount(key, val) {
   try {
     return Promise.resolve(val.node.unmount(`component_${key}`));
@@ -84,19 +93,19 @@ function renderPosTerminals(adyenConnectedTerminals) {
 
 function setAmazonPayConfig(adyenPaymentMethods) {
   const amazonpay = adyenPaymentMethods.paymentMethods.find(
-      (paymentMethod) => paymentMethod.type === 'amazonpay',
+    (paymentMethod) => paymentMethod.type === 'amazonpay',
   );
   if (amazonpay) {
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
-        amazonpay.configuration;
+      amazonpay.configuration;
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
       name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
-          document.querySelector('#shippingLastNamedefault')?.value
+        document.querySelector('#shippingLastNamedefault')?.value
       }`,
       addressLine1: document.querySelector('#shippingAddressOnedefault')?.value,
       city: document.querySelector('#shippingAddressCitydefault')?.value,
       stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-          ?.value,
+        ?.value,
       postalCode: document.querySelector('#shippingZipCodedefault')?.value,
       countryCode: document.querySelector('#shippingCountrydefault')?.value,
       phoneNumber: document.querySelector('#shippingPhoneNumberdefault')?.value,
@@ -118,25 +127,28 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
       sessionData: session.sessionData,
     };
     store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+
+    setCheckoutConfiguration(store.checkout.options);
+
     setAmazonPayConfig(store.checkout.paymentMethodsResponse);
 
     document.querySelector('#paymentMethodsList').innerHTML = '';
 
     renderStoredPaymentMethods(store.checkout.paymentMethodsResponse);
     renderPaymentMethods(
-        store.checkout.paymentMethodsResponse,
-        session.imagePath,
+      store.checkout.paymentMethodsResponse,
+      session.imagePath,
     );
     renderPosTerminals(store.adyenConnectedTerminals);
 
     const firstPaymentMethod = document.querySelector(
-        'input[type=radio][name=brandCode]',
+      'input[type=radio][name=brandCode]',
     );
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
   });
 
   helpers.createShowConfirmationForm(
-      window.ShowConfirmationPaymentFromComponent,
+    window.ShowConfirmationPaymentFromComponent,
   );
 };

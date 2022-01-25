@@ -18,9 +18,9 @@ function getPersonalDetails() {
     firstName: document.querySelector('#shippingFirstNamedefault')?.value,
     lastName: document.querySelector('#shippingLastNamedefault')?.value,
     telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-        ?.value,
+      ?.value,
     shopperEmail: document.querySelector('.customer-summary-email')
-        ?.textContent,
+      ?.textContent,
   };
 }
 
@@ -68,8 +68,8 @@ function getImage(isStored, paymentMethod) {
 
 function getLabel(isStored, paymentMethod) {
   const label = isStored
-      ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
-      : '';
+    ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
+    : '';
   return `${paymentMethod.name}${label}`;
 }
 
@@ -81,14 +81,14 @@ function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
     container.append(template.content);
   };
   return fallback
-      ? createTemplate()
-      : setNode(paymentMethod.type)(paymentMethodID);
+    ? createTemplate()
+    : setNode(paymentMethod.type)(paymentMethodID);
 }
 
 function handlePayment(options) {
   return options.isStored
-      ? setNode(options.paymentMethodID)('card', options.paymentMethod)
-      : handleFallbackPayment(options);
+    ? setNode(options.paymentMethodID)('card', options.paymentMethod)
+    : handleFallbackPayment(options);
 }
 
 function getListContents({ imagePath, isStored, paymentMethod }) {
@@ -113,8 +113,8 @@ function hasNoChildNodes({ paymentMethodID, container }) {
 
 function setValid({ paymentMethodID, container }) {
   if (
-      hasNoChildNodes({ paymentMethodID, container }) &&
-      ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
+    hasNoChildNodes({ paymentMethodID, container }) &&
+    ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
   ) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
@@ -134,10 +134,10 @@ function handleInput({ paymentMethodID }) {
 }
 
 module.exports.renderPaymentMethod = function renderPaymentMethod(
-    paymentMethod,
-    isStored,
-    path,
-    description = null,
+  paymentMethod,
+  isStored,
+  path,
+  description = null,
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 

@@ -14,10 +14,10 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
  *  Confirm payment status after receiving redirectResult from Adyen
  */
 server.post(
-    'PaymentsDetails',
-    server.middleware.https,
-    consentTracking.consent,
-    adyen.paymentsDetails,
+  'PaymentsDetails',
+  server.middleware.https,
+  consentTracking.consent,
+  adyen.paymentsDetails,
 );
 
 server.get('Sessions', server.middleware.https, adyen.callCreateSession);
@@ -26,18 +26,18 @@ server.get('Sessions', server.middleware.https, adyen.callCreateSession);
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */
 server.get(
-    'Redirect3DS1Response',
-    server.middleware.https,
-    adyen.redirect3ds1Response,
+  'Redirect3DS1Response',
+  server.middleware.https,
+  adyen.redirect3ds1Response,
 );
 
 /**
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
  */
 server.post(
-    'ShowConfirmationPaymentFromComponent',
-    server.middleware.https,
-    adyen.showConfirmationPaymentFromComponent,
+  'ShowConfirmationPaymentFromComponent',
+  server.middleware.https,
+  adyen.showConfirmationPaymentFromComponent,
 );
 
 /**
@@ -51,9 +51,9 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
     currency: req.form.amountCurrency,
   };
   const donationResult = adyenGiving.donate(
-      orderNo,
-      donationAmount,
-      pspReference,
+    orderNo,
+    donationAmount,
+    pspReference,
   );
 
   return donationResult.response;
@@ -63,9 +63,9 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
  * Make a payment from inside a component (paypal)
  */
 server.post(
-    'PaymentFromComponent',
-    server.middleware.https,
-    adyen.paymentFromComponent,
+  'PaymentFromComponent',
+  server.middleware.https,
+  adyen.paymentFromComponent,
 );
 
 /**
