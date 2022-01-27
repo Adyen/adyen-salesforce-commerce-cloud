@@ -543,8 +543,11 @@ var adyenHelperObj = {
       reference = order.getOrderNo();
     }
 
-    //Create signature to verify returnUrl
-    const signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
+    let signature = '';
+    //Create signature to verify returnUrl if there is an order
+    if (order && order.getUUID()) {
+      signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
+    }
 
     if(stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = 'CardOnFile';
@@ -555,7 +558,6 @@ var adyenHelperObj = {
 
     stateData.merchantAccount = adyenHelperObj.getAdyenMerchantAccount();
     stateData.reference = reference;
-    // This update will break SG
     stateData.returnUrl = URLUtils.https(
       'Adyen-ShowConfirmation',
       'merchantReference',
