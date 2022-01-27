@@ -37,7 +37,7 @@ function resolveUnmount(key, val) {
  */
 function createSession(session) {
   $.ajax({
-    url: window.getSessionsUrl,
+    url: window.sessionsUrl,
     type: 'get',
     success(data) {
       session(data);
@@ -127,11 +127,9 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
       sessionData: session.sessionData,
     };
     store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-
     setCheckoutConfiguration(store.checkout.options);
 
     setAmazonPayConfig(store.checkout.paymentMethodsResponse);
-
     document.querySelector('#paymentMethodsList').innerHTML = '';
 
     renderStoredPaymentMethods(store.checkout.paymentMethodsResponse);
@@ -139,7 +137,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
       store.checkout.paymentMethodsResponse,
       session.imagePath,
     );
-    renderPosTerminals(store.adyenConnectedTerminals);
+    renderPosTerminals(session.adyenConnectedTerminals);
 
     const firstPaymentMethod = document.querySelector(
       'input[type=radio][name=brandCode]',

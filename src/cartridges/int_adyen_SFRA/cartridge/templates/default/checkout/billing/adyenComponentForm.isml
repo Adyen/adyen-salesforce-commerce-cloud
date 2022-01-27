@@ -46,7 +46,7 @@
          window.paypalIntent = '${pdict.adyen.paypalIntent}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
-         window.getSessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+         window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
      </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
