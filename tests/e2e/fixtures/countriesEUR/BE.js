@@ -4,8 +4,8 @@ const shopperData = require("../../data/shopperData.json");
 module.exports = (checkoutPage) => {
     test('bcmc mobile renders', async t => {
         await checkoutPage.setShopperDetails(shopperData.BE);
-        await checkoutPage.setEmail();
         await doQRCodePayment("bcmc_mobile");
+        await checkoutPage.completeCheckout();
         await checkoutPage.expectQRcode();
     });
 }

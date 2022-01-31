@@ -20,9 +20,9 @@ for(const environment of environments) {
       });
 
   test('Swish success', async () => {
-    await checkoutPage.setEmail();
     await doQRCodePayment("swish");
-    await checkoutPage.expectQRcode();
+      await checkoutPage.completeCheckout();
+      await checkoutPage.expectQRcode();
   });
 }
 

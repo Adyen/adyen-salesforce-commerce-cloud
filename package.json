@@ -20,7 +20,7 @@
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
-    "test:e2e": "testcafe chrome:headless tests --skip-js-errors"
+    "test:e2e": "testcafe chrome:headless tests -q attemptLimit=3,successThreshold=1 --skip-js-errors"
   },
   "engines": {
     "node": ">=4.0"

@@ -293,7 +293,6 @@ export default class PaymentMethodsPage {
     initiateQRCode = async (paymentMethod) => {
         await t
             .click(Selector(`#rb_${paymentMethod}`))
-            .click(Selector(`#component_${paymentMethod} button`))
     }
 
     initiateBoletoPayment = async () => {
