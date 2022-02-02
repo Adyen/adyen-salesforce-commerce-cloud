@@ -26,5 +26,5 @@ for(const environment of environments) {
   testGermany(checkoutPage);
   testAustria(checkoutPage);
   testPortugal(checkoutPage);
-  testBelgium(checkoutPage);
+  testBelgium(checkoutPage, environment);
 }

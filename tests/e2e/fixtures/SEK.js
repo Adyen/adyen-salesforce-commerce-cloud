@@ -20,8 +20,12 @@ for(const environment of environments) {
       });
 
   test('Swish success', async () => {
-    await doQRCodePayment("swish");
-    await checkoutPage.completeCheckout();
+    await checkoutPage.setShopperDetails(shopperData.BE);
+    if(environment.name === "SG")
+      await checkoutPage.setEmail();
+    await doQRCodePayment("swish", environment.name);
+    if(environment.name === "SFRA")
+      await checkoutPage.completeCheckout();
     await checkoutPage.expectQRcode();
   });
 }
