@@ -20,7 +20,6 @@ for(const environment of environments) {
       });
 
   test('Swish success', async () => {
-    await checkoutPage.setShopperDetails(shopperData.BE);
     if(environment.name === "SG")
       await checkoutPage.setEmail();
     await doQRCodePayment("swish", environment.name);
