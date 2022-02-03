@@ -342,8 +342,7 @@ function paymentFromComponent() {
     Transaction.commit();
     // Decline flow for Amazon pay is handled different from other Component PMs
     // Order needs to be failed here to handle Amazon decline flow.
-    Logger.getLogger('Adyen').error('result is ' + JSON.stringify(result));
-    if (paymentInstrument.custom.adyenPaymentMethod === 'amazonpay' && result.error) {
+    if (paymentInstrument.custom.adyenPaymentMethod === 'amazonpay' && result.adyenErrorMessage) {
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });

@@ -27,7 +27,7 @@ if(window.amazonCheckoutSessionId) {
             component.handleAction(response.fullResponse.action);
         } else if (response.resultCode === window.resultCodeAuthorised) {
             handleAuthorised(response);
-        } else if (response.error) {
+        } else {
             // first try the amazon decline flow
             component.handleDeclineFlow();
             // if this does not trigger a redirect, try the regular handleError flow
