@@ -1,8 +1,8 @@
-/* ### Custom Adyen cartridge ### */
+/* ### Custom Adyen cartridge start ### */
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
-/* ### Custom Adyen cartridge ### */
+/* ### Custom Adyen cartridge end ### */
 
 function placeOrder(req, res, next) {
     const BasketMgr = require('dw/order/BasketMgr');
@@ -132,13 +132,13 @@ function placeOrder(req, res, next) {
         return next();
     }
 
-    /* ### Custom Adyen cartridge ### */
+    /* ### Custom Adyen cartridge start ### */
     // Cache order number in order to be able to restore cart later
     req.session.privacyCache.set('currentOrderNumber', order.orderNo);
 
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
-    /* ### Custom Adyen cartridge ### */
+    /* ### Custom Adyen cartridge end ### */
 
     // Handle custom processing post authorization
     var options = {
@@ -159,7 +159,7 @@ function placeOrder(req, res, next) {
         return;
     }
 
-    /* ### Custom Adyen cartridge ### */
+    /* ### Custom Adyen cartridge start ### */
     const cbEmitter = (route) => this.emit(route, req, res);
     if (
         handlePaymentResult.action &&
@@ -167,7 +167,7 @@ function placeOrder(req, res, next) {
     ) {
         return processPayment(order, handlePaymentResult, req, res, cbEmitter);
     }
-    /* ### Custom Adyen cartridge ### */
+    /* ### Custom Adyen cartridge end ### */
 
     var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
     if (fraudDetectionStatus.status === 'fail') {
