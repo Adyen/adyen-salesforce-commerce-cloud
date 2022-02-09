@@ -340,6 +340,13 @@ function paymentFromComponent() {
     result.orderToken = order.getOrderToken();
 
     Transaction.commit();
+    // Decline flow for Amazon pay is handled different from other Component PMs
+    // Order needs to be failed here to handle Amazon decline flow.
+    if (paymentInstrument.custom.adyenPaymentMethod === 'amazonpay' && result.adyenErrorMessage) {
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+    }
     const responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({result});
   }
