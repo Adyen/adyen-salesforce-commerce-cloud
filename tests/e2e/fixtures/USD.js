@@ -128,7 +128,7 @@ test('my account remove card success', async () => {
     await checkoutPage.expectSuccess();
   });
 
-  test('Card payment 3DS1 with restored cart success', async () => {
+  test.skip('Card payment 3DS1 with restored cart success', async () => {
     await goToBillingWithFullCartGuestUser();
     await doCardPayment(cardData.threeDs1);
     await checkoutPage.completeCheckout();
@@ -150,7 +150,7 @@ test('my account remove card success', async () => {
     await checkoutPage.expectRefusal();
   });
 
-  test('Card payment 3DS1 with restored cart failure', async () => {
+  test.skip('Card payment 3DS1 with restored cart failure', async () => {
     await goToBillingWithFullCartGuestUser();
     await doCardPayment(cardData.threeDs1);
     await checkoutPage.setEmail();

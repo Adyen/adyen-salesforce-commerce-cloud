@@ -17,8 +17,8 @@ const completeBankTransferRedirect = async () => {
     await paymentMethodsPage.submitSimulator();
 }
 
-const doQRCodePayment = async (paymentMethod) => {
-    await paymentMethodsPage.initiateQRCode(paymentMethod);
+const doQRCodePayment = async (paymentMethod, envName) => {
+    await paymentMethodsPage.initiateQRCode(paymentMethod, envName);
 }
 
 const doGooglePayPayment = async () => {

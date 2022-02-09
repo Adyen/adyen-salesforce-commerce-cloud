@@ -40,7 +40,7 @@ for(const environment of environments) {
     await checkoutPage.expectRefusal();
   });
 
-  test('Boleto Success', async t => {
+  test.skip('Boleto Success', async t => {
     await doBoletoPayment();
     await checkoutPage.completeCheckout();
     await checkoutPage.expectVoucher();
