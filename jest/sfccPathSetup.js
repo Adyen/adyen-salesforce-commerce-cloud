@@ -186,3 +186,7 @@ jest.mock('*/cartridge/adyenConstants/constants', () => {
   return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/constants');
 }, {virtual: true});
 
+jest.mock('*/cartridge/adyenConstants/paymentMethodDescriptions', () => {
+  return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/paymentMethodDescriptions');
+}, {virtual: true});
+

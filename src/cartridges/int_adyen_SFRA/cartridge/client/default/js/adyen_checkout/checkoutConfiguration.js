@@ -1,7 +1,6 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
-const adyenCheckout = require('../adyenCheckout');
 
 function getCardConfig() {
   return {
@@ -104,6 +103,12 @@ function handleOnChange(state) {
   store.componentsObj[type].isValid = store.isValid;
   store.componentsObj[type].stateData = state.data;
 }
+
+const actionHandler = async (action) => {
+  const checkout = await AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
 
 function handleOnAdditionalDetails(state) {
   $.ajax({
