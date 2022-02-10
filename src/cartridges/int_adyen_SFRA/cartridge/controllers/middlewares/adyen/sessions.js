@@ -1,9 +1,9 @@
 const Logger = require('dw/system/Logger');
 const BasketMgr = require('dw/order/BasketMgr');
-const { createSession } = require('*/cartridge/scripts/adyenSessions');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
+const { createSession } = require('*/cartridge/scripts/adyenSessions');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const constants = require('*/cartridge/adyenConstants/constants');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');

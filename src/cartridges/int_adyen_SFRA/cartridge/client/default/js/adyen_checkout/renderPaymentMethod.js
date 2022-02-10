@@ -158,7 +158,7 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   };
 
   const imagePath = getImagePath(options);
-  const liContents = getListContents({ ...options, imagePath , description});
+  const liContents = getListContents({ ...options, imagePath, description });
 
   li.innerHTML = liContents;
   li.classList.add('paymentMethod');
