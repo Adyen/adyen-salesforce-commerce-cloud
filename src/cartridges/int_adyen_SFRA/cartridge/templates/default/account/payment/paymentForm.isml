@@ -1,3 +1,4 @@
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <div>
@@ -62,3 +63,4 @@
     </isif>
 </div>
 <isinclude template="adyenActionModal" />
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>

@@ -9,7 +9,7 @@
 	bonus products, redeemed coupons and gift certificate line items.
 </iscomment>
 
-<iscomment> ### Custom Adyen cartridge ### </iscomment>
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <script>
@@ -23,7 +23,7 @@
        || (dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD')
        && ['Adyen_Component', 'ADYEN_CREDIT'].indexOf(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) > -1) }
 </script>
-<iscomment> ### Custom Adyen cartridge ### </iscomment>
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>
 
 <isreportcheckout checkoutstep="${5}" checkoutname="${'OrderSummary'}"/>
 	<isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
@@ -227,9 +227,9 @@
 
                 <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
             </div>
-            <iscomment> ### Custom Adyen cartridge ### </iscomment>
+            <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 			<form id="submit-order-form" action="${URLUtils.https('COSummary-Submit')}" method="post" class="submit-order">
-			    <iscomment> ### Custom Adyen cartridge ### </iscomment>
+			    <iscomment> ### Custom Adyen cartridge end ### </iscomment>
 				<fieldset>
 					<div class="form-row">
 						<a class="back-to-cart" href="${URLUtils.url('Cart-Show')}">
@@ -259,10 +259,10 @@
 		</div>
 </isdecorate>
 
-<iscomment> ### Custom Adyen cartridge ### </iscomment>
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <div id="action-modal-SG" class="modal">
     <div class="action-modal-content-SG">
         <div id="action-container" />
     </div>
 </div>
-<iscomment> ### Custom Adyen cartridge ### </iscomment>
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>
