@@ -71,9 +71,9 @@ function renderStoredPaymentMethods(data, imagePath) {
   }
 }
 
-function renderPaymentMethods(data, imagePath) {
+function renderPaymentMethods(data, imagePath, adyenDescriptions) {
   data.paymentMethods.forEach((pm) => {
-    renderPaymentMethod(pm, false, imagePath);
+    renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
   });
 }
 
@@ -136,6 +136,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     renderPaymentMethods(
       store.checkout.paymentMethodsResponse,
       session.imagePath,
+      session.adyenDescriptions,
     );
     renderPosTerminals(session.adyenConnectedTerminals);
 

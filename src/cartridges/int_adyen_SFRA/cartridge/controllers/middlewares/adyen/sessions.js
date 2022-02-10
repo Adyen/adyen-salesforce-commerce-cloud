@@ -6,6 +6,7 @@ const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const constants = require('*/cartridge/adyenConstants/constants');
+const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;
@@ -42,6 +43,7 @@ function callCreateSession(req, res, next) {
       id: response.id,
       sessionData: response.sessionData,
       imagePath: adyenURL,
+      adyenDescriptions: paymentMethodDescriptions,
       adyenConnectedTerminals: JSON.parse(connectedTerminals),
     });
     return next();
