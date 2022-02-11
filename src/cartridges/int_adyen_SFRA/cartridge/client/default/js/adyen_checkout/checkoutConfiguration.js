@@ -119,7 +119,7 @@ function handleOnAdditionalDetails(state) {
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {
-        adyenCheckout.actionHandler(data.action);
+        actionHandler(data.action);
       } else {
         window.location.href = data.redirectUrl;
       }
