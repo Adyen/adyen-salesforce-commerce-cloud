@@ -173,4 +173,5 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   setCheckoutConfiguration,
+  actionHandler,
 };

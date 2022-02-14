@@ -52,7 +52,7 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
 
 // card and checkout component creation
 const cardNode = document.getElementById('card');
-checkout = new AdyenCheckout(store.checkoutConfiguration);
+checkout = AdyenCheckout(store.checkoutConfiguration);
 const card = checkout.create('card').mount(cardNode);
 
 let formErrorsExist = false;

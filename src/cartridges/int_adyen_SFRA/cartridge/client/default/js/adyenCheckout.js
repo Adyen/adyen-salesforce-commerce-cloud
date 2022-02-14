@@ -4,6 +4,7 @@ const {
 } = require('./adyen_checkout/renderGenericComponent');
 const {
   setCheckoutConfiguration,
+    actionHandler,
 } = require('./adyen_checkout/checkoutConfiguration');
 const {
   assignPaymentMethodValue,
@@ -81,4 +82,5 @@ $('button[value="submit-payment"]').on('click', () => {
 
 module.exports = {
   renderGenericComponent,
+  actionHandler,
 };
