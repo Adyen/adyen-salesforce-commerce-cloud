@@ -2,8 +2,11 @@
 <isdecorate template="account/pt_account">
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
+
+	<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+	<iscomment> ### Custom Adyen cartridge end ### </iscomment>
 
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
 	<div class="paymentslist">
@@ -34,9 +37,11 @@
 			</ul>
 		</isif>
 	</div>
+	<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 	<script type="text/javascript">
 		if(window.location.href.indexOf("AuthorisationFailed") > -1){
 			document.getElementById("cardError").style.display = "block";
 		}
 	</script>
+	<iscomment> ### Custom Adyen cartridge end ### </iscomment>
 </isdecorate>

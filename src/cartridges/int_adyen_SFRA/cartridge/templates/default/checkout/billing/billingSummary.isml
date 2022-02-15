@@ -21,4 +21,6 @@
     <span class="summary-section-label payment-info-label">${Resource.msg('label.order.payment.info', 'confirmation', null)}</span><br/>
     <isinclude template="checkout/billing/paymentOptions/paymentOptionsSummary" />
 </div>
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isinclude template="adyenActionModal" />
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>

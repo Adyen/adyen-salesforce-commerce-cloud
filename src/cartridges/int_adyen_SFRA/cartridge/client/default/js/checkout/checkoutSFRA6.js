@@ -6,9 +6,9 @@ const summaryHelpers = require('base/checkout/summary');
 const formHelpers = require('base/checkout/formErrors');
 const scrollAnimate = require('base/components/scrollAnimate');
 const billing = require('./billing');
-// ### BEGIN Custom Adyen cartridge ###
+// ### Custom Adyen cartridge start ###
 const adyenCheckout = require('../adyenCheckout');
-// ### END Custom Adyen cartridge ###
+// ### Custom Adyen cartridge end ###
 
 /**
  * Create the jQuery Checkout Plugin.
@@ -360,10 +360,10 @@ const adyenCheckout = require('../adyenCheckout');
                   // go to appropriate stage and display error message
                   defer.reject(data);
                 }
-                // ### BEGIN Custom Adyen cartridge ###
+                // ### Custom Adyen cartridge start ###
               } else if (data.adyenAction) {
                 adyenCheckout.actionHandler(data.adyenAction);
-                // ### END Custom Adyen cartridge ###
+                // ### Custom Adyen cartridge end ###
               } else {
                 var redirect = $('<form>')
                     .appendTo(document.body)
