@@ -50,10 +50,13 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   });
 };
 
-// card and checkout component creation
-const cardNode = document.getElementById('card');
-checkout = AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create('card').mount(cardNode);
+async function initializeCardComponent() {
+  // card and checkout component creation
+  const cardNode = document.getElementById('card');
+  checkout = await AdyenCheckout(store.checkoutConfiguration);
+  checkout.create('card').mount(cardNode);
+}
+
 
 let formErrorsExist = false;
 
@@ -75,6 +78,8 @@ function submitAddCard() {
     },
   });
 }
+
+initializeCardComponent();
 
 // Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {

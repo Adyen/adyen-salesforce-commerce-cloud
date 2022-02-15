@@ -54,15 +54,15 @@ export default class PaymentMethodsPage {
             .click(Selector('#rb_scheme'))
             .typeText(Selector('.adyen-checkout__card__holderName__input'), cardInput.holderName)
             .switchToIframe('.adyen-checkout__card__cardNumber__input iframe')
-            .typeText('#encryptedCardNumber', cardInput.cardNumber)
+            .typeText('.input-field', cardInput.cardNumber)
             .switchToMainWindow()
             .switchToIframe('.adyen-checkout__card__exp-date__input iframe')
-            .typeText('#encryptedExpiryDate', cardInput.expirationDate)
+            .typeText('.input-field', cardInput.expirationDate)
             .switchToMainWindow();
         if(cardInput.cvc !== "") {
             await t
                 .switchToIframe('.adyen-checkout__card__cvc__input iframe')
-                .typeText('#encryptedSecurityCode', cardInput.cvc)
+                .typeText('.input-field', cardInput.cvc)
                 .switchToMainWindow();
         }
 
