@@ -202,7 +202,7 @@ function handle(customObj) {
       case 'CAPTURE_FAILED':
         if (customObj.custom.success === 'true') {
           order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-          order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+          order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
         Logger.getLogger('Adyen', 'adyen').info(
