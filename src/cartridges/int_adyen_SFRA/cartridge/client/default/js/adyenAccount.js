@@ -2,6 +2,7 @@ const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
+let card;
 
 // Store configuration
 store.checkoutConfiguration.amount = {
@@ -54,9 +55,8 @@ async function initializeCardComponent() {
   // card and checkout component creation
   const cardNode = document.getElementById('card');
   checkout = await AdyenCheckout(store.checkoutConfiguration);
-  checkout.create('card').mount(cardNode);
+  card = checkout.create('card').mount(cardNode);
 }
-
 
 let formErrorsExist = false;
 
@@ -93,6 +93,6 @@ $('button[value="add-new-payment"]').on('click', (event) => {
     }
     event.preventDefault();
   } else {
-    card.showValidation();
+    card?.showValidation();
   }
 });

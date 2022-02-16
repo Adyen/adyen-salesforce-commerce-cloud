@@ -4,7 +4,7 @@ const {
 } = require('./adyen_checkout/renderGenericComponent');
 const {
   setCheckoutConfiguration,
-    actionHandler,
+  actionHandler,
 } = require('./adyen_checkout/checkoutConfiguration');
 const {
   assignPaymentMethodValue,
