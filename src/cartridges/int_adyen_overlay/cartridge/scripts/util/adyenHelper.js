@@ -442,11 +442,12 @@ var adyenHelperObj = {
       args.paymentRequest.shopperEmail = profile.getEmail();
     }
 
+    const address = args.order.getBillingAddress() || args.order.getDefaultShipment().getShippingAddress();
     const shopperDetails = {
-      firstName: args.order.getDefaultShipment().getShippingAddress().firstName,
+      firstName: address.firstName,
       gender,
       infix: '',
-      lastName: args.order.getDefaultShipment().getShippingAddress().lastName,
+      lastName: address.lastName,
     };
     args.paymentRequest.shopperName = shopperDetails;
 

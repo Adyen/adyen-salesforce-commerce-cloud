@@ -30,19 +30,13 @@ require('dw/web');
 // script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
-function getLineItems(args) {
-  let orderOrBasket;
-  if (args.Order) {
-    orderOrBasket = args.Order;
-  } else if (args.Basket) {
-    orderOrBasket = args.Basket;
-  } else {
-    return null;
-  }
+function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
+  if (!(order || basket)) return null;
+  const orderOrBasket = order || basket;
+  const allLineItems = orderOrBasket.getProductLineItems();
 
   // Add all product and shipping line items to request
   const lineItems = [];
-  const allLineItems = orderOrBasket.getAllLineItems();
   for (const item in allLineItems) {
     const lineItem = allLineItems[item];
     if (
@@ -67,7 +61,7 @@ function getLineItems(args) {
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
-      lineItemObject.taxPercentage = args.addTaxPercentage ? (
+      lineItemObject.taxPercentage = addTaxPercentage ? (
           new Number(vatPercentage) * 10000
       ).toFixed() : 0;
 

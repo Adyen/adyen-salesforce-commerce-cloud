@@ -48,6 +48,7 @@ function callCreateSession(req, res, next) {
     });
     return next();
   } catch (error) {
+    Logger.getLogger('Adyen').error('Failed to create Adyen Checkout Session');
     Logger.getLogger('Adyen').error(error);
     return next();
   }
