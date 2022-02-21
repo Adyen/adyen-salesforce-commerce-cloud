@@ -30,7 +30,7 @@ for(const environment of environments) {
       });
 
   const goToBillingWithFullCartGuestUser = async () => {
-    await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US);
+    await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US, shopperData.US.shopperEmail);
     await checkoutPage.setShopperDetails(shopperData.US);
   }
 

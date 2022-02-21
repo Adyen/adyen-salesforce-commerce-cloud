@@ -15,7 +15,7 @@ for(const environment of environments) {
       .beforeEach(async t => {
         await t.maximizeWindow()
         checkoutPage = new environment.CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.SE);
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.SE, shopperData.SE.shopperEmail);
         await checkoutPage.setShopperDetails(shopperData.SE);
       });
 

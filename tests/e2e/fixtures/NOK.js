@@ -21,7 +21,7 @@ for(const environment of environments) {
         await t.maximizeWindow()
         // Set manual timeout due to slow redirect for Trustly
         checkoutPage = new environment.CheckoutPage();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO);
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO, shopperData.NO.shopperEmail);
         await checkoutPage.setShopperDetails(shopperData.NO);
       });
 
