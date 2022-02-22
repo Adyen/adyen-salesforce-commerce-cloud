@@ -1,11 +1,14 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/bundle.js');
+</isscript>
 
 <script>
       window.Configuration = {

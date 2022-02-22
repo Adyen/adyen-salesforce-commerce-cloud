@@ -4,6 +4,7 @@ require('./amazon');
 require('./summary');
 
 var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];
+var installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
 var maskedCardNumber;
 var MASKED_CC_PREFIX = '************';
 var selectedMethod;
@@ -143,12 +144,7 @@ function initializeBillingEvents() {
       pix: getQRCodeConfig(),
       amazonpay: getAmazonpayConfig(),
     };
-    if (window.installments) {
-      try {
-        var installments = JSON.parse(window.installments);
-        checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-      } catch (e) {} // eslint-disable-line no-empty
-    }
+
     if (
         window.googleMerchantID !== 'null' &&
         window.Configuration.environment === 'live'
@@ -354,6 +350,7 @@ async function renderGenericComponent() {
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
         paymentMethodsResponse.amount;
+    setInstallments(paymentMethodsResponse.amount);
   }
   if (paymentMethodsResponse.countryCode) {
     checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
@@ -692,6 +689,33 @@ function getAmazonpayConfig() {
     },
     onError: () => {},
   };
+}
+
+function getInstallmentValues(maxValue) {
+  const values = [];
+  for (let i = 1; i <= maxValue; i += 1) {
+    values.push(i);
+  }
+  return values;
+}
+
+function setInstallments(amount) {
+  try {
+    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
+      return;
+    }
+    const [minAmount, numOfInstallments] = window.installments ?
+        window.installments.replace(/\[|]/g, '').split(',') : [null, null];
+    if (minAmount <= amount.value) {
+        checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
+        card: {},
+      }; // eslint-disable-next-line max-len
+        checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = getInstallmentValues(
+          numOfInstallments,
+      );
+        checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    }
+  } catch (e) {} // eslint-disable-line no-empty
 }
 
 /**
