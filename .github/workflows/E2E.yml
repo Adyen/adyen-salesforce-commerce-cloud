@@ -6,6 +6,7 @@ jobs:
   end-to-end-testing:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - sfra-version: "v5.3.0"
