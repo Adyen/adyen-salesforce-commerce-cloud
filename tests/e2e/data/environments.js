@@ -1,4 +1,4 @@
-import CheckoutPageSFRA from "../pages/CheckoutPageSFRA";
+import CheckoutPageSFRA5 from "../pages/CheckoutPageSFRA5";
 import CheckoutPageSFRA6 from "../pages/CheckoutPageSFRA6";
 import CheckoutPageSG from "../pages/CheckoutPageSG";
 import AccountPageSFRA from "../pages/AccountPageSFRA";
@@ -9,7 +9,7 @@ if(process.env.SFRA_VERSION === 'v5.3.0') {
   environments.push(
     {
       name: 'SFRA v5.3.0',
-      CheckoutPage: CheckoutPageSFRA,
+      CheckoutPage: CheckoutPageSFRA5,
       urlExtension: '/s/RefArch/home',
       AccountPage: AccountPageSFRA,
     },
