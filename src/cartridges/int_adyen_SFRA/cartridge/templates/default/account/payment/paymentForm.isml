@@ -1,11 +1,11 @@
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}"></script>
 <div>
     <isif condition="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}">
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/bundle.js');
             assets.addCss('/css/adyenCss.css');
             assets.addJs('/js/adyenAccount.js');
         </isscript>

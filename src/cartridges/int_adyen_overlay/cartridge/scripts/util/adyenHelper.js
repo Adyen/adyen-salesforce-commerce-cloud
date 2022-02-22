@@ -38,6 +38,7 @@ var adyenHelperObj = {
     PAYMENTDETAILS: 'AdyenPaymentDetails',
     RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
+    SESSIONS: 'AdyenSessions',
     POSPAYMENT: 'AdyenPosPayment',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
@@ -55,7 +56,7 @@ var adyenHelperObj = {
   LOADING_CONTEXT_LIVE:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
 
-  CHECKOUT_COMPONENT_VERSION: '4.7.2',
+  CHECKOUT_COMPONENT_VERSION: '5.6.1',
   VERSION: '21.2.0',
   BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
@@ -441,11 +442,12 @@ var adyenHelperObj = {
       args.paymentRequest.shopperEmail = profile.getEmail();
     }
 
+    const address = args.order.getBillingAddress() || args.order.getDefaultShipment().getShippingAddress();
     const shopperDetails = {
-      firstName: args.order.getBillingAddress().firstName,
+      firstName: address.firstName,
       gender,
       infix: '',
-      lastName: args.order.getBillingAddress().lastName,
+      lastName: address.lastName,
     };
     args.paymentRequest.shopperName = shopperDetails;
 

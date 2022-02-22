@@ -49,12 +49,38 @@ describe('Payment', () => {
       details: 'mocked_details',
     };
     handlePayment(stateData, order, { req, res, next });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(
+      paymentErrorSnap,
+      `
+      Array [
+        Array [
+          "Checkout-Begin",
+          "stage",
+          "payment",
+          "paymentError",
+          "mocked_error.payment.not.valid",
+        ],
+      ]
+    `,
+    );
   });
 
   it('should handle payment error when theres not state data', () => {
     const stateData = {};
     handlePayment(stateData, order, { req, res, next });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(
+      paymentErrorSnap,
+      `
+      Array [
+        Array [
+          "Checkout-Begin",
+          "stage",
+          "payment",
+          "paymentError",
+          "mocked_error.payment.not.valid",
+        ],
+      ]
+    `,
+    );
   });
 });

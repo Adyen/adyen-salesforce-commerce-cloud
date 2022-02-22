@@ -2,6 +2,7 @@ const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
+let card;
 
 // Store configuration
 store.checkoutConfiguration.amount = {
@@ -50,10 +51,12 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   });
 };
 
-// card and checkout component creation
-const cardNode = document.getElementById('card');
-checkout = new AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create('card').mount(cardNode);
+async function initializeCardComponent() {
+  // card and checkout component creation
+  const cardNode = document.getElementById('card');
+  checkout = await AdyenCheckout(store.checkoutConfiguration);
+  card = checkout.create('card').mount(cardNode);
+}
 
 let formErrorsExist = false;
 
@@ -76,6 +79,8 @@ function submitAddCard() {
   });
 }
 
+initializeCardComponent();
+
 // Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
   if (store.isValid) {
@@ -88,6 +93,6 @@ $('button[value="add-new-payment"]').on('click', (event) => {
     }
     event.preventDefault();
   } else {
-    card.showValidation();
+    card?.showValidation();
   }
 });

@@ -2,21 +2,22 @@ const { renderGenericComponent } = require('../renderGenericComponent');
 const store = require('../../../../../store');
 
 beforeEach(() => {
-  window.AdyenCheckout = jest.fn();
+  window.AdyenCheckout = jest.fn(() => {});
   window.Configuration = { amount: 0 };
-  window.getPaymentMethodsURL = "Adyen-GetPaymentMethods";
+  window.sessionsUrl = "Adyen-Sessions";
 });
 describe('Render Generic Component', () => {
-  it('should call getPaymentMethods', async () => {
+  it('should call sessions', async () => {
     $.ajax = jest.fn();
     store.componentsObj = { foo: 'bar', bar: 'baz' };
     await renderGenericComponent();
     expect($.ajax).toBeCalledWith({
-      url: 'Adyen-GetPaymentMethods',
+      url: 'Adyen-Sessions',
       type: 'get',
       success: expect.any(Function),
     });
   });
+
   it('should render', async () => {
     document.body.innerHTML = `
       <div id="paymentMethodsList"></div>
@@ -37,23 +38,23 @@ describe('Render Generic Component', () => {
         <input type="text" id="shippingZipCodedefault" value="test">  
       </div>
     `;
-    window.AdyenCheckout = jest.fn(() => ({
+    window.AdyenCheckout = jest.fn(async () => ({
       create: jest.fn(),
       paymentMethodsResponse: {
         storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+        paymentMethods: [{ type: 'amazonpay' }],
       },
+      options: {
+        amount: 'mocked_amount',
+        countryCode: 'mocked_countrycode',
+      }
     }));
 
     const mockedSuccessResponse = {
-      amount: 'mocked_amount',
-      countryCode: 'mocked_country',
-      AdyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-      AdyenPaymentMethods: {
-        paymentMethods: [{ type: 'scheme', name: 'Card' }, {type: 'amazonpay'}],
-        storedPaymentMethods: true,
-      },
-      ImagePath: 'example.com',
-      AdyenDescriptions: [{ description: 'mocked_description' }, { description: 'mocked_description2' }],
+      adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
+      id: 'mock_id',
+      sessionData: 'mock_session_data',
+      imagePath: 'example.com',
     };
 
     $.ajax = jest.fn(({ success }) => success(mockedSuccessResponse));

@@ -12,7 +12,7 @@
             locale: '${request.locale}'
         };
 
-        const checkout = new AdyenCheckout(configuration);
+        const checkout = await AdyenCheckout(configuration);
         const voucherResult = document.getElementById('voucherResult');
         var action = JSON.parse('${payment.adyenAction}'.replace(/&quot;/g, '\"'));
         const voucher = checkout.createFromAction(action).mount(voucherResult);

@@ -1,7 +1,6 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
-const adyenCheckout = require('../adyenCheckout');
 
 function getCardConfig() {
   return {
@@ -105,6 +104,12 @@ function handleOnChange(state) {
   store.componentsObj[type].stateData = state.data;
 }
 
+const actionHandler = async (action) => {
+  const checkout = await AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
 function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
@@ -114,7 +119,7 @@ function handleOnAdditionalDetails(state) {
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {
-        adyenCheckout.actionHandler(data.action);
+        actionHandler(data.action);
       } else {
         window.location.href = data.redirectUrl;
       }
@@ -168,4 +173,5 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   setCheckoutConfiguration,
+  actionHandler,
 };
