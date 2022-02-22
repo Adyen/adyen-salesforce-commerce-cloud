@@ -1,6 +1,7 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
+const { installmentLocales } = require('./localesUsingInstallments');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -14,17 +15,13 @@ function addPosTerminals(terminals) {
   document.querySelector('#adyenPosTerminals').append(ddTerminals);
 }
 
-/**
- * Makes an ajax call to the controller function GetPaymentMethods
- */
-function getPaymentMethods(paymentMethods) {
-  $.ajax({
-    url: window.getPaymentMethodsURL,
-    type: 'get',
-    success(data) {
-      paymentMethods(data);
-    },
-  });
+function setCheckoutConfiguration(checkoutOptions) {
+  const setField = (key, val) => val && { [key]: val };
+  store.checkoutConfiguration = {
+    ...store.checkoutConfiguration,
+    ...setField('amount', checkoutOptions.amount),
+    ...setField('countryCode', checkoutOptions.countryCode),
+  };
 }
 
 function resolveUnmount(key, val) {
@@ -34,6 +31,19 @@ function resolveUnmount(key, val) {
     // try/catch block for val.unmount
     return Promise.resolve(false);
   }
+}
+
+/**
+ * Makes an ajax call to the controller function CreateSession
+ */
+function createSession(session) {
+  $.ajax({
+    url: window.sessionsUrl,
+    type: 'get',
+    success(data) {
+      session(data);
+    },
+  });
 }
 
 /**
@@ -47,33 +57,28 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function renderStoredPaymentMethod(data) {
+function renderStoredPaymentMethod(imagePath) {
   return (pm) => {
     if (pm.supportedShopperInteractions.includes('Ecommerce')) {
-      renderPaymentMethod(pm, true, data.ImagePath);
+      renderPaymentMethod(pm, true, imagePath);
     }
   };
 }
 
-function renderStoredPaymentMethods(data) {
-  if (data.AdyenPaymentMethods.storedPaymentMethods) {
-    const { storedPaymentMethods } = store.checkout.paymentMethodsResponse;
-    storedPaymentMethods.forEach(renderStoredPaymentMethod(data));
+function renderStoredPaymentMethods(data, imagePath) {
+  if (data.storedPaymentMethods) {
+    const { storedPaymentMethods } = data;
+    storedPaymentMethods.forEach(renderStoredPaymentMethod(imagePath));
   }
 }
 
-function renderPaymentMethods(data) {
-  data.AdyenPaymentMethods.paymentMethods.forEach((pm, i) => {
-    renderPaymentMethod(
-      pm,
-      false,
-      data.ImagePath,
-      data.AdyenDescriptions[i].description,
-    );
+function renderPaymentMethods(data, imagePath, adyenDescriptions) {
+  data.paymentMethods.forEach((pm) => {
+    renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
   });
 }
 
-function renderPosTerminals(data) {
+function renderPosTerminals(adyenConnectedTerminals) {
   const removeChilds = () => {
     const posTerminals = document.querySelector('#adyenPosTerminals');
     while (posTerminals.firstChild) {
@@ -81,19 +86,10 @@ function renderPosTerminals(data) {
     }
   };
 
-  if (data.AdyenConnectedTerminals?.uniqueTerminalIds?.length) {
+  if (adyenConnectedTerminals?.uniqueTerminalIds?.length) {
     removeChilds();
-    addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+    addPosTerminals(adyenConnectedTerminals.uniqueTerminalIds);
   }
-}
-
-function setCheckoutConfiguration(data) {
-  const setField = (key, val) => val && { [key]: val };
-  store.checkoutConfiguration = {
-    ...store.checkoutConfiguration,
-    ...setField('amount', data.amount),
-    ...setField('countryCode', data.countryCode),
-  };
 }
 
 function setAmazonPayConfig(adyenPaymentMethods) {
@@ -102,7 +98,7 @@ function setAmazonPayConfig(adyenPaymentMethods) {
   );
   if (amazonpay) {
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
-      amazonpay.configuration; // eslint-disable-line max-len
+      amazonpay.configuration;
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
       name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
         document.querySelector('#shippingLastNamedefault')?.value
@@ -120,6 +116,9 @@ function setAmazonPayConfig(adyenPaymentMethods) {
 
 function setInstallments(amount) {
   try {
+    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
+      return;
+    }
     const [minAmount, numOfInstallments] = window.installments
       ?.replace(/\[|]/g, '')
       .split(',');
@@ -136,25 +135,31 @@ function setInstallments(amount) {
 }
 
 /**
- * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ * Calls createSession and then renders the retrieved payment methods (including card component)
  */
 module.exports.renderGenericComponent = async function renderGenericComponent() {
   if (Object.keys(store.componentsObj).length !== 0) {
     await unmountComponents();
   }
-  getPaymentMethods((data) => {
-    store.checkoutConfiguration.paymentMethodsResponse =
-      data.AdyenPaymentMethods;
-    setCheckoutConfiguration(data);
-    setAmazonPayConfig(data.AdyenPaymentMethods);
-    setInstallments(data.amount);
-    store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
+  createSession(async (session) => {
+    store.checkoutConfiguration.session = {
+      id: session.id,
+      sessionData: session.sessionData,
+    };
+    store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+    setCheckoutConfiguration(store.checkout.options);
+    setInstallments(store.checkout.options.amount);
+    setAmazonPayConfig(store.checkout.paymentMethodsResponse);
     document.querySelector('#paymentMethodsList').innerHTML = '';
 
-    renderStoredPaymentMethods(data);
-    renderPaymentMethods(data);
-    renderPosTerminals(data);
+    renderStoredPaymentMethods(store.checkout.paymentMethodsResponse);
+    renderPaymentMethods(
+      store.checkout.paymentMethodsResponse,
+      session.imagePath,
+      session.adyenDescriptions,
+    );
+    renderPosTerminals(session.adyenConnectedTerminals);
 
     const firstPaymentMethod = document.querySelector(
       'input[type=radio][name=brandCode]',
@@ -162,6 +167,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
   });
+
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );

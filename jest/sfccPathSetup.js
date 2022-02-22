@@ -25,21 +25,12 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/notify', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/notify');
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/sessions', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/sessions');
+}, {virtual: true});
+
 jest.mock('*/cartridge/controllers/middlewares/adyen/paymentFromComponent', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/paymentFromComponent');
-}, {virtual: true});
-
-// middlewares/adyen/getPaymentMethod subclasses
-jest.mock('*/cartridge/controllers/middlewares/adyen/getPaymentMethods', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/getPaymentMethods');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/adyen/getPaymentMethod/payment', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/getPaymentMethod/payment');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/adyen/getPaymentMethod/utils', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/getPaymentMethod/utils');
 }, {virtual: true});
 
 // middlewares/adyen/showConfirmationPaymentFromComponent subclasses
@@ -129,36 +120,12 @@ jest.mock('*/cartridge/controllers/utils/clearForms', () => {
 }, {virtual: true});
 
 // controllers/middlewares/checkout_services subclasses
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/index', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/index');
-}, {virtual: true});
-
 jest.mock('*/cartridge/controllers/middlewares/checkout_services/placeOrder', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder');
 }, {virtual: true});
 
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/helpers/index', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/helpers/index');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/utils/index', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/utils/index');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/utils/payment', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/utils/payment');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/utils/order', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/utils/order');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/utils/fraud', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/utils/fraud');
-}, {virtual: true});
-
-jest.mock('*/cartridge/controllers/middlewares/checkout_services/utils/transaction', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/utils/transaction');
+jest.mock('*/cartridge/controllers/middlewares/checkout_services/placeOrder', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder');
 }, {virtual: true});
 
 // controllers/middlewares/checkout subclasses
@@ -217,5 +184,9 @@ jest.mock('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/pay
 // int_adyen_overlay mocks
 jest.mock('*/cartridge/adyenConstants/constants', () => {
   return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/constants');
+}, {virtual: true});
+
+jest.mock('*/cartridge/adyenConstants/paymentMethodDescriptions', () => {
+  return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/paymentMethodDescriptions');
 }, {virtual: true});
 

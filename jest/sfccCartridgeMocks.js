@@ -28,6 +28,15 @@ jest.mock('*/cartridge/scripts/adyenDeleteRecurringPayment', () => {
   return { deleteRecurringPayment: jest.fn(() => true) };
 }, {virtual: true});
 
+jest.mock('*/cartridge/scripts/adyenSessions', () => {
+  return {
+    createSession: jest.fn( () => ({
+      id: 'mock_id',
+      sessionData: 'mock_session_data',
+    }))
+  }
+}, {virtual: true});
+
 jest.mock('*/cartridge/scripts/adyenGetPaymentMethods', () => {
   return {
     getMethods: jest.fn(() => ({
@@ -36,6 +45,13 @@ jest.mock('*/cartridge/scripts/adyenGetPaymentMethods', () => {
   };
 }, {virtual: true});
 
+jest.mock('*/cartridge/scripts/adyenGetPaymentMethods', () => {
+  return {
+    getMethods: jest.fn(() => ({
+      paymentMethods: [{type: 'visa'}],
+    }))
+  };
+}, {virtual: true});
 jest.mock('*/cartridge/scripts/adyenTerminalApi', () => {
   return {
     getTerminals: jest.fn(() => ({

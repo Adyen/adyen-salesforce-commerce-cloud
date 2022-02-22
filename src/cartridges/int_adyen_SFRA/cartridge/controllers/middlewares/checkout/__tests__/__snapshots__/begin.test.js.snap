@@ -5,6 +5,7 @@ Array [
   Array [
     Object {
       "adyen": Object {
+        "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
         "cardholderNameBool": true,
         "clientKey": "mocked_client_key",
@@ -24,6 +25,7 @@ Array [
   Array [
     Object {
       "adyen": Object {
+        "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
         "cardholderNameBool": true,
         "clientKey": "mocked_client_key",

@@ -1,9 +1,6 @@
 const store = require('../../../store');
 const helpers = require('./adyen_checkout/helpers');
 
-const amazonPayNode = document.getElementById('amazon-container');
-const checkout = new AdyenCheckout(window.Configuration);
-
 function handleAuthorised(response) {
   document.querySelector('#result').value = JSON.stringify({
     pspReference: response.fullResponse?.pspReference,
@@ -52,66 +49,75 @@ function paymentFromComponent(data, component) {
   });
 }
 
-const amazonConfig = {
-  showOrderButton: false,
-  returnUrl: window.returnURL,
-  configuration: {
-    merchantId: window.amazonMerchantID,
-    storeId: window.amazonStoreID,
-    publicKeyId: window.amazonPublicKeyID,
-  },
-  amazonCheckoutSessionId: window.amazonCheckoutSessionId,
-  onSubmit: (state, component) => {
-    document.querySelector('#adyenStateData').value = JSON.stringify(
-      state.data,
-    );
-    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-      state.data,
-    );
-    paymentFromComponent(state.data, component);
-  },
-  onAdditionalDetails: (state) => {
-    state.data.paymentMethod = 'amazonpay';
+async function mountAmazonPayComponent() {
+  const amazonPayNode = document.getElementById('amazon-container');
+  const checkout = await AdyenCheckout(window.Configuration);
+
+  const amazonConfig = {
+    showOrderButton: false,
+    returnUrl: window.returnURL,
+    configuration: {
+      merchantId: window.amazonMerchantID,
+      storeId: window.amazonStoreID,
+      publicKeyId: window.amazonPublicKeyID,
+    },
+    amazonCheckoutSessionId: window.amazonCheckoutSessionId,
+    onSubmit: (state, component) => {
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state) => {
+      state.data.paymentMethod = 'amazonpay';
+      $.ajax({
+        type: 'post',
+        url: window.paymentsDetailsURL,
+        data: JSON.stringify(state.data),
+        contentType: 'application/json; charset=utf-8',
+        success(data) {
+          if (data.isSuccessful) {
+            handleAuthorised(data);
+          } else if (!data.isFinal && typeof data.action === 'object') {
+            checkout.createFromAction(data.action).mount('#amazon-container');
+          } else {
+            $('#action-modal').modal('hide');
+            handleError();
+          }
+        },
+      });
+    },
+  };
+
+  const amazonPayComponent = checkout
+    .create('amazonpay', amazonConfig)
+    .mount(amazonPayNode);
+
+  helpers.createShowConfirmationForm(
+    window.ShowConfirmationPaymentFromComponent,
+  );
+
+  $('#dwfrm_billing').submit(function apiRequest(e) {
+    e.preventDefault();
+
+    const form = $(this);
+    const url = form.attr('action');
+
     $.ajax({
-      type: 'post',
-      url: window.paymentsDetailsURL,
-      data: JSON.stringify(state.data),
-      contentType: 'application/json; charset=utf-8',
+      type: 'POST',
+      url,
+      data: form.serialize(),
+      async: false,
       success(data) {
-        if (data.isSuccessful) {
-          handleAuthorised(data);
-        } else if (!data.isFinal && typeof data.action === 'object') {
-          checkout.createFromAction(data.action).mount('#amazon-container');
-        } else {
-          $('#action-modal').modal('hide');
-          handleError();
-        }
+        store.formErrorsExist = 'fieldErrors' in data;
       },
     });
-  },
-};
-
-const amazonPayComponent = checkout
-  .create('amazonpay', amazonConfig)
-  .mount(amazonPayNode);
-
-helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
-
-$('#dwfrm_billing').submit(function apiRequest(e) {
-  e.preventDefault();
-
-  const form = $(this);
-  const url = form.attr('action');
-
-  $.ajax({
-    type: 'POST',
-    url,
-    data: form.serialize(),
-    async: false,
-    success(data) {
-      store.formErrorsExist = 'fieldErrors' in data;
-    },
   });
-});
-$('#action-modal').modal({ backdrop: 'static', keyboard: false });
-amazonPayComponent.submit();
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+  amazonPayComponent.submit();
+}
+
+mountAmazonPayComponent();
