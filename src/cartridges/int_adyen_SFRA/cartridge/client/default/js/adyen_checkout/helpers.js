@@ -91,7 +91,7 @@ function showValidation() {
 
 function getInstallmentValues(maxValue) {
   const values = [];
-  for (let i = 1; i <= maxValue; i++) {
+  for (let i = 1; i <= maxValue; i += 1) {
     values.push(i);
   }
   return values;

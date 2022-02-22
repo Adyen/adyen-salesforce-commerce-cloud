@@ -119,16 +119,20 @@ function setAmazonPayConfig(adyenPaymentMethods) {
 }
 
 function setInstallments(amount) {
-    try {
-      const [minAmount, numOfInstallments, supportedCards] = window.installments?.replace(/\[|]/g,'').split(',');
-      if(minAmount <= amount.value) {
-        store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = { card: {} };
-        store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(numOfInstallments);
-        store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
-      }
-    } catch (e) {
-      console.error(`Could not set installments.. ${e.toString()}`);
-    } // eslint-disable-line no-empty
+  try {
+    const [minAmount, numOfInstallments] = window.installments
+      ?.replace(/\[|]/g, '')
+      .split(',');
+    if (minAmount <= amount.value) {
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
+        card: {},
+      }; // eslint-disable-next-line max-len
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(
+        numOfInstallments,
+      );
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    }
+  } catch (e) {} // eslint-disable-line no-empty
 }
 
 /**
