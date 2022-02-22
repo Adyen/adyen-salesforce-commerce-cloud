@@ -118,6 +118,19 @@ function setAmazonPayConfig(adyenPaymentMethods) {
   }
 }
 
+function setInstallments(amount) {
+    try {
+      const [minAmount, numOfInstallments, supportedCards] = window.installments?.replace(/\[|]/g,'').split(',');
+      if(minAmount <= amount.value) {
+        store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = { card: {} };
+        store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(numOfInstallments);
+        store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+      }
+    } catch (e) {
+      console.error(`Could not set installments.. ${e.toString()}`);
+    } // eslint-disable-line no-empty
+}
+
 /**
  * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
  */
@@ -130,6 +143,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
       data.AdyenPaymentMethods;
     setCheckoutConfiguration(data);
     setAmazonPayConfig(data.AdyenPaymentMethods);
+    setInstallments(data.amount);
     store.checkout = new AdyenCheckout(store.checkoutConfiguration);
 
     document.querySelector('#paymentMethodsList').innerHTML = '';
