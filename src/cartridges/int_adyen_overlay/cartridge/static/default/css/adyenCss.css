@@ -159,7 +159,7 @@
 }
 
 /* The Modal (background) */
-.modal {
+#action-modal-SG {
     display: none;
     position: fixed;
     z-index: 50;
