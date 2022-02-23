@@ -48,14 +48,11 @@ export default class CheckoutPageSFRA {
     await t.navigateTo(this.getCheckoutUrl(locale));
   }
 
-  goToCheckoutPageWithFullCart = async (locale, shopperEmail) => {
+  goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
     await this.successMessage();
 
     await this.navigateToCheckout(locale);
-    await t
-        .typeText(this.checkoutPageGuestEmailInput, shopperEmail)
-        .click(this.checkoutGuest);
   }
 
   getCheckoutUrl(locale){
@@ -71,6 +68,9 @@ export default class CheckoutPageSFRA {
 
   setShopperDetails = async (shopperDetails) => {
     await t
+        .typeText(this.checkoutPageGuestEmailInput, shopperDetails.shopperEmail)
+        .click(this.checkoutGuest)
+
         .typeText(this.checkoutPageUserFirstNameInput, shopperDetails.shopperName.firstName)
         .typeText(this.checkoutPageUserLastNameInput, shopperDetails.shopperName.lastName)
         .typeText(this.checkoutPageUserStreetInput, shopperDetails.address.street)

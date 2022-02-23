@@ -6,7 +6,6 @@ import testPortugal from "./countriesEUR/PT";
 import testBelgium from "./countriesEUR/BE";
 import { regionsEnum } from "../data/enums"
 import { environments } from "../data/environments"
-const shopperData = require("../data/shopperData.json");
 
 for(const environment of environments) {
   const checkoutPage = new environment.CheckoutPage();
@@ -19,7 +18,7 @@ for(const environment of environments) {
       .beforeEach(async t => {
         // create full cart and go to checkout
         await t.maximizeWindow();
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, shopperData.FR.shopperEmail);
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
       });
 
   testNetherlands(checkoutPage);
