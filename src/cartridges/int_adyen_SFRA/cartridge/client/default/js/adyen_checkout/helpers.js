@@ -89,6 +89,14 @@ function showValidation() {
     : displayValidationErrors();
 }
 
+function getInstallmentValues(maxValue) {
+  const values = [];
+  for (let i = 1; i <= maxValue; i += 1) {
+    values.push(i);
+  }
+  return values;
+}
+
 function createShowConfirmationForm(action) {
   if (document.querySelector('#showConfirmationForm')) {
     return;
@@ -111,4 +119,5 @@ module.exports = {
   displaySelectedMethod,
   showValidation,
   createShowConfirmationForm,
+  getInstallmentValues,
 };

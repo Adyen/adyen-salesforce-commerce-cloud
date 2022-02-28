@@ -73,6 +73,12 @@ function createPaymentRequest(args) {
       paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
     }
 
+    // Add installments
+    if (AdyenHelper.getCreditCardInstallments()) {
+      const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
+      paymentRequest.installments = {value: numOfInstallments}
+    }
+
     const myAmount = AdyenHelper.getCurrencyValueForApi(
         paymentInstrument.paymentTransaction.amount,
     ).getValueOrNull(); // args.Amount * 100;
