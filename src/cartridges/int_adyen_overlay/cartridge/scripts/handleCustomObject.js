@@ -248,7 +248,7 @@ function handle(customObj) {
       case 'CAPTURE':
         if (
           customObj.custom.success === 'true' &&
-          String(order.status) === String(Order.ORDER_STATUS_CANCELLED)
+          order.status.value === Order.ORDER_STATUS_CANCELLED
         ) {
           order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
           order.setExportStatus(Order.EXPORT_STATUS_READY);
