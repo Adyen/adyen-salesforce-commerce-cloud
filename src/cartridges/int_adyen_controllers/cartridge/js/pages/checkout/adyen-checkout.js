@@ -360,7 +360,7 @@ async function renderGenericComponent() {
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = sessionsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
         sessionsResponse.amount;
-    setInstallments(paymentMethodsResponse.amount);
+    setInstallments(sessionsResponse.amount);
   }
   if (sessionsResponse.countryCode) {
     checkoutConfiguration.countryCode = sessionsResponse.countryCode;
