@@ -220,7 +220,7 @@ function paymentsDetails(state) {
  * @function
  * @description Initializes Adyen Checkout My Account events
  */
-function initializeAccountEvents() {
+async function initializeAccountEvents() {
   checkoutConfiguration = window.Configuration;
   checkoutConfiguration.onAdditionalDetails = function(state) {
     paymentsDetails(state);
