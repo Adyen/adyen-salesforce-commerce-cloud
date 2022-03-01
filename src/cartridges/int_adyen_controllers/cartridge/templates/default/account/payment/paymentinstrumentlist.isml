@@ -7,8 +7,8 @@
 	<isset  name="AdyenHelper" value="${require('int_adyen_overlay/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 	<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
-    <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-    <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+	<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 	<iscomment> ### Custom Adyen cartridge end ### </iscomment>
 
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />

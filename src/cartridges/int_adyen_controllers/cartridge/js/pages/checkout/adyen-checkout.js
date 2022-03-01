@@ -43,12 +43,8 @@ async function initializeBillingEvents() {
     }
   });
 
-  //  if (window.getPaymentMethodsResponse) {
   if (window.sessionsResponse) {
-    console.log('sessions response ');
-    console.log(window.sessionsResponse);
     sessionsResponse = window.sessionsResponse;
-    // paymentMethodsResponse = window.getPaymentMethodsResponse;
     checkoutConfiguration = window.Configuration;
 
     checkoutConfiguration.onChange = function (state /* , component */) {
@@ -172,19 +168,12 @@ async function initializeBillingEvents() {
       id: window.sessionsResponse.id,
       sessionData: window.sessionsResponse.sessionData,
     };
-    createCheckout();
-    // checkout = await AdyenCheckout(checkoutConfiguration);
-    console.log(checkout);
-    console.log(checkout.paymentMethodsResponse);
+    checkout = await AdyenCheckout(checkoutConfiguration);
     paymentMethodsResponse = checkout.paymentMethodsResponse;
 
     document.querySelector('#paymentMethodsList').innerHTML = '';
     renderGenericComponent();
   }
-}
-
-async function createCheckout() {
-  checkout = await AdyenCheckout(checkoutConfiguration);
 }
 
 function zeroAuth(data, checkout) {
@@ -236,8 +225,7 @@ function initializeAccountEvents() {
   checkoutConfiguration.onAdditionalDetails = function(state) {
     paymentsDetails(state);
   };
-  createCheckout();
-  // checkout = await AdyenCheckout(checkoutConfiguration);
+  checkout = await AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
   var isValid = false;
@@ -360,47 +348,17 @@ function getFallback(paymentMethod) {
 }
 
 /**
- * Calls createSession and then renders the retrieved payment methods (including card component)
+ * Renders all payment methods (including card component) retrieved from Adyen session
  */
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length) {
     await unmountComponents();
   }
 
-  // createSession(async (session) => {
-  //     checkoutConfiguration.session = {
-  //     id: session.id,
-  //     sessionData: session.sessionData,
-  //   };
-  //   checkout = await AdyenCheckout(checkoutConfiguration);
-
-    // console.log(checkout);
-    // console.log(checkout.paymentMethodsResponse);
-    // setCheckoutConfiguration(store.checkout.options);
-
-    // setAmazonPayConfig(store.checkout.paymentMethodsResponse);
-
-    // renderStoredPaymentMethods(store.checkout.paymentMethodsResponse);
-    // renderPaymentMethods(
-    //     store.checkout.paymentMethodsResponse,
-    //     session.imagePath,
-    //     session.adyenDescriptions,
-    // );
-    // renderPosTerminals(session.adyenConnectedTerminals);
-    //
-    // const firstPaymentMethod = document.querySelector(
-    //     'input[type=radio][name=brandCode]',
-    // );
-    // firstPaymentMethod.checked = true;
-    // helpers.displaySelectedMethod(firstPaymentMethod.value);
-  // });
-
-
   var paymentMethod;
   var i;
   checkoutConfiguration.paymentMethodsResponse =
       paymentMethodsResponse.paymentMethods;
-  // var paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
   if (sessionsResponse.amount) {
     checkoutConfiguration.amount = sessionsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = sessionsResponse.amount;
@@ -415,9 +373,6 @@ async function renderGenericComponent() {
   if(amazonpay) {
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
   }
-
-  // checkout = new AdyenCheckout(checkoutConfiguration);
-  // document.querySelector('#paymentMethodsList').innerHTML = '';
 
   if (paymentMethodsResponse.storedPaymentMethods) {
     for (
@@ -596,10 +551,7 @@ function createCheckoutComponent(
     }
     componentsObj[paymentMethodID].node = node;
     return node;
-  } catch (e) {
-    console.log('went to catch');
-    console.log(e.toString());
-  } // eslint-disable-line no-empty
+  } catch (e) {} // eslint-disable-line no-empty
   return false;
 }
 
@@ -701,19 +653,6 @@ function getCardConfig() {
       componentsObj[methodToUpdate].stateData = state.data;
     },
   }
-}
-
-/**
- * Makes an ajax call to the controller function CreateSession
- */
-function createSession(session) {
-  $.ajax({
-    url: window.sessionsUrl,
-    type: 'get',
-    success(data) {
-      session(data);
-    },
-  });
 }
 
 function getGooglePayConfig() {

@@ -122,7 +122,6 @@ function Redirect3DS1Response() {
  */
 function showConfirmation() {
   try {
-    Logger.getLogger('Adyen').error('inside showConfirmation');
     const redirectResult = request.httpParameterMap.get('redirectResult').stringValue;
     const payload = request.httpParameterMap.get('payload').stringValue;
     const signature = request.httpParameterMap.get('signature').stringValue;
@@ -239,12 +238,9 @@ function paymentsDetails() {
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
         requestBody
     );
-    Logger.getLogger('Adyen').error('paymentsDetailsResponse is ' + JSON.stringify(paymentsDetailsResponse));
-
     const response = AdyenHelper.createAdyenCheckoutResponse(
         paymentsDetailsResponse,
     );
-    Logger.getLogger('Adyen').error('response is ' + JSON.stringify(response));
 
     if (isAmazonpay) {
       response.fullResponse = {
@@ -449,15 +445,6 @@ function showConfirmationPaymentFromComponent() {
   return {};
 }
 
-// function getCountryCode(currentBasket, locale) {
-//   const countryCode = Locale.getLocale(locale.id).country;
-//   const firstItem = currentBasket.getShipments()?.[0];
-//   if (firstItem?.shippingAddress) {
-//     return firstItem.shippingAddress.getCountryCode().value;
-//   }
-//   return countryCode;
-// }
-
 function getConnectedTerminals() {
   const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
   if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
@@ -470,9 +457,7 @@ function getConnectedTerminals() {
  */
 function sessions(customer) {
     try {
-      Logger.getLogger('Adyen').error('inside sessions');
       const currentBasket = BasketMgr.getCurrentBasket();
-      // const countryCode = getCountryCode(currentBasket, req.locale);
       const Locale = require('dw/util/Locale');
       const countryCode = Locale.getLocale(request.getLocale()).country;
       const response = adyenSessions.createSession(
@@ -480,8 +465,6 @@ function sessions(customer) {
           AdyenHelper.getCustomer(customer),
           countryCode,
       );
-      Logger.getLogger('Adyen').error('response is ' + JSON.stringify(response));
-
       const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
       const connectedTerminals = getConnectedTerminals();
 
@@ -513,11 +496,8 @@ function sessions(customer) {
       };
 
       return responseJSON;
-      // const responseUtils = require('*/cartridge/scripts/util/Response');
-      // responseUtils.renderJSON({responseJSON});
     } catch (error) {
-      Logger.getLogger('Adyen').error('Failed to create Adyen Checkout Session');
-      Logger.getLogger('Adyen').error(error);
+      Logger.getLogger('Adyen').error(`Failed to create Adyen Checkout Session... ${error.toString()}`);
     }
 }
 
