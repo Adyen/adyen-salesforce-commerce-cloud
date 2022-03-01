@@ -1,4 +1,5 @@
 if(window.amazonCheckoutSessionId) {
+    window.sessionsResponse = null;
     const amazonPayNode = document.getElementById('amazonContainerSG');
 
     function handleAuthorised(response) {
@@ -86,10 +87,13 @@ if(window.amazonCheckoutSessionId) {
         },
     };
 
-    const checkout = new AdyenCheckout(window.Configuration);
-    const amazonPayComponent = checkout
-        .create('amazonpay', amazonConfig)
-        .mount(amazonPayNode);
+    async function mountAmazonPayComponent() {
+        const checkout = await AdyenCheckout(window.Configuration);
+        const amazonPayComponent = checkout
+            .create('amazonpay', amazonConfig)
+            .mount(amazonPayNode);
+        amazonPayComponent.submit();
+    }
 
-    amazonPayComponent.submit();
+    mountAmazonPayComponent();
 }

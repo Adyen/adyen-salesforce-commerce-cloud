@@ -11,10 +11,12 @@ const PaymentMgr = require('dw/order/PaymentMgr');
 const app = require('app_storefront_controllers/cartridge/scripts/app');
 const guard = require('app_storefront_controllers/cartridge/scripts/guard');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const adyenSessions = require('*/cartridge/scripts/adyenSessions');
 
 const OrderModel = app.getModel('Order');
 const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
+const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
 
 const EXTERNAL_PLATFORM_VERSION = 'SiteGenesis';
 /**
@@ -120,6 +122,7 @@ function Redirect3DS1Response() {
  */
 function showConfirmation() {
   try {
+    Logger.getLogger('Adyen').error('inside showConfirmation');
     const redirectResult = request.httpParameterMap.get('redirectResult').stringValue;
     const payload = request.httpParameterMap.get('payload').stringValue;
     const signature = request.httpParameterMap.get('signature').stringValue;
@@ -440,6 +443,78 @@ function showConfirmationPaymentFromComponent() {
   return {};
 }
 
+// function getCountryCode(currentBasket, locale) {
+//   const countryCode = Locale.getLocale(locale.id).country;
+//   const firstItem = currentBasket.getShipments()?.[0];
+//   if (firstItem?.shippingAddress) {
+//     return firstItem.shippingAddress.getCountryCode().value;
+//   }
+//   return countryCode;
+// }
+
+function getConnectedTerminals() {
+  const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
+  if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
+    return adyenTerminalApi.getTerminals().response;
+  }
+  return '{}';
+}
+/**
+ * Make a request to Adyen to create a new session
+ */
+function sessions(customer) {
+    try {
+      Logger.getLogger('Adyen').error('inside sessions');
+      const currentBasket = BasketMgr.getCurrentBasket();
+      // const countryCode = getCountryCode(currentBasket, req.locale);
+      const Locale = require('dw/util/Locale');
+      const countryCode = Locale.getLocale(request.getLocale()).country;
+      const response = adyenSessions.createSession(
+          currentBasket,
+          AdyenHelper.getCustomer(customer),
+          countryCode,
+      );
+      Logger.getLogger('Adyen').error('response is ' + JSON.stringify(response));
+
+      const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
+      const connectedTerminals = getConnectedTerminals();
+
+      const currency = currentBasket.getTotalGrossPrice().currencyCode;
+      const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
+          ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+          : new dw.value.Money(1000, currency);
+
+      const shippingForm = session.forms.singleshipping;
+      const shippingAddress = {
+        firstName:  shippingForm.shippingAddress.addressFields.firstName.value,
+        lastName:  shippingForm.shippingAddress.addressFields.lastName.value,
+        address1:  shippingForm.shippingAddress.addressFields.address1.value,
+        city:  shippingForm.shippingAddress.addressFields.city.value,
+        country:  shippingForm.shippingAddress.addressFields.country.value,
+        phone:  shippingForm.shippingAddress.addressFields.phone.value,
+        postalCode:  shippingForm.shippingAddress.addressFields.postal.value,
+      };
+
+      const responseJSON = {
+        id: response.id,
+        sessionData: response.sessionData,
+        imagePath: adyenURL,
+        adyenDescriptions: paymentMethodDescriptions,
+        amount: { value: paymentAmount.value, currency: currency },
+        countryCode: countryCode,
+        adyenConnectedTerminals: JSON.parse(connectedTerminals),
+        shippingAddress: shippingAddress,
+      };
+
+      return responseJSON;
+      // const responseUtils = require('*/cartridge/scripts/util/Response');
+      // responseUtils.renderJSON({responseJSON});
+    } catch (error) {
+      Logger.getLogger('Adyen').error('Failed to create Adyen Checkout Session');
+      Logger.getLogger('Adyen').error(error);
+    }
+}
+
 /**
  * Complete a donation through adyenGiving
  */
@@ -610,6 +685,8 @@ exports.Redirect3DS1Response = guard.ensure(
 exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
+
+exports.Sessions = sessions;
 
 exports.getExternalPlatformVersion = getExternalPlatformVersion();
 
