@@ -250,6 +250,7 @@ function paymentsDetails() {
       };
     }
 
+    //check if payment is not zero auth for my account
     if(paymentsDetailsResponse.merchantReference !== "recurringPayment-account") {
       const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
       const paymentInstruments = order.getPaymentInstruments(
