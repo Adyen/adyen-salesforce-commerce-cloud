@@ -239,9 +239,13 @@ function paymentsDetails() {
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
         requestBody
     );
+    Logger.getLogger('Adyen').error('paymentsDetailsResponse is ' + JSON.stringify(paymentsDetailsResponse));
+
     const response = AdyenHelper.createAdyenCheckoutResponse(
         paymentsDetailsResponse,
     );
+    Logger.getLogger('Adyen').error('response is ' + JSON.stringify(response));
+
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
@@ -250,27 +254,29 @@ function paymentsDetails() {
       };
     }
 
-    const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
-    const paymentInstruments = order.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
-    );
-    const signature = AdyenHelper.createSignature(
-        paymentInstruments[0],
-        order.getUUID(),
-        paymentsDetailsResponse.merchantReference,
-    );
-    Transaction.wrap(() => {
-      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
-          paymentsDetailsResponse,
+    if(paymentsDetailsResponse.merchantReference !== "recurringPayment-account") {
+      const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+      const paymentInstruments = order.getPaymentInstruments(
+          constants.METHOD_ADYEN_COMPONENT,
       );
-    });
-    response.redirectUrl = URLUtils.url(
-        'Adyen-ShowConfirmation',
-        'merchantReference',
-        response.merchantReference,
-        'signature',
-        signature,
-    ).toString();
+      const signature = AdyenHelper.createSignature(
+          paymentInstruments[0],
+          order.getUUID(),
+          paymentsDetailsResponse.merchantReference,
+      );
+      Transaction.wrap(() => {
+        paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
+            paymentsDetailsResponse,
+        );
+      });
+      response.redirectUrl = URLUtils.url(
+          'Adyen-ShowConfirmation',
+          'merchantReference',
+          response.merchantReference,
+          'signature',
+          signature,
+      ).toString();
+    }
 
     const responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({response});
