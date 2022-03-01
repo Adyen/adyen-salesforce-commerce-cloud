@@ -1,6 +1,6 @@
 import {ClientFunction, Selector, t} from "testcafe";
 
-export default class CheckoutPageSFRA {
+export default class CheckoutPageSFRA5 {
 
     consentButton = Selector('.affirm');
     categoryLink = Selector('.home-main-categories .category-tile');

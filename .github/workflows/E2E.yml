@@ -3,15 +3,24 @@ name: E2E
 on: [push]
 
 jobs:
-  deploy-and-run:
+  end-to-end-testing:
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: "v5.3.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA5"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA5"
+          - sfra-version: "v6.0.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA6"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA6"
     steps:
       - name: Checkout SFRA code
         uses: actions/checkout@v2
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
-          ref: v5.3.0
+          ref: ${{ matrix.sfra-version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - name: setup Node
@@ -34,8 +43,8 @@ jobs:
           echo '{
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
+            "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
+            "code-version": "${{ secrets[matrix.code-version-secret] }}"
           }' >> dw.json
       - name: push cartridge code
         working-directory: adyen-salesforce-commerce-cloud
@@ -46,4 +55,5 @@ jobs:
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
-          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
+          SFRA_VERSION: ${{ matrix.sfra-version }}
+          SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}

@@ -1,6 +1,7 @@
 import { regionsEnum } from "../data/enums";
 import { environments } from "../data/environments"
 import {doQRCodePayment} from "../paymentFlows/pending";
+import {completeKlarnaRedirect, doKlarnaPayment} from "../paymentFlows/redirectShopper";
 const shopperData = require("../data/shopperData.json");
 
 let checkoutPage;
@@ -19,14 +20,20 @@ for(const environment of environments) {
         await checkoutPage.setShopperDetails(shopperData.SE);
       });
 
-  test('Swish success', async () => {
-    if(environment.name === "SG")
-      await checkoutPage.setEmail();
-    await doQRCodePayment("swish", environment.name);
-    if(environment.name === "SFRA")
-      await checkoutPage.completeCheckout();
-    await checkoutPage.expectQRcode();
-  });
+      test('Swish success', async () => {
+        if(environment.name === "SG")
+          await checkoutPage.setEmail();
+        await doQRCodePayment("swish", environment.name);
+        if(environment.name === "SFRA")
+          await checkoutPage.completeCheckout();
+        await checkoutPage.expectQRcode();
+      });
+
+    test('Klarna Success', async t => {
+        await checkoutPage.setShopperDetails(shopperData.SE);
+        await doKlarnaPayment();
+        await checkoutPage.completeCheckout();
+        await completeKlarnaRedirect(true);
+        await checkoutPage.expectSuccess();
+    });
 }
-
-
