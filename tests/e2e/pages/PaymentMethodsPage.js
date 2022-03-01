@@ -75,7 +75,7 @@ export default class PaymentMethodsPage {
         if(oneClickCardInput.cvc !== "") {
             await t
                 .switchToIframe(oneClickLi.find('iframe'))
-                .typeText('#encryptedSecurityCode', oneClickCardInput.cvc)
+                .typeText('input[data-fieldtype="encryptedSecurityCode"]', oneClickCardInput.cvc)
                 .switchToMainWindow();
         }
     }
@@ -166,6 +166,16 @@ export default class PaymentMethodsPage {
             .switchToMainWindow()
     }
 
+    confirmKlarnaPaymentWithIDNumber = async () => {
+        await Selector('#payment-method-selector')();
+        await t
+            .click(Selector('#buy-button'))
+            .switchToIframe('#klarna-hpp-instance-fullscreen')
+            .typeText(Selector('#invoice_kp-purchase-approval-form-national-identification-number'), '811228-9874')
+            .click(Selector('#invoice_kp-purchase-approval-form-continue-button'))
+            .switchToMainWindow()
+    }
+
     cancelKlarnaDirectEBankingPayment = async () => {
         await t
             .click(Selector('.back-to-merchant cancel-transaction'))
@@ -217,7 +227,7 @@ export default class PaymentMethodsPage {
         const affirmEmail = Selector('#component_affirm input[name="shopperEmail"]');
         await t
             .click(Selector('#rb_affirm'))
-            .typeText(affirmEmail, shopper.shopperEmail)
+            .typeText(affirmEmail, shopper.shopperEmail, {replace: true});
     }
 
     confirmSimulator = async () => {
@@ -328,7 +338,7 @@ export default class PaymentMethodsPage {
     initiateKonbiniPayment = async () => {
         await t
             .click(Selector('#rb_econtext_stores'))
-            .typeText(Selector('input[name="econtext.shopperEmail"]'), shopperData.JP.shopperEmail)
+            .typeText(Selector('input[name="econtext.shopperEmail"]'), shopperData.JP.shopperEmail, {replace: true})
             .typeText(Selector('input[name="econtext.telephoneNumber"]'), '3333333333', {replace: true});
     }
 }

@@ -39,6 +39,15 @@ const completeKlarnaRedirect = async (success) => {
     }
 }
 
+const completeKlarnaRedirectWithIDNumber = async (success) => {
+    if(success){
+        await paymentMethodsPage.confirmKlarnaPaymentWithIDNumber();
+    }
+    else {
+        await paymentMethodsPage.cancelKlarnaPayment();
+    }
+}
+
 const doKlarnaPayNowPayment = async () => {
     await paymentMethodsPage.initiateKlarnaPayment('paynow');
 }
@@ -143,6 +152,7 @@ module.exports = {
     completeOneyRedirect,
     doKlarnaPayment,
     completeKlarnaRedirect,
+    completeKlarnaRedirectWithIDNumber,
     doKlarnaAccountPayment,
     completeKlarnaAccountRedirect,
     doKlarnaPayNowPayment,
