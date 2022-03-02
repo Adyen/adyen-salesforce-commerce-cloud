@@ -176,7 +176,7 @@ function handle(customObj) {
         break;
       case 'CANCELLATION':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCELLATION notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was cancelled.',
           order.orderNo,
@@ -184,7 +184,7 @@ function handle(customObj) {
         break;
       case 'CANCEL_OR_REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCEL_OR_REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was cancelled or refunded.',
           order.orderNo,
@@ -192,7 +192,7 @@ function handle(customObj) {
         break;
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was refunded.',
           order.orderNo,
@@ -202,7 +202,7 @@ function handle(customObj) {
       case 'CAPTURE_FAILED':
         if (customObj.custom.success === 'true') {
           order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-          order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+          order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
         Logger.getLogger('Adyen', 'adyen').info(
@@ -229,7 +229,7 @@ function handle(customObj) {
         break;
       case 'OFFER_CLOSED':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('Offer closed, failing order');
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, false);
         });
@@ -248,7 +248,7 @@ function handle(customObj) {
       case 'CAPTURE':
         if (
           customObj.custom.success === 'true' &&
-          String(order.status) === String(Order.ORDER_STATUS_CANCELLED)
+          order.status.value === Order.ORDER_STATUS_CANCELLED
         ) {
           order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
           order.setExportStatus(Order.EXPORT_STATUS_READY);

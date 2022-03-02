@@ -1,6 +1,7 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
+const { installmentLocales } = require('./localesUsingInstallments');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -113,6 +114,26 @@ function setAmazonPayConfig(adyenPaymentMethods) {
   }
 }
 
+function setInstallments(amount) {
+  try {
+    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
+      return;
+    }
+    const [minAmount, numOfInstallments] = window.installments
+      ?.replace(/\[|]/g, '')
+      .split(',');
+    if (minAmount <= amount.value) {
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
+        card: {},
+      }; // eslint-disable-next-line max-len
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(
+        numOfInstallments,
+      );
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    }
+  } catch (e) {} // eslint-disable-line no-empty
+}
+
 /**
  * Calls createSession and then renders the retrieved payment methods (including card component)
  */
@@ -128,7 +149,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     };
     store.checkout = await AdyenCheckout(store.checkoutConfiguration);
     setCheckoutConfiguration(store.checkout.options);
-
+    setInstallments(store.checkout.options.amount);
     setAmazonPayConfig(store.checkout.paymentMethodsResponse);
     document.querySelector('#paymentMethodsList').innerHTML = '';
 

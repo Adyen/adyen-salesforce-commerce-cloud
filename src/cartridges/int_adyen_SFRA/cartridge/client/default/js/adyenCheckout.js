@@ -36,12 +36,6 @@ if (window.cardholderNameBool !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
 
-if (window.installments) {
-  try {
-    const installments = JSON.parse(window.installments);
-    store.checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {} // eslint-disable-line no-empty
-}
 if (
   window.googleMerchantID !== 'null' &&
   window.Configuration.environment === 'live'
