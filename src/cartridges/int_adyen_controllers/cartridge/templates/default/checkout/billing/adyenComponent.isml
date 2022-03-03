@@ -30,8 +30,6 @@
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-    <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-
     <script>
         var queryString = '${request.getHttpQueryString()}'.split("=");
         var amazonCheckoutSessionId = queryString[queryString.length - 1];

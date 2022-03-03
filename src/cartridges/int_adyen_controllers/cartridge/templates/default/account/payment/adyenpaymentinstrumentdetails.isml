@@ -1,7 +1,7 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
-<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 
 <script>
     var clientKey = "${AdyenHelper.getAdyenClientKey()}";

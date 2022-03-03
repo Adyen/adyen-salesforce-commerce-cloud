@@ -7,6 +7,7 @@
 
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/adyenCheckout.css');
     assets.addJs('/js/bundle.js');
 </isscript>
 
@@ -26,7 +27,6 @@
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-    <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/amazon.js');
