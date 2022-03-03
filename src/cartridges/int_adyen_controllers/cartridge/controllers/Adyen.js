@@ -453,14 +453,24 @@ function getConnectedTerminals() {
   }
   return '{}';
 }
+
+function getCountryCode(currentBasket) {
+  const Locale = require('dw/util/Locale');
+  const countryCode = Locale.getLocale(request.getLocale()).country;
+  const firstItem = currentBasket.getShipments()?.[0];
+  if (firstItem?.shippingAddress) {
+    return firstItem.shippingAddress.getCountryCode().value;
+  }
+  return countryCode;
+}
+
 /**
  * Make a request to Adyen to create a new session
  */
 function sessions(customer) {
     try {
       const currentBasket = BasketMgr.getCurrentBasket();
-      const Locale = require('dw/util/Locale');
-      const countryCode = Locale.getLocale(request.getLocale()).country;
+      const countryCode = getCountryCode(currentBasket, request.getLocale())
       const response = adyenSessions.createSession(
           currentBasket,
           AdyenHelper.getCustomer(customer),
