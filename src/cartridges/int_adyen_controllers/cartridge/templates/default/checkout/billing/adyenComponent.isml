@@ -56,7 +56,6 @@
          window.installments = "${AdyenHelper.getCreditCardInstallments()}";
          window.googleMerchantID = "${AdyenHelper.getGoogleMerchantID()}";
          window.cardholderNameBool = "${AdyenHelper.getAdyenCardholderNameEnabled()}";
-         window.paypalIntent = "${AdyenHelper.getAdyenPayPalIntent()}";
          window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
      </script>
 

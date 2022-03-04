@@ -46,7 +46,6 @@
          window.installments = '${pdict.adyen.installments}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
-         window.paypalIntent = '${pdict.adyen.paypalIntent}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
          window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";

@@ -71,7 +71,6 @@ function initializeBillingEvents() {
       googlepay: getGooglePayConfig(),
       paypal: {
         environment: window.Configuration.environment,
-        intent: window.paypalIntent,
         showPayButton: true,
         onClick: (data, actions) => {
           if(paypalTerminatedEarly) {
