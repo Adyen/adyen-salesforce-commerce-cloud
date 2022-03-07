@@ -49,6 +49,6 @@ const donationConfig = {
   onCancel: handleOnCancel,
 };
 
-AdyenCheckout(window.Configuration).then( (checkout) => {
+AdyenCheckout(window.Configuration).then((checkout) => {
   checkout.create('donation', donationConfig).mount(adyenGivingNode);
 });

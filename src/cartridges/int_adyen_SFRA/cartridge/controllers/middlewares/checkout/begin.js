@@ -62,7 +62,6 @@ function begin(req, res, next) {
   const googleMerchantID = AdyenHelper.getGoogleMerchantID();
   const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
   const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
-  const paypalIntent = AdyenHelper.getAdyenPayPalIntent();
   const SFRA6Enabled = AdyenHelper.getAdyenSFRA6Compatibility();
 
   const viewData = res.getViewData();
@@ -73,7 +72,6 @@ function begin(req, res, next) {
     googleMerchantID,
     merchantAccount,
     cardholderNameBool,
-    paypalIntent,
     adyenClientKey,
     SFRA6Enabled,
   };
