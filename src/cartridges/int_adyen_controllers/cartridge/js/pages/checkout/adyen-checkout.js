@@ -1,4 +1,3 @@
-// require('./bundle');
 require('./adyen-giving');
 require('./amazon');
 require('./summary');
@@ -351,8 +350,6 @@ async function renderGenericComponent() {
     await unmountComponents();
   }
 
-  var paymentMethod;
-  var i;
   checkoutConfiguration.paymentMethodsResponse =
       paymentMethodsResponse.paymentMethods;
   if (sessionsResponse.amount) {
@@ -373,11 +370,11 @@ async function renderGenericComponent() {
 
   if (paymentMethodsResponse.storedPaymentMethods) {
     for (
-        i = 0;
+        var i = 0;
         i < checkout.paymentMethodsResponse.storedPaymentMethods.length;
         i++
     ) {
-      paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
+      var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
       if (paymentMethod.supportedShopperInteractions.includes('Ecommerce')) {
         renderPaymentMethod(
             paymentMethod,
