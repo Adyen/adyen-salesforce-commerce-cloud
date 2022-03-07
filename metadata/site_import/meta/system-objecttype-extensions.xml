@@ -386,6 +386,24 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Frontend_Region">
+                <display-name xml:lang="x-default">Checkout frontend region</display-name>
+                <description xml:lang="x-default">The region to load your frontend resources (e.g. secured field iframes) from. Should be set to the region closest to where your shoppers are located.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>AU</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
@@ -531,6 +549,7 @@
                 <attribute attribute-id="Adyen_merchantCode"/>
                 <attribute attribute-id="Adyen_API_Key"/>
                 <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_Frontend_Region"/>
                 <attribute attribute-id="Adyen_ClientKey"/>
                 <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
 
