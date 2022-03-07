@@ -76,7 +76,9 @@ function createPaymentRequest(args) {
     // Add installments
     if (AdyenHelper.getCreditCardInstallments()) {
       const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
-      paymentRequest.installments = {value: numOfInstallments}
+      if(numOfInstallments !== undefined) {
+        paymentRequest.installments = {value: numOfInstallments}
+      }
     }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
@@ -193,6 +195,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     paymentResponse.decision = 'ERROR';
 
     if (responseObject.additionalData) {
+      Logger.getLogger('Adyen').error("setting order.custom.Adyen_paymentMethod inside responseObject.additionalData");
       order.custom.Adyen_paymentMethod = responseObject.additionalData
         .paymentMethod
         ? responseObject.additionalData.paymentMethod

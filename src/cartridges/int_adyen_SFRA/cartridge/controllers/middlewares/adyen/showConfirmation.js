@@ -1,4 +1,5 @@
 const Logger = require('dw/system/Logger');
+const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
@@ -28,6 +29,7 @@ function getPaymentsDetailsResult(
   let result = JSON.parse(
     adyenPaymentInstrument.paymentTransaction.custom.Adyen_authResult,
   );
+
   if (hasQuerystringDetails) {
     const requestObject = getPaymentDetailsPayload(req.querystring);
     result = adyenCheckout.doPaymentsDetailsCall(requestObject);
@@ -86,6 +88,16 @@ function showConfirmation(req, res, next) {
         );
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
+
+      if(adyenPaymentInstrument.custom.adyenPaymentData) {
+        Logger.getLogger('Adyen').error(`inside if adyenPaymentInstrument.custom.adyenPaymentData`);
+        // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
+        // Adyen_paymentMethod is used in Adyen Giving
+        Transaction.wrap(() => {
+          order.custom.Adyen_paymentMethod = JSON.parse(adyenPaymentInstrument.custom.adyenPaymentData).paymentMethod?.type;
+        });
+      }
+
       const detailsResult = getPaymentsDetailsResult(
         adyenPaymentInstrument,
         redirectResult,
