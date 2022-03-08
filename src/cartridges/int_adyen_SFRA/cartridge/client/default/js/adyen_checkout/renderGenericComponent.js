@@ -153,7 +153,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     setAmazonPayConfig(store.checkout.paymentMethodsResponse);
     document.querySelector('#paymentMethodsList').innerHTML = '';
 
-    renderStoredPaymentMethods(store.checkout.paymentMethodsResponse);
+    renderStoredPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath);
     renderPaymentMethods(
       store.checkout.paymentMethodsResponse,
       session.imagePath,
