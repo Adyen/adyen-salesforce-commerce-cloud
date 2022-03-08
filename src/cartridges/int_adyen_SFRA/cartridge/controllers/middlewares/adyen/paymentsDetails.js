@@ -8,25 +8,24 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 function getSignature(paymentsDetailsResponse) {
   const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
-  if(order) {
+  if (order) {
     const paymentInstruments = order.getPaymentInstruments(
-        constants.METHOD_ADYEN_COMPONENT,
+      constants.METHOD_ADYEN_COMPONENT,
     );
 
     const signature = AdyenHelper.createSignature(
-        paymentInstruments[0],
-        order.getUUID(),
-        paymentsDetailsResponse.merchantReference,
+      paymentInstruments[0],
+      order.getUUID(),
+      paymentsDetailsResponse.merchantReference,
     );
     Transaction.wrap(() => {
       paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
-          paymentsDetailsResponse,
+        paymentsDetailsResponse,
       );
     });
     return signature;
   }
   return undefined;
-
 }
 
 /*
@@ -57,13 +56,13 @@ function paymentsDetails(req, res, next) {
       };
     }
 
-    if(signature !== null) {
+    if (signature !== null) {
       response.redirectUrl = URLUtils.url(
-          'Adyen-ShowConfirmation',
-          'merchantReference',
-          response.merchantReference,
-          'signature',
-          signature,
+        'Adyen-ShowConfirmation',
+        'merchantReference',
+        response.merchantReference,
+        'signature',
+        signature,
       ).toString();
     }
 

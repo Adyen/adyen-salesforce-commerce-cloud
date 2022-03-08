@@ -29,7 +29,6 @@ function getPaymentsDetailsResult(
   let result = JSON.parse(
     adyenPaymentInstrument.paymentTransaction.custom.Adyen_authResult,
   );
-
   if (hasQuerystringDetails) {
     const requestObject = getPaymentDetailsPayload(req.querystring);
     result = adyenCheckout.doPaymentsDetailsCall(requestObject);
@@ -61,6 +60,18 @@ function handlePaymentsDetailsResult(
   return payment.handlePaymentError(order, 'placeOrder', options);
 }
 
+function setPaymentMethodField(adyenPaymentInstrument, order) {
+  if (adyenPaymentInstrument.custom.adyenPaymentData) {
+    // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
+    // Adyen_paymentMethod is used in Adyen Giving
+    Transaction.wrap(() => {
+      order.custom.Adyen_paymentMethod = JSON.parse(
+        adyenPaymentInstrument.custom.adyenPaymentData,
+      ).paymentMethod?.type;
+    });
+  }
+}
+
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
  * if the payment was accepted.
@@ -89,14 +100,7 @@ function showConfirmation(req, res, next) {
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
 
-      if(adyenPaymentInstrument.custom.adyenPaymentData) {
-        Logger.getLogger('Adyen').error(`inside if adyenPaymentInstrument.custom.adyenPaymentData`);
-        // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
-        // Adyen_paymentMethod is used in Adyen Giving
-        Transaction.wrap(() => {
-          order.custom.Adyen_paymentMethod = JSON.parse(adyenPaymentInstrument.custom.adyenPaymentData).paymentMethod?.type;
-        });
-      }
+      setPaymentMethodField(adyenPaymentInstrument, order);
 
       const detailsResult = getPaymentsDetailsResult(
         adyenPaymentInstrument,
