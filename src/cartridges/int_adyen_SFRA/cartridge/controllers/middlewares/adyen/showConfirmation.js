@@ -62,7 +62,6 @@ function handlePaymentsDetailsResult(
 
 function setPaymentMethodField(adyenPaymentInstrument, order) {
   if (adyenPaymentInstrument.custom.adyenPaymentData) {
-    // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
     // Adyen_paymentMethod is used in Adyen Giving
     Transaction.wrap(() => {
       order.custom.Adyen_paymentMethod = JSON.parse(
@@ -100,6 +99,7 @@ function showConfirmation(req, res, next) {
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
 
+      // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
       setPaymentMethodField(adyenPaymentInstrument, order);
 
       const detailsResult = getPaymentsDetailsResult(
