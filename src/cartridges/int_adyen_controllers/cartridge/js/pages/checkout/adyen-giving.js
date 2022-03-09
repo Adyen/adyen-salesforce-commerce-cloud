@@ -36,7 +36,7 @@ if (
 
   let amounts;
   try {
-    amounts = JSON.parse(donationAmounts);
+    amounts = JSON.parse(window.donationAmounts);
   } catch (e) {
     amounts = [];
   }

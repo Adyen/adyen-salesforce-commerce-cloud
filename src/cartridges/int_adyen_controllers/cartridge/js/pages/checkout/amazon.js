@@ -23,7 +23,6 @@ if(window.amazonCheckoutSessionId) {
 
     function handleAmazonResponse(response, component) {
         if (response.fullResponse && response.fullResponse.action) {
-            document.querySelector('.ui-widget-overlay').style.visibility = 'hidden';
             component.handleAction(response.fullResponse.action);
         } else if (response.resultCode === window.resultCodeAuthorised) {
             handleAuthorised(response);
