@@ -1,4 +1,3 @@
-require('./bundle');
 require('./adyen-giving');
 require('./amazon');
 require('./summary');
@@ -10,6 +9,7 @@ var MASKED_CC_PREFIX = '************';
 var selectedMethod;
 var componentsObj = {};
 var checkoutConfiguration;
+var sessionsResponse;
 var paymentMethodsResponse;
 var checkout;
 var formErrorsExist;
@@ -19,7 +19,7 @@ var paypalTerminatedEarly = false;
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
-function initializeBillingEvents() {
+async function initializeBillingEvents() {
   $('#billing-submit').on('click', function () {
     var isAdyenPOS = document.querySelector('.payment-method-options :checked').value
         === 'AdyenPOS';
@@ -43,9 +43,10 @@ function initializeBillingEvents() {
     }
   });
 
-  if (window.getPaymentMethodsResponse) {
-    paymentMethodsResponse = window.getPaymentMethodsResponse;
+  if (window.sessionsResponse) {
+    sessionsResponse = window.sessionsResponse;
     checkoutConfiguration = window.Configuration;
+
     checkoutConfiguration.onChange = function (state /* , component */) {
       var type = state.data.paymentMethod.type;
       if(selectedMethod === "googlepay" && type === "paywithgoogle") {
@@ -157,6 +158,14 @@ function initializeBillingEvents() {
       checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
       checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
     }
+    checkoutConfiguration.session = {
+      id: window.sessionsResponse.id,
+      sessionData: window.sessionsResponse.sessionData,
+    };
+    checkout = await AdyenCheckout(checkoutConfiguration);
+    paymentMethodsResponse = checkout.paymentMethodsResponse;
+
+    document.querySelector('#paymentMethodsList').innerHTML = '';
     renderGenericComponent();
   }
 }
@@ -205,12 +214,12 @@ function paymentsDetails(state) {
  * @function
  * @description Initializes Adyen Checkout My Account events
  */
-function initializeAccountEvents() {
+async function initializeAccountEvents() {
   checkoutConfiguration = window.Configuration;
   checkoutConfiguration.onAdditionalDetails = function(state) {
     paymentsDetails(state);
   };
-  checkout = new AdyenCheckout(checkoutConfiguration);
+  checkout = await AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
   var isValid = false;
@@ -333,55 +342,50 @@ function getFallback(paymentMethod) {
 }
 
 /**
- * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ * Renders all payment methods (including card component) retrieved from Adyen session
  */
 async function renderGenericComponent() {
   if (Object.keys(componentsObj).length) {
     await unmountComponents();
   }
-  var paymentMethod;
-  var i;
+
   checkoutConfiguration.paymentMethodsResponse =
-      paymentMethodsResponse.adyenPaymentMethods;
-  var paymentMethods = paymentMethodsResponse.adyenPaymentMethods;
-  if (paymentMethodsResponse.amount) {
-    checkoutConfiguration.amount = paymentMethodsResponse.amount;
-    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = paymentMethodsResponse.amount;
+      paymentMethodsResponse.paymentMethods;
+  if (sessionsResponse.amount) {
+    checkoutConfiguration.amount = sessionsResponse.amount;
+    checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = sessionsResponse.amount;
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount =
-        paymentMethodsResponse.amount;
-    setInstallments(paymentMethodsResponse.amount);
+        sessionsResponse.amount;
+    setInstallments(sessionsResponse.amount);
   }
-  if (paymentMethodsResponse.countryCode) {
-    checkoutConfiguration.countryCode = paymentMethodsResponse.countryCode;
+  if (sessionsResponse.countryCode) {
+    checkoutConfiguration.countryCode = sessionsResponse.countryCode;
   }
-  var amazonpay = window.getPaymentMethodsResponse.adyenPaymentMethods.paymentMethods.find(
+  var amazonpay = paymentMethodsResponse.paymentMethods.find(
       (paymentMethod) => paymentMethod.type === 'amazonpay');
   if(amazonpay) {
     checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
   }
 
-  checkout = new AdyenCheckout(checkoutConfiguration);
-  document.querySelector('#paymentMethodsList').innerHTML = '';
-
-  if (paymentMethods.storedPaymentMethods) {
+  if (paymentMethodsResponse.storedPaymentMethods) {
     for (
-        i = 0;
+        var i = 0;
         i < checkout.paymentMethodsResponse.storedPaymentMethods.length;
         i++
     ) {
-      paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
+      var paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
       if (paymentMethod.supportedShopperInteractions.includes('Ecommerce')) {
         renderPaymentMethod(
             paymentMethod,
             true,
-            paymentMethodsResponse.ImagePath,
+            sessionsResponse.imagePath,
         );
       }
     }
   }
 
-  paymentMethods.paymentMethods.forEach((pm) => {
-    renderPaymentMethod(pm, false, paymentMethodsResponse.ImagePath);
+  paymentMethodsResponse.paymentMethods.forEach((pm) => {
+    renderPaymentMethod(pm, false, sessionsResponse.imagePath);
   });
 
   var firstPaymentMethod = document.querySelector(
@@ -509,7 +513,7 @@ function renderCheckoutComponent(
 }
 
 function getPersonalDetails() {
-  const shippingAddress = window.getPaymentMethodsResponse.shippingAddress;
+  const shippingAddress = sessionsResponse.shippingAddress;
   return {
     firstName: shippingAddress.firstName,
     lastName: shippingAddress.lastName,
@@ -668,14 +672,14 @@ function getAmazonpayConfig() {
     locale: window.Configuration.locale,
     returnUrl: window.returnURL,
     addressDetails: {
-      name: paymentMethodsResponse.shippingAddress.firstName
-          + ' ' + paymentMethodsResponse.shippingAddress.lastName,
-      addressLine1: paymentMethodsResponse.shippingAddress.address1,
-      city:  paymentMethodsResponse.shippingAddress.city,
-      stateOrRegion: paymentMethodsResponse.shippingAddress.city,
-      postalCode:  paymentMethodsResponse.shippingAddress.postalCode,
-      countryCode: paymentMethodsResponse.shippingAddress.country,
-      phoneNumber: paymentMethodsResponse.shippingAddress.phone,
+      name: sessionsResponse.shippingAddress.firstName
+          + ' ' + sessionsResponse.shippingAddress.lastName,
+      addressLine1: sessionsResponse.shippingAddress.address1,
+      city:  sessionsResponse.shippingAddress.city,
+      stateOrRegion: sessionsResponse.shippingAddress.city,
+      postalCode:  sessionsResponse.shippingAddress.postalCode,
+      countryCode: sessionsResponse.shippingAddress.country,
+      phoneNumber: sessionsResponse.shippingAddress.phone,
     },
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');

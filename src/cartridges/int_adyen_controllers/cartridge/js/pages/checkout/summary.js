@@ -1,5 +1,12 @@
 // This script is executed only on the checkout summary page
-if((window.location.pathname.includes('COBilling-Billing') || window.location.pathname.includes('Adyen-ShowConfirmation')) && window.isAdyenPayment) {
+  if((window.location.pathname.includes('COBilling-Billing') || window.location.pathname.includes('Adyen-ShowConfirmation')) && window.isAdyenPayment) {
+
+  async function handleAction(action) {
+    window.Configuration.onAdditionalDetails = onAdditionalDetails;
+    const checkout = await AdyenCheckout(window.Configuration);
+    const actionContainer = document.getElementById('action-container');
+    checkout.createFromAction(action).mount(actionContainer);
+  }
 
   // onAdditionalDetails event handler to be included in Adyen Component configuration
   var onAdditionalDetails = function (state) {
@@ -9,12 +16,9 @@ if((window.location.pathname.includes('COBilling-Billing') || window.location.pa
       data: JSON.stringify(state.data),
       contentType: 'application/json; charset=utf-8',
       async: false,
-      success(data) {
+      success: function (data) {
         if (!data.response.isFinal && typeof data.response.action === 'object') {
-          window.Configuration.onAdditionalDetails = onAdditionalDetails;
-          const checkout = new AdyenCheckout(window.Configuration);
-          const actionContainer = document.getElementById('action-container');
-          checkout.createFromAction(data.response.action).mount(actionContainer);
+          handleAction(data.action);
         } else {
           window.location.href = data.response.redirectUrl;
         }
@@ -23,22 +27,21 @@ if((window.location.pathname.includes('COBilling-Billing') || window.location.pa
   }
 
   // serializes form data and submits to place order. Then proceeds to handle the result
-  function placeOrder(formId) {
+   function placeOrder(formId) {
     const form = $('#' + formId);
     $.ajax({
       method:'POST',
       url: window.summarySubmitUrl,
       data: $(form).serialize(),
-      success: (data) => {
+      success: function(data) {
         if (data.action) {
-          window.Configuration.onAdditionalDetails = onAdditionalDetails;
-          const checkout = new AdyenCheckout(window.Configuration);
-          const actionContainer = document.getElementById('action-container');
           document.getElementById('action-modal-SG').style.display = "block";
-          checkout.createFromAction(data.action).mount(actionContainer);
+          handleAction(data.action);
         } else {
           window.location.href = data.continueUrl;
         }
+      },
+      error: function(err) {
       }
     });
   }

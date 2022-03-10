@@ -3,19 +3,20 @@
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isset name="adyenRecurringPaymentsEnabled" value="${AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
-<isset name="methods" value="${pdict.AdyenPaymentMethods}" scope="page"/>
+<isset name="adyenSessions" value="${pdict.AdyenSessionsResponse}" scope="page"/>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
 <isscript>
-    var getPaymentMethodsResponse = JSON.stringify(methods);
+    var sessionsResponse = JSON.stringify(adyenSessions);
 </isscript>
 
 <script>
-    var paymentMethods = `${getPaymentMethodsResponse}`.replace(/&quot;/g, '\"');
-    window.getPaymentMethodsResponse = JSON.parse(paymentMethods);
+    var sessionsRes = `${sessionsResponse}`.replace(/&quot;/g, '\"');
+    window.sessionsResponse = JSON.parse(sessionsRes);
     var clientKey = "${AdyenHelper.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
@@ -57,6 +58,7 @@
          window.googleMerchantID = "${AdyenHelper.getGoogleMerchantID()}";
          window.cardholderNameBool = "${AdyenHelper.getAdyenCardholderNameEnabled()}";
          window.merchantAccount = "${AdyenHelper.getAdyenMerchantAccount()}";
+         window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
      </script>
 
     <isset name="ratePayValues" value="${AdyenHelper.getRatePayID()}" scope="page"/>

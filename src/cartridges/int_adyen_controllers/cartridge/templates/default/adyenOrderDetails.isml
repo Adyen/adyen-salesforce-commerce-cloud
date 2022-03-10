@@ -16,14 +16,17 @@
 		<div id="voucherResult"></div>
 		<br/>
 		<script type="text/javascript">
+			async function createVoucher(configuration) {
+                const checkout = await AdyenCheckout(configuration);
+                const voucherResult = document.getElementById('voucherResult');
+                var action = JSON.parse('${paymentInstr.custom.adyenAction}'.replace(/&quot;/g, '\"'));
+                const voucher = checkout.createFromAction(action).mount(voucherResult);
+			}
 			var configuration = {
 				locale: '${request.locale}'
 			};
 
-			const checkout = new AdyenCheckout(configuration);
-			const voucherResult = document.getElementById('voucherResult');
-			var action = JSON.parse('${paymentInstr.custom.adyenAction}'.replace(/&quot;/g, '\"'));
-			const voucher = checkout.createFromAction(action).mount(voucherResult);
+            createVoucher(configuration);
 		</script>
 		<!--- Payment details for econtext --->
 		<isif condition="${adyenAction.reference}">
