@@ -17,7 +17,8 @@ beforeEach(() => {
 
   req = {
     querystring: {
-      merchantReference: 'mocked_merchantReference'
+      merchantReference: 'mocked_merchantReference',
+      signature: 'mocked_signature',
     },
     locale: { id: 'nl_NL' },
   };
@@ -35,12 +36,23 @@ describe('Show Confirmation', () => {
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
+
   it('should have payload', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     req.querystring.payload = 'mocked_payload_result';
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
+
+  it('should return to checkout when signatures mismatch', () => {
+      req.querystring.payload = 'mocked_payload_result';
+      req.querystring.signature = 'mismatching_signature';
+      const URLUtils = require('dw/web/URLUtils');
+      const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+      showConfirmation(req, res, jest.fn());
+      expect(URLUtils.url.mock.calls[0][0]).toEqual('Error-ErrorCode');
+  })
+
   test.each(['Authorised', 'Pending', 'Received'])(
     'should handle successful payment: %p for SFRA6',
     (a) => {
@@ -51,6 +63,7 @@ describe('Show Confirmation', () => {
         paymentMethod: [],
         merchantReference: 'mocked_merchantReference',
       }));
+      req.querystring.redirectResult = 'mocked_redirect_result';
       showConfirmation(req, res, jest.fn());
       expect(res.render.mock.calls[0][0]).toBe('orderConfirmForm');
     },
@@ -66,6 +79,7 @@ describe('Show Confirmation', () => {
           paymentMethod: [],
           merchantReference: 'mocked_merchantReference',
         }));
+        req.querystring.redirectResult = 'mocked_redirect_result';
         showConfirmation(req, res, jest.fn());
         expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
       },

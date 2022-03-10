@@ -15,18 +15,6 @@ beforeEach(() => {
   next = jest.fn();
 });
 
-const paymentErrorSnap = `
-  Array [
-    Array [
-      "Checkout-Begin",
-      "stage",
-      "placeOrder",
-      "paymentError",
-      "mocked_error.payment.not.valid",
-    ],
-  ]
-`;
-
 describe('Payment', () => {
   it('should successfully handle payment', () => {
     adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
@@ -49,9 +37,7 @@ describe('Payment', () => {
       details: 'mocked_details',
     };
     handlePayment(stateData, order, { req, res, next });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(
-      paymentErrorSnap,
-      `
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
           "Checkout-Begin",
@@ -61,16 +47,13 @@ describe('Payment', () => {
           "mocked_error.payment.not.valid",
         ],
       ]
-    `,
-    );
+    `);
   });
 
   it('should handle payment error when theres not state data', () => {
     const stateData = {};
     handlePayment(stateData, order, { req, res, next });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(
-      paymentErrorSnap,
-      `
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
           "Checkout-Begin",
@@ -80,7 +63,6 @@ describe('Payment', () => {
           "mocked_error.payment.not.valid",
         ],
       ]
-    `,
-    );
+    `);
   });
 });

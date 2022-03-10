@@ -1,10 +1,16 @@
 const paymentInstrument = () => [
   {
     custom: {
-      adyenPaymentData: 'mocked_adyen_payment_data',
+      adyenPaymentData: "{ \"paymentMethod\": { \"type\": \"mocked_type\" } }",
       adyenRedirectURL: 'https://some_mocked_url/signature',
       adyenMD: 'mocked_adyen_MD',
       adyenAction: 'mocked_adyen_action',
+    },
+    paymentTransaction: {
+        custom: {
+            Adyen_merchantSig: 'mocked_signature',
+            Adyen_authResult: "{ \"data\": \"mock\"}",
+        },
     },
   },
 ];
@@ -38,6 +44,7 @@ export const getOrder = jest.fn((statusValue=4/* orderNo */) => ({
   setExportStatus: jest.fn(),
   orderNo: 'mocked_orderNo',
   orderToken: 'mocked_orderToken',
+  getUUID: jest.fn(),
   custom: { Adyen_pspReference: 'mocked_pspRef' },
   status: { value: statusValue}
 }));
