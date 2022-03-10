@@ -387,8 +387,8 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_Frontend_Region">
-                <display-name xml:lang="x-default">Checkout frontend region</display-name>
-                <description xml:lang="x-default">The region to load your frontend resources (e.g. secured field iframes) from. Should be set to the region closest to where your shoppers are located.</description>
+                <display-name xml:lang="x-default">Region</display-name>
+                <description xml:lang="x-default">This should be set to the region closest to where your shoppers are located. It influences the speed at which front-end resources (Adyen Checkout Component) used throughout the checkout process will be retrieved.</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
