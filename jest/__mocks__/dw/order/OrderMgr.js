@@ -1,14 +1,15 @@
 const paymentInstrument = () => [
   {
     custom: {
-      adyenPaymentData: 'mocked_adyen_payment_data',
+      adyenPaymentData: "{ \"paymentMethod\": { \"type\": \"mocked_type\" } }",
       adyenRedirectURL: 'https://some_mocked_url/signature',
       adyenMD: 'mocked_adyen_MD',
       adyenAction: 'mocked_adyen_action',
     },
     paymentTransaction: {
         custom: {
-            Adyen_merchantSig: 'mocked_signature'
+            Adyen_merchantSig: 'mocked_signature',
+            Adyen_authResult: "{ \"data\": \"mock\"}",
         },
     },
   },

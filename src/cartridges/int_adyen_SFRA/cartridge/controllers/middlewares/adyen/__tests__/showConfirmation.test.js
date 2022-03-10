@@ -10,10 +10,6 @@ beforeEach(() => {
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
-  JSON.parse = jest.fn().mockImplementationOnce(() => {
-    return {paymentMethod: { type: 'mocked_type'}};
-  });
-
   res = {
     redirect: jest.fn(),
     render: jest.fn(),
