@@ -9,6 +9,11 @@ Object {
       "adyenPaymentData": "mocked_adyen_payment_data",
       "adyenRedirectURL": "https://some_mocked_url/signature",
     },
+    "paymentTransaction": Object {
+      "custom": Object {
+        "Adyen_merchantSig": "mocked_signature",
+      },
+    },
   },
   "details": Object {
     "payload": "mocked_payload",
@@ -25,6 +30,11 @@ Object {
       "adyenMD": "mocked_adyen_MD",
       "adyenPaymentData": "mocked_adyen_payment_data",
       "adyenRedirectURL": "https://some_mocked_url/signature",
+    },
+    "paymentTransaction": Object {
+      "custom": Object {
+        "Adyen_merchantSig": "mocked_signature",
+      },
     },
   },
   "details": Object {

@@ -18,6 +18,7 @@ function getSignature(paymentsDetailsResponse) {
       order.getUUID(),
       paymentsDetailsResponse.merchantReference,
     );
+
     Transaction.wrap(() => {
       paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
         paymentsDetailsResponse,
@@ -55,7 +56,6 @@ function paymentsDetails(req, res, next) {
         resultCode: paymentsDetailsResponse.resultCode,
       };
     }
-
     if (signature !== null) {
       response.redirectUrl = URLUtils.url(
         'Adyen-ShowConfirmation',

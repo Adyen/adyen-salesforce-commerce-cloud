@@ -38,12 +38,6 @@ describe('Begin', () => {
     expect(OrderMgr.failOrder).not.toHaveBeenCalled();
   })
 
-  it('should log the error when failed to restore cart', () => {
-    req.session.privacyCache.get.mockImplementationOnce(() =>{ throw Error('Something went wrong'); });
-    begin(req, res, jest.fn());
-    expect(Logger.error).toHaveBeenCalledWith('Failed to restore cart. error: Error: Something went wrong');
-  })
-
   it('should not attempt to restore cart when cart is not empty', () => {
     req.session.privacyCache.get.mockImplementationOnce(() =>{ return '12312' });
     OrderMgr.status = { value: 0};
