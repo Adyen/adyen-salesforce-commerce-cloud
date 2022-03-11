@@ -51,10 +51,19 @@ var adyenHelperObj = {
 
   ADYEN_LIVE_URL: 'https://live.adyen.com/',
   ADYEN_TEST_URL: 'https://test.adyen.com/',
+  FRONTEND_REGIONS: {
+    EU: 'EU',
+    US: 'US',
+    AU: 'AU',
+  },
   LOADING_CONTEXT_TEST:
     'https://checkoutshopper-test.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE:
+  LOADING_CONTEXT_LIVE_EU:
     'https://checkoutshopper-live.adyen.com/checkoutshopper/',
+  LOADING_CONTEXT_LIVE_US:
+    'https://checkoutshopper-live-us.adyen.com/checkoutshopper/',
+  LOADING_CONTEXT_LIVE_AU:
+    'https://checkoutshopper-live-au.adyen.com/checkoutshopper/',
 
   CHECKOUT_COMPONENT_VERSION: '5.6.1',
   VERSION: '21.2.0',
@@ -229,7 +238,16 @@ var adyenHelperObj = {
         returnValue = adyenHelperObj.LOADING_CONTEXT_TEST;
         break;
       case adyenHelperObj.MODE.LIVE:
-        returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE;
+        const frontEndRegion = adyenHelperObj.getCustomPreference('Adyen_Frontend_Region');
+        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.US ) {
+            returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_US;
+            break;
+        }
+        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.AU ) {
+            returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_AU;
+            break;
+        }
+        returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_EU;
         break;
     }
     return returnValue;
