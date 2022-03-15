@@ -88,6 +88,15 @@ function showConfirmation(req, res, next) {
     const adyenPaymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
+
+    if (order.status.value === Order.ORDER_STATUS_NEW) {
+      Logger.getLogger('Adyen').debug(
+        'ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation',
+      );
+      res.redirect(URLUtils.url('Cart-Show'));
+      return next();
+    }
+
     if (
       adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
       signature
