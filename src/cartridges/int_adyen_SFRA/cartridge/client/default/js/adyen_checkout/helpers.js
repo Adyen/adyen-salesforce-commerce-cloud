@@ -30,7 +30,7 @@ function paymentFromComponent(data, component) {
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
       }
-      if (response.paymentError) {
+      if (response.paymentError || response.error) {
         component.handleError();
       }
     },
