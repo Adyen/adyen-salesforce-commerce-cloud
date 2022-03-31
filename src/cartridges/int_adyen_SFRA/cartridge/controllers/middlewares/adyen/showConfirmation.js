@@ -73,8 +73,8 @@ function setPaymentMethodField(adyenPaymentInstrument, order) {
 
 function isOrderAlreadyProcessed(order) {
   return (
-    order.status.value !==
-    (Order.ORDER_STATUS_CREATED && Order.ORDER_STATUS_FAILED)
+    order.status.value !== Order.ORDER_STATUS_CREATED &&
+    order.status.value !== Order.ORDER_STATUS_FAILED
   );
 }
 
