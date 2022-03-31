@@ -606,7 +606,6 @@ var adyenHelperObj = {
 
     const origin = `${request.getHttpProtocol()}://${request.getHttpHost()}`;
     jsonObject.origin = origin;
-    jsonObject.threeDS2RequestData = { notificationURL: '' };
 
     return jsonObject;
   },
