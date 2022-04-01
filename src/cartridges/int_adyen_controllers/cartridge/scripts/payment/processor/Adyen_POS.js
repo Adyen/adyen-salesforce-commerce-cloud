@@ -60,6 +60,7 @@ function authorize(args) {
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     );
     return {
+      isAdyen: true,
       authorized: false,
       fieldErrors: [],
       serverErrors: errors,
@@ -81,12 +82,15 @@ function authorize(args) {
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     );
     return {
+      isAdyen: true,
       authorized: false,
       fieldErrors: [],
       serverErrors: errors,
       error: true,
     };
   }
+
+  result.isAdyen = true;
   return result;
 }
 
