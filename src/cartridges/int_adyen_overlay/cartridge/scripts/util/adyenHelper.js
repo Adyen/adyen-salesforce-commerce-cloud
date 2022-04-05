@@ -66,7 +66,7 @@ var adyenHelperObj = {
     'https://checkoutshopper-live-au.adyen.com/checkoutshopper/',
 
   CHECKOUT_COMPONENT_VERSION: '5.6.1',
-  VERSION: '21.2.0',
+  VERSION: '22.1.0',
   BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
 
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
