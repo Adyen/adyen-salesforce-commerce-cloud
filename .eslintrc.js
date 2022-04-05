@@ -67,7 +67,7 @@ module.exports = {
     "complexity": [
       "error",
       {
-        "max": 4,
+        "max": 5,
       },
     ],
     "eqeqeq": "error",

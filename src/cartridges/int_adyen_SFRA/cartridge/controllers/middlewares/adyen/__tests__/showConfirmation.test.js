@@ -17,7 +17,7 @@ beforeEach(() => {
 
   req = {
     querystring: {
-      merchantReference: 'mocked_merchantReference',
+      merchantReference: 0,
       signature: 'mocked_signature',
     },
     locale: { id: 'nl_NL' },
@@ -51,6 +51,13 @@ describe('Show Confirmation', () => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
       showConfirmation(req, res, jest.fn());
       expect(URLUtils.url.mock.calls[0][0]).toEqual('Error-ErrorCode');
+  })
+
+  it('should not continue processing when order is not open or failed', () => {
+    const URLUtils = require('dw/web/URLUtils');
+    req.querystring.merchantReference = 4;
+    showConfirmation(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Cart-Show');
   })
 
   test.each(['Authorised', 'Pending', 'Received'])(

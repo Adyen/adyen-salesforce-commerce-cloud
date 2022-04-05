@@ -71,6 +71,13 @@ function setPaymentMethodField(adyenPaymentInstrument, order) {
   }
 }
 
+function isOrderAlreadyProcessed(order) {
+  return (
+    order.status.value !== Order.ORDER_STATUS_CREATED &&
+    order.status.value !== Order.ORDER_STATUS_FAILED
+  );
+}
+
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
  * if the payment was accepted.
@@ -88,6 +95,15 @@ function showConfirmation(req, res, next) {
     const adyenPaymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
+
+    if (isOrderAlreadyProcessed(order)) {
+      Logger.getLogger('Adyen').debug(
+        'ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation',
+      );
+      res.redirect(URLUtils.url('Cart-Show'));
+      return next();
+    }
+
     if (
       adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
       signature
