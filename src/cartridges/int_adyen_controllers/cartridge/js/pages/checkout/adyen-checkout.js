@@ -227,6 +227,7 @@ async function initializeAccountEvents() {
       .create('card', {
         hasHolderName: true,
         holderNameRequired: true,
+        brands: window.allowedBrands,
         onChange: function (state) {
           adyenStateData = state.data;
           isValid = state.isValid;
