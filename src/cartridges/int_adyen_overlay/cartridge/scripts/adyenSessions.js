@@ -36,14 +36,6 @@ function createSession(basket, customer, countryCode) {
       throw new Error('Could not do /sessions call');
     }
 
-    let paymentAmount = 0;
-    let currencyCode = session.currency.currencyCode;
-
-    if(basket) {
-      paymentAmount = AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice());
-      currencyCode = basket.currencyCode;
-    }
-
     let sessionsRequest = {};
 
     // There is no basket for myAccount session requests
@@ -52,8 +44,8 @@ function createSession(basket, customer, countryCode) {
       let paymentRequest = {
         merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
         amount: {
-          currency: currencyCode,
-          value: paymentAmount.value,
+          currency: basket.currencyCode,
+          value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
         },
       };
 
@@ -84,8 +76,8 @@ function createSession(basket, customer, countryCode) {
         allowedPaymentMethods: ['scheme'],
         reference: 'no_basket',
         amount: {
-          currency: currencyCode,
-          value: paymentAmount.value,
+          currency: session.currency.currencyCode,
+          value: 0,
         },
       }
     }
