@@ -196,11 +196,9 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
     savePaymentDetails: jest.fn(),
     getAdyenHash: jest.fn((str, str2) => `${str} __ ${str2}`),
     getLoadingContext: jest.fn(() => 'mocked_loading_context'),
-    getCreditCardInstallments: jest.fn(() => true),
     getCurrencyValueForApi: jest.fn(() => ({
       value: 1000,
     })),
-    getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
     isAdyenGivingAvailable: jest.fn(() => true),
     getAdyenGivingConfig: jest.fn(() => true),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
