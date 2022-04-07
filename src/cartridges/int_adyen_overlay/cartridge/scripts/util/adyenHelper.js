@@ -29,7 +29,6 @@ const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPayme
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
-const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
 var adyenHelperObj = {
