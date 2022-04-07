@@ -28,7 +28,6 @@ function getCustomPreference(field) {
     return customPreference;
 }
 
-/* eslint no-var: off */
 const adyenConfigsObj = {
     // Get the current adyen environment mode (live or test)
     getAdyenEnvironment() {

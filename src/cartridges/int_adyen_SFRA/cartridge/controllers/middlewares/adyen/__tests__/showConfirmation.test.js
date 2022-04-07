@@ -7,7 +7,7 @@ let req;
 beforeEach(() => {
   const { adyen } = require('../../index');
   adyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-    showConfirmation = adyen.showConfirmation;
+  showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
   res = {
