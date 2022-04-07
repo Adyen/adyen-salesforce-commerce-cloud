@@ -27,7 +27,7 @@ function getCustomPreference(field) {
     }
     return customPreference;
 }
- 
+
 const adyenConfigsObj = {
     // Get the current adyen environment mode (live or test)
     getAdyenEnvironment() {
