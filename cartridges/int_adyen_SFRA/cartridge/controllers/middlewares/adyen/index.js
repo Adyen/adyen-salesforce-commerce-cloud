@@ -1,25 +1,40 @@
 "use strict";
 
-var showConfirmation = require('*/cartridge/controllers/middlewares/adyen/showConfirmation');
+var adyen3d = require('./adyen3d');
 
-var paymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/paymentFromComponent');
+var adyen3ds2 = require('./adyen3ds2');
 
-var notify = require('*/cartridge/controllers/middlewares/adyen/notify');
+var authorizeWithForm = require('./authorizeWithForm');
 
-var showConfirmationPaymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent');
+var authorize3ds2 = require('./authorize3ds2');
 
-var paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
+var redirect = require('./redirect');
 
-var redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
+var showConfirmation = require('./showConfirmation');
 
-var callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
+var getPaymentMethods = require('./getPaymentMethods');
+
+var paymentFromComponent = require('./paymentFromComponent');
+
+var notify = require('./notify');
+
+var showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
+
+var paymentsDetails = require('./paymentsDetails');
+
+var redirect3ds1Response = require('./redirect3ds1Response');
 
 module.exports = {
+  adyen3d: adyen3d,
+  adyen3ds2: adyen3ds2,
+  authorizeWithForm: authorizeWithForm,
+  authorize3ds2: authorize3ds2,
+  redirect: redirect,
   showConfirmation: showConfirmation,
+  getPaymentMethods: getPaymentMethods,
   paymentFromComponent: paymentFromComponent,
   notify: notify,
   showConfirmationPaymentFromComponent: showConfirmationPaymentFromComponent,
   paymentsDetails: paymentsDetails,
-  redirect3ds1Response: redirect3ds1Response,
-  callCreateSession: callCreateSession
+  redirect3ds1Response: redirect3ds1Response
 };

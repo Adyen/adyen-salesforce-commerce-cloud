@@ -1,4 +1,3 @@
-<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
     <isif condition="${paymentOption.ID === 'AdyenComponent'}">
         <isinclude template="checkout/billing/paymentOptions/adyenComponentTab"/>
@@ -7,4 +6,4 @@
         <isinclude template="checkout/billing/paymentOptions/adyenPosTab"/>
     </isif>
 </isloop>
-<iscomment> ### Custom Adyen cartridge end ### </iscomment>
+

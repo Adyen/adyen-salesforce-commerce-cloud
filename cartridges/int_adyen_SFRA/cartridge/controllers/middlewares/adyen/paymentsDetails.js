@@ -4,32 +4,12 @@ var Logger = require('dw/system/Logger');
 
 var URLUtils = require('dw/web/URLUtils');
 
-var OrderMgr = require('dw/order/OrderMgr');
-
-var Transaction = require('dw/system/Transaction');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
-var constants = require('*/cartridge/adyenConstants/constants');
-
-function getSignature(paymentsDetailsResponse) {
-  var order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
-
-  if (order) {
-    var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
-    var signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
-    Transaction.wrap(function () {
-      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
-    });
-    return signature;
-  }
-
-  return undefined;
-}
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment
+ * This is used to confirm 3DS2 payment status after (zeroAuth) challenge & authentication
  */
 
 
@@ -39,9 +19,7 @@ function paymentsDetails(req, res, next) {
     var isAmazonpay = request.paymentMethod === 'amazonpay';
     request.paymentMethod = undefined;
     var paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(request);
-    var response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse); // Create signature to verify returnUrl
-
-    var signature = getSignature(paymentsDetailsResponse);
+    var response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
 
     if (isAmazonpay) {
       response.fullResponse = {
@@ -49,10 +27,6 @@ function paymentsDetails(req, res, next) {
         paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
         resultCode: paymentsDetailsResponse.resultCode
       };
-    }
-
-    if (signature !== null) {
-      response.redirectUrl = URLUtils.url('Adyen-ShowConfirmation', 'merchantReference', response.merchantReference, 'signature', signature).toString();
     }
 
     res.json(response);

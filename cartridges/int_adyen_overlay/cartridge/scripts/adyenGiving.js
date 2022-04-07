@@ -29,8 +29,6 @@ var Transaction = require('dw/system/Transaction');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-
 function donate(donationReference, donationAmount, originalReference) {
   try {
     var service = AdyenHelper.getService(AdyenHelper.SERVICE.ADYENGIVING);
@@ -40,13 +38,13 @@ function donate(donationReference, donationAmount, originalReference) {
     }
 
     var requestObject = {
-      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      donationAccount: AdyenConfigs.getAdyenGivingCharityAccount(),
+      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      donationAccount: AdyenHelper.getAdyenGivingCharityAccount(),
       modificationAmount: donationAmount,
-      reference: "".concat(AdyenConfigs.getAdyenMerchantAccount(), "-").concat(donationReference),
+      reference: "".concat(AdyenHelper.getAdyenMerchantAccount(), "-").concat(donationReference),
       originalReference: originalReference
     };
-    var xapikey = AdyenConfigs.getAdyenApiKey();
+    var xapikey = AdyenHelper.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-key', xapikey);

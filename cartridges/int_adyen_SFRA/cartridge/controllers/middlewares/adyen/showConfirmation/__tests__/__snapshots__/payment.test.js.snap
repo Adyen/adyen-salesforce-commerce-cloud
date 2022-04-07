@@ -6,20 +6,14 @@ Object {
     "custom": Object {
       "adyenAction": "mocked_adyen_action",
       "adyenMD": "mocked_adyen_MD",
-      "adyenPaymentData": "{ \\"paymentMethod\\": { \\"type\\": \\"mocked_type\\" } }",
+      "adyenPaymentData": "mocked_adyen_payment_data",
       "adyenRedirectURL": "https://some_mocked_url/signature",
-    },
-    "paymentTransaction": Object {
-      "custom": Object {
-        "Adyen_authResult": "{ \\"data\\": \\"mock\\"}",
-        "Adyen_merchantSig": "mocked_signature",
-      },
     },
   },
   "details": Object {
     "payload": "mocked_payload",
   },
-  "paymentData": "{ \\"paymentMethod\\": { \\"type\\": \\"mocked_type\\" } }",
+  "paymentData": "mocked_adyen_payment_data",
 }
 `;
 
@@ -29,19 +23,13 @@ Object {
     "custom": Object {
       "adyenAction": "mocked_adyen_action",
       "adyenMD": "mocked_adyen_MD",
-      "adyenPaymentData": "{ \\"paymentMethod\\": { \\"type\\": \\"mocked_type\\" } }",
+      "adyenPaymentData": "mocked_adyen_payment_data",
       "adyenRedirectURL": "https://some_mocked_url/signature",
-    },
-    "paymentTransaction": Object {
-      "custom": Object {
-        "Adyen_authResult": "{ \\"data\\": \\"mock\\"}",
-        "Adyen_merchantSig": "mocked_signature",
-      },
     },
   },
   "details": Object {
     "redirectResult": "mocked_redirect_result",
   },
-  "paymentData": "{ \\"paymentMethod\\": { \\"type\\": \\"mocked_type\\" } }",
+  "paymentData": "mocked_adyen_payment_data",
 }
 `;

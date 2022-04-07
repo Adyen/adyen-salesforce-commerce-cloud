@@ -5,7 +5,7 @@ Array [
   Array [
     "Checkout-Begin",
     "stage",
-    "payment",
+    "placeOrder",
     "paymentError",
     "mocked_error.payment.not.valid",
   ],
@@ -17,7 +17,7 @@ Array [
   Array [
     "Checkout-Begin",
     "stage",
-    "payment",
+    "placeOrder",
     "paymentError",
     "mocked_error.payment.not.valid",
   ],

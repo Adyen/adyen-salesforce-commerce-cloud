@@ -2,19 +2,64 @@
 
 exports[`Authorize should authorize 3DS payments 1`] = `
 Object {
-  "error": true,
+  "authorized": true,
+  "authorized3d": true,
+  "orderNo": "15",
+  "paymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": undefined,
+    },
+    "paymentMethod": "AdyenComponent",
+    "paymentTransaction": Object {
+      "paymentProcessor": "mockedPaymentProcessor",
+    },
+    "setCreditCardExpirationMonth": [MockFunction],
+    "setCreditCardExpirationYear": [MockFunction],
+    "setCreditCardNumber": [MockFunction],
+    "setCreditCardToken": [MockFunction],
+    "setCreditCardType": [MockFunction],
+  },
+  "redirectObject": Object {
+    "data": Object {
+      "MD": "mockedMD",
+    },
+    "url": "mockedUrl",
+  },
+  "signature": "mockedUrl __ ockedMD",
 }
 `;
 
 exports[`Authorize should authorize 3DS2 payments 1`] = `
 Object {
-  "error": true,
+  "action": "\\"mockedAction\\"",
+  "resultCode": "mockedresultCode",
+  "threeDS2": "mockedthreeDS2",
 }
 `;
 
 exports[`Authorize should authorize redirectShopper payments 1`] = `
 Object {
-  "error": true,
+  "authorized": true,
+  "authorized3d": false,
+  "orderNo": "15",
+  "paymentInstrument": Object {
+    "custom": Object {
+      "adyenPaymentData": "mockedpaymentData",
+    },
+    "paymentMethod": "AdyenComponent",
+    "paymentTransaction": Object {
+      "paymentProcessor": "mockedPaymentProcessor",
+    },
+    "setCreditCardExpirationMonth": [MockFunction],
+    "setCreditCardExpirationYear": [MockFunction],
+    "setCreditCardNumber": [MockFunction],
+    "setCreditCardToken": [MockFunction],
+    "setCreditCardType": [MockFunction],
+  },
+  "redirectObject": Object {
+    "url": "mockedURL",
+  },
+  "signature": "mockedURL __ 15",
 }
 `;
 
@@ -26,7 +71,8 @@ Object {
 
 exports[`Authorize should handle the create payment request decision accept 1`] = `
 Object {
-  "error": true,
+  "authorized": true,
+  "error": false,
 }
 `;
 

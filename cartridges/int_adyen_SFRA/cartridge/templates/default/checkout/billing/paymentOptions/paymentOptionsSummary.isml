@@ -1,9 +1,7 @@
 <div class="payment-details">
     <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
-        <iscomment> ### Custom Adyen cartridge start ### </iscomment>
         <isif condition="${payment.paymentMethod == 'AdyenPOS' || payment.paymentMethod == 'AdyenComponent'} ">
             <isinclude template="checkout/billing/paymentOptions/adyenComponentSummary"/>
         </isif>
-        <iscomment> ### Custom Adyen cartridge end ### </iscomment>
     </isloop>
 </div>

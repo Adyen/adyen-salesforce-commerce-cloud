@@ -1,13 +1,12 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 
 <script>
-    var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
+    var clientKey = "${AdyenHelper.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
+    var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";

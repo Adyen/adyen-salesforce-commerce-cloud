@@ -37,7 +37,7 @@ if (document.querySelector('.adyen-payment-details') && window.adyenGivingAvaila
   var amounts;
 
   try {
-    amounts = JSON.parse(window.donationAmounts);
+    amounts = JSON.parse(donationAmounts);
   } catch (e) {
     amounts = [];
   }
@@ -53,7 +53,6 @@ if (document.querySelector('.adyen-payment-details') && window.adyenGivingAvaila
     onDonate: handleOnDonate,
     onCancel: handleOnCancel
   };
-  AdyenCheckout(window.Configuration).then(function (checkout) {
-    checkout.create('donation', donationConfig).mount(adyenGivingNode);
-  });
+  var checkout = new AdyenCheckout(window.Configuration);
+  donation = checkout.create('donation', donationConfig).mount(adyenGivingNode);
 }

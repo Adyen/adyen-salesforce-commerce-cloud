@@ -1,7 +1,7 @@
 <iscontent compact="true"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 
 <isif condition="${payment.adyenAction != null}">
     <!--- Payment action for Voucher --->
@@ -12,12 +12,10 @@
             locale: '${request.locale}'
         };
 
-        AdyenCheckout(configuration).then((checkout) => {
-            const voucherResult = document.getElementById('voucherResult');
-            const action = JSON.parse('${payment.adyenAction}'.replace(/&quot;/g, '\"'));
-            checkout.createFromAction(action).mount(voucherResult);
-        });
-
+        const checkout = new AdyenCheckout(configuration);
+        const voucherResult = document.getElementById('voucherResult');
+        var action = JSON.parse('${payment.adyenAction}'.replace(/&quot;/g, '\"'));
+        const voucher = checkout.createFromAction(action).mount(voucherResult);
     </script>
 </isif>
 

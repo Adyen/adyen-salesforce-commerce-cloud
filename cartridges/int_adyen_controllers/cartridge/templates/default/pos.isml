@@ -2,7 +2,7 @@
 <isinclude template="util/modules"/>
 
 <isset name="brandCode" value="AdyenPOS" scope="session"/>
-<isset name="connectedTerminals" value="${pdict.AdyenSessionsResponse.adyenConnectedTerminals}" scope="page"/>
+<isset name="connectedTerminals" value="${pdict.AdyenPaymentMethods.adyenConnectedTerminals}" scope="page"/>
 
 <isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
 <div class="form-row form-indent">

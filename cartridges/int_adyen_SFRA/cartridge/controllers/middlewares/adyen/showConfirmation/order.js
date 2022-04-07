@@ -6,12 +6,10 @@ var URLUtils = require('dw/web/URLUtils');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
-function handleOrderConfirm(adyenPaymentInstrument, result, order, orderModel, _ref) {
+function handleOrderConfirm(order, orderModel, adyenPaymentInstrument, result, _ref) {
   var res = _ref.res,
       next = _ref.next;
   Transaction.wrap(function () {
@@ -20,7 +18,7 @@ function handleOrderConfirm(adyenPaymentInstrument, result, order, orderModel, _
   });
   clearForms.clearForms(); // determines SFRA version for backwards compatibility
 
-  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+  if (AdyenHelper.getAdyenSFRA6Compatibility() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken

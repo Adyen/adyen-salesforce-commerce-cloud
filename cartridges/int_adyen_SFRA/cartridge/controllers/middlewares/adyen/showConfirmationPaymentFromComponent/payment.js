@@ -2,8 +2,6 @@
 
 var OrderMgr = require('dw/order/OrderMgr');
 
-var Order = require('dw/order/Order');
-
 var Transaction = require('dw/system/Transaction');
 
 var URLUtils = require('dw/web/URLUtils');
@@ -11,8 +9,6 @@ var URLUtils = require('dw/web/URLUtils');
 var Locale = require('dw/util/Locale');
 
 var Resource = require('dw/web/Resource');
-
-var Logger = require('dw/system/Logger');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
@@ -22,11 +18,9 @@ var OrderModel = require('*/cartridge/models/order');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-
 var constants = require('*/cartridge/adyenConstants/constants');
 
-var _require = require('*/cartridge/controllers/utils/index'),
+var _require = require('../../../utils/index'),
     clearForms = _require.clearForms;
 
 function handlePaymentError(order, _ref) {
@@ -35,7 +29,7 @@ function handlePaymentError(order, _ref) {
   Transaction.wrap(function () {
     OrderMgr.failOrder(order, true);
   });
-  res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
+  res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)));
   return next();
 }
 
@@ -83,7 +77,7 @@ function handleAuthorisedPayment(order, result, adyenPaymentInstrument, _ref2) {
   });
   clearForms.clearForms(); // determines SFRA version for backwards compatibility
 
-  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+  if (AdyenHelper.getAdyenSFRA6Compatibility() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken
@@ -111,11 +105,6 @@ function handlePayment(stateData, order, options) {
     } else {
       return handlePaymentError(order, options);
     }
-  }
-
-  if (order.status.value === Order.ORDER_STATUS_FAILED) {
-    Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
-    return handlePaymentError(order, options);
   }
 
   var detailsCall = handlePaymentsDetailsCall(stateData, adyenPaymentInstrument);

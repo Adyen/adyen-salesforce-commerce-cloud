@@ -1,13 +1,5 @@
 "use strict";
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var _require = require('./commons/index'),
@@ -16,8 +8,7 @@ var _require = require('./commons/index'),
 
 var store = require('../../../store');
 
-var checkout;
-var card; // Store configuration
+var checkout; // Store configuration
 
 store.checkoutConfiguration.amount = {
   value: 0,
@@ -65,38 +56,12 @@ store.checkoutConfiguration.onAdditionalDetails = function (state) {
       }
     }
   });
-};
+}; // card and checkout component creation
 
-function initializeCardComponent() {
-  return _initializeCardComponent.apply(this, arguments);
-}
 
-function _initializeCardComponent() {
-  _initializeCardComponent = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-    var cardNode;
-    return _regenerator["default"].wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            // card and checkout component creation
-            cardNode = document.getElementById('card');
-            _context.next = 3;
-            return AdyenCheckout(store.checkoutConfiguration);
-
-          case 3:
-            checkout = _context.sent;
-            card = checkout.create('card').mount(cardNode);
-
-          case 5:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _initializeCardComponent.apply(this, arguments);
-}
-
+var cardNode = document.getElementById('card');
+checkout = new AdyenCheckout(store.checkoutConfiguration);
+var card = checkout.create('card').mount(cardNode);
 var formErrorsExist = false;
 
 function submitAddCard() {
@@ -116,9 +81,8 @@ function submitAddCard() {
       }
     }
   });
-}
+} // Add Payment Button event handler
 
-initializeCardComponent(); // Add Payment Button event handler
 
 $('button[value="add-new-payment"]').on('click', function (event) {
   if (store.isValid) {
@@ -131,8 +95,6 @@ $('button[value="add-new-payment"]').on('click', function (event) {
 
     event.preventDefault();
   } else {
-    var _card;
-
-    (_card = card) === null || _card === void 0 ? void 0 : _card.showValidation();
+    card.showValidation();
   }
 });

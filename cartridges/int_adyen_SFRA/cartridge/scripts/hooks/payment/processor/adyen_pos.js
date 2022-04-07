@@ -1,6 +1,6 @@
 "use strict";
 
-var middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
+var middlewares = require('./middlewares/index');
 
 function Handle(basket) {
   return middlewares.posHandle(basket);

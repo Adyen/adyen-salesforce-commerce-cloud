@@ -51,10 +51,8 @@
 				<div>
 					<span class="label">${Resource.msg('global.amount','locale',null)}:</span>
 					<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
-                    <iscomment> ### Custom Adyen cartridge start ### </iscomment>
                     <br/>
                     <isinclude template="adyenOrderDetails" />
-                    <iscomment> ### Custom Adyen cartridge end ### </iscomment>
 				</div><!-- END: payment-amount -->
 			</isloop>
 		</td>

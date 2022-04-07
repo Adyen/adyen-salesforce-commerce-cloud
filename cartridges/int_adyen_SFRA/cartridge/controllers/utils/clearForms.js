@@ -38,20 +38,8 @@ function clearAdyenData(paymentInstrument) {
     paymentInstrument.custom.adyenAction = null;
   });
 }
-/**
- * Clear Adyen transaction data
- */
-
-
-function clearPaymentTransactionData(paymentInstrument) {
-  Transaction.wrap(function () {
-    paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
-    paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = null;
-  });
-}
 
 module.exports = {
   clearForms: clearForms,
-  clearAdyenData: clearAdyenData,
-  clearPaymentTransactionData: clearPaymentTransactionData
+  clearAdyenData: clearAdyenData
 };

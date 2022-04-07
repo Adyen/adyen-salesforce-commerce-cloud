@@ -3,7 +3,7 @@
 exports[`Render Generic Component should render 1`] = `
 Object {
   "amount": "mocked_amount",
-  "countryCode": "mocked_countrycode",
+  "countryCode": "mocked_country",
   "paymentMethodsConfiguration": Object {
     "amazonpay": Object {
       "addressDetails": Object {
@@ -18,9 +18,17 @@ Object {
       "configuration": undefined,
     },
   },
-  "session": Object {
-    "id": "mock_id",
-    "sessionData": "mock_session_data",
+  "paymentMethodsResponse": Object {
+    "paymentMethods": Array [
+      Object {
+        "name": "Card",
+        "type": "scheme",
+      },
+      Object {
+        "type": "amazonpay",
+      },
+    ],
+    "storedPaymentMethods": true,
   },
 }
 `;

@@ -12,6 +12,10 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
+var paymentResponseHandler = require('./authorize/paymentResponse');
+
+var constants = require('*/cartridge/adyenConstants/constants');
+
 function errorHandler() {
   var serverErrors = [Resource.msg('error.payment.processor.not.supported', 'checkout', null)];
   return {
@@ -20,6 +24,10 @@ function errorHandler() {
     serverErrors: serverErrors,
     error: true
   };
+}
+
+function check3DS2(result) {
+  return result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER;
 }
 
 function paymentErrorHandler(result) {
@@ -53,15 +61,14 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
   if (result.error) {
     return errorHandler();
+  } // Trigger 3DS2 flow
+
+
+  if (check3DS2(result)) {
+    return paymentResponseHandler(paymentInstrument, result, orderNumber);
   }
 
-  var checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
-
-  if (!checkoutResponse.isFinal) {
-    return checkoutResponse;
-  }
-
-  if (!checkoutResponse.isSuccessful) {
+  if (result.decision !== 'ACCEPT') {
     return paymentErrorHandler(result);
   }
 
