@@ -3,7 +3,7 @@
 
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 
-<input type="hidden" id="allowedBrands" value="${pdict.AllowedBrands}"/>
+<input type="hidden" id="sessionData" value="${pdict.SessionData}"/>
 
 <script>
     var clientKey = "${AdyenHelper.getAdyenClientKey()}";
@@ -11,7 +11,7 @@
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
-    window.allowedBrands = JSON.parse(document.getElementById('allowedBrands').value);
+    window.sessionData = JSON.parse(document.getElementById('sessionData').value);
     window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
     window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";

@@ -219,6 +219,7 @@ async function initializeAccountEvents() {
   checkoutConfiguration.onAdditionalDetails = function(state) {
     paymentsDetails(state);
   };
+  checkoutConfiguration.session = window.sessionData
   checkout = await AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
@@ -227,7 +228,6 @@ async function initializeAccountEvents() {
       .create('card', {
         hasHolderName: true,
         holderNameRequired: true,
-        brands: window.allowedBrands,
         onChange: function (state) {
           adyenStateData = state.data;
           isValid = state.isValid;
