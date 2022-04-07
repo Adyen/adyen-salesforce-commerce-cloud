@@ -26,16 +26,17 @@ const StringUtils = require('dw/util/StringUtils');
 const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 function getTerminals() {
   try {
     const requestObject = {};
     const getTerminalRequest = {};
-    getTerminalRequest.merchantAccount = AdyenHelper.getAdyenMerchantAccount();
+    getTerminalRequest.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
 
     // storeId is optional
-    if (AdyenHelper.getAdyenStoreId() !== null) {
-      getTerminalRequest.store = AdyenHelper.getAdyenStoreId();
+    if (AdyenConfigs.getAdyenStoreId() !== null) {
+      getTerminalRequest.store = AdyenConfigs.getAdyenStoreId();
     }
 
     requestObject.request = getTerminalRequest;
@@ -199,7 +200,7 @@ function executeCall(serviceType, requestObject) {
     throw new Error(`Error creating terminal service ${serviceType}`);
   }
 
-  const apiKey = AdyenHelper.getAdyenApiKey();
+  const apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

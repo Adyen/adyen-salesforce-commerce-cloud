@@ -1,5 +1,6 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 // order-confirm is POST in SFRA v6.0.0. orderID is contained in form.
 // This was a GET call with a querystring containing ID in earlier versions.
@@ -8,14 +9,14 @@ function getOrderId(req) {
 }
 
 function handleAdyenGiving(req, res, order) {
-  const clientKey = AdyenHelper.getAdyenClientKey();
-  const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+  const clientKey = AdyenConfigs.getAdyenClientKey();
+  const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
   const configuredAmounts = AdyenHelper.getDonationAmounts();
-  const charityName = AdyenHelper.getAdyenGivingCharityName();
-  const charityWebsite = AdyenHelper.getAdyenGivingCharityWebsite();
-  const charityDescription = AdyenHelper.getAdyenGivingCharityDescription();
-  const adyenGivingBackgroundUrl = AdyenHelper.getAdyenGivingBackgroundUrl();
-  const adyenGivingLogoUrl = AdyenHelper.getAdyenGivingLogoUrl();
+  const charityName = AdyenConfigs.getAdyenGivingCharityName();
+  const charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
+  const charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
+  const adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
+  const adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
 
   const donationAmounts = {
     currency: session.currency.currencyCode,

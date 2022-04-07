@@ -1,6 +1,6 @@
 "use strict";
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
@@ -32,14 +32,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* API Includes */
 var Logger = require('dw/system/Logger');
-/* Script Modules */
-
 
 var Resource = require('dw/web/Resource');
 
 var Order = require('dw/order/Order');
 
+var Transaction = require('dw/system/Transaction');
+/* Script Modules */
+
+
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 var RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 
@@ -47,7 +51,18 @@ var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceDa
 
 var adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 
-var constants = require('*/cartridge/adyenConstants/constants');
+var constants = require('*/cartridge/adyenConstants/constants'); //SALE payment methods require payment transaction type to be Capture
+
+
+function setPaymentTransactionType(paymentInstrument, paymentMethod) {
+  var salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
+
+  if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
+    Transaction.wrap(function () {
+      paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
+    });
+  }
+}
 
 function createPaymentRequest(args) {
   try {
@@ -56,18 +71,31 @@ function createPaymentRequest(args) {
 
     var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument); // Add Risk data
 
-    if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+    if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
     } // Get 3DS2 data
 
 
-    if (AdyenHelper.getAdyen3DS2Enabled()) {
+    if (AdyenConfigs.getAdyen3DS2Enabled()) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     } // L2/3 Data
 
 
-    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
       paymentRequest.additionalData = _objectSpread(_objectSpread({}, paymentRequest.additionalData), adyenLevelTwoThreeData.getLineItems(args));
+    } // Add installments
+
+
+    if (AdyenConfigs.getCreditCardInstallments()) {
+      var _JSON$parse$installme;
+
+      var numOfInstallments = (_JSON$parse$installme = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments) === null || _JSON$parse$installme === void 0 ? void 0 : _JSON$parse$installme.value;
+
+      if (numOfInstallments !== undefined) {
+        paymentRequest.installments = {
+          value: numOfInstallments
+        };
+      }
     }
 
     var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull(); // args.Amount * 100;
@@ -103,13 +131,9 @@ function createPaymentRequest(args) {
       if (paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 && session.privacy.ratePayFingerprint) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
-    } // Add empty browserInfo for GooglePay
+    }
 
-
-    if (paymentMethodType === 'paywithgoogle') {
-      paymentRequest.browserInfo = {};
-    } // make API call
-
+    setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod); // make API call
 
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
@@ -171,22 +195,12 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       order.custom.Adyen_paymentMethod = responseObject.additionalData.paymentMethod ? responseObject.additionalData.paymentMethod : null;
     }
 
-    var threeDS2ResultCodes = [constants.RESULTCODES.IDENTIFYSHOPPER, constants.RESULTCODES.CHALLENGESHOPPER];
     var acceptedResultCodes = [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED, constants.RESULTCODES.REDIRECTSHOPPER];
     var presentToShopperResultCodes = [constants.RESULTCODES.PRESENTTOSHOPPER];
     var refusedResultCodes = [constants.RESULTCODES.CANCELLED, constants.RESULTCODES.ERROR, constants.RESULTCODES.REFUSED];
     var resultCode = paymentResponse.resultCode; // Check the response object from /payment call
 
-    if (threeDS2ResultCodes.indexOf(resultCode) !== -1) {
-      if (responseObject.action) {
-        paymentInstrument.custom.adyenAction = JSON.stringify(responseObject.action);
-      }
-
-      paymentResponse.decision = 'ACCEPT';
-      paymentResponse.threeDS2 = true;
-      paymentResponse.token3ds2 = responseObject.action.token;
-      paymentResponse.paymentData = responseObject.paymentData;
-    } else if (acceptedResultCodes.indexOf(resultCode) !== -1) {
+    if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT'; // if 3D Secure is used, the statuses will be updated later
 
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
@@ -267,7 +281,7 @@ function executeCall(serviceType, requestObject) {
     };
   }
 
-  var apiKey = AdyenHelper.getAdyenApiKey();
+  var apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

@@ -73,13 +73,13 @@ describe('Confirm paymentsDetails', function () {
       };
     });
     paymentsDetails(req, res, jest.fn());
-    expect(URLUtils.url).not.toHaveBeenCalled();
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Adyen-ShowConfirmation');
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
     expect(AdyenHelper.createAdyenCheckoutResponse.mock.calls.length).toEqual(1);
     expect(res.json.mock.calls[0][0]).toEqual({
       isFinal: true,
-      isSuccessful: false
+      isSuccessful: false,
+      redirectUrl: "[\"Adyen-ShowConfirmation\",\"merchantReference\",null,\"signature\",\"mocked_signature\"]"
     });
-    expect(URLUtils.url).not.toHaveBeenCalled();
   });
 });

@@ -1,0 +1,26 @@
+<span class="summary-section-label billing-addr-label">${Resource.msg('label.order.billing.address', 'confirmation', null)}</span><br/>
+<isif condition="${pdict.order.billing.billingAddress.address !== null}">
+    <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
+    <iselse>
+    <isset name="address" value="{}" scope="page"/>
+</isif>
+
+<div class="summary-details billing">
+     <isinclude template="checkout/addressSummary" />
+        <span class="order-summary-email">${pdict.order.orderEmail}</span>
+    <br/>
+    <isif condition="${pdict.order.billing.billingAddress.address !== null}">
+        <span class="order-summary-phone">${pdict.order.billing.billingAddress.address.phone}</span>
+        <iselse>
+        <span class="order-summary-phone"></span>
+    </isif>
+</div>
+
+<!--- Payment information --->
+<div class="summary-details">
+    <span class="summary-section-label payment-info-label">${Resource.msg('label.order.payment.info', 'confirmation', null)}</span><br/>
+    <isinclude template="checkout/billing/paymentOptions/paymentOptionsSummary" />
+</div>
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+<isinclude template="adyenActionModal" />
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>

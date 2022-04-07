@@ -24,6 +24,7 @@ const Logger = require('dw/system/Logger');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 function deleteRecurringPayment(args) {
   try {
@@ -53,13 +54,13 @@ function deleteRecurringPayment(args) {
     }
 
     const requestObject = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       shopperReference: customerID,
       recurringDetailReference,
       contract: 'ONECLICK',
     };
 
-    const apiKey = AdyenHelper.getAdyenApiKey();
+    const apiKey = AdyenConfigs.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-KEY', apiKey);

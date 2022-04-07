@@ -1,14 +1,12 @@
 <iscontent type="text/html"/>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
-<isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
+<isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
-<isscript>
-    var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('/js/bundle.js');
-</isscript>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
 <script>
       window.Configuration = {
@@ -21,10 +19,11 @@
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+      window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
+      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-    <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/amazon.js');
@@ -37,31 +36,16 @@
     </script>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
 
-     <div class="modal fade" id="action-modal" role="dialog">
-         <div class="modal-dialog" id="adyenModalDialog">
-             <div id="action-container"></div>
-             <div id="amazon-container"></div>
-         </div>
-     </div>
+    <isinclude template="adyenActionModal" />
 
-      </form>
-      <form method="post"
-            id="showConfirmationForm"
-            name="showConfirmationForm"
-            action="${ShowConfirmationPaymentFromComponent}">
-            <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-            <input type="hidden" id="merchantReference" name="merchantReference"/>
-            <input type="hidden" id="result" name="result" value="null"/>
-      </form>
 <iselse>
     <script>
          window.installments = '${pdict.adyen.installments}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
-         window.paypalIntent = '${pdict.adyen.paypalIntent}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
-         window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+         window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
      </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
@@ -94,13 +78,6 @@
      <script type="text/javascript">
          dfDo('adyenFingerprint');
      </script>
-     </form>
-     <form method="post"
 
-           id="showConfirmationForm"
-           action="${ShowConfirmationPaymentFromComponent}">
-           <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
-           <input type="hidden" id="merchantReference" name="merchantReference"/>
-     </form>
 </iselse>
 </isif>

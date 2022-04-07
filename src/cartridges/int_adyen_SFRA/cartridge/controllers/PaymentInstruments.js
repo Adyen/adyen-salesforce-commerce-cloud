@@ -5,7 +5,7 @@ server.extend(module.superModule);
 const userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 const {
   paymentInstruments,
@@ -35,8 +35,8 @@ server.prepend(
   consentTracking.consent,
   userLoggedIn.validateLoggedIn,
   (req, res, next) => {
-    const clientKey = AdyenHelper.getAdyenClientKey();
-    const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+    const clientKey = AdyenConfigs.getAdyenClientKey();
+    const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
     const viewData = res.getViewData();
     viewData.adyen = {
       clientKey,
