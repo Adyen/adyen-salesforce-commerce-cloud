@@ -3,15 +3,13 @@
 
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 
-<input type="hidden" id="sessionData" value="${pdict.SessionData}"/>
-
 <script>
     var clientKey = "${AdyenHelper.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
-    window.sessionData = JSON.parse(document.getElementById('sessionData').value);
+    window.sessionData = JSON.parse('${pdict.SessionData}'.replace(/&quot;/g, '\"'));
     window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
     window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";

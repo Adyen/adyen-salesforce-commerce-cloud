@@ -219,7 +219,7 @@ async function initializeAccountEvents() {
   checkoutConfiguration.onAdditionalDetails = function(state) {
     paymentsDetails(state);
   };
-  checkoutConfiguration.session = window.sessionData
+  checkoutConfiguration.session = window.sessionData;
   checkout = await AdyenCheckout(checkoutConfiguration);
   var newCard = document.getElementById('newCard');
   var adyenStateData;
