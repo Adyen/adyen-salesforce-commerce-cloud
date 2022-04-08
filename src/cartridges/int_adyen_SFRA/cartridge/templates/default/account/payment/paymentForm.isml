@@ -16,6 +16,7 @@
                 environment: '${pdict.adyen.environment}'
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
+            window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
         </script>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"

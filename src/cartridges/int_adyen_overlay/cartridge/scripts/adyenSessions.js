@@ -36,35 +36,52 @@ function createSession(basket, customer, countryCode) {
       throw new Error('Could not do /sessions call');
     }
 
-    const paymentAmount = AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice());
-    const currencyCode = basket.currencyCode;
+    let sessionsRequest = {};
 
-    //TODO: Change AdyenHelper so that this object can have a different name. Not creating a payment request here
-    let paymentRequest = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
-      amount: {
-        currency: currencyCode,
-        value: paymentAmount.value,
-      },
-    };
+    // There is no basket for myAccount session requests
+    if(basket) {
+      //TODO: Change AdyenHelper so that this object can have a different name. Not creating a payment request here
+      let paymentRequest = {
+        merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+        amount: {
+          currency: basket.currencyCode,
+          value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
+        },
+      };
 
-    // Add Risk data
-    if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
-      paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
-          basket
-      );
+      // Add Risk data
+        if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+          paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
+              basket
+          );
+        }
+
+        // L2/3 Data
+        if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+          paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems({Basket: basket}) };
+        }
+
+        // Create shopper data fields
+        sessionsRequest = AdyenHelper.createShopperObject({
+          order: basket,
+          paymentRequest,
+        });
+
+        sessionsRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems({Basket: basket});
+        sessionsRequest.reference = basket.getUUID();
+    } else {
+      // if there is no basket we only retrieve 'scheme' for zeroAuth
+      sessionsRequest = {
+        merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+        allowedPaymentMethods: ['scheme'],
+        reference: 'no_basket',
+        amount: {
+          currency: session.currency.currencyCode,
+          value: 0,
+        },
+      }
     }
 
-    // L2/3 Data
-    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
-      paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems({Basket: basket}) };
-    }
-
-    // Create shopper data fields
-    const sessionsRequest = AdyenHelper.createShopperObject({
-      order: basket,
-      paymentRequest,
-    });
 
     if (countryCode) {
       sessionsRequest.countryCode = countryCode;
@@ -74,7 +91,6 @@ function createSession(basket, customer, countryCode) {
       sessionsRequest.shopperLocale = request.getLocale();
     }
 
-    sessionsRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems({Basket: basket});
     // This is not yet used. A valid URl to ShowConfirmation requires an order number, which we do not yet have.
     sessionsRequest.returnUrl = URLUtils.url('Checkout-Begin', 'stage', 'placeOrder').toString();
 
@@ -91,7 +107,6 @@ function createSession(basket, customer, countryCode) {
       sessionsRequest.shopperReference = customerID;
     }
 
-    sessionsRequest.reference = basket.getUUID();
     sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
     const xapikey = AdyenHelper.getAdyenApiKey();
