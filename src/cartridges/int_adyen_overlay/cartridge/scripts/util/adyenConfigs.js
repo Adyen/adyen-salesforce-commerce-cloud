@@ -19,7 +19,6 @@
 const dwsystem = require('dw/system');
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
-// Retrieve a custom preference
 function getCustomPreference(field) {
     let customPreference = null;
     if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
@@ -29,7 +28,6 @@ function getCustomPreference(field) {
 }
 
 const adyenConfigsObj = {
-    // Get the current adyen environment mode (live or test)
     getAdyenEnvironment() {
         return getCustomPreference('Adyen_Mode').value;
     },
@@ -126,12 +124,10 @@ const adyenConfigsObj = {
         return getCustomPreference('AdyenGiving_charityUrl');
     },
 
-    // get the preference value for the Adyen Giving charity background image URL
     getAdyenGivingBackgroundUrl() {
         return getCustomPreference('AdyenGiving_backgroundUrl')?.getAbsURL();
     },
 
-    // get the preference value for the Adyen Giving charity logo image URL
     getAdyenGivingLogoUrl() {
         return getCustomPreference('AdyenGiving_logoUrl')?.getAbsURL();
     },
