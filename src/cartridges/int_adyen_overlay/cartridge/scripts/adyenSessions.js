@@ -73,7 +73,7 @@ function createSession(basket, customer, countryCode) {
     } else {
       // if there is no basket we only retrieve 'scheme' for zeroAuth
       sessionsRequest = {
-        merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+        merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
         allowedPaymentMethods: ['scheme'],
         reference: 'no_basket',
         amount: {
