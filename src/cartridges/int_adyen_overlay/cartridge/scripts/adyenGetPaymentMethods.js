@@ -22,6 +22,7 @@
 // script include
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 function getMethods(basket, customer, countryCode) {
   try {
@@ -48,7 +49,7 @@ function getMethods(basket, customer, countryCode) {
     }
 
     const paymentMethodsRequest = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
         currency: currencyCode,
         value: paymentAmount.value,
@@ -78,7 +79,7 @@ function getMethods(basket, customer, countryCode) {
 
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
-    const xapikey = AdyenHelper.getAdyenApiKey();
+    const xapikey = AdyenConfigs.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-key', xapikey);

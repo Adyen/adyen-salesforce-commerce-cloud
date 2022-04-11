@@ -22,6 +22,7 @@
 // script include
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
@@ -42,7 +43,7 @@ function createSession(basket, customer, countryCode) {
     if(basket) {
       //TODO: Change AdyenHelper so that this object can have a different name. Not creating a payment request here
       let paymentRequest = {
-        merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+        merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
         amount: {
           currency: basket.currencyCode,
           value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
@@ -50,14 +51,14 @@ function createSession(basket, customer, countryCode) {
       };
 
       // Add Risk data
-        if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+        if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
           paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
               basket
           );
         }
 
         // L2/3 Data
-        if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+        if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
           paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems({Basket: basket}) };
         }
 
@@ -72,7 +73,7 @@ function createSession(basket, customer, countryCode) {
     } else {
       // if there is no basket we only retrieve 'scheme' for zeroAuth
       sessionsRequest = {
-        merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+        merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
         allowedPaymentMethods: ['scheme'],
         reference: 'no_basket',
         amount: {
@@ -109,7 +110,7 @@ function createSession(basket, customer, countryCode) {
 
     sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
-    const xapikey = AdyenHelper.getAdyenApiKey();
+    const xapikey = AdyenConfigs.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-key', xapikey);

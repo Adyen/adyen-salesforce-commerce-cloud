@@ -9,6 +9,7 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 
@@ -69,7 +70,7 @@ function handleAuthorisedPayment(
 
   clearForms.clearForms();
   // determines SFRA version for backwards compatibility
-  if (AdyenHelper.getAdyenSFRA6Compatibility() === true) {
+  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken,

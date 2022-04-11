@@ -4,7 +4,7 @@ const Logger = require('dw/system/Logger');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function shouldRestoreBasket(cachedOrderNumber) {
@@ -55,14 +55,14 @@ function begin(req, res, next) {
     }
   }
 
-  const clientKey = AdyenHelper.getAdyenClientKey();
-  const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
-  const installments = AdyenHelper.getCreditCardInstallments();
-  const adyenClientKey = AdyenHelper.getAdyenClientKey();
-  const googleMerchantID = AdyenHelper.getGoogleMerchantID();
-  const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
-  const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
-  const SFRA6Enabled = AdyenHelper.getAdyenSFRA6Compatibility();
+  const clientKey = AdyenConfigs.getAdyenClientKey();
+  const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
+  const installments = AdyenConfigs.getCreditCardInstallments();
+  const adyenClientKey = AdyenConfigs.getAdyenClientKey();
+  const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
+  const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
+  const cardholderNameBool = AdyenConfigs.getAdyenCardholderNameEnabled();
+  const SFRA6Enabled = AdyenConfigs.getAdyenSFRA6Compatibility();
 
   const viewData = res.getViewData();
   viewData.adyen = {

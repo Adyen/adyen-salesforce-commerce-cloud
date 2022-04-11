@@ -11,13 +11,14 @@
 
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <script>
-    var clientKey = "${AdyenHelper.getAdyenClientKey()}";
+    var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
+    var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.summarySubmitUrl = "${URLUtils.https('COSummary-Submit')}";

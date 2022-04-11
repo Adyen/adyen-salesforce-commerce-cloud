@@ -1,5 +1,6 @@
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <isset name="adyenPaymentFields" value="${pdict.forms.billingForm.adyenPaymentFields}" scope="page"/>
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
