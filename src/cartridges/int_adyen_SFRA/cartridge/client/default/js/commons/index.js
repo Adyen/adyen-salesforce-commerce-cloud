@@ -10,3 +10,13 @@ module.exports.onFieldValid = function onFieldValid(data) {
 module.exports.onBrand = function onBrand(brandObject) {
   document.querySelector('#cardType').value = brandObject.brand;
 };
+
+/**
+ * Makes an ajax call to the controller function CreateSession
+ */
+module.exports.createSession = async function() {
+   return $.ajax({
+    url: 'Adyen-Sessions',
+    type: 'get',
+});
+}
