@@ -1,8 +1,4 @@
-const {
-  onFieldValid,
-  onBrand,
-  createSession,
-} = require('./commons/index');
+const { onFieldValid, onBrand, createSession } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;

@@ -14,9 +14,9 @@ module.exports.onBrand = function onBrand(brandObject) {
 /**
  * Makes an ajax call to the controller function CreateSession
  */
-module.exports.createSession = async function() {
-   return $.ajax({
+module.exports.createSession = async function createSession() {
+  return $.ajax({
     url: 'Adyen-Sessions',
     type: 'get',
-});
-}
+  });
+};
