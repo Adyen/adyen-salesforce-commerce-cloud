@@ -10,6 +10,7 @@
     var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.sessionData = JSON.parse('${pdict.SessionData}'.replace(/&quot;/g, '\"'));
     window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
     window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";

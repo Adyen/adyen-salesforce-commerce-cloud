@@ -10,7 +10,7 @@ const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMet
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;
-  const firstItem = currentBasket.getShipments()?.[0];
+  const firstItem = currentBasket?.getShipments()?.[0];
   if (firstItem?.shippingAddress) {
     return firstItem.shippingAddress.getCountryCode().value;
   }

@@ -530,6 +530,9 @@ var adyenHelperObj = {
         case 'CUP':
           cardType = 'cup';
           break;
+        case 'Carte Bancaire':
+          cardType = 'cartebancaire';
+          break;
         default:
           cardType = cardType.toLowerCase();
           break;
@@ -574,6 +577,9 @@ var adyenHelperObj = {
           break;
         case 'cup':
           cardType = 'CUP';
+          break;
+        case 'cartebancaire':
+          cardType = 'Carte Bancaire';
           break;
         default:
           cardType = '';

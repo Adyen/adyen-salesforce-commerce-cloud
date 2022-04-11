@@ -45,7 +45,7 @@ function getMethods(basket, customer, countryCode) {
     } else {
       // paymentMethods call from My Account
       currencyCode = session.currency.currencyCode;
-      paymentAmount = new dw.value.Money(1000, currencyCode);
+      paymentAmount = new dw.value.Money(0, currencyCode);
     }
 
     const paymentMethodsRequest = {
