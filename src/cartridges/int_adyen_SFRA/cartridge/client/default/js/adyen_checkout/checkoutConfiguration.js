@@ -113,7 +113,10 @@ function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken,
+    }),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {

@@ -11,6 +11,15 @@ function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
+function assignOrderFormValues(response) {
+  if (response.orderNo) {
+    document.querySelector('#merchantReference').value = response.orderNo;
+  }
+  if (response.orderToken) {
+    document.querySelector('#orderToken').value = response.orderToken;
+  }
+}
+
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
@@ -24,9 +33,8 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
-      if (response.orderNo) {
-        document.querySelector('#merchantReference').value = response.orderNo;
-      }
+      assignOrderFormValues(response);
+
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
       }
@@ -105,6 +113,7 @@ function createShowConfirmationForm(action) {
   const form = `<form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${action}">
     <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
     <input type="hidden" id="merchantReference" name="merchantReference"/>
+    <input type="hidden" id="orderToken" name="orderToken"/>
     <input type="hidden" id="result" name="result" value="null"/>
   </form>`;
 
