@@ -39,6 +39,8 @@ function paymentFromComponent(data, component) {
     data: {
       data: JSON.stringify(data),
       paymentMethod: 'amazonpay',
+      merchantReference: document.querySelector('#merchantReference').value,
+      orderToken: document.querySelector('#orderToken').value,
     },
     success(response) {
       helpers.assignOrderFormValues(response);

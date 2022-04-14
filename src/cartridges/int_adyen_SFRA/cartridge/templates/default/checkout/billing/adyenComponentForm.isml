@@ -44,7 +44,7 @@
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
-         var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
+         window.showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
          window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
      </script>
 
