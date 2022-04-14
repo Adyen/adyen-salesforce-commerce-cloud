@@ -251,9 +251,16 @@ server.get('Redirect', server.middleware.https, function (req, res, next) {
 server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
     try {
         var order = OrderMgr.getOrder(session.privacy.orderNo);
-        var paymentInstruments = order.getPaymentInstruments("Adyen");
         var adyenPaymentInstrument;
         var paymentData;
+        var paymentInstruments;
+
+        if(order){
+            paymentInstruments = order.getPaymentInstruments("Adyen");
+        }else{
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+            return next();  
+        }
 
         //looping through all Adyen payment methods, however, this only can be one.
         var instrumentsIter = paymentInstruments.iterator();
