@@ -37,6 +37,7 @@ function getPaypalConfig() {
         {
           cancelTransaction: true,
           merchantReference: document.querySelector('#merchantReference').value,
+          orderToken: document.querySelector('#orderToken').value,
         },
         component,
       );

@@ -122,6 +122,7 @@ function createShowConfirmationForm(action) {
 }
 
 module.exports = {
+  assignOrderFormValues,
   assignPaymentMethodValue,
   paymentFromComponent,
   resetPaymentMethod,

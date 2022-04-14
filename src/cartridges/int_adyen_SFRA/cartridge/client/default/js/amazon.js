@@ -41,9 +41,7 @@ function paymentFromComponent(data, component) {
       paymentMethod: 'amazonpay',
     },
     success(response) {
-      if (response.orderNo) {
-        document.querySelector('#merchantReference').value = response.orderNo;
-      }
+      helpers.assignOrderFormValues(response);
       handleAmazonResponse(response, component);
     },
   });
@@ -76,7 +74,10 @@ async function mountAmazonPayComponent() {
       $.ajax({
         type: 'post',
         url: window.paymentsDetailsURL,
-        data: JSON.stringify(state.data),
+        data: JSON.stringify({
+          data: state.data,
+          orderToken: window.orderToken,
+        }),
         contentType: 'application/json; charset=utf-8',
         success(data) {
           if (data.isSuccessful) {
