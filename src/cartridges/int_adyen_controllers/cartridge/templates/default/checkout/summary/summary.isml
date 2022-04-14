@@ -16,6 +16,7 @@
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <script>
+    var orderToken = "${pdict.Basket.orderBeingEdited.orderToken}"
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
