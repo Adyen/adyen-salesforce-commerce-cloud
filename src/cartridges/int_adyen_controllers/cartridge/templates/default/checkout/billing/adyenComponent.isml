@@ -19,7 +19,7 @@
     var sessionsRes = `${sessionsResponse}`.replace(/&quot;/g, '\"');
     window.sessionsResponse = JSON.parse(sessionsRes);
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
-    var loadingContext = "${AdyenConfigs.getLoadingContext()}";
+    var loadingContext = "${AdyenHelper.getLoadingContext()}";
     var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
