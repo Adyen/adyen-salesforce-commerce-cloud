@@ -27,6 +27,7 @@ const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function getTerminals() {
   try {
@@ -40,7 +41,7 @@ function getTerminals() {
     }
 
     requestObject.request = getTerminalRequest;
-    return executeCall(AdyenHelper.SERVICE.CONNECTEDTERMINALS, requestObject);
+    return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Adyen getTerminals: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
@@ -109,7 +110,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     terminalRequestObject.terminalId = terminalId;
 
     const paymentResult = executeCall(
-      AdyenHelper.SERVICE.POSPAYMENT,
+      constants.SERVICE.POSPAYMENT,
       terminalRequestObject,
     );
     if (paymentResult.error) {
@@ -191,7 +192,7 @@ function sendAbortRequest(serviceId, terminalId) {
       },
     },
   };
-  return executeCall(AdyenHelper.SERVICE.POSPAYMENT, abortRequestObject);
+  return executeCall(constants.SERVICE.POSPAYMENT, abortRequestObject);
 }
 
 function executeCall(serviceType, requestObject) {

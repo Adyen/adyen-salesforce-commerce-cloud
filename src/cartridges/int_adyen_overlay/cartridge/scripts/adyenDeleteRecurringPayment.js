@@ -25,11 +25,12 @@ const Logger = require('dw/system/Logger');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function deleteRecurringPayment(args) {
   try {
     const service = AdyenHelper.getService(
-      AdyenHelper.SERVICE.RECURRING_DISABLE,
+        constants.SERVICE.RECURRING_DISABLE,
     );
     if (!service) {
       throw new Error('Could not do /disable call');

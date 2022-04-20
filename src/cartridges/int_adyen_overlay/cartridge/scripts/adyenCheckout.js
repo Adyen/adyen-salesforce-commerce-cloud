@@ -140,7 +140,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    const callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
+    const callResult = executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     if (callResult.isOk() === false) {
       Logger.getLogger('Adyen').error(
         `Adyen: Call error code${callResult
@@ -162,7 +162,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     if (!resultObject || !resultObject.getText()) {
       throw new Error(
         `No correct response from ${
-          AdyenHelper.SERVICE.PAYMENT
+            constants.SERVICE.PAYMENT
         }, result: ${JSON.stringify(resultObject)}`,
       );
     }
@@ -259,7 +259,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   const callResult = executeCall(
-    AdyenHelper.SERVICE.PAYMENTDETAILS,
+      constants.SERVICE.PAYMENTDETAILS,
     paymentDetailsRequest,
   );
   if (callResult.isOk() === false) {

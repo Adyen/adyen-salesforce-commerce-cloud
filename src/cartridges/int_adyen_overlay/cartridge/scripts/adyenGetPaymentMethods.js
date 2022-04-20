@@ -23,11 +23,12 @@
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function getMethods(basket, customer, countryCode) {
   try {
     const service = AdyenHelper.getService(
-      AdyenHelper.SERVICE.CHECKOUTPAYMENTMETHODS,
+        constants.SERVICE.CHECKOUTPAYMENTMETHODS,
     );
     if (!service) {
       throw new Error('Could not do /paymentMethods call');
