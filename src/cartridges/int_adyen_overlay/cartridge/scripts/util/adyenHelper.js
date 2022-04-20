@@ -25,15 +25,12 @@ const Logger = require('dw/system/Logger');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
-const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
-  BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
-
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service) {
     var adyenService = null;
