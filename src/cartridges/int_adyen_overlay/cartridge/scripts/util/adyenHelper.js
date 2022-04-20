@@ -36,7 +36,6 @@ var adyenHelperObj = {
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
-    RECURRING: 'AdyenRecurring',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     SESSIONS: 'AdyenSessions',
     POSPAYMENT: 'AdyenPosPayment',
@@ -323,7 +322,7 @@ var adyenHelperObj = {
       gender = args.paymentRequest.shopperName.gender;
     }
 
-    if (args.order.getDefaultShipment().getShippingAddress().getPhone()) {
+    if (args.order?.getDefaultShipment()?.getShippingAddress()?.getPhone()) {
       args.paymentRequest.telephoneNumber = args.order
           .getDefaultShipment()
           .getShippingAddress()
@@ -345,10 +344,10 @@ var adyenHelperObj = {
 
     const address = args.order.getBillingAddress() || args.order.getDefaultShipment().getShippingAddress();
     const shopperDetails = {
-      firstName: address.firstName,
+      firstName: address?.firstName,
       gender,
       infix: '',
-      lastName: address.lastName,
+      lastName: address?.lastName,
     };
     args.paymentRequest.shopperName = shopperDetails;
 

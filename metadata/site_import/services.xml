@@ -40,13 +40,13 @@
         <user-id></user-id>
         <password/>
     </service-credential>
-    <service-credential service-credential-id="AdyenRecurring">
-        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v25/listRecurringDetails</url>
+    <service-credential service-credential-id="AdyenRecurringDisable">
+        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v68/disable</url>
         <user-id></user-id>
         <password/>
     </service-credential>
-    <service-credential service-credential-id="AdyenRecurringDisable">
-        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v25/disable</url>
+    <service-credential service-credential-id="AdyenRecurringDisableLive">
+        <url>https://[YOUR_LIVE_PREFIX]-pal-live.adyenpayments.com/pal/servlet/Recurring/v68/disable</url>
         <user-id></user-id>
         <password/>
     </service-credential>
