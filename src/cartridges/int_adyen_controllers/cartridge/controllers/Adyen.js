@@ -242,13 +242,14 @@ function paymentsDetails() {
   try {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const requestBody = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
-    const paymentsDetails = requestBody.data;
-    const isAmazonpay = paymentsDetails.paymentMethod === 'amazonpay';
-    paymentsDetails.paymentMethod = undefined;
+    const data = requestBody.data;
+    const isAmazonpay = data.paymentMethod === 'amazonpay';
+    data.paymentMethod = undefined;
 
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-        paymentsDetails
+        data
     );
+
     const response = AdyenHelper.createAdyenCheckoutResponse(
         paymentsDetailsResponse,
     );
@@ -285,6 +286,8 @@ function paymentsDetails() {
           requestBody.orderToken,
           'signature',
           signature,
+          'orderToken',
+          order.orderToken,
       ).toString();
     }
 
@@ -554,21 +557,6 @@ function donate() {
 }
 
 /**
- * Separated order confirm for Credit cards and APM's.
- */
-function orderConfirm(orderNo) {
-  let order = null;
-  if (orderNo) {
-    order = OrderMgr.getOrder(orderNo);
-  }
-  if (!order) {
-    app.getController('Error').Start();
-    return {};
-  }
-  app.getController('COSummary').ShowConfirmation(order);
-}
-
-/**
  * Make a request to Adyen to get payment methods based on countryCode. Called from COBilling-Start
  */
 function getPaymentMethods(cart, customer) {
@@ -691,8 +679,6 @@ exports.Redirect3DS1Response = guard.ensure(
     ['https'],
     Redirect3DS1Response,
 );
-
-exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
 

@@ -25,6 +25,8 @@ var Logger = require('dw/system/Logger');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+
 function getMethods(basket, customer, countryCode) {
   try {
     var service = AdyenHelper.getService(AdyenHelper.SERVICE.CHECKOUTPAYMENTMETHODS);
@@ -42,11 +44,11 @@ function getMethods(basket, customer, countryCode) {
     } else {
       // paymentMethods call from My Account
       currencyCode = session.currency.currencyCode;
-      paymentAmount = new dw.value.Money(1000, currencyCode);
+      paymentAmount = new dw.value.Money(0, currencyCode);
     }
 
     var paymentMethodsRequest = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
         currency: currencyCode,
         value: paymentAmount.value
@@ -74,7 +76,7 @@ function getMethods(basket, customer, countryCode) {
     }
 
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
-    var xapikey = AdyenHelper.getAdyenApiKey();
+    var xapikey = AdyenConfigs.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-key', xapikey);

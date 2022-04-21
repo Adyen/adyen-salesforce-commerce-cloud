@@ -70,9 +70,11 @@ function handle(customObj) {
   result.status = PIPELET_ERROR;
   result.EventCode = customObj.custom.eventCode;
   result.SubmitOrder = false;
-  result.SkipOrder = false;
-  var orderId = customObj.custom.orderId.split('-', 1);
-  var order = OrderMgr.getOrder(orderId[0]);
+  result.SkipOrder = false; // split order ID by - and remove last split (which is the date)
+
+  var orderIdSplit = customObj.custom.orderId.split('-').slice(0, -1);
+  var orderId = orderIdSplit.join('-');
+  var order = OrderMgr.getOrder(orderId);
   result.Order = order;
 
   if (order === null) {
@@ -112,7 +114,7 @@ function handle(customObj) {
           var amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
           var totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
 
-          if (order.paymentStatus === Order.PAYMENT_STATUS_PAID) {
+          if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
             Logger.getLogger('Adyen', 'adyen').info('Duplicate callback received for order {0}.', order.orderNo);
           } else if (amountPaid < totalAmount) {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
@@ -131,7 +133,7 @@ function handle(customObj) {
 
           if (!empty(reasonCode) && (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) && isAdyen) {
             refusedHpp = true;
-          } else if (order.status === Order.ORDER_STATUS_FAILED) {
+          } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
@@ -145,19 +147,19 @@ function handle(customObj) {
 
       case 'CANCELLATION':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCELLATION notification received');
         Logger.getLogger('Adyen', 'adyen').info('Order {0} was cancelled.', order.orderNo);
         break;
 
       case 'CANCEL_OR_REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCEL_OR_REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info('Order {0} was cancelled or refunded.', order.orderNo);
         break;
 
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info('Order {0} was refunded.', order.orderNo);
         break;
       // CustomAdyen
@@ -165,7 +167,7 @@ function handle(customObj) {
       case 'CAPTURE_FAILED':
         if (customObj.custom.success === 'true') {
           order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-          order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+          order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
 
@@ -189,7 +191,7 @@ function handle(customObj) {
 
       case 'OFFER_CLOSED':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('Offer closed, failing order');
         Transaction.wrap(function () {
           OrderMgr.failOrder(order, false);
         });
@@ -202,7 +204,7 @@ function handle(customObj) {
         break;
 
       case 'CAPTURE':
-        if (customObj.custom.success === 'true' && String(order.status) === String(Order.ORDER_STATUS_CANCELLED)) {
+        if (customObj.custom.success === 'true' && order.status.value === Order.ORDER_STATUS_CANCELLED) {
           order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
           order.setExportStatus(Order.EXPORT_STATUS_READY);
           order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);

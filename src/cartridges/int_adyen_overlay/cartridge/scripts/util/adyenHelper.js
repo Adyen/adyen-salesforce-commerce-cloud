@@ -445,8 +445,10 @@ var adyenHelperObj = {
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
     let reference = 'recurringPayment-account';
+    let orderToken = 'recurringPayment-token'
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
+      orderToken = order.getOrderToken();
     }
 
     let signature = '';
@@ -469,7 +471,9 @@ var adyenHelperObj = {
         'merchantReference',
         reference,
         'signature',
-        signature
+        signature,
+        'orderToken',
+        orderToken,
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 

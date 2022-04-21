@@ -18,5 +18,9 @@ module.exports = {
     RECEIVED: 'Received',
     REDIRECTSHOPPER: 'RedirectShopper',
     REFUSED: 'Refused'
-  }
+  },
+  ACTIONTYPES: {
+    VOUCHER: 'voucher'
+  },
+  CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/'
 };

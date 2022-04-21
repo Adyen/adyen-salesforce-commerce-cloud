@@ -1,6 +1,14 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 if (window.amazonCheckoutSessionId) {
   var handleAuthorised = function handleAuthorised(response) {
@@ -25,11 +33,13 @@ if (window.amazonCheckoutSessionId) {
 
   var handleAmazonResponse = function handleAmazonResponse(response, component) {
     if (response.fullResponse && response.fullResponse.action) {
-      document.querySelector('.ui-widget-overlay').style.visibility = 'hidden';
       component.handleAction(response.fullResponse.action);
     } else if (response.resultCode === window.resultCodeAuthorised) {
       handleAuthorised(response);
-    } else if (response.error) {
+    } else {
+      // first try the amazon decline flow
+      component.handleDeclineFlow(); // if this does not trigger a redirect, try the regular handleError flow
+
       handleError();
     }
   };
@@ -51,6 +61,35 @@ if (window.amazonCheckoutSessionId) {
     });
   };
 
+  var mountAmazonPayComponent = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+      var checkout, amazonPayComponent;
+      return _regenerator["default"].wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return AdyenCheckout(window.Configuration);
+
+            case 2:
+              checkout = _context.sent;
+              amazonPayComponent = checkout.create('amazonpay', amazonConfig).mount(amazonPayNode);
+              amazonPayComponent.submit();
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function mountAmazonPayComponent() {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  window.sessionsResponse = null;
   var amazonPayNode = document.getElementById('amazonContainerSG');
   var amazonConfig = {
     showOrderButton: false,
@@ -70,7 +109,10 @@ if (window.amazonCheckoutSessionId) {
       $.ajax({
         type: 'post',
         url: window.paymentsDetailsURL,
-        data: JSON.stringify(state.data),
+        data: JSON.stringify({
+          data: state.data,
+          orderToken: ''
+        }),
         contentType: 'application/; charset=utf-8',
         success: function success(data) {
           if (data.response.isSuccessful) {
@@ -84,7 +126,5 @@ if (window.amazonCheckoutSessionId) {
       });
     }
   };
-  var checkout = new AdyenCheckout(window.Configuration);
-  var amazonPayComponent = checkout.create('amazonpay', amazonConfig).mount(amazonPayNode);
-  amazonPayComponent.submit();
+  mountAmazonPayComponent();
 }

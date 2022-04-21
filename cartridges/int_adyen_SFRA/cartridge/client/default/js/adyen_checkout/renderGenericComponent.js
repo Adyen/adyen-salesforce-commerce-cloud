@@ -8,12 +8,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -22,9 +16,15 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var store = require('../../../../store');
 
@@ -32,6 +32,12 @@ var _require = require('./renderPaymentMethod'),
     renderPaymentMethod = _require.renderPaymentMethod;
 
 var helpers = require('./helpers');
+
+var _require2 = require('./localesUsingInstallments'),
+    installmentLocales = _require2.installmentLocales;
+
+var _require3 = require('../commons'),
+    createSession = _require3.createSession;
 
 function addPosTerminals(terminals) {
   var ddTerminals = document.createElement('select');
@@ -44,19 +50,13 @@ function addPosTerminals(terminals) {
   });
   document.querySelector('#adyenPosTerminals').append(ddTerminals);
 }
-/**
- * Makes an ajax call to the controller function GetPaymentMethods
- */
 
+function setCheckoutConfiguration(checkoutOptions) {
+  var setField = function setField(key, val) {
+    return val && _defineProperty({}, key, val);
+  };
 
-function getPaymentMethods(paymentMethods) {
-  $.ajax({
-    url: window.getPaymentMethodsURL,
-    type: 'get',
-    success: function success(data) {
-      paymentMethods(data);
-    }
-  });
+  store.checkoutConfiguration = _objectSpread(_objectSpread(_objectSpread({}, store.checkoutConfiguration), setField('amount', checkoutOptions.amount)), setField('countryCode', checkoutOptions.countryCode));
 }
 
 function resolveUnmount(key, val) {
@@ -73,10 +73,10 @@ function resolveUnmount(key, val) {
 
 
 function unmountComponents() {
-  var promises = Object.entries(store.componentsObj).map(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        key = _ref2[0],
-        val = _ref2[1];
+  var promises = Object.entries(store.componentsObj).map(function (_ref2) {
+    var _ref3 = _slicedToArray(_ref2, 2),
+        key = _ref3[0],
+        val = _ref3[1];
 
     delete store.componentsObj[key];
     return resolveUnmount(key, val);
@@ -84,29 +84,29 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function renderStoredPaymentMethod(data) {
+function renderStoredPaymentMethod(imagePath) {
   return function (pm) {
     if (pm.supportedShopperInteractions.includes('Ecommerce')) {
-      renderPaymentMethod(pm, true, data.ImagePath);
+      renderPaymentMethod(pm, true, imagePath);
     }
   };
 }
 
-function renderStoredPaymentMethods(data) {
-  if (data.AdyenPaymentMethods.storedPaymentMethods) {
-    var storedPaymentMethods = store.checkout.paymentMethodsResponse.storedPaymentMethods;
-    storedPaymentMethods.forEach(renderStoredPaymentMethod(data));
+function renderStoredPaymentMethods(data, imagePath) {
+  if (data.storedPaymentMethods) {
+    var storedPaymentMethods = data.storedPaymentMethods;
+    storedPaymentMethods.forEach(renderStoredPaymentMethod(imagePath));
   }
 }
 
-function renderPaymentMethods(data) {
-  data.AdyenPaymentMethods.paymentMethods.forEach(function (pm, i) {
-    renderPaymentMethod(pm, false, data.ImagePath, data.AdyenDescriptions[i].description);
+function renderPaymentMethods(data, imagePath, adyenDescriptions) {
+  data.paymentMethods.forEach(function (pm) {
+    renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
   });
 }
 
-function renderPosTerminals(data) {
-  var _data$AdyenConnectedT, _data$AdyenConnectedT2;
+function renderPosTerminals(adyenConnectedTerminals) {
+  var _adyenConnectedTermin;
 
   var removeChilds = function removeChilds() {
     var posTerminals = document.querySelector('#adyenPosTerminals');
@@ -116,18 +116,10 @@ function renderPosTerminals(data) {
     }
   };
 
-  if ((_data$AdyenConnectedT = data.AdyenConnectedTerminals) !== null && _data$AdyenConnectedT !== void 0 && (_data$AdyenConnectedT2 = _data$AdyenConnectedT.uniqueTerminalIds) !== null && _data$AdyenConnectedT2 !== void 0 && _data$AdyenConnectedT2.length) {
+  if (adyenConnectedTerminals !== null && adyenConnectedTerminals !== void 0 && (_adyenConnectedTermin = adyenConnectedTerminals.uniqueTerminalIds) !== null && _adyenConnectedTermin !== void 0 && _adyenConnectedTermin.length) {
     removeChilds();
-    addPosTerminals(data.AdyenConnectedTerminals.uniqueTerminalIds);
+    addPosTerminals(adyenConnectedTerminals.uniqueTerminalIds);
   }
-}
-
-function setCheckoutConfiguration(data) {
-  var setField = function setField(key, val) {
-    return val && _defineProperty({}, key, val);
-  };
-
-  store.checkoutConfiguration = _objectSpread(_objectSpread(_objectSpread({}, store.checkoutConfiguration), setField('amount', data.amount)), setField('countryCode', data.countryCode));
 }
 
 function setAmazonPayConfig(adyenPaymentMethods) {
@@ -138,8 +130,7 @@ function setAmazonPayConfig(adyenPaymentMethods) {
   if (amazonpay) {
     var _document$querySelect, _document$querySelect2, _document$querySelect3, _document$querySelect4, _document$querySelect5, _document$querySelect6, _document$querySelect7, _document$querySelect8;
 
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration; // eslint-disable-line max-len
-
+    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
     store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails = {
       name: "".concat((_document$querySelect = document.querySelector('#shippingFirstNamedefault')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value, " ").concat((_document$querySelect2 = document.querySelector('#shippingLastNamedefault')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.value),
       addressLine1: (_document$querySelect3 = document.querySelector('#shippingAddressOnedefault')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.value,
@@ -151,13 +142,39 @@ function setAmazonPayConfig(adyenPaymentMethods) {
     };
   }
 }
+
+function setInstallments(amount) {
+  try {
+    var _window$installments;
+
+    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
+      return;
+    }
+
+    var _window$installments$ = (_window$installments = window.installments) === null || _window$installments === void 0 ? void 0 : _window$installments.replace(/\[|]/g, '').split(','),
+        _window$installments$2 = _slicedToArray(_window$installments$, 2),
+        minAmount = _window$installments$2[0],
+        numOfInstallments = _window$installments$2[1];
+
+    if (minAmount <= amount.value) {
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
+        card: {}
+      }; // eslint-disable-next-line max-len
+
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(numOfInstallments);
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    }
+  } catch (e) {} // eslint-disable-line no-empty
+
+}
 /**
- * Calls getPaymenMethods and then renders the retrieved payment methods (including card component)
+ * Calls createSession and then renders the retrieved payment methods (including card component)
  */
 
 
 module.exports.renderGenericComponent = /*#__PURE__*/function () {
   var _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+    var session, firstPaymentMethod;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -171,21 +188,33 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             return unmountComponents();
 
           case 3:
-            getPaymentMethods(function (data) {
-              store.checkoutConfiguration.paymentMethodsResponse = data.AdyenPaymentMethods;
-              setCheckoutConfiguration(data);
-              setAmazonPayConfig(data.AdyenPaymentMethods);
-              store.checkout = new AdyenCheckout(store.checkoutConfiguration);
-              document.querySelector('#paymentMethodsList').innerHTML = '';
-              renderStoredPaymentMethods(data);
-              renderPaymentMethods(data);
-              renderPosTerminals(data);
-              var firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
-              firstPaymentMethod.checked = true;
-              helpers.displaySelectedMethod(firstPaymentMethod.value);
-            });
+            _context.next = 5;
+            return createSession();
 
-          case 4:
+          case 5:
+            session = _context.sent;
+            store.checkoutConfiguration.session = {
+              id: session.id,
+              sessionData: session.sessionData
+            };
+            _context.next = 9;
+            return AdyenCheckout(store.checkoutConfiguration);
+
+          case 9:
+            store.checkout = _context.sent;
+            setCheckoutConfiguration(store.checkout.options);
+            setInstallments(store.checkout.options.amount);
+            setAmazonPayConfig(store.checkout.paymentMethodsResponse);
+            document.querySelector('#paymentMethodsList').innerHTML = '';
+            renderStoredPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath);
+            renderPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath, session.adyenDescriptions);
+            renderPosTerminals(session.adyenConnectedTerminals);
+            firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
+            firstPaymentMethod.checked = true;
+            helpers.displaySelectedMethod(firstPaymentMethod.value);
+            helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
+
+          case 21:
           case "end":
             return _context.stop();
         }
