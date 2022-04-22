@@ -25,49 +25,12 @@ const Logger = require('dw/system/Logger');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
-const {blockedPaymentMethods} = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
-  // service constants
-  SERVICE: {
-    PAYMENT: 'AdyenPayment',
-    PAYMENTDETAILS: 'AdyenPaymentDetails',
-    RECURRING_DISABLE: 'AdyenRecurringDisable',
-    SESSIONS: 'AdyenSessions',
-    POSPAYMENT: 'AdyenPosPayment',
-    CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
-    CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
-    ADYENGIVING: 'AdyenGiving',
-  },
-  MODE: {
-    TEST: 'TEST',
-    LIVE: 'LIVE',
-  },
-
-  ADYEN_LIVE_URL: 'https://live.adyen.com/',
-  ADYEN_TEST_URL: 'https://test.adyen.com/',
-  FRONTEND_REGIONS: {
-    EU: 'EU',
-    US: 'US',
-    AU: 'AU',
-  },
-  LOADING_CONTEXT_TEST:
-      'https://checkoutshopper-test.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_EU:
-      'https://checkoutshopper-live.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_US:
-      'https://checkoutshopper-live-us.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_AU:
-      'https://checkoutshopper-live-au.adyen.com/checkoutshopper/',
-
-  CHECKOUT_COMPONENT_VERSION: '5.6.1',
-  VERSION: '22.1.0',
-  BLOCKED_PAYMENT_METHODS: blockedPaymentMethods,
-
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service) {
     var adyenService = null;
@@ -117,11 +80,11 @@ var adyenHelperObj = {
   getAdyenUrl() {
     let returnValue = '';
     switch (AdyenConfigs.getAdyenEnvironment()) {
-      case adyenHelperObj.MODE.TEST:
-        returnValue = adyenHelperObj.ADYEN_TEST_URL;
+      case constants.MODE.TEST:
+        returnValue = constants.ADYEN_TEST_URL;
         break;
-      case adyenHelperObj.MODE.LIVE:
-        returnValue = adyenHelperObj.ADYEN_LIVE_URL;
+      case constants.MODE.LIVE:
+        returnValue = constants.ADYEN_LIVE_URL;
         break;
     }
     return returnValue;
@@ -166,33 +129,33 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
-    return `${checkoutUrl}sdk/${adyenHelperObj.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
+    return `${checkoutUrl}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
   },
 
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
-    return `${checkoutCSS}sdk/${adyenHelperObj.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
+    return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
   },
 
   // get the loading context based on the current environment (live or test)
   getLoadingContext() {
     let returnValue = '';
     switch (AdyenConfigs.getAdyenEnvironment()) {
-      case adyenHelperObj.MODE.TEST:
-        returnValue = adyenHelperObj.LOADING_CONTEXT_TEST;
+      case constants.MODE.TEST:
+        returnValue = constants.LOADING_CONTEXT_TEST;
         break;
-      case adyenHelperObj.MODE.LIVE:
+      case constants.MODE.LIVE:
         const frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
-        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.US ) {
-          returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_US;
+        if(frontEndRegion === constants.FRONTEND_REGIONS.US ) {
+          returnValue = constants.LOADING_CONTEXT_LIVE_US;
           break;
         }
-        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.AU ) {
-          returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_AU;
+        if(frontEndRegion === constants.FRONTEND_REGIONS.AU ) {
+          returnValue = constants.LOADING_CONTEXT_LIVE_AU;
           break;
         }
-        returnValue = adyenHelperObj.LOADING_CONTEXT_LIVE_EU;
+        returnValue = constants.LOADING_CONTEXT_LIVE_EU;
         break;
     }
     return returnValue;
@@ -676,7 +639,7 @@ var adyenHelperObj = {
 
     applicationInfo.merchantApplication = {
       name: 'adyen-salesforce-commerce-cloud',
-      version: adyenHelperObj.VERSION,
+      version: constants.VERSION,
     };
 
     applicationInfo.externalPlatform = {

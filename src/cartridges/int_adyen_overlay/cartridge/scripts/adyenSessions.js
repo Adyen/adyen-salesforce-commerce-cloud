@@ -27,11 +27,12 @@ const URLUtils = require('dw/web/URLUtils');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function createSession(basket, customer, countryCode) {
   try {
     const service = AdyenHelper.getService(
-        AdyenHelper.SERVICE.SESSIONS
+        constants.SERVICE.SESSIONS
     );
     if (!service) {
       throw new Error('Could not do /sessions call');

@@ -25,10 +25,11 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function donate(donationReference, donationAmount, originalReference) {
   try {
-    const service = AdyenHelper.getService(AdyenHelper.SERVICE.ADYENGIVING);
+    const service = AdyenHelper.getService(constants.SERVICE.ADYENGIVING);
     if (!service) {
       throw new Error('Could not connect to Adyen Giving');
     }
