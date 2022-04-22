@@ -9,7 +9,7 @@ const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
-  if (cachedOrderNumber !== undefined) {
+  if (cachedOrderNumber) {
     const currentBasket = BasketMgr.getCurrentBasket();
     // check if cart is null or empty
     if (!currentBasket || currentBasket.getAllProductLineItems().length === 0) {
@@ -19,9 +19,9 @@ function shouldRestoreBasket(cachedOrderNumber) {
   return false;
 }
 
-function restoreBasket(cachedOrderNumber) {
+function restoreBasket(cachedOrderNumber, cachedOrderToken) {
   try {
-    const currentOrder = OrderMgr.getOrder(cachedOrderNumber);
+    const currentOrder = OrderMgr.getOrder(cachedOrderNumber, cachedOrderToken);
     // if order status is CREATED we can fail it and restore basket
     if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
       Transaction.wrap(() => {
@@ -46,8 +46,9 @@ function begin(req, res, next) {
   }
 
   const cachedOrderNumber = req.session.privacyCache.get('currentOrderNumber');
+  const cachedOrderToken = req.session.privacyCache.get('currentOrderToken');
   if (shouldRestoreBasket(cachedOrderNumber)) {
-    if (restoreBasket(cachedOrderNumber)) {
+    if (restoreBasket(cachedOrderNumber, cachedOrderToken)) {
       const emit = (route) => this.emit(route, req, res);
       res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
       emit('route:Complete');

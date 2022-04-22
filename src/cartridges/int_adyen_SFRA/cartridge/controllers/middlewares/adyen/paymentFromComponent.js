@@ -19,7 +19,10 @@ function paymentFromComponent(req, res, next) {
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
     );
 
-    const order = OrderMgr.getOrder(reqDataObj.merchantReference);
+    const order = OrderMgr.getOrder(
+      reqDataObj.merchantReference,
+      reqDataObj.orderToken,
+    );
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
@@ -69,6 +72,7 @@ function paymentFromComponent(req, res, next) {
   }
 
   result.orderNo = order.orderNo;
+  result.orderToken = order.orderToken;
   res.json(result);
   return next();
 }

@@ -135,9 +135,10 @@ function placeOrder(req, res, next) {
     /* ### Custom Adyen cartridge start ### */
     // Cache order number in order to be able to restore cart later
     req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+    req.session.privacyCache.set('currentOrderToken', order.orderToken);
 
     // Handles payment authorization
-    var handlePaymentResult = adyenHelpers.handlePayments(order, order.orderNo);
+    var handlePaymentResult = adyenHelpers.handlePayments(order);
     /* ### Custom Adyen cartridge end ### */
 
     // Handle custom processing post authorization
