@@ -92,7 +92,7 @@ function doCustomValidation() {
 }
 
 function showValidation() {
-  return store.selectedPaymentIsValid 
+  return store.selectedPaymentIsValid
     ? doCustomValidation()
     : displayValidationErrors();
 }

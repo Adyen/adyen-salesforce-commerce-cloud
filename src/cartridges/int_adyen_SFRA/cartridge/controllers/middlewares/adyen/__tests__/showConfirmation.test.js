@@ -17,7 +17,7 @@ beforeEach(() => {
 
   req = {
     querystring: {
-      merchantReference: 0,
+      merchantReference: "0",
       signature: 'mocked_signature',
     },
     locale: { id: 'nl_NL' },
