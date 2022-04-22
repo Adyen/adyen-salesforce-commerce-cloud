@@ -95,6 +95,7 @@ function Authorize(args) {
   const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
   if (!checkoutResponse.isFinal) {
     checkoutResponse.isAdyen = true;
+    checkoutResponse.orderToken = order.orderToken;
     return checkoutResponse;
   }
 

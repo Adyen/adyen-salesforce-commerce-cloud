@@ -15,7 +15,7 @@
       url: 'Adyen-PaymentsDetails',
       data: JSON.stringify({
         data: state.data,
-        orderToken: ''
+        orderToken: window.orderToken,
       }),
       contentType: 'application/json; charset=utf-8',
       async: false,
@@ -38,6 +38,7 @@
       data: $(form).serialize(),
       success: function(data) {
         if (data.action) {
+          window.orderToken = data.orderToken;
           document.getElementById('action-modal-SG').style.display = "block";
           handleAction(data.action);
         } else {
