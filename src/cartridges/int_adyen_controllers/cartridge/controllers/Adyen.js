@@ -287,8 +287,6 @@ function paymentsDetails() {
           requestBody.orderToken,
           'signature',
           signature,
-          'orderToken',
-          order.orderToken,
       ).toString();
     }
 
