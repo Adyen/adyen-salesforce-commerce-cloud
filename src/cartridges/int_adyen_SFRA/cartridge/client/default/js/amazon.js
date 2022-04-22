@@ -43,7 +43,7 @@ function paymentFromComponent(data, component) {
       orderToken: document.querySelector('#orderToken').value,
     },
     success(response) {
-      helpers.assignOrderFormValues(response);
+      helpers.setOrderFormData(response);
       handleAmazonResponse(response, component);
     },
   });

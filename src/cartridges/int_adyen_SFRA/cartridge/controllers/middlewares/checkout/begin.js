@@ -9,7 +9,7 @@ const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
-  if (cachedOrderNumber !== undefined && cachedOrderNumber !== null) {
+  if (cachedOrderNumber) {
     const currentBasket = BasketMgr.getCurrentBasket();
     // check if cart is null or empty
     if (!currentBasket || currentBasket.getAllProductLineItems().length === 0) {

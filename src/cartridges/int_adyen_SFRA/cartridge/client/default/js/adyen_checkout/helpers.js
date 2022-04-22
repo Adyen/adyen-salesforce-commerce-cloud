@@ -11,7 +11,7 @@ function assignPaymentMethodValue() {
   ).innerHTML;
 }
 
-function assignOrderFormValues(response) {
+function setOrderFormData(response) {
   if (response.orderNo) {
     document.querySelector('#merchantReference').value = response.orderNo;
   }
@@ -33,7 +33,7 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
-      assignOrderFormValues(response);
+      setOrderFormData(response);
 
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
@@ -92,7 +92,7 @@ function doCustomValidation() {
 }
 
 function showValidation() {
-  return store.selectedPaymentIsValid
+  return store.selectedPaymentIsValid 
     ? doCustomValidation()
     : displayValidationErrors();
 }
@@ -122,7 +122,7 @@ function createShowConfirmationForm(action) {
 }
 
 module.exports = {
-  assignOrderFormValues,
+  setOrderFormData,
   assignPaymentMethodValue,
   paymentFromComponent,
   resetPaymentMethod,
