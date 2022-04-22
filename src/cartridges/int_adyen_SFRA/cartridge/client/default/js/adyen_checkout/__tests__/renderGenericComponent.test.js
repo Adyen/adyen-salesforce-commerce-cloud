@@ -1,23 +1,38 @@
 const { renderGenericComponent } = require('../renderGenericComponent');
+const { createSession } = require('../../commons');
 const store = require('../../../../../store');
 
+jest.mock('../../commons');
+jest.mock('../../../../../store');
+
 beforeEach(() => {
-  window.AdyenCheckout = jest.fn(() => {});
+  window.AdyenCheckout = jest.fn(async () => ({
+    create: jest.fn(),
+    paymentMethodsResponse: {
+      storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+      paymentMethods: [{ type: 'amazonpay' }],
+    },
+    options: {
+      amount: 'mocked_amount',
+      countryCode: 'mocked_countrycode',
+    }
+  }));
   window.Configuration = { amount: 0 };
-  window.sessionsUrl = "Adyen-Sessions";
+  store.checkoutConfiguration = {
+
+  };
+  store.checkout = {
+   options: {}
+  };
+  createSession.mockReturnValue({
+    adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
+    id: 'mock_id',
+    sessionData: 'mock_session_data',
+    imagePath: 'example.com',
+    adyenDescriptions: {},
+  });
 });
 describe('Render Generic Component', () => {
-  it('should call sessions', async () => {
-    $.ajax = jest.fn();
-    store.componentsObj = { foo: 'bar', bar: 'baz' };
-    await renderGenericComponent();
-    expect($.ajax).toBeCalledWith({
-      url: 'Adyen-Sessions',
-      type: 'get',
-      success: expect.any(Function),
-    });
-  });
-
   it('should render', async () => {
     document.body.innerHTML = `
       <div id="paymentMethodsList"></div>
@@ -35,32 +50,14 @@ describe('Render Generic Component', () => {
         <input type="text" id="shippingZipCodedefault" value="test">
         <input type="text" id="shippingCountrydefault" value="test">
         <input type="text" id="shippingPhoneNumberdefault" value="test">
-        <input type="text" id="shippingZipCodedefault" value="test">  
+        <input type="text" id="shippingZipCodedefault" value="test">
       </div>
     `;
-    window.AdyenCheckout = jest.fn(async () => ({
-      create: jest.fn(),
-      paymentMethodsResponse: {
-        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
-        paymentMethods: [{ type: 'amazonpay' }],
-      },
-      options: {
-        amount: 'mocked_amount',
-        countryCode: 'mocked_countrycode',
-      }
-    }));
 
-    const mockedSuccessResponse = {
-      adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-      id: 'mock_id',
-      sessionData: 'mock_session_data',
-      imagePath: 'example.com',
-    };
-
-    $.ajax = jest.fn(({ success }) => success(mockedSuccessResponse));
     store.componentsObj = { foo: 'bar', bar: 'baz' };
     store.checkoutConfiguration.paymentMethodsConfiguration = {amazonpay: {}};
     await renderGenericComponent();
+    expect(createSession).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
         document.querySelector('input[type=radio][name=brandCode]').value,

@@ -1,4 +1,4 @@
-const { onFieldValid, onBrand } = require('./commons/index');
+const { onFieldValid, onBrand, createSession } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
@@ -9,6 +9,7 @@ store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
 };
+
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
@@ -51,30 +52,16 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   });
 };
 
-/**
- * Makes an ajax call to the controller function CreateSession
- */
-function createSession(session) {
-  $.ajax({
-    url: window.sessionsUrl,
-    type: 'get',
-    success(data) {
-      session(data);
-    },
-  });
-}
-
 async function initializeCardComponent() {
   // card and checkout component creation
-  createSession(async (session) => {
-    store.checkoutConfiguration.session = {
-      id: session.id,
-      sessionData: session.sessionData,
-    };
-    const cardNode = document.getElementById('card');
-    checkout = await AdyenCheckout(store.checkoutConfiguration);
-    card = checkout.create('card').mount(cardNode);
-  });
+  const session = await createSession();
+  store.checkoutConfiguration.session = {
+    id: session.id,
+    sessionData: session.sessionData,
+  };
+  const cardNode = document.getElementById('card');
+  checkout = await AdyenCheckout(store.checkoutConfiguration);
+  card = checkout.create('card').mount(cardNode);
 }
 
 let formErrorsExist = false;
