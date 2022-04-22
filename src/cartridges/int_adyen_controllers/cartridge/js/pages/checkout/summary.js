@@ -13,7 +13,10 @@
     $.ajax({
       type: 'POST',
       url: 'Adyen-PaymentsDetails',
-      data: JSON.stringify(state.data),
+      data: JSON.stringify({
+        data: state.data,
+        orderToken: window.orderToken,
+      }),
       contentType: 'application/json; charset=utf-8',
       async: false,
       success: function (data) {
@@ -35,6 +38,7 @@
       data: $(form).serialize(),
       success: function(data) {
         if (data.action) {
+          window.orderToken = data.orderToken;
           document.getElementById('action-modal-SG').style.display = "block";
           handleAction(data.action);
         } else {

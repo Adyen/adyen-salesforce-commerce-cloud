@@ -71,7 +71,10 @@ if(window.amazonCheckoutSessionId) {
             $.ajax({
                 type: 'post',
                 url: window.paymentsDetailsURL,
-                data: JSON.stringify(state.data),
+                data: JSON.stringify({
+                  data: state.data,
+                  orderToken: document.querySelector('#orderToken').value,
+                }),
                 contentType: 'application/; charset=utf-8',
                 success(data) {
                     if (data.response.isSuccessful) {
