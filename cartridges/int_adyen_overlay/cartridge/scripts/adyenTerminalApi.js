@@ -32,18 +32,22 @@ var Order = require('dw/order/Order');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+
+var constants = require('*/cartridge/adyenConstants/constants');
+
 function getTerminals() {
   try {
     var requestObject = {};
     var getTerminalRequest = {};
-    getTerminalRequest.merchantAccount = AdyenHelper.getAdyenMerchantAccount(); // storeId is optional
+    getTerminalRequest.merchantAccount = AdyenConfigs.getAdyenMerchantAccount(); // storeId is optional
 
-    if (AdyenHelper.getAdyenStoreId() !== null) {
-      getTerminalRequest.store = AdyenHelper.getAdyenStoreId();
+    if (AdyenConfigs.getAdyenStoreId() !== null) {
+      getTerminalRequest.store = AdyenConfigs.getAdyenStoreId();
     }
 
     requestObject.request = getTerminalRequest;
-    return executeCall(AdyenHelper.SERVICE.CONNECTEDTERMINALS, requestObject);
+    return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
     Logger.getLogger('Adyen').error("Adyen getTerminals: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return {
@@ -102,7 +106,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     terminalRequestObject.isPaymentRequest = true;
     terminalRequestObject.serviceId = serviceId;
     terminalRequestObject.terminalId = terminalId;
-    var paymentResult = executeCall(AdyenHelper.SERVICE.POSPAYMENT, terminalRequestObject);
+    var paymentResult = executeCall(constants.SERVICE.POSPAYMENT, terminalRequestObject);
 
     if (paymentResult.error) {
       throw new Error("Error in POS payment result: ".concat(JSON.stringify(paymentResult.response)));
@@ -174,7 +178,7 @@ function sendAbortRequest(serviceId, terminalId) {
       }
     }
   };
-  return executeCall(AdyenHelper.SERVICE.POSPAYMENT, abortRequestObject);
+  return executeCall(constants.SERVICE.POSPAYMENT, abortRequestObject);
 }
 
 function executeCall(serviceType, requestObject) {
@@ -184,7 +188,7 @@ function executeCall(serviceType, requestObject) {
     throw new Error("Error creating terminal service ".concat(serviceType));
   }
 
-  var apiKey = AdyenHelper.getAdyenApiKey();
+  var apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

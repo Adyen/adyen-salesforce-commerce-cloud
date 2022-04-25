@@ -1,14 +1,24 @@
 "use strict";
 
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var _require = require('./commons/index'),
     onFieldValid = _require.onFieldValid,
-    onBrand = _require.onBrand;
+    onBrand = _require.onBrand,
+    createSession = _require.createSession;
 
 var store = require('../../../store');
 
-var checkout; // Store configuration
+var checkout;
+var card; // Store configuration
 
 store.checkoutConfiguration.amount = {
   value: 0,
@@ -42,7 +52,9 @@ store.checkoutConfiguration.onAdditionalDetails = function (state) {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    data: JSON.stringify({
+      data: state.data
+    }),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success: function success(data) {
@@ -56,12 +68,46 @@ store.checkoutConfiguration.onAdditionalDetails = function (state) {
       }
     }
   });
-}; // card and checkout component creation
+};
 
+function initializeCardComponent() {
+  return _initializeCardComponent.apply(this, arguments);
+}
 
-var cardNode = document.getElementById('card');
-checkout = new AdyenCheckout(store.checkoutConfiguration);
-var card = checkout.create('card').mount(cardNode);
+function _initializeCardComponent() {
+  _initializeCardComponent = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+    var session, cardNode;
+    return _regenerator["default"].wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return createSession();
+
+          case 2:
+            session = _context.sent;
+            store.checkoutConfiguration.session = {
+              id: session.id,
+              sessionData: session.sessionData
+            };
+            cardNode = document.getElementById('card');
+            _context.next = 7;
+            return AdyenCheckout(store.checkoutConfiguration);
+
+          case 7:
+            checkout = _context.sent;
+            card = checkout.create('card').mount(cardNode);
+
+          case 9:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _initializeCardComponent.apply(this, arguments);
+}
+
 var formErrorsExist = false;
 
 function submitAddCard() {
@@ -81,8 +127,9 @@ function submitAddCard() {
       }
     }
   });
-} // Add Payment Button event handler
+}
 
+initializeCardComponent(); // Add Payment Button event handler
 
 $('button[value="add-new-payment"]').on('click', function (event) {
   if (store.isValid) {
@@ -95,6 +142,8 @@ $('button[value="add-new-payment"]').on('click', function (event) {
 
     event.preventDefault();
   } else {
-    card.showValidation();
+    var _card;
+
+    (_card = card) === null || _card === void 0 ? void 0 : _card.showValidation();
   }
 });
