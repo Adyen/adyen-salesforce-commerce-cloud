@@ -10,7 +10,10 @@ function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
-    const order = OrderMgr.getOrder(req.form.merchantReference);
+    const order = OrderMgr.getOrder(
+      req.form.merchantReference,
+      req.form.orderToken,
+    );
     return handlePayment(stateData, order, options);
   } catch (e) {
     Logger.getLogger('Adyen').error(

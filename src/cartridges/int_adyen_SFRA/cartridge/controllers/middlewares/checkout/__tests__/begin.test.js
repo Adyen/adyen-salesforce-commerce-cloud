@@ -40,13 +40,13 @@ describe('Begin', () => {
 
   it('should not attempt to restore cart when cart is not empty', () => {
     req.session.privacyCache.get.mockImplementationOnce(() =>{ return '12312' });
-    OrderMgr.status = { value: 0};
+    OrderMgr.status = { value: "0"};
     begin(req, res, jest.fn());
     expect(Transaction.wrap).not.toHaveBeenCalled();
   })
 
   it('should successfully restore cart when current cart is empty and order number is in cache', () => {
-    req.session.privacyCache.get.mockImplementationOnce(() =>{ return 0 });
+    req.session.privacyCache.get.mockImplementationOnce(() =>{ return "0" });
     BasketMgr.getAllProductLineItems.mockImplementationOnce(() =>{ return []; });
     begin(req, res, jest.fn());
     expect(Transaction.wrap).toHaveBeenCalled();

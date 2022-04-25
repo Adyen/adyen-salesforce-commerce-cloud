@@ -26,7 +26,7 @@ require('dw/util');
 require('dw/value');
 require('dw/net');
 require('dw/web');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
@@ -42,7 +42,7 @@ function getLineItems({ Order: order, Basket: basket }) {
         const quantity = LineItemHelper.getQuantity(lineItem);
         const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
         const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-        const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
+        const commodityCode = AdyenConfigs.getAdyenLevel23CommodityCode();
         const currentLineItem = {
             [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.value.toFixed(),
             [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.value.toFixed()) + parseFloat(vatAmount.value.toFixed()),

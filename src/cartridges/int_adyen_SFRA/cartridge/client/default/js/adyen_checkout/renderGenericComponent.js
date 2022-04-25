@@ -2,6 +2,7 @@ const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
+const { createSession } = require('../commons');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -31,19 +32,6 @@ function resolveUnmount(key, val) {
     // try/catch block for val.unmount
     return Promise.resolve(false);
   }
-}
-
-/**
- * Makes an ajax call to the controller function CreateSession
- */
-function createSession(session) {
-  $.ajax({
-    url: window.sessionsUrl,
-    type: 'get',
-    success(data) {
-      session(data);
-    },
-  });
 }
 
 /**
@@ -142,34 +130,34 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     await unmountComponents();
   }
 
-  createSession(async (session) => {
-    store.checkoutConfiguration.session = {
-      id: session.id,
-      sessionData: session.sessionData,
-    };
-    store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-    setCheckoutConfiguration(store.checkout.options);
-    setInstallments(store.checkout.options.amount);
-    setAmazonPayConfig(store.checkout.paymentMethodsResponse);
-    document.querySelector('#paymentMethodsList').innerHTML = '';
+  const session = await createSession();
 
-    renderStoredPaymentMethods(
-      store.checkout.paymentMethodsResponse,
-      session.imagePath,
-    );
-    renderPaymentMethods(
-      store.checkout.paymentMethodsResponse,
-      session.imagePath,
-      session.adyenDescriptions,
-    );
-    renderPosTerminals(session.adyenConnectedTerminals);
+  store.checkoutConfiguration.session = {
+    id: session.id,
+    sessionData: session.sessionData,
+  };
+  store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  setCheckoutConfiguration(store.checkout.options);
+  setInstallments(store.checkout.options.amount);
+  setAmazonPayConfig(store.checkout.paymentMethodsResponse);
+  document.querySelector('#paymentMethodsList').innerHTML = '';
 
-    const firstPaymentMethod = document.querySelector(
-      'input[type=radio][name=brandCode]',
-    );
-    firstPaymentMethod.checked = true;
-    helpers.displaySelectedMethod(firstPaymentMethod.value);
-  });
+  renderStoredPaymentMethods(
+    store.checkout.paymentMethodsResponse,
+    session.imagePath,
+  );
+  renderPaymentMethods(
+    store.checkout.paymentMethodsResponse,
+    session.imagePath,
+    session.adyenDescriptions,
+  );
+  renderPosTerminals(session.adyenConnectedTerminals);
+
+  const firstPaymentMethod = document.querySelector(
+    'input[type=radio][name=brandCode]',
+  );
+  firstPaymentMethod.checked = true;
+  helpers.displaySelectedMethod(firstPaymentMethod.value);
 
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,

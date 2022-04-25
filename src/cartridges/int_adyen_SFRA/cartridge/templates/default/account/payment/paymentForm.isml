@@ -1,7 +1,8 @@
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
 <div>
-    <isif condition="${pdict.AdyenHelper.getAdyenRecurringPaymentsEnabled()}">
+    <isif condition="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}">
         <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
         <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
         <isscript>
@@ -16,6 +17,7 @@
                 environment: '${pdict.adyen.environment}'
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
+            window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
         </script>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"

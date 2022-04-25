@@ -4,7 +4,7 @@ const store = require('../../../../store');
 
 function getCardConfig() {
   return {
-    enableStoreDetails: showStoreDetails,
+    enableStoreDetails: window.showStoreDetails,
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
@@ -37,6 +37,7 @@ function getPaypalConfig() {
         {
           cancelTransaction: true,
           merchantReference: document.querySelector('#merchantReference').value,
+          orderToken: document.querySelector('#orderToken').value,
         },
         component,
       );
@@ -113,7 +114,10 @@ function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken,
+    }),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {

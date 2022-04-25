@@ -6,8 +6,11 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 
-function getSignature(paymentsDetailsResponse) {
-  const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+function getSignature(paymentsDetailsResponse, orderToken) {
+  const order = OrderMgr.getOrder(
+    paymentsDetailsResponse.merchantReference,
+    orderToken,
+  );
   if (order) {
     const paymentInstruments = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
@@ -35,11 +38,14 @@ function getSignature(paymentsDetailsResponse) {
 function paymentsDetails(req, res, next) {
   try {
     const request = JSON.parse(req.body);
-    const isAmazonpay = request.paymentMethod === 'amazonpay';
-    request.paymentMethod = undefined;
+
+    const isAmazonpay = request?.data?.paymentMethod === 'amazonpay';
+    if (request.data) {
+      request.data.paymentMethod = undefined;
+    }
 
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-      request,
+      request.data,
     );
 
     const response = AdyenHelper.createAdyenCheckoutResponse(
@@ -47,7 +53,7 @@ function paymentsDetails(req, res, next) {
     );
 
     // Create signature to verify returnUrl
-    const signature = getSignature(paymentsDetailsResponse);
+    const signature = getSignature(paymentsDetailsResponse, request.orderToken);
 
     if (isAmazonpay) {
       response.fullResponse = {
@@ -63,6 +69,8 @@ function paymentsDetails(req, res, next) {
         response.merchantReference,
         'signature',
         signature,
+        'orderToken',
+        request.orderToken,
       ).toString();
     }
 

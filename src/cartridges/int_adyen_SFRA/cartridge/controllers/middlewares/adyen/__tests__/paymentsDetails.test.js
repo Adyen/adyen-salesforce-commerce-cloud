@@ -50,6 +50,7 @@ describe('Confirm paymentsDetails', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+    adyenCheckout.doPaymentsDetailsCall.mockImplementationOnce(() => { return {}; });
     AdyenHelper.createAdyenCheckoutResponse.mockImplementationOnce(() => {throw new Error('mock_error')});
     paymentsDetails(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
@@ -75,7 +76,7 @@ describe('Confirm paymentsDetails', () => {
     expect(res.json.mock.calls[0][0]).toEqual({
       isFinal: true,
       isSuccessful: false,
-      redirectUrl:"[\"Adyen-ShowConfirmation\",\"merchantReference\",null,\"signature\",\"mocked_signature\"]",
+      redirectUrl: "[\"Adyen-ShowConfirmation\",\"merchantReference\",null,\"signature\",\"mocked_signature\",\"orderToken\",null]"
     });
   });
 });

@@ -43,5 +43,7 @@ describe('Checkout Services', () => {
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());
     expect(req.session.privacyCache.set.mock.calls[0][0]).toBe('currentOrderNumber');
     expect(req.session.privacyCache.set.mock.calls[0][1]).toBe('mocked_orderNo');
+    expect(req.session.privacyCache.set.mock.calls[1][0]).toBe('currentOrderToken');
+    expect(req.session.privacyCache.set.mock.calls[1][1]).toBe('mocked_orderToken');
   });
 });

@@ -4,12 +4,12 @@ const Logger = require('dw/system/Logger');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
-  if (cachedOrderNumber !== undefined) {
+  if (cachedOrderNumber) {
     const currentBasket = BasketMgr.getCurrentBasket();
     // check if cart is null or empty
     if (!currentBasket || currentBasket.getAllProductLineItems().length === 0) {
@@ -19,9 +19,9 @@ function shouldRestoreBasket(cachedOrderNumber) {
   return false;
 }
 
-function restoreBasket(cachedOrderNumber) {
+function restoreBasket(cachedOrderNumber, cachedOrderToken) {
   try {
-    const currentOrder = OrderMgr.getOrder(cachedOrderNumber);
+    const currentOrder = OrderMgr.getOrder(cachedOrderNumber, cachedOrderToken);
     // if order status is CREATED we can fail it and restore basket
     if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
       Transaction.wrap(() => {
@@ -46,8 +46,9 @@ function begin(req, res, next) {
   }
 
   const cachedOrderNumber = req.session.privacyCache.get('currentOrderNumber');
+  const cachedOrderToken = req.session.privacyCache.get('currentOrderToken');
   if (shouldRestoreBasket(cachedOrderNumber)) {
-    if (restoreBasket(cachedOrderNumber)) {
+    if (restoreBasket(cachedOrderNumber, cachedOrderToken)) {
       const emit = (route) => this.emit(route, req, res);
       res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
       emit('route:Complete');
@@ -55,14 +56,14 @@ function begin(req, res, next) {
     }
   }
 
-  const clientKey = AdyenHelper.getAdyenClientKey();
-  const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
-  const installments = AdyenHelper.getCreditCardInstallments();
-  const adyenClientKey = AdyenHelper.getAdyenClientKey();
-  const googleMerchantID = AdyenHelper.getGoogleMerchantID();
-  const merchantAccount = AdyenHelper.getAdyenMerchantAccount();
-  const cardholderNameBool = AdyenHelper.getAdyenCardholderNameEnabled();
-  const SFRA6Enabled = AdyenHelper.getAdyenSFRA6Compatibility();
+  const clientKey = AdyenConfigs.getAdyenClientKey();
+  const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
+  const installments = AdyenConfigs.getCreditCardInstallments();
+  const adyenClientKey = AdyenConfigs.getAdyenClientKey();
+  const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
+  const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
+  const cardholderNameBool = AdyenConfigs.getAdyenCardholderNameEnabled();
+  const SFRA6Enabled = AdyenConfigs.getAdyenSFRA6Compatibility();
 
   const viewData = res.getViewData();
   viewData.adyen = {

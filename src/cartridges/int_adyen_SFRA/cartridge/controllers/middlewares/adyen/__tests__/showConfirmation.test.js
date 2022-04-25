@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
 let showConfirmation;
-let adyenHelper;
+let adyenConfigs;
 let res;
 let req;
 
 beforeEach(() => {
   const { adyen } = require('../../index');
-  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+  adyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
@@ -17,7 +17,7 @@ beforeEach(() => {
 
   req = {
     querystring: {
-      merchantReference: 0,
+      merchantReference: "0",
       signature: 'mocked_signature',
     },
     locale: { id: 'nl_NL' },
@@ -64,7 +64,7 @@ describe('Show Confirmation', () => {
     'should handle successful payment: %p for SFRA6',
     (a) => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-      adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(true);
+      adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(true);
       adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
         resultCode: a,
         paymentMethod: [],
@@ -79,7 +79,7 @@ describe('Show Confirmation', () => {
   'should handle successful payment: %p for SFRA5',
       (a) => {
         const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-        adyenHelper.getAdyenSFRA6Compatibility.mockReturnValue(false);
+        adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(false);
         const URLUtils = require('dw/web/URLUtils');
         adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
           resultCode: a,

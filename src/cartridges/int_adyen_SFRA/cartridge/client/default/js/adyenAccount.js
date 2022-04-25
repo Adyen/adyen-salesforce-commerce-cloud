@@ -1,4 +1,4 @@
-const { onFieldValid, onBrand } = require('./commons/index');
+const { onFieldValid, onBrand, createSession } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
@@ -9,6 +9,7 @@ store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
 };
+
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
@@ -35,7 +36,7 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    data: JSON.stringify({ data: state.data }),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
@@ -53,6 +54,11 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
 
 async function initializeCardComponent() {
   // card and checkout component creation
+  const session = await createSession();
+  store.checkoutConfiguration.session = {
+    id: session.id,
+    sessionData: session.sessionData,
+  };
   const cardNode = document.getElementById('card');
   checkout = await AdyenCheckout(store.checkoutConfiguration);
   card = checkout.create('card').mount(cardNode);

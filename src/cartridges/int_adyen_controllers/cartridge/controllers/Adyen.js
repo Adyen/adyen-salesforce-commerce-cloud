@@ -126,10 +126,11 @@ function showConfirmation() {
     const payload = request.httpParameterMap.get('payload').stringValue;
     const signature = request.httpParameterMap.get('signature').stringValue;
     const merchantReference = request.httpParameterMap.get('merchantReference').stringValue;
+    const orderToken = request.httpParameterMap.get('orderToken').stringValue;
     const authorized = request.httpParameterMap.get('authorized').stringValue;
     const error = request.httpParameterMap.get('error').stringValue;
 
-    const order = OrderMgr.getOrder(merchantReference);
+    const order = OrderMgr.getOrder(merchantReference, orderToken);
 
     // if the payment is authorized, we can navigate to order confirm
     if(authorized === 'true') {
@@ -241,12 +242,15 @@ function paymentsDetails() {
   try {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     const requestBody = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
-    const isAmazonpay = requestBody.paymentMethod === 'amazonpay';
-    requestBody.paymentMethod = undefined;
+
+    const data = requestBody.data;
+    const isAmazonpay = data.paymentMethod === 'amazonpay';
+    data.paymentMethod = undefined;
 
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-        requestBody
+        data
     );
+
     const response = AdyenHelper.createAdyenCheckoutResponse(
         paymentsDetailsResponse,
     );
@@ -261,7 +265,7 @@ function paymentsDetails() {
 
     //check if payment is not zero auth for my account
     if(paymentsDetailsResponse.merchantReference !== 'recurringPayment-account') {
-      const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference);
+      const order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference, requestBody.orderToken);
       const paymentInstruments = order.getPaymentInstruments(
           constants.METHOD_ADYEN_COMPONENT,
       );
@@ -279,6 +283,8 @@ function paymentsDetails() {
           'Adyen-ShowConfirmation',
           'merchantReference',
           response.merchantReference,
+          'orderToken',
+          requestBody.orderToken,
           'signature',
           signature,
       ).toString();
@@ -550,21 +556,6 @@ function donate() {
 }
 
 /**
- * Separated order confirm for Credit cards and APM's.
- */
-function orderConfirm(orderNo) {
-  let order = null;
-  if (orderNo) {
-    order = OrderMgr.getOrder(orderNo);
-  }
-  if (!order) {
-    app.getController('Error').Start();
-    return {};
-  }
-  app.getController('COSummary').ShowConfirmation(order);
-}
-
-/**
  * Make a request to Adyen to get payment methods based on countryCode. Called from COBilling-Start
  */
 function getPaymentMethods(cart, customer) {
@@ -687,8 +678,6 @@ exports.Redirect3DS1Response = guard.ensure(
     ['https'],
     Redirect3DS1Response,
 );
-
-exports.OrderConfirm = guard.httpsGet(orderConfirm);
 
 exports.GetPaymentMethods = getPaymentMethods;
 

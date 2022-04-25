@@ -30,6 +30,7 @@ const Transaction = require('dw/system/Transaction');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
@@ -37,7 +38,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 //SALE payment methods require payment transaction type to be Capture
 function setPaymentTransactionType(paymentInstrument, paymentMethod) {
-  const salePaymentMethods = AdyenHelper.getAdyenSalePaymentMethods();
+  const salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
   if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
     Transaction.wrap(function () {
       paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
@@ -57,24 +58,24 @@ function createPaymentRequest(args) {
     );
 
     // Add Risk data
-    if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+    if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
         order,
       );
     }
 
     // Get 3DS2 data
-    if (AdyenHelper.getAdyen3DS2Enabled()) {
+    if (AdyenConfigs.getAdyen3DS2Enabled()) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
     // L2/3 Data
-    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
       paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
     }
 
     // Add installments
-    if (AdyenHelper.getCreditCardInstallments()) {
+    if (AdyenConfigs.getCreditCardInstallments()) {
       const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
       if(numOfInstallments !== undefined) {
         paymentRequest.installments = {value: numOfInstallments}
@@ -139,7 +140,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    const callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
+    const callResult = executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     if (callResult.isOk() === false) {
       Logger.getLogger('Adyen').error(
         `Adyen: Call error code${callResult
@@ -161,7 +162,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     if (!resultObject || !resultObject.getText()) {
       throw new Error(
         `No correct response from ${
-          AdyenHelper.SERVICE.PAYMENT
+            constants.SERVICE.PAYMENT
         }, result: ${JSON.stringify(resultObject)}`,
       );
     }
@@ -258,7 +259,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   const callResult = executeCall(
-    AdyenHelper.SERVICE.PAYMENTDETAILS,
+      constants.SERVICE.PAYMENTDETAILS,
     paymentDetailsRequest,
   );
   if (callResult.isOk() === false) {
@@ -302,7 +303,7 @@ function executeCall(serviceType, requestObject) {
   if (service === null) {
     return { error: true };
   }
-  const apiKey = AdyenHelper.getAdyenApiKey();
+  const apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

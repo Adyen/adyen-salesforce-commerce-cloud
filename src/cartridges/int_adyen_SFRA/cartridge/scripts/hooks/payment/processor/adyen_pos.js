@@ -7,12 +7,8 @@ function Handle(basket) {
 /**
  * Authorize
  */
-function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.posAuthorize(
-    orderNumber,
-    paymentInstrument,
-    paymentProcessor,
-  );
+function Authorize(order, paymentInstrument, paymentProcessor) {
+  return middlewares.posAuthorize(order, paymentInstrument, paymentProcessor);
 }
 
 exports.Handle = Handle;

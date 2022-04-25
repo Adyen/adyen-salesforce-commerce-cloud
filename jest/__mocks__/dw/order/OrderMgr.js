@@ -38,7 +38,7 @@ export const getPaymentInstruments = jest.fn(() => ({
 
 
 
-export const getOrder = jest.fn((statusValue=4/* orderNo */) => ({
+export const getOrder = jest.fn((statusValue="4"/* orderNo */) => ({
   getPaymentInstruments,
   setPaymentStatus: jest.fn(),
   setExportStatus: jest.fn(),

@@ -89,9 +89,10 @@ function showConfirmation(req, res, next) {
     payload,
     signature,
     merchantReference,
+    orderToken,
   } = req.querystring;
   try {
-    const order = OrderMgr.getOrder(merchantReference);
+    const order = OrderMgr.getOrder(merchantReference, orderToken);
     const adyenPaymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];

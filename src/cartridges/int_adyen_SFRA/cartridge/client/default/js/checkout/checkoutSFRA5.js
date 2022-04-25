@@ -330,6 +330,7 @@ var adyenCheckout = require('../adyenCheckout');
                                 }
                                 // ### Custom Adyen cartridge start ###
                             } else if (data.adyenAction) {
+                                window.orderToken = data.orderToken;
                                 adyenCheckout.actionHandler(data.adyenAction);
                                 // ### Custom Adyen cartridge end ###
                             } else {
