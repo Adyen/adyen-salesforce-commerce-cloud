@@ -1,6 +1,6 @@
 "use strict";
 
-var middlewares = require('./middlewares/index');
+var middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
 
 function Handle(basket) {
   return middlewares.posHandle(basket);
@@ -10,8 +10,8 @@ function Handle(basket) {
  */
 
 
-function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.posAuthorize(orderNumber, paymentInstrument, paymentProcessor);
+function Authorize(order, paymentInstrument, paymentProcessor) {
+  return middlewares.posAuthorize(order, paymentInstrument, paymentProcessor);
 }
 
 exports.Handle = Handle;

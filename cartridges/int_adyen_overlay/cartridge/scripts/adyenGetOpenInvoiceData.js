@@ -38,18 +38,15 @@ require('dw/web'); // script include
 
 var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
-function getLineItems(args) {
-  var order;
-
-  if (args.Order) {
-    order = args.Order;
-  } else {
-    return null;
-  } // Add all product and shipping line items to request
-
+function getLineItems(_ref) {
+  var order = _ref.Order,
+      basket = _ref.Basket,
+      addTaxPercentage = _ref.addTaxPercentage;
+  if (!(order || basket)) return null;
+  var orderOrBasket = order || basket;
+  var allLineItems = orderOrBasket.getProductLineItems(); // Add all product and shipping line items to request
 
   var lineItems = [];
-  var allLineItems = order.getAllLineItems();
 
   for (var item in allLineItems) {
     var lineItem = allLineItems[item];
@@ -68,7 +65,7 @@ function getLineItems(args) {
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
-      lineItemObject.taxPercentage = args.addTaxPercentage ? (new Number(vatPercentage) * 10000).toFixed() : 0;
+      lineItemObject.taxPercentage = addTaxPercentage ? (new Number(vatPercentage) * 10000).toFixed() : 0;
       lineItems.push(lineItemObject);
     }
   }

@@ -6,15 +6,9 @@ var Logger = require('dw/system/Logger');
 
 var Transaction = require('dw/system/Transaction');
 
-var OrderMgr = require('dw/order/OrderMgr');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
-var paymentResponseHandler = require('./authorize/paymentResponse');
-
-var constants = require('*/cartridge/adyenConstants/constants');
 
 function errorHandler() {
   var serverErrors = [Resource.msg('error.payment.processor.not.supported', 'checkout', null)];
@@ -24,10 +18,6 @@ function errorHandler() {
     serverErrors: serverErrors,
     error: true
   };
-}
-
-function check3DS2(result) {
-  return result.threeDS2 || result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER;
 }
 
 function paymentErrorHandler(result) {
@@ -40,7 +30,7 @@ function paymentErrorHandler(result) {
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom
  *      logic to authorize credit card payment.
- * @param {number} orderNumber - The current order's number
+ * @param {dw.order.Order} order - The current order
  * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
  * @param {dw.order.PaymentProcessor} paymentProcessor -  The payment processor of the current
  *      payment method
@@ -48,8 +38,7 @@ function paymentErrorHandler(result) {
  */
 
 
-function authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  var order = OrderMgr.getOrder(orderNumber);
+function authorize(order, paymentInstrument, paymentProcessor) {
   Transaction.wrap(function () {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -61,14 +50,15 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
 
   if (result.error) {
     return errorHandler();
-  } // Trigger 3DS2 flow
-
-
-  if (check3DS2(result)) {
-    return paymentResponseHandler(paymentInstrument, result, orderNumber);
   }
 
-  if (result.decision !== 'ACCEPT') {
+  var checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
+
+  if (!checkoutResponse.isFinal) {
+    return checkoutResponse;
+  }
+
+  if (!checkoutResponse.isSuccessful) {
     return paymentErrorHandler(result);
   }
 

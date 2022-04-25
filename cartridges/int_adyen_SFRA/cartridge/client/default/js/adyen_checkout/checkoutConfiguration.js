@@ -1,5 +1,15 @@
 "use strict";
 
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 var helpers = require('./helpers');
 
 var _require = require('../commons'),
@@ -10,7 +20,7 @@ var store = require('../../../../store');
 
 function getCardConfig() {
   return {
-    enableStoreDetails: showStoreDetails,
+    enableStoreDetails: window.showStoreDetails,
     onChange: function onChange(state) {
       store.isValid = state.isValid;
       var method = state.data.paymentMethod.storedPaymentMethodId ? "storedCard".concat(state.data.paymentMethod.storedPaymentMethodId) : store.selectedMethod;
@@ -27,7 +37,6 @@ function getPaypalConfig() {
   return {
     showPayButton: true,
     environment: window.Configuration.environment,
-    intent: window.paypalIntent,
     onSubmit: function onSubmit(state, component) {
       helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(store.selectedPayment.stateData);
@@ -37,7 +46,8 @@ function getPaypalConfig() {
       store.paypalTerminatedEarly = false;
       helpers.paymentFromComponent({
         cancelTransaction: true,
-        merchantReference: document.querySelector('#merchantReference').value
+        merchantReference: document.querySelector('#merchantReference').value,
+        orderToken: document.querySelector('#orderToken').value
       }, component);
     },
     onError: function onError(error, component) {
@@ -76,62 +86,6 @@ function getPaypalConfig() {
   };
 }
 
-function getQRCodeConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: function onSubmit(state, component) {
-      $('#dwfrm_billing').trigger('submit');
-
-      if (store.formErrorsExist) {
-        return;
-      }
-
-      helpers.assignPaymentMethodValue();
-      document.querySelector('#adyenStateData').value = JSON.stringify(store.selectedPayment.stateData);
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: function onAdditionalDetails(state
-    /* , component */
-    ) {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(state.data);
-      document.querySelector('#showConfirmationForm').submit();
-    }
-  };
-}
-
-function getMbwayConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: function onSubmit(state, component) {
-      $('#dwfrm_billing').trigger('submit');
-      helpers.assignPaymentMethodValue();
-
-      if (store.formErrorsExist) {
-        component.setStatus('ready');
-        return;
-      }
-
-      if (document.getElementById('component_mbway')) {
-        document.getElementById('component_mbway').querySelector('button').disabled = true;
-      }
-
-      helpers.paymentFromComponent(state.data, component);
-      document.querySelector('#adyenStateData').value = JSON.stringify(store.selectedPayment.stateData);
-    },
-    onError: function onError()
-    /* error, component */
-    {
-      document.querySelector('#showConfirmationForm').submit();
-    },
-    onAdditionalDetails: function onAdditionalDetails(state
-    /* , component */
-    ) {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(state.data);
-      document.querySelector('#showConfirmationForm').submit();
-    }
-  };
-}
-
 function getGooglePayConfig() {
   return {
     environment: window.Configuration.environment,
@@ -150,6 +104,11 @@ function getGooglePayConfig() {
 
 function handleOnChange(state) {
   var type = state.data.paymentMethod.type;
+
+  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
+    type = 'googlepay';
+  }
+
   store.isValid = state.isValid;
 
   if (!store.componentsObj[type]) {
@@ -158,6 +117,57 @@ function handleOnChange(state) {
 
   store.componentsObj[type].isValid = store.isValid;
   store.componentsObj[type].stateData = state.data;
+}
+
+var actionHandler = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee(action) {
+    var checkout;
+    return _regenerator["default"].wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return AdyenCheckout(store.checkoutConfiguration);
+
+          case 2:
+            checkout = _context.sent;
+            checkout.createFromAction(action).mount('#action-container');
+            $('#action-modal').modal({
+              backdrop: 'static',
+              keyboard: false
+            });
+
+          case 5:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function actionHandler(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+function handleOnAdditionalDetails(state) {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken
+    }),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success: function success(data) {
+      if (!data.isFinal && _typeof(data.action) === 'object') {
+        actionHandler(data.action);
+      } else {
+        window.location.href = data.redirectUrl;
+      }
+    }
+  });
 }
 
 function getAmazonpayConfig() {
@@ -183,6 +193,7 @@ function getAmazonpayConfig() {
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
+  store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
   store.checkoutConfiguration.paymentMethodsConfiguration = {
@@ -197,34 +208,9 @@ function setCheckoutConfiguration() {
 
     },
     paywithgoogle: getGooglePayConfig(),
+    googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
-    mbway: getMbwayConfig(),
-    swish: getQRCodeConfig(),
-    bcmc_mobile: getQRCodeConfig(),
-    wechatpayQR: getQRCodeConfig(),
-    amazonpay: getAmazonpayConfig(),
-    pix: getQRCodeConfig(),
-    afterpay_default: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden'
-      }
-    },
-    facilypay_3x: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden'
-      }
-    },
-    ratepay: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden'
-      }
-    }
+    amazonpay: getAmazonpayConfig()
   };
 }
 
@@ -233,6 +219,5 @@ module.exports = {
   getPaypalConfig: getPaypalConfig,
   getGooglePayConfig: getGooglePayConfig,
   setCheckoutConfiguration: setCheckoutConfiguration,
-  getMbwayConfig: getMbwayConfig,
-  getQRCodeConfig: getQRCodeConfig
+  actionHandler: actionHandler
 };

@@ -30,7 +30,7 @@ function paymentFromComponent(req, res, next) {
   if (reqDataObj.cancelTransaction) {
     Logger.getLogger('Adyen').error("Shopper cancelled paymentFromComponent transaction for order ".concat(reqDataObj.merchantReference));
 
-    var _order = OrderMgr.getOrder(reqDataObj.merchantReference);
+    var _order = OrderMgr.getOrder(reqDataObj.merchantReference, reqDataObj.orderToken);
 
     Transaction.wrap(function () {
       OrderMgr.failOrder(_order, true);
@@ -65,10 +65,18 @@ function paymentFromComponent(req, res, next) {
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     Logger.getLogger('Adyen').error("Payment refused for order ".concat(order.orderNo));
-    result.paymentError = true;
+    result.paymentError = true; // Decline flow for Amazon pay is handled different from other Component PMs
+    // Order needs to be failed here to handle Amazon decline flow.
+
+    if (reqDataObj.paymentMethod === 'amazonpay') {
+      Transaction.wrap(function () {
+        OrderMgr.failOrder(order, true);
+      });
+    }
   }
 
   result.orderNo = order.orderNo;
+  result.orderToken = order.orderToken;
   res.json(result);
   return next();
 }
