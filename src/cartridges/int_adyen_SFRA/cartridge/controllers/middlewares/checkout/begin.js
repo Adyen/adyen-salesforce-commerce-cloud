@@ -5,6 +5,7 @@ const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 
 function shouldRestoreBasket(cachedOrderNumber) {
@@ -57,7 +58,7 @@ function begin(req, res, next) {
   }
 
   const clientKey = AdyenConfigs.getAdyenClientKey();
-  const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
+  const environment = AdyenHelper.getCheckoutEnvironment();
   const installments = AdyenConfigs.getCreditCardInstallments();
   const adyenClientKey = AdyenConfigs.getAdyenClientKey();
   const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
