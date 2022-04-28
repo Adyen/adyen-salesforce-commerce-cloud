@@ -207,6 +207,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
     createAdyenCheckoutResponse: jest.fn(() => ({isFinal: true, isSuccessful: false})),
     getCustomer: jest.fn(() => {}),
     createSignature: jest.fn( () => 'mocked_signature'),
+    getCheckoutEnvironment: jest.fn(() => 'test'),
   };
 }, {virtual: true});
 

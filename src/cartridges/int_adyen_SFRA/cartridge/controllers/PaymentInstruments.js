@@ -6,6 +6,7 @@ const userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 const {
   paymentInstruments,
@@ -36,7 +37,7 @@ server.prepend(
   userLoggedIn.validateLoggedIn,
   (req, res, next) => {
     const clientKey = AdyenConfigs.getAdyenClientKey();
-    const environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
+    const environment = AdyenHelper.getCheckoutEnvironment();
     const viewData = res.getViewData();
     viewData.adyen = {
       clientKey,
