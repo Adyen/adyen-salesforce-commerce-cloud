@@ -6,11 +6,11 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 var OrderModel = require('*/cartridge/models/order');
 
-var handleOrderConfirm = require('./order');
+var handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 
-var payment = require('./payment');
+var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 
-function handleAuthorised(order, result, adyenPaymentInstrument, options) {
+function handleAuthorised(adyenPaymentInstrument, detailsResult, order, options) {
   var req = options.req; // custom fraudDetection
 
   var fraudDetectionStatus = {
@@ -28,7 +28,7 @@ function handleAuthorised(order, result, adyenPaymentInstrument, options) {
     countryCode: currentLocale.country
   }); // Save orderModel to custom object during session
 
-  return handleOrderConfirm(order, orderModel, adyenPaymentInstrument, result, options);
+  return handleOrderConfirm(adyenPaymentInstrument, detailsResult, order, orderModel, options);
 }
 
 module.exports = handleAuthorised;

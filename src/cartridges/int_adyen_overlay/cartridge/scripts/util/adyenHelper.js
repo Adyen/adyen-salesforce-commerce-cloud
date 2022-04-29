@@ -76,20 +76,6 @@ var adyenHelperObj = {
     return null;
   },
 
-  // get the Adyen Url based on which environment is configured (live or test)
-  getAdyenUrl() {
-    let returnValue = '';
-    switch (AdyenConfigs.getAdyenEnvironment()) {
-      case constants.MODE.TEST:
-        returnValue = constants.ADYEN_TEST_URL;
-        break;
-      case constants.MODE.LIVE:
-        returnValue = constants.ADYEN_LIVE_URL;
-        break;
-    }
-    return returnValue;
-  },
-
   getAdyenGivingConfig(order) {
     const paymentMethod = order.custom.Adyen_paymentMethod;
     if (
@@ -138,27 +124,32 @@ var adyenHelperObj = {
     return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
   },
 
-  // get the loading context based on the current environment (live or test)
-  getLoadingContext() {
+  // get the current region-based checkout environment
+  getCheckoutEnvironment() {
     let returnValue = '';
     switch (AdyenConfigs.getAdyenEnvironment()) {
-      case constants.MODE.TEST:
-        returnValue = constants.LOADING_CONTEXT_TEST;
+      case adyenHelperObj.MODE.TEST:
+        returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_TEST;
         break;
-      case constants.MODE.LIVE:
+      case adyenHelperObj.MODE.LIVE:
         const frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
-        if(frontEndRegion === constants.FRONTEND_REGIONS.US ) {
-          returnValue = constants.LOADING_CONTEXT_LIVE_US;
+        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.US ) {
+          returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_US;
           break;
         }
-        if(frontEndRegion === constants.FRONTEND_REGIONS.AU ) {
-          returnValue = constants.LOADING_CONTEXT_LIVE_AU;
+        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.AU ) {
+          returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }
-        returnValue = constants.LOADING_CONTEXT_LIVE_EU;
+        returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
     return returnValue;
+  },
+
+  // get the loading context based on the current environment (live or test)
+  getLoadingContext() {
+    return `https://checkoutshopper-${adyenHelperObj.getCheckoutEnvironment()}.adyen.com/checkoutshopper/`;
   },
 
   // get the hash used to verify redirect requests

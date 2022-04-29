@@ -40,19 +40,11 @@ module.exports = {
 
   ADYEN_LIVE_URL: 'https://live.adyen.com/',
   ADYEN_TEST_URL: 'https://test.adyen.com/',
-  FRONTEND_REGIONS: {
-    EU: 'EU',
-    US: 'US',
-    AU: 'AU',
-  },
-  LOADING_CONTEXT_TEST:
-      'https://checkoutshopper-test.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_EU:
-      'https://checkoutshopper-live.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_US:
-      'https://checkoutshopper-live-us.adyen.com/checkoutshopper/',
-  LOADING_CONTEXT_LIVE_AU:
-      'https://checkoutshopper-live-au.adyen.com/checkoutshopper/',
+
+  CHECKOUT_ENVIRONMENT_TEST: 'test',
+  CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
+  CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
+  CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
 
   CHECKOUT_COMPONENT_VERSION: '5.6.1',
   VERSION: '22.1.0',

@@ -1,16 +1,16 @@
 "use strict";
 
-var authorize = require('./authorize');
+var authorize = require('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize');
 
-var handle = require('./handle');
+var handle = require('*/cartridge/scripts/hooks/payment/processor/middlewares/handle');
 
-var posHandle = require('./posHandle');
+var posHandle = require('*/cartridge/scripts/hooks/payment/processor/middlewares/posHandle');
 
-var posAuthorize = require('./posAuthorize');
+var posAuthorize = require('*/cartridge/scripts/hooks/payment/processor/middlewares/posAuthorize');
 
-var processForm = require('./processForm');
+var processForm = require('*/cartridge/scripts/hooks/payment/processor/middlewares/processForm');
 
-var savePaymentInformation = require('./savePaymentInformation');
+var savePaymentInformation = require('*/cartridge/scripts/hooks/payment/processor/middlewares/savePaymentInformation');
 
 module.exports = {
   authorize: authorize,
