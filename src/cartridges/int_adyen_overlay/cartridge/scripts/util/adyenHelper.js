@@ -128,16 +128,16 @@ var adyenHelperObj = {
   getCheckoutEnvironment() {
     let returnValue = '';
     switch (AdyenConfigs.getAdyenEnvironment()) {
-      case adyenHelperObj.MODE.TEST:
+      case constants.MODE.TEST:
         returnValue = constants.CHECKOUT_ENVIRONMENT_TEST;
         break;
-      case adyenHelperObj.MODE.LIVE:
+      case constants.MODE.LIVE:
         const frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
-        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.US ) {
+        if(frontEndRegion === constants.FRONTEND_REGIONS.US ) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_US;
           break;
         }
-        if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.AU ) {
+        if(frontEndRegion === constants.FRONTEND_REGIONS.AU ) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }

@@ -41,6 +41,12 @@ module.exports = {
   ADYEN_LIVE_URL: 'https://live.adyen.com/',
   ADYEN_TEST_URL: 'https://test.adyen.com/',
 
+  FRONTEND_REGIONS: {
+    US: 'US',
+    AU: 'AU',
+    EU: 'EU',
+  },
+
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
