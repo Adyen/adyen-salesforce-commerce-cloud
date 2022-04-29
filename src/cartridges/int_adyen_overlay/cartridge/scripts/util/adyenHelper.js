@@ -129,19 +129,19 @@ var adyenHelperObj = {
     let returnValue = '';
     switch (AdyenConfigs.getAdyenEnvironment()) {
       case adyenHelperObj.MODE.TEST:
-        returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_TEST;
+        returnValue = constants.CHECKOUT_ENVIRONMENT_TEST;
         break;
       case adyenHelperObj.MODE.LIVE:
         const frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
         if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.US ) {
-          returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_US;
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_US;
           break;
         }
         if(frontEndRegion === adyenHelperObj.FRONTEND_REGIONS.AU ) {
-          returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_AU;
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }
-        returnValue = adyenConstants.CHECKOUT_ENVIRONMENT_LIVE_EU;
+        returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
     return returnValue;
