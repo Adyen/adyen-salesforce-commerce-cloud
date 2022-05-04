@@ -20,7 +20,7 @@
     window.sessionsResponse = JSON.parse(sessionsRes);
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = AdyenHelper.getCheckoutEnvironment();
+    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.returnURL = "${URLUtils.https('COBilling-Start')}";
