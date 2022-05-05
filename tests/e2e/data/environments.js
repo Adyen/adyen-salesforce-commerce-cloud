@@ -24,7 +24,7 @@ if (process.env.SFRA_VERSION === 'v5.3.0') {
 
 if (process.env.SFRA_VERSION === 'v6.1.0') {
   environments.push({
-    name: 'SFRA v6.0.0',
+    name: 'SFRA v6.1.0',
     CheckoutPage: CheckoutPageSFRA6,
     urlExtension: '/s/RefArch/home',
     AccountPage: AccountPageSFRA,
