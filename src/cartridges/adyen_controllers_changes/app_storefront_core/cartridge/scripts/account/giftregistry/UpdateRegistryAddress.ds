@@ -1,0 +1,98 @@
+/**
+* This script ensures that shipments representing gift registries 
+* have an address in place. Because a gift registry shipping address 
+* can change based on the date of the gift registry event, we want to 
+* make sure that the address we are displaying in the summary page is 
+* the up-to-date address.
+*
+* @input Shipments : dw.util.Collection
+*
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    // read pipeline dictionary input parameter
+    var shipments : Collection = pdict.Shipments;
+    if (shipments == null || shipments.size() <= 0)
+    {
+    	return PIPELET_NEXT;
+    }
+    
+    // look at the shipments
+	var iter : Iterator = shipments.iterator();
+	var shipment : Shipment = null;
+	while (iter != null && iter.hasNext())
+	{
+		shipment = iter.next();
+		
+		// if the shipment represents a registry
+		// update the shipping address
+		var address : CustomerAddress = getRegistryAddress(shipment);
+		if (address != null)
+		{
+			var orderAddress : OrderAddress = shipment.getShippingAddress();
+			if (orderAddress == null)
+			{
+				orderAddress = shipment.createShippingAddress();
+			} 			
+			
+			copyAddressInfo(address, orderAddress);
+		}
+	}
+
+    return PIPELET_NEXT;
+}
+
+/**
+* Copy address infor from address to orderAddress.
+*/
+function copyAddressInfo(address : CustomerAddress, orderAddress : OrderAddress)
+{
+	if (address == null || orderAddress == null) {
+		return;
+	}
+	
+	orderAddress.setAddress1(address.getAddress1());
+	orderAddress.setAddress2(address.getAddress2());
+	orderAddress.setCity(address.getCity());
+	orderAddress.setCountryCode(address.getCountryCode());
+	orderAddress.setFirstName(address.getFirstName());
+	orderAddress.setJobTitle(address.getJobTitle());
+	orderAddress.setLastName(address.getLastName());
+	orderAddress.setPhone(address.getPhone());
+	orderAddress.setPostalCode(address.getPostalCode());
+	orderAddress.setPostBox(address.getPostBox());
+	orderAddress.setSalutation(address.getSalutation());
+	orderAddress.setSecondName(address.getSecondName());
+	orderAddress.setStateCode(address.getStateCode());
+	orderAddress.setSuffix(address.getSuffix());
+	orderAddress.setSuite(address.getSuite());
+	orderAddress.setTitle(address.getTitle());
+}
+
+/**
+* Returns the address associated with a registry if the 
+* shipment contains registry items. Otherwise, this function 
+* return null.
+*/
+function getRegistryAddress(shipment : Shipment) 
+{
+	var items : Collection = shipment.getProductLineItems();
+	if (items == null || items.size() <= 0)
+	{
+		return null;
+	}
+	
+	var item : ProductLineItem = items.iterator().next();
+	if (item.getProductListItem() != null)
+	{
+		return item.getProductListItem().getList().getCurrentShippingAddress();
+	}
+	
+	return null;
+}

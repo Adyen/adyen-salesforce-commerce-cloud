@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: coreshowselectedstore.isml </iscomment>
+<isscript>
+	var store : Store = dw.catalog.StoreMgr.getStore(pdict.CurrentHttpParameterMap.storeId);
+</isscript>
+<div>
+	${Resource.msg('storelist.lightbox.selectedstore','storepickup',null)}
+	<br />      <a href="${URLUtils.url('StoreInventory-SetZipCodeCore','pid', pdict.CurrentHttpParameterMap.pid)}">${Resource.msg('storelist.lightbox.changelocation','storepickup',null)}</a>
+	<br />
+	<br />		${store.name};
+	<br />		${store.address1};
+	<isif condition="${store.address2}">
+	<br />${store.address2}
+	</isif>
+	<br />		${store.city}, ${store.stateCode}
+	<br />		${store.postalCode} ${store.countryCode.displayValue}
+	<br />		${store.phone}
+	
+	<br />
+	
+	<isif condition="${!empty(pdict.CurrentHttpParameterMap.pid)}">
+		<a href="${URLUtils.url('Product-Show','pid', pdict.CurrentHttpParameterMap.pid)}">${Resource.msg('storelist.backtopdp','storepickup',null)}</a>
+		<br /><a href="${URLUtils.url('Cart-Show')}">${Resource.msg('storelist.cart','storepickup',null)}</a>		
+	</isif>
+</div>

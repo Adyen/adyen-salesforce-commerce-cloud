@@ -1,0 +1,205 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+    <isinclude template="util/modules"/>
+
+        <h1>${Resource.msg('account.giftregistry.title','account',null)}</h1>
+
+        <isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+        <form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.giftregistry.htmlName}_navigation">
+            <isif condition="${pdict.ProductList != null}">
+                <isset name="currentpage" value="shipping" scope="pdict" />
+                <div class="page-content-tab-navigaton">
+                    <isinclude template="account/giftregistry/navigation"/>
+                </div>
+            </isif>
+        </form>
+
+    <div class="page-content-tab-wrapper">
+
+        <form action="${URLUtils.httpsContinue()}"
+              method="post"
+              class="form-horizontal"
+              id="${pdict.CurrentForms.giftregistry.htmlName}"
+              name="${pdict.CurrentForms.giftregistry.htmlName}">
+
+            <h2>${Resource.msg('account.giftregistry.addresses.beforeheader','account',null)}</h2>
+
+            <p>${Resource.msg('account.giftregistry.addresses.beforemessage','account',null)}</p>
+
+            <fieldset name="address-before">
+
+                <legend>
+                    ${Resource.msg('global.selectaddressmessage','locale',null)}:
+                    <div class="dialog-required">
+                        <span class="required-indicator">
+                            &#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em>
+                        </span>
+                    </div>
+                </legend>
+
+                <isif condition="${pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+
+                    <div class="select-address">
+
+                        <div class="form-row">
+
+                            <label for="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeList.htmlName}">
+                                ${Resource.msg('global.selectaddress','locale',null)}
+                            </label>
+
+                            <div class="field-wrapper">
+                                <select name="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeList.htmlName}"
+                                        id="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeList.htmlName}"
+                                        class="input-select">
+                                    <option value="" selected="selected">${Resource.msg('resource.select','forms',null)}</option>
+                                    <isif condition="${pdict.CurrentCustomer.profile.addressBook.addresses.size() == 0}">
+                                        <option value="${Resource.msg('global.nosavedaddress','locale',null)}">
+                                            ${Resource.msg('global.nosavedaddress','locale',null)}
+                                        </option>
+                                    <iselse/>
+                                        <isloop items="${pdict.CurrentCustomer.profile.addressBook.addresses}" var="address">
+                                            <isif condition="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent.addressid.htmlValue == address.ID}">
+                                                <option value="${address.ID}" selected="selected">
+                                                    (<isprint value="${address.ID}"/>)
+                                                    <isprint value="${address.address1}"/>,
+                                                    <isprint value="${address.city}"/>,
+                                                    <isprint value="${address.stateCode}"/>,
+                                                    <isprint value="${address.postalCode}"/>
+                                                </option>
+                                            <iselse/>
+                                                <option value="${address.ID}">
+                                                    (<isprint value="${address.ID}"/>)
+                                                    <isprint value="${address.address1}"/>,
+                                                    <isprint value="${address.city}"/>,
+                                                    <isprint value="${address.stateCode}"/>,
+                                                    <isprint value="${address.postalCode}"/>
+                                                </option>
+                                            </isif>
+                                        </isloop>
+                                    </isif>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </isif>
+
+                <isscript>
+                    var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+                </isscript>
+                <isdynamicform formobject="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent}"
+                               formdata="${currentCountry.dynamicForms.addressDetails}"/>
+
+            </fieldset>
+
+            <h2>${Resource.msg('account.giftregistry.addresses.postheader','account',null)}</h2>
+
+            <p>${Resource.msg('account.giftregistry.addresses.postmessage','account',null)}</p>
+
+            <fieldset name="address-after">
+
+                <legend>
+                    ${Resource.msg('global.selectaddressmessage','locale',null)}:
+                    <div class="dialog-required">
+                        <span class="required-indicator">
+                            &#8226; <em>${Resource.msg('global.requiredfield', 'locale', null)}</em>
+                        </span>
+                    </div>
+                </legend>
+                <div class="form-row form-row-button">
+                    <button type="button" class="usepreevent">${Resource.msg('account.giftregistry.addresses.usepreevent', 'account', null)}</button>
+                </div>
+
+                <isif condition="${pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+
+                    <div class="select-address">
+
+                        <div class="form-row">
+
+                            <label for="${pdict.CurrentForms.giftregistry.eventaddress.addressBeforeList.htmlName}">
+                                ${Resource.msg('global.selectaddress','locale',null)}
+                            </label>
+
+                            <div class="field-wrapper">
+                                <select name="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterList.htmlName}"
+                                        id="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterList.htmlName}"
+                                        class="input-select">
+                                    <option value="" selected="selected">${Resource.msg('resource.select','forms',null)}</option>
+                                    <isif condition="${pdict.CurrentCustomer.profile.addressBook.addresses.size() == 0}">
+                                        <option value="${Resource.msg('global.nosavedaddress','locale',null)}">
+                                            ${Resource.msg('global.nosavedaddress','locale',null)}</option>
+
+                                    <iselse/>
+                                        <isloop items="${pdict.CurrentCustomer.profile.addressBook.addresses}" var="address">
+                                            <isif condition="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent.addressid.htmlValue == address.ID}">
+                                                <option value="${address.ID}" selected="selected">
+                                                    (<isprint value="${address.ID}"/>)
+                                                    <isprint value="${address.address1}"/>,
+                                                    <isprint value="${address.city}"/>,
+                                                    <isprint value="${address.stateCode}"/>,
+                                                    <isprint value="${address.postalCode}"/>
+                                                </option>
+                                            <iselse/>
+                                                <option value="${address.ID}">
+                                                    (<isprint value="${address.ID}"/>)
+                                                    <isprint value="${address.address1}"/>,
+                                                    <isprint value="${address.city}"/>,
+                                                    <isprint value="${address.stateCode}"/>,
+                                                    <isprint value="${address.postalCode}"/>
+                                                </option>
+                                            </isif>
+                                        </isloop>
+                                    </isif>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </isif>
+
+                <isscript>
+                    var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+                </isscript>
+                <isdynamicform formobject="${pdict.CurrentForms.giftregistry.eventaddress.addressAfterEvent}"
+                               formdata="${currentCountry.dynamicForms.addressDetails}"/>
+
+                <div class="form-row form-row-button">
+                    <isif condition="${pdict.ProductList == null}">
+                        <button class="previous cancel"
+                                type="submit"
+                                value="&laquo; ${Resource.msg('global.previous','locale',null)}"
+                                name="${pdict.CurrentForms.giftregistry.eventaddress.back.htmlName}">
+                            <span>&laquo; ${Resource.msg('global.previous','locale',null)}</span>
+                        </button>
+                        <button type="submit"
+                                name="${pdict.CurrentForms.giftregistry.eventaddress.setBeforeAfterAddresses.htmlName}"
+                                value="${Resource.msg('global.continue', 'locale', null)}">
+                            ${Resource.msg('global.continue','locale',null)}
+                        </button>
+                    <iselse/>
+                        <button type="submit"
+                                name="${pdict.CurrentForms.giftregistry.eventaddress.setBeforeAfterAddresses.htmlName}"
+                                value="${Resource.msg('global.apply', 'locale', null)}">
+                            ${Resource.msg('global.apply','locale',null)}
+                        </button>
+                    </isif>
+                </div>
+
+            </fieldset>
+
+        </form>
+
+    </div>
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.giftregistry.eventaddress.addressBeforeEvent;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>

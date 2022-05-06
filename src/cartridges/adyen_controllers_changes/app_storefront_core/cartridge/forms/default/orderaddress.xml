@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="firstname" label="profile.firstname" type="string" mandatory="true" binding="firstName" max-length="50" value-error="address.firstname.missing" />
+	<field formid="lastname" label="profile.lastname" type="string" mandatory="true" binding="lastName" max-length="50" value-error="address.lastname.missing" />
+	<field formid="address1" label="resource.address1" type="string" mandatory="true" binding="address1" max-length="50" value-error="resource.addresserror" />
+	<field formid="address2" label="resource.address2" type="string" mandatory="false" binding="address2" max-length="50" />
+	<field formid="city" label="resource.city" type="string" mandatory="true" binding="city" min-length="2" max-length="50" value-error="address.city.missing" />
+	<field formid="state" label="resource.state" type="string" mandatory="true" binding="stateCode" value-error="address.state.missing">
+		<options>
+			<option optionid="" 	label="resource.select" 	value=""/>
+			<option optionid="##" 	label="state.us.other" 	value="##"/>
+			<option optionid="CA" 	label="state.us.california" 	value="CA"/>
+			<option optionid="MA" 	label="state.us.massachusetts" 	value="MA"/>
+			<option optionid="NH" 	label="state.us.newhampshire" 	value="NH"/>
+			<option optionid="NY" 	label="state.us.newyork" 	value="NY"/>
+		</options>
+	</field>
+
+	<!--  postal code -->
+	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="5" max-length="10" regexp="(^\d{5}(-\d{4})?$)|(^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Za-z]{1} *\d{1}[A-Za-z]{1}\d{1}$)" binding="postalCode"
+		missing-error="resource.errorzip"/>
+
+	<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode" value-error="address.country.missing">
+		<options>
+			<option optionid="us" 	label="country.unitedstates"	value="us"/>
+		</options>
+	</field>
+	<!-- we provide both a mandatory and an optional phone field - either one can be used
+	     depending on the specific requirements -->
+	<field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="false" binding="phone" max-length="20" value-error="address.phone.missing" />
+	<!-- all possible actions performed on an address -->
+	<action formid="cancel" valid-form="false"/>
+	<action formid="confirm" valid-form="true"/>
+</form>

@@ -1,0 +1,58 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Store Locator Result',
+			type: 'StoreLocatorResult',
+			ns: 'storelocator'
+		};
+	</isscript>
+
+	<isinclude template="util/modules"/>
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="storelocator/pt_storelocatorresults_UI"/>
+
+	<iscomment>Add  template-specific header information here.</iscomment>
+
+</head>
+<body>
+
+	<div id="wrapper" class="pt_store-locator">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="page-content clearfix">
+
+			<isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}" bcurl2="${URLUtils.https('Stores-Find')}" bctext2="${Resource.msg('global.header.storelocator','locale',null)}" bctext3="${Resource.msg('search.results','search',null)}"/>
+
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+			<div id="secondary" class="nav">
+				<nav>
+					<h1 class="visually-hidden">${Resource.msg('global.secondarynavheading','locale',null)}</h1>
+					<div class="secondary-navigation">
+						<isinclude url="${URLUtils.url('Account-IncludeNavigation')}"/>
+					</div>
+				</nav>
+				<div class="account-nav-asset">
+					<iscontentasset aid="account-nav-text"/>
+				</div>
+			</div>
+
+		</div><!-- /main -->
+
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="storelocator/pt_storelocatorresults_VARS"/>
+
+	</div>
+
+</body>
+</html>

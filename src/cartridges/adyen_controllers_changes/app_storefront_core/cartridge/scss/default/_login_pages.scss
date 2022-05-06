@@ -1,0 +1,38 @@
+.checkoutlogin {
+	margin: 4em auto;
+	width: 80%;
+	.col-1 {
+		@media screen and (min-width: 768px) {
+			border-right: 1px solid $gainsboro;
+		}
+	}
+}
+.login-box {
+	h3 {
+		margin: 0;
+	}
+	p {
+		margin: 1em 0;
+	}
+	.error {
+		margin-left: 0;
+	}
+}
+
+.login-rememberme {
+	display: inline-block;
+	margin-left: .5em;
+}
+
+.login-oauth p:first-child {
+	font-size: 2em;
+	text-align: center;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+#OAuthProvider {
+	display: block;
+	margin-bottom: 1em;
+	width: 80%;
+}

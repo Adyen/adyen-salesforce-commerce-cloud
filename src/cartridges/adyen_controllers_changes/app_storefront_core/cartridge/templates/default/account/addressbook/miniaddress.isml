@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+
+<iscomment>
+	Creates a miniaddress display.
+
+	Parameter:
+	p_address	 	: the address object to display
+    p_productlist   : the product list the address represents. can be empty
+</iscomment>
+
+
+<iscomment>
+	There are some addresses without an ID, catch this here and make this include
+    more universal usable therefore.
+</iscomment>
+
+<isif condition="${'ID' in pdict.p_address && !empty(pdict.p_address.ID)}">
+	<div class="mini-address-title">
+		<isprint value="${pdict.p_address.ID}"/>
+		<isif condition="${!empty(pdict.p_productlist)}">
+			<div class="mini-address-product-list">${Resource.msg('account.addressbook.miniaddress.registrywishlist','account',null)}</div>
+		</isif>
+	</div>
+</isif>
+
+<isminiaddress_localized pp_address="${pdict.p_address}" />

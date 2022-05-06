@@ -1,0 +1,130 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+
+<isinclude template="util/modules"/>
+
+<isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+	<h1>${Resource.msg('account.registrycustomer.giftregistries','account',null)}</h1>
+	<div class="form-inline">
+		<isinclude template="account/giftregistry/giftregistrysearch"/>
+	</div>
+	<isif condition="${pdict.ProductList == null}">
+		<div class="registrynone">${Resource.msgf('account.registrycustomer.' + pdict.Status.code, 'account', null, pdict.Status.parameters)}</div><!-- END: registrynone -->
+	<iselse/>
+
+	<div class="list-share">
+		<h2 class="list-title"><isprint value="${pdict.ProductList.name}"/> - <isprint value="${pdict.ProductList.eventDate}"/></h2>
+	</div>
+	<div class="event-info">
+		<h3>${Resource.msg('account.giftregistry.userinformation','account',null)}</h3>
+		<dl class="user">
+			<dt>${Resource.msg('account.registrycustomer.role','account',null)}</dt>
+			<dd><isprint value="${pdict.ProductList.registrant.role}"/></dd>
+			<dt>${Resource.msg('account.registrycustomer.name','account',null)}</dt>
+			<dd><isprint value="${pdict.ProductList.registrant.firstName}"/>&nbsp;<isprint value="${pdict.ProductList.registrant.lastName}"/></dd>
+			<isif condition="${pdict.ProductList.coRegistrant != null}">
+				<dt>${Resource.msg('account.registrycustomer.role','account',null)}</dt>
+				<dd><isprint value="${pdict.ProductList.coRegistrant.role}"/></dd>
+				<dt>${Resource.msg('account.registrycustomer.name','account',null)}</dt>
+				<dd><isprint value="${pdict.ProductList.coRegistrant.firstName}"/>&nbsp;<isprint value="${pdict.ProductList.coRegistrant.lastName}"/></dd>
+			</isif>
+		</dl>
+	</div>
+	<div class="event-info">
+		<h3>${Resource.msg('giftregistryconfirmation.eventinfo','account',null)}</h3>
+		<dl class="event">
+			<dt>${Resource.msg('account.registrycustomer.eventtype','account',null)}</dt>
+			<dd><isprint value="${Resource.msg('giftregistry.' + pdict.ProductList.eventType, 'forms', null)}"/></dd>
+			<dt>${Resource.msg('account.registrycustomer.location','account',null)}</dt>
+			<dd><isprint value="${pdict.ProductList.eventCity}"/>,<isprint value="${pdict.ProductList.eventState}"/></dd>
+		</dl>
+	</div>
+
+	<isif condition="${empty(pdict.CurrentForms.giftregistry.items)}">
+		<div class="gift-registry-empty-message">${Resource.msg('account.registrycustomer.noitems','account',null)}</div>
+	</isif>
+
+	<table class="item-list" class="gift-registry-items">
+		<isloop items="${pdict.CurrentForms.giftregistry.items}" var="item" status="loopstate">
+			<tr>
+				<td class="item-image">
+					<iscomment>Display product image using module</iscomment>
+					<isdisplayproductimage p_productli="${item.object}" p_size="small"/>
+				</td>
+
+				<td class="item-details">
+					<iscomment>Display product list item using module</iscomment>
+					<isdisplayproductlistitem p_productli="${item.object}"/>
+
+					<iscomment>display product availability using module</iscomment>
+					<isdisplayproductavailability p_productli="${item.object}"/>
+				</td>
+
+				<td class="item-dashboard">
+
+					<div class="item-option option-date-added">
+						<span class="label">${Resource.msg('account.registrycustomer.dateadded','account',null)}</span>
+						<span class="value"><isprint value="${item.object.creationDate}"/></span>
+					</div>
+
+					<isif condition="${item.object.type == item.object.TYPE_PRODUCT}">
+						<isif condition="${item.purchasedQuantity.value>item.quantity.value}">
+							<isset name="exceededClass" value="${' exceeded'}" scope="page" />
+						<iselse/>
+							<isset name="exceededClass" value="${''}" scope="page" />
+						</isif>
+						<div class="item-option option-quantity-desired">
+							<span class="label">${Resource.msg('productlist.qtydesired','account',null)}</span>
+							<span class="value${exceededClass}"><isprint value="${item.quantity.value}" formatter="#"/></span>
+						</div>
+
+						<div class="item-option option-quantity-purchased">
+							<span class="label">${Resource.msg('productlist.qtypurchased','account',null)}</span>
+							<span class="value${exceededClass}"><isprint value="${item.purchasedQuantity.value}" formatter="#"/></span>
+						</div>
+
+					</isif>
+
+					<isloop items="${item.priority.options}" var="option">
+						<isif condition="${item.object.priority == option.htmlValue}">
+							<iscomment>priority select box</iscomment>
+							<div class="item-option option-priority">
+								<span class="label">${Resource.msg('account.registrycustomer.priority','account',null)}</span>
+								<span class="value">${Resource.msg(option.label,'forms',null)}</span>
+							</div>
+						</isif>
+					</isloop>
+
+					<div class="item-option option-add-to-cart">
+						<isset name="isGiftCert" value="${item.object.type == item.object.TYPE_GIFT_CERTIFICATE}" scope="page"/>
+						<isif condition="${isGiftCert}">
+							<form action="${URLUtils.url('GiftCert-Purchase')}" method="get" name="gift-cert-purchase">
+						<iselse/>
+							<form action="${URLUtils.url('Cart-AddProduct')}" method="post" name="${pdict.CurrentForms.product.addtocart.htmlName}">
+						</isif>
+							<fieldset>
+								<input type="hidden" name="itemid" value="${item.object.ID}"/>
+								<input type="hidden" name="plid" value="${pdict.ProductList.UUID}"/>
+								<isif condition="${isGiftCert}">
+									<button type="submit" name="${item.addGiftCertificate.htmlName}" title="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" value="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" class="button-fancy-small">
+										${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}
+									</button>
+								<iselse/>
+									<label for="Quantity">${Resource.msg('global.qty','locale',null)}:</span>
+									<input class="input-text" type="text" name="Quantity" maxlength="3" value="${Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()}"/>
+									<button type="submit" name="${item.addItemToCart.htmlName}" title="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" value="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" class="button-fancy-small add-to-cart">
+										${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}
+									</button>
+								</isif>
+							</fieldset>
+						</form>
+					</div>
+				</td>
+			</tr>
+		</isloop>
+	</table>
+
+	</isif>
+
+</isdecorate>

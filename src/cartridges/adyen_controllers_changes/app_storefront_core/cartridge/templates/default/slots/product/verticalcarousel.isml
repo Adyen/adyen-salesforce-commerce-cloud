@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+<isinclude template="util/modules"/>
+
+<h2>${Resource.msg('global.carousel.featuredproducts','locale',null)}</h2>
+
+<div id="vertical-carousel">
+	<ul>
+		<isloop items="${slotcontent.content}" var="product">
+			<li>
+				<div class="analytics capture-product-id"><isprint value="${product.getID()}"/></div>
+				<isproducttile product="${product}" showpricing="${true}"/>
+			</li>
+		</isloop>
+	</ul>
+	<a class="jcarousel-nav jcarousel-prev">${Resource.msg('global.previous.abbr', 'locale', null)}</a>
+	<a class="jcarousel-nav jcarousel-next">${Resource.msg('global.next', 'locale', null)}</a>
+</div>
+
+<!-- END: verticalcarousel -->

@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+<div class="product-listing product-listing-1x2">
+
+	<isloop items="${slotcontent.content}" var="product" begin="0" end="1">
+		<isset name="Product" value="${product}" scope="pdict" />
+		<iscomment>Check for a product in the dictionary, if no product found. This section is skipped.</iscomment>
+		<isif condition="${!empty(pdict.Product)}">
+		
+			<div class="product-listing-image">
+				<isif condition="${!empty(pdict.Product.getImage('large',0))}">
+					<a title="${product.name}"  href="${URLUtils.http('Product-Show','pid', product.ID)}"><img src="${product.getImage('large',0).getURL()}" alt="${product.name}" /></a>
+				</isif>
+			</div>
+			
+			<div class="product-listing-details">
+				<h3><a title="${product.name}"  href="${URLUtils.http('Product-Show','pid', product.ID)}"><isprint value="${product.name}"/></a></h3>
+				<isinclude template="product/components/pricing"/>
+			</div>
+			
+		</isif>
+	</isloop>
+	
+</div>

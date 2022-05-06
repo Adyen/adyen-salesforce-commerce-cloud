@@ -1,0 +1,19 @@
+/**
+ * CalculateCart.ds
+ *
+ *
+ * @input  Basket : dw.order.Basket
+ */
+ importPackage( dw.system );
+
+/**
+ * Function: execute
+ *
+ * Main function of the calculation script.
+ */
+function execute( pdict : PipelineDictionary ) : Number
+{
+	dw.system.HookMgr.callHook( "dw.ocapi.shop.basket.calculate", "calculate", pdict.Basket );
+	
+    return PIPELET_NEXT;
+}

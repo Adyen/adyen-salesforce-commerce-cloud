@@ -1,0 +1,54 @@
+/**
+* This script initializes the 'selected' radio buttons 
+* for the addresses used for the event's before and after 
+* shipping addresses.
+*
+* @input ProductList : dw.customer.ProductList The Product List.
+* @input Customer : dw.customer.Customer The customer whose addresses will be used.
+* @input BeforeEventField : dw.web.FormField The form field representing the before event address.
+* @input AfterEventField : dw.web.FormField The form field representing the before event address.
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.web );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var productList : ProductList = pdict.ProductList;
+	var customer : Customer = pdict.Customer;
+	var beforeEvent : FormField = pdict.BeforeEventField;
+	var afterEvent : FormField = pdict.AfterEventField;
+	var addressBook : String = "addressbook";
+	var newAddress : String = "newaddress";
+
+	// update before event radio selection
+	if (productList.getShippingAddress() != null)
+	{
+		beforeEvent.setValue(addressBook);
+	} 
+	else
+	{
+		// see if the address book has any elements
+		if (customer.getProfile().getAddressBook().getAddresses().size() <= 0) {
+			beforeEvent.setValue(newAddress);
+		} else {
+			beforeEvent.setValue(addressBook);
+		}		
+	}
+	
+	// update after event radio selection
+	if (productList.getPostEventShippingAddress() != null)
+	{
+		afterEvent.setValue(addressBook);
+		
+	} else {
+		// see if the address book has any elements
+		if (customer.getProfile().getAddressBook().getAddresses().size() <= 0) {
+			afterEvent.setValue(newAddress);
+		} else {
+			afterEvent.setValue(addressBook);
+		}
+	}
+
+    return PIPELET_NEXT;
+}

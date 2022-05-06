@@ -1,0 +1,49 @@
+/**
+* Salesforce Commerce Cloud Script File
+* Check store for the line item
+* check the qty against the inventory of the store with matching storeID, 
+* in the event that the cart is being updated with a new qty	
+*
+*  @input Basket : dw.order.Basket
+*
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{		
+
+	var basket : Basket = args.Basket;
+	
+	for each (var pli : ProductLineItem in basket.allProductLineItems){
+		
+		if(pli.custom.fromStoreId == null){
+			//skip none instore pli's
+			continue;
+		}
+			
+		//check the qty against the inventory of the store with matching storeID, 
+		//in the event that the cart is being updated with a new qty			
+		var store : Store = StoreMgr.getStore(pli.custom.fromStoreId);
+		var storeinventory : ProductInventoryList = ProductInventoryMgr.getInventoryList(store.custom.inventoryListId);
+
+		if(storeinventory.getRecord(pli.productID).ATS.value >= pli.quantityValue) {
+
+			pli.custom.fromStoreId = store.ID;
+			pli.setProductInventoryList(storeinventory);
+		
+		} else {
+				//the in store line item will be reset to a regular home delivery item.
+				pli.custom.fromStoreId="";
+				pli.setProductInventoryList(null);
+			  	pli.setShipment(basket.getDefaultShipment());								
+		}
+		
+	}
+	
+	
+    return PIPELET_NEXT;
+
+}

@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>Template for promotion slot on the top of the header</iscomment>
+<div class="header-promotion">
+	<isif condition="${slotcontent != null}">
+		<isloop items="${slotcontent.content}" var="markupText">
+			<isprint value="${markupText.markup}" encoding="off"/>
+		</isloop>
+	</isif>
+</div>

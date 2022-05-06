@@ -1,0 +1,113 @@
+#wrapper {
+    background-color: $white;
+    border: 0;
+    left: 0;
+    margin: auto;
+    position: relative;
+    transition: left 0.2s ease-in;
+    width: 100%;
+    @media screen and (min-width: 768px) {
+        width: 760px;
+    }
+    @media screen and (min-width: 960px) {
+        width: 960px;
+    }
+    &.pt_storefront,
+    &.pt_order-confirmation {
+        width: 100%;
+    }
+    &.pt_categorylanding {
+        width: 100%;
+        .primary-content {
+            padding-bottom: 0;
+            @media screen and (min-width: 768px) {
+                width: 80%;
+            }
+        }
+        .refinements {
+            border-right: 0;
+            display: none;
+            width: 0;
+            @media screen and (min-width: 768px) {
+                display: block;
+                width: 20%;
+            }
+        }
+    }
+    &.pt_product-details {
+        .primary-content {
+            padding-top: 1rem;
+        }
+    }
+    &.menu-active {
+        left: 50%;
+    }
+    @media screen and (min-width: 768px) {
+        &.menu-active {
+            left: auto;
+        }
+    }
+}
+
+.primary-content {
+    width: 100%;
+    @media screen and (min-width: 768px) {
+        border-left: 1px solid $gainsboro;
+        float: right;
+        margin-left: -1px;
+        padding: 0 0 20px;
+        position: relative;
+        width: 787px;
+	    .primary-focus & {
+	        border: none;
+	        float: left;
+	        margin: 0;
+	        width: 76%;
+	    } 
+	    .full-width & {
+	        border: none;
+	        width: 100%;
+	    }
+	 }
+}
+
+#secondary {
+    border: 0;
+    float: none;
+    font-size: 1.1em;
+    width: 100%;
+    @media screen and (min-width: 768px) {
+        background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top transparent;
+        border-right: 1px solid $gainsboro;
+        float: left;
+        width: 172px;
+        position: relative;
+        nav {
+            padding-left: 10px;
+            padding-right: 10px;
+            a {
+                display: block;
+            }
+        }
+        .primary-focus & {
+            background: none;
+            border: none;
+            box-sizing: border-box;
+            float: left;
+            padding-left: .4rem;
+            width: 24%;
+        }
+    }
+    // Remove Refinements for responsive design
+    .pt_content-search-result &,
+    .pt_order & {
+        display: none;
+        @media screen and (min-width: 768px) {
+            display: block;
+        }
+    }
+}
+
+.secondary-content {
+    clear: both;
+}

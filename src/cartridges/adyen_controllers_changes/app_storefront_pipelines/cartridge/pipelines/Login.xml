@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="MyAccount">
+  <description>Handles all customer login related storefront processes.</description>
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is a central place to login a user from the login form.</description>
+        </text-node>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Process">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Process" secure="true"/>
+        <node-display x="1" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="source" x="-1" y="1"/>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="CurrentHttpParameterMap.OAuthProvider.stringValue" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="-1"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/PreInitiateOAuthLogin.ds"/>
+              </pipelet-node>
+              <node-display x="1" y="0"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="./+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                    <bend-point relative-to="target" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="InitiateOAuthLogin" pipelet-set-identifier="bc_api">
+                <key-binding alias="Location" key="AuthorizationURL"/>
+                <key-binding alias="CurrentHttpParameterMap.OAuthProvider.stringValue" key="OAuthProviderID"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="3" y="2"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <pipelet-node pipelet-name="InvalidateFormElement" pipelet-set-identifier="bc_api">
+                      <key-binding alias="CurrentForms.oauthlogin.loginsucceeded" key="FormElement"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/PostFinalizeOAuthLogin.ds"/>
+                      <key-binding alias="Location" key="Location"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in2" target-path="./+1"/>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="util/redirect.isml"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="util/redirect.isml"/>
+              </interaction-node>
+              <node-display x="0" y="2"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Check locked status of Customer." pipelet-name="GetCustomer" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.login.username.value" key="Login"/>
+          <key-binding alias="TempCustomer" key="Customer"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+          <bend-point relative-to="target" x="-1" y="-1"/>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="typeof(TempCustomer) != 'undefined'&amp;&amp; TempCustomer != null &amp;&amp; TempCustomer.profile != null &amp;&amp; TempCustomer.profile.credentials.locked" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="0" y="2"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in1" target-path="./b3.2">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-2"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="&quot;FailedLoginCounter&quot;" key="From_0"/>
+          <key-binding alias="CounterLabel" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="RateLimiter-Check"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="LoginCustomer" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.login.username.value" key="Login"/>
+          <key-binding alias="CurrentForms.login.password.value" key="Password"/>
+          <key-binding alias="CurrentForms.login.rememberme.value" key="RememberMe"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="typeof(TempCustomer) != 'undefined' &amp;&amp; TempCustomer != null &amp;&amp; TempCustomer.profile != null &amp;&amp; TempCustomer.profile.credentials.locked" condition-operator="expr"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('customerServiceEmail')" key="From_0"/>
+                      <key-binding alias="MailFrom" key="To_0"/>
+                      <key-binding alias="dw.web.Resource.msg('resource.youraccount','email',null)" key="From_1"/>
+                      <key-binding alias="MailSubject" key="To_1"/>
+                      <key-binding alias="&quot;mail/lockoutemail&quot;" key="From_2"/>
+                      <key-binding alias="MailTemplate" key="To_2"/>
+                      <key-binding alias="TempCustomer.profile.email" key="From_3"/>
+                      <key-binding alias="MailTo" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <call-node start-name-ref="Mail-SecureSend"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="target" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-1" y="3"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="InvalidateFormElement" pipelet-set-identifier="bc_api">
+                <key-binding alias="CurrentForms.login.loginsucceeded" key="FormElement"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <end-node name="login_failed"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="RateLimiter-HideCaptcha"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.login" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="4"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="login_succeeded"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryLinkedIn">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryLinkedIn" secure="true"/>
+        <node-display x="3" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1"/>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromLinkedInProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="5" y="4"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.oauthlogin" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="/Process.1/b2.2/b2.2">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="2"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is the reentry point after an OAuth login, i.e., its URL is passed to the OAuth provider as the redirect URL.</description>
+        </text-node>
+        <node-display width="3" x="5" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryGoogle">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryGoogle" secure="true"/>
+        <node-display x="4" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1"/>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromGoogleProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="2"/>
+          <bend-point relative-to="target" x="0" y="-6"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryGooglePlus">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryGooglePlus" secure="true"/>
+        <node-display x="5" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromGooglePlusProviderAndLogin.ds"/>
+          <key-binding alias="logger" key="ScriptLog"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in2" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="3"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryMicrosoft">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryMicrosoft" secure="true"/>
+        <node-display x="6" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="3" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromMicrosoftProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="3" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="4"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryFacebook">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryFacebook" secure="true"/>
+        <node-display x="7" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="5" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromFacebookProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="5" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="target" x="-2" y="-3"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryGitHub">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryGitHub" secure="true"/>
+        <node-display x="8" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="7" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromGitHubProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="6"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentrySinaWeibo">
+    <segment>
+      <node>
+        <start-node name="OAuthReentrySinaWeibo" secure="true"/>
+        <node-display x="10" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="8"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromSinaWeiboProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="6"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="target" x="4" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_11">
+    <segment>
+      <node>
+        <text-node>
+          <description>Logs out the authenticated customer</description>
+        </text-node>
+        <node-display x="15" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="OAuthReentryVKontakte">
+    <segment>
+      <node>
+        <start-node name="OAuthReentryVKontakte" secure="true"/>
+        <node-display x="12" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="FinalizeOAuthLogin" pipelet-set-identifier="bc_api">
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="AccessToken" key="AccessToken"/>
+          <key-binding alias="RefreshToken" key="RefreshToken"/>
+          <key-binding alias="AccessTokenExpiry" key="AccessTokenExpiry"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+          <key-binding alias="ErrorStatus" key="ErrorStatus"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="8"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="app_storefront_core:account/login/oauth/ObtainAccountFromVKontakteProviderAndLogin.ds"/>
+          <key-binding alias="ResponseText" key="ResponseText"/>
+          <key-binding alias="OAuthProviderID" key="OAuthProviderID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="/Process.1/b2.2/b2.1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="source" x="1" y="6"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="/OAuthReentryLinkedIn.2">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="8"/>
+        </transition-display>
+      </transition>
+    </segment>
+  </branch>
+  <branch basename="Logout">
+    <segment>
+      <node>
+        <start-node name="Logout" secure="true"/>
+        <node-display x="15" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="LogoutCustomer" pipelet-set-identifier="bc_api"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.login" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.profile" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="account/accountredirect"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>Handles redirect after login.  A start node is set with the following variables.
+-  TargetPipeline is the location of the pipeline
+-  TargetPipelineParams are any parameters that need to be sent</description>
+        </text-node>
+        <node-display width="2" x="16" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Redirect">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Redirect" secure="true"/>
+        <node-display x="17" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="typeof(TargetPipeline) != 'undefined' &amp;&amp; TargetPipeline != null" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="account/login/loginredirect"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="Home-Show"/>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Used in the following pipelines:
+
+Account (Show, EditProfile)
+Address (List, Add, Edit, SetDefault, DeleteAddress)
+Cart (Login)
+COCustomer (Start)
+GiftRegistry (Start, AddProduct, Delete, Create)
+Order (History)
+PaymentsInstrument (List, Delete)
+Wishlist (Show, Add)</description>
+        </text-node>
+        <node-display height="2" width="3" x="17" y="5"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

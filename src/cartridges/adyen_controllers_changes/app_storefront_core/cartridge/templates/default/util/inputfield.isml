@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Displays a input field for templates.
+
+	If `label` is set to true or not defined (default), the label will be rendered. If set to false, it will not be rendered.
+
+	If `value` is set to true or not defined (default), the input element will be rendered. If set to false, it will not be rendered.
+</iscomment>
+
+<isscript>
+var inputField = require('~/cartridge/scripts/common/inputField')(pdict);
+</isscript>
+
+<div class="form-row ${inputField.rowClass}">
+	<isif condition="${inputField}">
+		<isif condition="${inputField.labelAfter}">
+			<isif condition="${!pdict.value || pdict.value === 'true'}">
+				<div class="field-wrapper">
+					<isprint value="${inputField.input}" encoding="off"/>
+				</div>
+			</isif>
+			<isif condition="${!pdict.label || pdict.label === 'true'}">
+				<isprint value="${inputField.label}" encoding="off"/>
+			</isif>
+		<iselse/>
+			<isif condition="${!pdict.label || pdict.label === 'true'}">
+				<isprint value="${inputField.label}" encoding="off"/>
+			</isif>
+			<isif condition="${!pdict.value || pdict.value === 'true'}">
+				<div class="field-wrapper">
+					<isprint value="${inputField.input}" encoding="off"/>
+				</div>
+			</isif>
+		</isif>
+		<isprint value="${inputField.help}" encoding="off"/>
+		<isprint value="${inputField.caption}" encoding="off"/>
+	</isif>
+</div>

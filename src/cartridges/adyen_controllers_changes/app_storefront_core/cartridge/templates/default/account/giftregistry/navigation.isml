@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<fieldset>
+
+	<button type="submit" name="${pdict.CurrentForms.giftregistry.navigation.navRegistry.htmlName}" class="${pdict.currentpage == "registry" ? "selected" : ""}">
+		${Resource.msg('navigation.tabregistry','account',null)}
+	</button>
+	
+	<button type="submit" name="${pdict.CurrentForms.giftregistry.navigation.navEvent.htmlName}" class="${pdict.currentpage == "event" ? "selected" : ""}">
+		${Resource.msg('navigation.tabevent','account',null)}
+	</button>
+	
+	<button type="submit" name="${pdict.CurrentForms.giftregistry.navigation.navShipping.htmlName}" class="${pdict.currentpage == "shipping" ? "selected" : ""}">
+		${Resource.msg('navigation.tabshipping','account',null)}
+	</button>
+	
+	<button type="submit" name="${pdict.CurrentForms.giftregistry.navigation.navPurchases.htmlName}" class="${pdict.currentpage == "purchases" ? "selected" : ""}">
+		${Resource.msg('navigation.tabpurchases','account',null)}
+	</button>
+
+</fieldset>

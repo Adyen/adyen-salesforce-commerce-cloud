@@ -1,0 +1,12 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>
+    Displays bonus product message "bonus" or bonus product's 
+    price based on the passed in variabble bonusProductPrice.
+
+    requires: bonusProductPrice
+</iscomment>
+
+<isscript>
+    var bonusProductPriceValue = bonusProductPrice > 0 ? bonusProductPrice : Resource.msg('global.bonus','locale',null);
+</isscript>

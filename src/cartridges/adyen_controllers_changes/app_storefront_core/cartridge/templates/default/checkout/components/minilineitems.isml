@@ -1,0 +1,154 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Renders mini lineitems for order summary and mini cart.
+
+	Parameters:
+	p_showreverse     	: boolean to render the line items in reverse order
+	p_lineitemctnr     	: the line item container to render (this could be either an order or a basket as they are both line item containers)
+	p_productlineitem	: in case of mini cart this is the product lineitem just got added/changed so it should be expanded and at the top of the list
+	p_giftcertlineitem	: in case of mini cart this is the gift certificate line item just got added/changed so it should be expanded and at the top of the list
+
+</iscomment>
+
+<iscomment>Create page varibale representing the line item container</iscomment>
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+
+<isif condition="${LineItemCtnr != null}">
+	<isscript>
+		var pliList : dw.util.Collection = new dw.util.ArrayList(LineItemCtnr.productLineItems);
+		if( pdict.p_showreverse )
+		{
+			// order of items is reverse in case of mini cart display
+			pliList.reverse();
+
+			// remove the bonus item from the mini cart display
+			var tempList : dw.util.ArrayList = new dw.util.ArrayList();
+
+			// add the recently touched/added product line item at the top of the list
+			if( pdict.p_productlineitem )
+			{
+				tempList.add( pdict.p_productlineitem );
+			}
+
+			for( var ind in pliList )
+			{
+				var li = pliList[ind];
+
+				// skip recently touched/added item, its already added before the loop
+				if( empty(pdict.p_productlineitem) || (pdict.p_productlineitem && li.position != pdict.p_productlineitem.position))
+				{
+					tempList.add( li );
+				}
+			}
+			pliList = tempList;
+		}
+	</isscript>
+
+	<iscomment>the item count is incremented after each display of a line item</iscomment>
+	<isset name="itemCount" value="${1}" scope="page"/>
+
+	<iscomment>render a newly added gift certificate line item at the top</iscomment>
+	<isif condition="${pdict.p_giftcertlineitem != null}">
+
+		<div class="mini-cart-product">
+			<div class="mini-cart-image">
+				<img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="<isprint value="${pdict.p_giftcertlineitem.lineItemText}"/>" />
+			</div>
+
+			<div class="mini-cart-name">
+				<span><isprint value="${pdict.p_giftcertlineitem.lineItemText}"/></span>
+			</div>
+
+			<div class="mini-cart-pricing">
+				${Resource.msg('global.qty','locale',null)}: 1
+				<isprint value="${pdict.p_giftcertlineitem.price}"/>
+			</div>
+
+		</div>
+
+		<isset name="itemCount" value="${itemCount+1}" scope="page"/>
+
+	</isif>
+
+	<iscomment>product line items (only rendered if we haven't add a gift certificate to the basket)</iscomment>
+		<isloop items="${pliList}" var="productLineItem" status="loopstate">
+
+			<div class="mini-cart-product">
+				<span class="mini-cart-toggle fa"></span>
+				<div class="mini-cart-image">
+					<isif condition="${productLineItem.product != null && productLineItem.product.getImage('small',0) != null}">
+						<img src="${productLineItem.product.getImage('small',0).getURL()}" alt="${productLineItem.product.getImage('small',0).alt}" title="${productLineItem.product.getImage('small',0).title}"/>
+					<iselse/>
+						<img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${productLineItem.productName}"  title="${productLineItem.productName}"/>
+					</isif>
+				</div>
+
+				<div class="mini-cart-name">
+					<isset name="itemUrl" value="${empty(productLineItem.categoryID) ? URLUtils.http('Product-Show','pid', productLineItem.productID) : URLUtils.http('Product-Show','pid', productLineItem.productID, 'cgid', productLineItem.categoryID)}" scope="page"/>
+
+					<a href="${itemUrl}" title="${Resource.msgf('product.label','product',null, productLineItem.productName)}"><isprint value="${productLineItem.productName}"/></a>
+				</div>
+
+				<div class="mini-cart-attributes">
+					<isdisplayvariationvalues product="${productLineItem.product}"/>
+				</div>
+
+				<isdisplayproductavailability p_productli="${productLineItem}" p_displayinstock="${false}" p_displaypreorder="${true}" p_displaybackorder="${true}"/>
+
+				<div class="mini-cart-pricing">
+
+					<span class="label">${Resource.msg('global.qty','locale',null)}:</span>
+					<span class="value"><isprint value="${productLineItem.quantity}"/></span>
+
+					<isif condition="${productLineItem.bonusProductLineItem}">
+						<isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+						<isinclude template="checkout/components/displaybonusproductprice" />
+						<isprint value="${bonusProductPriceValue}" />
+					<iselse/>
+						<isset name="productTotal" value="${productLineItem.adjustedPrice}" scope="page"/>
+						<isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+							<isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+								<isset name="productTotal" value="${productTotal.add(optionLI.adjustedPrice)}" scope="page"/>
+							</isloop>
+						</isif>
+						<span class="mini-cart-price"><isprint value="${productTotal}"/></span>
+					</isif>
+
+				</div>
+
+			</div>
+
+			<isset name="itemCount" value="${itemCount+1}" scope="page"/>
+
+		</isloop>
+
+	<iscomment>gift certificate line items (only rendered if we haven't add a product to the basket)</iscomment>
+		<isloop items="${LineItemCtnr.giftCertificateLineItems}" var="gcLI" status="loopstate">
+			<iscomment>
+				Omit showing the gift certificate that was just added (in case we render the minicart).
+				This gift certificate has already been rendered at the top before the product line items.
+			</iscomment>
+			<isif condition="${!(pdict.p_giftcertlineitem != null && pdict.p_giftcertlineitem.UUID.equals(gcLI.UUID))}">
+
+				<div class="mini-cart-product <isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+
+					<div class="mini-cart-image">
+						<img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="<isprint value="${gcLI.lineItemText}"/>" />
+					</div>
+
+					<div class="mini-cart-name">
+						<isprint value="${gcLI.lineItemText}"/>
+					</div><!-- END: name -->
+
+					<div class="mini-cart-pricing">
+						<span class="label">${Resource.msg('global.qty','locale',null)}: 1</span>
+						<span class="value"><isprint value="${gcLI.price}"/></span>
+					</div>
+
+				</div>
+				<isset name="itemCount" value="${itemCount+1}" scope="page"/>
+			</isif>
+		</isloop>
+
+
+</isif>

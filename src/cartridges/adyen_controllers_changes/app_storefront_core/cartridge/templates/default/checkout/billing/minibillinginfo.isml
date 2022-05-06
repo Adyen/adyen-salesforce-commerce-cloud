@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+<iscomment>
+    This template renders the billing address and a list of all payment
+    methods (more precessively payment instruments) used for the payment
+    of the basket. It is displayed in the order summary at the right hand
+    side in the checkout process.
+</iscomment>
+<isset name="billingAddress" value="${pdict.Basket.billingAddress}" scope="page"/>
+<isset name="paymentInstruments" value="${pdict.Basket.paymentInstruments}" scope="page"/>
+
+<isif condition="${!empty(billingAddress)}">
+    <div class="mini-billing-address  order-component-block">
+
+        <h3 class="section-header">
+            <a href="${URLUtils.https('COBilling-Start')}" class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+            ${Resource.msg('minibillinginfo.billingaddress','checkout',null)}
+        </h3>
+
+        <div class="details">
+            <isminicheckout_address p_address="${billingAddress}"/>
+        </div>
+
+    </div>
+</isif>
+
+<isif condition="${!empty(paymentInstruments)}">
+    <iscomment>render a box per payment instrument</iscomment>
+    <isloop items="${paymentInstruments}" var="paymentInstr" status="loopstate">
+        <div class="mini-payment-instrument  order-component-block <isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+
+            <h3 class="section-header">
+                <a href="${URLUtils.https('COBilling-Start')}"  class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+                <isif condition="${loopstate.first}"><span>${Resource.msg('minibillinginfo.paymentmethod','checkout',null)}</span></isif>
+            </h3>
+
+            <div class="details">
+                <iscomment>
+                    dynamically render the detail section depending on the type of the payment instrument
+                </iscomment>
+                <isif condition="${dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstr.paymentMethod)}">
+                    <div>${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}: <isprint value="${paymentInstr.maskedGiftCertificateCode}"/></div>
+                <iselse/>
+                    <div><isprint value="${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}" /></div>
+                    <isminicreditcard card="${paymentInstr}" show_expiration="${true}"/>
+                    <div>
+                        ${Resource.msg('minibillinginfo.amount', 'checkout', null)}: <span class="minibillinginfo-amount"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
+                    </div><!-- END: payment-amount -->
+                </isif>
+            </div>
+        </div>
+    </isloop>
+</isif>

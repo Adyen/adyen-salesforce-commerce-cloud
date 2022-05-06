@@ -1,0 +1,71 @@
+/**
+ * Utils.ds
+ *
+ * This script holds utility functions for the instore pick up feature
+ *
+ */
+importPackage( dw.util );
+importPackage( dw.catalog);
+importPackage( dw.system );
+importPackage( dw.web );
+
+/**
+*	Returns a store object based on the storeID
+*/
+function getStoreObject(storeID : String) : dw.catalog.Store {
+	
+	
+	var store : Store = StoreMgr.getStore(storeID);
+
+	return store;
+}
+
+
+//Availability Messaging for Store Inventory
+function getStoreAvailabilityMessage(store : dw.catalog.Store, product : dw.catalog.Product) : String {
+
+		var storeInventoryListId : String = store.custom.inventoryListId;
+		var productInventoryList : ProductInventoryList = null;
+		var productInventoryrecord : ProductInventoryRecord = null;
+		var availabilityMessage : String = Resource.msg('global.instock','locale',null); //"In stock"
+		
+		// check for Inventory Availability	
+		if (storeInventoryListId != null) {
+			
+			productInventoryList = ProductInventoryMgr.getInventoryList(storeInventoryListId);
+			
+			if (productInventoryList != null) {
+			
+				productInventoryrecord = productInventoryList.getRecord(product.ID);
+				
+				if (productInventoryrecord != null ) {
+
+						//RP product
+					if (productInventoryrecord.ATS.value >= 1) {
+						
+						//Instock
+						availabilityMessage = Resource.msg('global.instock','locale',null); //"In stock"
+							
+					} else {
+						
+						// not available as ATS is less than 1
+						availabilityMessage = Resource.msg('cart.store.notavailable','checkout',null); //"Not Available"
+					}
+						
+				} else {
+					// not available as Inventory Record doesn't exist
+					availabilityMessage = Resource.msg('cart.store.notavailable','checkout',null); //"Not Available"
+				}
+									
+			} else {
+				// not available as Inventory List doesn't exist
+				availabilityMessage = Resource.msg('cart.store.notavailable','checkout',null); //"Not Available"
+			}
+			
+		} else {
+			// not available as Store Inventory is not set
+			availabilityMessage = Resource.msg('cart.store.notavailable','checkout',null); //"Not Available"
+		}
+	
+    return availabilityMessage;
+}

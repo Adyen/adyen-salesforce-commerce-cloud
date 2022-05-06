@@ -1,0 +1,16 @@
+/**
+ * consentTracking.ds
+ *
+ * 
+ * @input consent : Boolean users tracing choice
+ */
+importPackage( dw.system );
+importPackage( dw.util );
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var consent = pdict.consent;
+    session.custom.consentTracking = consent;
+    session.setTrackingAllowed(consent);
+
+    return PIPELET_NEXT;
+}

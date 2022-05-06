@@ -1,0 +1,114 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Log event indicating creation or use of cart
+
+	DO NOT CHANGE THE LOCALE HERE. It just serves the purpose of logging the information
+	to the analytics log file. The customer will never see it and the analytics module expects en_US.
+</iscomment>
+<isif condition="${!empty(pdict.Basket)}">
+	<isscript>
+		var locale = 'en_US';
+	</isscript>
+
+	<isif condition="${!empty(pdict.Basket.allLineItems)}">
+		<iscomment>
+			Some common statistic for this cart
+		</iscomment>
+		<isinclude url="${URLUtils.url('ReportingEvent-Start',
+							'ID', 		'BasketOpen',
+							'BasketID', pdict.Basket.UUID,
+							'Items', 	StringUtils.formatNumber(pdict.Basket.productLineItems.length, '#,##0', locale),
+
+							'MerchandizeTotal',	StringUtils.formatNumber(pdict.Basket.merchandizeTotalPrice.value, '#,##0.00', locale),
+							'AdjMerchandizeTotal',	StringUtils.formatNumber(pdict.Basket.getAdjustedMerchandizeTotalPrice(false).value, '#,##0.00', locale),
+							'AdjMerchandizeTotalPromo',	StringUtils.formatNumber(pdict.Basket.getAdjustedMerchandizeTotalPrice(true).value, '#,##0.00', locale),
+
+							'ShippingTotal',	StringUtils.formatNumber(pdict.Basket.shippingTotalPrice.value, '#,##0.00', locale),
+							'AdjShippingTotal',	StringUtils.formatNumber(pdict.Basket.adjustedShippingTotalPrice.value, '#,##0.00', locale)
+							)}"/>
+
+		<iscomment>
+			Report all price adjustments for the entire cart, such as 25% of entire order.
+		</iscomment>
+		<isloop items="${pdict.Basket.priceAdjustments}" var="priceAdjustment">
+			<iscomment>Get Campaign ID</iscomment>
+			<isscript>
+				var campaignID : String = "N/A";
+				if ( priceAdjustment.campaignID != null )
+				{
+				    campaignID = priceAdjustment.campaignID;
+				}
+			</isscript>
+			<isinclude url="${URLUtils.url('ReportingEvent-Start',
+							'ID', 	    'OrderPromo',
+							'campID',   campaignID,
+							'promoID',  priceAdjustment.promotionID,
+							'value',    StringUtils.formatNumber(priceAdjustment.price.value, '#,##0.00', locale),
+							'campaign', !priceAdjustment.isCustom(),
+							'coupon',   priceAdjustment.basedOnCoupon
+							)}"/>
+		</isloop>
+
+		<iscomment>
+			Check all shipments for shipping promotions, lineitems and their promotions
+		</iscomment>
+		<isloop items="${pdict.Basket.shipments}" var="shipment">
+			<iscomment>
+				The shipment might have one or more price adjustments
+			</iscomment>
+			<isloop items="${shipment.shippingPriceAdjustments}" var="shippingAdjustment">
+				<iscomment>Get Campaign ID</iscomment>
+				<isscript>
+					var campaignID : String = "N/A";
+					if ( shippingAdjustment.campaignID != null )
+					{
+					    campaignID = shippingAdjustment.campaignID;
+					}
+				</isscript>
+				<isinclude url="${URLUtils.url('ReportingEvent-Start',
+						'ID', 	    'ShippingPromo',
+						'campID',   campaignID,
+						'promoID',  shippingAdjustment.promotionID,
+						'value',    StringUtils.formatNumber(shippingAdjustment.price.value, '#,##0.00', locale),
+						'campaign', !shippingAdjustment.isCustom(),
+						'coupon',   shippingAdjustment.basedOnCoupon
+						)}"/>
+			</isloop>
+
+			<iscomment>
+				Check all product items in the cart, gift carts promotions
+			</iscomment>
+			<isloop items="${shipment.productLineItems}" var="lineitem">
+				<iscomment>
+					Each item can have multiple price adjustments
+				</iscomment>
+				<isloop items="${lineitem.priceAdjustments}" var="priceAdjustment">
+					<iscomment>Get Campaign ID</iscomment>
+					<isscript>
+						var campaignID : String = "N/A";
+						if ( priceAdjustment.campaignID != null )
+						{
+						    campaignID = priceAdjustment.campaignID;
+						}
+					</isscript>
+					<isinclude url="${URLUtils.url('ReportingEvent-Start',
+									'ID', 	    'ItemPromo',
+									'ItemUUID',	lineitem.UUID,
+									'campID',   campaignID,
+									'promoID',  priceAdjustment.promotionID,
+									'value',    StringUtils.formatNumber(priceAdjustment.price.value, '#,##0.00', locale),
+									'campaign', !priceAdjustment.isCustom(),
+									'coupon',   priceAdjustment.basedOnCoupon
+									)}"/>
+				</isloop>
+			</isloop>
+	</isloop>
+
+	</isif>
+</isif>
+
+<iscomment>
+	This reporting include tries to keep track of the source code. So that we have the information, even
+	if it was tracked before.
+</iscomment>
+<isinclude template="util/reporting/ReportSourceCodes.isml"/>

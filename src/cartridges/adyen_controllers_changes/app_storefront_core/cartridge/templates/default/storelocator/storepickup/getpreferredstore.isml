@@ -1,0 +1,11 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isscript>
+var userStoreId = [];
+
+	userStoreId.push({
+		storeId : pdict.CurrentSession.custom.storeId
+	});
+
+var sessionStore = JSON.stringify(userStoreId);
+</isscript>
+<isprint value="${sessionStore}" encoding="off"/>

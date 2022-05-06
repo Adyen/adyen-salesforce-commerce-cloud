@@ -1,0 +1,242 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isinclude template="util/functions"/>
+
+<isif condition="${pdict.ProductSearchResult != null}">
+
+<iscomment>
+	The following javascript code is necessary in order to update the refinements in the
+	left navigation:
+
+	- New refinements are registered as inline javascript calls from the
+	  refreshed product grid and will be rendered at the correct position in the left
+	  navigation with respect to the defined order.
+	- Obsolete refinements are removed from the left nevigation.
+	- Refinement values are also updated using this technique: unselectable values are
+	  either grayed out or are hidden; selectable values become activated (if grayed out
+	  before) or are rendered into the value list of the corresponding refinement.
+</iscomment>
+<script type="text/javascript"><!--
+
+<isset name="Refinements" value="${pdict.ProductSearchResult.refinements}" scope="page"/>
+
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+
+	<iscomment>
+		If we have a category context, we build a path from the root to the category.
+		This is necessary to register the category refinement with the parent categories
+		of the current refinement category in order to correctly display the hierachical
+		category refinement.
+	</iscomment>
+	<isscript>
+		var cat = pdict.ProductSearchResult.category;
+		var path = new dw.util.ArrayList();
+		while( cat != null && cat.parent != null )
+		{
+			if( !cat.online )
+			{
+				cat = cat.parent;
+				continue;
+			}
+			path.addAt( 0, cat );
+			cat = cat.parent;
+		}
+
+		// build path of category IDs
+		var IDPath = new dw.util.ArrayList();
+
+		if(path != null)
+		{
+			// build array list of category IDs
+			var pathIterator = path.iterator();
+			while( pathIterator.hasNext() )
+			{
+				IDPath.add( pathIterator.next().ID );
+			}
+		}
+
+	
+
+	
+	</isscript>
+
+	<iscomment>update the category ID</iscomment>
+	<isif condition="${!empty(pdict.ProductSearchResult.categoryID)}">
+		app.search.result.categoryID = "${pdict.ProductSearchResult.categoryID}";
+	<iselse/>
+		app.search.result.categoryID = null;
+	</isif>
+
+	<iscomment>get the current paging model for convenient reuse</iscomment>
+	<isset name="pagingModel" value="${pdict.ProductPagingModel}" scope="page"/>
+	
+	<isscript>
+		function appendPaging( url : dw.web.URL, pagingModel : dw.web.PagingModel )
+		{
+			// if there is no paging model, we have nothing to append
+			if( pagingModel == null )
+			{
+				return url;
+			}
+			
+			return pagingModel.appendPaging( url, 0 );
+		} 
+	</isscript>
+
+	<isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="loopstate">
+		<iscomment>init a Refinement object for each refinement, add all values and register the refinement</iscomment>
+
+		<isset name="JSIdentifier" value="${'dwRefinement_' + loopstate.count}" scope="page"/>
+
+		<iscomment>category refinement values</iscomment>
+		<isif condition="${RefinementDefinition.isCategoryRefinement()}">
+			var ${JSIdentifier} = new app.search.Refinement("refinement-category", "${RefinementDefinition.displayName}", "category", false, "${appendPaging(pdict.ProductSearchResult.urlRelaxCategory('Search-Show'), pagingModel)}", null);
+
+			<iscomment>if we have path information add values for each visited category node down to the refinement category</iscomment>
+			<isif condition="${path.size() > 0}">
+				<isloop items="${path.iterator()}" var="categoryNode" status="nodeloop">
+
+					<iscomment>
+						include the top level category, in case we have a keyword search
+						(this is necessary to render the top level category as link above the category refinements)
+					</iscomment>
+					<isif condition="${!empty(pdict.ProductSearchResult.searchPhrase) && nodeloop.count == 1}">
+						${JSIdentifier}.add(
+							null,
+							"${categoryNode.ID}",
+							null,
+							"${categoryNode.displayName}",
+							<isif condition="${pdict.ProductSearchResult.categoryID == categoryNode.ID}">
+								"${dw.catalog.ProductSearchModel.urlForCategory(URLUtils.url('Search-Show','q',pdict.ProductSearchResult.searchPhrase), categoryNode.ID)}",
+							<iselse/>
+								"${appendPaging(pdict.ProductSearchResult.urlRefineCategory('Search-Show',categoryNode.ID), pagingModel)}",								
+							</isif>							
+							"${appendPaging(pdict.ProductSearchResult.urlRelaxCategory('Search-Show'), pagingModel)}",
+							false,
+							true,
+							true,
+							0,
+							true);
+					</isif>
+
+					<iscomment>
+						get the next level refinement values per category node:
+						 - in case the given category is the current refinement category we render the
+						   next level category refinement values for that category using the search refinements;
+						 - in case the given category is not the current refinement category we use the
+						   online sub categories independent of the search result!
+					</iscomment>
+					<isif condition="${pdict.ProductSearchResult.categoryID == categoryNode.ID}">
+						<isloop items="${Refinements.getNextLevelCategoryRefinementValues(categoryNode)}" var="RefinementValue">
+							<iscomment>get the category object per refinement value</iscomment>
+							<isset name="valueCategory" value="${dw.catalog.CatalogMgr.getCategory( RefinementValue.getValue() )}" scope="page"/>
+
+							${JSIdentifier}.add(
+								null,
+								"${RefinementValue.getValue()}",
+								null,
+								"${RefinementValue.getDisplayValue()}",
+								"${appendPaging(pdict.ProductSearchResult.urlRefineCategory('Search-Show',RefinementValue.getValue()), pagingModel)}",
+								"${appendPaging(pdict.ProductSearchResult.urlRelaxCategory('Search-Show'), pagingModel)}",
+								<isif condition="${pdict.ProductSearchResult.categoryID != null && pdict.ProductSearchResult.categoryID == RefinementValue.getValue()}">true<iselse/>false</isif>,
+								true,
+								<isif condition="${Refinements.getNextLevelCategoryRefinementValues(valueCategory).size() > 0}">true<iselse/>false</isif>,
+								${nodeloop.count},
+								<isif condition="${path.contains(valueCategory)}">true<iselse/>false</isif>);
+						</isloop>
+					<iselse/>
+						<isloop items="${categoryNode.onlineSubCategories}" var="SubCategory">
+							${JSIdentifier}.add(
+								null,
+								"${SubCategory.ID}",
+								null,
+								"${SubCategory.displayName}",
+								<isif condition="${pdict.ProductSearchResult.categorySearch}">
+									<isset name="refineLinkUrl" value="${dw.catalog.ProductSearchModel.urlForCategory('Search-Show', SubCategory.ID)}" scope="page"/>
+								<iselse/>
+									<isset name="refineLinkUrl" value="${dw.catalog.ProductSearchModel.urlForCategory(URLUtils.url('Search-Show','q',pdict.ProductSearchResult.searchPhrase), SubCategory.ID)}" scope="page"/>
+								</isif>
+								"${refineLinkUrl}",
+								"${appendPaging(pdict.ProductSearchResult.urlRelaxCategory('Search-Show'), pagingModel)}",
+								<isif condition="${pdict.ProductSearchResult.categoryID != null && pdict.ProductSearchResult.categoryID == SubCategory.ID}">true<iselse/>false</isif>,
+								true,
+								<isif condition="${SubCategory.onlineSubCategories.size() > 0}">true<iselse/>false</isif>,
+								${nodeloop.count},
+								<isif condition="${path.contains(SubCategory)}">true<iselse/>false</isif>);
+						</isloop>
+					</isif>
+				</isloop>
+			<iselse/>
+				<iscomment>register values for top categories only</iscomment>
+				<isloop items="${Refinements.getNextLevelCategoryRefinementValues(pdict.ProductSearchResult.category)}" var="RefinementValue">
+					<iscomment>get the category object per refinement value</iscomment>
+					<isset name="valueCategory" value="${dw.catalog.CatalogMgr.getCategory( RefinementValue.getValue() )}" scope="page"/>
+
+					${JSIdentifier}.add(
+						null,
+						"${RefinementValue.getValue()}",
+						null,
+						"${RefinementValue.getDisplayValue()}",
+						"${appendPaging(pdict.ProductSearchResult.urlRefineCategory('Search-Show',RefinementValue.getValue()), pagingModel)}",
+						"${appendPaging(pdict.ProductSearchResult.urlRelaxCategory('Search-Show'), pagingModel)}",
+						<isif condition="${pdict.ProductSearchResult.categoryID != null && RefinementValue.getValue().equals(pdict.ProductSearchResult.categoryID)}">true<iselse/>false</isif>,
+						true,
+						<isif condition="${Refinements.getNextLevelCategoryRefinementValues(valueCategory).size() > 0}">true<iselse/>false</isif>,
+						1,
+						<isif condition="${path.contains(valueCategory)}">true<iselse/>false</isif>);
+				</isloop>
+			</isif>
+
+		</isif>
+
+		<iscomment>attribute refinement values</iscomment>
+		<isif condition="${RefinementDefinition.isAttributeRefinement()}">
+			var ${JSIdentifier} = new app.search.Refinement("refinement-${cleanupID(RefinementDefinition.attributeID)}", "${RefinementDefinition.displayName}", "attribute", <isif condition="${RefinementDefinition.attributeID.equals('refinementColor') || RefinementDefinition.attributeID.equals('size')}">true<iselse/>false</isif>, "${appendPaging(pdict.ProductSearchResult.urlRelaxAttribute('Search-Show',RefinementDefinition.attributeID), pagingModel)}", ${RefinementDefinition.cutoffThreshold});
+			<isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue">
+				${JSIdentifier}.add(
+					"${RefinementValue.getID()}",
+					"${RefinementValue.getValue()}",
+					<isif condition="${!empty(RefinementValue.getPresentationID())}">"${RefinementValue.getPresentationID()}"<iselse/>null</isif>,
+					"${RefinementValue.getDisplayValue()}",
+					"${appendPaging(pdict.ProductSearchResult.urlRefineAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()), pagingModel)}",
+					"${appendPaging(pdict.ProductSearchResult.urlRelaxAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()), pagingModel)}",
+					<isif condition="${pdict.ProductSearchResult.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">true<iselse/>false</isif>,
+					<isif condition="${RefinementValue.hitCount == 0}">false<iselse/>true</isif>,
+					false,
+					null,
+					false);
+			</isloop>
+		</isif>
+
+		<iscomment>price refinement values</iscomment>
+		<isif condition="${RefinementDefinition.isPriceRefinement()}">
+			var ${JSIdentifier} = new app.search.Refinement("refinement-price", "${RefinementDefinition.displayName}", "price", false, "${appendPaging(pdict.ProductSearchResult.urlRelaxPrice('Search-Show'), pagingModel)}", null);
+			<isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue">
+				${JSIdentifier}.add(
+					null,
+					null,
+					null,
+					"${RefinementValue.getDisplayValue()}",
+					"${appendPaging(pdict.ProductSearchResult.urlRefinePrice('Search-Show',RefinementValue.getValueFrom(),RefinementValue.getValueTo()), pagingModel)}",
+					"${appendPaging(pdict.ProductSearchResult.urlRelaxPrice('Search-Show'), pagingModel)}",
+					<isif condition="${pdict.ProductSearchResult.isRefinedByPriceRange(RefinementValue.valueFrom,RefinementValue.valueTo)}">true<iselse/>false</isif>,
+					<isif condition="${RefinementValue.hitCount == 0}">false<iselse/>true</isif>,
+					false,
+					null,
+					false);
+			</isloop>
+		</isif>
+
+		app.search.result.register(${JSIdentifier}, ${loopstate.count});
+	</isloop>
+
+	<iscomment>		
+		in order to preserve the refinements, when we have no hits anymore
+		(must not break any handler bindings)
+	</iscomment>
+	app.search.result.clean();
+</isif>
+
+//--></script>
+
+</isif>

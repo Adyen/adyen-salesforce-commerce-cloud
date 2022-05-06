@@ -1,0 +1,75 @@
+.pt_gift-registry {
+	.create-new-registry {
+		margin: 1em 0;
+		button {
+			float: left;
+			margin-right: 2em;
+		}
+		p {
+			font-size: 1.3em;
+		}
+	}
+	.add-gift-cert {
+		border: 1px solid $white-smoke;
+		margin-bottom: -1px;
+		overflow: auto;
+		padding: .83em;
+		p {
+			color: $nobel;
+			font-style: italic;
+			line-height: 1.5em;
+		}
+	}
+	.hdr-options {
+		width: 9%;
+	}
+}
+
+.page-content-tab-navigaton button {
+	background-color: $gainsboro;
+	border-color: $white-smoke;
+	border-width: 1px;
+	color: $nobel;
+	font-size: 1.1em;
+	font-style: italic;
+	font-weight: 400;
+	margin: 0 0 -1px;
+	&.selected {
+		background-color: $white;
+		border-bottom: 1px solid $white;
+	}
+}
+
+.page-content-tab-wrapper {
+	border: 1px solid $white-smoke;
+	padding: .42em;
+}
+
+.gift-reg-purchases {
+	.item-purchased-by {
+		dd {
+			float: left;
+			font-weight: bold;
+			margin: 0 1em 0 0;
+			position: relative;
+			width: auto;
+		}
+		dt {
+			clear: both;
+			float: left;
+			margin: 0 1em 0 0;
+			position: relative;
+			width: auto;
+		}
+	}
+	.quantity-purchased {
+		color: $sangria;
+	}
+}
+
+.gift-registry-advanced {
+	@extend %clearfix;
+	.toggle-content {
+		display: none;
+	}
+}

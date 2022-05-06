@@ -1,0 +1,61 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Get the price model for this product.	
+</iscomment>
+
+<isset name="PriceModel" value="${pdict.Product.getPriceModel()}" scope="page"/>
+
+<iscomment>
+	Check whether this product has price in the sale pricebook.  If so, then
+	display two prices:  crossed-out standard price and sales price.
+</iscomment>
+
+<isinclude template="product/components/standardprice"/>
+
+<isset name="PriceTable" value="${PriceModel.getPriceTable()}" scope="page"/>
+<isset name="SalesPrice" value="${PriceModel.getPrice()}" scope="page"/>
+<isset name="BasePriceQuantity" value="${PriceModel.getBasePriceQuantity()}" scope="page"/>
+<isset name="ShowStandardPrice" value="${StandardPrice.available && SalesPrice.available && StandardPrice.compareTo(SalesPrice) == 1}" scope="page"/>
+
+<iscomment>
+	Check whether there are any active customer promotions for this product.  If so, then
+	display two prices:  crossed-out pricebook price and promotional price.
+
+	Note:  we never display two crossed-out prices even if there is both a price-book
+	discount and a promotion.
+</iscomment>
+<isset name="promos" value="${dw.campaign.PromotionMgr.activeCustomerPromotions.getProductPromotions(pdict.Product)}" scope="page"/>
+<isset name="PromotionalPrice" value="${dw.value.Money.NOT_AVAILABLE}" scope="page"/>
+<isset name="isPromoPrice" value="${false}" scope="page"/>
+<isif condition="${! empty(promos)}">
+	<isloop items="${promos}" var="promo">
+		<isif condition="${promo.getPromotionClass() != null && promo.getPromotionClass().equals(dw.campaign.Promotion.PROMOTION_CLASS_PRODUCT)}">
+			<isif condition="${pdict.Product.optionProduct}">
+				<isif condition="${pdict.CurrentOptionModel != null}">
+					<isset name="PromotionalPrice" value="${promo.getPromotionalPrice(pdict.Product, pdict.CurrentOptionModel)}" scope="page"/>
+				<iselse/>
+					<isset name="PromotionalPrice" value="${promo.getPromotionalPrice(pdict.Product, pdict.Product.getOptionModel())}" scope="page"/>
+				</isif>
+			<iselse/>
+				<isset name="PromotionalPrice" value="${promo.getPromotionalPrice(pdict.Product)}" scope="page"/>
+			</isif>
+		</isif>
+		<isbreak/>
+	</isloop>
+	<isif condition="${PromotionalPrice.available && SalesPrice.compareTo(PromotionalPrice) != 0}">
+		<isset name="ShowStandardPrice" value="${true}" scope="page"/>
+		<isset name="StandardPrice" value="${SalesPrice}" scope="page"/>
+		<isset name="SalesPrice" value="${PromotionalPrice}" scope="page"/>
+		<isset name="isPromoPrice" value="${true}" scope="page"/>
+	</isif>
+</isif>
+
+
+<iscomment> assumption is that currecty code is same for standard and sale pricing </iscomment>
+pricing: {standard: "${StandardPrice.value}", sale: "${SalesPrice.value}", isPromoPrice: ${isPromoPrice}, quantities: [
+
+	<iscomment>show price table, avoid display of empty table. Open div and table on demand.</iscomment>
+
+	<isloop items="${PriceTable.getQuantities()}" var="Quantity" status="loopstatusprice">
+		{unit: "${Quantity.unit}", value: "${Quantity.value}"}<isif condition="${!loopstatusprice.last}">,</isif>
+	</isloop>]}

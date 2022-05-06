@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="storelocator/pt_storelocatorresults">
+
+	<isinclude template="util/modules"/>
+
+	<h1>
+		${Resource.msg('storelocator.storelocatorresults.yoursearchfound','storelocator',null)}
+		<isprint value="${pdict.StoresCount}"/> ${Resource.msg('storelocator.storelocatorresults.stores','storelocator',null)}
+	</h1>
+
+	<isif condition="${!empty(pdict.Stores)}">
+
+		<a href="${URLUtils.url('Stores-Find')}">&lt;&lt; ${Resource.msg('storelocator.storelocatorresults.backtolocator','storelocator',null)}</a>
+
+		<div class="store-locator-header">
+			${Resource.msg('storelocator.storelocatorresults.allstores','storelocator',null)}
+			<isif condition="${pdict.SearchString == 'US'}">${Resource.msg('country.the.unitedstates','forms',null)}</isif>
+			<isif condition="${pdict.SearchString == 'DE'}">${Resource.msg('country.germany','forms',null)}</isif>
+			<isif condition="${pdict.SearchString == 'CA'}">${Resource.msg('country.canada','forms',null)}</isif>
+		</div>
+		<table id="store-location-results" class="item-list">
+			<thead>
+				<tr>
+					<th class="section-header">${Resource.msg('storelocator.storelocatorresults.storename','storelocator',null)}</th>
+					<th class="section-header">${Resource.msg('storelocator.storelocatorresults.address','storelocator',null)}</th>
+					<th class="section-header">${Resource.msg('storelocator.storelocatorresults.directions','storelocator',null)}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<isloop items="${pdict.Stores}" var="Store" status="loopstate">
+					<tr>
+						<td class="store-information">
+							<div class="store-name">
+								<isprint value="${Store.name}"/>
+								(<a class="store-details-link"
+									target="_blank" id="${Store.ID}"
+									href="${URLUtils.url('Stores-Details','StoreID', Store.ID)}"
+									title="${Resource.msg('storelocator.storelocatorresults.storedetails.label','storelocator',null)}"
+									data-dlg-options='{"width":900,"height":600}'>${Resource.msg('storelocator.storelocatorresults.storedetails','storelocator',null)}</a>)
+							</div>
+
+							<isif condition="${Store.storeHours != null}">
+								<div class="store-hours">
+									<isprint value="${Store.storeHours}" encoding="off"/>
+								</div>
+							</isif>
+
+							<isif condition="${Store.storeEvents != null}">
+								<div class="store-events">
+									<isprint value="${Store.storeEvents}" encoding="off"/>
+								</div>
+							</isif>
+
+						</td>
+
+						<td class="store-address">
+
+							<isprint value="${Store.address1}"/><br/>
+							<isprint value="${Store.city}"/><isif condition="${Store.city != null && Store.stateCode != null}">,</isif> <isprint value="${Store.stateCode}"/> <isprint value="${Store.postalCode}"/><br/>
+							<isprint value="${Store.countryCode}"/>
+
+						</td>
+
+						<iscomment>Example for a link to a map service</iscomment>
+						<isscript>
+							var qAttr = "";
+							if (Store.address1 != null) qAttr += Store.address1 + ", ";
+							if (Store.address2 != null) qAttr += Store.address2 + ", ";
+							if (Store.city != null) qAttr += Store.city + ", ";
+							if (Store.postalCode != null) qAttr += Store.postalCode + ", ";
+							if (Store.stateCode != null) qAttr += Store.stateCode + ", ";
+							if (Store.countryCode != null) qAttr += Store.countryCode;
+
+							var glink = "http://maps.google.com/maps?hl=en&f=q&q=" + encodeURI(qAttr);
+						</isscript>
+						<td class="store-map">
+							<a class="google-map" href="${glink}" target="_blank">${Resource.msg('storelocator.storelocatorresults.map','storelocator',null)}</a>
+						</td>
+					</tr>
+				</isloop>
+			</tbody>
+		</table>
+	</isif>
+</isdecorate>

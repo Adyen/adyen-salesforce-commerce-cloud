@@ -1,0 +1,64 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: setlayout.isml </iscomment>
+<iscomment>Mobile/Responsive</iscomment>
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('disableResponsiveDesign')}">
+
+	<!--  responsive NOT enabled -->
+
+<iselse/>
+
+	<isif condition="${empty(pdict.CurrentSession.custom.device)
+		|| pdict.CurrentSession.custom.device == 'mobile'
+		|| pdict.CurrentSession.custom.device == 'tablet'
+		|| pdict.CurrentSession.custom.device == 'desktop'}">
+		<isset name="siteUrl" value="${URLUtils.url('Home-FullSite')}" scope="page"/>
+
+		<script type="text/javascript">
+			if (window.jQuery) {
+				jQuery(document).ready(function(){
+					if(screen.width < 768){
+						jQuery('#footer').append('<a href="${URLUtils.url('Home-Show')}" class="full-site-link">View Full Site</a>');
+						jQuery('.full-site-link')
+							.attr('href', '<isprint value="${siteUrl}" encoding="off"/>')
+							.click(function(e) {
+								e.preventDefault();
+								jQuery.ajax({
+									url: '<isprint value="${siteUrl}" encoding="off"/>',
+									success: function(){
+										window.location.reload();
+									}
+								});
+							}
+						);
+					}
+				});
+			}
+		</script>
+
+	<iselse/>
+		<isset name="siteUrl" value="${URLUtils.url('Home-MobileSite')}" scope="page"/>
+		<script type="text/javascript">
+			if (window.jQuery) {
+				jQuery(document).ready(function(){
+					if(screen.width < 768){
+						jQuery('#footer').append('<a href="${URLUtils.url('Home-Show')}" class="mobile-site-link">View Mobile Site</a>');
+						jQuery('.mobile-site-link')
+						.attr('href', '<isprint value="${siteUrl}" encoding="off"/>')
+						.click(function(e) {
+							e.preventDefault();
+							jQuery.ajax({
+								url: '<isprint value="${siteUrl}" encoding="off"/>',
+								success: function(){
+									window.location.reload();
+								}
+							});
+						});
+					}
+				});
+			}
+		</script>
+
+	</isif>
+
+</isif>

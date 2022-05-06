@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var escapedUrl = pdict.url ? encodeURIComponent(pdict.url): '';
+	var title = Resource.msg('account.email.subject.registrywishlist', 'account', null) ;	
+	var escapedTitle = pdict.title ? encodeURIComponent(pdict.title) : title;
+</isscript>
+<a class="share-icon" title="${Resource.msg('global.socialshare.facebook.label', 'locale', null)}" data-share="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${escapedUrl}" target="_blank"><i class="fa fa-facebook-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.facebook', 'locale', null)}</span></a>
+<a class="share-icon" title="${Resource.msg('global.socialshare.twitter.label', 'locale', null)}" data-share="twitter" href="https://twitter.com/intent/tweet/?url=${escapedUrl}&text=${escapedTitle}" target="_blank"><i class="fa fa-twitter-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.twitter', 'locale', null)}</span></a>
+<a class="share-icon" title="${Resource.msg('global.socialshare.googleplus.label', 'locale', null)}" data-share="googleplus" href="https://plus.google.com/share?url=${escapedUrl}" target="_blank"><i class="fa fa-google-plus-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.googleplus', 'locale', null)}</span></a>
+<a class="share-icon" title="${Resource.msg('global.socialshare.pinterest.label', 'locale', null)}" data-share="pinterest" href="https://www.pinterest.com/pin/create/button/?url=${escapedUrl}&description=${escapedTitle}" target="_blank"><i class="fa fa-pinterest-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.pinterest', 'locale', null)}</span></a>
+<a class="share-icon" title="${Resource.msg('global.socialshare.email.label', 'locale', null)}" data-share="email" href="mailto:name@email.com?subject=${escapedTitle}&body=${escapedUrl}" target="_blank"><i class="fa fa-envelope-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.email', 'locale', null)}</span></a>

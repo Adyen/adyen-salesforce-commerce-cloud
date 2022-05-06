@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+	<!-- this is a dummy field used to provide the loginpanel template with the
+	     information that login failed -->
+	<field formid="loginsucceeded" type="boolean" mandatory="false"/>
+
+	<action formid="login" valid-form="true"/>
+
+	<!-- this form action is necessary for the guest checkout -->
+	<action formid="unregistered" valid-form="false"/>
+</form>

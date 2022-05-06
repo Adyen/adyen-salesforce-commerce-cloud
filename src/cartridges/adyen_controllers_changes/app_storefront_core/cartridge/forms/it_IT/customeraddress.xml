@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="addressid" label="customeraddress.addressid.label" type="string" mandatory="true" binding="ID" max-length="20"
+		missing-error="customeraddress.addressid.missing-error"
+		value-error="customeraddress.addressid.value-error"/>
+	<field formid="firstname" label="profile.firstname" type="string" mandatory="true" binding="firstName" max-length="50"
+		missing-error="customeraddress.firstname.missing-error"/>
+	<field formid="lastname" label="profile.lastname" type="string" mandatory="true" binding="lastName" max-length="50"
+		missing-error="customeraddress.lastname.missing-error"/>
+	<field formid="address1" label="resource.address1" type="string" mandatory="true" binding="address1" max-length="50"
+		description="customeraddress.address1.description"
+		missing-error="resource.addresserror"/>
+	<field formid="address2" label="resource.address2" type="string" mandatory="false" binding="address2" max-length="50"
+		description="customeraddress.address2.description" />
+	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="5" max-length="10" binding="postalCode" missing-error="resource.errorzip" description="address.postalcode.example" regexp="(^([0-9]){5}$)"/>	
+	<field formid="city" label="resource.city" type="string" mandatory="true" binding="city" min-length="2" max-length="50"
+		missing-error="customeraddress.city.missing-error"/>
+
+	<!-- use global state list -->
+	<include formid="states" name="states"/>
+
+	<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode"
+		missing-error="customeraddress.country.missing-error">
+		<options>
+			<option optionid="it" label="country.italy" value="it"/>
+		</options>
+	</field>
+
+	<field formid="phone" label="profile.phone" description="address.phone.example" type="string" 
+		mandatory="true" binding="phone" max-length="20" missing-error="address.phone.missing" 
+		range-error="address.field.invalid" regexp="(^(([0-9]{2,4})([-\s\/]{0,1})([0-9]{4,8}))?$)"/>
+		
+	<!-- all possible actions performed on an address -->
+	<action formid="cancel" valid-form="false"/>
+	<action formid="remove" valid-form="false"/>
+	<action formid="edit" valid-form="true"/>
+	<action formid="confirm" valid-form="true"/>
+	<action formid="create" valid-form="true"/>
+</form>

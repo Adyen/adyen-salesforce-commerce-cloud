@@ -1,0 +1,24 @@
+/**
+*   This script sets the customers login by using the non deprecated method dw.customer.Credentials.setLogin(newLogin : String , currentPassword : String ) : boolean 
+*   @input Login : String User-Name of the current customer.
+*   @input Password : String Password of the current customer.
+*   @input CurrentCustomer : dw.customer.Customer Current customer.
+*
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+    if(args.CurrentCustomer != null &&  args.Login != null && args.Password != null)
+    {
+    	var loginSuccessful : Boolean = args.CurrentCustomer.profile.credentials.setLogin(args.Login, args.Password);
+    	if(loginSuccessful)
+    	{
+    		return PIPELET_NEXT;
+    	} 
+    }
+
+   return PIPELET_ERROR;
+}

@@ -1,0 +1,83 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${pdict.CurrentSession.customer.anonymous || pdict.CurrentSession.customer.externallyAuthenticated}">
+	<p>${Resource.msg('global.or', 'locale', null)}</p>
+	<isif condition="${pdict.CurrentSession.customer.anonymous}">
+		<p>${Resource.msgf('account.login.logininclude.oauthcustomersheader','account',"")}</p>
+	<iselse/>
+		<p>${Resource.msgf('account.login.logininclude.oauthcustomersheaderreturning','account',"")}</p>
+	</isif>
+	<iscomment>Login Unsuccessful Error Message</iscomment>
+	<isif condition="${!pdict.CurrentForms.oauthlogin.loginsucceeded.valid}">
+		<div class="error-form">${Resource.msgf('account.login.logininclude.oauthloginerror','account',"")}</div>
+	</isif>
+
+	<form action="${URLUtils.httpsContinue()}" method="post" class="clearfix" id="${pdict.CurrentForms.oauthlogin.htmlName}">
+		<fieldset>
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('GooglePlus' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="GooglePlus login"
+				class="oAuthIcon"
+				id='GooglePlus'
+			 	name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+			 	src="${URLUtils.staticURL('/images/Google.png')}"
+			 	/>
+			</isif>
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('LinkedIn' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="LinkedIn login"
+				 class="oAuthIcon"
+				 id='LinkedIn'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+			 	 src="${URLUtils.staticURL('/images/LinkedIn.png')}"
+				 />
+			</isif>
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('Microsoft' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="Microsoft login"
+				 class="oAuthIcon"
+				 id='Microsoft'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+			 	 src="${URLUtils.staticURL('/images/Microsoft.png')}"
+				 />
+			</isif>
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('Facebook' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="Facebook login"
+				 class="oAuthIcon"
+				 id='Facebook'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+			 	 src="${URLUtils.staticURL('/images/Facebook.png')}"
+				 />
+			</isif>
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('GitHub' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="GitHub login"
+				 class="oAuthIcon"
+				 id='GitHub'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+				 src="${URLUtils.staticURL('/images/GitHub.jpg')}"
+				 />
+			</isif>
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('SinaWeibo' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="SinaWeibo login"
+				 class="oAuthIcon"
+				 id='SinaWeibo'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+				 src="${URLUtils.staticURL('/images/SinaWeibo.png')}"
+				 />
+			</isif>
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous || (pdict.CurrentSession.customer.externallyAuthenticated && ('VKontakte' == pdict.CurrentSession.customer.profile.credentials.authenticationProviderID))}">
+			<input type="image" alt="VKontakte login"
+				 class="oAuthIcon"
+				 id='VKontakte'
+				 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+				 src="${URLUtils.staticURL('/images/VKontakte.png')}"
+				 />
+			</isif>
+
+			<input type="hidden" name="rememberme" id="rememberme" value="">
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			<input type="hidden" name="OAuthProvider" id="OAuthProvider" value=""/>
+		</fieldset>
+	</form>
+</isif>

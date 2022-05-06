@@ -1,0 +1,9 @@
+@media print {
+	.pt_order-confirmation #mini-cart, 
+	.pt_order-confirmation .menu-utility-user,
+	.pt_order-confirmation .menu-utility,
+	.pt_order-confirmation .header-banner,
+	.pt_order-confirmation #navigation{
+		display:none;
+	}
+}

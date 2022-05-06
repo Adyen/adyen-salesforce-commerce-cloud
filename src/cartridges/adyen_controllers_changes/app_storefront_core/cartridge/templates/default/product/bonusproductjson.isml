@@ -1,0 +1,3 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isscript>var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');</isscript>
+<isprint value="${ProductUtils.getBonusProductJson(pdict.Product, pdict.BonusDiscountLineItem)}" encoding="off"/>

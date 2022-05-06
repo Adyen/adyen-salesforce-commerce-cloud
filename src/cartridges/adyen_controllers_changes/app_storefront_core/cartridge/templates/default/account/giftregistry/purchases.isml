@@ -1,0 +1,86 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+<isinclude template="util/modules"/>
+
+	<h1>${Resource.msg('account.giftregistry.title','account',null)}</h1>
+
+	<isslot id="registry-header" description="Banner for Gift Registry" context="global" />
+
+	<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.giftregistry.purchases.htmlName}">
+
+		<fieldset>
+
+			<input type="hidden" name="ProductListUUID" value="${pdict.ProductList.UUID}" />
+
+			<isset name="currentpage" value="purchases" scope="pdict" />
+
+			<div class="page-content-tab-navigaton">
+				<isinclude template="account/giftregistry/navigation"/>
+			</div>
+
+			<div class="page-content-tab-wrapper">
+
+			<h2>${Resource.msg('global.product','locale',null)}</h2>
+
+			<table class="item-list gift-reg-purchases">
+
+			<isif condition="${empty(pdict.CurrentForms.giftregistry.purchases)}">
+				<tr>
+					<td>${Resource.msg('registry.noproductsfound','account',null)}</td>
+				</tr>
+			</isif>
+
+			<isloop items="${pdict.CurrentForms.giftregistry.purchases}" var="item" status="loopstate">
+				<isset name="productlistitempurchase" value="${item.object}" scope="page"/>
+				<isset name="productlistitem" value="${item.object.item}" scope="page"/>
+
+				<tr class="<isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+
+					<td class="item-image">
+
+						<iscomment>Display product image using module</iscomment>
+						<isdisplayproductimage p_productli="${item.object.item}" p_size="small"/>
+
+					</td>
+					<td class="item-details">
+
+						<iscomment>Display product list item using module</iscomment>
+						<isdisplayproductlistitem p_productli="${productlistitem}"/>
+
+						<iscomment>display product availability using module</iscomment>
+						<isdisplayproductavailability p_productli="${productlistitem}"/>
+
+					</td>
+					<td class="item-purchased-by">
+
+						<dl>
+							<dt>${Resource.msg('registry.purchasedby','account',null)}</dt>
+							<dd><isprint value="${productlistitempurchase.purchaserName}"/></dd>
+							<dt>${Resource.msg('registry.datepurchased','account',null)}</dt>
+							<dd><isprint value="${productlistitempurchase.purchaseDate}"/></dd>
+
+							<isif condition="${productlistitem.type == productlistitem.TYPE_PRODUCT}">
+								<dt>${Resource.msg('productlist.qtydesired','account',null)}</dt>
+								<dd><isprint value="${productlistitem.quantity.value}" formatter="#"/></dd>
+							<iselseif condition="${productlistitem.type == productlistitem.TYPE_GIFT_CERTIFICATE}">
+								<!-- GC Quantity Empty -->
+							</isif>
+
+							<dt class="quantity-purchased">${Resource.msg('productlist.qtypurchased','account',null)}</dt>
+							<dd class="quantity-purchased"><isprint value="${productlistitempurchase.quantity}"/></dd>
+						</dl>
+					</td>
+				</tr>
+
+
+
+		</isloop>
+
+			</table>
+
+		</div>
+
+	</fieldset>
+	</form>
+
+</isdecorate>

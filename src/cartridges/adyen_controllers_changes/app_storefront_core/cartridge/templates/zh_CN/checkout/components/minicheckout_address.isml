@@ -1,0 +1,30 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates a Chinese localized miniaddress display.
+
+	Parameter:
+	p_address	 	: the address object to display
+</iscomment>
+
+<iscomment> CountryName PostalCode </iscomment>
+<div>
+	<isprint value="${Resource.msg(("country."+pdict.p_address.countryCode).toLowerCase(), "forms", null)}"/>
+	<isprint value="${pdict.p_address.postalCode}"/>
+</div>
+
+<iscomment> StateCode City Address1 Address2 </iscomment>
+<div>	
+	<isprint value="${pdict.p_address.stateCode}"/>
+		<isprint value="${pdict.p_address.city}"/>				  
+	<isprint value="${pdict.p_address.address1}"/>  
+	<isif condition="${!empty(pdict.p_address.address2)}">
+		<isprint value="${pdict.p_address.address2}"/>
+	</isif>
+</div>	
+		
+<iscomment> LastName FirstName </iscomment>		
+<div>
+	<isprint value="${pdict.p_address.lastName}"/>
+	<isprint value="${pdict.p_address.firstName}"/> 
+</div>
+

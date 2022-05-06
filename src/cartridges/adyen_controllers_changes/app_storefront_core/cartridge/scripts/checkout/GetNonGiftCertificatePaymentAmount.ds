@@ -1,0 +1,24 @@
+/**
+ * Returns the amount of order total that is not covered by any gift certificate.
+ *
+ * @input Basket : dw.order.LineItemCtnr The basket.
+ * @output Amount : Number The amount to pay that is not covered by any gift certificate.
+ */
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.value );
+
+importScript("checkout/Utils.ds");
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// get basket from pipeline dictionary
+    var basket : Basket = pdict.Basket;
+
+    // calculate non-gift-certificate payment amount
+    var money : Money = calculateNonGiftCertificateAmount( basket );
+    pdict["Amount"] = money.available ? money.value : null;
+    
+    return PIPELET_NEXT;
+}

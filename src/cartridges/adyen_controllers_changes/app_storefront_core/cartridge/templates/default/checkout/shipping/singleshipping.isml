@@ -1,0 +1,139 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout">
+<isinclude template="util/modules"/>
+
+<iscomment>
+    This template visualizes the first step of the single shipping checkout
+    scenario. It renders a form for the shipping address and shipping method
+    selection. Both are stored at a single shipment only.
+</iscomment>
+
+<iscomment>Report this checkout step (we need to report two steps)</iscomment>
+
+<isreportcheckout checkoutstep="${2}" checkoutname="${'ShippingAddress'}"/>
+<isreportcheckout checkoutstep="${3}" checkoutname="${'ShippingMethod'}"/>
+<isscript>
+    importScript("cart/CartUtils.ds");
+    var productListAddresses = CartUtils.getAddressList(pdict.Basket, pdict.CurrentCustomer, true);
+</isscript>
+
+    <iscomment>checkout progress indicator</iscomment>
+
+    <ischeckoutprogressindicator step="1" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+
+    <form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.singleshipping.shippingAddress.htmlName}" class="checkout-shipping address form-horizontal">
+
+        <fieldset>
+        <isif condition="${pdict.HomeDeliveries}">
+                <iscomment>shipping address area</iscomment>
+
+                    <legend>
+                        ${Resource.msg('singleshipping.enteraddress','checkout',null)}
+                        <div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+                    </legend>
+
+                    <iscomment>Entry point for Multi-Shipping (disabled on purpose)</iscomment>
+                    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableMultiShipping')}">
+                        <isscript>
+                            var plicount = 0;
+
+                            for each (var shipment in pdict.Basket.shipments) {
+                            	for each (var product in shipment.productLineItems) {
+	                                plicount += product.quantity;
+                            	}
+                            }
+                        </isscript>
+                        <isif condition="${plicount > 1 }">
+                            <div class="ship-to-multiple">
+                                ${Resource.msg('singleshipping.multiple','checkout',null)}
+                                <button class="shiptomultiplebutton button-fancy-medium cancel" type="submit" name="${pdict.CurrentForms.singleshipping.shipToMultiple.htmlName}" value="${Resource.msg('global.yes','locale',null)}">
+                                    ${Resource.msg('global.yes','locale',null)}
+                                </button>
+                            </div>
+                        </isif>
+                    </isif>
+
+
+                    <iscomment>display select box with stored addresses if customer is authenticated and there are saved addresses</iscomment>
+                    <isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+                        <div class="select-address form-row">
+                            <label for="${pdict.CurrentForms.singleshipping.addressList.htmlName}">
+                                ${Resource.msg('global.selectaddressmessage','locale',null)}
+                            </label>
+                            <div class="field-wrapper">
+                                <isaddressselectlist p_listId="${pdict.CurrentForms.singleshipping.addressList.htmlName}" p_listaddresses="${productListAddresses}" />
+                            </div>
+                        </div>
+                    </isif>
+
+                    <isscript>
+                        var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+                    </isscript>
+                    <isdynamicform formobject="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+
+                    <iscomment>Add address to Address Book</iscomment>
+                    <isif condition="${pdict.CurrentCustomer.authenticated}">
+                        <isinputfield formfield="${pdict.CurrentForms.singleshipping.shippingAddress.addToAddressBook}" type="checkbox"/>
+                    </isif>
+
+                    <iscomment>Use address for Billing Address</iscomment>
+                    <isinputfield formfield="${pdict.CurrentForms.singleshipping.shippingAddress.useAsBillingAddress}" type="checkbox"/>
+
+                    <iscomment>Is this a gift</iscomment>
+                    <isinputfield formfield="${pdict.CurrentForms.singleshipping.shippingAddress.isGift}" type="radio"/>
+
+                    <isscript>
+                        var attributes = {
+                            rows: 4,
+                            cols: 10,
+                            'data-character-limit': 250
+                        };
+                    </isscript>
+                    <isinputfield rowclass="gift-message-text" formfield="${pdict.CurrentForms.singleshipping.shippingAddress.giftMessage}" type="textarea" attributes="${attributes}"/>
+
+                </fieldset>
+
+                <div id="shipping-method-list">
+                    <isinclude url="${URLUtils.https('COShipping-UpdateShippingMethodList')}"/>
+                </div>
+        </isif>
+        <fieldset>
+
+            <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+                <isset name="instoreShipmentsExists" value="${false}" scope="page"/>
+                <isinclude template="checkout/shipping/storepickup/instoremessages"/>
+            <iselse/>
+                <isset name="instoreShipmentsExists" value="${false}" scope="page"/>
+            </isif>
+
+
+            <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp') && instoreShipmentsExists}">
+                <div class="form-row form-row-button instore-continue-button">
+            <iselse/>
+                <div class="form-row form-row-button">
+            </isif>
+
+                <button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.singleshipping.shippingAddress.save.htmlName}" value="${Resource.msg('global.continuebilling','locale',null)}"><span>${Resource.msg('global.continuebilling','locale',null)}</span></button>
+            </div>
+
+            <iscomment>Entry point for Multi-Shipping (disabled on purpose)</iscomment>
+            <isif condition="${pdict.Basket.productLineItems.size() > 1 && false}">
+                <div class="ship-to-multiple">
+                    ${Resource.msg('singleshipping.multiple','checkout',null)} <a href="${URLUtils.https('COShippingMultiple-Start')}">${Resource.msg('global.yes','locale',null)}</a>
+                </div>
+            </isif>
+
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+        </fieldset>
+
+
+    </form>
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.singleshipping.shippingAddress.addressFields;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>
