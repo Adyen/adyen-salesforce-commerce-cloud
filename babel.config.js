@@ -9,6 +9,6 @@ module.exports = function (api) {
       ["@babel/plugin-proposal-decorators", { legacy: true }],
       "@babel/plugin-proposal-class-properties",
     ],
-    exclude: ["node_modules/**", "adyen_controllers_changes"],
+    only: ["./src/cartridges/bm_adyen", "./src/cartridges/int_adyen_controllers", "./src/cartridges/int_adyen_overlay", "./src/cartridges/int_adyen_SFRA"],
   };
 };

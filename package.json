@@ -13,7 +13,7 @@
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
-    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge app_storefront_core && sgmf-scripts --uploadCartridge app_storefront_controllers",
+    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_controllers && sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_core",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",

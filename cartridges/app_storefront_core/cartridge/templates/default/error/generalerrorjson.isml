@@ -1,2 +1,0 @@
-<iscontent type="application/json" charset="UTF-8" compact="true"/>
-{Success: false, LogRequestID: "${pdict.CurrentRequest.requestID.indexOf('-') > 0 ? pdict.CurrentRequest.requestID.substr(0, pdict.CurrentRequest.requestID.indexOf('-')):pdict.CurrentRequest.requestID}"}

@@ -1,1 +1,0 @@
-<iscomment>render a content asset content as XML</iscomment><iscontent type="text/xml"/><isif condition="${pdict.Content != null && 'body' in pdict.Content.custom && pdict.Content.custom.body != null}"><isprint value="${pdict.Content.custom.body}" encoding="off"/></isif>

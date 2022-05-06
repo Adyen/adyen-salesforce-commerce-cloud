@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
-	<list formid="orderlist">
-		<action formid="show" valid-form="false"/>
-	</list>
-</form>

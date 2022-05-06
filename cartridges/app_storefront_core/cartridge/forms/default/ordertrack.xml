@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
- <field formid="orderNumber" label="ordertrack.orderNumber" type="string" mandatory="true" binding="orderNumber" missing-error="ordertrack.orderNumber.missing-error"/>
- <field formid="orderEmail" label="ordertrack.orderEmail" type="string" mandatory="true" binding="orderEmail" missing-error="ordertrack.orderEmail.missing-error"/>
- <field formid="postalCode" label="ordertrack.postalCode" type="string" mandatory="true" binding="postalCode" missing-error="resource.errorzip" parse-error="resource.errorzip" regexp="(^\d{5}(-\d{4})?$)|(^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Za-z]{1} *\d{1}[A-Za-z]{1}\d{1}$)" value-error="resource.errorzip"/>
- 
- <action formid="findorder" valid-form="false"/>	
-</form>
