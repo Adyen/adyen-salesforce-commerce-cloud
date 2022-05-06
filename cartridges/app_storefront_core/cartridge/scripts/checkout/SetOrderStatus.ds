@@ -1,0 +1,20 @@
+/**
+* Set the order export status to EXPORT_STATUS_READY
+*
+* @input Order : dw.order.Order The order.
+*/
+importPackage( dw.order );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // read pipeline dictionary input parameter
+    var order : Order = pdict.Order;
+
+	// set the export status to EXPORT_STATUS_READY
+	order.setExportStatus(Order.EXPORT_STATUS_READY);
+	
+	// set the confirmation status to confirmed
+   	order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED)
+   
+   	return PIPELET_NEXT;
+}

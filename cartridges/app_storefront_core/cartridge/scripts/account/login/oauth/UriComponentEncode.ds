@@ -1,0 +1,22 @@
+/**
+ * @input Unencoded : String
+ * @output Encoded : String
+ */
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.util );
+importPackage( dw.customer );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var THIS_SCRIPT : String = 'UriComponentEncode.ds:';
+	var unencoded : String = pdict.Unencoded;
+	if (null == unencoded) {
+		Logger.warn(THIS_SCRIPT + 'exiting because the unencoded value is null.');
+		return PIPELET_ERROR;
+	} else {
+		pdict.Encoded = encodeURIComponent(unencoded);
+		Logger.debug(THIS_SCRIPT + 'original unencoded value was: ' + unencoded + ' and the encoded one is:' + pdict.Encoded);
+	}
+	return PIPELET_NEXT;
+}

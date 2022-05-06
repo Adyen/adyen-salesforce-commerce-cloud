@@ -1,0 +1,55 @@
+/**
+*	This script loads customer addresses and session addresses
+*	(shipment addresses) and stores them into the session address
+*	book attribute if it is available and configured in BM.
+*
+*   @input CCustomer : dw.customer.Customer The current customer from pdict.
+*	@input CBasket : dw.order.Basket The current basket from pdict.
+*
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.web );
+importPackage( dw.util );
+
+importScript("checkout/Utils.ds");
+
+function execute( args : PipelineDictionary ) : Number {
+
+	// Initialize global variables
+	var customer : Customer = args.CCustomer;
+	var basket : Basket = args.CBasket;
+	var shipments : Collection = basket.getShipments();
+	var sessionAddressBook : String = new String();
+	var log : Log = Logger.getLogger("multishipping");
+	
+	// Check if custom attribute "sessionAddressBook" for Basket is defined
+	if (!empty(basket.describe().getCustomAttributeDefinition('sessionAddressBook'))){
+		sessionAddressBook = basket.custom.sessionAddressBook;
+	} else {
+		log.error(Resource.msg("multishipping.error.attributenotdefined", "checkout", null));
+		return PIPELET_ERROR;
+	}
+	
+	// Load addresses from Customer Address Book	
+	if (customer.registered && customer.addressBook != null){
+		for each(var address in customer.addressBook.addresses){
+			sessionAddressBook = addAddressToJSON(sessionAddressBook, address);
+		}
+	}
+	
+	// Load addresses from Shipments excluding instore shipments
+	if (shipments != null){
+		for each (var shipment : Shipment in shipments){
+			if (shipment.shippingAddress != null && shipment.custom.shipmentType != 'instore'){
+				sessionAddressBook = addAddressToJSON(sessionAddressBook, shipment.shippingAddress);
+			}
+		}
+	}
+	
+	// Store addresses in the sessionAddressBook attribute
+	basket.custom.sessionAddressBook = sessionAddressBook;
+
+    return PIPELET_NEXT;
+}

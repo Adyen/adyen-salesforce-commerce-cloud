@@ -1,0 +1,88 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isset name="DecoratorTemplate" value="checkout/pt_checkout" scope="page" />
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.pwr.stringValue == 'true' || pdict.CurrentHttpParameterMap.source.stringValue == 'search' || pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart'}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page" />
+</isif>
+
+<isdecorate template="${DecoratorTemplate}" />
+<isinclude template="util/modules" />
+
+<isif condition="${DecoratorTemplate == 'checkout/pt_checkout'}">
+	<iscomment>checkout progress indicator</iscomment>
+	<ischeckoutprogressindicator step="1" multishipping="true" />
+</isif>
+
+<h1>
+	${Resource.msg('multishipping.editaddress.headline','checkout',null)} <span
+		class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span>
+</h1>
+
+<h3 class="error" id="multiaddresserror"/>
+
+<form method="post" action="${URLUtils.httpsContinue()}" id="edit-address-form" class="form-horizontal address" name="${pdict.CurrentForms.multishipping.editAddress.htmlName}">
+	<fieldset>
+		<isif condition="${pdict.Status != null && pdict.Status.isError()}">
+			<!-- Use the error code value to build an appropriate error message -->
+			<span class="form-error">
+				<isprint value="${Resource.msg('addressdetails.' + pdict.Status.code, 'account',null)}" />
+			</span>
+		</isif>
+		<isset name="addresses" value="${pdict.CurrentForms.multishipping.editAddress.addressList}" scope="page" />
+		<isscript>
+			var addressesArr = [];
+			for (var opt in addresses.options) {
+				addressesArr.push(addresses.options[opt].object);
+			}
+		</isscript>
+		<div class="select-address address-list" data-addresses="${JSON.stringify(addressesArr)}">
+			<div class="form-row">
+				<label for="${pdict.CurrentForms.multishipping.editAddress.addressList.htmlName}">${Resource.msg('global.selectaddressmessage','locale',null)}:
+				</label>
+				<div class="field-wrapper">
+					<select class="input-select-multiship" name="${addresses.htmlName}">
+						<option value="newAddress" selected="selected">${Resource.msg('multishipping.editaddress.select.newaddress','forms',null)}</option>
+						<isloop items="${addresses.options}" var="option">
+							<isset name="address" value="${option.object}" scope="page" />
+							<isif condition="${!empty(address.ID)}">
+								<isset name="prefix" value="${'(' + address.ID + ')'}" scope="page" />
+							<iselse>
+								<isset name="prefix" value="${address.firstName + ' ' + address.lastName + ','}" scope="page" />
+							</isif>
+							<option value="${option.optionId}" <isif condition="${option.selected}">selected="selected</isif>>
+								<isprint value="${prefix}" />
+								<isprint value="${address.address1}" />,
+								<isprint value="${address.city}" />,
+								<isprint value="${address.stateCode}" />,
+								<isprint value="${address.postalCode}" />
+							</option>
+						</isloop>
+					</select>
+				</div>
+			</div>
+
+		</div>
+
+		<isscript>
+			var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+		</isscript>
+		<isdynamicform formobject="${pdict.CurrentForms.multishipping.editAddress.addressFields}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+
+		<iscomment>Add address to Address Book</iscomment>
+		<isif condition="${pdict.CurrentCustomer.authenticated}"> <isinputfield
+			formfield="${pdict.CurrentForms.multishipping.editAddress.addToAddressBook}"
+			type="checkbox"/> </isif>
+
+		<div class="form-row form-row-button">
+			<button type="submit" name="${pdict.CurrentForms.multishipping.editAddress.save.htmlName}" value="${Resource.msg('global.save','locale',null)}">${Resource.msg('global.save','locale',null)}</button>
+			<button class="cancel cancel-button" type="button" name="${pdict.CurrentForms.multishipping.editAddress.cancel.htmlName}" value="${Resource.msg('global.cancel','locale',null)}">${Resource.msg('global.cancel','locale',null)}</button>
+		</div>
+	</fieldset>
+
+</form>
+
+<isscript> importScript("util/ViewHelpers.ds"); var
+addressForm = pdict.CurrentForms.shippingaddress; var countries =
+ViewHelpers.getCountriesAndRegions(addressForm); var json =
+JSON.stringify(countries); </isscript>
+<script>if (window.app) {app.countries = <isprint value="${json}" encoding="off"/>;}</script>
+</isdecorate>

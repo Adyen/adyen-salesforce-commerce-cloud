@@ -1,0 +1,88 @@
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function CartUtils() {}
+
+CartUtils.getAddressList = function(basket, currentCustomer, includeLineItems) {	
+	function getAddressObject(addy, plist) {
+		var display = addy.ID;
+		var key = addy.ID;
+		var addyType = "customer";
+		if (!empty(plist)) {
+			addyType = plist.type;
+			var rsc = plist.type==ProductList.TYPE_WISH_LIST ? "wishlist" : "giftregistry"; 
+			display = dw.web.Resource.msgf("singleshipping."+rsc, 'checkout', null, plist.owner.profile.firstName);
+			key = plist.owner.profile.credentials.login+"??"+addy.ID; 
+		}
+		
+		return {
+			UUID : addy.UUID,	
+			ID: addy.ID,
+			key: key,
+            firstName: addy.firstName,
+            lastName: addy.lastName,
+            address1: addy.address1,
+            address2: addy.address2,
+            postalCode: addy.postalCode,
+            city: addy.city,
+            stateCode: addy.stateCode,
+            countryCode: addy.countryCode.value,
+            phone: addy.phone,            
+            type: addyType,
+            displayValue: display            
+		};
+	}
+		
+	var al = new ArrayList();
+		
+	if (empty(basket) || (empty(basket.productLineItems) && empty(basket.giftCertificateLineItems))) {
+		return al;
+	}
+	
+	if (currentCustomer.authenticated && currentCustomer.profile.addressBook.addresses.size() > 0) {
+		var addys = currentCustomer.profile.addressBook.addresses;
+		for(var i=0,len=addys.length;i<len;i++) {
+			al.add(getAddressObject(addys[i], null));
+		}
+	}	
+	if (!includeLineItems) {
+		return al;
+	}
+	
+	var lineItems = basket.productLineItems;
+	for(var i=0,len=lineItems.length;i<len;i++) {
+		var lineItem : ProductLineItem = lineItems[i];
+		// if no wish list or registry address items, 
+		// or the list owner is the customer, 
+		// or the addy is empty, check the next item
+		if (empty(lineItem.productListItem) 
+			|| empty(lineItem.productListItem.list)
+			|| currentCustomer == lineItem.productListItem.list.owner 
+			|| empty(lineItem.productListItem.list.shippingAddress)) {
+			continue;
+		}
+		
+		// finally...		
+		var plist = lineItem.productListItem.list;		
+		var addy : CustomerAddress = plist.shippingAddress;	
+		
+		// build object which can be converted to a json string using JSON.stringify()		
+		al.add(getAddressObject(addy, plist));		
+	}	
+	return al;
+};
+
+CartUtils.getProductListAddress = function(id : String, basket, currentCustomer) {
+	var addys = CartUtils.getAddressList(basket, currentCustomer);
+	if (id in addys) {
+		return addys[id];
+	}
+	for(var i=0,len=addys.length;i<len;i++) {
+		if (addys[i].id==id || addys[i].key==id) {
+			return addys[i];
+		}
+	}	
+	return {};
+}

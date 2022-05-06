@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+	<isscript>
+		var links, title;
+		// User has session, but not authenticated
+		if (customer.registered && !customer.authenticated) {
+			title = Resource.msg('global.accountlink', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// User has session and is validated
+		} else if (customer.registered) {
+			title = Resource.msgf('global.user.name', 'locale', null, customer.profile.firstName, customer.profile.lastName);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Order-History'),
+				title: Resource.msg('global.link.orders', 'locale', null)
+			}, {
+				href: URLUtils.https('Wishlist-Show'),
+				title: Resource.msg('global.header.wishlistlink', 'locale', null)
+			}, {
+				href: URLUtils.https('GiftRegistry-Start'),
+				title: Resource.msg('global.header.registrylink', 'locale', null)
+			}, {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// user has no session
+		} else {
+			title = Resource.msg('global.login', 'locale', null) + ' /  ' + Resource.msg('global.register', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.login', 'locale', null)
+			}, {
+				href: URLUtils.https('Account-StartRegister'),
+				title: Resource.msg('global.register', 'locale', null)
+			}];
+		}
+	</isscript>
+
+	<li class="user-info">
+		<a class="user-account" href="${URLUtils.https('Account-Show')}" title="${Resource.msg('global.user', 'locale', null) + ': ' + title}">
+			<i class="fa fa-user"></i>
+			<span>${title}</span>
+		</a>
+		<div class="user-panel">
+			<h3>${title}</h3>
+			<div class="user-links">
+				<isloop items="${links}" var="link">
+					<a class="${link.class}" href="${link.href}" title="${Resource.msgf('global.goto.label', 'locale', null, link.title)}">${link.title}</a>
+				</isloop>
+			</div>
+			<isslot id="header-usermenu" description="Slot the is part of the user dropdown menu for site above 768 width" context="global" />
+		</div>
+	</li>

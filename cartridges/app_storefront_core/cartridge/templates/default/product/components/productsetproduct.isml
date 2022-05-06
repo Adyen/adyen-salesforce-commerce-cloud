@@ -1,0 +1,90 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var avm = pdict.Product.availabilityModel;
+	pdict.available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+					&& avm.inventoryRecord != null
+					&& avm.inventoryRecord.stockLevel.available;
+</isscript>
+	<div class="product-set-image">
+		<isset name="smImg" value="${pdict.Product.getImages('small')[0]}" scope="page" />
+		<img class="product-thumbnail" src="${smImg.getURL()}" alt="${smImg.alt}"/>
+	</div>
+
+	<div class="product-set-details">
+		<h1 class="product-name">
+			<a class="item-name" href="${URLUtils.url('Product-Show','pid', pdict.Product.ID)}" title="${Resource.msgf('product.label','product',null, pdict.Product.name)}">
+				<isprint value="${pdict.Product.name}"/>
+			</a>
+		</h1>
+
+		<div class="product-number">
+			${Resource.msg('product.item','product',null)} <isprint value="${ pdict.Product.ID }"/>
+		</div>
+		
+		<iscomment>
+			product pricing
+			=============================================================
+		</iscomment>
+		
+		<isinclude template="product/components/pricing"/>
+
+		<isif condition="${pdict.isSet}">
+			<isinclude template="product/components/promotions"/>
+		</isif>
+
+		<isif condition="${pdict.isBundle}">
+			<div class="attribute">
+				<span class="label">${Resource.msg('global.quantity','locale',null)}: </span>
+				<span class="value"><isprint value="${pdict.ProductSet.getBundledProductQuantity(pdict.Product)}" /></span>
+			</div>
+		</isif>
+
+		<isif condition="${pdict.isSet}">
+			<isinclude template="product/components/variations"/>
+		</isif>
+
+		<isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
+		<isset name="group" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
+
+		<isinclude template="product/components/group"/>
+
+		<isinclude template="product/components/options"/>
+
+	</div>
+	<isif condition="${pdict.isSet}">
+		<isscript>
+			// ensure a unique form name and make the name reuseable, because the call to
+			// dynamicHtmlName always creates a different name
+			var uniqueFormID : String = pdict.CurrentForms.product.addtocart.dynamicHtmlName;
+		</isscript>
+		<div class="product-add-to-cart add-sub-product">
+		
+			<iscomment>
+				availability
+				=============================================================
+			</iscomment>
+		
+			<isif condition="${!pdict.Product.variationGroup}">
+				<div class="availability-web">
+					<label>${Resource.msg('global.availability','locale',null)}</label>
+					<span class="value"><isinclude template="product/components/availability"/></span>
+				</div>
+			</isif>
+		
+		
+			<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${uniqueFormID}">
+				<input type="hidden" name="availability" value="${pdict.Product.availabilityModel.availabilityStatus}"/>
+				<input type="hidden" name="pid" value="${pdict.Product.ID}" />
+				<div class="inventory">
+					<div class="quantity">
+					    <label for="${uniqueFormID}-quantity">${Resource.msg('global.qty','locale',null)}</label>
+						<input type="text" name="Quantity" id="${uniqueFormID}-quantity" maxlength="3" class="input-text" value="${Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()}" size="2" maxlength="6" />
+					</div>
+				</div>
+				<isset name="disabledText" value="${pdict.available ? '' : ' disabled="disabled"'}" scope="page"/>
+				<button type="submit" value="${Resource.msg('global.addtocart','locale',null)}" class="button-fancy-medium sub-product-item add-to-cart"<isprint value="${disabledText}" encoding="off"/>>
+					${Resource.msg('global.addtocart','locale',null)}
+				</button>
+			</form>
+		</div>
+	</isif>

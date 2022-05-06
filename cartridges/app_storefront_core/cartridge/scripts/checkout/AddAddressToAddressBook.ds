@@ -1,0 +1,63 @@
+/**
+ * AddAddressToAddressBook.ds
+ *
+ * This script attempts to add the given order address to the
+ * address book of the current customer profile.
+ * The address attribute "city" is used to generate the address
+ * ID within the address book.
+ *
+ * @input Profile : dw.customer.Profile
+ * @input OrderAddress : dw.order.OrderAddress
+ */
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.web );
+
+var accountUtils = require('../account/Utils');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var addressBook : AddressBook = pdict.Profile.addressBook;
+	var usedAddress : OrderAddress = pdict.OrderAddress;
+
+	if(usedAddress == null)
+	{
+		Logger.debug("Cannot add address to address book, without given order address.");
+		return PIPELET_ERROR;
+	}
+
+	// get a possible equivalent address from the address book
+	var address : CustomerAddress = accountUtils.getEquivalentAddress(addressBook, usedAddress);
+
+	// create the new address, if no equavalent address was found
+	// and copy the address attributes
+	if(address == null)
+	{
+		// get a unique address ID
+		var addressID : String = accountUtils.determineUniqueAddressID(usedAddress.city, addressBook);
+
+		// check on empty address ID
+		if(empty(addressID))
+		{
+			Logger.debug("Cannot add address to address book, with empty address ID.");
+			return PIPELET_ERROR;
+		}
+
+		address = addressBook.createAddress( addressID );
+		address.setFirstName( usedAddress.firstName );
+		address.setLastName( usedAddress.lastName );
+		address.setAddress1( usedAddress.address1 );
+		address.setAddress2( usedAddress.address2 );
+		address.setCity( usedAddress.city );
+		address.setPostalCode( usedAddress.postalCode );
+		address.setStateCode( usedAddress.stateCode );
+		address.setCountryCode( usedAddress.countryCode.value );
+	}
+
+	// update the phone in either the equivalent found address
+	// or in the newly created address
+	address.setPhone( usedAddress.phone );
+
+    return PIPELET_NEXT;
+}

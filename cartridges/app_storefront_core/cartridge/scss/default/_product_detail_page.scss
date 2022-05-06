@@ -1,0 +1,562 @@
+#product-nav-container {
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    width: 160px;
+    div {
+        float: left;
+        text-align: center;
+        width: 77px;
+    }
+    img {
+        max-height: 100%;
+        max-width: 80%;
+    }
+    span {
+        display: block;
+        height: 65px;
+    }
+    .divided span {
+        border-right: 1px solid $gainsboro;
+        padding-right: 5px;
+    }
+}
+
+.pdp-main {
+    @extend %clearfix;
+    font-family: $sans-serif-alt;
+    margin: 0 1%;
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    label {
+        padding: 0;
+        text-align: left;
+        text-transform: uppercase;
+        width: auto;
+    }
+    .product-col-1 {
+        @media screen and (min-width: 480px) {
+            float: left;
+            width: 37%;
+        }
+    }
+    .product-col-2 {
+        @media screen and (min-width: 480px) {
+            float: right;
+            width: 59.5%;
+        }
+        .price-standard {
+            border-right: 1px solid $gainsboro;
+            padding-right: .5rem;
+        }
+    }
+    .product-name {
+        margin-bottom: .3rem;
+        @media screen and (min-width: 768px) {
+            width: 65%;
+        }
+    }
+    .product-number {
+        color: $very-light-gray;
+        font-size: .65rem;
+        margin-bottom: .5rem;
+    }
+    .product-price {
+        font-size: 1.5rem;
+        margin-bottom: .5em;
+        .price-standard {
+            color: $nobel;
+            font-weight: 100;
+            text-decoration: line-through;
+        }
+        .price-tiered {
+            color: $sangria;
+            font-size: .6em;
+            line-height: 1.5em;
+        }
+    }
+    .product-review {
+        @extend %clearfix;
+        margin-bottom: .5rem;
+    }
+    .product-main-attributes {
+        .attribute {
+            padding: .2em 0;
+        }
+        .label {
+            padding: 0;
+        }
+    }
+    .product-primary-image {
+        max-width: 100%;
+        text-align: center;
+    }
+    .product-info {
+        clear: both;
+        padding-top: 1em;
+        // Height for PDP Tabs
+        @media screen and (min-width: 768px) {
+            height: 25em;
+        }
+        ul {
+            font-size: .8rem;
+            list-style: square;
+            padding: 0 5em;
+            @media screen and (min-width: 768px) {
+                padding-bottom: 1em;
+                padding-top: 1em;
+            }
+        }
+    }
+    // Product Add to Cart Area (Availability, Quantity)
+    .product-add-to-cart {
+        border-bottom: 1px solid $very-light-gray;
+        border-top: 1px solid $very-light-gray;
+        display: block;
+        margin: 0;
+        padding: 1em .5em;
+        overflow: hidden;
+        .inventory {
+            float: left;
+            white-space: nowrap;
+            label {
+                display: inline;
+                float: none;
+                text-align: right;
+            }
+            input {
+                font-size: 1.5em;
+                height: 50px;
+                width: 50px;
+                margin-right: .4em;
+                text-align: center;
+                @media screen and (min-width: 768px) {
+                    height: 37px;
+                    width: 37px;
+                }
+            }
+        }
+        button {
+            float: left;
+            font-weight: 600;
+            height: 50px;
+            padding: .5em .7em;
+            white-space: nowrap;
+            width: 36.5%;
+            &.add-all-to-cart {
+                width: auto;
+            }
+            @media screen and (min-width: 768px) {
+                height: 37px;
+                padding: .5em 2em;
+                width: auto;
+            }
+        }
+        .dw-apple-pay-button {
+            margin-left: .5rem;
+            @media screen and (min-width: 768px) {
+                width: 172px; // make sure apple pay button is as big as Add To Cart
+            }
+        }
+    }
+    .promotion {
+        background-color: $white-smoke;
+        border-top: 1px solid #ccc;
+        overflow: hidden;
+        padding: 1.5em;
+        .promotion-title {
+            font-weight: bold;
+            margin-bottom: .3rem;
+            text-transform: uppercase;
+        }
+        .promotion-callout {
+            color: $rain-forest;
+            font-size: 1rem;
+            .tooltip {
+                font-size: .7rem;
+                margin-left: .2rem;
+            }
+        }
+    }
+    .product-actions {
+        @extend %clearfix;
+        padding: 1em .5em;
+        .socialsharing {
+            float: none;
+            margin-right: 1rem;
+            padding-top: 1em;
+            @media screen and (min-width: 960px) {
+                float: left;
+                padding-top: 0;
+            }
+        }
+        a {
+            margin-right: .1rem;
+            &.share-icon {
+                color: $nobel;
+                &:hover {
+                    color: $citrus;
+                }
+                i {
+                    font-size: 3rem;
+                    @media screen and (min-width: 768px) {
+                        font-size: 2rem;
+                    }
+                }
+            }
+        }
+    }
+    // Product Set Display
+    .product-set {
+        .product-set-list {
+            border-top: 1px solid $very-light-gray;
+            .product-set-details {
+                float: left;
+                padding-left: .5rem;
+                width: 75%;
+            }
+            .product-set-item {
+                clear: both;
+                overflow: hidden;
+                padding: 1em 0 0;
+            }
+            .product-set-image {
+                float: left;
+                width: 22%;
+                img {
+                    width: 100%;
+                }
+            }
+            .product-name {
+                float: none;
+                font-size: 1.3em;
+                margin-bottom: 0;
+                width: auto;
+            }
+            .product-price {
+                font-size: 1rem;
+                margin: .5em 0;
+            }
+            .attribute {
+                h3 {
+                    width: 25%;
+                }
+                .label {
+                    width: 25%;
+                    white-space: nowrap;
+                }
+            }
+        }
+        .product-add-to-cart {
+            border-top: none;
+            padding-top: 0;
+            label {
+                float: left;
+                font-size: .75rem;
+                padding-top: .3em;
+                padding-right: .5em;
+            }
+            .availability-web {
+                label {
+                    float: none;
+                    padding: top;
+                }
+            }
+        }
+    }
+    // Product Recommendations
+    .recommendations {
+        clear: left;
+        padding: 2em 0;
+        .recommendation-tooltip {
+            background: none repeat scroll 0 0 $white;
+            border: 1px solid;
+            left: 50%;
+            position: absolute;
+            text-align: left;
+            top: 50%;
+            width: 300px;
+            z-index: 100;
+        }
+        h2 {
+            font-size: 2em;
+            font-style: italic;
+            font-weight: 400;
+            margin-left: 14px;
+        }
+        #carousel-recommendations {
+            margin: auto;
+            position: relative;
+            overflow: hidden;
+            width: 250px;
+            @media screen and (min-width: 690px) {
+                width: 500px;
+            }
+            @media screen and (min-width: 768px) {
+                width: 750px;
+            }
+        }
+        ul {
+            list-style-type: none;
+            position: relative;
+            width: 2000em;
+        }
+        li {
+            float: left;
+            width: 250px;
+        }
+        .product-tile {
+            padding: 0 2em;
+        }
+        .product-name {
+            font-size: 1em;
+            margin: .2em 0;
+            width: 100%;
+        }
+        .product-price {
+            font-size: 1em;
+        }
+        .jcarousel-clip {
+            margin: auto;
+            overflow: hidden;
+            width: 300px;
+        }
+        .jcarousel-nav {
+            cursor: pointer;
+            position: absolute;
+            top: 20%;
+            &.inactive {
+                display: none;
+            }
+        }
+        .jcarousel-prev {
+            left: 0;
+        }
+        .jcarousel-next {
+            right: 0;
+        }
+        .product-tile:hover .recommendation-tooltip {
+            display: block !important;
+        }
+    }
+}
+
+.main-image {
+    display: block;
+}
+.primary-image {
+    max-width: 100%;
+}
+
+.product-thumbnails {
+    ul {
+        @extend %clearfix;
+    }
+    // thumbnail
+    .thumb {
+        border-bottom: 5px solid $white;
+        float: left;
+        margin-right: .5rem;
+        padding-top: 1px;
+        width: 3.4375rem;
+        &.selected {
+            border-color: $citrus;
+        }
+    }
+    // thumbnail image
+    img {
+        border: 1px solid $very-light-gray;
+        box-sizing: border-box;
+        cursor: pointer;
+        max-width: 100%;
+        height: auto;
+    }
+    h2 {
+        margin: 1rem 0 .3rem;
+    }
+}
+
+.rating {
+    color: $rain-forest;
+    .product-info & {
+        font-size: 2em;
+    }
+}
+
+.product-variations,
+.product-options {
+    .attribute {
+        margin: 1em 0;
+        overflow: hidden;
+        padding: 0;
+        position: relative;
+        h3,
+        .label {
+            font-weight: bold;
+            margin-bottom: .3rem;
+            text-transform: uppercase;
+        }
+        .value {
+            width: 100%;
+            @media screen and (min-width: 768px) {
+                width: 75%;
+            }
+        }
+        ul {
+            float: right;
+            width: 100%;
+        }
+        .selected-value {
+            border: 0 none;
+            color: $citrus;
+            font-weight: bold;
+            padding: 1.3em 0 0 .4em;
+            text-transform: uppercase;
+            @media screen and (min-width: 768px)  {
+                padding-top: .8em;
+            }
+        }
+        .size-chart-link {
+            clear: both;
+            float: none;
+            a {
+                border-color: $white !important;
+                padding: 0;
+            }
+        }
+    }
+    .swatches li {
+        float: left;
+        &:hover,
+        &.selected {
+            a {
+                border-color: $citrus;
+            }
+        }
+        &.unselectable {
+            a {
+                color: $gainsboro;
+                opacity: .8;
+            }
+            &:hover {
+                a {
+                    border-color: $gainsboro;
+                }
+            }
+        }
+        a {
+            border-color: $gainsboro;
+            border-style: solid;
+            border-width: 1px 1px 3px;
+            display: block;
+            line-height: 3.5;
+            min-height: 2.625rem;
+            min-width: 2.625rem;
+            margin: 0 .5rem .5rem 0;
+            padding: 1px;
+            text-align: center;
+            white-space: nowrap;
+            @media screen and (min-width: 768px) {
+                line-height: 2.7;
+                min-height: 2rem;
+                min-width: 2rem;
+            }
+        }
+    }
+    .color li {
+        a {
+            line-height: 0;
+            width: 2.625rem;
+            height: 2.625rem;
+            @media screen and (min-width: 768px) {
+                width: 2rem;
+                height: 2rem;
+            }
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    select {
+        background-color: $white;
+        border: 1px solid $gainsboro;
+        border-radius: 0;
+        height: 42px;
+        width: 100%;
+        margin-left: 0;
+        @media screen and (min-width: 768px) {
+            height: 32px;
+        }
+    }
+}
+
+// Tabs using just CSS, no javascript required
+.tabs {
+    position: relative;
+    text-align: center;
+}
+.tab {
+    @media screen and (min-width: 768px) {
+        display: inline-block;
+        float: none;
+    }
+    .tab-switch {
+        display: none;
+        &:checked {
+            + .tab-label {
+                @media screen and (min-width: 768px) {
+                    background: #fff;
+                    border-bottom-color: $citrus;
+                    color: $black;
+                    font-weight: 700;
+                    top: -0.0625rem;
+                    transition: all 0.35s;
+                    z-index: 1
+                }
+            }
+            + label + .tab-content {
+                opacity: 1;
+                transition: all 0.35s;
+                z-index: 2;
+            }
+        }
+    }
+    .tab-label {
+        border-bottom: 3px solid $white;
+        color: $nobel;
+        display: block;
+        font-weight: 400;
+        line-height: 2.5em;
+        margin-bottom: 0;
+        position: relative;
+        text-transform: none;
+        top: 0;
+        transition: all 0.25s;
+        @media screen and (min-width: 768px) {
+            cursor: pointer;
+            padding: 0 1.25rem;
+            &:hover {
+                border-bottom-color: $nobel;
+                top: -0.25rem;
+                transition: top 0.25s;
+            }
+        }
+    }
+    .tab-content {
+        padding: 1em 0;
+        text-align: left;
+        z-index: 1;
+        @media screen and (min-width: 768px) {
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 2.75em;
+            transition: all 0.35s;
+            width: 100%;
+        }
+    }
+}

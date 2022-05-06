@@ -1,0 +1,37 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: confirmationregister.isml </iscomment>
+<iscomment>Provide a create account form for unregistered customers</iscomment>
+
+<isif condition="${!pdict.CurrentCustomer.authenticated}">
+
+	<div class="login-box login-create-account clearfix">
+	
+		<h2>${Resource.msg('account.user.registration.createnew','account',null)}</h2>
+
+		<div class="login-box-content clearfix">
+
+			<p>${Resource.msg('globalaccount.createmessage','locale',null)}</p>
+
+			<form action="${URLUtils.httpsContinue()}" method="post" id="RegistrationForm">
+				<fieldset>
+					<isscript>
+						var attributes = {
+							autocomplete: "off"
+						};
+					</isscript>				
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.firstname}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.lastname}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.emailconfirm}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.login.password}" type="password" dynamicname="true" attributes="${attributes}"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.login.passwordconfirm}" type="password" dynamicname="true" attributes="${attributes}"/>
+					<button type="submit" class="largebutton" value="${Resource.msg('global.createbutton','locale',null)}" name="${pdict.CurrentForms.profile.confirm.htmlName}"><span>${Resource.msg('global.createbutton','locale',null)}</span></button>
+                    <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+				</fieldset>
+			</form>
+
+		</div>
+	.
+	</div>
+
+</isif>

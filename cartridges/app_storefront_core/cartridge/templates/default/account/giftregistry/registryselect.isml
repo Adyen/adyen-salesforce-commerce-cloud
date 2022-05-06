@@ -1,0 +1,37 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/giftregistry/pt_giftregistry">
+	
+
+		<h1>${Resource.msg('registryselect.header','account',null)}</h1>
+		
+		<table id="registry-results">
+		
+			<tr>
+				<th>${Resource.msg('registrylist.eventnameheader','account',null)}</th>
+				<th>${Resource.msg('registrylist.eventtypeheader','account',null)}</th>
+				<th>${Resource.msg('registrylist.dateheader','account',null)}</th>
+			</tr>
+			
+			<isloop items="${pdict.CurrentForms.productlists.items}" var="item" status="loopstate">
+			
+			<tr <isif condition="${loopstate.first}">class="first"<iselseif condition="${loopstate.last}">class="last"</isif>>
+				<td>
+					<form action="${URLUtils.continueURL()}" method="post" id="${'RegistrySelect_' + item.object.UUID}">
+						<fieldset>
+							<input type="hidden" name="${item.select.htmlName}"/>
+							<button type="submit" class="button-secondary" name="${'RegistrySelect_' + item.object.UUID}">
+								<isprint value="${item.object.name}"/>
+							</button>
+						</fieldset>
+					</form>	
+				</td>
+				<td><isprint value="${item.object.eventType}"/></td>
+				<td><isprint value="${item.object.eventDate}"/></td>
+			</tr>
+			
+			</isloop>	
+			
+		</table>
+
+
+</isdecorate>

@@ -1,0 +1,105 @@
+'use strict';
+
+var PagingModel = require('dw/web/PagingModel');
+var ProductSearchModel = require('dw/catalog/ProductSearchModel');
+var ArrayList = require('dw/util/ArrayList');
+
+/**
+ * GetBonusDiscountLineItem
+ *
+ * This script returns a bonus discount line item from a given uuid.
+ *
+ *   @input BonusDiscountLineItems : dw.util.Collection Collection of bonuslineitems to be searched.
+ *   @input uuid : String uuid of the bonus line item to be found.
+ *   @input pageSize : Number page size
+ *   @input pageStart : Number page start 
+ *   @output BonusDiscountLineItem : dw.order.BonusDiscountLineItem
+ *   @output BonusDiscountProducts : dw.util.ArrayList
+ *   @output BPTotal : Number
+ *
+ */
+  
+ function execute(pdict) {
+
+    pdict.BonusDiscountLineItem = getBonusDiscountLineItem(pdict.BonusDiscountLineItems, pdict.uuid);
+    var bpCount = pdict.BonusDiscountLineItem.bonusProducts.length;
+    if(pdict.pageSize && !bpCount){
+        var BPLIObj = getBonusPLIs(pdict.pageSize, pdict.pageStart, pdict.BonusDiscountLineItem);
+
+        pdict.BPTotal = BPLIObj.bpTotal;
+        pdict.BonusDiscountProducts = BPLIObj.bonusDiscountProducts;
+
+    } else {
+        pdict.BPTotal = -1;
+    }
+
+    return PIPELET_NEXT;
+}
+
+
+/**
+ * Returns a collection of products eligble as a bonus product
+ * @param {Number} pageSize Size of the pages retrieved for lazy loads
+ * @param {Number} pageStart The start position of the retrieved page
+ * @param {dw.order.BonusDiscountLineItem} itm The item that allows for the choice of a bonus product
+ * @returns {Object} returnObj object that holds a collection of bonus products and the total number of bonus products
+ * @returns {dw.util.ArrayList} returnObj.bonusDiscountProducts collection of bonus products
+ * @returns {dw.util.ArrayList} returnObj.bpTotal number of bonus products found in the search result
+ */
+function getBonusPLIs(pageSize, pageStart, item) {
+    var returnObj = {
+        bpTotal: -1
+    };
+
+
+    if (item.bonusProducts.length === 0) {
+        var psm = new ProductSearchModel();
+        psm.setPromotionID(item.promotionID);
+        psm.setPromotionProductType('bonus');
+        psm.search();
+
+        var productSearchHit;
+        var productArray = new ArrayList();
+        var pagingModel = new PagingModel(psm.getProductSearchHits(), psm.count);
+
+        //set page size and start points
+        pagingModel.setStart(pageStart);
+        pagingModel.setPageSize(pageSize);
+
+        var iter = pagingModel.pageElements;
+        while (iter !== null && iter.hasNext()) {
+            productSearchHit = iter.next();
+            productArray.push(productSearchHit.getProduct());
+        }
+
+        returnObj.bonusDiscountProducts = productArray;
+        returnObj.bpTotal = psm.count;
+
+    }
+
+    return returnObj;
+}
+
+/**
+ * Identifies the bonus line item
+ * @param {dw.util.Collection} BonusDiscountLineItems the bonusDiscountLineItems property of a dw.order.LineItemCtnr
+ * @param {String} uuid the uinique identifier of the product that enables the choice of bonus products
+ * @returns {dw.order.BonusDiscountLineItem} itm The item that allows for the choice of a bonus product
+ */
+function getBonusDiscountLineItem(BonusDiscountLineItems, uuid) {
+    var BonusDiscountLineItem;
+    for each(var item in BonusDiscountLineItems) {
+        if (item.UUID == uuid) {
+            BonusDiscountLineItem = item;
+        }
+    }
+    return BonusDiscountLineItem;
+}
+
+
+/** Exported functions **/
+module.exports = {
+    execute: execute,
+    getBonusPLIs: getBonusPLIs,
+    getBonusDiscountLineItem: getBonusDiscountLineItem
+};

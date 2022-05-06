@@ -1,0 +1,13 @@
+<iscontent type="application/javascript" charset="UTF-8" compact="true"/>
+
+<isscript>
+    var CSRFProtection = require('dw/web/CSRFProtection');
+    var tokenName = CSRFProtection.getTokenName();
+    var tokenValue = CSRFProtection.generateToken();
+    var json = {
+        csrf_token_name: tokenName,
+        csrf_token_value: tokenValue
+    };
+</isscript>
+
+<isprint value="${JSON.stringify(json)}"/>

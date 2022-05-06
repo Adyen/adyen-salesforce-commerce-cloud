@@ -1,0 +1,382 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${(pdict.cache != null) ? pdict.cache : true}">
+	<iscache type="relative" hour="24" varyby="price_promotion"/>
+</isif>
+<iscomment>
+	This template is best used via a **remote** include (Product-HitTile) and _not_ local include.
+	This template renders a product tile using a product. The following parameters
+	must be passed into the template module:
+
+	product 		: the product to render the tile for
+	showswatches 	: check, whether to render the color swatches (default is false)
+	showpricing		: check, whether to render the pricing (default is false)
+	showpromotion	: check, whether to render the promotional messaging (default is false)
+	showrating		: check, whether to render the review rating (default is false)
+	showcompare		: check, whether to render the compare checkbox (default is false)
+</iscomment>
+
+<isset name="Product" value="${pdict.product}" scope="page"/>
+
+<isif condition="${!empty(Product)}">
+	<iscomment>
+		Get the colors selectable from the current product master or variant range if we
+		need to determine them based on a search result.
+	</iscomment>
+	<isscript>
+
+		var PromotionMgr = require('dw/campaign/PromotionMgr');
+		
+		// set default settings
+		/*
+			Relies on the fact that the represented product is a variant if color slicing is enabled
+		 	See script API doc @ProductSearchHit.product
+		*/
+		var showswatches = pdict.showswatches || Product.isMaster();
+		var showpricing = pdict.showpricing || false;
+		var showpromotion = pdict.showpromotion || false;
+		var showrating = pdict.showrating || false;
+		var showcompare = pdict.showcompare || false;
+
+		var selectableColors = new dw.util.ArrayList();
+		var imageSize = 'medium';
+		var PVM = Product.variationModel;
+		var colorVarAttr, selectedColor, imageSource, image;
+		if (PVM) {
+			colorVarAttr = PVM.getProductVariationAttribute('color');
+			if (colorVarAttr) {
+				selectableColors = PVM.getFilteredValues(colorVarAttr);
+			}
+			if (Product.variationGroup && colorVarAttr) {
+				imageSource = selectedColor = PVM.getSelectedValue(colorVarAttr);
+				if (!imageSource) {
+					if (!PVM.variants.isEmpty()) {
+						imageSource = PVM.defaultVariant;
+						if (imageSource) {
+							selectedColor = PVM.getVariationValue(imageSource, colorVarAttr);
+						}
+					}
+				}
+			} else if (Product.isMaster() && PVM.defaultVariant) {
+				if (colorVarAttr) {
+					imageSource = PVM.defaultVariant;
+					selectedColor = imageSource.variationModel.getSelectedValue(colorVarAttr);
+				} else {
+					imageSource = PVM.master;
+				}
+			} else if (Product.isVariant() && colorVarAttr) {
+				imageSource = selectedColor = PVM.getSelectedValue(colorVarAttr);
+				if (!imageSource) {
+					if (!PVM.variants.isEmpty()) {
+						imageSource = PVM.variants[0];
+						selectedColor = imageSource.variationModel.getSelectedValue(colorVarAttr);
+					}
+				}
+			} else {
+				// standard product, product set or bundle
+				imageSource = Product;
+			}
+		} else {
+			imageSource = Product;
+		}
+		image = imageSource.getImage(imageSize, 0);
+
+		// Generate link to product detail page: by default it's just the product of the product search hit.
+		// If a color variation is available, the first color is used as link URL.
+
+		//RAP-3006 - added cgid because the breadcumb will not work otherwise.  It needs to pass the category ID
+		// in order to show the proper category the user clicked on
+		var productUrl = URLUtils.url('Product-Show', 'pid', Product.ID, 'cgid', pdict.CurrentHttpParameterMap.cgid);
+		if (selectedColor) {
+			productUrl = Product.variationModel.urlSelectVariationValue('Product-Show', colorVarAttr, selectedColor) + '&cgid=' + pdict.CurrentHttpParameterMap.cgid;
+		}
+	</isscript>
+	<div class="product-tile" id="${Product.UUID}" data-itemid="${Product.ID}"><!-- dwMarker="product" dwContentID="${Product.UUID}" -->
+		<iscomment>Image</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<div class="product-image"><!-- dwMarker="product" dwContentID="${Product.UUID}" -->
+			<iscomment>Render the thumbnail</iscomment>
+			<iscomment>If image couldn't be determined, display a "no image" medium.</iscomment>
+			<isif condition="${!empty(image)}">
+				<isset name="thumbnailUrl" value="${image.getURL()}" scope="page"/>
+				<isset name="thumbnailAlt" value="${image.alt}" scope="page"/>
+				<isset name="thumbnailTitle" value="${image.title}" scope="page"/>
+			<iselse/>
+				<isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+				<isset name="thumbnailAlt" value="${Product.name}" scope="page"/>
+				<isset name="thumbnailTitle" value="${Product.name}" scope="page"/>
+			</isif>
+
+			<iscomment>RAP-2997, if the product name is missing from the image title, add it in</iscomment>
+			<isif condition="${thumbnailTitle.charAt(0) == ','}">
+				<isset name="thumbnailTitle" value="${Product.name + thumbnailTitle}" scope="page"/>
+			</isif>
+			<isif condition="${thumbnailAlt.charAt(0) == ','}">
+				<isset name="thumbnailAlt" value="${Product.name + thumbnailAlt}" scope="page"/>
+			</isif>
+
+			<a class="thumb-link" href="${productUrl}" title="${Product.name}">
+				<img src="${thumbnailUrl}" alt="${thumbnailAlt}"/>
+			</a>
+		</div>
+
+		<iscomment>Product Name</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<div class="product-name">
+			<a class="name-link" href="${productUrl}" title="${Resource.msgf('product.label','product',null, Product.name)}">
+				<isprint value="${Product.name}"/>
+			</a>
+		</div>
+
+		<iscomment>Pricing</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<isif condition="${showpricing}">
+			<div class="product-pricing">
+				<isscript>
+					var currencyCode = session.getCurrency().getCurrencyCode();
+					var price = {};
+					var PriceModelSource = Product;
+					var PriceModel;
+					if (Product.productSet) {
+						price.class = 'product-set-price';
+						price.value = Resource.msg('global.buyall', 'locale', null);
+						price.title = Resource.msg('product.setprice', 'product', null);
+					} else if ((Product.master || Product.variationGroup) && pdict.CurrentHttpParameterMap.pricerange.stringValue == 'true') {
+						// Product master or variation group price range depending on the represented variants
+						price.class = 'product-sales-price';
+						price.value = dw.util.StringUtils.formatMoney(dw.value.Money(pdict.CurrentHttpParameterMap.minprice, currencyCode)) + ' - ' + dw.util.StringUtils.formatMoney(dw.value.Money(pdict.CurrentHttpParameterMap.maxprice, currencyCode));
+						price.title = Resource.msg('product.pricerange', 'product', null);
+					} else {
+						// For product master or variation group without a price range get the pricing from first variant
+						if ((Product.master || Product.variationGroup) && pdict.CurrentHttpParameterMap.pricerange.stringValue != 'true') {
+							PriceModelSource = Product.variants[0];
+						}
+						// Regular pricing through price model of the product. If the product is an option product, we have to initialize the product price model with the option model.
+						if (Product.optionProduct) {
+							PriceModel = PriceModelSource.getPriceModel(Product.getOptionModel());
+						} else {
+							PriceModel = PriceModelSource.getPriceModel();
+						}
+					}
+				</isscript>
+				<iscomment>
+					Check whether the product has price in the sale pricebook. If so, then
+					display two prices: crossed-out standard price and sales price.
+
+					TODO: should find a better way to include logic.
+				</iscomment>
+				<isinclude template="product/components/standardprice"/>
+				<isscript>
+
+					var SalesPrice;
+					var ShowStandardPrice;
+					var extraPrice = {};
+					var prices = [];
+					var promos = PromotionMgr.getActiveCustomerPromotions().getProductPromotions(Product);
+
+					// simulate the same if else block from before the template include break
+					if (!Product.productSet && pdict.CurrentHttpParameterMap.pricerange.stringValue != 'true' && !promos.length) {
+						SalesPrice = PriceModel.getPrice();
+						ShowStandardPrice = StandardPrice.available && SalesPrice.available && StandardPrice.compareTo(SalesPrice) == 1;
+						if (ShowStandardPrice) {
+							price.class = 'product-standard-price';
+							price.title = Resource.msg('product.standardprice', 'product', null);
+							price.value = StandardPrice;
+							extraPrice.class = 'product-sales-price';
+							extraPrice.title = Resource.msg('product.saleprice', 'product', null);
+							extraPrice.value = SalesPrice;
+						} else {
+							price.class = 'product-sales-price';
+							price.title = Resource.msg('product.saleprice', 'product', null);
+							price.value = SalesPrice;
+						}					
+					} else if (promos.length) {
+
+						var promoItem;
+						var promo;
+						var promoVariantProduct = Product;	
+						var promoIter = promos.iterator();
+						var promoVariant;
+						var variantIter = Product.variationModel.variants.iterator();
+						
+
+						if(Product.master){
+							while (variantIter.hasNext()) {
+								promoVariant = variantIter.next();
+								if (PromotionMgr.getActiveCustomerPromotions().getProductPromotions(promoVariant).length) {
+									promoVariantProduct = promoVariant;
+									break;
+								}
+							}
+							if (!PriceModel) {PriceModel = promoVariantProduct.getPriceModel();}
+						}
+						
+						StandardPrice = PriceModel.getPrice();
+						
+						while (promoIter.hasNext()) {
+							promoItem = promoIter.next();
+							if (promoItem.getPromotionClass()) {
+								promo = promoItem;
+								break;
+							}
+						}
+
+						SalesPrice = promo.getPromotionalPrice(promoVariantProduct, promoVariantProduct.getOptionModel());
+						
+						if(SalesPrice.available){
+							price.class = 'product-standard-price';
+							price.title = Resource.msg('product.standardprice', 'product', null);
+							price.value = StandardPrice;
+						
+							extraPrice.class = 'product-sales-price';
+							extraPrice.title = Resource.msg('product.saleprice', 'product', null);
+							extraPrice.value = SalesPrice;
+						}else{
+							price.class = 'product-sales-price';
+							price.title = Resource.msg('product-sales-pricee', 'product', null);
+							price.value = StandardPrice;
+						}
+					}
+					prices.push(price);
+					if (extraPrice) {prices.push(extraPrice);}
+				</isscript>
+				<isloop items="${prices}" var="productPrice">
+					<span class="${productPrice.class}" title="${productPrice.title}"><isprint value="${productPrice.value}"/></span>
+				</isloop>
+			</div>
+		</isif>
+
+		<iscomment>Promotion</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<isif condition="${showpromotion}">
+			<div class="product-promo">
+				<isset name="promos" value="${dw.campaign.PromotionMgr.activeCustomerPromotions.getProductPromotions(Product)}" scope="page"/>
+				<isif condition="${!empty(promos)}">
+					<isloop items="${promos}" alias="promo" status="promoloopstate">
+						<div class="promotional-message">
+							<isprint value="${promo.calloutMsg}" encoding="off"/>
+						</div>
+					</isloop>
+				</isif>
+			</div>
+		</isif>
+
+		<iscomment>Rating</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<isif condition="${showrating && !Product.productSet}">
+			<isinclude template="product/components/reviewsmini"/>
+		</isif>
+
+		<iscomment>Swatches</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<isif condition="${showswatches}">
+			<iscomment>
+				Render the color swatch secion for a product. We show color swatches for color variations known to the product master.
+			</iscomment>
+
+			<isif condition="${!empty(selectableColors) && selectableColors.size() > 1 && !empty(colorVarAttr)}">
+				<div class="product-swatches">
+					<iscomment>render a link to the palette and hide the actual palette if there are more than five colors contained</iscomment>
+					<isif condition="${selectableColors.size() > 5}">
+						<a class="product-swatches-all">${Resource.msg('productresultarea.viewallcolors','search',null)} (<isprint value="${selectableColors.size()}"/>)</a>
+					</isif>
+
+					<iscomment>render the palette, the first swatch is always preselected</iscomment>
+					<ul class="swatch-list<isif condition="${selectableColors.size() > 5}"> swatch-toggle</isif>">
+						<isloop items="${selectableColors}" var="colorValue" status="varloop">
+							<iscomment>Determine the swatch and the thumbnail for this color</iscomment>
+							<isset name="colorSwatch" value="${colorValue.getImage('swatch')}" scope="page"/>
+							<isset name="colorThumbnail" value="${colorValue.getImage('medium')}" scope="page"/>
+
+							<iscomment>If images couldn't be determined, display a "no image" thumbnail</iscomment>
+							<isif condition="${!empty(colorSwatch)}">
+								<isset name="swatchUrl" value="${colorSwatch.getURL()}" scope="page"/>
+								<isset name="swatchAlt" value="${colorSwatch.alt}" scope="page"/>
+								<isset name="swatchTitle" value="${colorSwatch.title}" scope="page"/>
+							<iselse/>
+								<isset name="swatchUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>
+								<isset name="swatchAlt" value="${colorValue.displayValue}" scope="page"/>
+								<isset name="swatchTitle" value="${colorValue.displayValue}" scope="page"/>
+							</isif>
+							<isif condition="${!empty(colorThumbnail)}">
+								<isset name="thumbnailUrl" value="${colorThumbnail.getURL()}" scope="page"/>
+								<isset name="thumbnailAlt" value="${colorThumbnail.alt}" scope="page"/>
+								<isset name="thumbnailTitle" value="${colorThumbnail.title}" scope="page"/>
+							<iselse/>
+								<isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>
+								<isset name="thumbnailAlt" value="${colorValue.displayValue}" scope="page"/>
+								<isset name="thumbnailTitle" value="${colorValue.displayValue}" scope="page"/>
+							</isif>
+							<isif condition="${!empty(selectedColor)}">
+								<isset name="preselectCurrentSwatch" value="${colorValue.value == selectedColor.value}" scope="page"/>
+							<iselse/>
+								<isset name="preselectCurrentSwatch" value="${varloop.first}" scope="page"/>
+							</isif>
+
+							<iscomment>build the proper URL and append the search query parameters</iscomment>
+							<isset name="swatchproductUrl" value="${Product.variationModel.url('Product-Show', colorVarAttr, colorValue.value)}" scope="page"/>
+							<isif condition="${!empty(pdict.ProductSearchResult)}">
+								<isset name="swatchproductUrl" value="${pdict.ProductSearchResult.url(swatchproductUrl)}" scope="page"/>
+							</isif>
+
+							<iscomment>render a single swatch, the url to the proper product detail page is contained in the href of the swatch link</iscomment>
+							<li>
+								<a href="${swatchproductUrl}" class="swatch ${(preselectCurrentSwatch) ? 'selected' : ''}" title="${swatchTitle}">
+									<img class="swatch-image" src="${swatchUrl}" alt="${swatchAlt}"  data-thumb='{"src":"${thumbnailUrl}","alt":"${thumbnailAlt}","title":"${thumbnailTitle}"}'/>
+								</a>
+							</li>
+						</isloop>
+					</ul><!-- .swatch-list -->
+				</div><!-- .product-swatches -->
+			</isif>
+		</isif>
+
+		<iscomment>Compare</iscomment>
+		<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+		<isif condition="${showcompare}">
+			<iscomment>
+				Render the compare checkbox, if search result is based on a category context.
+				The checkbox is displayed if either the category or one of its parent categories
+				has the custom attribute "enableCompare" set to true.
+			</iscomment>
+			<isscript>var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');</isscript>
+			<isif condition="${!empty(pdict.CurrentHttpParameterMap.cgid.value) && ProductUtils.isCompareEnabled(pdict.CurrentHttpParameterMap.cgid.value)}">
+				<isif condition="${!Product.productSet && !Product.bundle}">
+					<isscript>
+						// mark the compare checkbox checked if the current product is
+						// in the current comparison list for the current category
+						importScript( "catalog/libCompareList.ds" );
+
+						var comparison = GetProductCompareList();
+						var comparisonProducts = null;
+						var checkedStr = '';
+						// Set the category
+						if (!empty(pdict.ProductSearchResult && !empty(pdict.ProductSearchResult.category))) {
+							comparison.setCategory(pdict.ProductSearchResult.category.ID);
+						}
+
+						if (comparison) {
+							comparisonProducts = comparison.getProducts();
+						}
+						if (!empty(comparisonProducts)) {
+							var pIt = comparisonProducts.iterator();
+							var productId = null;
+							while (pIt.hasNext()) {
+								productId = pIt.next();
+								if (productId == Product.ID) {
+									checkedStr = 'checked="checked"';
+									break;
+								}
+							}
+						}
+					</isscript>
+					<div class="product-compare label-inline">
+						<label for="${'cc-'+Product.UUID}">${Resource.msg('search.compare', 'search', null)} <span class="visually-hidden">${Product.name} ${Product.ID}</span></label>
+						<div class="field-wrapper">
+							<input type="checkbox" class="compare-check" id="${'cc-'+Product.UUID}" <isprint value="${checkedStr}" encoding="off" />/>
+						</div>
+					</div>
+				</isif>
+			</isif>
+		</isif>
+	</div><!--  END: .product-tile -->
+</isif>

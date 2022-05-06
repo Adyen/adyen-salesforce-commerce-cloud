@@ -1,0 +1,178 @@
+#secondary a {
+	color: $citrus;
+}
+
+#category-level-1 {
+	li {
+		color: $dim-gray;
+		display: block;
+		.refinement-link {
+			background: none repeat scroll 0 0 transparent;
+			padding: 0 0 0 1em;
+		}
+		&.expandable {
+			.refinement-link {
+				padding: 0 0 0 .4em;
+			}
+			.active {
+				font-weight: bold;
+				padding: 0 0 0 .2em;
+			}
+		}
+	}
+}
+
+#category-level-2 {
+	a {
+		&.active {
+			color: $night-rider;
+			font-weight: 700;
+		}
+		&.refinement-link {
+			margin: 0 0 0 .4em;
+			padding: 0;
+		}
+	}
+}
+#category-level-2 {
+	padding: .5em .1em 0 .7em;
+}
+#category-level-3 {
+	padding: .3em 0 0;
+	a {
+		&.refinement-link {
+			font-style: normal;
+			margin: 0 0 0 .9em;
+			padding: 0;
+		}
+		&.active {}
+	}
+}
+
+.refinement-header {
+	background-color: $white-smoke;
+	border-top: 1px solid $gainsboro;
+	display: block;
+	font-size: 1.1em;
+	font-weight: bold;
+	letter-spacing: 0.125em;
+	margin: 0;
+	padding: 1.15em .75em .75em;
+	text-transform: uppercase;
+}
+
+.refinement {
+	padding-bottom: .65em;
+	position: relative;
+	// Hide Refinements on Category Landing Pages
+	.pt_categorylanding & {
+   		display: none;
+   		&.category-refinement {
+   			display: block;
+   		}    	
+   	}
+	h3 {
+		background-color: $white-smoke;
+		border-top: 1px solid $gainsboro;
+		font-size: 1.1em;
+		letter-spacing: 0.125em;
+		margin: 0 0 .65em;
+		padding: 1.15em .75em .75em;
+		text-transform: uppercase;
+		.ie7 & {
+			clear: both;
+		}
+		i {
+			color: $rain-forest
+		}
+	}
+	ul {
+		list-style: none outside none;
+		margin: 0;
+		padding: 0 .55em 0;
+	}
+	li {
+		padding: .5em;
+	}
+	ul {
+		li {
+			i {
+				color: $gainsboro;
+			}
+			&.selected {
+				i {
+					color: $rain-forest;
+				}
+			}
+		}
+		&.swatches li {
+			float: left;
+			padding: .16em;
+			a {
+				border: 2px solid $gainsboro;
+				border-radius: .5em;
+				display: block;
+				padding: 0.2em 0.8em;
+			}
+			&.selected a {
+				border-color: $citrus;
+				font-weight: bold;
+			}
+			&.unselectable a {
+				background-image: url("../images/interface/icon-color-swatch-unselectable.png");
+				background-position: right top;
+			}
+		}
+		&.refinementColor li a {
+			height: 23px;
+			padding: 0;
+			text-indent: -999em;
+			width: 30px;
+		}
+	}
+	.clear-refinement {
+		font-weight: bold;
+   		padding: 0 1.05em 0.4em;
+	}
+	.refinement-link {
+		border: 0 none;
+	}
+	.selected .refinement-link {
+		background-position: left bottom;
+	}
+	.refinement-top-level {
+		padding: 1em;
+	}
+}
+
+.scrollable {
+	height: 10em;
+	overflow: auto;
+}
+
+.nav {
+	ul {
+		border: 0 none;
+		list-style: none outside none;
+		margin: .58em 0;
+		padding: 0;
+		li {
+			list-style: none outside none !important;
+			margin: 0 0 .58em !important;
+		}
+	}
+	.toggle {
+		border: 0 none;
+		display: block;
+		font-size: 1em;
+		font-weight: 700;
+		margin: .83em 0 .58em;
+		text-transform: uppercase;
+		span {
+			background: none repeat scroll 0 0 transparent;
+		}
+	}
+	.expanded {
+		background-position: left -96px;
+	}
+}

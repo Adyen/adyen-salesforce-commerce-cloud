@@ -1,0 +1,67 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<div class="form-row label-inline home-delivery">
+	<isif condition="${lineItem.product.custom.availableForInStorePickup}">
+		<input id="delivery-options-home" type="radio" class="delivery-option" name="delivery_option_${lineItem.getUUID()}"
+				value="home"
+				<isif condition="${lineItem.custom.fromStoreId == null}">checked</isif>/>
+	</isif>
+	<label for="delivery-options-home">${Resource.msg('cart.store.homedelivery','checkout',null)}</label>
+
+	<iscomment>Product Existence and Product Availability</iscomment>
+	<isif condition="${!lineItem.bonusProductLineItem || lineItem.getBonusDiscountLineItem() != null}">
+		<isif condition="${lineItem.product == null}">
+			<span class="not-available">
+				${Resource.msg('cart.removeditem','checkout',null)}
+			</span>
+		<iselse/>
+			<isset name="product" value="${lineItem.product}" scope="page" />
+			<isset name="quantity" value="${pdict.Basket.getAllProductQuantities().get(lineItem.product).value}" scope="page" />
+		</isif>
+	</isif>
+</div>
+
+<isif condition="${lineItem.product.custom.availableForInStorePickup}">
+	<isif condition="${!empty(lineItem.custom.fromStoreId)}">
+		<isset name="store" value="${dw.catalog.StoreMgr.getStore(lineItem.custom.fromStoreId)}" scope="page"/>
+	<iselseif condition="${!empty(session.custom.storeId)}">
+		<isset name="store" value="${dw.catalog.StoreMgr.getStore(session.custom.storeId)}" scope="page"/>
+	<iselse/>
+		<isset name="store" value="${null}" scope="page"/>
+	</isif>
+	<isif condition="${!empty(store)}">
+		<isset name="storeinventorylist" value="${dw.catalog.ProductInventoryMgr.getInventoryList(store.custom.inventoryListId)}" scope="page"/>
+		<isif condition="${!empty(storeinventorylist) && !empty(storeinventorylist.getRecord(lineItem.productID))}">
+			<isset name="storeinventoryATS" value="${storeinventorylist.getRecord(lineItem.productID).stockLevel.value}" scope="page"/>
+		</isif>
+	</isif>
+
+	<div class="form-row label-inline instore-delivery">
+		<input id="delivery-options-store" type="radio" class="delivery-option" value="store" name="delivery_option_${lineItem.getUUID()}"
+				<isif condition="${typeof storeinventoryATS == 'undefined' || empty(storeinventoryATS) || storeinventoryATS < lineItem.quantityValue}">disabled </isif>
+				<isif condition="${lineItem.custom.fromStoreId != null}">checked</isif>/>
+
+		<label for="delivery-options-store">${Resource.msg('cart.store.instorepickup', 'checkout', null)}</label>
+
+		<iscomment>Store Address</iscomment>
+		<isif condition="${!empty(store)}">
+			<div class="selected-store-address" data-store-id="${store.ID}">
+				<isprint value="${store.address1}"/><br />
+				<isprint value="${store.city}"/><isif condition="${store.city != null && store.stateCode != null}">,</isif> <isprint value="${store.stateCode}"/> <isprint value="${store.postalCode}"/>
+			</div>
+			<isif condition="${!empty(storeinventoryATS) && storeinventoryATS >= lineItem.quantityValue}">
+				<isset name="status" value="store-in-stock" scope="page" />
+				<isset name="statusText" value="${StringUtils.format(Resource.msg('global.instock','locale',null))}" scope="page" />
+			<iselse/>
+				<isset name="status" value="store-error" scope="page" />
+				<isset name="statusText" value="${StringUtils.format(Resource.msg('cart.store.notavailable','checkout',null))}" scope="page" />
+			</isif>
+			<div class="selected-store-availability" data-status="${status}">${statusText}</div>
+		<iselse>
+			<div class="selected-store-address"></div>
+			<div class="selected-store-availability"></div>
+		</isif>
+		<div class="form-row">
+			<a class="set-preferred-store" href="" data-uuid="${lineItem.getUUID()}"> ${Resource.msg('storelist.lightbox.selectstore','storepickup',null)}</a>
+		</div>
+	</div>
+</isif>

@@ -1,0 +1,71 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+	This template renders a dialog with shipping address details for the checkout.
+	The dialog supports editing an existing address and removing an address.
+</iscomment>
+<div id="AddressForm" class="edit_address_form" >
+	<form method="post" name="EditAddressForm" id="EditAddressForm" action="${URLUtils.continueURL()}">
+		<fieldset>
+			<div id="editprofile" class="editaddress">
+				<div class="keynote">
+					<span class="required">*</span><strong>${Resource.msg('global.requiredfield','locale',null)}</strong></strong>
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.firstName}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.lastName}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.address1}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.address2}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.country}" type="select"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.states.state}" type="select"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.city}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.postal}" type="input"/>
+
+				</div>
+				<div class="formfield clearfix">
+					<isinputfield formfield="${pdict.CurrentForms.shippingaddress.phone}" type="input"/>
+
+				</div>
+			</div>
+		</fieldset>
+		<fieldset>
+			<div class="actions clearfix">
+				<button id="dialogApplyBtn" name="${pdict.CurrentForms.shippingaddress.apply.htmlName}" type="button" value="${Resource.msg('global.apply', 'locale', null)}"><span>${Resource.msg('global.apply', 'locale', null)}</span></button>
+				<button id="dialogCancelBtn" type="button" value="${Resource.msg('global.cancel', 'locale', null)}"><span>${Resource.msg('global.cancel', 'locale', null)}</span></button>
+				<isif condition="${!empty(pdict.CurrentForms.shippingaddress.object)}">
+					<button id="dialogDeleteBtn" name="${pdict.CurrentForms.shippingaddress.remove.htmlName}" type="button" value="${Resource.msg('global.delete', 'locale', null)}"><span>${Resource.msg('global.delete', 'locale', null)}</span></button>
+				</isif>
+			</div>
+
+		</fieldset>
+	</form>
+<isscript>
+	importScript("util/ViewHelpers.ds");
+	var addressForm = pdict.CurrentForms.shippingaddress;
+	var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+	var json = JSON.stringify(countries);
+</isscript>
+<script>window.countries = <isprint value="${json}" encoding="off"/>;</script>
+</div>

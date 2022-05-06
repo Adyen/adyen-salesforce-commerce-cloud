@@ -1,0 +1,9 @@
+<iscontent type="text/javascript" charset="UTF-8" compact="true"/>
+<isscript>
+    importScript("util/Resource.ds");
+</isscript>
+
+(function(){
+    window.SessionAttributes = <isprint value="${JSON.stringify(ResourceHelper.getSessionAttributes())}" encoding="off"/>;
+    window.User = <isprint value="${JSON.stringify(ResourceHelper.getUserSettings())}" encoding="off"/>;
+}());

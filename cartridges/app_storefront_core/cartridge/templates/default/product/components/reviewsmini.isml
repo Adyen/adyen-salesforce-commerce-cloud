@@ -1,0 +1,12 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	// if there is pdict.Product, assign Product to that
+	// this is mostly to cover the case on Product Detail Page where Product is not null
+	if (pdict.Product) {
+		Product = pdict.Product;
+	}
+</isscript>
+
+<div class="product-review" data-pid="${Product.ID}">
+	<div class="rating"></div>
+</div>

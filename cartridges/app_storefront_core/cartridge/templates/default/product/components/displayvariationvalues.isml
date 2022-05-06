@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Dumps variation attributes values as name value pairs.
+	e.g. color: red
+	params:
+	pdict.product
+</iscomment>
+
+<isif condition="${pdict.product != null && pdict.product.isVariant()}">
+	<isloop items="${pdict.product.variationModel.getProductVariationAttributes()}" var="VA">
+		<isset name="SelectedVariationValue" value="${pdict.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+		<div class="attribute" data-attribute="${VA.ID}">
+			<span class="label">${VA.displayName}</span>
+			<span class="value">
+				<isif condition="${SelectedVariationValue != null}">
+					<isprint value="${SelectedVariationValue.displayValue}"/>
+				<iselse/>
+					-
+				</isif>
+			</span>
+		</div>
+	</isloop>
+</isif>

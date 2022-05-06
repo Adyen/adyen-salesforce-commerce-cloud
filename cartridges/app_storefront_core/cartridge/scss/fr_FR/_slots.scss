@@ -1,0 +1,42 @@
+// French-specific slot styling details
+
+// RAP-3734 - make the French version of H1 smaller
+#home-bottom-left h1 {
+	@media screen and (min-width: 768px) {
+			font-size: 3.2rem;
+	}
+}
+#home-bottom-center {
+	.home-bottom-center-text {
+		top: 10%;
+		h1 {
+			font-size: 3rem;
+		}
+		h3 {
+			font-size: .7rem;
+		}
+	}
+}
+
+.home-bottom-right {
+	.home-bottom-right-header {
+		h2 {
+			padding: 0 0 0 0;
+			margin: 0;
+			@media screen and (min-width: 768px) {
+				font-size: 2rem;
+			}
+		}
+		h3 {
+			@media screen and (min-width: 768px) {
+				font-size: 2rem;
+			}
+		}
+	}
+}
+
+#home-bottom-left h2 {
+	@media screen and (min-width: 768px) {
+		font-size: 1.5rem;
+	}
+}

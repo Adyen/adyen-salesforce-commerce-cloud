@@ -1,0 +1,147 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/orderhistory/pt_orderhistory">
+	<isinclude template="util/modules"/>
+	
+	<h1>${Resource.msg('account.orders.orderhistory','account',null)}</h1>
+	
+		<isif condition="${pdict.OrderPagingModel.empty}">
+			
+			<div class="no_orders">${Resource.msg('account.orders.noorders','account',null)}</div>
+		
+		<iselse/>
+		
+			<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.orders.htmlName}">
+			
+			<div class="search-result-options">
+				<ispagingbar pageurl="${URLUtils.https('Order-History')}" pagingmodel="${pdict.OrderPagingModel}"/>
+			</div>
+			
+			<ul class="search-result-items">
+			
+			<isloop items="${pdict.CurrentForms.orders.orderlist}" var="order" status="orderloopstate">
+				
+				<li>
+					<div class="order-history-header">
+					
+						<button type="submit"  value="${Resource.msg('account.orders.orderdetail','account',null)}" name="${order.show.htmlName}">
+							${Resource.msg('account.orders.orderdetail','account',null)}
+						</button>
+						
+						<div class="order-date">
+							<span class="label">${Resource.msg('account.orders.datelabel','account',null)}</span>
+							<span class="value"><isprint value="${order.object.creationDate}" /></span>
+						</div>
+		
+						<isset name="Order" value="${order.object}" scope="page"/>
+						<isinclude template="account/orderhistory/orderstatusinclude" />
+		
+						<div class="order-number">
+							<span class="label">${Resource.msg('account.orders.numberlabel','account',null)}</span>
+							<span class="value"><isprint value="${order.object.orderNo}" /></span>
+						</div>
+	
+					</div>
+					
+					<div class="order-history-items">
+					
+						<table class="order-history-table">
+							<iscomment>For each shipment, render shipped to, items and order total </iscomment>
+							<isloop items="${order.object.shipments}" var="Shipment" status="shipmentloopstate">
+								
+								<iscomment>display order total in first row only</iscomment>						
+								<isif condition="${shipmentloopstate.first}">
+									<tr>
+										<isif condition="${!empty(Shipment.custom.shipmentType) && Shipment.custom.shipmentType == 'instore'}">
+											<th class="order-shipped-to">${Resource.msg('cart.store.instorepickup','checkout',null)}</td>
+										<iselse/>
+											<th class="order-shipped-to">${Resource.msg('account.orders.shippedto','account',null)}</td>
+										</isif>	
+										<th class="order-items">${Resource.msg('account.orders.items','account',null)}</td>
+										<th class="order-total-price">${Resource.msg('global.ordertotal','locale',null)}</td>
+									</tr>
+								<iselse/>
+									<tr>
+										<isif condition="${!empty(Shipment.custom.shipmentType) && Shipment.custom.shipmentType == 'instore'}">
+											<th class="order-shipped-to">${Resource.msg('cart.store.instorepickup','checkout',null)}</td>
+										<iselse/>									
+											<th class="order-shipped-to">${Resource.msg('account.orders.shippedto','account',null)}</th>
+										</isif>						
+										<th class="order-items">${Resource.msg('account.orders.items','account',null)}</th>
+										<th></th>
+									</tr>
+								</isif>
+								
+								<tr>
+								
+									<td>
+										<iscomment>Gift Certificates are in there own shipment. So if we have a shipment that contains
+											just a Gift Certificate, we want to render the email address of the recipient</iscomment>
+										<isif condition="${Shipment.giftCertificateLineItems.size() == 1}">
+											<isset name="theGiftCert" value="${Shipment.giftCertificateLineItems.iterator().next()}" scope="page"/>
+											<span class="value">${theGiftCert.recipientEmail}</span>
+										<iselse/>
+											<span class="value"><isprint value="${Shipment.shippingAddress.fullName}" /></span>
+										</isif>
+		
+									</td>
+									
+									<td class="order-items">
+										<ul>								
+											<isloop items="${Shipment.productLineItems}" var="PLI" status="pliloopstate">
+
+												<iscomment>if we have more product line items than the max page size, display view all link and create hidden div</iscomment>
+												<isif condition="${ ( pliloopstate.count - 1 ) >= pdict.OrderPagingModel.pageSize }">														
+													<li class="hidden">
+												<iselse/>
+													<li>
+												</isif>
+													
+													<isprint value="${PLI.productName}"/>
+												
+												</li>
+												
+											</isloop>
+			
+											<isloop items="${Shipment.giftCertificateLineItems}" var="giftCertificateLineItem" status="gcliloopstate">
+												<li>${Resource.msg('global.giftcertificate','locale',null)}</li>
+											</isloop>
+										
+										</ul>						
+									</td>
+									
+									<td>
+										<iscomment>Display total price for order</iscomment>
+										<isif condition="${shipmentloopstate.first}">
+											<span class="value"><isprint value="${order.object.totalGrossPrice}"/></span>
+										<iselse/>
+											&nbsp;
+										</isif>
+									</td>
+									
+								</tr>
+								
+							</isloop>
+						</table>
+	
+					</div>
+				</li>
+				
+				<iscomment>if we have more than five orders, we use the paging bar</iscomment>
+				<isif condition="${orderloopstate.count >= (pdict.OrderPagingModel.pageSize + 1)}">
+					<isbreak/>
+				</isif>
+				
+			</isloop>
+			
+			</ul>
+			
+			<div class="search-result-options">
+				<ispagingbar pageurl="${URLUtils.https('Order-History')}" pagingmodel="${pdict.OrderPagingModel}"/>
+			</div>
+			
+			</form>
+			
+		</isif>
+
+
+</isdecorate>

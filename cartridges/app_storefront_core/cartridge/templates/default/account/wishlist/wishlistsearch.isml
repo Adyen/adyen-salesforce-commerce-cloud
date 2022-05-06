@@ -1,0 +1,28 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<form action="${URLUtils.httpsContinue()}" method="post" class="wishlist-search" id="${pdict.CurrentForms.wishlist.search.htmlName}">
+	<fieldset>
+		<isscript>
+			var attributes = {
+				maxlength: 255
+			};
+		</isscript>
+		<legend class="visually-hidden">Search for someone's wish list</legend>
+
+		<isinputfield formfield="${pdict.CurrentForms.wishlist.search.lastname}" type="input" attributes="${attributes}" />
+
+		<isinputfield formfield="${pdict.CurrentForms.wishlist.search.firstname}" type="input" attributes="${attributes}"/>
+
+		<isinputfield formfield="${pdict.CurrentForms.wishlist.search.email}" type="input" attributes="${attributes}"/>
+
+		<div class="form-row form-row-button">
+			<button type="submit" value="${Resource.msg('global.find','locale',null)}" name="${pdict.CurrentForms.wishlist.search.search.htmlName}">
+				${Resource.msg('global.find','locale',null)}
+			</button>
+		</div>
+		
+		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+	</fieldset>
+
+</form>

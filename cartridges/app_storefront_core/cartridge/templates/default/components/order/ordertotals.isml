@@ -1,0 +1,137 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template is used to render the order totals for a basket or an order.
+
+    Parameters:
+    p_lineitemctnr     : the line item container to render (this could be either an order or a basket as they are both line item containers)
+    p_showshipmentinfo : boolean that controls if individual shipment information is rendered or if aggregate totals are rendered
+    p_shipmenteditable : boolean that controls if the shipment should have an edit link
+    p_totallabel       : label to use for the total at bottom of summary table
+</iscomment>
+
+<iscomment>Create page varibale representing the line item container</iscomment>
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+
+<isif condition="${!empty(LineItemCtnr)}">
+	<table class="order-totals-table">
+		<tbody>
+			<iscomment>
+				render order subtotal if there are both contained in the cart, products and gift certificates
+				(product line item prices including product level promotions plus gift certificate line items prices)
+			</iscomment>
+			<tr class="order-subtotal">
+				<td>${Resource.msg('order.ordersummary.subtotal','order',null)}</td>
+				<td><isprint value="${LineItemCtnr.getAdjustedMerchandizeTotalPrice(false).add(LineItemCtnr.giftCertificateTotalPrice)}"/></td>
+			</tr>
+
+			<iscomment>calculate order level discounts</iscomment>
+			<isscript>
+				var merchTotalExclOrderDiscounts : dw.value.Money = LineItemCtnr.getAdjustedMerchandizeTotalPrice(false);
+				var merchTotalInclOrderDiscounts : dw.value.Money = LineItemCtnr.getAdjustedMerchandizeTotalPrice(true);
+				var orderDiscount : dw.value.Money = merchTotalExclOrderDiscounts.subtract( merchTotalInclOrderDiscounts );
+			</isscript>
+			<isif condition="${!empty(orderDiscount) && orderDiscount.value > 0.0}">
+				<tr class="order-discount discount">
+					<td>${Resource.msg('order.ordersummary.orderdiscount','order',null)}</td>
+					<td>- <isprint value="${orderDiscount}"/></td>
+				</tr>
+			</isif>
+
+			<iscomment>render each single shipment or shipping total</iscomment>
+			<isif condition="${pdict.p_showshipmentinfo}">
+				<iscomment>the url to edit shipping depends on the checkout scenario</iscomment>
+				<isset name="editUrl" value="${URLUtils.https('COShipping-Start')}" scope="page"/>
+				<isif condition="${pdict.CurrentForms.multishipping.entered.value}">
+					<isset name="editUrl" value="${URLUtils.https('COShippingMultiple-StartShipments')}" scope="page"/>
+				</isif>
+				<isloop items="${LineItemCtnr.shipments}" var="Shipment" status="loopstatus">
+					<iscomment>show shipping cost per shipment only if it's a physical shipment containing product line items</iscomment>
+					<isif condition="${Shipment.productLineItems.size() > 0}">
+					<tr class="order-shipping <isif condition="${loopstatus.first}"> first <iselseif condition="${loopstatus.last}"> last</isif>">
+						<td>
+							<isif condition="${pdict.p_shipmenteditable}">
+								<a href="${editUrl}" title="${Resource.msg('order.ordersummary.ordershipping.edit','order',null)}">${Resource.msg('order.ordersummary.ordershipping.edit','order',null)}</a>
+							</isif>
+							${Resource.msg('order.ordersummary.ordershipping','order',null)} <!--  SHIPPING NAME -->
+							<isif condition="${!empty(Shipment) && !empty(Shipment.shippingMethod)}">
+                                <isprint value="${Shipment.shippingMethod.displayName}"/>
+                            </isif>
+                        </td>
+						<td>
+							<isif condition="${LineItemCtnr.shippingTotalPrice.available}">
+								<isprint value="${Shipment.shippingTotalPrice}"/>
+							<iselse/>
+								${Resource.msg('global.symbol.dash','locale',null)}
+							</isif>
+						</td>
+					</tr>
+					</isif>
+				</isloop>
+			<iselse/>
+				<tr class="order-shipping">
+					<td>
+						${Resource.msg('order.ordersummary.ordershipping','order',null)}
+						<!-- Display Shipping Method -->
+						<isset name="Shipment" value="${LineItemCtnr.shipments.iterator().next()}" scope="page"/>
+						<isif condition="${!empty(Shipment) && !empty(Shipment.shippingMethod)}">
+							<isprint value="${Shipment.shippingMethod.displayName}"/>
+						</isif>
+					</td>
+					<td>
+						<isif condition="${LineItemCtnr.shippingTotalPrice.available}">
+							<isprint value="${LineItemCtnr.shippingTotalPrice}"/>
+						<iselse/>
+							${Resource.msg('global.symbol.dash','locale',null)}
+						</isif>
+					</td>
+				</tr>
+			</isif>
+
+			<iscomment>calculate shipping discount</iscomment>
+			<isscript>
+				var shippingExclDiscounts : dw.value.Money = LineItemCtnr.shippingTotalPrice;
+				var shippingInclDiscounts : dw.value.Money = LineItemCtnr.getAdjustedShippingTotalPrice();
+				var shippingDiscount : dw.value.Money = shippingExclDiscounts.subtract( shippingInclDiscounts );
+			</isscript>
+			<isif condition="${!empty(shippingDiscount) && shippingDiscount.value > 0.0}">
+				<isif condition="${pdict.p_showshipmentinfo}">
+					<tr class="order-shipping-discount discount">
+						<td>${Resource.msg('order.ordersummary.ordershippingdiscount','order',null)}</td>
+						<td>- <isprint value="${shippingDiscount}"/></td>
+					</tr>
+				<iselse/>
+					<tr class="order-shipping-discount discount">
+						<td>${Resource.msg('order.ordersummary.ordershippingdiscount','order',null)}</td>
+						<td>- <isprint value="${shippingDiscount}"/></td>
+					</tr>
+				</isif>
+			</isif>
+
+			<iscomment>tax amount - Note: only show this field if taxation policy is net</iscomment>
+			<isif condition="${dw.order.TaxMgr.getTaxationPolicy() == dw.order.TaxMgr.TAX_POLICY_NET}">
+				<tr class="order-sales-tax">
+					<td>${Resource.msg('order.ordersummary.ordertax','order',null)}</td>
+					<td>
+						<isif condition="${LineItemCtnr.totalTax.available}">
+							<isprint value="${LineItemCtnr.totalTax}"/>
+						<iselse/>
+							${Resource.msg('global.symbol.dash','locale',null)}
+						</isif>
+					</td>
+				</tr>
+			</isif>
+
+			<iscomment>order total</iscomment>
+			<tr class="order-total">
+				<isif condition="${LineItemCtnr.totalGrossPrice.available}">
+				 	<isset name="orderTotalValue" value="${LineItemCtnr.totalGrossPrice}" scope="page"/>
+				<iselse/>
+					<isset name="orderTotalValue" value="${LineItemCtnr.getAdjustedMerchandizeTotalPrice(true).add(LineItemCtnr.giftCertificateTotalPrice)}" scope="page"/>
+				</isif>
+
+				<td><isprint value="${pdict.p_totallabel}"/></td>
+				<td class="order-value"><isprint value="${orderTotalValue}"/></td>
+			</tr>
+		</tbody>
+	</table>
+</isif>

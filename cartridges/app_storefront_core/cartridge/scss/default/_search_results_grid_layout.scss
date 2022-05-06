@@ -1,0 +1,244 @@
+.pt_product-search-result .primary-content h1.content-header {
+    padding-left: 15px;
+}
+
+.pt_content-search-result,
+.pt_product-search-noresult {
+    .primary-content {
+        > h1, 
+        > h2,
+        > p {
+            margin: 0;
+            padding: .1em 1%;
+        }
+        .no-hits-help,
+        .no-hits-search,
+        .no-hits-footer {
+            padding: .1em 1%;
+        }
+        .pagination {
+            float: none;
+            padding: .1em 1%;
+        }
+    }
+}
+
+.category-main-banner img {
+    max-width: 100%;
+}
+
+.no-hits-search-term,
+.no-hits-search-term-suggest {
+    color: $sangria;
+    font-style: italic;
+}
+
+.no-hits-footer {
+    background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top transparent;
+    margin: 20px 0;
+    padding: 20px 0;
+}
+
+.search-result-bookmarks {
+    margin: 15px;
+    .first {
+        border-right: 1px solid $nobel;
+        padding-right: 5px;
+    }
+}
+
+.search-result-options {
+    padding: 1em 0.5em;
+    overflow: hidden;
+    .sort-by {
+        padding-bottom: 1em;
+        @media screen and (min-width: 768px) {
+            float: left;
+            margin-right: .5em;
+            padding-bottom: 0;
+        }
+    }
+    .items-per-page {
+        float: left;
+        margin-right: .5em;
+    }
+    form {
+        margin-bottom: 0;
+    }
+    label {
+        display: none;
+    }
+    select {
+        border: 1px solid $gainsboro;
+        border-radius: 5px;
+        color: $dim-gray;
+        padding: .5em;
+    }
+    .pagination {
+        float: right;   
+        @media screen and (min-width: 768px) {
+            padding-top: .8em;
+        }
+        .results-hits {
+            color: $dim-gray;
+            float: left;
+            display: none;
+            @media screen and (min-width: 768px) {
+                display: block;
+            }
+        }
+        ul {
+            border: 1px solid $gainsboro;
+            border-radius: 5px;
+            background-color: $white;
+            float: right;
+            margin: 0;
+            padding: 0;
+            @media screen and (min-width: 768px) {
+                background-color:transparent;
+                border: none;
+            }
+        }
+        li {            
+            border-right: 1px solid $gainsboro;
+            float: left;
+            @media screen and (min-width: 768px) {
+                border: none;
+                padding: 0 .5em;
+            }
+            a,
+            &.current-page,
+            i {             
+                display: block;
+                font-size: 1rem;
+                height: 32px;
+                line-height: 2.1rem;
+                text-align: center;
+                width: 32px;
+                @media screen and (min-width: 768px) {
+                    font-size: inherit;
+                    height: auto;
+                    line-height: inherit;
+                    width: auto;
+                }
+            }
+        }
+    }
+}
+
+.search-result-items {
+    margin: 0;
+    padding: 0;
+    li {
+        list-style: none outside none;
+    }
+    .new-row {
+        clear: both;
+    }
+    .grid-tile {
+        background: none repeat scroll 0 0 $white;
+        box-shadow: 0 0 9px $very-light-gray;
+        float: left;
+        list-style: none outside none;
+        margin: 0 0 2% 20px;
+        padding: 2%;
+        width: 26%;
+    }
+    .invisible {
+        display: none;
+    }
+}
+
+.search-result-content {
+    clear: both;
+    .product-price {
+        .price-standard {
+            color: #999;
+            font-weight: 100;
+            text-decoration: line-through;
+        }
+    }
+}
+
+.search-promo {
+    padding: 20px;
+}
+
+#results-content {
+    background: url("../images/interface/icon-double-line-header.png") repeat-x scroll left top transparent;
+    padding-top: 30px;
+}
+
+.folder-content-list {
+    align-items: stretch;
+    clear: both;
+    display: flex;
+    flex-wrap: wrap;
+    padding: .5em 1%;
+    li {
+        background-color: $white-smoke;
+        border: 1px solid $very-light-gray;
+        flex-basis: 100%;
+        flex-grow: 1;
+        list-style-type: none;
+        margin: .25rem;
+        padding: 1rem;
+        @media screen and (min-width: 480px) {
+            flex-basis: 40%;
+        }
+    }
+    p {
+        line-height: 1.1rem;
+    }
+    .content-title {
+        display: block;
+        font-size: 1.2em;
+    }
+    .readmore {
+        font-style: italic;
+        padding-left: .3rem;
+    }
+}
+
+.no-results {
+    padding: 20px;
+}
+
+.toggle-grid {
+    display: block;
+    float: left;
+    margin-right: 0.5em;
+    i {
+        cursor: pointer;
+        margin-right: 0.3em;
+    }
+    [data-option="column"] {
+        color: $citrus;
+    }
+    &.wide {
+        [data-option="wide"] {
+            color: $citrus;
+        }
+        [data-option="column"] {
+            color: $dim-gray;
+        }
+    }
+}
+
+.wide-tiles {
+    .search-result-items .grid-tile {
+        width: 91%;
+    }
+    .product-tile {
+        .product-swatches {
+            bottom: auto;
+            left: auto;
+            position: relative;
+            right: auto;
+            margin-top: 5px;
+            li {
+                float: left;
+            }
+        }
+    }
+}

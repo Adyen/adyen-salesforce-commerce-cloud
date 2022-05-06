@@ -1,0 +1,34 @@
+/**
+* Salesforce Commerce Cloud Script File
+* To define input and output parameters, create entries of the form:
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*-   @input ExampleIn : String This is a sample comment.
+*-   @output ExampleOut : Number
+
+*    @output Location : String
+*/
+
+importPackage( dw.system );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var THIS_SCRIPT : String = 'PostFinalizeOAuthLogin.ds: ';
+
+	//to continue to the destination (preserved in the session before InitiateOAuthLogin pipelet)
+	args.Location = session.custom['ContinuationURL']; 
+
+	Logger.debug(THIS_SCRIPT + "Extracted from session.custom: ContinuationURL: " + session.custom['ContinuationURL']);
+	delete session.custom['ContinuationURL'];
+
+    return PIPELET_NEXT;
+}

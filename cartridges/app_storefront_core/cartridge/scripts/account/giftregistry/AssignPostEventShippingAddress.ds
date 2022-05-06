@@ -1,0 +1,32 @@
+/**
+* This script assigns the form values of the address before event to the address after event.
+*
+* This script is using form object definitions and form value definitions defined in 
+* in the giftregistry.xml form. To access objects defined in a form, you use a script 
+* expression. 
+*
+* @input GiftRegistryForm : dw.web.FormGroup The form definition representing the gift registry.
+*
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.web );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var giftRegistryForm : FormGroup = pdict.GiftRegistryForm;
+	
+	var addressBeforeFields : FormGroup = giftRegistryForm.eventaddress.addressBeforeEvent;
+	
+	giftRegistryForm.eventaddress.addressAfterEvent.firstname.value = addressBeforeFields.firstname.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.lastname.value = addressBeforeFields.lastname.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.address1.value = addressBeforeFields.address1.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.address2.value = addressBeforeFields.address2.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.city.value = addressBeforeFields.city.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.postal.value = addressBeforeFields.postal.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.states.state.value = addressBeforeFields.states.state.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.country.value = addressBeforeFields.country.value;
+	giftRegistryForm.eventaddress.addressAfterEvent.phone.value = addressBeforeFields.phone.value;
+
+    return PIPELET_NEXT;
+}

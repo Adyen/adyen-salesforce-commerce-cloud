@@ -13,6 +13,7 @@
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge app_storefront_core && sgmf-scripts --uploadCartridge app_storefront_controllers",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",

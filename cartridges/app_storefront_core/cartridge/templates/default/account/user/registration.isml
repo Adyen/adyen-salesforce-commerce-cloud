@@ -1,0 +1,109 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+	<isinclude template="util/modules"/>
+
+	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
+
+	<iscomment>Builds a registration page for the user. It provides all input fields for names and address</iscomment>
+
+		<isscript>
+			var attributes = {
+				disabled: 'disabled'
+			};
+			var autocomplete_attributes = {
+				autocomplete: "off"
+			};					
+		</isscript>
+
+		<isif condition="${customer.authenticated && customer.registered}">
+			<h1>${Resource.msg('account.user.registration.editaccount','account',null)}</h1>
+		<iselse/>
+			<h1>${Resource.msg('account.user.registration.createnew','account',null)}</h1>
+		</isif>
+
+		<form action="${URLUtils.httpsContinue()}" method="post" class="form-horizontal" id="RegistrationForm">
+
+			<fieldset>
+
+				<legend>
+					<isif condition="${customer.authenticated && customer.registered}">
+						${Resource.msg('account.user.registration.editname','account',null)}
+					<iselse/>
+						${Resource.msg('account.user.registration.name','account',null)}
+					</isif>
+					<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+				</legend>
+				<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.firstname}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.lastname}" type="input"/>
+				<iselse/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.firstname}" type="input" attributes="${attributes}"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.lastname}" type="input" attributes="${attributes}"/>
+				</isif>
+			</fieldset>
+
+			<fieldset>
+
+				<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">			
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.emailconfirm}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.login.password}" type="password" dynamicname="true" attributes="${autocomplete_attributes}"/>
+					<isif condition="${!(customer.authenticated && customer.registered)}">
+						<isinputfield formfield="${pdict.CurrentForms.profile.login.passwordconfirm}" type="password" dynamicname="true" attributes="${autocomplete_attributes}"/>
+					</isif>
+				<iselse/>
+					<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="input" attributes="${attributes}"/>
+				</isif>
+				<isinputfield formfield="${pdict.CurrentForms.profile.customer.addtoemaillist}" type="checkbox"/>
+
+				<div class="form-caption">
+     			    <isif condition="${customer.authenticated && customer.registered}">
+	    				    <p>(<a href="${URLUtils.url('Page-Show', 'cid', 'consent_tracking_hint')}" class="consent-tracking-policy" data-url="${URLUtils.url('Page-Show', 'cid', 'consent_tracking_hint').toString()}"  title="${Resource.msg('account.user.link','account',null)}">${Resource.msg('account.user.link','account',null)}</a>)</p>
+					</isif>
+					<span>${Resource.msg('global.email.policy','locale',null)}</span>
+					(<a href="${URLUtils.url('Page-Show', 'cid', 'privacy-policy')}" class="privacy-policy" title="${Resource.msg('global.privacypolicy','locale',null)}">${Resource.msg('global.privacypolicy','locale',null)}</a>).
+
+				</div>
+
+				<div class="form-row form-row-button">
+					<button type="submit" value="${Resource.msg('global.apply','locale',null)}" name="${pdict.CurrentForms.profile.confirm.htmlName}">
+						${Resource.msg('global.apply','locale',null)}
+					</button>
+				</div>
+
+				<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+			</fieldset>
+
+		</form>
+
+		<isif condition="${customer.authenticated && customer.registered}">
+			<form action="${URLUtils.httpsContinue()}" method="post" class="form-horizontal" id="ChangePassowrdForm">
+				<fieldset>
+					<legend>
+						${Resource.msg('account.user.registration.logininfo','account',null)}
+						<div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+					</legend>
+					<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">			
+	
+						<isinputfield formfield="${pdict.CurrentForms.profile.login.currentpassword}" type="password" dynamicname="true" attributes="${autocomplete_attributes}"/>
+	
+						<isinputfield formfield="${pdict.CurrentForms.profile.login.newpassword}" type="password" dynamicname="true" attributes="${autocomplete_attributes}"/>
+						<isinputfield formfield="${pdict.CurrentForms.profile.login.newpasswordconfirm}" type="password" dynamicname="true" attributes="${autocomplete_attributes}"/>
+					<iselse/>
+						<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="input" attributes="${attributes}"/>
+					</isif>
+	
+					<div class="form-row form-row-button">
+						<button type="submit" value="${Resource.msg('global.apply','locale',null)}" name="${pdict.CurrentForms.profile.changepassword.htmlName}">
+							${Resource.msg('global.apply','locale',null)}
+						</button>
+					</div>
+					
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+	
+				</fieldset>
+	
+			</form>
+		</isif>
+</isdecorate>

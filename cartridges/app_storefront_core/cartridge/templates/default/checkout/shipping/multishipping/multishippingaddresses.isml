@@ -1,0 +1,223 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout">
+<isinclude template="util/modules"/>
+
+<iscomment>
+    This template visualizes the first step of the multi shipping checkout
+    scenario. It renders a list of all product line items and offers a shipping
+    address selection per product line item.
+</iscomment>
+
+
+<iscomment>Report this checkout step</iscomment>
+<isreportcheckout checkoutstep="${2}" checkoutname="${'ShippingAddress'}"/>
+<div class="checkout">
+    <iscomment>checkout progress indicator</iscomment>
+    <ischeckoutprogressindicator step="1" multishipping="true"/>
+    <form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.multishipping.addressSelection.htmlName}" class="checkout-multi-shipping address">
+    <div class="checkoutmultishipping">
+        <table class="item-list"  cellspacing="0">
+            <thead>
+                <tr>
+                    <th class="section-header"  colspan="2">${Resource.msg('global.product','locale',null)}</th>
+                    <th class="section-header">${Resource.msg('global.quantity','locale',null)}</th>
+                    <th class="section-header">${Resource.msg('multishippingaddresses.locationheader','checkout',null)}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <iscomment>Product line items (provide address selection for each)</iscomment>
+                <isloop items="${pdict.CurrentForms.multishipping.addressSelection.quantityLineItems}" var="listItem" status="loopstate">
+                    <isset name="quantityLI" value="${listItem.object}" scope="page"/>
+                    <isset name="quantityLIproduct" value="${dw.catalog.ProductMgr.getProduct(listItem.object.productID)}" scope="page"/>
+                    <tr class="cart-row <isif condition="${loopstate.first}"> first </isif>">
+
+                        <td class="item-image">
+                            <isif condition="${quantityLIproduct != null && quantityLIproduct.getImage('small',0) != null}">
+                                <img src="${quantityLIproduct.getImage('small',0).getURL()}" alt="${quantityLIproduct.getImage('small',0).alt}" title="${quantityLIproduct.getImage('small',0).title}"/>
+                            <iselse/>
+                                <img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${quantityLI.productName}" title="${quantityLI.productName}"/>
+                            </isif>
+                            <isif condition="${quantityLI.bonusProductLineItem}">
+                                <div class="bonus-item">${Resource.msg('global.bonus','locale',null)}</div>
+                            </isif>
+                        </td>
+
+                        <td class="item-details">
+                        <div class="product-list-item">
+                            <iscomment>See if the items is part of the site catalog, and online prior to rendering link</iscomment>
+                            <isif condition="${quantityLIproduct == null || (quantityLIproduct != null && (!quantityLIproduct.assignedToSiteCatalog || !quantityLIproduct.online))}">
+                                <span class="not-available">
+                                    <iscomment>${Resource.msg('cart.removeditem','checkout',null)}</iscomment>
+                                </span>
+                                <div class="name"><isprint value="${quantityLIproduct.name}"/></div>
+                            <iselse/>
+                                <div class="name">
+                                    <iscomment>
+                                        Item has a category context, forward this category context
+                                        MUST use URLUtils.http as creates absolute url and URLUtils.url does not work in case of an email
+                                        e.g. order confirmation email, links inside it are wrong i.e. host name is missing because
+                                        URLUtils.url api returns relative url!!
+                                    </iscomment>
+                                    <isif condition="${!empty(quantityLIproduct.primaryCategory) && quantityLIproduct.primaryCategory.ID != null}">
+                                        <a href="${URLUtils.http('Product-Show','pid', quantityLIproduct.ID, 'cgid', quantityLIproduct.primaryCategory.ID)}" title="${quantityLIproduct.name}"><isprint value="${quantityLI.lineItemText}"/></a>
+                                    <iselse/>
+                                        <a href="${URLUtils.http('Product-Show','pid', quantityLIproduct.ID)}" title="${quantityLIproduct.name}"><isprint value="${quantityLI.lineItemText}"/></a>
+                                    </isif>
+                                </div>
+                            </isif>
+
+                            <div class="attribute">
+                                <isif condition="${quantityLI.bonusProductLineItem}">
+                                    <isset name="bonusProductPrice" value="${pdict.Basket.allProductLineItems[loopstate.count - 1].adjustedPrice}" scope="page"/>
+                                    <isinclude template="checkout/components/displaybonusproductprice" />
+                                    <span class="label">${Resource.msg('global.price','locale',null)}:</span>
+                                    <div class="bonus-item"> <isprint value="${bonusProductPriceValue}" /> </div>
+                                <iselse/>
+                                    <span class="label">${Resource.msg('global.price','locale',null)}:</span>
+                                    <isset name="Product" value="${quantityLIproduct}" scope="pdict"/>
+                                    <isinclude template="product/components/pricing"/>
+                                </isif>
+                            </div>
+
+                            <iscomment>variations</iscomment>
+                            <isdisplayvariationvalues product="${quantityLIproduct}"/>
+
+                            <div class="sku">
+                                <span class="label">${Resource.msg('global.itemno','locale',null)} </span>
+                                <span class="value"><isprint value="${quantityLIproduct.ID}"/></span>
+                            </div>
+                        </div>
+                        </td>
+                        <td class="quantitycolumn"><isprint value="${quantityLI.quantity}"/></td>
+                        <td class="shippingaddress required">
+                            <iscomment>display select box with available addresses</iscomment>
+                            <isif condition="${!listItem.addressList.options.optionsCount > 0}">
+                                <isset name="gotOption" value="${false}" scope="PAGE">
+                            <iselse>
+                                <isset name="gotOption" value="${true}" scope="PAGE">
+                            </isif>
+                            <select class="select-address required" name="${listItem.addressList.htmlName}">
+                                <option value="" data-with-option="${Resource.msg('global.selectaddressmessage','locale',null)}" data-no-option="${Resource.msg('multishippingaddresses.noaddresses','checkout',null)}">
+                                    <isif condition="${!gotOption}">
+                                        ${Resource.msg('multishippingaddresses.noaddresses','checkout',null)}
+                                    <iselse>
+                                        ${Resource.msg('global.selectaddressmessage','locale',null)}
+                                    </isif>
+                                </option>
+                                <isloop items="${listItem.addressList.options}" var="option">
+                                    <isset name="address" value="${option.object}" scope="page"/>
+                                    <isif condition="${!empty(address.ID)}">
+                                        <isset name="prefix" value="${'(' + address.ID + ')'}" scope="page"/>
+                                    <iselse/>
+                                        <isset name="prefix" value="${address.firstName + ' ' + address.lastName + ','}" scope="page"/>
+                                    </isif>
+                                    <option value="${option.optionId}" <isif condition="${option.selected}">selected="selected"</isif>><isprint value="${prefix}"/> <isprint value="${address.address1}"/>, <isprint value="${address.city}"/>, <isprint value="${address.stateCode}"/>, <isprint value="${address.postalCode}"/></option>
+                                </isloop>
+                            </select>
+                            <div class="edit-address">
+                                <span href="${URLUtils.url('COShippingMultiple-EditAddresses')}" class="edit">${Resource.msg('multishipping.editaddress','checkout',null)}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </isloop>
+
+                <iscomment>Gift certificate line items</iscomment>
+                <isloop items="${pdict.Basket.giftCertificateLineItems}" var="gcLI">
+                    <tr class="rowgiftcert">
+                        <td class="item-image"><img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="${GiftCertificate.object.lineItemText}" /></td>
+                        <td class="detailscolumn"><span class="name">${Resource.msg('global.giftcertificate','locale',null)}</span> - <isprint value="${gcLI.price}"/> ${Resource.msg('global.deliveredviaemail','locale',null)}</td>
+                        <td class="quantitycolumn">1</td>
+                        <td class="shippingaddress">${gcLI.recipientEmail}</td>
+                    </tr>
+                </isloop>
+                <iscomment>In store line items</iscomment>
+                <isloop items="${pdict.Basket.productLineItems}" var="pli">
+                    <isif condition=${!empty(pli.custom.fromStoreId)}>
+                        <isset name="pliProduct" value="${pli.product}" scope="page"/>
+                        <isset name="store" value="${dw.catalog.StoreMgr.getStore(pli.custom.fromStoreId)}" scope="page"/>
+
+                        <tr class="rowgiftcert">
+                            <td class="item-image">
+                                <isif condition="${pliProduct != null && pli.product.getImage('small',0) != null}">
+                                    <img src="${pliProduct.getImage('small',0).getURL()}" alt="${pliProduct.getImage('small',0).alt}" title="${pliProduct.getImage('small',0).title}"/>
+                                <iselse/>
+                                    <img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${pliProduct.productName}" title="${pliProduct.productName}"/>
+                                </isif>
+                                <isif condition="${pliProduct.bonusProductLineItem}">
+                                    <div class="bonus-item">${Resource.msg('global.bonus','locale',null)}</div>
+                                </isif>
+                            </td>
+                            <td class="item-details">
+                                <div class="product-list-item">
+                                    <iscomment>See if the items is part of the site catalog, and online prior to rendering link</iscomment>
+                                    <isif condition="${pliProduct == null || (pliProduct != null && (!pliProduct.assignedToSiteCatalog || !pliProduct.online))}">
+                                        <span class="not-available">
+                                            <iscomment>${Resource.msg('cart.removeditem','checkout',null)}</iscomment>
+                                        </span>
+                                        <div class="name"><isprint value="${pliProduct.name}"/></div>
+                                    <iselse/>
+                                        <div class="name">
+                                            <iscomment>
+                                                Item has a category context, forward this category context
+                                                MUST use URLUtils.http as creates absolute url and URLUtils.url does not work in case of an email
+                                                e.g. order confirmation email, links inside it are wrong i.e. host name is missing because
+                                                URLUtils.url api returns relative url!!
+                                            </iscomment>
+                                            <isif condition="${!empty(pliProduct.primaryCategory) && pliProduct.primaryCategory.ID != null}">
+                                                <a href="${URLUtils.http('Product-Show','pid', pliProduct.ID, 'cgid', pliProduct.primaryCategory.ID)}" title="${pliProduct.name}"><isprint value="${quantityLI.lineItemText}"/></a>
+                                            <iselse/>
+                                                <a href="${URLUtils.http('Product-Show','pid', pliProduct.ID)}" title="${pliProduct.name}"><isprint value="${quantityLI.lineItemText}"/></a>
+                                            </isif>
+                                        </div>
+                                    </isif>
+                                    <div class="attribute">
+                                        <span class="label">${Resource.msg('global.price','locale',null)}:</span>
+                                        <isset name="Product" value="${pliProduct}" scope="pdict"/>
+                                        <isinclude template="product/components/pricing"/>
+                                    </div>
+
+                                    <iscomment>variations</iscomment>
+                                    <isdisplayvariationvalues product="${pliProduct}"/>
+
+                                    <div class="sku">
+                                        <span class="label">${Resource.msg('global.itemno','locale',null)} </span>
+                                        <span class="value"><isprint value="${quantityLIproduct.ID}"/></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="quantitycolumn">
+                                <isprint value=${pli.quantity.value} style="INTEGER"/>
+                            </td>
+                            <td class="shippingaddress">
+                                <isif condition="${!empty(store) && dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}" />
+                                    <span class="label">${Resource.msg('cart.store.storepickupaddress','checkout',null)}</span>
+                                    <div><isprint value="${store.name}"/></div>
+                                    <div><isprint value="${store.address1}"/></div>
+                                    <isif condition="${!empty(store.address2)}">
+                                        <div><isprint value="${store.address2}"/></div>
+                                    </isif>
+                                    <div><isprint value="${store.city}"/>, <isprint value="${store.stateCode}"/> <isprint value="${store.postalCode}"/></div>
+                                    <div><isprint value="${store.countryCode}"/></div>
+                                </isif>
+                            </td>
+                        </tr>
+                    </isif>
+                </isloop>
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+        <div class="formactions">
+            <button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.multishipping.addressSelection.save.htmlName}" value="${Resource.msg('global.continueshippingmethods','locale',null)}"><span>${Resource.msg('global.continueshippingmethods','locale',null)}</span></button>
+        </div><!-- END: formactions -->
+    </div><!-- END: multishipaddresses -->
+    </form>
+</div><!-- END: checkout -->
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.profile.address;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>

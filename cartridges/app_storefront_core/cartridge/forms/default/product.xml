@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<action formid="selectvariation" valid-form="false"/>
+	<action formid="selectoption" valid-form="false"/>
+	<action formid="addtocart" valid-form="false"/>
+	<action formid="compare" valid-form="false"/>
+	<action formid="variation" valid-form="false"/>
+	<action formid="addtowishlist" valid-form="false"/>
+	<action formid="addtogiftregistry" valid-form="false"/>
+</form>

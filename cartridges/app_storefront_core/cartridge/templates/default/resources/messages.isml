@@ -1,0 +1,12 @@
+<iscache type="relative" hour="24"/>
+<iscontent type="text/javascript" charset="UTF-8" compact="true"/>
+<isscript>
+	var key = pdict.CurrentHttpParameterMap.key.stringValue;
+	var bundleName = pdict.CurrentHttpParameterMap.bn.stringValue;
+	var message = "";
+	if (key!=null) {
+		message = bundleName==null ? dw.web.Resource.msg(key) : dw.web.Resource.msg(key, bundleName, "");
+	}	
+	var omsg = {msg:message}; 
+</isscript>
+<isprint value="${JSON.stringify(omsg)}" encoding="off"/> 

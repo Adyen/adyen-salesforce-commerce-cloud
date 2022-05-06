@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="day" label="resource.day" type="integer" mandatory="true"
+			missing-error="bml.dayerror">
+		<options>
+			<option label="resource.day" value=""/>
+			<option label="day.001" value="01"/>
+			<option label="day.002" value="02"/>
+			<option label="day.003" value="03"/>
+			<option label="day.004" value="04"/>
+			<option label="day.005" value="05"/>
+			<option label="day.006" value="06"/>
+			<option label="day.007" value="07"/>
+			<option label="day.008" value="08"/>
+			<option label="day.009" value="09"/>
+			<option label="day.010" value="10"/>
+			<option label="day.011" value="11"/>
+			<option label="day.012" value="12"/>
+			<option label="day.013" value="13"/>
+			<option label="day.014" value="14"/>
+			<option label="day.015" value="15"/>
+			<option label="day.016" value="16"/>
+			<option label="day.017" value="17"/>
+			<option label="day.018" value="18"/>
+			<option label="day.019" value="19"/>
+			<option label="day.020" value="20"/>
+			<option label="day.021" value="21"/>
+			<option label="day.022" value="22"/>
+			<option label="day.023" value="23"/>
+			<option label="day.024" value="24"/>
+			<option label="day.025" value="25"/>
+			<option label="day.026" value="26"/>
+			<option label="day.027" value="27"/>
+			<option label="day.028" value="28"/>
+			<option label="day.029" value="29"/>
+			<option label="day.030" value="30"/>
+			<option label="day.031" value="31"/>
+		</options>
+	</field>
+	<field formid="month" label="resource.month" type="integer" mandatory="true"
+			missing-error="bml.montherror">
+		<options>
+			<option label="resource.month" value=""/>
+			<option label="month.january" value="01"/>
+			<option label="month.february" value="02"/>
+			<option label="month.march" value="03"/>
+			<option label="month.april" value="04"/>
+			<option label="month.may" value="05"/>
+			<option label="month.june" value="06"/>
+			<option label="month.july" value="07"/>
+			<option label="month.august" value="08"/>
+			<option label="month.september" value="09"/>
+			<option label="month.october" value="10"/>
+			<option label="month.november" value="11"/>
+			<option label="month.december" value="12"/>
+		</options>
+	</field>
+	<field formid="year" label="resource.year" type="integer" mandatory="true"
+			missing-error="bml.yearerror" value-error="bml.valueerror">
+		<options>
+			<option label="resource.year" value=""/>
+			<option label="year.2000" value="2000"/>
+			<option label="year.1999" value="1999"/>
+			<option label="year.1998" value="1998"/>
+			<option label="year.1997" value="1997"/>
+			<option label="year.1996" value="1996"/>
+			<option label="year.1995" value="1995"/>
+			<option label="year.1994" value="1994"/>
+			<option label="year.1993" value="1993"/>
+			<option label="year.1992" value="1992"/>
+			<option label="year.1991" value="1991"/>
+			<option label="year.1990" value="1990"/>
+			<option label="year.1989" value="1989"/>
+			<option label="year.1988" value="1988"/>
+			<option label="year.1987" value="1987"/>
+			<option label="year.1986" value="1986"/>
+			<option label="year.1985" value="1985"/>
+			<option label="year.1984" value="1984"/>
+			<option label="year.1983" value="1983"/>
+			<option label="year.1982" value="1982"/>
+			<option label="year.1981" value="1981"/>
+			<option label="year.1980" value="1980"/>
+			<option label="year.1979" value="1979"/>
+			<option label="year.1978" value="1978"/>
+			<option label="year.1977" value="1977"/>
+			<option label="year.1976" value="1976"/>
+			<option label="year.1975" value="1975"/>
+			<option label="year.1974" value="1974"/>
+			<option label="year.1973" value="1973"/>
+			<option label="year.1972" value="1972"/>
+			<option label="year.1971" value="1971"/>
+			<option label="year.1970" value="1970"/>
+			<option label="year.1969" value="1969"/>
+			<option label="year.1968" value="1968"/>
+			<option label="year.1967" value="1967"/>
+			<option label="year.1966" value="1966"/>
+			<option label="year.1965" value="1965"/>
+			<option label="year.1964" value="1964"/>
+			<option label="year.1963" value="1963"/>
+			<option label="year.1962" value="1962"/>
+			<option label="year.1961" value="1961"/>
+			<option label="year.1960" value="1960"/>
+			<option label="year.1959" value="1959"/>
+			<option label="year.1958" value="1958"/>
+			<option label="year.1957" value="1957"/>
+			<option label="year.1956" value="1956"/>
+			<option label="year.1955" value="1955"/>
+			<option label="year.1954" value="1954"/>
+			<option label="year.1953" value="1953"/>
+			<option label="year.1952" value="1952"/>
+			<option label="year.1951" value="1951"/>
+			<option label="year.1950" value="1950"/>
+			<option label="year.1949" value="1949"/>
+			<option label="year.1948" value="1948"/>
+			<option label="year.1947" value="1947"/>
+			<option label="year.1946" value="1946"/>
+			<option label="year.1945" value="1945"/>
+			<option label="year.1944" value="1944"/>
+			<option label="year.1943" value="1943"/>
+			<option label="year.1942" value="1942"/>
+			<option label="year.1941" value="1941"/>
+			<option label="year.1940" value="1940"/>
+		</options>
+	</field>
+	<field formid="ssn" label="bml.ssn" type="string" mandatory="true" min-length="4" max-length="4"
+			missing-error="bml.ssnerror"
+			parse-error="bml.ssninvalid"
+			regexp="(^\d{4}$)" 			
+			range-error="bml.ssnerror"/>
+
+	<field formid="termsandconditions"
+			label="bml.terms" type="boolean" mandatory="true"
+			value-error="bml.termserror"/>
+
+	<action formid="confirm" valid-form="true"/>
+</form>

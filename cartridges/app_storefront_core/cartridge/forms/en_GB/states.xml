@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="state" label="resource.state" type="string" mandatory="false" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid"/>
+</form>

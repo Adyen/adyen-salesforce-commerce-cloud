@@ -1,0 +1,44 @@
+{
+	"hooks": [
+        {
+            "name": "dw.system.request.onSession",
+            "script": "./request/OnSession"
+        },
+        {
+            "name": "dw.system.request.onRequest",
+            "script": "./request/OnRequest"
+        },
+		{
+			"name": "app.payment.processor.default",
+			"script": "./payment/processor/default"
+		},
+		{
+			"name": "app.payment.processor.BASIC_CREDIT",
+			"script": "./payment/processor/BASIC_CREDIT"
+		},
+		{
+			"name": "app.payment.processor.BASIC_GIFT_CERTIFICATE",
+			"script": "./payment/processor/BASIC_GIFT_CERTIFICATE"
+		},
+		{
+			"name": "app.payment.processor.CYBERSOURCE_BML",
+			"script": "./payment/processor/CYBERSOURCE_BML"
+		},
+		{
+			"name": "app.payment.processor.CYBERSOURCE_CREDIT",
+			"script": "./payment/processor/CYBERSOURCE_CREDIT"
+		},
+		{
+			"name": "app.payment.processor.PAYPAL_CREDIT",
+			"script": "./payment/processor/PAYPAL_CREDIT"
+		},
+		{
+			"name": "app.payment.processor.PAYPAL_EXPRESS",
+			"script": "./payment/processor/PAYPAL_EXPRESS"
+		},
+		{
+			"name": "app.payment.processor.VERISIGN_CREDIT",
+			"script": "./payment/processor/VERISIGN_CREDIT"
+		}
+	]
+}

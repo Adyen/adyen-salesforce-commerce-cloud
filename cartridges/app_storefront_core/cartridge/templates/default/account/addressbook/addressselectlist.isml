@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>previous_addresses = [];</isscript>
+<select id="${pdict.p_listid}" name="${pdict.p_listid}" class="input-select">
+	<iscomment>May be preferable to replace data-address attribute with ajax call</iscomment>
+	<option value="" selected="selected">${Resource.msg('address.list.select','forms',null)}</option>
+	<isloop items="${pdict.p_listaddresses}" var="address">
+		<isset name="aid" value="${empty(address.key) ? address.ID : address.key}" scope="page"/>
+		<isif condition="${previous_addresses.indexOf(aid) < 0}">
+			<option value="${aid}" ${aid == pdict.SelectedAddressID ? "selected='selected'" : ""} data-address='<isprint value="${JSON.stringify(address).replace("'","^")}" encoding="on"/>'>
+				(${!address.displayValue ? aid : address.displayValue}) ${Resource.msgf('address.saved.dropdown.format', 'forms', null, address.address1, address.city, address.stateCode, address.postalCode)}
+			</option>
+		</isif>
+		<isscript>previous_addresses.push(aid)</isscript>
+	</isloop>
+</select>

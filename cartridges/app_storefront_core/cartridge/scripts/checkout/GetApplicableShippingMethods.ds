@@ -1,0 +1,104 @@
+/**
+ * GetApplicableShippingMethods.ds
+ *
+ * This script retrieves the list of applicable shipping methods
+ * for a given shipment and a full or partial shipping address.
+ * A shipping method is applicable if it does not exclude any of 
+ * the products in the shipment, and does not exclude the specified 
+ * address.
+ * 
+ * @input Basket: dw.order.Basket
+ * @input Country : String
+ * @input State : String
+ * @input PostalCode : String
+ * @input City : String
+ * @input Address1 : String
+ * @input Address2 : String
+ * @output ShippingMethods : Object The shipping methods.
+ */
+
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.campaign );
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.web );
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;
+	var shipment : Shipment = basket.defaultShipment;
+
+	// country code
+	var countryCode : String = pdict.Country;
+	if (countryCode == null || StringUtils.trim(countryCode) == "")
+	{
+		// SiteGenesis-specific default used to define list of shipping methods shown by default.
+		// Modify as needed.
+		countryCode = "US";
+	}
+	else
+	{
+		countryCode = StringUtils.trim(countryCode);
+	}
+	
+	// state code
+	var stateCode : String = pdict.State;
+	if (stateCode == null || StringUtils.trim(stateCode) == "")
+	{
+		// SiteGenesis-specific default used to define list of shipping methods shown by default.
+		// Modify as needed.
+		stateCode = "NY"; 
+	}
+	else
+	{
+		stateCode = StringUtils.trim(stateCode);
+	}
+	
+	
+	// postal code
+	var postalCode : String	= pdict.PostalCode;
+	if (postalCode != null)
+	{
+		postalCode = StringUtils.trim(postalCode);	// no need for defaults
+	}
+	
+	// city
+	var city : String = pdict.City;
+	if (city != null)
+	{
+		city = StringUtils.trim(city);  // no need for defaults
+	}	
+	
+	// address1
+	var address1 : String = pdict.Address1;
+	if (address1 != null)
+	{
+		address1 = StringUtils.trim(address1);  // no need for defaults
+	}
+	
+	// address2
+	var address2 : String = pdict.Address2;
+	if (address2 != null)
+	{
+		address2 = StringUtils.trim(address2);  // no need for defaults
+	}
+	
+	// Construct an address from request parameters.
+	var addressObj = new Object();
+	addressObj.address1 = address1;
+	addressObj.address2 = address2;
+	addressObj.countryCode = countryCode;
+	addressObj.stateCode = stateCode;
+	addressObj.postalCode = postalCode;
+	addressObj.city = city;
+	
+	// Retrieve the list of applicabnle shipping methods for the given shipment and address.
+	var shippingModel : ShipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+	var ret : Collection = new ArrayList();
+	ret = shippingModel.getApplicableShippingMethods(addressObj);
+	pdict.ShippingMethods = ret;
+	
+    return PIPELET_NEXT;
+}

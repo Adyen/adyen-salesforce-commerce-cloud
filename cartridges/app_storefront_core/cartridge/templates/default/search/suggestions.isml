@@ -1,0 +1,176 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+    This template renders the search suggestions popup.
+</iscomment>
+
+<isscript>
+
+    // Instantiate the search-suggestions script and retrieve the suggestions
+    var SearchSuggest = require('~/cartridge/scripts/search/SearchSuggest');
+    var suggest = SearchSuggest(pdict.CurrentHttpParameterMap.q.value, 5);
+
+    // Determine if the left fly-out should be rendered (any of these values must be true)
+    var renderLeftFlyOut = suggest.recent.available || suggest.popular.available || suggest.custom.available || suggest.brand.available || suggest.category.available || suggest.content.available;
+
+    // Determine if the search-suggestion wrapper should be rendered (either value can be true)
+    var renderSearchSuggestWrapper = suggest.product.available || renderLeftFlyOut;
+
+    // Determine if a single or two-column view should be rendered (both values must be true to render the full-view)
+    var renderFullView = suggest.product.available && renderLeftFlyOut;
+
+    // Manage how category suggestions are rendered
+    var showCategoriesAsSearchPhrases = false;
+
+</isscript>
+
+<iscomment>Render the suggestions-wrapper for full-width or recent / popular search displays</iscomment>
+<isif condition="${renderSearchSuggestWrapper}">
+    <div class="search-suggestion-wrapper <isif condition="${renderFullView}">full</isif>">
+<iscomment>Render product search-suggestions -- only if search-suggestions were found</iscomment>
+<isif condition="${suggest.product.available}">
+    <div class="product-suggestions" phrase-count="${suggest.product.phrases.size()}">
+        <isloop items="${suggest.product.phrases}" alias="phrase" status="loopState" >
+            <isif condition="${loopState.first}">
+                <div class="search-phrase">
+                    ${Resource.msg('search.suggest.searchfor', 'search', null)}
+                    &quot;<a href="${URLUtils.url('Search-Show', 'q', phrase.getPhrase())}">
+                    <isloop items="${suggest.product.terms}" alias="suggestedTerms">
+                        <isif condition="${!suggestedTerms.isEmpty()}">
+                            <isset name="firstTerm" value="${suggestedTerms.getFirstTerm()}" scope="page"/>
+                            <isif condition="${firstTerm.isExactMatch()}">
+                                <span class="original" ><isprint value="${firstTerm.getValue()}" /></span>
+                            <iselseif condition="${firstTerm.isCorrected()}">
+                                <span class="corrected"><isprint value="${firstTerm.getValue()}" /></span>
+                            <iselseif condition="${firstTerm.isCompleted()}">
+                                <span class="completed"><span class="original"><isprint value="${suggestedTerms.getOriginalTerm()}" /></span><isprint value="${firstTerm.getValue().substring(suggestedTerms.getOriginalTerm().length)}" /></span>
+                            <iselseif condition="${firstTerm.isAdditional()}">
+                                <span class="completed"><isprint value="${firstTerm.getValue()}" /></span>
+                            </isif>
+                        </isif>
+                    </isloop>
+                    </a>&quot; ?
+                </div>
+                <isif condition="${!loopState.last}">
+                    <div class="hitgroup">
+                        <h4 class="header">${Resource.msg('search.suggest.alternatives','search',null)}</h4>
+                </isif>
+            <iselse>
+                <a class="hit" href="${URLUtils.url('Search-Show', 'q', phrase.getPhrase())}"><isprint value="${phrase.getPhrase()}" /></a>
+                <isif condition="${loopState.last}">
+                    </div>
+                </isif>
+            </isif>
+        </isloop>
+
+<iscomment>Render the product suggestions -- only if product suggestions were found</iscomment>
+<isif condition="${suggest.product.available}">
+    <isloop items="${suggest.product.products}" alias="suggestedProduct">
+        <isset name="productSearchHit" value="${suggestedProduct.getProductSearchHit()}" scope="page"/>
+        <isset name="product" value="${productSearchHit.getProduct()}" scope="page"/>
+        <div class="product-suggestion">
+            <a class="product-link" href="${URLUtils.url('Product-Show', 'pid', product.getID())}">
+                <isset name="productImage" value="${product.getImage('small')}" scope="page"/>
+                <div class="product-image">
+                    <isif condition="${productImage != null}">
+                        <img src="${productImage.getURL()}" alt="${productImage.alt}" title="${productImage.title}" />
+                        <iselse/>
+                        <img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${product.name}" title="${product.name}" />
+                    </isif>
+                </div>
+                <div class="product-details">
+                    <div class="product-name"><isprint value="${product.name}" /></div>
+                    <div class="product-price">${Resource.msg('search.suggest.from','search',null)} <isprint value="${productSearchHit.getMinPrice()}" /></div>
+                </div>
+            </a>
+        </div>
+    </isloop>
+</isif>
+</div>
+</isif>
+
+<iscomment>Render the left fly-out menu -- if content exists</iscomment>
+<isif condition="${renderLeftFlyOut}">
+    <iscomment>Include some debugging on this div -- and expose the rendering flag-value for each of the suggestion's data properties</iscomment>
+    <div class="phrase-suggestions" data-product="${suggest.product.available}" data-recent="${suggest.recent.available}" data-popular="${suggest.popular.available}" data-custom="${suggest.custom.available}" data-brand="${suggest.brand.available}" data-category="${suggest.category.available}" data-content="${suggest.content.available}">
+
+        <iscomment> Your Recent Searches </iscomment>
+        <isif condition="${suggest.recent.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.recentqueries', 'search', null)}</h4>
+                <isloop items="${suggest.recent.phrases}" alias="phrase">
+                    <a class="hit" href="${URLUtils.url('Search-Show', 'q', phrase.getPhrase())}"><isprint value="${phrase.getPhrase()}" /></a>
+                </isloop>
+            </div>
+        </isif>
+
+        <iscomment> Popular Searches </iscomment>
+        <isif condition="${suggest.popular.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.popularqueries', 'search', null)}</h4>
+                <isloop items="${suggest.popular.phrases}" alias="phrase">
+                    <a class="hit" href="${URLUtils.url('Search-Show', 'q', phrase.getPhrase())}"><isprint value="${phrase.getPhrase()}" /></a>
+                </isloop>
+            </div>
+        </isif>
+
+        <iscomment> Custom Search Pages </iscomment>
+        <isif condition="${suggest.custom.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.otherqueries', 'search', null)}</h4>
+                <isloop items="${suggest.custom.phrases}" alias="phrase">
+                    <a class="hit" href="${URLUtils.url('Search-Show', 'q', phrase.getPhrase())}"><isprint value="${phrase.getPhrase()}" /></a>
+                </isloop>
+            </div>
+        </isif>
+
+        <iscomment> Brand Pages </iscomment>
+        <isif condition="${suggest.brand.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.lookingforbrands', 'search', null)}</h4>
+                <isloop items="${suggest.brand.phrases}" alias="suggestedBrand">
+                    <a class="hit" href="${URLUtils.url('Search-Show', 'q', suggestedBrand.getPhrase())}"><isprint value="${suggestedBrand.getPhrase()}" /></a>
+                </isloop>
+            </div>
+        </isif>
+
+        <iscomment> Categories Pages </iscomment>
+        <isif condition="${suggest.category.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.categories', 'search', null)}</h4>
+                <isif condition="${!showCategoriesAsSearchPhrases}">
+                    <isloop items="${suggest.category.categories}" alias="suggestedCategory">
+                        <isset name="category" value="${suggestedCategory.getCategory()}" scope="page"/>
+                        <a class="hit" href="${URLUtils.url('Search-Show', 'cgid', category.getID())}">
+                            <isprint value="${category.getDisplayName()}" />
+                            <isif condition="${!category.isTopLevel()}">
+                                <span class="parent-category">${Resource.msg('search.suggest.in','search',null)} <isprint value="${category.getParent().getDisplayName()}" /></span>
+                            </isif>
+                        </a>
+                    </isloop>
+                    <iselse>
+                        <isloop items="${suggest.category.phrases}" alias="suggestedCategory">
+                            <a class="hit" href="${URLUtils.url('Search-Show', 'q', suggestedCategory.getPhrase())}"><isprint value="${suggestedCategory.getPhrase()}" /></a>
+                        </isloop>
+                </isif>
+            </div>
+        </isif>
+
+        <iscomment> Content Pages </iscomment>
+        <isif condition="${suggest.content.available}">
+            <div class="hitgroup">
+                <h4 class="header">${Resource.msg('search.suggest.pagesofinerested', 'search', null)}</h4>
+                <isloop items="${suggest.content.content}" alias="suggestedContent">
+                    <isset name="content" value="${suggestedContent.getContent()}" scope="page"/>
+                    <div class="hit">
+                        <a href="${URLUtils.url('Page-Show', 'cid', content.getID())}"><isprint value="${content.getName()}" /></a>
+                    </div>
+                </isloop>
+            </div>
+        </isif>
+
+    </div>
+</isif>
+</div>
+</isif>

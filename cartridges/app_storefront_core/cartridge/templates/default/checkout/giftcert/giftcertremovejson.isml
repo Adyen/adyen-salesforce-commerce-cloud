@@ -1,0 +1,9 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<iscomment>
+	This template renders the details of a gift certificate removal as JSON response.
+</iscomment>
+{
+	"giftCertificate": {
+	    "removed": <isif condition="${pdict.GiftCertRemoveStatus != null && pdict.GiftCertRemoveStatus.status == dw.system.Status.OK}">true<iselse/>false</isif>
+	}
+}

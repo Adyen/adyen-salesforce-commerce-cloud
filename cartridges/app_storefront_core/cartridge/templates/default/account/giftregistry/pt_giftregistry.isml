@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'Gift Registry',
+			type: 'GiftRegistry',
+			ns: 'registry'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>This page must be cachable. It inherits the caching attributes by the decorated template.</iscomment>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="account/giftregistry/pt_giftregistry_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+
+	<div id="wrapper" class="pt_gift-registry">
+
+		<isinclude template="components/header/header"/>
+
+		<div id="main" role="main" class="clearfix page-content">
+			<isinclude template="components/browsertoolscheck"/>
+			<isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}" bctext2="${Resource.msg('account.giftregistry.title','account',null)}"/>
+
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+
+			<div id="secondary" class="nav">
+				<nav>
+					<h1 class="visually-hidden">Secondary Navigation</h1>
+					<div class="secondary-navigation">
+						<isif condition="${pdict.CurrentCustomer.registered}">
+							<iscontentasset aid="account-nav-registered"/>
+						<iselse/>
+							<iscontentasset aid="account-nav-unregistered"/>
+						</isif>
+					</div>
+				</nav>
+				<div class="account-nav-asset">
+					<iscontentasset aid="account-nav-text"/>
+				</div>
+			</div>
+
+		</div><!-- /main -->
+
+		<isinclude template="components/footer/footer"/>
+	</div>
+
+</body>
+</html>

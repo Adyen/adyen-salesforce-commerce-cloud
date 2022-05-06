@@ -1,0 +1,58 @@
+/**
+ * Cleans the shipments of the passed in basket by putting all gift 
+ * certificate line items to single, possibly new shipments (one shipment
+ * per gift certificate line item).
+ * 
+ * @input Basket : dw.order.Basket The basket to update the shipments for.
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+importScript("checkout/Utils.ds");
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;
+
+	// list of line items
+	var giftCertificatesLI : Collection = new ArrayList();
+
+	// find gift certificates in shipments which have
+	// product line items and gift certificate line items merged
+	var shipments : Collection = basket.getShipments();
+	var iter : Iterator = shipments.iterator();
+	while( iter != null && iter.hasNext() )
+	{
+		var shipment : Shipment = iter.next();
+		
+		// skip shipment if no gift certificates are contained
+		if( shipment.giftCertificateLineItems.size() == 0 )
+		{
+			continue;
+		}
+		
+		// skip shipment if no products and just one gift certificate is contained
+		if( shipment.productLineItems.size() == 0 && shipment.giftCertificateLineItems.size() == 1 )
+		{
+			continue;
+		}
+		
+		// if there are gift certificates add them to the list
+		if( shipment.giftCertificateLineItems.size() > 0 )
+		{
+			giftCertificatesLI.addAll( shipment.giftCertificateLineItems );
+		}
+	}
+
+	// create a shipment for each gift certificate line item
+	iter = giftCertificatesLI.iterator();
+	while( iter != null && iter.hasNext() )
+	{
+		var gcLI : GiftCertificateLineItem = iter.next();
+		var newShipmentID : String = determineUniqueShipmentID( basket, "Shipment #" );
+		gcLI.setShipment( basket.createShipment( newShipmentID ) );
+	}
+
+    return PIPELET_NEXT;
+}

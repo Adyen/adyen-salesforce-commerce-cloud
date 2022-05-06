@@ -1,0 +1,52 @@
+/**
+* @output FacebookJSON : String
+* @output FacebookUser : Object
+* @output RegistrationStatus : dw.system.Status
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.crypto );
+
+function execute( pdict : PipelineDictionary  ) : Number
+{
+	var fbenc  : String = pdict.CurrentHttpParameterMap.signed_request.value.split('.')[1];
+	var fbjson : String = dw.util.StringUtils.decodeBase64(fbenc.replace('-','+').replace('_','/'));
+	pdict.FacebookJSON = fbjson;
+	
+	try 
+	{
+		var fbuser : Object = JSON.parse(fbjson);
+		pdict.FacebookUser = fbuser;
+	}
+	catch (err)
+	{
+		pdict["RegistrationStatus"] = new Status(Status.ERROR, "RegistrationError");
+		return PIPELET_ERROR;
+	}	
+	
+	if(fbuser != null)
+	{	
+		pdict.CurrentForms.profile.customer.email.value = fbuser.registration.email;
+		pdict.CurrentForms.profile.customer.emailconfirm.value = fbuser.registration.email;
+		pdict.CurrentForms.profile.login.password.value = fbuser.registration.password;
+		pdict.CurrentForms.profile.login.passwordconfirm.value = fbuser.registration.password;
+ 		pdict.CurrentForms.profile.customer.firstname.value = fbuser.registration.first_name;
+		pdict.CurrentForms.profile.customer.lastname.value = fbuser.registration.last_name;
+		pdict.CurrentForms.profile.customer.phone.value = fbuser.registration.phone;
+
+		var profile : dw.customer.Profile = dw.customer.CustomerMgr.queryProfile("email='" + fbuser.registration.email + "'");
+		
+		if (profile != null) 
+		{
+			pdict["RegistrationStatus"] = new Status(Status.ERROR, "CustomerAlreadyExistError");
+			return PIPELET_ERROR;
+		}
+			
+		return PIPELET_NEXT;
+	}
+	else
+	{
+		pdict["RegistrationStatus"] = new Status(Status.ERROR, "RegistrationError");
+		return PIPELET_ERROR;
+	}
+}

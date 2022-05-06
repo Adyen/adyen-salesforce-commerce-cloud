@@ -1,0 +1,202 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	Creates a checkout indicator.
+	The state of the progress is taken from	the value parameter pdict.step.
+</iscomment>
+
+<iscomment>render the shipping steps by default</iscomment>
+<isif condition="${empty(pdict.rendershipping)}">
+	<isset name="rendershipping" value="true" scope="page"/>
+<iselse/>
+    <isset name="rendershipping" value="${pdict.rendershipping}" scope="page"/>
+</isif>
+
+<div class="breadcrumb checkout-progress-indicator${pdict.multishipping == 'true' ? ' multishipprogress' : ''}">
+
+	<iscomment>render progress indicator based on current single or multi shipping</iscomment>
+	<isif condition="${pdict.multishipping == 'true'}">
+	
+		<iscomment>multi shipping scenario</iscomment>
+		<isif condition="${pdict.step == '1'}">
+			<isset name="step1state" value="active"   scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+			<isset name="step4state" value="inactive" scope="page"/>
+		<iselseif condition="${pdict.step == '2'}">
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="active"   scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+			<isset name="step4state" value="inactive" scope="page"/>
+		<iselseif condition="${pdict.step == '3'}">
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="active"   scope="page"/>
+			<isset name="step4state" value="inactive" scope="page"/>
+		<iselseif condition="${pdict.step == '4'}">
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+			<isset name="step4state" value="active"   scope="page"/>
+		<iselse/>
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+			<isset name="step4state" value="inactive" scope="page"/>
+		</isif>
+
+		<div class="${step1state}">
+			<isif condition="${pdict.CurrentForms.multishipping.addressSelection.fulfilled.value}">
+				<a href="${URLUtils.https('COShippingMultiple-Start')}" title="${Resource.msg('checkoutprogressindicator.shippingaddresses','checkout',null)}">
+					<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.shippingaddresses','checkout',null)}
+				</a>
+				<i class="fa fa-chevron-right"></i>
+			<iselse/>
+				<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+				${Resource.msg('checkoutprogressindicator.shippingaddresses','checkout',null)}
+				<i class="fa fa-chevron-right"></i>
+			</isif>
+		</div><!-- END: step1 -->
+		
+		<div class="step-2 ${step2state}">
+			<isif condition="${pdict.CurrentForms.multishipping.shippingOptions.fulfilled.value}">
+				<a href="${URLUtils.https('COShippingMultiple-StartShipments')}" title="${Resource.msg('checkoutprogressindicator.shippingmethods','checkout',null)}">
+					<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.shippingmethods','checkout',null)}
+				</a>
+				<i class="fa fa-chevron-right"></i>
+			<iselse/>
+				<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+				${Resource.msg('checkoutprogressindicator.shippingmethods','checkout',null)}
+				<i class="fa fa-chevron-right"></i>
+			</isif>
+		</div><!-- END: step2 -->
+		
+
+		<div class="step-3 ${step3state}">
+			<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+				<a href="${URLUtils.https('COBilling-Start')}" title="${Resource.msg('checkoutprogressindicator.billing','checkout',null)}">
+					<span>${Resource.msg('checkoutprogressindicator.step3','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+				</a>
+				<i class="fa fa-chevron-right"></i>
+			<iselse/>
+				<span>${Resource.msg('checkoutprogressindicator.step3','checkout',null)}</span>
+				${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+				<i class="fa fa-chevron-right"></i>
+			</isif>
+		</div><!-- END: step3 -->
+		
+
+		<div class="step-4 ${step4state}">
+			<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+				<a href="${URLUtils.https('COSummary-Start')}" title="${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}">
+					<span>${Resource.msg('checkoutprogressindicator.step4','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+				</a>
+			<iselse/>
+				<span>${Resource.msg('checkoutprogressindicator.step4','checkout',null)}</span>
+				${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+			</isif>
+		</div><!-- END: step4 -->
+		
+	<iselse/>
+	
+		<iscomment>single shipping scenario</iscomment>
+		<isif condition="${pdict.step == '1'}">
+			<isset name="step1state" value="active"   scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+		<iselseif condition="${pdict.step == '2'}">
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="active"   scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+		<iselseif condition="${pdict.step == '3'}">
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="active"   scope="page"/>
+		<iselse/>
+			<isset name="step1state" value="inactive" scope="page"/>
+			<isset name="step2state" value="inactive" scope="page"/>
+			<isset name="step3state" value="inactive" scope="page"/>
+		</isif>
+
+		<isif condition="${rendershipping == 'true'}">
+		
+			<iscomment>render steps with shipping (default)</iscomment>
+			<div class="step-1 ${step1state}">
+				<isif condition="${pdict.CurrentForms.singleshipping.fulfilled.value}">
+					<a href="${URLUtils.https('COShipping-Start')}" title="${Resource.msg('checkoutprogressindicator.shipping','checkout',null)}">
+						<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+						${Resource.msg('checkoutprogressindicator.shipping','checkout',null)}
+					</a>
+					<i class="fa fa-chevron-right"></i>
+				<iselse/>
+					<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.shipping','checkout',null)}
+					<i class="fa fa-chevron-right"></i>
+				</isif>
+			</div><!-- END: step1 -->
+			
+			<div class="step-2 ${step2state}">
+				<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+					<a href="${URLUtils.https('COBilling-Start')}" title="${Resource.msg('checkoutprogressindicator.billing','checkout',null)}">
+						<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+						${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+					</a>
+					<i class="fa fa-chevron-right"></i>
+				<iselse/>
+					<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+					<i class="fa fa-chevron-right"></i>
+				</isif>
+			</div><!-- END: step2 -->
+
+			<div class="step-3 ${step3state}">
+				<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+					<a href="${URLUtils.https('COSummary-Start')}" title="${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}">
+						<span>${Resource.msg('checkoutprogressindicator.step3','checkout',null)}</span>
+						${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+					</a>
+				<iselse/>
+					<span>${Resource.msg('checkoutprogressindicator.step3','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+				</isif>
+			</div><!-- END: step3 -->
+			
+		<iselse/>
+		
+			<iscomment>render steps without shipping (labels are adjusted)</iscomment>
+			
+			<div class="step-2 ${step2state}">
+				<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+					<a href="${URLUtils.https('COBilling-Start')}" title="${Resource.msg('checkoutprogressindicator.billing','checkout',null)}">
+						<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+						${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+					</a>
+					<i class="fa fa-chevron-right"></i>
+				<iselse/>
+					<span>${Resource.msg('checkoutprogressindicator.step1','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.billing','checkout',null)}
+					<i class="fa fa-chevron-right"></i>
+				</isif>
+			</div><!-- END: step2 -->
+			
+			<div class="step-3 ${step3state}">
+				<isif condition="${pdict.CurrentForms.billing.fulfilled.value}">
+					<a href="${URLUtils.https('COSummary-Start')}" title="${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}">
+						<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+						${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+					</a>
+				<iselse/>
+					<span>${Resource.msg('checkoutprogressindicator.step2','checkout',null)}</span>
+					${Resource.msg('checkoutprogressindicator.placeorder','checkout',null)}
+				</isif>
+			</div><!-- END: step3 -->
+			
+		</isif>
+		
+	</isif>
+	
+</div>

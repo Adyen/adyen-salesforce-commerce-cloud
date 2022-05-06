@@ -1,0 +1,61 @@
+/**
+*	This script creates for each quantity of a ProductLineItem a new
+*	QuantityLineItem helper object, where the important data is stored at.
+*
+*   @input ProductLineItem : dw.order.ProductLineItem The ProductLineItem.
+*   @input CBasket : dw.order.Basket The current basket object.
+*	@input QuantityLineItemsIn : dw.util.ArrayList The incoming/existing Quantity Line Items.
+*
+*	@output QuantityLineItemsOut : dw.util.ArrayList Save Quantity Line Items.
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.catalog );
+
+importScript("checkout/Utils.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	// Init script variables
+	var basket : Basket = args.CBasket;
+	var pli : ProductLineItem = args.ProductLineItem;
+	var quantity : Number = pli.quantityValue;
+	var quantityLineItems : ArrayList = args.QuantityLineItemsIn;
+	
+	// Create new ArrayList if there are no QLIs
+	if (quantityLineItems == null){
+		quantityLineItems = new ArrayList();
+	} 
+	
+	// Create for each quantity of the ProductLineItem a new QuantityLineItem
+	for (var i = 0; i < quantity; i++){
+		var qli : Object = new QuantityLineItem();
+		qli.quantity = new Quantity(1, pli.quantity.getUnit());
+		qli.lineItemText = pli.lineItemText;
+		qli.productID = pli.productID;
+		qli.pliUUID = pli.UUID;
+		qli.bonusProductLineItem = pli.bonusProductLineItem;
+	
+		//persisting the optionID, if the product does not have an option is set to 'na'
+		if(pli.optionProductLineItems.size() > 0){
+			for (var iter : Iterator = pli.optionProductLineItems.iterator(); iter.hasNext(); ) {
+				var item = iter.next();
+				qli.optionID = item.optionValueID;  
+			}
+		}else{
+			qli.optionID = 'na';
+		}
+		
+		//skipping plis that are using the instore pick up shipping method
+		if(empty(pli.custom.fromStoreId)){
+			quantityLineItems.add(qli);
+		}	
+	}
+	
+	args.QuantityLineItemsOut = quantityLineItems;
+
+   return PIPELET_NEXT;
+}

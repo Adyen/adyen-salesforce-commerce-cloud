@@ -1,0 +1,36 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/orderhistory/pt_orderhistory">
+<isinclude template="util/modules"/>
+
+	<isif condition="${!empty(pdict.Order)}">
+	
+		<isorderdetails order="${pdict.Order}" orderstatus="true"/>
+		
+		<div class="actions">
+			<isif condition="${pdict.CurrentCustomer.authenticated}">
+				<a href="${URLUtils.https('Order-History')}" title="${Resource.msg('account.orderdetails.returnorder','account',null)}">
+					${Resource.msg('account.orderdetails.returnorder','account',null)}
+				</a>
+			</isif>
+			<a href="${URLUtils.httpHome()}" title="${Resource.msg('account.orderdetails.returnshopping','account',null)}">
+				${Resource.msg('account.orderdetails.returnshopping','account',null)}
+			</a>	
+		</div>
+		
+	<iselse/>
+	
+		<isif condition="${pdict.CurrentCustomer.authenticated}">
+			<div class="back">
+				<a href="${URLUtils.https('Order-History')}" title="${Resource.msg('account.orderdetails.returnorder','account',null)}">
+					${Resource.msg('account.orderdetails.returnorder','account',null)}
+				</a>
+			</div>
+		</isif>
+		<div class="not-found">
+			${Resource.msg('account.orders.notfound','account',null)}
+		</div>
+	
+	</isif>
+
+
+</isdecorate>

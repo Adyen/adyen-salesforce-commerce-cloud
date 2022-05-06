@@ -1,0 +1,75 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${!pdict.pagingmodel.empty}">
+<isscript>
+	var current = pdict.pagingmodel.start,
+		totalCount = pdict.pagingmodel.count,
+		pageSize = pdict.pagingmodel.pageSize,
+		pageURL = pdict.pageurl,
+		currentPage = pdict.pagingmodel.currentPage,
+		maxPage = pdict.pagingmodel.maxPage,
+		showingStart = current + 1,
+		showingEnd = current + pageSize;
+
+	if (showingEnd > totalCount) {
+		showingEnd = totalCount;
+	}
+
+	lr = 2; // number of explicit page links to the left and right
+	if (maxPage <= 2*lr) {
+		rangeBegin = 0;
+		rangeEnd = maxPage;
+	} else {
+		rangeBegin = Math.max(Math.min(currentPage - lr, maxPage - 2 * lr), 0);
+		rangeEnd = Math.min( rangeBegin + 2 * lr, maxPage );
+	}
+</isscript>
+<script type="text/javascript">
+</script>
+<div class="pagination">
+	<div class="results-hits">
+		<isif condition="${pdict.ProductSearchResult && pdict.ProductSearchResult.count > 0}"> <span class="toggle-grid"><i class="fa fa-th fa-lg" data-option="column"></i><i class="fa fa-th-list fa-lg" data-option="wide"></i></span></isif>
+		${Resource.msg('global.paginginformation.showing', 'locale', null)}
+		<isif condition="${!empty(pdict.OrderPagingModel) || !dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')}">
+			<isprint value="${StringUtils.formatInteger(showingStart)}"/> - <isprint value="${StringUtils.formatInteger(showingEnd)}"/> ${Resource.msg('paginginformation.of', 'search', null)}
+		</isif>
+		<isprint value="${pdict.pagingmodel.count}"/> ${Resource.msg('search.results', 'search', null)}
+	</div>
+	<iscomment>Avoid empty paging div or empty div with empty ul</iscomment>
+	<isif condition="${(!empty(pdict.OrderPagingModel) || !dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')) && pdict.pagingmodel.pageCount > 1}">
+		<ul>
+		<isif condition="${(currentPage > 0) && (maxPage > 4)}">
+			<li class="first-last">
+				<a class="page-first" title="${Resource.msg('global.paginginformation.first.label', 'locale', null)}" href="${decodeURI(pdict.pagingmodel.appendPaging( pageURL, 0))}"><i class="fa fa-angle-double-left"></i><span class="visually-hidden">${Resource.msg('global.paginginformation.first', 'locale', null)}</span></a>
+			</li>
+			<li class="first-last">
+				<a class="page-previous" title="${Resource.msg('global.paginginformation.previous.label', 'locale', null)}" href="${decodeURI(pdict.pagingmodel.appendPaging( pageURL, current - pageSize))}"><i class="fa fa-angle-left"></i><span class="visually-hidden">${Resource.msg('global.paginginformation.previous.label', 'locale', null)}</span></a>
+			</li>
+		</isif>
+
+		<isif condition="${maxPage >= 1}">
+			<isloop status="i" begin="${rangeBegin}" end="${rangeEnd}">
+				<isif condition="${i.index != currentPage}">
+					<li>
+						<iscomment>This long line is needed to avoid extra whitespaces in the link text</iscomment>
+						<a class="page-<isprint value="${i.index + 1}" style="0"/>" title="${Resource.msgf('global.paginginformation.goto.label', 'locale', null, i.index + 1)}" href="${decodeURI(pdict.pagingmodel.appendPaging( pageURL, current + (i.index - currentPage) * pageSize))}"><isprint value="${i.index + 1}" style="0"/></a>
+					</li>
+				<iselse/>
+					<li class="current-page" title="${Resource.msgf('global.paginginformation.current.label', 'locale', null, i.index + 1)}">
+						<isprint value="${i.index + 1}" style="0"/>
+					</li>
+				</isif>
+			</isloop>
+
+			<isif condition="${(current < totalCount - pageSize) && (maxPage > 4)}">
+				<li class="first-last">
+					<a class="page-next" title="${Resource.msg('global.paginginformation.next.label', 'locale', null)}" href="${decodeURI(pdict.pagingmodel.appendPaging( pageURL, current + pageSize))}"><i class="fa fa-angle-right"></i><span class="visually-hidden">${Resource.msg('global.paginginformation.next', 'locale', null)}</span></a>
+				</li>
+				<li class="first-last">
+					<a class="page-last" title="${Resource.msg('global.paginginformation.last.label', 'locale', null)}" href="${decodeURI(pdict.pagingmodel.appendPaging( pageURL, current + (maxPage - currentPage) * pageSize))}"><i class="fa fa-angle-double-right"></i><span class="visually-hidden">${Resource.msg('global.paginginformation.last', 'locale', null)}</span></a>
+				</li>
+			</isif>
+		</isif>
+		</ul>
+	</isif>
+	</div>
+</isif>

@@ -1,0 +1,130 @@
+/**
+ * @input OAuthProviderID : String
+ * @input ResponseText : String
+ * @input AccessToken : String
+ * @input ErrorStatus : String
+ */
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.util );
+importPackage( dw.customer );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var THIS_SCRIPT : String = 'ObtainAccountFromSinaWeiboProviderAndLogin.ds, pdict.OAuthProviderID:' + pdict.OAuthProviderID + ": ";
+	if (null == pdict.OAuthProviderID) {
+		Logger.warn(THIS_SCRIPT + "Exiting because the provider id is null.");
+		return PIPELET_ERROR;	
+	}
+	if (null != pdict.ErrorStatus) {
+		Logger.warn(THIS_SCRIPT + "Exiting because the ErrorStatus is not null. It is:" + pdict.ErrorStatus);
+		return PIPELET_ERROR;	
+	}
+
+	Logger.debug(THIS_SCRIPT + "pdict.ResponseText: " + pdict.ResponseText);
+	if (null!=pdict.ResponseText) {
+		//wheather to drop the rememberMe cookie (preserved in the session before InitiateOAuthLogin pipelet)
+		var rememberMe : Boolean = session.custom['RememberMe'];
+		delete session.custom['RememberMe'];
+		
+		var extProfile : Object = JSON.parse(pdict.ResponseText);
+		if (null == extProfile) {
+			Logger.warn(THIS_SCRIPT + "extProfile could not be extracted from the response:" + pdict.ResponseText);
+			return PIPELET_ERROR;
+		}
+		var userId = extProfile['uid']; //!!not 'id', but 'uid' for SinaWeibo
+		if (!userId) {
+			Logger.warn(THIS_SCRIPT + "Undefined user identifier - make sure you are mapping the correct property from the response."
+				+ " We are mapping 'uid' which is not available in the response: " + extProfile);
+			return PIPELET_ERROR;
+		}
+		Logger.debug(THIS_SCRIPT + "Parsed UserId from response: "+userId);
+		var profile : Profile = CustomerMgr.getExternallyAuthenticatedCustomerProfile(pdict.OAuthProviderID, userId);
+		var customer : Customer;
+		var name, email : String;
+		if (profile == null)
+		{
+			// vvvvvvvvv Custom JSON parsing part starts here: vvvvvvvvv
+			if (null == pdict.AccessToken) {
+				Logger.warn(THIS_SCRIPT + "Exiting because the AccessToken input parameter is null.");
+				return PIPELET_ERROR;	
+			}
+			var accessTokenSuffix = '?access_token=' + pdict.AccessToken;
+			var http:HTTPClient = new dw.net.HTTPClient();
+			http.setTimeout(30000); //30 secs
+			
+			//Obtain the name:
+			//http://open.weibo.com/wiki/2/users/show/en -> https://api.weibo.com/2/users/show.json 
+			var urlUser : String = 'https://api.weibo.com/2/users/show.json' + accessTokenSuffix
+				+ '&uid=' + userId;
+			http.open( 'GET', urlUser );
+			http.send();
+			var resultName : String = http.getText();
+			if (200 != http.statusCode) {
+				Logger.warn(THIS_SCRIPT + "Got an error calling:" + urlUser 
+				+ ". The status code is:" + http.statusCode + " ,the text is:" + resultName
+				+ " and the error text is:" + http.getErrorText());
+				return PIPELET_ERROR;
+			} else {
+				var weiboUser : Object = JSON.parse(resultName);
+				if (null == weiboUser) {
+					Logger.warn(THIS_SCRIPT + "Name could not be extracted from the response:" + resultName);
+					return PIPELET_ERROR;
+				} else {
+					name = weiboUser['name'];
+				}
+			}
+				
+			//Obtain the email:
+			//http://open.weibo.com/wiki/2/account/profile/email -> https://api.weibo.com/2/account/profile/email.json
+			var urlEmail : String = 'https://api.weibo.com/2/account/profile/email.json' + accessTokenSuffix;
+			http.open( 'GET', urlEmail );
+			http.send();
+			var resultEmail : String = http.getText();
+			if (200 != http.statusCode) {//!
+				Logger.warn(THIS_SCRIPT + "Email could not be retrieved. Got an error calling:" + urlUser 
+				+ ". The status code is:" + http.statusCode + " ,the text is:" + resultEmail
+				+ " and the error text is:" + http.getErrorText()
+				+ ". Make sure your application is authorized by Weibo to request email info (usually need to be successfully audited by them.)");
+				//return PIPELET_ERROR;
+			} else {
+				var weiboEmail : Object = JSON.parse(resultEmail);// in the format: ('[{"Email": "weibo_api_tech@sina.com"}]');
+				if (null == weiboEmail) {
+					Logger.warn(THIS_SCRIPT + "Email could not be extracted from the response:" + resultEmail);
+					//return PIPELET_ERROR;
+				} else {
+					var emails : Array = weiboEmail;
+					if (emails && 0 < emails.length) {
+						//first element of the array would be the account email according to Google:
+						email = emails[0]['Email'];
+					}
+				}
+			}				
+			
+			Logger.debug(THIS_SCRIPT + "User id: "+userId+" not found in the DB, creating a new profile.");
+			customer = CustomerMgr.createExternallyAuthenticatedCustomer(pdict.OAuthProviderID, userId);
+			profile = customer.getProfile();
+			
+			profile.setFirstName(name);
+			profile.setLastName(name); 
+			profile.setEmail(email);
+			// ^^^^^^^^^^^ Custom parsing part ends here ^^^^^^^^^^^
+		} else {
+			customer = profile.getCustomer();
+		}
+		var credentials : Credentials = profile.getCredentials();
+				if (credentials.isEnabled()) {
+			CustomerMgr.loginExternallyAuthenticatedCustomer(pdict.OAuthProviderID, userId, rememberMe);
+			Logger.debug(THIS_SCRIPT + "Logged in external customer with id:" + userId);
+		} else {
+			Logger.warn(THIS_SCRIPT + "Customer attempting to login into a disabled profile: "
+				+ profile.getCustomer().getCustomerNo() + " with id:" + userId);
+			return PIPELET_ERROR;
+		}
+		
+		return PIPELET_NEXT;
+	} else {
+		Logger.warn(THIS_SCRIPT + "Response from provider is empty");
+		return PIPELET_ERROR;
+	} 
+}

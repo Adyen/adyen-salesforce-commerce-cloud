@@ -1,0 +1,24 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+<isscript>
+	// build simple object to serialize into json.
+	// using <isjson> (json.isml) would be redundant here since the
+	// simple object has already been created 
+	var o = {"success":false, "result":{}, "errors":{}};
+	if (pdict.GeneralError == null && pdict.FormErrors.isEmpty()) {
+		o.success = true;
+		o.result.lineItemId = pdict.GiftCertificateLineItem.UUID;
+	}
+	else {
+		o.errors.FormErrors = {};
+		o.errors.GeneralErrors = [];		
+		var errorSet = pdict.FormErrors.entrySet();
+		for(var i=0,len=errorSet.length;i<len;i++) {
+			o.errors.FormErrors[errorSet[i].getKey()] = errorSet[i].getValue();
+		}
+		if (!empty(pdict.GeneralError)) {
+			o.errors.GeneralErrors.push(pdict.GeneralError);
+		}
+	}
+	var ojson = JSON.stringify(o);
+</isscript>
+<isprint value="${ojson}" encoding="off"/>

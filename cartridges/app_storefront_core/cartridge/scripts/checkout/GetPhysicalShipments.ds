@@ -1,0 +1,34 @@
+/**
+ * Determines the physical shipments of the given basket. Physical
+ * shipments are shipments which contain at least one product line item.
+ * A shipment which contains only gift certificates is not a physical shipment.
+ * 
+ * @input Basket : dw.order.Basket The basket to determine the physical shipments for.
+ * @output Shipments : dw.util.Collection The physical shipments of the basket
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;
+
+	// list of physical shipments
+	var physicalShipments : Collection = new ArrayList();
+
+	// find physical shipments
+	var shipments : Collection = basket.getShipments();
+	var iter : Iterator = shipments.iterator();
+	while( iter != null && iter.hasNext() )
+	{
+		var shipment : Shipment = iter.next();
+		if( !shipment.getProductLineItems().isEmpty() && shipment.custom.shipmentType != 'instore')
+		{
+			physicalShipments.add( shipment );
+		}
+	}
+
+	pdict.Shipments = physicalShipments;
+    return PIPELET_NEXT;
+}

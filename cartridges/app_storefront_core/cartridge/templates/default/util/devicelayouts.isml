@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Responsive design testing for the masses">
+    <title>Responsive Design Testing</title>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/testing/responsive.css')}" />    
+
+</head>
+<body id="container">
+    <div id="url">
+        <form method="post">
+            <input type="text" placeholder="Navigate via the first frame below, or enter a url to test directly" />
+            <input type="submit" value="submit">
+            <div id="options">
+                <label for="normal"><input id="normal" type="radio" name="option" value="1" checked>Width only</label><br />
+                <label for="accurate"><input id="accurate" type="radio" name="option" value="2">Device sizes</label>
+            </div>
+        </form>
+    </div>
+    <div id="frames" class="widthOnly">
+        <div id="inner">
+                                                                                                                    
+            <div id="f2" class="frame">                                                                                                   
+                <h2>320<span> x 480</span> <span class="small">(iPhone)</span> <img src="loader_large.gif" /></h2>                   
+                <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless width="337" height="480"></iframe>
+            </div>                                                                                                                        
+            <div id="f3" class="frame">                                                                                                   
+                <h2>480<span> x 640</span> <span class="small">(small tablet)</span> <img src="loader_large.gif" /></h2>                   
+                <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless width="497" height="640"></iframe>
+            </div>                                                                                                                        
+            <div id="f4" class="frame">                                                                                                   
+                <h2>768<span> x 1024</span> <span class="small">(iPad - Portrait)</span> <img src="loader_large.gif" /></h2>                   
+                <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless width="785" height="1024"></iframe>
+            </div>
+            <div id="f5" class="frame">
+                <h2>1024<span> x 768</span> <span class="small">(iPad - Landscape)</span> <img src="loader_large.gif" /></h2>
+                <iframe sandbox="allow-same-origin allow-forms allow-scripts" seamless width="1041" height="768"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <script> var siteURL = '${URLUtils.httpHome()}' </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script src="${URLUtils.staticURL('/testing/responsive.js')}" type="text/javascript"></script>
+
+</body>
+</html>

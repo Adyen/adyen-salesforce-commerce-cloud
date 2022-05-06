@@ -1,0 +1,116 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="checkout/cart/pt_cart" scope="page"/>
+<isset name="lazyLoad" value="${true}" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' }">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isif condition="${pdict.CurrentHttpParameterMap.lazyLoad.stringValue == 'true' }">
+	<isset name="lazyLoad" value="${false}" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+
+	<iscomment>
+		This template renders a list of bonus products for adding to the cart.
+	</iscomment>
+
+	<isinclude template="util/modules"/>
+	<isscript>
+		var lidata = {
+			uuid:pdict.BonusDiscountLineItem.UUID,
+			maxItems:pdict.BonusDiscountLineItem.getMaxBonusItems(),
+			itemCount:pdict.BonusDiscountLineItem.getBonusProductLineItems().size(),
+			pageStart: pdict.CurrentHttpParameterMap.pageStart.intValue,
+			bpTotal: pdict.BPTotal,
+			pageSize: pdict.CurrentHttpParameterMap.pageSize.intValue
+			
+		};
+
+	</isscript>
+	<isif condition="${lazyLoad}">
+		<div id="bonus-product-list" class="bonus-product-list pdp-main" data-line-item-detail='<isprint value="${JSON.stringify(lidata)}" encoding="off"/>'>
+	
+			<div class="promotion">
+				<isprint value="${pdict.BonusDiscountLineItem.getPromotion().getCalloutMsg()}" encoding="off"/>
+				<a class="tooltip" href="#">
+					${Resource.msg('product.promotiondetails','product',null)}
+					<div class="tooltip-content" data-layout="small">
+						<isprint value="${pdict.BonusDiscountLineItem.getPromotion().getDetails()}"/>
+					</div>
+				</a>
+			</div>
+	</isif>
+	<iscomment>Display the list of bonus products</iscomment>
+	<isif condition="${(pdict.BonusDiscountLineItem.bonusProducts && pdict.BonusDiscountProducts) && (pdict.BonusDiscountLineItem.bonusProducts.size() == 1 || pdict.BonusDiscountProducts.size() == 1)}"><!-- one item --></isif>
+
+	<isset name="BonusProductsCollection" value="${pdict.BonusDiscountLineItem.bonusProducts.size() > 0 ? pdict.BonusDiscountLineItem.bonusProducts : pdict.BonusDiscountProducts}" scope="page">
+	<isloop items="${BonusProductsCollection}" var="LoopProductHit" status="loopstate">
+		<isset name="hasDefaultVariant" value="${!empty(LoopProductHit.variationModel)}" scope="page"/>
+		<isset name="Product" value="${hasDefaultVariant ? LoopProductHit : LoopProductHit.variationModel.defaultVariant}" scope="pdict"/>
+			
+		<isscript>
+			var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+			var productType = ProductUtils.getProductType(pdict.Product);
+		</isscript>
+			
+		<div class="bonus-product-item" id="${'item-'+pdict.Product.UUID}" data-producttype="${productType}">
+			<isinclude template="product/components/bonusproduct"/>
+		</div>
+
+		<isif condition="${loopstate.last && lazyLoad && (pdict.BPTotal > 0 )}">
+			<button type="button" id="more-bonus-products" class="button-fancy-medium" value="${Resource.msg('cart.bonusproduct.button.more','checkout',null)}">
+				${Resource.msg('cart.bonusproduct.button.more','checkout',null)}
+			</button>
+		</isif>
+	</isloop>
+	<isif condition="${lazyLoad}">
+			<div class="bonus-product-list-footer promotion">
+				<isscript>
+					var msg = Resource.msgf('product.selectbonusproducts', 'product', null, '<span class="bonus-items-available">' + (lidata.maxItems - lidata.itemCount) + '</span>');
+				</isscript>
+				<div class="bonus-product-summary">
+					<h2><isprint value="${msg}" encoding="off"/></h2>
+					<ul class="selected-bonus-items">
+						<iscomment>Add already selected bonus product item</iscomment>
+						<isloop items="${pdict.BonusDiscountLineItem.bonusProductLineItems}" var="BonusProductHit">
+	
+							<isset name="Product" value="${BonusProductHit.product}" scope="page"/>
+							<isset name="BonusDiscountLineItem" value="${BonusProductHit}" scope="page"/>
+							<li class="selected-bonus-item" data-uuid="${Product.UUID}" data-pid="${Product.ID}">
+								<i class="remove-link fa fa-remove" href="${'#'}" title="Remove this product"></i>
+								<div class="item-name">${Product.name}</div>
+								<ul class="item-attributes">
+									<isset name="attributeDefinitions" value="${Product.variationModel.getProductVariationAttributes()}" scope="page"/>
+									<isloop items="${attributeDefinitions}" var="attributeDefinition">
+										<isset name="selectedValue" value="${Product.variationModel.getSelectedValue(attributeDefinition)}" scope="page"/>
+										<li data-attribute-id="${attributeDefinition.ID}">
+											<span class="display-name">${attributeDefinition.displayName}</span>: <span class="display-value">${selectedValue.displayValue}</span>
+										</li>
+									</isloop>
+									<li class="item-qty">
+										<span class="display-name">${Resource.msg('global.qty','locale',null)}</span>: <span class="display-value">${BonusDiscountLineItem.quantityValue.toFixed()}</span>
+									</li>
+								</ul>
+	
+								<iscomment>Add any bonus sub product items</iscomment>
+								<isloop items="${BonusProductHit.bundledProductLineItems}" var="BundledBonusProductHit">
+									<isset name="Product" value="${BundledBonusProductHit.product}" scope="pdict"/>
+								</isloop>
+							</li>
+						</isloop>
+						<li class="selected-item-template" style="display:none;">
+							<a title="remove" class="remove-link" href="#"><img alt="remove" src="${dw.web.URLUtils.staticURL('images/icon_remove.gif')}"/></a>
+							<span class="item-name"></span> ${Resource.msg('global.qty','locale',null)}:<span class="item-qty"></span>
+							<ul class="item-attributes"><li><span class="display-name"></span>: <span class="display-value"></span></li></ul>
+						</li>
+					</ul>
+				</div>
+				<button type="button" class="add-to-cart-bonus button-fancy-medium" value="${Resource.msg('global.addtocart','locale',null)}">
+					${Resource.msg('global.addtocart','locale',null)}
+				</button>
+			</div><!---.bonus-product-list-footer--->
+		</div><!---#bonus-product-list --->
+	</isif>
+</isdecorate>
