@@ -1,7 +1,0 @@
-<iscontent type="text/html" charset="UTF-8" compact="true"/>
-<isif condition="${pdict.pagingmodel != null && !pdict.pagingmodel.empty}">
-	<iscomment>return current page number (for headings, page title)</iscomment>
-	<isif condition="${ (pdict.pagingmodel.pageCount > 1) && (pdict.pagingmodel.currentPage > 0) }">
-		<span class="paging-current-page">${Resource.msg('search.pageresults','search',null)} <isprint value="${pdict.pagingmodel.currentPage + 1}"  style="0"/></span>
-	</isif>
-</isif>
