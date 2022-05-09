@@ -35,6 +35,7 @@ var PaymentProcessor = app.getModel('PaymentProcessor');
  * @param {dw.order.Order} order - the order to handle payments for.
  * @return {Object} JSON object containing information about missing payments, errors, or an empty object if the function is successful.
  */
+// ### Custom Adyen cartridge start ###
 function handlePayments(order) {
 
     if (order.getTotalNetPrice().value !== 0.00) {
@@ -74,6 +75,7 @@ function handlePayments(order) {
 
     return {};
 }
+// ### Custom Adyen cartridge end ###
 
 /**
  * The entry point for order creation. This function is not exported, as this controller must only
@@ -82,6 +84,7 @@ function handlePayments(order) {
  * @transactional
  * @return {Object} JSON object that is empty, contains error information, or PlaceOrderError status information.
  */
+// ### Custom Adyen cartridge start ###
 function start() {
     var cart = Cart.get();
 
@@ -205,6 +208,7 @@ function start() {
     }
     return handlePaymentsResult;
 }
+// ### Custom Adyen cartridge end ###
 
 function clearForms() {
     // Clears all forms used in the checkout process.

@@ -10,7 +10,6 @@
  */
 
 /* API Includes */
-var AdyenController = require("int_adyen_controllers/cartridge/controllers/Adyen");
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
@@ -19,6 +18,9 @@ var app = require('~/cartridge/scripts/app');
 var guard = require('~/cartridge/scripts/guard');
 
 var Cart = app.getModel('Cart');
+// ### Custom Adyen cartridge start ###
+var AdyenController = require("int_adyen_controllers/cartridge/controllers/Adyen");
+// ### Custom Adyen cartridge end ###
 
 /**
  * Renders the summary page prior to order creation.
@@ -58,6 +60,7 @@ function start(context) {
  * This function is called when the "Place Order" action is triggered by the
  * customer.
  */
+// ### Custom Adyen cartridge start ###
 function submit() {
     // Calls the COPlaceOrder controller that does the place order action and any payment authorization.
     // If the order creation failed, it returns a JSON object with an error key and a boolean value.
@@ -76,6 +79,7 @@ function submit() {
 
     }
 }
+// ### Custom Adyen cartridge end ##
 
 /**
  * Renders the order confirmation page after successful order
@@ -83,6 +87,7 @@ function submit() {
  * provides a "Create Account" form. This function handles the
  * account creation.
  */
+// ### Custom Adyen cartridge start ###
 function showConfirmation(order) {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
     var adyenGivingConfig = AdyenHelper.getAdyenGivingConfig(order);
@@ -108,6 +113,7 @@ function showConfirmation(order) {
         ContinueURL: URLUtils.https('Account-RegistrationForm') // needed by registration form after anonymous checkouts
     }).render('checkout/confirmation/confirmation');
 }
+// ### Custom Adyen cartridge end ###
 
 /*
  * Module exports

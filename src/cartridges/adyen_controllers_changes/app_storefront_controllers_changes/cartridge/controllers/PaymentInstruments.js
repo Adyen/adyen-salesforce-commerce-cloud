@@ -17,13 +17,15 @@ var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
-var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/adyenHelper');
-var AdyenConfigs = require('int_adyen_overlay/cartridge/scripts/util/adyenConfigs');
 var app = require('~/cartridge/scripts/app');
 var guard = require('~/cartridge/scripts/guard');
-var adyenSessions = require('int_adyen_overlay/cartridge/scripts/adyenSessions');
 var constants = require("*/cartridge/adyenConstants/constants");
+// ### Custom Adyen cartridge start ###
+var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/adyenHelper');
+var AdyenConfigs = require('int_adyen_overlay/cartridge/scripts/util/adyenConfigs');
+var adyenSessions = require('int_adyen_overlay/cartridge/scripts/adyenSessions');
 var adyenSaveCreditCard = require("*/cartridge/scripts/adyenSaveCreditCard");
+// ### Custom Adyen cartridge end ###
 
 /**
  * Displays a list of customer payment instruments.
@@ -33,6 +35,7 @@ var adyenSaveCreditCard = require("*/cartridge/scripts/adyenSaveCreditCard");
  * Renders a list of the saved credit card payment instruments of the current
  * customer (account/payment/paymentinstrumentlist template).
  */
+// ### Custom Adyen cartridge start ###
 function list() {
     // Get the Saved Cards from Adyen to get latest saved cards
     require('int_adyen_overlay/cartridge/scripts/updateSavedCards').updateSavedCards({CurrentCustomer : customer});
@@ -50,7 +53,9 @@ function list() {
         PaymentInstruments: paymentInstruments
     }).render('account/payment/paymentinstrumentlist');
 }
+// ### Custom Adyen cartridge end ##
 
+// ### Custom Adyen cartridge start ##
 function getSessionData() {
 
   var sessionsResponse =  adyenSessions.createSession(
@@ -64,6 +69,7 @@ function getSessionData() {
     sessionData: sessionsResponse.sessionData,
   };
 }
+// ### Custom Adyen cartridge end ##
 
 /**
  * Adds a new credit card payment instrument to the saved payment instruments of the current customer.
@@ -134,6 +140,7 @@ function save(params) {
  * @transaction
  * @return {boolean} true if the credit card can be verified, false otherwise
  */
+// ### Custom Adyen cartridge start ###
 function create() {
     if(getAdyenPaymentInstruments()) {
         return adyenSaveCreditCard.create();
@@ -156,8 +163,7 @@ function create() {
         }
         pspReference = 'PspReference' in createRecurringPaymentAccountResult && !empty(createRecurringPaymentAccountResult.PspReference) ? createRecurringPaymentAccountResult.PspReference : '';
         tokenID = 'TokenID' in createRecurringPaymentAccountResult && !empty(createRecurringPaymentAccountResult.TokenID) ? createRecurringPaymentAccountResult.TokenID : '';
-        /*if  (empty(TokenID)  ||  empty(PspReference))  {
-    return   false;                   }*/
+
         try {
             Transaction.wrap(function() {
                 /*  var  newCreditCard  = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
@@ -213,7 +219,7 @@ function create() {
 
     return true;
 }
-
+// ### Custom Adyen cartridge end ###
 
 /**
  * Form handler for the paymentinstruments form. Handles the following actions:
@@ -226,6 +232,7 @@ function create() {
  * @TODO Should be moved into handlePaymentForm
  * @FIXME Inner method should be lowercase.error action should do something
  */
+// ### Custom Adyen cartridge start ###
 function Delete() {
     var paymentForm = app.getForm('paymentinstruments');
     paymentForm.handleAction({
@@ -256,22 +263,24 @@ function Delete() {
 
     response.redirect(URLUtils.https('PaymentInstruments-List'));
 }
-
+// ### Custom Adyen cartridge end ###
 
 /*
  * Private helpers
  */
-
+// ### Custom Adyen cartridge start ###
 function getAdyenPaymentInstruments() {
     var wallet = customer.getProfile().getWallet();
     return wallet.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
 }
+// ### Custom Adyen cartridge start ###
 
 /**
  * Verifies if the entered credit card details are valid.
  *
  * @returns {boolean} true in case of success, otherwise false.
  */
+// ### Custom Adyen cartridge start ###
 function verifyCreditCard() {
     var newCreditCardForm = app.getForm('paymentinstruments.creditcards.newcreditcard');
 
@@ -308,6 +317,7 @@ function verifyCreditCard() {
 
     return true;
 }
+// ### Custom Adyen cartridge end ###
 
 /*
  * Web exposed methods

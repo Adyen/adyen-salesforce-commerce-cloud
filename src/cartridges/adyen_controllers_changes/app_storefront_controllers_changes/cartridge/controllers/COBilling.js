@@ -24,12 +24,13 @@ var Countries = require('app_storefront_core/cartridge/scripts/util/Countries');
 /* Script Modules */
 var app = require('~/cartridge/scripts/app');
 var guard = require('~/cartridge/scripts/guard');
+// ### Custom Adyen cartridge start ###
 var AdyenController = require("int_adyen_controllers/cartridge/controllers/Adyen");
 var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/adyenHelper");
 var AdyenConfigs = require("int_adyen_overlay/cartridge/scripts/util/adyenConfigs");
-
-var BasketMgr = require('dw/order/BasketMgr');
 var constants = require("*/cartridge/adyenConstants/constants");
+// ### Custom Adyen cartridge end ###
+var BasketMgr = require('dw/order/BasketMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 
 
@@ -84,6 +85,7 @@ function initEmailAddress(cart) {
  * @param {module:models/CartModel~CartModel} cart - A CartModel wrapping the current Basket.
  * @param {object} params - (optional) if passed, added to view properties so they can be accessed in the template.
  */
+// ### Custom Adyen cartridge start ###
 function returnToForm(cart, params) {
     var pageMeta = require('~/cartridge/scripts/meta');
 
@@ -112,6 +114,7 @@ function returnToForm(cart, params) {
         }).render('checkout/billing/billing');
     }
 }
+// ### Custom Adyen cartridge end ###
 
 /**
  * Updates cart calculation and page information and renders the billing page.
@@ -176,6 +179,7 @@ function initCreditCardList(cart) {
  * Starting point for billing. After a successful shipping setup, both COShipping
  * and COShippingMultiple call this function.
  */
+// ### Custom Adyen cartridge start ###
 function publicStart() {
     var cart = app.getModel('Cart').get();
     if (cart) {
@@ -213,6 +217,7 @@ function publicStart() {
         app.getController('Cart').Show();
     }
 }
+// ### Custom Adyen cartridge end ###
 
 /**
  * Adjusts gift certificate redemptions after applying coupon(s), because this changes the order total.
@@ -517,6 +522,7 @@ function updateAddressDetails() {
  * the {@link module:controllers/COSummary~start|COSummary controller Start function}.
  * - __selectAddress__ - calls the {@link module:controllers/COBilling~updateAddressDetails|updateAddressDetails} function.
  */
+// ### Custom Adyen cartridge start ###
 function billing(data) {
     // restore cart and redirect to billing stage if successful
     if(session.privacy.currentOrderNumber && session.privacy.currentOrderToken) {
@@ -602,6 +608,7 @@ function billing(data) {
         }
     });
 }
+// ### Custom Adyen cartridge end ###
 
 /**
 * Gets the gift certificate code from the httpParameterMap and redeems it. For an ajax call, renders an empty JSON object.
@@ -783,6 +790,7 @@ function selectCreditCard() {
  * @param {module:models/CartModel~CartModel} cart - A CartModel wrapping the current Basket.
  * @return {Boolean} true if existing payment instruments are valid, false if not.
  */
+// ### Custom Adyen cartridge start ###
 function validatePayment(cart) {
     var paymentAmount, countryCode, invalidPaymentInstruments, result;
     if (cart.getPaymentInstrument() &&
@@ -815,6 +823,7 @@ function validatePayment(cart) {
     }
     return result;
 }
+// ### Custom Adyen cartridge end ###
 
 /**
  * Attempts to save the used credit card in the customer payment instruments.
@@ -824,6 +833,7 @@ function validatePayment(cart) {
  * @transactional
  * @return {Boolean} true if credit card is successfully saved.
  */
+// ### Custom Adyen cartridge start ###
 function saveCreditCard() {
     if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
         //saved credit cards are handling in COPlaceOrder and Login for Adyen - saved cards are synced with Adyen ListRecurringDetails API call
@@ -857,6 +867,7 @@ function saveCreditCard() {
         return true;
     }
 }
+// ### Custom Adyen cartridge end ###
 
 /*
 * Module exports
