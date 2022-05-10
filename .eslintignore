@@ -20,3 +20,4 @@ src/cartridges/int_adyen_SFRA/test
 # remove lines below from ignore after refactor
 src/cartridges/int_adyen_overlay
 src/cartridges/int_adyen_controllers
+src/cartridges/adyen_controllers_changes
