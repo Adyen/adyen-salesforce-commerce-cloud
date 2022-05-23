@@ -24,15 +24,27 @@
 
 /* API Includes */
 const Logger = require('dw/system/Logger');
-
-/* Script Modules */
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
+const Transaction = require('dw/system/Transaction');
+
+/* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
+
+//SALE payment methods require payment transaction type to be Capture
+function setPaymentTransactionType(paymentInstrument, paymentMethod) {
+  const salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
+  if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
+    Transaction.wrap(function () {
+      paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
+    });
+  }
+}
 
 function createPaymentRequest(args) {
   try {
@@ -46,20 +58,28 @@ function createPaymentRequest(args) {
     );
 
     // Add Risk data
-    if (AdyenHelper.getAdyenBasketFieldsEnabled()) {
+    if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
         order,
       );
     }
 
     // Get 3DS2 data
-    if (AdyenHelper.getAdyen3DS2Enabled()) {
+    if (AdyenConfigs.getAdyen3DS2Enabled()) {
       paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
     // L2/3 Data
-    if (AdyenHelper.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
       paymentRequest.additionalData = { ...paymentRequest.additionalData, ...adyenLevelTwoThreeData.getLineItems(args) };
+    }
+
+    // Add installments
+    if (AdyenConfigs.getCreditCardInstallments()) {
+      const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
+      if(numOfInstallments !== undefined) {
+        paymentRequest.installments = {value: numOfInstallments}
+      }
     }
 
     const myAmount = AdyenHelper.getCurrencyValueForApi(
@@ -101,12 +121,10 @@ function createPaymentRequest(args) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
     }
-    // Add empty browserInfo for GooglePay
-    if (paymentMethodType === 'paywithgoogle') {
-      paymentRequest.browserInfo = {};
-    }
 
-  // make API call
+    setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
+
+    // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     Logger.getLogger('Adyen').error(
@@ -122,7 +140,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    const callResult = executeCall(AdyenHelper.SERVICE.PAYMENT, paymentRequest);
+    const callResult = executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     if (callResult.isOk() === false) {
       Logger.getLogger('Adyen').error(
         `Adyen: Call error code${callResult
@@ -144,7 +162,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     if (!resultObject || !resultObject.getText()) {
       throw new Error(
         `No correct response from ${
-          AdyenHelper.SERVICE.PAYMENT
+            constants.SERVICE.PAYMENT
         }, result: ${JSON.stringify(resultObject)}`,
       );
     }
@@ -184,11 +202,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         : null;
     }
 
-    const threeDS2ResultCodes = [
-      constants.RESULTCODES.IDENTIFYSHOPPER,
-      constants.RESULTCODES.CHALLENGESHOPPER
-    ];
-
     const acceptedResultCodes = [
       constants.RESULTCODES.AUTHORISED,
       constants.RESULTCODES.PENDING,
@@ -206,18 +219,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
     const {resultCode} = paymentResponse;
     // Check the response object from /payment call
-    if (threeDS2ResultCodes.indexOf(resultCode) !== -1) {
-      if (responseObject.action) {
-        paymentInstrument.custom.adyenAction = JSON.stringify(
-            responseObject.action,
-        );
-      }
-      paymentResponse.decision = 'ACCEPT';
-      paymentResponse.threeDS2 = true;
-
-      paymentResponse.token3ds2 = responseObject.action.token;
-      paymentResponse.paymentData = responseObject.paymentData;
-    } else if (acceptedResultCodes.indexOf(resultCode) !== -1) {
+    if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       // if 3D Secure is used, the statuses will be updated later
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
@@ -257,7 +259,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   const callResult = executeCall(
-    AdyenHelper.SERVICE.PAYMENTDETAILS,
+      constants.SERVICE.PAYMENTDETAILS,
     paymentDetailsRequest,
   );
   if (callResult.isOk() === false) {
@@ -301,7 +303,7 @@ function executeCall(serviceType, requestObject) {
   if (service === null) {
     return { error: true };
   }
-  const apiKey = AdyenHelper.getAdyenApiKey();
+  const apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

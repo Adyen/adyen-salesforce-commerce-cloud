@@ -1,7 +1,7 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "21.2.0",
-  "description": "SFRA cartridge",
+  "version": "22.1.0",
+  "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
     "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
@@ -13,13 +13,15 @@
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers",
+    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_controllers_changes && sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_core_changes",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files",
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
-    "test:coverage": "jest ./src --coverage"
+    "test:coverage": "jest ./src --coverage",
+    "test:e2e": "testcafe -c 3 chrome:headless tests -q attemptLimit=3,successThreshold=1 --skip-js-errors"
   },
   "engines": {
     "node": ">=4.0"
@@ -27,6 +29,7 @@
   "dependencies": {
     "cleave.js": "^1.0.1",
     "mobx": "^5.15.4",
+    "testcafe": "^1.16.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
@@ -53,7 +56,6 @@
     "jest": "^25.5.4",
     "jquery": "^3.4.1",
     "mocha": "^7.2.0",
-    "node-sass": "^4.14.1",
     "postcss-loader": "^3.0.0",
     "prettier": "2.0.5",
     "prettier-eslint-cli": "^5.0.0",
@@ -68,6 +70,7 @@
     "stylelint": "^13.5.0",
     "stylelint-config-standard": "^12.0.0",
     "stylelint-scss": "^3.17.2",
+    "testcafe": "^1.16.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.1.2"
   },
@@ -83,8 +86,10 @@
     ]
   },
   "jest": {
-    "setupFiles": [
-      "./jest/globals.js"
+    "setupFilesAfterEnv": [
+      "./jest/globals.js",
+      "./jest/sfccPathSetup.js",
+      "./jest/sfccCartridgeMocks"
     ]
   }
 }

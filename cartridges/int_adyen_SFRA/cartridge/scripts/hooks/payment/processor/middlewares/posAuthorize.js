@@ -8,21 +8,18 @@ var Transaction = require('dw/system/Transaction');
 
 var Logger = require('dw/system/Logger');
 
-var OrderMgr = require('dw/order/OrderMgr');
-
 var adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 /**
  * Authorize
  */
 
 
-function posAuthorize(orderNumber, paymentInstrument, paymentProcessor) {
+function posAuthorize(order, paymentInstrument, paymentProcessor) {
   Transaction.wrap(function () {
-    paymentInstrument.paymentTransaction.transactionID = orderNumber;
+    paymentInstrument.paymentTransaction.transactionID = order.orderNo;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
   var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
-  var order = OrderMgr.getOrder(orderNumber);
   var terminalId = adyenPaymentForm.terminalId.value;
 
   if (!terminalId) {

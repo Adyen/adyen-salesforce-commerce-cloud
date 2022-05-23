@@ -4,7 +4,7 @@ const store = require('../../../../store');
 
 function getCardConfig() {
   return {
-    enableStoreDetails: showStoreDetails,
+    enableStoreDetails: window.showStoreDetails,
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
@@ -23,7 +23,6 @@ function getPaypalConfig() {
   return {
     showPayButton: true,
     environment: window.Configuration.environment,
-    intent: window.paypalIntent,
     onSubmit: (state, component) => {
       helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(
@@ -38,6 +37,7 @@ function getPaypalConfig() {
         {
           cancelTransaction: true,
           merchantReference: document.querySelector('#merchantReference').value,
+          orderToken: document.querySelector('#orderToken').value,
         },
         component,
       );
@@ -75,63 +75,6 @@ function getPaypalConfig() {
   };
 }
 
-function getQRCodeConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      $('#dwfrm_billing').trigger('submit');
-      if (store.formErrorsExist) {
-        return;
-      }
-
-      helpers.assignPaymentMethodValue();
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        store.selectedPayment.stateData,
-      );
-
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: (state /* , component */) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
-  };
-}
-
-function getMbwayConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      $('#dwfrm_billing').trigger('submit');
-      helpers.assignPaymentMethodValue();
-      if (store.formErrorsExist) {
-        component.setStatus('ready');
-        return;
-      }
-      if (document.getElementById('component_mbway')) {
-        document
-          .getElementById('component_mbway')
-          .querySelector('button').disabled = true;
-      }
-      helpers.paymentFromComponent(state.data, component);
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        store.selectedPayment.stateData,
-      );
-    },
-    onError: (/* error, component */) => {
-      document.querySelector('#showConfirmationForm').submit();
-    },
-    onAdditionalDetails: (state /* , component */) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
-  };
-}
-
 function getGooglePayConfig() {
   return {
     environment: window.Configuration.environment,
@@ -149,13 +92,42 @@ function getGooglePayConfig() {
 }
 
 function handleOnChange(state) {
-  const { type } = state.data.paymentMethod;
+  let { type } = state.data.paymentMethod;
+  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
+    type = 'googlepay';
+  }
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
   }
   store.componentsObj[type].isValid = store.isValid;
   store.componentsObj[type].stateData = state.data;
+}
+
+const actionHandler = async (action) => {
+  const checkout = await AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
+function handleOnAdditionalDetails(state) {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken,
+    }),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(data) {
+      if (!data.isFinal && typeof data.action === 'object') {
+        actionHandler(data.action);
+      } else {
+        window.location.href = data.redirectUrl;
+      }
+    },
+  });
 }
 
 function getAmazonpayConfig() {
@@ -180,6 +152,7 @@ function getAmazonpayConfig() {
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
+  store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
@@ -192,34 +165,9 @@ function setCheckoutConfiguration() {
       showEmailAddress: false, // allow shopper to specify their email address
     },
     paywithgoogle: getGooglePayConfig(),
+    googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
-    mbway: getMbwayConfig(),
-    swish: getQRCodeConfig(),
-    bcmc_mobile: getQRCodeConfig(),
-    wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
-    pix: getQRCodeConfig(),
-    afterpay_default: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
-    facilypay_3x: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
-    ratepay: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    },
   };
 }
 
@@ -228,6 +176,5 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   setCheckoutConfiguration,
-  getMbwayConfig,
-  getQRCodeConfig,
+  actionHandler,
 };

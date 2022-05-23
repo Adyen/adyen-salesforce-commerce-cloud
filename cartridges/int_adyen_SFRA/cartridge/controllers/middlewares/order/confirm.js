@@ -2,23 +2,29 @@
 
 var OrderMgr = require('dw/order/OrderMgr');
 
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper'); // order-confirm is POST in SFRA v6.0.0. orderID is contained in form.
-// This was a GET call with a querystring containing ID in earlier versions.
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs'); // order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
+// This was a GET call with a querystring containing ID & token in earlier versions.
 
 
 function getOrderId(req) {
   return req.form && req.form.orderID ? req.form.orderID : req.querystring.ID;
 }
 
+function getOrderToken(req) {
+  return req.form && req.form.orderToken ? req.form.orderToken : req.querystring.token;
+}
+
 function handleAdyenGiving(req, res, order) {
-  var clientKey = AdyenHelper.getAdyenClientKey();
-  var environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+  var clientKey = AdyenConfigs.getAdyenClientKey();
+  var environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
   var configuredAmounts = AdyenHelper.getDonationAmounts();
-  var charityName = AdyenHelper.getAdyenGivingCharityName();
-  var charityWebsite = AdyenHelper.getAdyenGivingCharityWebsite();
-  var charityDescription = AdyenHelper.getAdyenGivingCharityDescription();
-  var adyenGivingBackgroundUrl = AdyenHelper.getAdyenGivingBackgroundUrl();
-  var adyenGivingLogoUrl = AdyenHelper.getAdyenGivingLogoUrl();
+  var charityName = AdyenConfigs.getAdyenGivingCharityName();
+  var charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
+  var charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
+  var adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
+  var adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
   var donationAmounts = {
     currency: session.currency.currencyCode,
     values: configuredAmounts
@@ -41,12 +47,13 @@ function handleAdyenGiving(req, res, order) {
 
 function confirm(req, res, next) {
   var orderId = getOrderId(req);
+  var orderToken = getOrderToken(req);
 
-  if (orderId) {
-    var order = OrderMgr.getOrder(orderId);
+  if (orderId && orderToken) {
+    var order = OrderMgr.getOrder(orderId, orderToken);
     var paymentMethod = order.custom.Adyen_paymentMethod;
 
-    if (AdyenHelper.getAdyenGivingEnabled() && AdyenHelper.isAdyenGivingAvailable(paymentMethod)) {
+    if (AdyenHelper.getAdyenGivingConfig(order) && AdyenHelper.isAdyenGivingAvailable(paymentMethod)) {
       handleAdyenGiving(req, res, order);
     }
   }

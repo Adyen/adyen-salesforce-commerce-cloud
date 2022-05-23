@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const { qrCodeMethods } = require('./qrCodeMethods');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -10,6 +9,15 @@ function assignPaymentMethodValue() {
   adyenPaymentMethod.value = document.querySelector(
     paymentMethodlabelId,
   ).innerHTML;
+}
+
+function setOrderFormData(response) {
+  if (response.orderNo) {
+    document.querySelector('#merchantReference').value = response.orderNo;
+  }
+  if (response.orderToken) {
+    document.querySelector('#orderToken').value = response.orderToken;
+  }
 }
 
 /**
@@ -25,13 +33,12 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
-      if (response.orderNo) {
-        document.querySelector('#merchantReference').value = response.orderNo;
-      }
+      setOrderFormData(response);
+
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
       }
-      if (response.paymentError) {
+      if (response.paymentError || response.error) {
         component.handleError();
       }
     },
@@ -62,9 +69,7 @@ function displaySelectedMethod(type) {
   resetPaymentMethod();
 
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'mbway', 'amazonpay', ...qrCodeMethods].indexOf(
-      type,
-    ) > -1;
+    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
 
   document
     .querySelector(`#component_${type}`)
@@ -92,10 +97,37 @@ function showValidation() {
     : displayValidationErrors();
 }
 
+function getInstallmentValues(maxValue) {
+  const values = [];
+  for (let i = 1; i <= maxValue; i += 1) {
+    values.push(i);
+  }
+  return values;
+}
+
+function createShowConfirmationForm(action) {
+  if (document.querySelector('#showConfirmationForm')) {
+    return;
+  }
+  const template = document.createElement('template');
+  const form = `<form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${action}">
+    <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="null"/>
+    <input type="hidden" id="merchantReference" name="merchantReference"/>
+    <input type="hidden" id="orderToken" name="orderToken"/>
+    <input type="hidden" id="result" name="result" value="null"/>
+  </form>`;
+
+  template.innerHTML = form;
+  document.querySelector('body').appendChild(template.content);
+}
+
 module.exports = {
+  setOrderFormData,
   assignPaymentMethodValue,
   paymentFromComponent,
   resetPaymentMethod,
   displaySelectedMethod,
   showValidation,
+  createShowConfirmationForm,
+  getInstallmentValues,
 };

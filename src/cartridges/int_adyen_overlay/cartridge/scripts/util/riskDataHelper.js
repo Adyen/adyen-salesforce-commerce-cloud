@@ -36,7 +36,7 @@ const __RiskDataHelper = {
         `riskdata.basket.item${itemNr}.productTitle`
       ] = LineItemHelper.getDescription(item);
       basketData[`riskdata.basket.item${itemNr}.amountPerItem`] =
-        LineItemHelper.getItemAmount(item).divide(quantity);
+        LineItemHelper.getItemAmount(item).divide(quantity).value.toFixed();
       basketData[`riskdata.basket.item${itemNr}.currency`] =
         item.adjustedNetPrice.currencyCode;
       basketData[`riskdata.basket.item${itemNr}.upc`] = item.product

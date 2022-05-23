@@ -1,11 +1,8 @@
 const Resource = require('dw/web/Resource');
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
-const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const paymentResponseHandler = require('./authorize/paymentResponse');
-const constants = require('*/cartridge/adyenConstants/constants');
 
 function errorHandler() {
   const serverErrors = [
@@ -20,13 +17,6 @@ function errorHandler() {
   };
 }
 
-function check3DS2(result) {
-  return (
-    result.threeDS2 ||
-    result.resultCode === constants.RESULTCODES.REDIRECTSHOPPER
-  );
-}
-
 function paymentErrorHandler(result) {
   Logger.getLogger('Adyen').error(
     `Payment failed, result: ${JSON.stringify(result)}`,
@@ -38,15 +28,13 @@ function paymentErrorHandler(result) {
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom
  *      logic to authorize credit card payment.
- * @param {number} orderNumber - The current order's number
+ * @param {dw.order.Order} order - The current order
  * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
  * @param {dw.order.PaymentProcessor} paymentProcessor -  The payment processor of the current
  *      payment method
  * @return {Object} returns an error object
  */
-function authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  const order = OrderMgr.getOrder(orderNumber);
-
+function authorize(order, paymentInstrument, paymentProcessor) {
   Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
@@ -59,13 +47,16 @@ function authorize(orderNumber, paymentInstrument, paymentProcessor) {
   if (result.error) {
     return errorHandler();
   }
-  // Trigger 3DS2 flow
-  if (check3DS2(result)) {
-    return paymentResponseHandler(paymentInstrument, result, orderNumber);
+
+  const checkoutResponse = AdyenHelper.createAdyenCheckoutResponse(result);
+  if (!checkoutResponse.isFinal) {
+    return checkoutResponse;
   }
-  if (result.decision !== 'ACCEPT') {
+
+  if (!checkoutResponse.isSuccessful) {
     return paymentErrorHandler(result);
   }
+
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
   Transaction.commit();
   return { authorized: true, error: false };

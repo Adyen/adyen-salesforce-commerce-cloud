@@ -1,4 +1,5 @@
 if(window.amazonCheckoutSessionId) {
+    window.sessionsResponse = null;
     const amazonPayNode = document.getElementById('amazonContainerSG');
 
     function handleAuthorised(response) {
@@ -23,11 +24,13 @@ if(window.amazonCheckoutSessionId) {
 
     function handleAmazonResponse(response, component) {
         if (response.fullResponse && response.fullResponse.action) {
-            document.querySelector('.ui-widget-overlay').style.visibility = 'hidden';
             component.handleAction(response.fullResponse.action);
         } else if (response.resultCode === window.resultCodeAuthorised) {
             handleAuthorised(response);
-        } else if (response.error) {
+        } else {
+            // first try the amazon decline flow
+            component.handleDeclineFlow();
+            // if this does not trigger a redirect, try the regular handleError flow
             handleError();
         }
     }
@@ -68,7 +71,10 @@ if(window.amazonCheckoutSessionId) {
             $.ajax({
                 type: 'post',
                 url: window.paymentsDetailsURL,
-                data: JSON.stringify(state.data),
+                data: JSON.stringify({
+                  data: state.data,
+                  orderToken: document.querySelector('#orderToken').value,
+                }),
                 contentType: 'application/; charset=utf-8',
                 success(data) {
                     if (data.response.isSuccessful) {
@@ -83,10 +89,13 @@ if(window.amazonCheckoutSessionId) {
         },
     };
 
-    const checkout = new AdyenCheckout(window.Configuration);
-    const amazonPayComponent = checkout
-        .create('amazonpay', amazonConfig)
-        .mount(amazonPayNode);
+    async function mountAmazonPayComponent() {
+        const checkout = await AdyenCheckout(window.Configuration);
+        const amazonPayComponent = checkout
+            .create('amazonpay', amazonConfig)
+            .mount(amazonPayNode);
+        amazonPayComponent.submit();
+    }
 
-    amazonPayComponent.submit();
+    mountAmazonPayComponent();
 }

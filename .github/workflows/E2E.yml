@@ -1,0 +1,59 @@
+name: E2E
+
+on: [push]
+
+jobs:
+  end-to-end-testing:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: "v5.3.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA5"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA5"
+          - sfra-version: "v6.1.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA6"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA6"
+    steps:
+      - name: Checkout SFRA code
+        uses: actions/checkout@v2
+        with:
+          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          ref: ${{ matrix.sfra-version }}
+          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+          path: storefront-reference-architecture
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: npm install storefront-reference-architecture
+        working-directory: storefront-reference-architecture
+        run: npm install
+      - name: npm install adyen-salesforce-commerce-cloud
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm install
+      - name: create dw.json file
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          echo '{
+            "username": "${{ secrets.SFCC_USERNAME }}",
+            "password": "${{ secrets.SFCC_PASSWORD }}",
+            "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
+            "code-version": "${{ secrets[matrix.code-version-secret] }}"
+          }' >> dw.json
+      - name: push cartridge code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run build
+      - name: run e2e tests
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run test:e2e
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          SFRA_VERSION: ${{ matrix.sfra-version }}
+          SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}

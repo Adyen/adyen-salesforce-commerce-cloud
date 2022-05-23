@@ -1,42 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="AdyenPayment">
-        <url>https://checkout-test.adyen.com/checkout/v67/payments</url>
+        <url>https://checkout-test.adyen.com/checkout/v68/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v67/payments</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v68/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetails">
-        <url>https://checkout-test.adyen.com/checkout/v67/payments/details</url>
+        <url>https://checkout-test.adyen.com/checkout/v68/payments/details</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenSessions">
+        <url>https://checkout-test.adyen.com/checkout/v68/sessions</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenSessionsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v68/sessions</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v67/payments/details</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v68/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethods">
-        <url>https://checkout-test.adyen.com/v67/paymentMethods</url>
+        <url>https://checkout-test.adyen.com/v68/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v67/paymentMethods</url>
-        <user-id></user-id>
-        <password/>
-    </service-credential>
-    <service-credential service-credential-id="AdyenRecurring">
-        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v25/listRecurringDetails</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v68/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenRecurringDisable">
-        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v25/disable</url>
+        <url>https://pal-test.adyen.com/pal/servlet/Recurring/v68/disable</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenRecurringDisableLive">
+        <url>https://[YOUR_LIVE_PREFIX]-pal-live.adyenpayments.com/pal/servlet/Recurring/v68/disable</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -116,6 +126,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenCheckoutPaymentMethods</credential-id>
     </service>
+    <service service-id="AdyenSessions">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenSessions</credential-id>
+    </service>
     <service service-id="AdyenRecurringDisable">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -153,4 +172,3 @@
         <credential-id>AdyenGiving</credential-id>
     </service>
 </services>
-

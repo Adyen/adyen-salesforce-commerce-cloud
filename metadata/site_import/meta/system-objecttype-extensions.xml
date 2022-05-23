@@ -351,20 +351,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenPayPalIntent">
-                <display-name xml:lang="x-default">PayPal auto capture</display-name>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <value>capture</value>
-                    </value-definition>
-                    <value-definition>
-                        <value>authorize</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23DataEnabled">
                 <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
                 <type>boolean</type>
@@ -400,6 +386,24 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Frontend_Region">
+                <display-name xml:lang="x-default">Region</display-name>
+                <description xml:lang="x-default">This should be set to the region closest to where your shoppers are located. It influences the speed at which front-end resources (Adyen Checkout Component) used throughout the checkout process will be retrieved.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>AU</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
@@ -412,6 +416,15 @@
             <attribute-definition attribute-id="Adyen_notification_user">
                 <display-name xml:lang="x-default">Adyen Notifications User</display-name>
                 <description xml:lang="x-default">Adyen Notifications User for Basic Authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenSalePaymentMethods">
+                <display-name xml:lang="x-default">Payment methods with SALE flow</display-name>
+                <description xml:lang="x-default">Only applicable for Salesforce OMS. List the txvariants with Authorisation type SALE comma separated (e.g. ideal,sepadirectdebit,paypal).</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -536,13 +549,12 @@
                 <attribute attribute-id="Adyen_merchantCode"/>
                 <attribute attribute-id="Adyen_API_Key"/>
                 <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_Frontend_Region"/>
                 <attribute attribute-id="Adyen_ClientKey"/>
                 <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
 
                 <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
-
-                <attribute attribute-id="AdyenPayPalIntent"/>
 
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
 
@@ -552,13 +564,14 @@
                 <attribute attribute-id="Adyen_StoreId"/>
 
                 <attribute attribute-id="Adyen3DS2Enabled"/>
-                <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
                 <attribute attribute-id="AdyenCardHolderName_enabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
+
+                <attribute attribute-id="AdyenSalePaymentMethods"/>
 
                 <attribute attribute-id="AdyenGiving_enabled"/>
                 <attribute attribute-id="AdyenGiving_charityName"/>

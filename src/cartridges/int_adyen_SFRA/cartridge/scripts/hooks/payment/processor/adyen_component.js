@@ -1,7 +1,7 @@
 /**
  *
  */
-const middlewares = require('./middlewares/index');
+const middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
 
 function Handle(basket, paymentInformation) {
   return middlewares.handle(basket, paymentInformation);
@@ -16,12 +16,8 @@ function Handle(basket, paymentInformation) {
  *      payment method
  * @return {Object} returns an error object
  */
-function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.authorize(
-    orderNumber,
-    paymentInstrument,
-    paymentProcessor,
-  );
+function Authorize(order, paymentInstrument, paymentProcessor) {
+  return middlewares.authorize(order, paymentInstrument, paymentProcessor);
 }
 
 exports.Handle = Handle;

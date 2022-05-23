@@ -1,5 +1,5 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 <input id="terminalId" type="hidden" name="${adyenPaymentFields.terminalId.htmlName}"/>
 
 <h3>${Resource.msg('terminal.selectTerminal', 'terminal', null)}</h3>

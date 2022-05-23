@@ -1,4 +1,4 @@
-const getPayments = require('./getPayments');
-const validatePaymentMethod = require('./validatePaymentMethod');
+const getPayments = require('*/cartridge/scripts/checkout/utils/getPayments');
+const validatePaymentMethod = require('*/cartridge/scripts/checkout/utils/validatePaymentMethod');
 
 module.exports = { getPayments, validatePaymentMethod };

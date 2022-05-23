@@ -1,13 +1,15 @@
-const { onFieldValid, onBrand } = require('./commons/index');
+const { onFieldValid, onBrand, createSession } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
+let card;
 
 // Store configuration
 store.checkoutConfiguration.amount = {
   value: 0,
   currency: 'EUR',
 };
+
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   card: {
     enableStoreDetails: false,
@@ -34,7 +36,7 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   $.ajax({
     type: 'POST',
     url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify(state.data),
+    data: JSON.stringify({ data: state.data }),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
@@ -50,10 +52,17 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
   });
 };
 
-// card and checkout component creation
-const cardNode = document.getElementById('card');
-checkout = new AdyenCheckout(store.checkoutConfiguration);
-const card = checkout.create('card').mount(cardNode);
+async function initializeCardComponent() {
+  // card and checkout component creation
+  const session = await createSession();
+  store.checkoutConfiguration.session = {
+    id: session.id,
+    sessionData: session.sessionData,
+  };
+  const cardNode = document.getElementById('card');
+  checkout = await AdyenCheckout(store.checkoutConfiguration);
+  card = checkout.create('card').mount(cardNode);
+}
 
 let formErrorsExist = false;
 
@@ -76,6 +85,8 @@ function submitAddCard() {
   });
 }
 
+initializeCardComponent();
+
 // Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
   if (store.isValid) {
@@ -88,6 +99,6 @@ $('button[value="add-new-payment"]').on('click', (event) => {
     }
     event.preventDefault();
   } else {
-    card.showValidation();
+    card?.showValidation();
   }
 });

@@ -14,13 +14,15 @@ const collections = require('*/cartridge/scripts/util/collections');
  */
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
-
   if (reqDataObj.cancelTransaction) {
     Logger.getLogger('Adyen').error(
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
     );
 
-    const order = OrderMgr.getOrder(reqDataObj.merchantReference);
+    const order = OrderMgr.getOrder(
+      reqDataObj.merchantReference,
+      reqDataObj.orderToken,
+    );
     Transaction.wrap(() => {
       OrderMgr.failOrder(order, true);
     });
@@ -59,9 +61,18 @@ function paymentFromComponent(req, res, next) {
       `Payment refused for order ${order.orderNo}`,
     );
     result.paymentError = true;
+
+    // Decline flow for Amazon pay is handled different from other Component PMs
+    // Order needs to be failed here to handle Amazon decline flow.
+    if (reqDataObj.paymentMethod === 'amazonpay') {
+      Transaction.wrap(() => {
+        OrderMgr.failOrder(order, true);
+      });
+    }
   }
 
   result.orderNo = order.orderNo;
+  result.orderToken = order.orderToken;
   res.json(result);
   return next();
 }

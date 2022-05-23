@@ -67,8 +67,10 @@ function handle(customObj) {
   result.SubmitOrder = false;
   result.SkipOrder = false;
 
-  const orderId = customObj.custom.orderId.split('-', 1);
-  const order = OrderMgr.getOrder(orderId[0]);
+  // split order ID by - and remove last split (which is the date)
+  const orderIdSplit = customObj.custom.orderId.split('-').slice(0, -1);
+  const orderId = orderIdSplit.join('-');
+  const order = OrderMgr.getOrder(orderId);
   result.Order = order;
 
   if (order === null) {
@@ -125,7 +127,7 @@ function handle(customObj) {
         if (customObj.custom.success === 'true') {
           const amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
           const totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
-          if (order.paymentStatus === Order.PAYMENT_STATUS_PAID) {
+          if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
             Logger.getLogger('Adyen', 'adyen').info(
               'Duplicate callback received for order {0}.',
               order.orderNo,
@@ -163,7 +165,7 @@ function handle(customObj) {
             isAdyen
           ) {
             refusedHpp = true;
-          } else if (order.status === Order.ORDER_STATUS_FAILED) {
+          } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
@@ -174,7 +176,7 @@ function handle(customObj) {
         break;
       case 'CANCELLATION':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCELLATION notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was cancelled.',
           order.orderNo,
@@ -182,7 +184,7 @@ function handle(customObj) {
         break;
       case 'CANCEL_OR_REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('CANCEL_OR_REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was cancelled or refunded.',
           order.orderNo,
@@ -190,7 +192,7 @@ function handle(customObj) {
         break;
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('REFUND notification received');
         Logger.getLogger('Adyen', 'adyen').info(
           'Order {0} was refunded.',
           order.orderNo,
@@ -200,7 +202,7 @@ function handle(customObj) {
       case 'CAPTURE_FAILED':
         if (customObj.custom.success === 'true') {
           order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-          order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+          order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
         Logger.getLogger('Adyen', 'adyen').info(
@@ -227,7 +229,7 @@ function handle(customObj) {
         break;
       case 'OFFER_CLOSED':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
+        order.trackOrderChange('Offer closed, failing order');
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, false);
         });
@@ -246,7 +248,7 @@ function handle(customObj) {
       case 'CAPTURE':
         if (
           customObj.custom.success === 'true' &&
-          String(order.status) === String(Order.ORDER_STATUS_CANCELLED)
+          order.status.value === Order.ORDER_STATUS_CANCELLED
         ) {
           order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
           order.setExportStatus(Order.EXPORT_STATUS_READY);

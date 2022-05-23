@@ -1,15 +1,16 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 <isset name="Order" value="${pdict.order}" scope="page"/>
-<isif condition="${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}">
+<isif condition="${AdyenHelper.getAdyenGivingConfig(Order)}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-    <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
     <script>
         window.Configuration = {
             locale: "${request.locale}",
-            clientKey: "${AdyenHelper.getAdyenClientKey}",
-            environment: "${AdyenHelper.getAdyenEnvironment().toLowerCase()}"
+            clientKey: "${AdyenConfigs.getAdyenClientKey}",
+            environment: "${AdyenHelper.getCheckoutEnvironment()}"
         };
         window.adyenGivingAvailable = "${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}"
         window.orderNo = '${pdict.Order.orderNo}';

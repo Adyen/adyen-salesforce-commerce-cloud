@@ -1,6 +1,5 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
-const { qrCodeMethods } = require('./qrCodeMethods');
 
 function getFallback(paymentMethod) {
   const fallback = {
@@ -22,23 +21,6 @@ function getPersonalDetails() {
       ?.value,
     shopperEmail: document.querySelector('.customer-summary-email')
       ?.textContent,
-    billingAddress: {
-      city: document.querySelector('#billingAddressCity')?.value,
-      postalCode: document.querySelector('#billingZipCode')?.value,
-      country: document.querySelector('#billingCountry')?.value,
-      stateOrProvince: document.querySelector('#billingState')?.value,
-      street: document.querySelector('#billingAddressOne')?.value,
-      houseNumberOrName: document.querySelector('#billingAddressTwo')?.value,
-    },
-    deliveryAddress: {
-      city: document.querySelector('#shippingAddressCitydefault')?.value,
-      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
-      country: document.querySelector('#shippingCountrydefault')?.value,
-      stateOrProvince: document.querySelector('#shippingStatedefault')?.value,
-      street: document.querySelector('#shippingAddressOnedefault')?.value,
-      houseNumberOrName: document.querySelector('#shippingAddressTwodefault')
-        ?.value,
-    },
   };
 }
 
@@ -53,6 +35,11 @@ function setNode(paymentMethodID) {
         data: {
           ...getPersonalDetails(),
           personalDetails: getPersonalDetails(),
+        },
+        visibility: {
+          personalDetails: 'editable',
+          billingAddress: 'hidden',
+          deliveryAddress: 'hidden',
         },
       });
       store.componentsObj[paymentMethodID].node = node;
@@ -143,28 +130,6 @@ function configureContainer({ paymentMethodID, container }) {
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = async (event) => {
-    if (
-      document.querySelector('.adyen-checkout__qr-loader') &&
-      qrCodeMethods.indexOf(store.selectedMethod) > -1
-    ) {
-      const compName = store.selectedMethod;
-      const qrComponent = store.componentsObj[compName];
-
-      await Promise.resolve(qrComponent.node.unmount(`component_${compName}`));
-      delete store.componentsObj[compName];
-
-      setNode(compName)(compName);
-      const node = store.componentsObj[compName]?.node;
-      if (node) {
-        node.mount(document.querySelector(`#component_${compName}`));
-      }
-
-      helpers.paymentFromComponent({
-        cancelTransaction: true,
-        merchantReference: document.querySelector('#merchantReference').value,
-      });
-    }
-
     helpers.displaySelectedMethod(event.target.value);
   };
 }
@@ -193,7 +158,7 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   };
 
   const imagePath = getImagePath(options);
-  const liContents = getListContents({ ...options, imagePath });
+  const liContents = getListContents({ ...options, imagePath, description });
 
   li.innerHTML = liContents;
   li.classList.add('paymentMethod');

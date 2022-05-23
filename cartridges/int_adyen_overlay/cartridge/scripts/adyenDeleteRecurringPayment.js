@@ -28,9 +28,13 @@ var Logger = require('dw/system/Logger');
 
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+
+var constants = require('*/cartridge/adyenConstants/constants');
+
 function deleteRecurringPayment(args) {
   try {
-    var service = AdyenHelper.getService(AdyenHelper.SERVICE.RECURRING_DISABLE);
+    var service = AdyenHelper.getService(constants.SERVICE.RECURRING_DISABLE);
 
     if (!service) {
       throw new Error('Could not do /disable call');
@@ -50,12 +54,12 @@ function deleteRecurringPayment(args) {
     }
 
     var requestObject = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       shopperReference: customerID,
       recurringDetailReference: recurringDetailReference,
       contract: 'ONECLICK'
     };
-    var apiKey = AdyenHelper.getAdyenApiKey();
+    var apiKey = AdyenConfigs.getAdyenApiKey();
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-KEY', apiKey);
