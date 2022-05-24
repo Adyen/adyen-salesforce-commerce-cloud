@@ -1,5 +1,5 @@
 // @ts-check
-import { devices } from '@playwright/test';
+const { devices } = require('@playwright/test');
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -120,4 +120,4 @@ const config = {
   //   port: 3000,
   // },
 };
-export default config;
+module.exports = config;
