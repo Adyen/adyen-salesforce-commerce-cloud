@@ -1,58 +1,60 @@
-import {ClientFunction, Selector, t} from "testcafe";
-
+import { expect } from '@playwright/test';
 export default class AccountPageSFRA {
-    consentButton = Selector('.affirm');
-    savedCard = Selector('.card p:nth-child(2)');
+  constructor(page) {
+    this.page = page;
+    this.consentButton = page.locator('.affirm');
+    this.savedCard = page.locator('.card p:nth-child(2)');
+  }
 
-    consent = async () => {
-        await t.click(this.consentButton)
+  consent = async () => {
+    await this.consentButton.click();
+  };
+
+  initiateCardPayment = async (cardInput) => {
+    await this.page
+      .locator('.adyen-checkout__card__holderName__input')
+      .type(cardInput.holderName);
+    await this.page
+      .framelocator('.adyen-checkout__card__cardNumber__input iframe')
+      .locator('.input-field')
+      .type(cardInput.cardNumber);
+    await this.page
+      .framelocator('.adyen-checkout__card__exp-date__input iframe')
+      .locator('.input-field')
+      .type(cardInput.expirationDate);
+
+    if (cardInput.cvc !== '') {
+      await this.page
+        .framelocator('.adyen-checkout__card__cvc__input iframe')
+        .locator('.input-field')
+        .type(cardInput.cvc);
     }
+    await this.page.click('button[name="save"]');
+  };
 
-    initiateCardPayment = async (cardInput) => {
-        await t
-            .typeText(Selector('.adyen-checkout__card__holderName__input'), cardInput.holderName)
-            .switchToIframe('.adyen-checkout__card__cardNumber__input iframe')
-            .typeText('.input-field', cardInput.cardNumber)
-            .switchToMainWindow()
-            .switchToIframe('.adyen-checkout__card__exp-date__input iframe')
-            .typeText('.input-field', cardInput.expirationDate)
-            .switchToMainWindow();
-        if(cardInput.cvc !== "") {
-            await t
-                .switchToIframe('.adyen-checkout__card__cvc__input iframe')
-                .typeText('.input-field', cardInput.cvc)
-                .switchToMainWindow();
-        }
-        await t.click('button[name="save"]');
-    }
+  addCard = async (cardData) => {
+    await this.page.click('a[href$="PaymentInstruments-AddPayment"]');
+    await this.initiateCardPayment(cardData);
+  };
 
-    addCard = async (cardData) => {
-        await t.click('a[href$="PaymentInstruments-AddPayment"]')
-        await this.initiateCardPayment(cardData);
-    }
+  removeCard = async () => {
+    await this.page.goto('/s/RefArch/wallet');
 
-    removeCard = async () => {
-        await t
-            .navigateTo(`/s/RefArch/wallet`)
-            .click('.remove-btn')
-            .click('.delete-confirmation-btn')
-    }
+    await this.page.click('.remove-btn');
+    await this.page.click('.delete-confirmation-btn');
+  };
 
-    expectSuccess = async (cardData) => {
-        const last4 = cardData.cardNumber.slice(-4);
-        await t
-            .expect(this.savedCard.innerText).contains(last4);
-    }
+  expectSuccess = async (cardData) => {
+    const last4 = cardData.cardNumber.slice(-4);
+    expect(await this.savedCard.innerText()).toContain(last4);
+  };
 
-    getLocation = ClientFunction(() => document.location.href);
+  expectFailure = async () => {
+    await expect(await this.page.locator('.card-error')).toBeVisible();
+  };
 
-    expectFailure = async () => {
-        await t.expect(Selector('.card-error').visible).ok();
-    }
-
-    expectCardRemoval = async (cardData) => {
-        const last4 = cardData.cardNumber.slice(-4);
-        await t.expect(this.savedCard.innerText).notContains(last4);
-    }
-
+  expectCardRemoval = async (cardData) => {
+    const last4 = cardData.cardNumber.slice(-4);
+    expect(await this.savedCard.innerText()).not.toContain(last4);
+  };
 }

@@ -1,60 +1,67 @@
-import {ClientFunction, Selector, t} from "testcafe";
+import { expect } from '@playwright/test';
 
 export default class AccountPageSG {
-  consentButton = Selector('.ui-dialog-buttonset button:first-child');
-  savedCard = Selector('.cc-number');
+  constructor(page) {
+    this.page = page;
+    this.consentButton = page.locator(
+      '.ui-dialog-buttonset button:first-child',
+    );
+    this.savedCard = page.locator('.cc-number');
+  }
 
   consent = async () => {
-    await t.click(this.consentButton)
-  }
+    await this.consentButton.click();
+  };
 
   initiateCardPayment = async (cardInput) => {
-    await t
-        .typeText(Selector('.adyen-checkout__card__holderName__input'), cardInput.holderName)
-        .switchToIframe('.adyen-checkout__card__cardNumber__input iframe')
-        .typeText('#encryptedCardNumber', cardInput.cardNumber)
-        .switchToMainWindow()
-        .switchToIframe('.adyen-checkout__card__exp-date__input iframe')
-        .typeText('#encryptedExpiryDate', cardInput.expirationDate)
-        .switchToMainWindow();
-    if(cardInput.cvc !== "") {
-      await t
-          .switchToIframe('.adyen-checkout__card__cvc__input iframe')
-          .typeText('#encryptedSecurityCode', cardInput.cvc)
-          .switchToMainWindow();
+    await this.page
+      .locator('.adyen-checkout__card__holderName__input')
+      .type(cardInput.holderName);
+
+    await this.page
+      .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
+      .locator('#encryptedCardNumber')
+      .type(cardInput.cardNumber);
+    await this.page
+      .frameLocator('.adyen-checkout__card__exp-date__input iframe')
+      .locator('#encryptedExpiryDate')
+      .type(cardInput.expirationDate);
+    if (cardInput.cvc !== '') {
+      await this.page
+        .framelocator('.adyen-checkout__card__cvc__input iframe')
+        .locator('#encryptedSecurityCode')
+        .type(cardInput.cvc);
     }
-    await t.click('#applyBtn');
-  }
+    await this.page.locator('#applyBtn').click();
+  };
 
   addCard = async (cardData) => {
-    await t
-        .navigateTo(`/s/SiteGenesis/wallet`)
-        .expect(Selector('.card-error').visible).notOk()
-        .click('.add-card')
+    await this.page.goto('/s/SiteGenesis/wallet');
+
+    const errorMessage = await this.page.locator('.card-error');
+    await expect(errorMessage).toBeHidden();
+    await this.page.locator('.add-card').click();
+
     await this.initiateCardPayment(cardData);
-  }
+  };
 
   removeCard = async () => {
-    await t
-        .navigateTo(`/s/SiteGenesis/wallet`)
-        .setNativeDialogHandler(() => true)
-        .click('.delete')
-  }
+    await this.page.goto('/s/SiteGenesis/wallet');
+    this.page.on('dialog', (dialog) => dialog.accept());
+    await this.page.click('.delete');
+  };
 
   expectSuccess = async (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    await t.expect(this.savedCard.withText(last4).exists).ok();
-  }
-
-  getLocation = ClientFunction(() => document.location.href);
+    expect(await this.savedCard.innerText()).toContain(last4);
+  };
 
   expectFailure = async () => {
-    await t.expect(Selector('.card-error').visible).ok();
-  }
+    await expect(await this.page.locator('.card-error')).toBeVisible();
+  };
 
   expectCardRemoval = async (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    await t .expect(this.savedCard.withText(last4).exists).notOk();;
-  }
-
+    expect(await this.savedCard.innerText()).not.toContain(last4);
+  };
 }
