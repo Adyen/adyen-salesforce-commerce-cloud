@@ -27,9 +27,23 @@ function getCustomPreference(field) {
     return customPreference;
 }
 
+function setCustomPreference(field, value) {
+    let customPreference = null;
+    if (adyenCurrentSite) {
+        adyenCurrentSite.setCustomPreferenceValue(field, value);
+        customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
+    }
+    return customPreference;
+}
+
 const adyenConfigsObj = {
+
     getAdyenEnvironment() {
         return getCustomPreference('Adyen_Mode').value;
+    },
+
+    setAdyenEnvironment(value) {
+        return setCustomPreference('Adyen_Mode', value).value;
     },
 
     getAdyenMerchantAccount() {
@@ -38,6 +52,10 @@ const adyenConfigsObj = {
 
     getAdyenSFRA6Compatibility() {
         return getCustomPreference('Adyen_SFRA6_Compatibility');
+    },
+
+    setAdyenSFRA6Compatibility(value) {
+        return setCustomPreference('Adyen_SFRA6_Compatibility', value);
     },
 
     getAdyenNotificationUser() {
