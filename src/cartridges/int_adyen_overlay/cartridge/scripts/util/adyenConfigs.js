@@ -40,6 +40,14 @@ const adyenConfigsObj = {
         return getCustomPreference('Adyen_SFRA6_Compatibility');
     },
 
+    getAdyenNotificationUser() {
+        return getCustomPreference('Adyen_notification_user');
+    },
+
+    getAdyenNotificationPassword() {
+        return getCustomPreference('Adyen_notification_password');
+    },
+
     getAdyen3DS2Enabled() {
         return getCustomPreference('Adyen3DS2Enabled');
     },
@@ -52,7 +60,7 @@ const adyenConfigsObj = {
         return getCustomPreference('AdyenCreditCardInstallments');
     },
 
-    getSystemIntegratorName: function () {
+    getSystemIntegratorName() {
         return getCustomPreference('Adyen_IntegratorName');
     },
 

@@ -1,13 +1,15 @@
 const server = require('server');
+const Logger = require('dw/system/Logger');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
-server.get('Start', csrfProtection.generateToken, (req, res, next) => {
-  res.render('adyenSettings/settings', {
-    merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-    apiKey: AdyenConfigs.getAdyenApiKey(),
-    mode: AdyenConfigs.getAdyenEnvironment(),
-  });
+server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
+  res.render('adyenSettings/settings');
+  return next();
+});
+
+server.post('Save', csrfProtection.generateToken, (req, res, next) => {
+  const formData = req.form;
+  Logger.getLogger('Adyen').error(JSON.stringify(formData));
   return next();
 });
 

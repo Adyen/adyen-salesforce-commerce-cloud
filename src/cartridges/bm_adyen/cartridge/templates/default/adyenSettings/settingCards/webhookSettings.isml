@@ -1,27 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+
 <div id="webhookSettings" class="card bg-white mt-4">
     <div class="card-body">
-    <h5 class="card-title">
-        Webhook settings
-    </h5>
-    <h7 class="card-subtitle text-muted">
-        To receive authorisation status updates, you need to first set up your username and password for webhook notifications in your Adyen 
-        <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area</a>. Learn more about 
-        <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-5-receive-payment-status-updates" target="_blank">how to set up these notification credentials</a>.
-    </h7>
+        <h5 class="card-title">
+            Webhook settings
+        </h5>
+        <h7 class="card-subtitle text-muted">
+            To receive authorisation status updates, you need to first set up your username and password for webhook notifications in your Adyen 
+            <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area</a>. Learn more about 
+            <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-5-receive-payment-status-updates" target="_blank">how to set up these notification credentials</a>.
+        </h7>
 
-    <form class="mt-2">
-        <div class="form-group">
-        <label class="font-weight-bold" for="notificationsUser">Webhook username</label>
-        <small id="notificationsUserHelp" class="form-text text-muted mb-1">After you've created an username for notification in Adyen Customer Area, you can enter your username in the following field.
-        </small>
-        <input type="text" class="form-control" id="notificationsUser " aria-describedby="notificationsUserHelp" placeholder="user012">
+        <div class="mt-2">
+            <div class="form-group">
+                <label class="font-weight-bold" for="notificationsUser">Webhook username</label>
+                <small id="notificationsUserHelp" class="form-text text-muted mb-1">After you've created an username for notification in Adyen Customer Area, you can enter your username in the following field.
+                </small>
+                <input type="text" class="form-control" name="adyenNotificationUser" id="notificationsUser" aria-describedby="notificationsUserHelp" placeholder="user012" value="${AdyenConfigs.getAdyenNotificationUser()}">
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold" for="notificationsPassword">Webhook password</label>
+                <small id="notificationsPasswordHelp" class="form-text text-muted mb-1">After you've created a password for notification in Adyen Customer Area, you can enter your password in the following field.
+                </small>
+                <input type="password" class="form-control" name="adyenNotificationPassword" id="notificationsPassword" aria-describedby="notificationsPasswordHelp" placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword()}">
+            </div>
         </div>
-        <div class="form-group">
-        <label class="font-weight-bold" for="notificationsPassword">Webhook password</label>
-        <small id="notificationsPasswordHelp" class="form-text text-muted mb-1">After you've created a password for notification in Adyen Customer Area, you can enter your password in the following field.
-        </small>
-        <input type="password" class="form-control" id="notificationsPassword" aria-describedby="notificationsPasswordHelp" placeholder="•••••••••••••••">
-        </div>
-    </form>
     </div>
 </div>

@@ -1,57 +1,61 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+
 <div id="optionalSettings" class="card bg-white mt-4">
     <div class="card-body">
-    <h5 class="card-title">
-        Optional settings
-    </h5>
-    <h7 class="card-subtitle text-muted">
-        You can obtain interchange discounts by submitting level 2/3 data.
-        At the same time, your shoppers will see additional data about their purchase on their credit card statement.
-        To see whether your business is eligible, refer to our <a class="text-primary" href="https://www.adyen.help/hc/en-us/articles/115001625130" target="_blank">FAQ support page</a>.
-    </h7>
+        <h5 class="card-title">
+            Optional settings
+        </h5>
+        <h7 class="card-subtitle text-muted">
+            You can obtain interchange discounts by submitting level 2/3 data.
+            At the same time, your shoppers will see additional data about their purchase on their credit card statement.
+            To see whether your business is eligible, refer to our <a class="text-primary" href="https://www.adyen.help/hc/en-us/articles/115001625130" target="_blank">FAQ support page</a>.
+        </h7>
 
-    <form class="mt-2">
-        <div class="form-group">
-        <label class="font-weight-bold" for="level23DataAuthorisation">Level 2/3 Data Authorisation</label>
-        <small id="level23DataAuthorisationHelp" class="form-text text-muted mb-1">
-            Not all businesses can submit Level 2 and 3 data, only select yes if your businesses is eligible for level 2/3 data submission. 
-            Do you want to send us your Level 2/3 data?
-        </small>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="level23DataYes" value="option1">
-            <label class="form-check-label" for="level23DataYes">Yes</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="level23DataNo" value="option2">
-            <label class="form-check-label" for="level23DataNo">No</label>
-        </div>
-        </div>
+        <div class="mt-2">
+            <div class="form-group">
+                <label class="font-weight-bold" for="level23DataAuthorisation">Level 2/3 Data Authorisation</label>
+                <small id="level23DataAuthorisationHelp" class="form-text text-muted mb-1">
+                    Not all businesses can submit Level 2 and 3 data, only select yes if your businesses is eligible for level 2/3 data submission. 
+                    Do you want to send us your Level 2/3 data?
+                </small>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="adyenLevel23DataEnabled" id="level23DataYes" value=true ${AdyenConfigs.getAdyenLevel23DataEnabled() ? 'checked': ''}>
+                    <label class="form-check-label" for="level23DataYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="adyenLevel23DataEnabled" id="level23DataNo" value=false ${!AdyenConfigs.getAdyenLevel23DataEnabled() ? 'checked': ''}>
+                    <label class="form-check-label" for="level23DataNo">No</label>
+                </div>
+            </div>
 
-        <div class="form-group">
-        <label class="font-weight-bold" for="commodityCode">Commodity code</label>
-        <small id="commodityCodeHelp" class="form-text text-muted mb-1">Enter the <a class="text-primary" href="https://www.unspsc.org/search-code" target="_blank">UNSPSC commodity code</a> for your products or services</small>
-        <input type="text" class="form-control" id="commodityCode" aria-describedby="commodityCodeHelp" placeholder="">
-        </div>
+            <div class="form-group">
+                <label class="font-weight-bold" for="commodityCode">Commodity code</label>
+                <small id="commodityCodeHelp" class="form-text text-muted mb-1">Enter the <a class="text-primary" href="https://www.unspsc.org/search-code" target="_blank">UNSPSC commodity code</a> for your products or services</small>
+                <input type="text" class="form-control" name="adyenLevel23CommodityCode" id="commodityCode" aria-describedby="commodityCodeHelp" value="${AdyenConfigs.getAdyenLevel23CommodityCode()}">
+            </div>
 
 
-        <div class="form-group border-top mt-4">
-        <label class="font-weight-bold mt-4" for="basketFields">Basket fields</label>
-        <small id="basketFieldsHelp" class="form-text text-muted mb-1">
-            You can use Basket fields for custom risk rules. Do you want to include Basket fields in your payment request?
-        </small>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="basketFieldsYes" value="option1">
-            <label class="form-check-label" for="basketFieldsYes">Yes</label>
+            <div class="form-group border-top mt-4">
+                <label class="font-weight-bold mt-4" for="basketFields">Basket fields</label>
+                <small id="basketFieldsHelp" class="form-text text-muted mb-1">
+                    You can use Basket fields for custom risk rules. Do you want to include Basket fields in your payment request?
+                </small>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="adyenBasketFieldsEnabled" id="basketFieldsYes" value=true ${AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                    <label class="form-check-label" for="basketFieldsYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="adyenBasketFieldsEnabled" id="basketFieldsNo" value=false ${!AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                    <label class="form-check-label" for="basketFieldsNo">No</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="systemIntegrator">System integrator</label>
+                <small id="systemIntegratorHelp" class="form-text text-muted mb-1">If your integration with Adyen is built by a system integrator, let us know their name, so that we can offer you better support.</small>
+                <input type="text" class="form-control" name="adyenIntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName()}">
+            </div>
         </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="basketFieldsNo" value="option2">
-            <label class="form-check-label" for="basketFieldsNo">No</label>
-        </div>
-        </div>
-        <div class="form-group">
-        <label class="font-weight-bold" for="systemIntegrator">System integrator</label>
-        <small id="systemIntegratorHelp" class="form-text text-muted mb-1">If your integration with Adyen is built by a system integrator, let us know their name, so that we can offer you better support.</small>
-        <input type="text" class="form-control" id="systemIntegrator" aria-describedby="systemIntegratorHelp" placeholder="">
-        </div>
-    </form>
     </div>
 </div>
