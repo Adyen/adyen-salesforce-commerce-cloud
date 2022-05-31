@@ -1,163 +1,209 @@
-import {ClientFunction, Selector, t} from "testcafe";
-
+import { chromium, expect } from '@playwright/test';
 export default class CheckoutPageSFRA5 {
+  constructor(page) {
+    this.page = page;
 
-    consentButton = Selector('.affirm');
-    categoryLink = Selector('.home-main-categories .category-tile');
-    productCard = Selector('.product .image-container a');
-    colourSelector = Selector('.color-attribute');
-    selectSize = Selector('.select-size');
-    sizeOption = this.selectSize.find('option');
-    addToCartButton = Selector('.add-to-cart');
-    successMessage = Selector('.add-to-cart-messages');
-    checkoutUrl = '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
-    checkoutGuest = Selector('.checkout-as-guest')
+    this.consentButton = page.locator('.affirm');
+    this.categoryLink = page.locator('.home-main-categories .category-tile');
+    this.productCard = page.locator('.product .image-container a');
+    this.colourSelector = page.locator('.color-attribute');
+    this.selectSize = page.locator('.select-size');
+    this.sizeOption = this.selectSize.find('option');
+    this.addToCartButton = page.locator('.add-to-cart');
+    this.successMessage = page.locator('.add-to-cart-messages');
+    this.checkoutUrl =
+      '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
+    this.checkoutGuest = page.locator('.checkout-as-guest');
 
-    loginUrl = '/customer/account';
-    emailInput = Selector('#email');
-    passwordInput = Selector('#pass');
-    submitButton = Selector('#send2');
-    customerAccountPage = Selector('.account.customer-account-index');
+    this.loginUrl = '/customer/account';
+    this.emailInput = page.locator('#email');
+    this.passwordInput = page.locator('#pass');
+    this.submitButton = page.locator('#send2');
+    this.customerAccountPage = page.locator('.account.customer-account-index');
 
-    checkoutPageUserEmailInput = Selector('input[name="loginEmail"]');
-    checkoutPageUserPasswordInput = Selector('input[name="loginPassword"]');
-    checkoutPageLoginButton = Selector('.login button[type="submit"]');
+    this.checkoutPageUserEmailInput = page.locator('input[name="loginEmail"]');
+    this.checkoutPageUserPasswordInput = page.locator(
+      'input[name="loginPassword"]',
+    );
+    this.checkoutPageLoginButton = page.locator('.login button[type="submit"]');
 
-    checkoutPageUserFirstNameInput = Selector('#shippingFirstNamedefault');
-    checkoutPageUserLastNameInput = Selector('#shippingLastNamedefault');
-    checkoutPageUserStreetInput = Selector('#shippingAddressOnedefault');
-    checkoutPageUserHouseNumberInput = Selector('#shippingAddressTwodefault');
-    checkoutPageUserCityInput = Selector('#shippingAddressCitydefault');
-    checkoutPageUserPostCodeInput = Selector('#shippingZipCodedefault');
-    checkoutPageUserCountrySelect = Selector('#shippingCountrydefault');
-    checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find('option');
-    checkoutPageUserStateSelect = Selector('#shippingStatedefault');
-    checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find('option');
-    checkoutPageUserTelephoneInput = Selector('#shippingPhoneNumberdefault');
+    this.checkoutPageUserFirstNameInput = page.locator(
+      '#shippingFirstNamedefault',
+    );
+    this.checkoutPageUserLastNameInput = page.locator(
+      '#shippingLastNamedefault',
+    );
+    this.checkoutPageUserStreetInput = page.locator(
+      '#shippingAddressOnedefault',
+    );
+    this.checkoutPageUserHouseNumberInput = page.locator(
+      '#shippingAddressTwodefault',
+    );
+    this.checkoutPageUserCityInput = page.locator(
+      '#shippingAddressCitydefault',
+    );
+    this.checkoutPageUserPostCodeInput = page.locator(
+      '#shippingZipCodedefault',
+    );
+    this.checkoutPageUserCountrySelect = page.locator(
+      '#shippingCountrydefault',
+    );
+    this.checkoutPageUserStateSelect = page.locator('#shippingStatedefault');
+    /*this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
+      'option',
+    );
+    this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
+      'option',
+    );
+    These selectors might be redundant based on how playwright interacts with dropdowns*/
+    this.checkoutPageUserTelephoneInput = page.locator(
+      '#shippingPhoneNumberdefault',
+    );
 
-    shippingSubmit = Selector('.submit-shipping');
+    this.shippingSubmit = page.locator('.submit-shipping');
 
-    submitPaymentButton = Selector('.submit-payment');
-    placeOrderButton = Selector('.place-order');
-    checkoutPageUserEmailInput = Selector('#email');
+    this.submitPaymentButton = page.locator('.submit-payment');
+    this.placeOrderButton = page.locator('.place-order');
+    this.checkoutPageUserEmailInput = page.locator('#email');
 
-    errorMessage = Selector('.error-message-text');
+    this.errorMessage = page.locator('.error-message-text');
+    this.thankYouMessage = page.locator('.order-thank-you-msg');
 
-    navigateToCheckout = async (locale) => {
-        await t.navigateTo(this.getCheckoutUrl(locale));
+    this.voucherCode = page.locator('#voucherResult');
+
+    this.qrLoaderAmount = page.locator(
+      '.adyen-checkout__qr-loader__payment_amount',
+    );
+    /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
+    this.qrImg = page.locator('img');
+
+    this.signInSectionButton = page.locator('.fa-sign-in');
+    this.emailField = page.locator('#login-form-email');
+    this.passwordField = page.locator('#login-form-password');
+    this.loginButton = page.locator('.login button[type="submit"]');
+  }
+
+  navigateToCheckout = async (locale) => {
+    await this.page.goto(this.getCheckoutUrl(locale));
+  };
+
+  goToCheckoutPageWithFullCart = async (locale) => {
+    await this.addProductToCart(locale);
+    await this.successMessage();
+
+    await this.navigateToCheckout(locale);
+    await this.checkoutGuest.click();
+  };
+
+  getCheckoutUrl(locale) {
+    return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
+  }
+
+  addProductToCart = async (locale) => {
+    await this.consentButton.click();
+    await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+    await this.addToCartButton.click();
+  };
+
+  setShopperDetails = async (shopperDetails) => {
+    await this.checkoutPageUserFirstNameInput.type(
+      shopperDetails.shopperName.firstName,
+    );
+    await this.checkoutPageUserLastNameInput.type(
+      shopperDetails.shopperName.lastName,
+    );
+    await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
+    await this.checkoutPageUserHouseNumberInput.type(
+      shopperDetails.address.houseNumberOrName,
+    );
+    await this.checkoutPageUserCityInput.type(shopperDetails.address.city);
+    await this.checkoutPageUserPostCodeInput.type(
+      shopperDetails.address.postalCode,
+    );
+
+    await this.checkoutPageUserCountrySelect.selectOption(
+      shopperDetails.address.country,
+    );
+
+    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+    if (shopperDetails.address.stateOrProvince !== '') {
+      await this.checkoutPageUserStateSelect.selectOption(
+        shopperDetails.address.stateOrProvince,
+      );
     }
+    await this.shippingSubmit.click();
+  };
 
-    goToCheckoutPageWithFullCart = async (locale) => {
-        await this.addProductToCart(locale);
-        await this.successMessage();
+  setEmail = async () => {
+    await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
+  };
 
-        await this.navigateToCheckout(locale);
-        await t.click(this.checkoutGuest);
-    }
+  submitShipping = async () => {
+    await this.shippingSubmit.click();
+  };
 
-    getCheckoutUrl(locale){
-        return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
-    }
+  submitPayment = async () => {
+    await this.submitPaymentButton.click();
+  };
+  placeOrder = async () => {
+    await this.placeOrderButton.click();
+  };
 
-    addProductToCart = async (locale) => {
-        await t
-            .click(this.consentButton)
-            .navigateTo(`/s/RefArch/25720033M.html?lang=${locale}`)
-            .click(this.addToCartButton);
-    }
+  completeCheckout = async () => {
+    await this.setEmail();
+    await this.submitPayment();
+    await this.placeOrder();
+  };
 
-    setShopperDetails = async (shopperDetails) => {
-        await t
-            .typeText(this.checkoutPageUserFirstNameInput, shopperDetails.shopperName.firstName)
-            .typeText(this.checkoutPageUserLastNameInput, shopperDetails.shopperName.lastName)
-            .typeText(this.checkoutPageUserStreetInput, shopperDetails.address.street)
-            .typeText(this.checkoutPageUserHouseNumberInput, shopperDetails.address.houseNumberOrName)
-            .typeText(this.checkoutPageUserCityInput, shopperDetails.address.city)
-            .typeText(this.checkoutPageUserPostCodeInput, shopperDetails.address.postalCode)
-            .click(this.checkoutPageUserCountrySelect)
-            .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
-            .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone);
-        if(shopperDetails.address.stateOrProvince !== "") {
-            await t
-                .click(this.checkoutPageUserStateSelect)
-                .click(this.checkoutPageUserStateSelectOption.withAttribute('id', shopperDetails.address.stateOrProvince));
+  goBackAndSubmitShipping = async () => {
+    await this.navigateBack();
+    await this.submitShipping();
+  };
 
-        }
-        await t.click(this.shippingSubmit);
-    }
+  goBackAndReplaceOrderDifferentWindow = async () => {
+    const checkoutLocation = await this.getLocation();
+    await this.placeOrder();
 
-    setEmail = async () => {
-        await t
-            .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
-    }
+    const browser = await chromium.launch();
+    const context = await browser.newContext();
+    const secondSession = await context.newPage();
 
-    submitShipping =  async () => {
-        await t
-            .click(this.shippingSubmit);
-    }
+    await secondSession.goto(checkoutLocation);
+  };
 
-    submitPayment = async () => {
-        await t
-            .click(this.submitPaymentButton);
-    }
-    placeOrder = async () => {
-        await t
-            .click(this.placeOrderButton);
-    }
+  expectSuccess = async () => {
+    expect(this.getLocation()).toContain('Order-Confirm');
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
+  };
 
-    completeCheckout = async () => {
-        await this.setEmail();
-        await this.submitPayment();
-        await this.placeOrder();
-    }
+  expectRefusal = async () => {
+    expect(this.errorMessage.innerText()).not.toBeEmpty();
+  };
 
-    goBackAndSubmitShipping = async () => {
-        await this.navigateBack();
-        await this.submitShipping();
-    }
+  expectVoucher = async () => {
+    await expect(this.voucherCode).toBeVisible({ timeout: 10000 });
+  };
 
-    goBackAndReplaceOrderDifferentWindow = async () => {
-        const checkoutLocation = await this.getLocation();
-        await this.placeOrder();
-        await t
-            .openWindow(checkoutLocation)
-            .switchToPreviousWindow();
-    }
+  expectQRcode = async () => {
+    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 10000 });
+    await expect(this.qrImg).toBeVisible({ timeout: 10000 });
+  };
 
-    expectSuccess = async () => {
-        await t
-            .expect(this.getLocation()).contains('Order-Confirm')
-            .expect(Selector('.order-thank-you-msg', { timeout: 60000 }).exists).ok();
-    }
+  getLocation = async () => {
+    await this.page.waitForPageLoad();
+    return await this.page.url();
+  };
 
-    expectRefusal = async () => {
-        await t
-            .expect(this.errorMessage.innerText).notEql('');
-    }
+  navigateBack = async () => {
+    await this.page.waitForPageLoad();
+    await this.page.goBack();
+    await this.page.waitForPageLoad();
+  };
 
-    expectVoucher = async () => {
-        const voucherExists = Selector('#voucherResult').exists;
-        await t
-            .expect(voucherExists).ok();
-    }
-
-    expectQRcode = async () => {
-        const amount = Selector('.adyen-checkout__qr-loader__payment_amount').exists;
-        const img = Selector('img').exists;
-        await t
-            .expect(amount).ok()
-            .expect(img).ok()
-    }
-
-    getLocation = ClientFunction(() => document.location.href);
-    navigateBack = ClientFunction( () => window.history.back());
-
-    loginUser = async (credentials) => {
-        await t
-            .click('.fa-sign-in')
-            .typeText('#login-form-email', credentials.shopperEmail)
-            .typeText('#login-form-password', credentials.password)
-            .click('.login button[type="submit"]')
-    }
-
+  loginUser = async (credentials) => {
+    await this.signInSectionButton.click();
+    await this.emailField.type(credentials.shopperEmail);
+    await this.passwordField.type(credentials.password);
+    await this.loginButton.click();
+  };
 }
