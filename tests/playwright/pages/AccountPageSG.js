@@ -38,7 +38,7 @@ export default class AccountPageSG {
   addCard = async (cardData) => {
     await this.page.goto('/s/SiteGenesis/wallet');
 
-    const errorMessage = await this.page.locator('.card-error');
+    const errorMessage = this.page.locator('.card-error');
     await expect(errorMessage).toBeHidden();
     await this.page.locator('.add-card').click();
 
@@ -57,7 +57,7 @@ export default class AccountPageSG {
   };
 
   expectFailure = async () => {
-    await expect(await this.page.locator('.card-error')).toBeVisible();
+    await expect(this.page.locator('.card-error')).toBeVisible();
   };
 
   expectCardRemoval = async (cardData) => {
