@@ -1,171 +1,252 @@
-import {ClientFunction, Selector, t} from "testcafe";
-
 export default class CheckoutPageSFRA {
+  constructor(page) {
+    this.page = page;
 
-  consentButton = Selector('.ui-dialog-buttonset button:first-child');
-  categoryTile = Selector('.category-tile');
-  productCard = Selector('.name-link');
-  selectSize = Selector('.swatchanchor').withText("6");
-  addToCartButton = Selector('#add-to-cart');
-  goToCart = Selector('.minicart-icon');
-  goToCheckout = Selector('button[name="dwfrm_cart_checkoutCart"]');
-  checkoutGuest = Selector('button[name="dwfrm_login_unregistered"]')
-  orderConfirmationDetails = Selector('.order-confirmation-details');
+    this.consentButton = page.locator(
+      '.ui-dialog-buttonset button:first-child',
+    );
+    this.categoryTile = page.locator('.category-tile');
+    this.productCard = page.locator('.name-link');
+    this.selectSize = page.locator('.swatchanchor').withText('6');
+    this.addToCartButton = page.locator('#add-to-cart');
+    this.goToCart = page.locator('.minicart-icon');
+    this.goToCheckout = page.locator('button[name="dwfrm_cart_checkoutCart"]');
+    this.checkoutGuest = page.locator(
+      'button[name="dwfrm_login_unregistered"]',
+    );
+    this.orderConfirmationDetails = page.locator('.order-confirmation-details');
 
-  errorMessage = Selector('.error-form');
-  shippingSubmit = Selector('button[name="dwfrm_singleshipping_shippingAddress_save"]')
+    this.errorMessage = page.locator('.error-form');
+    this.shippingSubmit = page.locator(
+      'button[name="dwfrm_singleshipping_shippingAddress_save"]',
+    );
 
-  checkoutPageUserEmailInput = Selector('#dwfrm_billing_billingAddress_email_emailAddress');
+    this.checkoutPageUserEmailInput = page.locator(
+      '#dwfrm_billing_billingAddress_email_emailAddress',
+    );
 
-  holderNameInput = Selector('#card .adyen-checkout__card__holderName input');
-  cardNumberIFrame = Selector('.adyen-checkout__card__cardNumber__input iframe');
-  cardNumberInput = Selector('#encryptedCardNumber');
-  expDateIFrame = Selector('.adyen-checkout__card__exp-date__input iframe');
-  expDateInput = Selector('#encryptedExpiryDate');
-  cvcIFrame = Selector('.adyen-checkout__card__cvc__input iframe');
-  cvcInput = Selector('#encryptedSecurityCode');
+    this.holderNameInput = page.locator(
+      '#card .adyen-checkout__card__holderName input',
+    );
+    this.cardNumberIFrame = page.locator(
+      '.adyen-checkout__card__cardNumber__input iframe',
+    );
+    this.cardNumberInput = page.locator('#encryptedCardNumber');
+    this.expDateIFrame = page.locator(
+      '.adyen-checkout__card__exp-date__input iframe',
+    );
+    this.expDateInput = page.locator('#encryptedExpiryDate');
+    this.cvcIFrame = page.locator('.adyen-checkout__card__cvc__input iframe');
+    this.cvcInput = page.locator('#encryptedSecurityCode');
 
-  oneClickInput = Selector('.cvc-container input.cvc-field');
+    this.oneClickInput = page.locator('.cvc-container input.cvc-field');
 
-  placeOrderButton = Selector('button[name="submit"]');
-  submitPaymentButton = Selector('button[id="billing-submit"]');
-  successMessage = Selector('.minicart-quantity').withText('1');
+    this.placeOrderButton = page.locator('button[name="submit"]');
+    this.submitPaymentButton = page.locator('button[id="billing-submit"]');
+    this.successMessage = page.locator('.minicart-quantity').withText('1');
 
-  checkoutPageUserFirstNameInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_firstName');
-  checkoutPageUserLastNameInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_lastName');
-  checkoutPageUserStreetInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_address1');
-  checkoutPageUserHouseNumberInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_address2');
-  checkoutPageUserCityInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_city');
-  checkoutPageUserPostCodeInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_postal');
-  checkoutPageUserCountrySelect = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_country');
-  checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find('option');
-  checkoutPageUserStateSelect = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_states_state'); //uncommented state selectors
-  checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find('option');
-  checkoutPageUserTelephoneInput = Selector('#dwfrm_singleshipping_shippingAddress_addressFields_phone');
-  checkoutPageUseShippingAddressForBillingCheckBox = Selector('#dwfrm_singleshipping_shippingAddress_useAsBillingAddress');
+    this.checkoutPageUserFirstNameInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_firstName',
+    );
+    this.checkoutPageUserLastNameInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_lastName',
+    );
+    this.checkoutPageUserStreetInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_address1',
+    );
+    this.checkoutPageUserHouseNumberInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_address2',
+    );
+    this.checkoutPageUserCityInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_city',
+    );
+    this.checkoutPageUserPostCodeInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_postal',
+    );
+    this.checkoutPageUserCountrySelect = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_country',
+    );
+    this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
+      'option',
+    );
+    this.checkoutPageUserStateSelect = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_states_state',
+    ); //uncommented state selectors
+    this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
+      'option',
+    );
+    this.checkoutPageUserTelephoneInput = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_addressFields_phone',
+    );
+    this.checkoutPageUseShippingAddressForBillingCheckBox = page.locator(
+      '#dwfrm_singleshipping_shippingAddress_useAsBillingAddress',
+    );
+    this.voucherCode = page.locator('#voucherResult');
 
-  navigateToCheckout = async (locale) => {
-    await t.navigateTo(this.getCheckoutUrl(locale));
+    this.qrLoaderAmount = page.locator(
+      '.adyen-checkout__qr-loader__payment_amount',
+    );
+    /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
+    this.qrImg = page.locator('img');
   }
+  navigateToCheckout = async (locale) => {
+    await this.page.goto(this.getCheckoutUrl(locale));
+  };
 
   goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
     await this.successMessage();
 
     await this.navigateToCheckout(locale);
-    await t.click(this.checkoutGuest);
-  }
+    await this.checkoutGuest.click();
+  };
 
-  getCheckoutUrl(locale){
+  getCheckoutUrl(locale) {
     return `/s/SiteGenesis/checkout?lang=${locale}`;
   }
 
   addProductToCart = async (locale) => {
-    await t
-        .click(this.consentButton)
-        .navigateTo(`/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`)
-        .click(this.addToCartButton);
-  }
+    await this.consentButton.click();
+    await this.page.goto(
+      `/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
+    );
+    await this.addToCartButton.click();
+  };
 
   setShopperDetails = async (shopperDetails) => {
-    await t
-        .typeText(this.checkoutPageUserFirstNameInput, shopperDetails.shopperName.firstName)
-        .typeText(this.checkoutPageUserLastNameInput, shopperDetails.shopperName.lastName)
-        .typeText(this.checkoutPageUserStreetInput, shopperDetails.address.street)
-        .typeText(this.checkoutPageUserHouseNumberInput, shopperDetails.address.houseNumberOrName)
-        .typeText(this.checkoutPageUserCityInput, shopperDetails.address.city)
-        .typeText(this.checkoutPageUserPostCodeInput, shopperDetails.address.postalCode)
-        .click(this.checkoutPageUserCountrySelect)
-        .click(this.checkoutPageUserCountrySelectOption.withAttribute('value', shopperDetails.address.country))
-        .typeText(this.checkoutPageUserTelephoneInput, shopperDetails.telephone);
-    if(shopperDetails.address.stateOrProvince !== "") {
-      await t
-          .click(this.checkoutPageUserStateSelect)
-          .click(this.checkoutPageUserStateSelectOption.withAttribute('value', shopperDetails.address.stateOrProvince));
+    await this.checkoutPageUserFirstNameInput.type(
+      shopperDetails.shopperName.firstName,
+    );
+    await this.checkoutPageUserLastNameInput.type(
+      shopperDetails.shopperName.lastName,
+    );
+    await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
+    await this.checkoutPageUserHouseNumberInput.type(
+      shopperDetails.address.houseNumberOrName,
+    );
+    await this.checkoutPageUserCityInput.type(shopperDetails.address.city);
+    await this.checkoutPageUserPostCodeInput.type(
+      shopperDetails.address.postalCode,
+    );
 
+    // await t
+    //   .typeText(
+    //     this.checkoutPageUserFirstNameInput,
+    //     shopperDetails.shopperName.firstName,
+    //   )
+    // .typeText(
+    //   this.checkoutPageUserLastNameInput,
+    //   shopperDetails.shopperName.lastName,
+    // )
+    // // .typeText(this.checkoutPageUserStreetInput, shopperDetails.address.street)
+    // .typeText(
+    //   this.checkoutPageUserHouseNumberInput,
+    //   shopperDetails.address.houseNumberOrName,
+    // )
+    // .typeText(this.checkoutPageUserCityInput, shopperDetails.address.city)
+    // .typeText(
+    //   this.checkoutPageUserPostCodeInput,
+    //   shopperDetails.address.postalCode,
+    // )
+    await this.checkoutPageUserCountrySelect.selectOption(
+      shopperDetails.address.country,
+    );
+
+    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+
+    if (shopperDetails.address.stateOrProvince !== '') {
+      await this.checkoutPageUserStateSelect.selectOption(
+        shopperDetails.address.stateOrProvince,
+      );
     }
-    await t
-        .click(this.checkoutPageUseShippingAddressForBillingCheckBox)
-        .click(this.shippingSubmit);
-  }
+
+    await this.checkoutPageUseShippingAddressForBillingCheckBox.click();
+    await this.shippingSubmit.click();
+  };
 
   setEmail = async () => {
-    await t
-        .typeText(this.checkoutPageUserEmailInput, 'test@adyenTest.com');
-  }
+    await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
+  };
 
-  submitShipping =  async () => {
-    await t
-        .click(this.shippingSubmit);
-  }
+  submitShipping = async () => {
+    await this.shippingSubmit.click();
+  };
 
   submitPayment = async () => {
-    await t
-        .click(this.submitPaymentButton);
-  }
+    await this.submitPaymentButton.click();
+  };
   placeOrder = async () => {
-    await t
-        .click(this.placeOrderButton);
-  }
+    await this.placeOrderButton.click();
+  };
 
   completeCheckoutLoggedInUser = async () => {
     await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
-  }
+  };
 
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
-  }
+  };
 
   goBackAndSubmitPayment = async () => {
     await this.navigateBack();
     await this.submitPayment();
-  }
+  };
 
   goBackAndReplaceOrderDifferentWindow = async () => {
     const checkoutLocation = await this.getLocation();
     await this.placeOrder();
-    await t
-        .openWindow(checkoutLocation)
-        .switchToPreviousWindow();
-  }
+
+    const browser = await chromium.launch();
+    const context = await browser.newContext();
+    const secondSession = await context.newPage();
+
+    await secondSession.goto(checkoutLocation);
+  };
 
   expectSuccess = async () => {
-    await t.expect(Selector('.confirmation-message', { timeout: 60000 }).exists).ok();
-  }
+    await expect(this.page.locator('.confirmation-message')).toBeVisible({
+      timeout: 20000,
+    });
+  };
 
   expectRefusal = async () => {
-    await t
-        .expect(this.errorMessage.innerText).notEql('');
-  }
+    expect(this.errorMessage.innerText()).not.toBeEmpty();
+  };
 
   expectVoucher = async () => {
-    const voucherExists = Selector('#voucherResult').exists;
-    await t
-        .expect(voucherExists).ok();
-  }
+    await expect(this.voucherCode).toBeVisible({ timeout: 10000 });
+  };
 
   expectQRcode = async () => {
-    const amount = Selector('.adyen-checkout__qr-loader__payment_amount').exists;
-    const img = Selector('img').exists;
-    await t
-        .expect(amount).ok()
-        .expect(img).ok()
-  }
+    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 10000 });
+    await expect(this.qrImg).toBeVisible({ timeout: 10000 });
+  };
 
-  getLocation = ClientFunction(() => document.location.href);
-  navigateBack = ClientFunction( () => window.history.back());
+  getLocation = async () => {
+    await this.page.waitForPageLoad();
+    return await this.page.url();
+  };
+
+  navigateBack = async () => {
+    await this.page.waitForPageLoad();
+    await this.page.goBack();
+    await this.page.waitForPageLoad();
+  };
 
   loginUser = async (credentials) => {
-    const inputEmail = Selector('input').withAttribute('id', /dwfrm_login_username_.*/);
-    const inputPassword = Selector('input').withAttribute('id', /dwfrm_login_password_.*/)
-    await t
-        .navigateTo('/s/SiteGenesis/account')
-        .typeText(inputEmail, credentials.shopperEmail)
-        .typeText(inputPassword, credentials.password)
-        .click('button[name="dwfrm_login_login"]')
-  }
+    await this.page.goto('/s/SiteGenesis/account');
+
+    await this.page
+      .locator('input[id="/dwfrm_login_username_.*/"]')
+      .type(credentials.shopperEmail);
+    await this.page
+      .locator('input[id="/dwfrm_login_password_.*/"]')
+      .type(credentials.password);
+
+    await this.page.click('button[name="dwfrm_login_login"]');
+  };
 }
