@@ -7,6 +7,7 @@ const { devices } = require('@playwright/test');
  */
 const config = {
   testDir: './fixtures/',
+  testMatch: '*.spec.mjs',
 
   /* Maximum time one test can run for. */
   timeout: 60 * 1000,
@@ -38,6 +39,10 @@ const config = {
 
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.SFCC_HOSTNAME,
+    httpCredentials: {
+      username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
+      password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
+    },
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
