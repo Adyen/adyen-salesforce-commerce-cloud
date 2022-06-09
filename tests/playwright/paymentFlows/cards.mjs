@@ -1,19 +1,19 @@
 import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
-const paymentMethodsPage = new PaymentMethodsPage(page);
+const paymentMethodsPage = new PaymentMethodsPage();
 
-const doCardPayment = async (cardData) => {
+export const doCardPayment = async (cardData) => {
   await paymentMethodsPage.initiateCardPayment(cardData);
 };
 
-const do3Ds1Verification = async () => {
+export const do3Ds1Verification = async () => {
   await paymentMethodsPage.do3Ds1Verification();
 };
 
-const do3Ds2Verification = async () => {
+export const do3Ds2Verification = async () => {
   await paymentMethodsPage.do3Ds2Verification();
 };
 
-const doCardPaymentOneclick = async (cardData) => {
+export const doCardPaymentOneclick = async (cardData) => {
   const oneClickLabel = `************${cardData.cardNumber.substring(
     cardData.cardNumber.length - 4,
   )}`;
@@ -23,15 +23,7 @@ const doCardPaymentOneclick = async (cardData) => {
   });
 };
 
-const doCardPaymentInstallments = async (cardData, nrInstallments) => {
+export const doCardPaymentInstallments = async (cardData, nrInstallments) => {
   await paymentMethodsPage.initiateCardPayment(cardData);
   await paymentMethodsPage.selectInstallments(nrInstallments);
-};
-
-module.exports = {
-  doCardPayment,
-  do3Ds1Verification,
-  do3Ds2Verification,
-  doCardPaymentOneclick,
-  doCardPaymentInstallments,
 };
