@@ -1,35 +1,35 @@
-import PaymentMethodsPage from '../pages/PaymentMethodsPage';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 const paymentMethodsPage = new PaymentMethodsPage();
 
-const doIdealPayment = async (testSuccess) => {
+export const doIdealPayment = async (testSuccess) => {
   await paymentMethodsPage.initiateIdealPayment(testSuccess);
 };
 
-const completeIdealRedirect = async () => {
+export const completeIdealRedirect = async () => {
   await paymentMethodsPage.submitSimulator();
 };
 
-const doBillDeskPayment = async (paymentMethod) => {
+export const doBillDeskPayment = async (paymentMethod) => {
   await paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
 };
 
-const completeBillDeskRedirect = async (success) => {
+export const completeBillDeskRedirect = async (success) => {
   await paymentMethodsPage.billdeskSimulator(success);
 };
 
-const doOneyPayment = async (shopper) => {
+export const doOneyPayment = async (shopper) => {
   await paymentMethodsPage.initiateOneyPayment(shopper);
 };
 
-const completeOneyRedirect = async (shopper) => {
+export const completeOneyRedirect = async (shopper) => {
   await paymentMethodsPage.confirmOneyPayment();
 };
 
-const doKlarnaPayment = async () => {
+export const doKlarnaPayment = async () => {
   await paymentMethodsPage.initiateKlarnaPayment(null);
 };
 
-const completeKlarnaRedirect = async (success) => {
+export const completeKlarnaRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmKlarnaPayment();
   } else {
@@ -37,7 +37,7 @@ const completeKlarnaRedirect = async (success) => {
   }
 };
 
-const completeKlarnaRedirectWithIDNumber = async (success) => {
+export const completeKlarnaRedirectWithIDNumber = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmKlarnaPaymentWithIDNumber();
   } else {
@@ -45,11 +45,11 @@ const completeKlarnaRedirectWithIDNumber = async (success) => {
   }
 };
 
-const doKlarnaPayNowPayment = async () => {
+export const doKlarnaPayNowPayment = async () => {
   await paymentMethodsPage.initiateKlarnaPayment('paynow');
 };
 
-const completeKlarnaPayNowRedirect = async (success) => {
+export const completeKlarnaPayNowRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmKlarnaPayNowPayment();
   } else {
@@ -57,11 +57,11 @@ const completeKlarnaPayNowRedirect = async (success) => {
   }
 };
 
-const doKlarnaAccountPayment = async () => {
+export const doKlarnaAccountPayment = async () => {
   await paymentMethodsPage.initiateKlarnaPayment('account');
 };
 
-const completeKlarnaAccountRedirect = async (success) => {
+export const completeKlarnaAccountRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmKlarnaAccountPayment();
   } else {
@@ -69,11 +69,11 @@ const completeKlarnaAccountRedirect = async (success) => {
   }
 };
 
-const doGiropayPayment = async (page) => {
+export const doGiropayPayment = async (page) => {
   await page.click('#rb_giropay');
 };
 
-const completeGiropayRedirect = async (paymentData, success) => {
+export const completeGiropayRedirect = async (paymentData, success) => {
   if (success) {
     await paymentMethodsPage.confirmGiropayPayment(paymentData);
   } else {
@@ -81,11 +81,11 @@ const completeGiropayRedirect = async (paymentData, success) => {
   }
 };
 
-const doEPSPayment = async () => {
+export const doEPSPayment = async () => {
   await paymentMethodsPage.initiateEPSPayment(success);
 };
 
-const completeEPSRedirect = async (success) => {
+export const completeEPSRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmSimulator();
   } else {
@@ -93,19 +93,19 @@ const completeEPSRedirect = async (success) => {
   }
 };
 
-const doAffirmPayment = async (shopper) => {
+export const doAffirmPayment = async (shopper) => {
   await paymentMethodsPage.initiateAffirmPayment(shopper);
 };
 
-const completeAffirmRedirect = async () => {
+export const completeAffirmRedirect = async () => {
   await paymentMethodsPage.cancelAffirmPayment();
 };
 
-const doVippsPayment = async (page) => {
+export const doVippsPayment = async (page) => {
   await page.click('#rb_vipps');
 };
 
-const completeVippsRedirect = async (success) => {
+export const completeVippsRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmVippsPayment();
   } else {
@@ -113,11 +113,11 @@ const completeVippsRedirect = async (success) => {
   }
 };
 
-const doTrustlyPayment = async (page) => {
+export const doTrustlyPayment = async (page) => {
   await page.click('#rb_trustly');
 };
 
-const completeTrustlyRedirect = async (success) => {
+export const completeTrustlyRedirect = async (success) => {
   if (success) {
     await paymentMethodsPage.confirmTrustlyPayment();
   } else {
@@ -125,38 +125,10 @@ const completeTrustlyRedirect = async (success) => {
   }
 };
 
-const doMobilePayPayment = async (page) => {
+export const doMobilePayPayment = async (page) => {
   await page.click('#rb_mobilepay');
 };
 
-const completeMobilePayRedirect = async () => {
+export const completeMobilePayRedirect = async () => {
   await paymentMethodsPage.confirmMobilePayPayment();
-};
-
-module.exports = {
-  doIdealPayment,
-  completeIdealRedirect,
-  doOneyPayment,
-  completeOneyRedirect,
-  doKlarnaPayment,
-  completeKlarnaRedirect,
-  completeKlarnaRedirectWithIDNumber,
-  doKlarnaAccountPayment,
-  completeKlarnaAccountRedirect,
-  doKlarnaPayNowPayment,
-  completeKlarnaPayNowRedirect,
-  doGiropayPayment,
-  completeGiropayRedirect,
-  doEPSPayment,
-  completeEPSRedirect,
-  doAffirmPayment,
-  completeAffirmRedirect,
-  doVippsPayment,
-  completeVippsRedirect,
-  doTrustlyPayment,
-  completeTrustlyRedirect,
-  doMobilePayPayment,
-  completeMobilePayRedirect,
-  doBillDeskPayment,
-  completeBillDeskRedirect,
 };

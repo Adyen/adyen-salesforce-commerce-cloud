@@ -1,7 +1,7 @@
-import { expect } from '@playwright/test';
+import expect from '@playwright/test';
 
-const shopperData = require('../data/shopperData.json');
-const paymentData = require('../data/paymentData.json');
+const shopperData = import('../data/shopperData.mjs');
+const paymentData = import('../data/paymentData.mjs');
 
 export default class PaymentMethodsPage {
   constructor(page) {
