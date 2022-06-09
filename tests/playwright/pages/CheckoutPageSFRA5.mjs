@@ -8,7 +8,7 @@ export default class CheckoutPageSFRA5 {
     this.productCard = page.locator('.product .image-container a');
     this.colourSelector = page.locator('.color-attribute');
     this.selectSize = page.locator('.select-size');
-    this.sizeOption = this.selectSize.find('option');
+    this.sizeOption = this.selectSize.selectOption('option');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
     this.checkoutUrl =
@@ -89,7 +89,7 @@ export default class CheckoutPageSFRA5 {
 
   goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
-    await this.successMessage();
+    await this.successMessage.waitFor({ visible: true, timeout: 5000 });
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
