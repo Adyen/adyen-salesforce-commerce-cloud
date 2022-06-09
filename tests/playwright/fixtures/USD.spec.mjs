@@ -10,8 +10,11 @@ import {
   do3Ds2Verification,
   doCardPaymentOneclick,
 } from '../paymentFlows/cards.mjs';
-const shopperData = require('../data/shopperData.json');
-const cardData = require('../data/cardData.json');
+import { ShopperData } from '../data/shopperData.mjs';
+import { CardData } from '../data/cardData.mjs';
+
+const shopperData = new ShopperData();
+const cardData = new CardData();
 
 let checkoutPage;
 let accountPage;
