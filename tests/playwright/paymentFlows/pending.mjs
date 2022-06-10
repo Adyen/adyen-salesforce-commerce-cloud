@@ -1,30 +1,35 @@
 import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
-const paymentMethodsPage = new PaymentMethodsPage();
+export class PendingPayments {
+  constructor(page) {
+    this.page = page;
+    this.paymentMethodsPage = new PaymentMethodsPage(page);
+  }
 
-export const doMBWayPayment = async () => {
-  await paymentMethodsPage.initiateMBWayPayment();
-};
+  doMBWayPayment = async () => {
+    await this.paymentMethodsPage.initiateMBWayPayment();
+  };
 
-export const doSEPAPayment = async () => {
-  await paymentMethodsPage.initiateSEPAPayment();
-};
+  doSEPAPayment = async () => {
+    await this.paymentMethodsPage.initiateSEPAPayment();
+  };
 
-export const doBankTransferPayment = async () => {
-  await paymentMethodsPage.initiateBankTransferPayment();
-};
+  doBankTransferPayment = async () => {
+    await this.paymentMethodsPage.initiateBankTransferPayment();
+  };
 
-export const completeBankTransferRedirect = async () => {
-  await paymentMethodsPage.submitSimulator();
-};
+  completeBankTransferRedirect = async () => {
+    await this.paymentMethodsPage.submitSimulator();
+  };
 
-export const doQRCodePayment = async (paymentMethod, envName) => {
-  await paymentMethodsPage.initiateQRCode(paymentMethod, envName);
-};
+  doQRCodePayment = async (paymentMethod, envName) => {
+    await this.paymentMethodsPage.initiateQRCode(paymentMethod, envName);
+  };
 
-export const doGooglePayPayment = async () => {
-  await paymentMethodsPage.initiateGooglePayPayment();
-};
+  doGooglePayPayment = async () => {
+    await this.paymentMethodsPage.initiateGooglePayPayment();
+  };
 
-export const doKonbiniPayment = async () => {
-  await paymentMethodsPage.initiateKonbiniPayment();
-};
+  doKonbiniPayment = async () => {
+    await this.paymentMethodsPage.initiateKonbiniPayment();
+  };
+}

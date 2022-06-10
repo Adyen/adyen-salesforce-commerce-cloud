@@ -1,134 +1,139 @@
-import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
-const paymentMethodsPage = new PaymentMethodsPage();
-
-export const doIdealPayment = async (testSuccess) => {
-  await paymentMethodsPage.initiateIdealPayment(testSuccess);
-};
-
-export const completeIdealRedirect = async () => {
-  await paymentMethodsPage.submitSimulator();
-};
-
-export const doBillDeskPayment = async (paymentMethod) => {
-  await paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
-};
-
-export const completeBillDeskRedirect = async (success) => {
-  await paymentMethodsPage.billdeskSimulator(success);
-};
-
-export const doOneyPayment = async (shopper) => {
-  await paymentMethodsPage.initiateOneyPayment(shopper);
-};
-
-export const completeOneyRedirect = async (shopper) => {
-  await paymentMethodsPage.confirmOneyPayment();
-};
-
-export const doKlarnaPayment = async () => {
-  await paymentMethodsPage.initiateKlarnaPayment(null);
-};
-
-export const completeKlarnaRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmKlarnaPayment();
-  } else {
-    await paymentMethodsPage.cancelKlarnaPayment();
+import paymentMethodsPage from '../pages/paymentMethodsPage.mjs';
+export class RedirectShopper {
+  constructor(page) {
+    this.page = page;
+    this.paymentMethodsPage = new paymentMethodsPage(page);
   }
-};
 
-export const completeKlarnaRedirectWithIDNumber = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmKlarnaPaymentWithIDNumber();
-  } else {
-    await paymentMethodsPage.cancelKlarnaPayment();
-  }
-};
+  doIdealPayment = async (testSuccess) => {
+    await this.paymentMethodsPage.initiateIdealPayment(testSuccess);
+  };
 
-export const doKlarnaPayNowPayment = async () => {
-  await paymentMethodsPage.initiateKlarnaPayment('paynow');
-};
+  completeIdealRedirect = async () => {
+    await this.paymentMethodsPage.submitSimulator();
+  };
 
-export const completeKlarnaPayNowRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmKlarnaPayNowPayment();
-  } else {
-    await paymentMethodsPage.cancelKlarnaPayment();
-  }
-};
+  doBillDeskPayment = async (paymentMethod) => {
+    await this.paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
+  };
 
-export const doKlarnaAccountPayment = async () => {
-  await paymentMethodsPage.initiateKlarnaPayment('account');
-};
+  completeBillDeskRedirect = async (success) => {
+    await this.paymentMethodsPage.billdeskSimulator(success);
+  };
 
-export const completeKlarnaAccountRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmKlarnaAccountPayment();
-  } else {
-    await paymentMethodsPage.cancelKlarnaPayment();
-  }
-};
+  doOneyPayment = async (shopper) => {
+    await this.paymentMethodsPage.initiateOneyPayment(shopper);
+  };
 
-export const doGiropayPayment = async (page) => {
-  await page.click('#rb_giropay');
-};
+  completeOneyRedirect = async (shopper) => {
+    await this.paymentMethodsPage.confirmOneyPayment();
+  };
 
-export const completeGiropayRedirect = async (paymentData, success) => {
-  if (success) {
-    await paymentMethodsPage.confirmGiropayPayment(paymentData);
-  } else {
-    await paymentMethodsPage.cancelGiropayPayment();
-  }
-};
+  doKlarnaPayment = async () => {
+    await this.paymentMethodsPage.initiateKlarnaPayment(null);
+  };
 
-export const doEPSPayment = async () => {
-  await paymentMethodsPage.initiateEPSPayment(success);
-};
+  completeKlarnaRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmKlarnaPayment();
+    } else {
+      await this.paymentMethodsPage.cancelKlarnaPayment();
+    }
+  };
 
-export const completeEPSRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmSimulator();
-  } else {
-    await paymentMethodsPage.cancelSimulator();
-  }
-};
+  completeKlarnaRedirectWithIDNumber = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmKlarnaPaymentWithIDNumber();
+    } else {
+      await this.paymentMethodsPage.cancelKlarnaPayment();
+    }
+  };
 
-export const doAffirmPayment = async (shopper) => {
-  await paymentMethodsPage.initiateAffirmPayment(shopper);
-};
+  doKlarnaPayNowPayment = async () => {
+    await this.paymentMethodsPage.initiateKlarnaPayment('paynow');
+  };
 
-export const completeAffirmRedirect = async () => {
-  await paymentMethodsPage.cancelAffirmPayment();
-};
+  completeKlarnaPayNowRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmKlarnaPayNowPayment();
+    } else {
+      await this.paymentMethodsPage.cancelKlarnaPayment();
+    }
+  };
 
-export const doVippsPayment = async (page) => {
-  await page.click('#rb_vipps');
-};
+  doKlarnaAccountPayment = async () => {
+    await this.paymentMethodsPage.initiateKlarnaPayment('account');
+  };
 
-export const completeVippsRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmVippsPayment();
-  } else {
-    await paymentMethodsPage.cancelVippsPayment();
-  }
-};
+  completeKlarnaAccountRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmKlarnaAccountPayment();
+    } else {
+      await this.paymentMethodsPage.cancelKlarnaPayment();
+    }
+  };
 
-export const doTrustlyPayment = async (page) => {
-  await page.click('#rb_trustly');
-};
+  doGiropayPayment = async (page) => {
+    await page.click('#rb_giropay');
+  };
 
-export const completeTrustlyRedirect = async (success) => {
-  if (success) {
-    await paymentMethodsPage.confirmTrustlyPayment();
-  } else {
-    await paymentMethodsPage.cancelTrustlyPayment();
-  }
-};
+  completeGiropayRedirect = async (paymentData, success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmGiropayPayment(paymentData);
+    } else {
+      await this.paymentMethodsPage.cancelGiropayPayment();
+    }
+  };
 
-export const doMobilePayPayment = async (page) => {
-  await page.click('#rb_mobilepay');
-};
+  doEPSPayment = async () => {
+    await this.paymentMethodsPage.initiateEPSPayment(success);
+  };
 
-export const completeMobilePayRedirect = async () => {
-  await paymentMethodsPage.confirmMobilePayPayment();
-};
+  completeEPSRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmSimulator();
+    } else {
+      await this.paymentMethodsPage.cancelSimulator();
+    }
+  };
+
+  doAffirmPayment = async (shopper) => {
+    await this.paymentMethodsPage.initiateAffirmPayment(shopper);
+  };
+
+  completeAffirmRedirect = async () => {
+    await this.paymentMethodsPage.cancelAffirmPayment();
+  };
+
+  doVippsPayment = async (page) => {
+    await page.click('#rb_vipps');
+  };
+
+  completeVippsRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmVippsPayment();
+    } else {
+      await this.paymentMethodsPage.cancelVippsPayment();
+    }
+  };
+
+  doTrustlyPayment = async (page) => {
+    await page.click('#rb_trustly');
+  };
+
+  completeTrustlyRedirect = async (success) => {
+    if (success) {
+      await this.paymentMethodsPage.confirmTrustlyPayment();
+    } else {
+      await this.paymentMethodsPage.cancelTrustlyPayment();
+    }
+  };
+
+  doMobilePayPayment = async (page) => {
+    await page.click('#rb_mobilepay');
+  };
+
+  completeMobilePayRedirect = async () => {
+    await this.paymentMethodsPage.confirmMobilePayPayment();
+  };
+}
