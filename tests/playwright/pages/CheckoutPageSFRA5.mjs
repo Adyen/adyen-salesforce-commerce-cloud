@@ -8,7 +8,7 @@ export default class CheckoutPageSFRA5 {
     this.productCard = page.locator('.product .image-container a');
     this.colourSelector = page.locator('.color-attribute');
     this.selectSize = page.locator('.select-size');
-    this.sizeOption = this.selectSize.selectOption('option');
+    // this.sizeOption = this.selectSize.selectOption('option');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
     this.checkoutUrl =
@@ -77,7 +77,9 @@ export default class CheckoutPageSFRA5 {
     /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
     this.qrImg = page.locator('img');
 
-    this.signInSectionButton = page.locator('.fa-sign-in');
+    this.signInSectionButton = page.locator(
+      'a[aria-label="Login to your account"]',
+    );
     this.emailField = page.locator('#login-form-email');
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');

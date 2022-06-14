@@ -15,17 +15,17 @@ export default class AccountPageSFRA {
       .locator('.adyen-checkout__card__holderName__input')
       .type(cardInput.holderName);
     await this.page
-      .framelocator('.adyen-checkout__card__cardNumber__input iframe')
+      .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
       .locator('.input-field')
       .type(cardInput.cardNumber);
     await this.page
-      .framelocator('.adyen-checkout__card__exp-date__input iframe')
+      .frameLocator('.adyen-checkout__card__exp-date__input iframe')
       .locator('.input-field')
       .type(cardInput.expirationDate);
 
     if (cardInput.cvc !== '') {
       await this.page
-        .framelocator('.adyen-checkout__card__cvc__input iframe')
+        .frameLocator('.adyen-checkout__card__cvc__input iframe')
         .locator('.input-field')
         .type(cardInput.cvc);
     }
@@ -50,7 +50,7 @@ export default class AccountPageSFRA {
   };
 
   expectFailure = async () => {
-    await expect(await this.page.locator('.card-error')).toBeVisible();
+    await expect(await this.page.locator('.alert-danger')).toBeVisible();
   };
 
   expectCardRemoval = async (cardData) => {

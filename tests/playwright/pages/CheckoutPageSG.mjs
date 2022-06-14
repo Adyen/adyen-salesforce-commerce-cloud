@@ -7,7 +7,7 @@ export default class CheckoutPageSFRA {
     );
     this.categoryTile = page.locator('.category-tile');
     this.productCard = page.locator('.name-link');
-    this.selectSize = page.locator('.swatchanchor').withText('6');
+    this.selectSize = page.locator('.swatchanchor:has-text("6")');
     this.addToCartButton = page.locator('#add-to-cart');
     this.goToCart = page.locator('.minicart-icon');
     this.goToCheckout = page.locator('button[name="dwfrm_cart_checkoutCart"]');
@@ -43,7 +43,7 @@ export default class CheckoutPageSFRA {
 
     this.placeOrderButton = page.locator('button[name="submit"]');
     this.submitPaymentButton = page.locator('button[id="billing-submit"]');
-    this.successMessage = page.locator('.minicart-quantity').withText('1');
+    this.successMessage = page.locator('.minicart-quantity:has-text("1")');
 
     this.checkoutPageUserFirstNameInput = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_firstName',
@@ -66,15 +66,15 @@ export default class CheckoutPageSFRA {
     this.checkoutPageUserCountrySelect = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_country',
     );
-    this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
-      'option',
-    );
+    // this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
+    //   'option',
+    // );
     this.checkoutPageUserStateSelect = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_states_state',
     ); //uncommented state selectors
-    this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
-      'option',
-    );
+    // this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
+    //   'option',
+    // );
     this.checkoutPageUserTelephoneInput = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_phone',
     );
@@ -241,10 +241,10 @@ export default class CheckoutPageSFRA {
     await this.page.goto('/s/SiteGenesis/account');
 
     await this.page
-      .locator('input[id="/dwfrm_login_username_.*/"]')
+      .locator('//input[contains(@id,"dwfrm_login_username_")]')
       .type(credentials.shopperEmail);
     await this.page
-      .locator('input[id="/dwfrm_login_password_.*/"]')
+      .locator('//input[contains(@id,"dwfrm_login_password_")]')
       .type(credentials.password);
 
     await this.page.click('button[name="dwfrm_login_login"]');

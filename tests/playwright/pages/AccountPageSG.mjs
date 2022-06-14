@@ -28,7 +28,7 @@ export default class AccountPageSG {
       .type(cardInput.expirationDate);
     if (cardInput.cvc !== '') {
       await this.page
-        .framelocator('.adyen-checkout__card__cvc__input iframe')
+        .frameLocator('.adyen-checkout__card__cvc__input iframe')
         .locator('#encryptedSecurityCode')
         .type(cardInput.cvc);
     }

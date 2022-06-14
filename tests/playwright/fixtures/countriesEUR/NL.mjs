@@ -14,7 +14,7 @@ import {
 } from '../../paymentFlows/cards.mjs';
 const shopperData = require('../../data/shopperData.mjs');
 
-module.exports = (checkoutPage) => {
+export async function testNetherlands(checkoutPage) {
   test('iDeal Success', async () => {
     await checkoutPage.setShopperDetails(shopperData.NL);
     await doIdealPayment(true);
@@ -73,4 +73,4 @@ module.exports = (checkoutPage) => {
     await checkoutPage.setEmail();
     await doGooglePayPayment();
   });
-};
+}
