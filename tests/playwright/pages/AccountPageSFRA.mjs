@@ -3,7 +3,6 @@ export default class AccountPageSFRA {
   constructor(page) {
     this.page = page;
     this.consentButton = page.locator('.affirm');
-    this.savedCard = page.locator('.card p:nth-child(2)');
   }
 
   consent = async () => {
@@ -46,7 +45,12 @@ export default class AccountPageSFRA {
 
   expectSuccess = async (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    expect(await this.savedCard.innerText()).toContain(last4);
+    const cardElement = this.savedCardElementGenerator(last4);
+
+    await cardElement.waitFor({
+      state: 'visible',
+      timeout: 3000,
+    });
   };
 
   expectFailure = async () => {
@@ -55,6 +59,16 @@ export default class AccountPageSFRA {
 
   expectCardRemoval = async (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    expect(await this.savedCard.innerText()).not.toContain(last4);
+    const cardElement = this.savedCardElementGenerator(last4);
+
+    await cardElement.waitFor({
+      state: 'detached',
+      timeout: 3000,
+    });
+  };
+
+  savedCardElementGenerator = (cardNumber) => {
+    let locatorText = `//*[@class="card"]//p[contains(text(),"${cardNumber}")]`;
+    return this.page.locator(locatorText);
   };
 }

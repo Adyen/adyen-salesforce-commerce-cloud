@@ -9,7 +9,7 @@ export default class PaymentMethodsPage {
   }
 
   getLocation = async () => {
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 })();
     return await this.page.url();
   };
 
@@ -58,6 +58,8 @@ export default class PaymentMethodsPage {
 
   initiateCardPayment = async (cardInput) => {
     await this.page.locator('#rb_scheme').click();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+
     await this.page
       .locator('.adyen-checkout__card__holderName__input')
       .type(cardInput.holderName);
@@ -103,9 +105,9 @@ export default class PaymentMethodsPage {
 
   do3Ds2Verification = async () => {
     const verificationIframe = this.page.frameLocator(
-      '.adyen-checkout__iframe',
+      '.adyen-checkout__threeds2__challenge iframe',
     );
-    await verificationIframe.locator('.input-field').type('password');
+    await verificationIframe.locator('input[name="answer"]').fill('password');
     await verificationIframe.locator('button[type="submit"]').click();
   };
 

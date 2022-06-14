@@ -174,12 +174,15 @@ export default class CheckoutPageSFRA5 {
   };
 
   expectSuccess = async () => {
-    expect(this.getLocation()).toContain('Order-Confirm');
+    await this.page.waitForNavigation({
+      url: /Order-Confirm/,
+      timeout: 15000,
+    });
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 
   expectRefusal = async () => {
-    expect(this.errorMessage.innerText()).not.toBeEmpty();
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
@@ -192,14 +195,14 @@ export default class CheckoutPageSFRA5 {
   };
 
   getLocation = async () => {
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.page.goBack();
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
   };
 
   loginUser = async (credentials) => {

@@ -199,14 +199,14 @@ export default class CheckoutPageSFRA {
   };
 
   getLocation = async () => {
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.page.goBack();
-    await this.page.waitForPageLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
   };
 
   loginUser = async (credentials) => {

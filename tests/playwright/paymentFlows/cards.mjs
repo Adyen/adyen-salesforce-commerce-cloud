@@ -1,4 +1,4 @@
-import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
+import PaymentMethodsPage from '../pages/paymentMethodsPage.mjs';
 export class Cards {
   constructor(page) {
     this.page = page;
@@ -6,29 +6,29 @@ export class Cards {
   }
 
   doCardPayment = async (cardData) => {
-    await paymentMethodsPage.initiateCardPayment(cardData);
+    await this.paymentMethodsPage.initiateCardPayment(cardData);
   };
 
   do3Ds1Verification = async () => {
-    await paymentMethodsPage.do3Ds1Verification();
+    await this.paymentMethodsPage.do3Ds1Verification();
   };
 
   do3Ds2Verification = async () => {
-    await paymentMethodsPage.do3Ds2Verification();
+    await this.paymentMethodsPage.do3Ds2Verification();
   };
 
   doCardPaymentOneclick = async (cardData) => {
     const oneClickLabel = `************${cardData.cardNumber.substring(
       cardData.cardNumber.length - 4,
     )}`;
-    await paymentMethodsPage.initiateOneClickPayment({
+    await this.paymentMethodsPage.initiateOneClickPayment({
       oneClickLabel,
       cvc: cardData.cvc,
     });
   };
 
   doCardPaymentInstallments = async (cardData, nrInstallments) => {
-    await paymentMethodsPage.initiateCardPayment(cardData);
-    await paymentMethodsPage.selectInstallments(nrInstallments);
+    await this.paymentMethodsPage.initiateCardPayment(cardData);
+    await this.paymentMethodsPage.selectInstallments(nrInstallments);
   };
 }
