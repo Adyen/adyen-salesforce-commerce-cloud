@@ -141,6 +141,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
@@ -210,5 +211,6 @@ export default class CheckoutPageSFRA5 {
     await this.emailField.type(credentials.shopperEmail);
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();
+    await this.page.waitForNavigation({ waitUntil: 'load' });
   };
 }

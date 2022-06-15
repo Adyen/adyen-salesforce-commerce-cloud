@@ -12,6 +12,7 @@ const cardData = new CardData();
 let checkoutPage;
 let accountPage;
 let cards;
+let redirectShopper;
 
 let environment = environments[0];
 // for (const environment of environments) {
@@ -222,9 +223,11 @@ test.describe.parallel(`${environment.name} USD`, () => {
 
   test.skip('PayPal Fail', async () => {});
 
-  test('Affirm Fail', async () => {
+  test('Affirm Fail', async ({ page }) => {
     await goToBillingWithFullCartGuestUser();
-    await doAffirmPayment(shopperData.US);
+
+    redirectShopper = new RedirectShopper(page);
+    await redirectShopper.doAffirmPayment(shopperData.US);
     await checkoutPage.completeCheckout();
     await completeAffirmRedirect(false);
     await checkoutPage.expectRefusal();
