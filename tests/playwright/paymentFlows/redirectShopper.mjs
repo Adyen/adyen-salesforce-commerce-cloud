@@ -1,8 +1,8 @@
-import paymentMethodsPage from '../pages/paymentMethodsPage.mjs';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 export class RedirectShopper {
   constructor(page) {
     this.page = page;
-    this.paymentMethodsPage = new paymentMethodsPage(page);
+    this.paymentMethodsPage = new PaymentMethodsPage(page);
   }
 
   doIdealPayment = async (testSuccess) => {
