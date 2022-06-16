@@ -49,7 +49,7 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'visible',
-      timeout: 3000,
+      timeout: 5000,
     });
   };
 
