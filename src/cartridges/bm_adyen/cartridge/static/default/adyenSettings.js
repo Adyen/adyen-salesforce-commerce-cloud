@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   submitButton.addEventListener('click', () => {
     const formData = new FormData(form);
     const requestBody = {};
-    for (const formPair of formData.entries()) {
-      requestBody[formPair[0]] = formPair[1];
-    }
+    formData.entries().forEach((formPair) => {
+      const key = formPair[0];
+      const value = formPair[1];
+      requestBody[key] = value;
+    });
 
     fetch('AdyenSettings-Save', {
       headers: {
@@ -21,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       method: 'POST',
       body: JSON.stringify(requestBody),
-    }).then((response) => {
-      console.log(response);
+    }).then(() => {
+      // console.log(response);
     });
 
     // $.ajax({
