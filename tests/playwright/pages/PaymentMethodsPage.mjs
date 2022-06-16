@@ -81,12 +81,13 @@ export default class PaymentMethodsPage {
   };
 
   initiateOneClickPayment = async (oneClickCardInput) => {
-    // TODO: Simplify the locator strategy here if possible
+    /*TODO: Simplify the locator strategy here if possible
     const cardLabelRegex = new RegExp(
       oneClickCardInput.oneClickLabel.replace(/[*]/g, '\\$&'),
     );
+    Still keeping the old regexp due to potential use for SG*/
     const oneClickLi = this.page.locator(
-      `//label[contains(text(),"${cardLabelRegex}")]/..`,
+      `//label[contains(text(),"${oneClickCardInput.oneClickLabel}")]/..`,
     );
     await oneClickLi.locator('input[name="brandCode"]').click();
     if (oneClickCardInput.cvc !== '') {
