@@ -91,7 +91,7 @@ export default class CheckoutPageSFRA5 {
 
   goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
-    await this.successMessage.waitFor({ visible: true, timeout: 5000 });
+    await this.successMessage.waitFor({ visible: true, timeout: 10000 });
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();

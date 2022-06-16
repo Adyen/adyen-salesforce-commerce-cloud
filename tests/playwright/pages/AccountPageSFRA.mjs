@@ -49,7 +49,7 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'visible',
-      timeout: 5000,
+      timeout: 10000,
     });
   };
 
@@ -63,7 +63,7 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'detached',
-      timeout: 3000,
+      timeout: 10000,
     });
   };
 
