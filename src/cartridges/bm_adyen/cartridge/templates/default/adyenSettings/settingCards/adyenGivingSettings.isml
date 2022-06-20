@@ -1,0 +1,67 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+
+<div id="adyenGivingSettings" class="card bg-white mt-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            Adyen Giving <small class="text-secondary">(optional)</small>
+        </h5>
+        <h7 class="card-subtitle text-muted">
+            With Adyen Giving feature, you can give your shoppers the option to donate to a charity as part of your payment flow. 
+            Not sure how to register? Contact your <a class="text-primary" href="https://www.adyen.com/contact" target="_blank">Adyen Account Manager or Support</a>.
+        </h7>
+        <div class="mt-2">
+            <div class="form-group">
+                <label class="font-weight-bold" for="adyenGivingButton">Adyen Giving</label>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <small id="adyenGivingButtonHelp" class="form-text text-muted mb-1">You need a charity account to enable Adyen Giving. Do you want to enable Adyen Giving?</small>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" id="adyenGivingButton" aria-describedby="adyenGivingButtonHelp"  class="btn btn-link border">No, disable</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="charityName">Charity name</label>
+                <small id="charityNameHelp" class="form-text text-muted mb-1">Enter the name of the charity displayed on the Adyen Giving component</small>
+                <input type="text" class="form-control" name="adyenGivingCharityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="charityMerchantAccount">Charity merchant account</label>
+                <small id="charityMerchantAccountHelp" class="form-text text-muted mb-1">Enter your Adyen merchant account name for charity</small>
+                <input type="text" class="form-control" name="adyenGivingCharityAccont" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="donationAmounts">Amounts for donation</label>
+                <small id="donationAmountsHelp" class="form-text text-muted mb-1">Enter the suggested amounts that the shopper can choose to donate</small>
+                <input type="text" class="form-control" name="adyenGivingDonationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Comma separated values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="charityDescription">Description</label>
+                <small id="charityDescriptionHelp" class="form-text text-muted mb-1">Enter the description of the charity</small>
+                <input type="text" class="form-control" name="adyenGivingCharityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="charityWebsite">Charity website</label>
+                <small id="charityWebsiteHelp" class="form-text text-muted mb-1">Enter the link to the charity website</small>
+                <input type="text" class="form-control" name="adyenGivingCharityWebsite" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="backgroundFile">Background image for Adyen Giving component</label>
+                <input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
+            </div>
+            
+            <div class="form-group">
+                <label class="font-weight-bold" for="logoFile">Logo in Adyen Giving component</label>
+                <input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
+            </div>
+        </div>
+    </div>
+</div>

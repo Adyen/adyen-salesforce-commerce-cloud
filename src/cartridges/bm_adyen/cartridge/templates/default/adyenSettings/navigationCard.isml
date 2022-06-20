@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="card bg-white mt-4">
+    <div id="navigationList" class="card-body list-group">
+        <a class="list-group-item list-group-item-action border-0" href="#requiredSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/> 
+        Required settings
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#webhookSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        Webhook settings
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#cardSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        Card settings
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#lpmSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        Local payment method settings
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#posSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        POS settings
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#adyenGivingSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        Adyen Giving
+        </a>
+        <a class="list-group-item list-group-item-action border-0" href="#optionalSettings">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Twemoji_1f600.svg/1280px-Twemoji_1f600.svg.png" width="20" height="20" class="rounded float-start mr-3"/>
+        Optional settings
+        </a>
+    </div>
+</div>

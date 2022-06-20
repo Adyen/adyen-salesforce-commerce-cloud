@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+
+<div id="posSettings" class="card bg-white mt-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            POS settings
+        </h5>
+        <h7 class="card-subtitle text-muted">
+            In the following steps, you can configure the point of sale settings that you want to offer in your Salesforce Commerce Cloud store. 
+        </h7>
+
+        <div class="mt-2">
+            <div class="form-group">
+            <label class="font-weight-bold" for="storeID">StoreID for Terminal API <small class="text-secondary">(optional)</small></label>
+            <small id="storeIDHelp" class="form-text text-muted mb-1">Enter your storeID value to make your terminals ready to use the Adyen Terminal API</small>
+            <input type="text" class="form-control" name="adyenStoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()}"/>
+            </div>
+        </div>
+    </div>
+</div>
