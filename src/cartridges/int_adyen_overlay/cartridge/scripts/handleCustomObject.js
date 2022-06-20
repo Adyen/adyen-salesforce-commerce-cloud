@@ -148,7 +148,7 @@ function handle(customObj) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
             Logger.getLogger('Adyen', 'adyen').info(
               'Order {0} updated to status PAID.',
-              order.orderNo,
+              order.orderNo,  
             );
             result.SubmitOrder = true;
           }
