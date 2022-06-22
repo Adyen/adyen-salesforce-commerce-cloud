@@ -159,6 +159,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   goBackAndSubmitShipping = async () => {
+    await this.page.waitForNavigation('load', { timeout: 10000 });
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -201,9 +202,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.page.goBack();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
   };
 
   loginUser = async (credentials) => {
