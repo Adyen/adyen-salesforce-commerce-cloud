@@ -10,7 +10,7 @@ const config = {
   testMatch: '*.spec.mjs',
 
   /* Maximum time one test can run for. */
-  timeout: 80 * 1000,
+  timeout: 90 * 1000,
 
   expect: {
     /**
