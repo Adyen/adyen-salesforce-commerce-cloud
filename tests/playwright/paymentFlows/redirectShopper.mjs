@@ -25,6 +25,10 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateOneyPayment(shopper);
   };
 
+  doPayPalPayment = async () => {
+    await this.paymentMethodsPage.initiatePayPalPayment();
+  };
+
   completeOneyRedirect = async (shopper) => {
     await this.paymentMethodsPage.confirmOneyPayment();
   };

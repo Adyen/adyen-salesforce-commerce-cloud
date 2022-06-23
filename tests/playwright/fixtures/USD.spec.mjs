@@ -60,10 +60,11 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test('Card payment 3DS1 with restored cart success', async () => {
+    test('Card payment 3DS1 with restored cart success', async ({ page }) => {
       await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
+      await page.waitForNavigation();
       await checkoutPage.goBackAndSubmitShipping();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.submitPayment();
@@ -154,9 +155,13 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test.skip('PayPal Success', async () => {});
-
-    test.skip('PayPal Fail', async () => {});
+    test('PayPal Success', async ({ page }) => {
+      await goToBillingWithFullCartGuestUser();
+      redirectShopper = new RedirectShopper(page);
+      await checkoutPage.setEmail();
+      await redirectShopper.doPayPalPayment();
+      await checkoutPage.expectSuccess();
+    });
 
     test('Affirm Fail', async ({ page }) => {
       await goToBillingWithFullCartGuestUser();

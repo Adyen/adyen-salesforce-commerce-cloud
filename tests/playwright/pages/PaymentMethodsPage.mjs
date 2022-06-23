@@ -1,7 +1,9 @@
 import expect from '@playwright/test';
+import { ShopperData } from '../data/shopperData.mjs';
+import { PaymentData } from '../data/paymentData.mjs';
 
-const shopperData = import('../data/shopperData.mjs');
-const paymentData = import('../data/paymentData.mjs');
+const shopperData = new ShopperData();
+const paymentData = new PaymentData();
 
 export default class PaymentMethodsPage {
   constructor(page) {
@@ -26,6 +28,42 @@ export default class PaymentMethodsPage {
     await iDealInput.click();
     await iDealDropDown.click();
     await issuer.click();
+  };
+
+  initiatePayPalPayment = async () => {
+    // Paypal button locator on payment methods page
+    const payPalButton = this.page
+      .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
+      .locator('.paypal-button');
+
+    // Click PayPal radio button
+    await this.page.click('#rb_paypal');
+
+    // Capture popup for interaction
+    const [popup] = await Promise.all([
+      this.page.waitForEvent('popup'),
+      payPalButton.click(),
+    ]);
+
+    // Wait for the page load
+    await popup.waitForNavigation({
+      url: /.*sandbox.paypal.com*/,
+      timeout: 15000,
+    });
+
+    // Paypal HPP selectors
+    this.emailInput = popup.locator('#email');
+    this.nextButton = popup.locator('#btnNext');
+    this.passwordInput = popup.locator('#password');
+    this.loginButton = popup.locator('#btnLogin');
+    this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
+
+    await this.emailInput.click();
+    await this.emailInput.fill(paymentData.PayPal.username);
+    await this.nextButton.click();
+    await this.passwordInput.fill(paymentData.PayPal.password);
+    await this.loginButton.click();
+    await this.agreeAndPayNowButton.click();
   };
 
   initiateBillDeskPayment = async (paymentMethod) => {
