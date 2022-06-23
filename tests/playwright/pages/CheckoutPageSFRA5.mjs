@@ -137,7 +137,11 @@ export default class CheckoutPageSFRA5 {
   };
 
   setEmail = async () => {
-    await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
+    /* After filling the shopper details, clicking "Next" has an autoscroll
+    feature, which leads the email field to be missed, hence the flakiness.
+    Waiting until the full page load prevents this situation */
+    await this.page.waitForLoadState('networkidle');
+    await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
   };
 
   submitShipping = async () => {
