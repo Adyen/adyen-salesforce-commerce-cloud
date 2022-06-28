@@ -96,25 +96,25 @@ export default class PaymentMethodsPage {
 
   initiateCardPayment = async (cardInput) => {
     await this.page.locator('#rb_scheme').click();
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 10000 });
 
     await this.page
       .locator('.adyen-checkout__card__holderName__input')
-      .type(cardInput.holderName);
+      .fill(cardInput.holderName);
 
     await this.page
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
       .locator('.input-field')
-      .type(cardInput.cardNumber);
+      .fill(cardInput.cardNumber);
     await this.page
       .frameLocator('.adyen-checkout__card__exp-date__input iframe')
       .locator('.input-field')
-      .type(cardInput.expirationDate);
+      .fill(cardInput.expirationDate);
     if (cardInput.cvc !== '') {
       await this.page
         .frameLocator('.adyen-checkout__card__cvc__input iframe')
         .locator('.input-field')
-        .type(cardInput.cvc);
+        .fill(cardInput.cvc);
     }
   };
 
