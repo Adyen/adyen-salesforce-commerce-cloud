@@ -55,11 +55,13 @@ function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
       const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
       const vatPercentage = LineItemHelper.getVatPercentage(lineItem);
 
-      lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
-      lineItemObject.taxAmount = vatAmount.getValue().toFixed();
-      lineItemObject.description = description;
+      lineItemObject.amountExcludingTax = (Math.floor(quantity * itemAmount.getValue())).toFixed();
+      lineItemObject.taxAmount = (Math.ceil(quantity * vatAmount.getValue())).toFixed();
+
+      const quantityDescription = quantity > 1 ? `${quantity}x `: '';
+      lineItemObject.description = `${quantityDescription}${description}`;
       lineItemObject.id = id;
-      lineItemObject.quantity = quantity;
+      lineItemObject.quantity = 1;
       lineItemObject.taxCategory = 'None';
       lineItemObject.taxPercentage = addTaxPercentage ? (
           new Number(vatPercentage) * 10000
