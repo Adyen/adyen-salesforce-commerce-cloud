@@ -218,7 +218,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectRefusal = async () => {
-    expect(this.errorMessage.innerText()).not.toBeEmpty();
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
