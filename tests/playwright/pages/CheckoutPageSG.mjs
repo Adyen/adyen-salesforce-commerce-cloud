@@ -1,3 +1,5 @@
+import { chromium, expect } from '@playwright/test';
+
 export default class CheckoutPageSFRA {
   constructor(page) {
     this.page = page;
@@ -95,7 +97,7 @@ export default class CheckoutPageSFRA {
 
   goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
-    await this.successMessage();
+    await this.successMessage.waitFor({ visible: true, timeout: 10000 });
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
@@ -182,12 +184,14 @@ export default class CheckoutPageSFRA {
   completeCheckoutLoggedInUser = async () => {
     await this.setEmail();
     await this.submitPayment();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
