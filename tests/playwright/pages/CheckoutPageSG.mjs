@@ -171,6 +171,7 @@ export default class CheckoutPageSFRA {
   };
 
   submitShipping = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
@@ -198,6 +199,12 @@ export default class CheckoutPageSFRA {
   goBackAndSubmitPayment = async () => {
     await this.navigateBack();
     await this.submitPayment();
+  };
+
+  goBackAndSubmitShipping = async () => {
+    // await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.navigateBack();
+    await this.submitShipping();
   };
 
   goBackAndReplaceOrderDifferentWindow = async () => {

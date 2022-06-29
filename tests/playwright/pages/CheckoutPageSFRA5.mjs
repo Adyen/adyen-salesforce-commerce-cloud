@@ -159,6 +159,7 @@ export default class CheckoutPageSFRA5 {
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
