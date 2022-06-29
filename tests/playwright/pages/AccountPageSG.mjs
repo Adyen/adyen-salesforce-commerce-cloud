@@ -14,24 +14,32 @@ export default class AccountPageSG {
   };
 
   initiateCardPayment = async (cardInput) => {
-    await this.page
-      .locator('.adyen-checkout__card__holderName__input')
-      .type(cardInput.holderName);
+    await this.page.waitForLoadState('load', { timeout: 10000 });
 
     await this.page
+      .locator('.adyen-checkout__card__holderName__input')
+      .fill(cardInput.holderName);
+
+    const cardNumberInputField = this.page
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
-      .locator('#encryptedCardNumber')
-      .type(cardInput.cardNumber);
-    await this.page
+      .locator('.input-field');
+    await cardNumberInputField.click();
+    await cardNumberInputField.fill(cardInput.cardNumber);
+
+    const expirationDateInputField = this.page
       .frameLocator('.adyen-checkout__card__exp-date__input iframe')
-      .locator('#encryptedExpiryDate')
-      .type(cardInput.expirationDate);
+      .locator('.input-field');
+    await expirationDateInputField.click();
+    await expirationDateInputField.fill(cardInput.expirationDate);
+
     if (cardInput.cvc !== '') {
-      await this.page
+      const cvcInputField = this.page
         .frameLocator('.adyen-checkout__card__cvc__input iframe')
-        .locator('#encryptedSecurityCode')
-        .type(cardInput.cvc);
+        .locator('.input-field');
+      await cvcInputField.click();
+      await cvcInputField.fill(cardInput.cvc);
     }
+
     await this.page.locator('#applyBtn').click();
   };
 
