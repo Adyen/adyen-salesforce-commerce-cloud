@@ -102,19 +102,24 @@ export default class PaymentMethodsPage {
       .locator('.adyen-checkout__card__holderName__input')
       .fill(cardInput.holderName);
 
-    await this.page
+    const cardNumberInputField = this.page
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
-      .locator('.input-field')
-      .fill(cardInput.cardNumber);
-    await this.page
+      .locator('.input-field');
+    await cardNumberInputField.click();
+    await cardNumberInputField.fill(cardInput.cardNumber);
+
+    const expirationDateInputField = this.page
       .frameLocator('.adyen-checkout__card__exp-date__input iframe')
-      .locator('.input-field')
-      .fill(cardInput.expirationDate);
+      .locator('.input-field');
+    await expirationDateInputField.click();
+    await expirationDateInputField.fill(cardInput.expirationDate);
+
     if (cardInput.cvc !== '') {
-      await this.page
+      const cvcInputField = this.page
         .frameLocator('.adyen-checkout__card__cvc__input iframe')
-        .locator('.input-field')
-        .fill(cardInput.cvc);
+        .locator('.input-field');
+      await cvcInputField.click();
+      await cvcInputField.fill(cardInput.cvc);
     }
   };
 
