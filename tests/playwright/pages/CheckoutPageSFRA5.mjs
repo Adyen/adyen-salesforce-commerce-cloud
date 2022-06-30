@@ -157,6 +157,11 @@ export default class CheckoutPageSFRA5 {
     await this.placeOrderButton.click();
   };
 
+  completeCheckoutLoggedInUser = async () => {
+    await this.submitPayment();
+    await this.placeOrder();
+  };
+
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();

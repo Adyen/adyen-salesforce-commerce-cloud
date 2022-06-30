@@ -40,6 +40,8 @@ export default class AccountPageSFRA {
     const cardElement = this.savedCardElementGenerator(cardData);
     const deleteButton = cardElement.locator('../../button');
 
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+
     await deleteButton.click();
     await this.page.click('.delete-confirmation-btn');
   };

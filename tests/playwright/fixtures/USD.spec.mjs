@@ -134,7 +134,7 @@ for (const environment of environments) {
     test('Card logged in user 3DS2 oneClick test success', async () => {
       await goToBillingWithFullCartLoggedInUser();
       await cards.doCardPaymentOneclick(cardData.threeDs2);
-      await checkoutPage.completeCheckout();
+      await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
       await checkoutPage.expectSuccess();
     });
@@ -145,7 +145,7 @@ for (const environment of environments) {
       cardDataInvalid.cvc = '123';
       await goToBillingWithFullCartLoggedInUser();
       await cards.doCardPaymentOneclick(cardDataInvalid);
-      await checkoutPage.completeCheckout();
+      await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
       await checkoutPage.expectRefusal();
     });
@@ -154,7 +154,7 @@ for (const environment of environments) {
     test('Card logged in user co-branded BCMC/Maestro oneClick test success', async () => {
       await goToBillingWithFullCartLoggedInUser();
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
-      await checkoutPage.completeCheckout();
+      await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds1Verification();
       await checkoutPage.expectSuccess();
     });
@@ -184,12 +184,12 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
-    });
 
-    test('my account add card no 3DS success', async ({ page }) => {
-      accountPage = new environment.AccountPage(page);
       await accountPage.consent();
       await checkoutPage.loginUser(shopperData.USAccountTestUser);
+    });
+
+    test('my account add card no 3DS success', async () => {
       await accountPage.addCard(cardData.noThreeDs);
       await accountPage.expectSuccess(cardData.noThreeDs);
       await accountPage.removeCard(cardData.noThreeDs);
@@ -197,8 +197,6 @@ for (const environment of environments) {
     });
 
     test('my account add card no 3DS failure', async () => {
-      await accountPage.consent();
-      await checkoutPage.loginUser(shopperData.USAccountTestUser);
       const cardDataInvalid = cardData.noThreeDs;
       cardDataInvalid.expirationDate = '0150';
       await accountPage.addCard(cardDataInvalid);
@@ -206,8 +204,6 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS1 success', async () => {
-      await accountPage.consent();
-      await checkoutPage.loginUser(shopperData.USAccountTestUser);
       await accountPage.addCard(cardData.threeDs1);
 
       await cards.do3Ds1Verification();
@@ -217,8 +213,6 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS1 failure', async () => {
-      await accountPage.consent();
-      await checkoutPage.loginUser(shopperData.USAccountTestUser);
       const cardDataInvalid = Object.assign({}, cardData.threeDs1);
       cardDataInvalid.expirationDate = '0150';
       await accountPage.addCard(cardDataInvalid);
@@ -227,8 +221,6 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS2 success', async () => {
-      await accountPage.consent();
-      await checkoutPage.loginUser(shopperData.USAccountTestUser);
       await accountPage.addCard(cardData.threeDs2);
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
@@ -237,8 +229,6 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS2 failure', async () => {
-      await accountPage.consent();
-      await checkoutPage.loginUser(shopperData.USAccountTestUser);
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.expirationDate = '0150';
       await accountPage.addCard(cardDataInvalid);

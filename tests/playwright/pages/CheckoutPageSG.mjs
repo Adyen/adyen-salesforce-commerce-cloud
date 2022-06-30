@@ -176,16 +176,16 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.placeOrderButton.click();
+    await this.page.waitForNavigation({ waitUntil: 'load' });
   };
 
   completeCheckoutLoggedInUser = async () => {
-    await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
   };
