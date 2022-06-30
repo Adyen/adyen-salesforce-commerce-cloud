@@ -30,6 +30,10 @@ require('dw/web');
 // script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
+function getDiscount(amount, adjustedAmount) {
+  return -1 * (amount - adjustedAmount);
+}
+
 function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
   if (!(order || basket)) return null;
   const orderOrBasket = order || basket;
@@ -51,23 +55,38 @@ function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
       const description = LineItemHelper.getDescription(lineItem);
       const id = LineItemHelper.getId(lineItem);
       const quantity = LineItemHelper.getQuantity(lineItem);
-      const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
-      const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-      const vatPercentage = LineItemHelper.getVatPercentage(lineItem);
+      const itemAmount = LineItemHelper.getOriginalItemAmount(lineItem);
+      const vatAmount = LineItemHelper.getOriginalVatAmount(lineItem);
 
-      lineItemObject.amountExcludingTax = (Math.floor(quantity * itemAmount.getValue())).toFixed();
-      lineItemObject.taxAmount = (Math.ceil(quantity * vatAmount.getValue())).toFixed();
+      const adjustedItemAmount = LineItemHelper.getItemAmount(lineItem)
+      const adjustedvatAmount = LineItemHelper.getVatAmount(lineItem);
 
-      const quantityDescription = quantity > 1 ? `${quantity}x `: '';
-      lineItemObject.description = `${quantityDescription}${description}`;
+      lineItemObject.amountExcludingTax = (Math.floor(itemAmount.divide(quantity))).toFixed();
+      lineItemObject.taxAmount = (Math.ceil(vatAmount.divide(quantity))).toFixed();
+      lineItemObject.description = description;
       lineItemObject.id = id;
-      lineItemObject.quantity = 1;
+      lineItemObject.quantity = quantity;
       lineItemObject.taxCategory = 'None';
       lineItemObject.taxPercentage = addTaxPercentage ? (
           new Number(vatPercentage) * 10000
       ).toFixed() : 0;
-
+      
       lineItems.push(lineItemObject);
+
+      //if original Price or Tax is higher than the adjusted price or Tax, we add the difference as a discount
+      if(adjustedItemAmount < itemAmount || adjustedvatAmount < vatAmount) {
+      const discountLineItem = {
+        description: `Discount on ${description}`,
+        id: 'Discount',
+        quantity: 1,
+        taxPercentage: addTaxPercentage ? (
+          new Number(vatPercentage) * 10000
+        ).toFixed() : 0,
+        amountExcludingTax: Math.floor(getDiscount(itemAmount, adjustedItemAmount)).toFixed(),
+        taxAmount: Math.ceil(getDiscount(vatAmount, adjustedvatAmount)).toFixed(),
+      }
+      lineItems.push(discountLineItem);
+      }
     }
   }
 

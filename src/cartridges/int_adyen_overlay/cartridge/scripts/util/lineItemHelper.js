@@ -71,6 +71,10 @@ const __LineItemHelper = {
     return vatPercentage;
   },
 
+  getOriginalVatAmount(lineItem) {
+    return AdyenHelper.getCurrencyValueForApi(lineItem.tax);
+  },
+
   getVatAmount(lineItem) {
     if (
       lineItem instanceof dw.order.ProductLineItem ||
@@ -96,6 +100,10 @@ const __LineItemHelper = {
     }
     return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
+
+  getOriginalItemAmount(lineItem) {
+    return AdyenHelper.getCurrencyValueForApi(lineItem.netPrice);
+  }
 };
 
 module.exports = __LineItemHelper;
