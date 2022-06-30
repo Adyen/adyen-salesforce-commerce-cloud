@@ -153,13 +153,13 @@ export default class CheckoutPageSFRA5 {
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrderButton.click();
   };
 
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
@@ -207,7 +207,9 @@ export default class CheckoutPageSFRA5 {
   };
 
   navigateBack = async () => {
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.page.goBack();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
   };
 
   loginUser = async (credentials) => {
