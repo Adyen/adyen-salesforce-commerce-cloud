@@ -176,23 +176,23 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrderButton.click();
   };
 
   completeCheckoutLoggedInUser = async () => {
     await this.setEmail();
     await this.submitPayment();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
   completeCheckout = async () => {
     await this.setEmail();
     await this.submitPayment();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrder();
   };
 
@@ -202,7 +202,6 @@ export default class CheckoutPageSFRA {
   };
 
   goBackAndSubmitShipping = async () => {
-    // await this.page.waitForNavigation('load', { timeout: 10000 });
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -250,13 +249,14 @@ export default class CheckoutPageSFRA {
 
   loginUser = async (credentials) => {
     await this.page.goto('/s/SiteGenesis/account');
+    await this.page.waitForLoadState('load', { timeout: 10000 });
 
     await this.page
       .locator('//input[contains(@id,"dwfrm_login_username_")]')
-      .type(credentials.shopperEmail);
+      .fill(credentials.shopperEmail);
     await this.page
       .locator('//input[contains(@id,"dwfrm_login_password_")]')
-      .type(credentials.password);
+      .fill(credentials.password);
 
     await this.page.click('button[name="dwfrm_login_login"]');
   };

@@ -6,7 +6,6 @@ export default class AccountPageSG {
     this.consentButton = page.locator(
       '.ui-dialog-buttonset button:first-child',
     );
-    this.savedCard = page.locator('.cc-number');
   }
 
   consent = async () => {
@@ -51,25 +50,43 @@ export default class AccountPageSG {
     await this.page.locator('.add-card').click();
 
     await this.initiateCardPayment(cardData);
+    await this.page.waitForLoadState('load', { timeout: 10000 });
   };
 
-  removeCard = async () => {
-    await this.page.goto('/s/SiteGenesis/wallet');
+  removeCard = async (cardData) => {
+    const deleteButton = this.page.locator(
+      `${this.savedCard(cardData)}/..//button[contains(@class,'delete')]`,
+    );
+
     this.page.on('dialog', (dialog) => dialog.accept());
-    await this.page.click('.delete');
+    await deleteButton.click();
+    await this.page.waitForLoadState('load', { timeout: 10000 });
   };
 
   expectSuccess = async (cardData) => {
-    const last4 = cardData.cardNumber.slice(-4);
-    expect(await this.savedCard.innerText()).toContain(last4);
+    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await expect(
+      await this.page.locator(this.savedCard(cardData)),
+    ).toBeVisible();
   };
 
   expectFailure = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await expect(this.page.locator('.card-error')).toBeVisible();
   };
 
   expectCardRemoval = async (cardData) => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
+    const cardElement = this.page.locator(this.savedCard(cardData));
+    await cardElement.waitFor({
+      state: 'detached',
+      timeout: 10000,
+    });
+  };
+
+  savedCard = (cardData) => {
     const last4 = cardData.cardNumber.slice(-4);
-    expect(await this.savedCard.innerText()).not.toContain(last4);
+    const savedCardLocator = `//div[@class='cc-number' and contains(text(),'**${last4}')]`;
+    return savedCardLocator;
   };
 }
