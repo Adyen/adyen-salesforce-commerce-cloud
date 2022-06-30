@@ -36,16 +36,16 @@ export default class AccountPageSFRA {
     await this.initiateCardPayment(cardData);
   };
 
-  removeCard = async () => {
-    await this.page.goto('/s/RefArch/wallet');
+  removeCard = async (cardData) => {
+    const cardElement = this.savedCardElementGenerator(cardData);
+    const deleteButton = cardElement.locator('../../button');
 
-    await this.page.click('.remove-btn');
+    await deleteButton.click();
     await this.page.click('.delete-confirmation-btn');
   };
 
   expectSuccess = async (cardData) => {
-    const last4 = cardData.cardNumber.slice(-4);
-    const cardElement = this.savedCardElementGenerator(last4);
+    const cardElement = this.savedCardElementGenerator(cardData);
 
     await cardElement.waitFor({
       state: 'visible',
@@ -58,8 +58,7 @@ export default class AccountPageSFRA {
   };
 
   expectCardRemoval = async (cardData) => {
-    const last4 = cardData.cardNumber.slice(-4);
-    const cardElement = this.savedCardElementGenerator(last4);
+    const cardElement = this.savedCardElementGenerator(cardData);
 
     await cardElement.waitFor({
       state: 'detached',
@@ -67,8 +66,9 @@ export default class AccountPageSFRA {
     });
   };
 
-  savedCardElementGenerator = (cardNumber) => {
-    let locatorText = `//*[@class="card"]//p[contains(text(),"${cardNumber}")]`;
+  savedCardElementGenerator = (cardData) => {
+    const last4 = cardData.cardNumber.slice(-4);
+    const locatorText = `//*[@class="card"]//p[contains(text(),"**${last4}")]`;
     return this.page.locator(locatorText);
   };
 }
