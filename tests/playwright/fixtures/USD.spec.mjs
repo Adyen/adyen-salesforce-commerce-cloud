@@ -64,7 +64,9 @@ for (const environment of environments) {
       await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
-      await checkoutPage.navigateBack();
+      environment.name == 'SG'
+        ? await checkoutPage.navigateBack()
+        : await checkoutPage.goBackAndSubmitShipping();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.submitPayment();
       await checkoutPage.placeOrder();
