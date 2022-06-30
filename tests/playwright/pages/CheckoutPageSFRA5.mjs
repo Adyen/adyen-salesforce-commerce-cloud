@@ -8,7 +8,6 @@ export default class CheckoutPageSFRA5 {
     this.productCard = page.locator('.product .image-container a');
     this.colourSelector = page.locator('.color-attribute');
     this.selectSize = page.locator('.select-size');
-    // this.sizeOption = this.selectSize.selectOption('option');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
     this.checkoutUrl =
@@ -49,13 +48,6 @@ export default class CheckoutPageSFRA5 {
       '#shippingCountrydefault',
     );
     this.checkoutPageUserStateSelect = page.locator('#shippingStatedefault');
-    /*this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
-      'option',
-    );
-    this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
-      'option',
-    );
-    These selectors might be redundant based on how playwright interacts with dropdowns*/
     this.checkoutPageUserTelephoneInput = page.locator(
       '#shippingPhoneNumberdefault',
     );
@@ -158,8 +150,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   completeCheckoutLoggedInUser = async () => {
-    await this.submitPayment();
-    await this.placeOrder();
+    await this.completeCheckout();
   };
 
   completeCheckout = async () => {

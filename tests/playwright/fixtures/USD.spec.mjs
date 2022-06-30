@@ -65,7 +65,7 @@ for (const environment of environments) {
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
       environment.name == 'SG'
-        ? await checkoutPage.navigateBack()
+        ? await checkoutPage.navigateBackFromRedirect()
         : await checkoutPage.goBackAndSubmitShipping();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.submitPayment();
@@ -130,35 +130,6 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    // Redirection is broken w/SG
-    test('Card logged in user 3DS2 oneClick test success', async () => {
-      await goToBillingWithFullCartLoggedInUser();
-      await cards.doCardPaymentOneclick(cardData.threeDs2);
-      await checkoutPage.completeCheckoutLoggedInUser();
-      await cards.do3Ds2Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    // Redirection is broken w/SG
-    test('Card logged in user 3DS2 oneClick test failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.threeDs2);
-      cardDataInvalid.cvc = '123';
-      await goToBillingWithFullCartLoggedInUser();
-      await cards.doCardPaymentOneclick(cardDataInvalid);
-      await checkoutPage.completeCheckoutLoggedInUser();
-      await cards.do3Ds2Verification();
-      await checkoutPage.expectRefusal();
-    });
-
-    // Redirection is broken w/SG
-    test('Card logged in user co-branded BCMC/Maestro oneClick test success', async () => {
-      await goToBillingWithFullCartLoggedInUser();
-      await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
-      await checkoutPage.completeCheckoutLoggedInUser();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
     test('PayPal Success', async ({ page }) => {
       await goToBillingWithFullCartGuestUser();
       redirectShopper = new RedirectShopper(page);
@@ -174,6 +145,40 @@ for (const environment of environments) {
       await checkoutPage.completeCheckout();
       await redirectShopper.completeAffirmRedirect(false);
       await checkoutPage.expectRefusal();
+    });
+  });
+
+  test.describe(`${environment.name} USD Card logged in user `, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+
+      checkoutPage = new environment.CheckoutPage(page);
+      accountPage = new environment.AccountPage(page);
+      cards = new Cards(page);
+      await goToBillingWithFullCartLoggedInUser();
+    });
+
+    test('3DS2 oneClick test success', async () => {
+      await cards.doCardPaymentOneclick(cardData.threeDs2);
+      await checkoutPage.completeCheckoutLoggedInUser();
+      await cards.do3Ds2Verification();
+      await checkoutPage.expectSuccess();
+    });
+
+    test('3DS2 oneClick test failure', async () => {
+      const cardDataInvalid = Object.assign({}, cardData.threeDs2);
+      cardDataInvalid.cvc = '123';
+      await cards.doCardPaymentOneclick(cardDataInvalid);
+      await checkoutPage.completeCheckoutLoggedInUser();
+      await cards.do3Ds2Verification();
+      await checkoutPage.expectRefusal();
+    });
+
+    test('co-branded BCMC/Maestro oneClick test success', async () => {
+      await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
+      await checkoutPage.completeCheckoutLoggedInUser();
+      await cards.do3Ds1Verification();
+      await checkoutPage.expectSuccess();
     });
   });
 

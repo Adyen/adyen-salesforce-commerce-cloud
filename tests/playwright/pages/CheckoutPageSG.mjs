@@ -68,15 +68,9 @@ export default class CheckoutPageSFRA {
     this.checkoutPageUserCountrySelect = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_country',
     );
-    // this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
-    //   'option',
-    // );
     this.checkoutPageUserStateSelect = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_states_state',
-    ); //uncommented state selectors
-    // this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
-    //   'option',
-    // );
+    );
     this.checkoutPageUserTelephoneInput = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_phone',
     );
@@ -131,25 +125,6 @@ export default class CheckoutPageSFRA {
       shopperDetails.address.postalCode,
     );
 
-    // await t
-    //   .typeText(
-    //     this.checkoutPageUserFirstNameInput,
-    //     shopperDetails.shopperName.firstName,
-    //   )
-    // .typeText(
-    //   this.checkoutPageUserLastNameInput,
-    //   shopperDetails.shopperName.lastName,
-    // )
-    // // .typeText(this.checkoutPageUserStreetInput, shopperDetails.address.street)
-    // .typeText(
-    //   this.checkoutPageUserHouseNumberInput,
-    //   shopperDetails.address.houseNumberOrName,
-    // )
-    // .typeText(this.checkoutPageUserCityInput, shopperDetails.address.city)
-    // .typeText(
-    //   this.checkoutPageUserPostCodeInput,
-    //   shopperDetails.address.postalCode,
-    // )
     await this.checkoutPageUserCountrySelect.selectOption(
       shopperDetails.address.country,
     );
@@ -182,7 +157,6 @@ export default class CheckoutPageSFRA {
   placeOrder = async () => {
     await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.placeOrderButton.click();
-    await this.page.waitForNavigation({ waitUntil: 'load' });
   };
 
   completeCheckoutLoggedInUser = async () => {
@@ -245,6 +219,11 @@ export default class CheckoutPageSFRA {
     await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.page.goBack();
     await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+  };
+
+  navigateBackFromRedirect = async () => {
+    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.navigateBack();
   };
 
   loginUser = async (credentials) => {
