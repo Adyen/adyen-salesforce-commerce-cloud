@@ -1,5 +1,4 @@
 import { chromium, expect } from '@playwright/test';
-
 export default class CheckoutPageSFRA {
   constructor(page) {
     this.page = page;
@@ -9,12 +8,11 @@ export default class CheckoutPageSFRA {
     this.productCard = page.locator('.product .image-container a');
     this.colourSelector = page.locator('.color-attribute');
     this.selectSize = page.locator('.select-size');
-    this.sizeOption = this.selectSize.find('option');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
     this.checkoutUrl =
       '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
-    this.checkoutGuest = page.locator('.submit-customer');
+    this.checkoutGuest = page.locator('.checkout-as-guest');
 
     this.loginUrl = '/customer/account';
     this.emailInput = page.locator('#email');
@@ -50,21 +48,9 @@ export default class CheckoutPageSFRA {
       '#shippingCountrydefault',
     );
     this.checkoutPageUserStateSelect = page.locator('#shippingStatedefault');
-    /*this.checkoutPageUserStateSelectOption = this.checkoutPageUserStateSelect.find(
-      'option',
-    );
-    this.checkoutPageUserCountrySelectOption = this.checkoutPageUserCountrySelect.find(
-      'option',
-    );
-    These selectors might be redundant based on how playwright interacts with dropdowns*/
     this.checkoutPageUserTelephoneInput = page.locator(
       '#shippingPhoneNumberdefault',
     );
-
-    this.checkoutPageUserTelephoneInput = page.locator(
-      '#shippingPhoneNumberdefault',
-    );
-    this.checkoutPageGuestEmailInput = page.locator('#email-guest');
 
     this.shippingSubmit = page.locator('.submit-shipping');
 
@@ -83,7 +69,9 @@ export default class CheckoutPageSFRA {
     /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
     this.qrImg = page.locator('img');
 
-    this.signInSectionButton = page.locator('.fa-sign-in');
+    this.signInSectionButton = page.locator(
+      'a[aria-label="Login to your account"]',
+    );
     this.emailField = page.locator('#login-form-email');
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');
@@ -95,13 +83,14 @@ export default class CheckoutPageSFRA {
 
   goToCheckoutPageWithFullCart = async (locale) => {
     await this.addProductToCart(locale);
-    await this.successMessage();
+    await this.successMessage.waitFor({ visible: true, timeout: 10000 });
 
     await this.navigateToCheckout(locale);
+    await this.checkoutGuest.click();
   };
 
   getCheckoutUrl(locale) {
-    return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Begin`;
+    return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
   }
 
   addProductToCart = async (locale) => {
@@ -111,16 +100,12 @@ export default class CheckoutPageSFRA {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    await this.checkoutPageGuestEmailInput.type(shopperDetails.shopperEmail);
-    await this.checkoutGuest.click();
-
     await this.checkoutPageUserFirstNameInput.type(
-      shopperDetails.shopperDetails.firstName,
+      shopperDetails.shopperName.firstName,
     );
     await this.checkoutPageUserLastNameInput.type(
-      shopperDetails.shopperDetails.lastName,
+      shopperDetails.shopperName.lastName,
     );
-
     await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
     await this.checkoutPageUserHouseNumberInput.type(
       shopperDetails.address.houseNumberOrName,
@@ -130,12 +115,11 @@ export default class CheckoutPageSFRA {
       shopperDetails.address.postalCode,
     );
 
-    await this.checkoutPageUserCountrySelect.selecOption(
+    await this.checkoutPageUserCountrySelect.selectOption(
       shopperDetails.address.country,
     );
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-
     if (shopperDetails.address.stateOrProvince !== '') {
       await this.checkoutPageUserStateSelect.selectOption(
         shopperDetails.address.stateOrProvince,
@@ -145,10 +129,15 @@ export default class CheckoutPageSFRA {
   };
 
   setEmail = async () => {
-    await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
+    /* After filling the shopper details, clicking "Next" has an autoscroll
+    feature, which leads the email field to be missed, hence the flakiness.
+    Waiting until the full page load prevents this situation */
+    await this.page.waitForLoadState('networkidle');
+    await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
   };
 
   submitShipping = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
@@ -156,15 +145,22 @@ export default class CheckoutPageSFRA {
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     await this.placeOrderButton.click();
   };
 
+  completeCheckoutLoggedInUser = async () => {
+    await this.completeCheckout();
+  };
+
   completeCheckout = async () => {
+    await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
   };
 
   goBackAndSubmitShipping = async () => {
+    await this.page.waitForNavigation('load', { timeout: 10000 });
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -181,12 +177,15 @@ export default class CheckoutPageSFRA {
   };
 
   expectSuccess = async () => {
-    expect(this.getLocation()).toContain('Order-Confirm');
+    await this.page.waitForNavigation({
+      url: /Order-Confirm/,
+      timeout: 15000,
+    });
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 
   expectRefusal = async () => {
-    expect(this.errorMessage.innerText()).not.toBeEmpty();
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
@@ -199,7 +198,7 @@ export default class CheckoutPageSFRA {
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 10000 });
     return await this.page.url();
   };
 
@@ -214,5 +213,6 @@ export default class CheckoutPageSFRA {
     await this.emailField.type(credentials.shopperEmail);
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();
+    await this.page.waitForNavigation({ waitUntil: 'load' });
   };
 }
