@@ -1,55 +1,54 @@
-import {
-  doVippsPayment,
-  doTrustlyPayment,
-  completeVippsRedirect,
-  completeTrustlyRedirect,
-} from '../paymentFlows/redirectShopper.mjs';
+import { test } from '@playwright/test';
+import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
 import { regionsEnum } from '../data/enums.mjs';
 import { environments } from '../data/environments.mjs';
-const shopperData = require('../data/shopperData.json');
+import { ShopperData } from '../data/shopperData.mjs';
+
+const shopperData = new ShopperData();
 
 let checkoutPage;
+let redirectShopper;
 
 for (const environment of environments) {
-  fixture`${environment.name} NOK`
-    .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
-    .httpAuth({
-      username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-      password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach(async (t) => {
-      await t.maximizeWindow();
-      // Set manual timeout due to slow redirect for Trustly
-      checkoutPage = new environment.CheckoutPage();
+  test.describe(`${environment.name} NOK`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+
+      checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO);
       await checkoutPage.setShopperDetails(shopperData.NO);
     });
 
-  test('Vipps Success', async () => {
-    await doVippsPayment();
-    await checkoutPage.completeCheckout();
-    await completeVippsRedirect(true);
-    // can only be tested up to redirect. No success assertion
-  });
+    test.only('Vipps Success', async ({ page }) => {
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doVippsPayment();
+      await checkoutPage.completeCheckout();
+      await redirectShopper.completeVippsRedirect(true);
+      // can only be tested up to redirect. No success assertion
+    });
 
-  test('Vipps Fail', async (t) => {
-    await doVippsPayment();
-    await checkoutPage.completeCheckout();
-    await completeVippsRedirect(false);
-    await checkoutPage.expectRefusal();
-  });
+    test('Vipps Fail', async ({ page }) => {
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doVippsPayment();
+      await checkoutPage.completeCheckout();
+      await redirectShopper.completeVippsRedirect(false);
+      await checkoutPage.expectRefusal();
+    });
 
-  test.skip('Trustly Success', async () => {
-    await doTrustlyPayment();
-    await checkoutPage.completeCheckout();
-    await completeTrustlyRedirect(true);
-    await checkoutPage.expectSuccess();
-  });
+    test.skip('Trustly Success', async ({ page }) => {
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doTrustlyPayment();
+      await checkoutPage.completeCheckout();
+      await redirectShopper.completeTrustlyRedirect(true);
+      await checkoutPage.expectSuccess();
+    });
 
-  test.skip('Trustly Fail', async () => {
-    await doTrustlyPayment();
-    await checkoutPage.completeCheckout();
-    await completeTrustlyRedirect(false);
-    await checkoutPage.expectRefusal();
+    test.skip('Trustly Fail', async ({ page }) => {
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doTrustlyPayment();
+      await checkoutPage.completeCheckout();
+      await redirectShopper.completeTrustlyRedirect(false);
+      await checkoutPage.expectRefusal();
+    });
   });
 }

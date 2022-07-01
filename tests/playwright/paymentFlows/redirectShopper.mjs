@@ -109,8 +109,8 @@ export class RedirectShopper {
     await this.paymentMethodsPage.cancelAffirmPayment();
   };
 
-  doVippsPayment = async (page) => {
-    await page.click('#rb_vipps');
+  doVippsPayment = async () => {
+    await this.page.click('#rb_vipps');
   };
 
   completeVippsRedirect = async (success) => {
@@ -121,8 +121,8 @@ export class RedirectShopper {
     }
   };
 
-  doTrustlyPayment = async (page) => {
-    await page.click('#rb_trustly');
+  doTrustlyPayment = async () => {
+    await this.page.click('#rb_trustly');
   };
 
   completeTrustlyRedirect = async (success) => {
@@ -133,8 +133,8 @@ export class RedirectShopper {
     }
   };
 
-  doMobilePayPayment = async (page) => {
-    await page.click('#rb_mobilepay');
+  doMobilePayPayment = async () => {
+    await this.page.click('#rb_mobilepay');
   };
 
   completeMobilePayRedirect = async () => {
