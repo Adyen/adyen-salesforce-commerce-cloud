@@ -29,22 +29,21 @@ const goToBillingWithFullCartLoggedInUser = async () => {
 for (const environment of environments) {
   test.describe.parallel(`${environment.name} USD`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${environment.urlExtension}`);
-
       checkoutPage = new environment.CheckoutPage(page);
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
+
+      await page.goto(`${environment.urlExtension}`);
+      await goToBillingWithFullCartGuestUser();
     });
 
     test('Card payment no 3DS success', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
     });
 
     test('Card payment no 3DS failure', async () => {
-      await goToBillingWithFullCartGuestUser();
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -53,7 +52,6 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS1 success', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
       await cards.do3Ds1Verification();
@@ -61,7 +59,6 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS1 with restored cart success', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
       environment.name == 'SG'
@@ -75,7 +72,6 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS1 failure', async () => {
-      await goToBillingWithFullCartGuestUser();
       const cardDataInvalid = Object.assign({}, cardData.threeDs1);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -85,7 +81,6 @@ for (const environment of environments) {
     });
 
     test.skip('Card payment 3DS1 with restored cart failure', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.setEmail();
       await checkoutPage.submitPayment();
@@ -95,7 +90,6 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS2 success', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.threeDs2);
       await checkoutPage.completeCheckout();
       await cards.do3Ds2Verification();
@@ -103,7 +97,6 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS2 failure', async () => {
-      await goToBillingWithFullCartGuestUser();
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -113,7 +106,6 @@ for (const environment of environments) {
     });
 
     test('Card co-branded BCMC payment success', async () => {
-      await goToBillingWithFullCartGuestUser();
       await cards.doCardPayment(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckout();
       await cards.do3Ds1Verification();
@@ -121,7 +113,6 @@ for (const environment of environments) {
     });
 
     test('Card co-branded BCMC payment failure', async () => {
-      await goToBillingWithFullCartGuestUser();
       const cardDataInvalid = Object.assign({}, cardData.coBrandedBCMC);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -131,7 +122,6 @@ for (const environment of environments) {
     });
 
     test('PayPal Success', async ({ page }) => {
-      await goToBillingWithFullCartGuestUser();
       redirectShopper = new RedirectShopper(page);
       await checkoutPage.setEmail();
       await redirectShopper.doPayPalPayment();
@@ -139,7 +129,6 @@ for (const environment of environments) {
     });
 
     test('Affirm Fail', async ({ page }) => {
-      await goToBillingWithFullCartGuestUser();
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();
