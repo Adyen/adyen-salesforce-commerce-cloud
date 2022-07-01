@@ -67,7 +67,7 @@ export default class CheckoutPageSFRA {
       '.adyen-checkout__qr-loader__payment_amount',
     );
     /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
-    this.qrImg = page.locator('img');
+    this.qrImg = page.locator('img[alt="Skanna QR-kod"]');
 
     this.signInSectionButton = page.locator(
       'a[aria-label="Login to your account"]',
