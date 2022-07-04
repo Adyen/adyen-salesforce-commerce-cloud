@@ -19,7 +19,8 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.NO);
     });
 
-    test.only('Vipps Success', async ({ page }) => {
+    // SG address dropdowns need to be fixed
+    test.skip('Vipps Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doVippsPayment();
       await checkoutPage.completeCheckout();
@@ -27,7 +28,8 @@ for (const environment of environments) {
       // can only be tested up to redirect. No success assertion
     });
 
-    test('Vipps Fail', async ({ page }) => {
+    // The postcode format is not supported in SG
+    test.skip('Vipps Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doVippsPayment();
       await checkoutPage.completeCheckout();
