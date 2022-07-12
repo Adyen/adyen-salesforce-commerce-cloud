@@ -351,21 +351,22 @@ export default class PaymentMethodsPage {
     await this.page.locator('input[name="loginid"]').type('idabarese51');
     await this.page.click('.button_next');
 
-    const oneTimeCode = await this.page.locator('.message_value').innerText();
+    const oneTimeCodeLocator = await this.page.locator(
+      "//span[@class='message_label' and contains(text(),'Engangskode')]/../span[@class='message_value']",
+    );
+    let oneTimeCode = await oneTimeCodeLocator.innerText();
 
-    await this.page.locator('input[name="otp"]').type(oneTimeCode);
+    await this.page
+      .locator('input[name="challenge_response"]')
+      .type(oneTimeCode);
     await this.page.click('.button_next');
     await this.page.click('.button_next');
 
-    await this.page.locator('input[name="password"]').type('password');
-    await this.page.click('.button_next');
-    await this.page.click('.button_next');
+    await this.page.waitForLoadState('load');
+    oneTimeCodeLocator.waitFor({ state: 'visible', timeout: 20000 });
+    oneTimeCode = await oneTimeCodeLocator.innerText();
 
-    const secondOneTimeCodeLocator = await this.page.locator('.message_value');
-    secondOneTimeCodeLocator.waitFor({ state: 'visible', timeout: 20000 });
-    const secondOneTimeCode = await secondOneTimeCodeLocator.innerText();
-
-    await this.page.locator('input[type="password"]').type(secondOneTimeCode);
+    await this.page.locator('input[type="password"]').type(oneTimeCode);
     await this.page.click('.button_next');
   };
 
