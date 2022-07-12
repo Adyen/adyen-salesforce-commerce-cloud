@@ -5,6 +5,7 @@ const showConfirmationPaymentFromComponent = require('*/cartridge/controllers/mi
 const paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
 const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
 const callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
+const checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
 
 module.exports = {
   showConfirmation,
@@ -14,4 +15,5 @@ module.exports = {
   paymentsDetails,
   redirect3ds1Response,
   callCreateSession,
+  checkBalance,
 };

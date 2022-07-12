@@ -91,6 +91,36 @@ function getGooglePayConfig() {
   };
 }
 
+function getGiftCardConfig() {
+  return {
+    showPayButton: true,
+    onBalanceCheck: (resolve, reject, data) => {
+      console.log('inside onBalanceCheck');
+      // Make a POST /paymentMethods/balance request
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-CheckBalance',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success(data) {
+          console.log('inside success');
+          console.log(JSON.stringify(data));
+        },
+      });
+      // Check if the balance is greater than or equal to the transaction amount
+
+    },
+    onOrderRequest: function (resolve, reject, data) {
+      // Make a POST /orders request
+      // Create an order for the total transaction amount
+    },
+    onOrderCancel: function(Order) {
+      // Make a POST /orders/cancel request
+    }
+  };
+}
+
 function handleOnChange(state) {
   let { type } = state.data.paymentMethod;
   if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
@@ -168,6 +198,7 @@ function setCheckoutConfiguration() {
     googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
+    giftcard: getGiftCardConfig(),
   };
 }
 

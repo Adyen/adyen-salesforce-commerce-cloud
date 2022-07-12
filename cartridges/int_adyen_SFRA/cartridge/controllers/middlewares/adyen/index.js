@@ -14,6 +14,8 @@ var redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/re
 
 var callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
 
+var checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
+
 module.exports = {
   showConfirmation: showConfirmation,
   paymentFromComponent: paymentFromComponent,
@@ -21,5 +23,6 @@ module.exports = {
   showConfirmationPaymentFromComponent: showConfirmationPaymentFromComponent,
   paymentsDetails: paymentsDetails,
   redirect3ds1Response: redirect3ds1Response,
-  callCreateSession: callCreateSession
+  callCreateSession: callCreateSession,
+  checkBalance: checkBalance
 };

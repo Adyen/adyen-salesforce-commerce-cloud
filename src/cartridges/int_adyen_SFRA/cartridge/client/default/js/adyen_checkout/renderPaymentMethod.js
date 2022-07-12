@@ -2,11 +2,7 @@ const store = require('../../../../store');
 const helpers = require('./helpers');
 
 function getFallback(paymentMethod) {
-  const fallback = {
-    giftcard: `
-        <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
-        <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
-  };
+  const fallback = {};
   if (fallback[paymentMethod.type]) {
     store.componentsObj[paymentMethod.type] = {};
   }
@@ -30,6 +26,8 @@ function setNode(paymentMethodID) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
+      // console.log('about to render ' + paymentMethodID);
+      // console.log(...args);
       // ALl nodes created for the checkout component are enriched with shopper personal details
       const node = store.checkout.create(...args, {
         data: {
@@ -44,6 +42,7 @@ function setNode(paymentMethodID) {
       });
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
+      console.error('no component... ' + e.toString());
       /* No component for payment method */
     }
   };
@@ -57,7 +56,8 @@ function getPaymentMethodID(isStored, paymentMethod) {
   }
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
-    return `${paymentMethod.type}_${paymentMethod.brand}`;
+    // return `${paymentMethod.type}_${paymentMethod.brand}`;
+    return `giftcard`;
   }
   return paymentMethod.type;
 }

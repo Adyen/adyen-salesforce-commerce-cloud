@@ -19,9 +19,7 @@ var store = require('../../../../store');
 var helpers = require('./helpers');
 
 function getFallback(paymentMethod) {
-  var fallback = {
-    giftcard: "\n        <input type=\"hidden\" class=\"brand\" name=\"brand\" value=\"".concat(paymentMethod.brand, "\"/>\n        <input type=\"hidden\" class=\"type\" name=\"type\" value=\"").concat(paymentMethod.type, "\"/>")
-  };
+  var fallback = {};
 
   if (fallback[paymentMethod.type]) {
     store.componentsObj[paymentMethod.type] = {};
@@ -54,6 +52,8 @@ function setNode(paymentMethodID) {
         args[_key] = arguments[_key];
       }
 
+      // console.log('about to render ' + paymentMethodID);
+      // console.log(...args);
       // ALl nodes created for the checkout component are enriched with shopper personal details
       var node = (_store$checkout = store.checkout).create.apply(_store$checkout, args.concat([{
         data: _objectSpread(_objectSpread({}, getPersonalDetails()), {}, {
@@ -68,6 +68,7 @@ function setNode(paymentMethodID) {
 
       store.componentsObj[paymentMethodID].node = node;
     } catch (e) {
+      console.error('no component... ' + e.toString());
       /* No component for payment method */
     }
   };
@@ -82,7 +83,8 @@ function getPaymentMethodID(isStored, paymentMethod) {
 
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
-    return "".concat(paymentMethod.type, "_").concat(paymentMethod.brand);
+    // return `${paymentMethod.type}_${paymentMethod.brand}`;
+    return "giftcard";
   }
 
   return paymentMethod.type;

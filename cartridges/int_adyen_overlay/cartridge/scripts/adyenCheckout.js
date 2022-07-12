@@ -272,6 +272,41 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
   return responseObject;
 }
 
+function doCheckBalanceCall(checkBalanceRequest) {
+  var callResult = executeCall(constants.SERVICE.CHECKBALANCE, checkBalanceRequest);
+
+  if (callResult.isOk() === false) {
+    Logger.getLogger('Adyen').error("Adyen: Call error code".concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
+    return {
+      error: true,
+      invalidRequest: true
+    };
+  }
+
+  var resultObject = callResult.object;
+
+  if (!resultObject || !resultObject.getText()) {
+    Logger.getLogger('Adyen').error("Error in /paymentMethods/balance response, response: ".concat(JSON.stringify(resultObject)));
+    return {
+      error: true
+    };
+  } // build the response object
+
+
+  var responseObject;
+
+  try {
+    responseObject = JSON.parse(resultObject.getText());
+  } catch (ex) {
+    Logger.getLogger('Adyen').error("error parsing response object ".concat(ex.message));
+    return {
+      error: true
+    };
+  }
+
+  return responseObject;
+}
+
 function executeCall(serviceType, requestObject) {
   var service = AdyenHelper.getService(serviceType);
 
@@ -292,5 +327,6 @@ function executeCall(serviceType, requestObject) {
 module.exports = {
   createPaymentRequest: createPaymentRequest,
   doPaymentsCall: doPaymentsCall,
-  doPaymentsDetailsCall: doPaymentsDetailsCall
+  doPaymentsDetailsCall: doPaymentsDetailsCall,
+  doCheckBalanceCall: doCheckBalanceCall
 };

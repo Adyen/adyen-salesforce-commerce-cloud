@@ -61,6 +61,11 @@ server.post('Notify', server.middleware.https, adyen.notify);
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }
+/**
+ * Called by Adyen to check balance of gift card.
+ */
 
+
+server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 module.exports = server.exports();
 module.exports.getExternalPlatformVersion = getExternalPlatformVersion();
