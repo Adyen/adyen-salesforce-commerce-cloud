@@ -227,7 +227,7 @@ export class ShopperData {
     address: {
       city: 'Tokyo',
       country: 'JP',
-      stateOrProvince: '',
+      stateOrProvince: '北海道',
       postalCode: '123-1234',
       street: 'Kungsgatan',
       houseNumberOrName: '37',
