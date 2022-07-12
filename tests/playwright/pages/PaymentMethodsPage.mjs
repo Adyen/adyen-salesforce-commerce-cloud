@@ -241,27 +241,34 @@ export default class PaymentMethodsPage {
       .switchToMainWindow();
   };
 
-  confirmKlarnaPaymentWithIDNumber = async () => {
-    await Selector('#payment-method-selector')();
-    await t
-      .click(Selector('#buy-button'))
-      .switchToIframe('#klarna-hpp-instance-fullscreen')
-      .typeText(
-        Selector(
-          '#invoice_kp-purchase-approval-form-national-identification-number',
-        ),
-        '811228-9874',
-      )
-      .click(Selector('#invoice_kp-purchase-approval-form-continue-button'))
-      .switchToMainWindow();
-  };
-
-  cancelKlarnaDirectEBankingPayment = async () => {
+    cancelKlarnaDirectEBankingPayment = async () => {
     await t
       .click(Selector('.back-to-merchant cancel-transaction'))
       .click(Selector('#CancelTransaction'));
   };
+
   */
+
+  confirmKlarnaPaymentWithIDNumber = async () => {
+    this.klarnaBuyButton = this.page.locator('#buy-button');
+    this.klarnaIframe = this.page.frameLocator(
+      '#klarna-hpp-instance-fullscreen',
+    );
+    this.klarnaIdNumberField = this.klarnaIframe.locator(
+      '#invoice_kp-purchase-approval-form-national-identification-number',
+    );
+    this.approvePurchaseButton = this.klarnaIframe.locator(
+      '#invoice_kp-purchase-approval-form-continue-button',
+    );
+
+    await this.klarnaBuyButton.waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.klarnaBuyButton.click();
+    await this.klarnaIdNumberField.fill('811228-9874');
+    await this.approvePurchaseButton.click();
+  };
 
   cancelKlarnaPayment = async () => {
     await this.page.click('#back-button');
@@ -422,7 +429,7 @@ export default class PaymentMethodsPage {
   initiateKonbiniPayment = async () => {
     await this.page.click('#rb_econtext_stores');
     await this.page
-      .locator('input[name="econtext.shopperEmail"]')
+      .locator('.adyen-checkout__input--shopperEmail')
       .fill(shopperData.JP.shopperEmail);
     await this.page
       .locator('input[name="econtext.telephoneNumber"]')
