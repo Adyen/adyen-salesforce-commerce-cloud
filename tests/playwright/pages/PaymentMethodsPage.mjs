@@ -1,4 +1,4 @@
-import expect from '@playwright/test';
+import { expect } from '@playwright/test';
 import { ShopperData } from '../data/shopperData.mjs';
 import { PaymentData } from '../data/paymentData.mjs';
 
@@ -11,7 +11,7 @@ export default class PaymentMethodsPage {
   }
 
   getLocation = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 })();
+    await this.page.waitForNavigation('load', { timeout: 10000 });
     return await this.page.url();
   };
 
@@ -338,7 +338,7 @@ export default class PaymentMethodsPage {
   };
 
   confirmVippsPayment = async () => {
-    expect(this.getLocation()).toContain('apitest.vipps.no');
+    expect(await this.getLocation()).toContain('apitest.vipps.no');
   };
 
   cancelVippsPayment = async () => {
