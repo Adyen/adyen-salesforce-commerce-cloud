@@ -430,10 +430,14 @@ export default class PaymentMethodsPage {
   initiateKonbiniPayment = async () => {
     await this.page.click('#rb_econtext_stores');
     await this.page
-      .locator('.adyen-checkout__input--shopperEmail')
+      .locator(
+        '#component_econtext_stores .adyen-checkout__input--shopperEmail',
+      )
       .fill(shopperData.JP.shopperEmail);
     await this.page
-      .locator('input[name="econtext.telephoneNumber"]')
+      .locator(
+        '#component_econtext_stores input[name="econtext.telephoneNumber"]',
+      )
       .fill('3333333333');
   };
 }

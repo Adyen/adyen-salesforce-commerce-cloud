@@ -1,28 +1,29 @@
+import { test } from '@playwright/test';
 import { regionsEnum } from '../data/enums.mjs';
 import { environments } from '../data/environments.mjs';
-import { doKonbiniPayment } from '../paymentFlows/pending';
-const shopperData = require('../data/shopperData.json');
+import { ShopperData } from '../data/shopperData.mjs';
+import { PendingPayments } from '../paymentFlows/pending.mjs';
 
+const shopperData = new ShopperData();
 let checkoutPage;
+let pendingPayments;
 
 for (const environment of environments) {
-  fixture`${environment.name} JPY`
-    .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
-    .httpAuth({
-      username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-      password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach(async (t) => {
-      await t.maximizeWindow();
-      checkoutPage = new environment.CheckoutPage();
+  test.describe.parallel(`${environment.name} JPY`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+
+      checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.JP);
       await checkoutPage.setShopperDetails(shopperData.JP);
     });
 
-  test('konbini Success', async (t) => {
-    await doKonbiniPayment();
-    await checkoutPage.completeCheckout();
-    await checkoutPage.expectSuccess();
-    await checkoutPage.expectVoucher();
+    test('konbini Success', async ({ page }) => {
+      pendingPayments = new PendingPayments(page);
+      await pendingPayments.doKonbiniPayment();
+      await checkoutPage.completeCheckout();
+      await checkoutPage.expectSuccess();
+      await checkoutPage.expectVoucher();
+    });
   });
 }
