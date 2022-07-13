@@ -345,7 +345,7 @@ export default class PaymentMethodsPage {
   };
 
   confirmVippsPayment = async () => {
-    expect(await this.getLocation()).toContain('apitest.vipps.no');
+    await expect(await this.getLocation()).toContain('apitest.vipps.no');
   };
 
   cancelVippsPayment = async () => {
@@ -383,7 +383,9 @@ export default class PaymentMethodsPage {
   };
 
   confirmMobilePayPayment = async () => {
-    expect(this.getLocation()).toContain('sandprod-products.mobilepay.dk');
+    await expect(await this.getLocation()).toContain(
+      'sandprod-products.mobilepay.dk',
+    );
   };
 
   initiateMultiBancoPayment = async () => {

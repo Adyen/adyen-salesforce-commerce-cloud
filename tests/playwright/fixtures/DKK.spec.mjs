@@ -1,32 +1,30 @@
-import {
-  doMobilePayPayment,
-  completeMobilePayRedirect,
-} from '../paymentFlows/redirectShopper.mjs';
-import { environments } from '../data/environments.mjs';
+import { test } from '@playwright/test';
+import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
 import { regionsEnum } from '../data/enums.mjs';
+import { environments } from '../data/environments.mjs';
+import { ShopperData } from '../data/shopperData.mjs';
 
-const shopperData = require('../data/shopperData.json');
+const shopperData = new ShopperData();
 
 let checkoutPage;
+let redirectShopper;
 
 for (const environment of environments) {
-  fixture`${environment.name} DKK`
-    .page(`https://${process.env.SFCC_HOSTNAME}${environment.urlExtension}`)
-    .httpAuth({
-      username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
-      password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
-    })
-    .beforeEach(async (t) => {
-      await t.maximizeWindow();
-      checkoutPage = new environment.CheckoutPage();
+  test.describe(`${environment.name} DKK`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+
+      checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DK);
       await checkoutPage.setShopperDetails(shopperData.DK);
     });
 
-  test('MobilePay', async () => {
-    await doMobilePayPayment();
-    await checkoutPage.completeCheckout();
-    await completeMobilePayRedirect();
-    // can only be tested up to redirect. No success assertion
+    test('MobilePay', async ({ page }) => {
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doMobilePayPayment();
+      await checkoutPage.completeCheckout();
+      await redirectShopper.completeMobilePayRedirect();
+      // can only be tested up to redirect. No success assertion
+    });
   });
 }
