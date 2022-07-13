@@ -76,18 +76,18 @@ export default class PaymentMethodsPage {
     const dropDown = this.page.locator(
       `#component_${paymentMethod} .adyen-checkout__dropdown__button`,
     );
-    const issuer = this.page.locator(
-      `#component_${paymentMethod} .adyen-checkout__dropdown__list li`,
-    );
+    const issuer = this.page
+      .locator(`#component_${paymentMethod} .adyen-checkout__dropdown__list li`)
+      .first();
     await input.click();
     await dropDown.click();
     await issuer.click();
   };
 
   billdeskSimulator = async (success) => {
-    const select = await page.locator('#BankStatus');
+    const select = await this.page.locator('#BankStatus');
     const result = success ? 'Success' : 'Failure';
-    await select.selectOption(`${result}`);
+    await select.selectOption({ label: `${result}` });
     await this.page.locator('#SubmitForm').click();
   };
 
@@ -309,11 +309,11 @@ export default class PaymentMethodsPage {
   };
 
   initiateEPSPayment = async () => {
-    const epsInput = page.locator('input[value="eps"]');
-    const epsDropDown = page.locator(
+    const epsInput = this.page.locator('input[value="eps"]');
+    const epsDropDown = this.page.locator(
       '#component_eps .adyen-checkout__dropdown__button',
     );
-    const epsIssuer = page.locator(
+    const epsIssuer = this.page.locator(
       '#component_eps .adyen-checkout__dropdown__list li',
     );
 
