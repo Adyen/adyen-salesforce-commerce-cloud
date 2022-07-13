@@ -251,20 +251,27 @@ export default class PaymentMethodsPage {
 
   confirmKlarnaPaymentWithIDNumber = async () => {
     this.klarnaBuyButton = this.page.locator('#buy-button');
-    this.klarnaIframe = this.page.frameLocator(
+    this.klarnaFullScreenIframe = this.page.frameLocator(
       '#klarna-hpp-instance-fullscreen',
     );
-    this.klarnaIdNumberField = this.klarnaIframe.locator(
+    this.klarnaHppIframe = this.page.frameLocator('#klarna-hpp-instance-main');
+
+    this.klarnaIdNumberField = this.klarnaFullScreenIframe.locator(
       '#invoice_kp-purchase-approval-form-national-identification-number',
     );
-    this.approvePurchaseButton = this.klarnaIframe.locator(
+    this.approvePurchaseButton = this.klarnaFullScreenIframe.locator(
       '#invoice_kp-purchase-approval-form-continue-button',
     );
 
-    await this.klarnaBuyButton.waitFor({
-      state: 'visible',
-      timeout: 10000,
-    });
+    this.klarnaPaymentMethodGroup = this.klarnaHppIframe.locator(
+      '#invoice_kp-invoice-payment-method',
+    );
+
+    await this.page.waitForNavigation('networkidle', { timeout: 10000 });
+    await this.klarnaPaymentMethodGroup.waitFor('visible', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.klarnaBuyButton.waitFor('visible', { timeout: 10000 });
+
     await this.klarnaBuyButton.click();
     await this.klarnaIdNumberField.fill('811228-9874');
     await this.approvePurchaseButton.click();
