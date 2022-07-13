@@ -106,8 +106,7 @@ function getGiftCardConfig() {
   return {
     showPayButton: true,
     onBalanceCheck: function onBalanceCheck(resolve, reject, data) {
-      console.log('inside onBalanceCheck'); // Make a POST /paymentMethods/balance request
-
+      console.log('inside onBalanceCheck');
       $.ajax({
         type: 'POST',
         url: 'Adyen-CheckBalance',
@@ -117,10 +116,21 @@ function getGiftCardConfig() {
         success: function success(data) {
           console.log('inside success');
           console.log(JSON.stringify(data));
+          console.log(JSON.stringify(data.resultCode));
+
+          if (data.resultCode && data.resultCode === "Success") {
+            resolve(data);
+          } else if (data.resultCode && data.resultCode === "NotEnoughBalance") {
+            console.log('just before reject');
+            reject(data);
+          } else {
+            console.error('Unexpected result code');
+          }
         }
-      }); // Check if the balance is greater than or equal to the transaction amount
+      });
     },
-    onOrderRequest: function onOrderRequest(resolve, reject, data) {// Make a POST /orders request
+    onOrderRequest: function onOrderRequest(resolve, reject, data) {
+      console.log('inside onOrderRequest'); // Make a POST /orders request
       // Create an order for the total transaction amount
     },
     onOrderCancel: function onOrderCancel(Order) {// Make a POST /orders/cancel request
