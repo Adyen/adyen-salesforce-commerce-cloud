@@ -96,7 +96,7 @@ export class ShopperData {
       city: 'København',
       country: 'DK',
       stateOrProvince: '',
-      postalCode: '1550',
+      postalCode: '15505',
       street: 'Rådhuspladsen',
       houseNumberOrName: '1',
     },
