@@ -3,9 +3,11 @@ import { regionsEnum } from '../../data/enums.mjs';
 import { environments } from '../../data/environments.mjs';
 import { ShopperData } from '../../data/shopperData.mjs';
 import { RedirectShopper } from '../../paymentFlows/redirectShopper.mjs';
+import { PendingPayments } from '../../paymentFlows/pending.mjs';
 
 let checkoutPage;
 let redirectShopper;
+let pendingPayments;
 const shopperData = new ShopperData();
 
 for (const environment of environments) {
@@ -28,53 +30,53 @@ for (const environment of environments) {
 
     test.skip('iDeal with restored cart success', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await doIdealPayment(true);
+      await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
       await checkoutPage.goBackAndSubmitShipping();
-      await doIdealPayment(true);
+      await redirectShopper.doIdealPayment(true);
       await checkoutPage.submitPayment();
       await checkoutPage.placeOrder();
-      await completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect();
       await checkoutPage.expectSuccess();
     });
 
     test('iDeal Fail', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await doIdealPayment(false);
+      await redirectShopper.doIdealPayment(false);
       await checkoutPage.completeCheckout();
-      await completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect();
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('iDeal with restored cart Fail', async () => {
+    test('iDeal with restored cart Fail', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await doIdealPayment(true);
+      await redirectShopper.doIdealPayment(true);
       await checkoutPage.setEmail();
       await checkoutPage.submitPayment();
       await checkoutPage.goBackAndReplaceOrderDifferentWindow();
-      await completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect();
       await checkoutPage.expectRefusal();
     });
 
     test('SEPA Success', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await doSEPAPayment();
+      await pendingPayments.doSEPAPayment();
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
     });
 
     test('bankTransfer_IBAN Success', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await doBankTransferPayment();
+      await pendingPayments.doBankTransferPayment();
       await checkoutPage.completeCheckout();
-      await completeBankTransferRedirect();
+      await pendingPayments.completeBankTransferRedirect();
       await checkoutPage.expectSuccess();
     });
 
-    test.skip('Google Pay Success', async () => {
+    test('Google Pay Success', async () => {
       await checkoutPage.setShopperDetails(shopperData.NL);
       await checkoutPage.setEmail();
-      await doGooglePayPayment();
+      await pendingPayments.doGooglePayPayment();
     });
   });
 }
