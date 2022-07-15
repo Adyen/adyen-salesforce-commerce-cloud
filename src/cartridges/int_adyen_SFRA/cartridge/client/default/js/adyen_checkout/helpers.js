@@ -24,7 +24,7 @@ function setOrderFormData(response) {
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-function paymentFromComponent(data, component) {
+function paymentFromComponent(data, component = {}) {
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -33,6 +33,31 @@ function paymentFromComponent(data, component) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
+      // check response if it includes orderData or remaining amount it means it is a split payment
+      console.log('paymentFromComponent response is ' + JSON.stringify(response));
+
+      setOrderFormData(response);
+
+      if (response.fullResponse?.action) {
+        component.handleAction(response.fullResponse.action);
+      }
+      if (response.paymentError || response.error) {
+        component.handleError();
+      }
+    },
+  }).fail(() => {});
+}
+
+function makePartialPayment(data) {
+  $.ajax({
+    url: "Adyen-partialPayment",
+    type: 'POST',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(response) {
+      // check response if it includes orderData or remaining amount it means it is a split payment
+      console.log('paymentFromComponent response is ' + JSON.stringify(response));
       setOrderFormData(response);
 
       if (response.fullResponse?.action) {
@@ -130,4 +155,5 @@ module.exports = {
   showValidation,
   createShowConfirmationForm,
   getInstallmentValues,
+  makePartialPayment,
 };

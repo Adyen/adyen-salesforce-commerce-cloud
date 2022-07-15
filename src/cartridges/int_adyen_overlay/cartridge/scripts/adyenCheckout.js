@@ -181,6 +181,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
+      Logger.getLogger('Adyen').error('return payments response object');
       return responseObject;
     }
 
@@ -339,6 +340,47 @@ function doCheckBalanceCall(checkBalanceRequest) {
   return responseObject;
 }
 
+function doCreateSplitPaymentOrderCall(splitPaymentRequest) {
+  const callResult = executeCall(
+      constants.SERVICE.SPLITPAYMENTSORDER,
+      splitPaymentRequest,
+  );
+  if (callResult.isOk() === false) {
+    Logger.getLogger('Adyen').error(
+        `Adyen: Call error code${callResult
+            .getError()
+            .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+    );
+    return {
+      error: true,
+      invalidRequest: true,
+    };
+  }
+
+  const resultObject = callResult.object;
+  if (!resultObject || !resultObject.getText()) {
+    Logger.getLogger('Adyen').error(
+        `Error in /orders response, response: ${JSON.stringify(
+            resultObject,
+        )}`,
+    );
+    return { error: true };
+  }
+
+  // build the response object
+  let responseObject;
+  try {
+    responseObject = JSON.parse(resultObject.getText());
+  } catch (ex) {
+    Logger.getLogger('Adyen').error(
+        `error parsing response object ${ex.message}`,
+    );
+    return { error: true };
+  }
+
+  return responseObject;
+}
+
 function executeCall(serviceType, requestObject) {
   const service = AdyenHelper.getService(serviceType);
   if (service === null) {
@@ -357,4 +399,5 @@ module.exports = {
   doPaymentsCall,
   doPaymentsDetailsCall,
   doCheckBalanceCall,
+  doCreateSplitPaymentOrderCall,
 };

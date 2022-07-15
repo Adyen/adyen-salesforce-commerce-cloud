@@ -78,6 +78,7 @@ function getViewData(
       adyenPaymentMethod,
       adyenIssuerName,
       stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
+      splitPaymentsOrder: paymentForm.adyenPaymentFields.adyenSplitPaymentsOrder.value,
     },
     saveCard: paymentForm.creditCardFields.saveCard.checked,
   };

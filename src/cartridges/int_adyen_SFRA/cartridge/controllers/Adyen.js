@@ -82,6 +82,12 @@ function getExternalPlatformVersion() {
  */
 server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 
+/**
+ * Called by Adyen to initiate a split (partial) payment
+ */
+server.post('SplitPayments', server.middleware.https, adyen.splitPayments);
+
+server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 module.exports = server.exports();
 

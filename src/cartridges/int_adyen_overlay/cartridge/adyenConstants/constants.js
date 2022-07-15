@@ -33,6 +33,7 @@ module.exports = {
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
     CHECKBALANCE: 'AdyenCheckBalance',
+    SPLITPAYMENTSORDER: 'AdyenSplitPaymentsOrder',
   },
   MODE: {
     TEST: 'TEST',

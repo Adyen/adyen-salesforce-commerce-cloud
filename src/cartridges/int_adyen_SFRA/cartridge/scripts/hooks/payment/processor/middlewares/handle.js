@@ -18,6 +18,7 @@ function handle(basket, paymentInformation) {
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
     paymentInstrument.custom.adyenPaymentMethod =
       paymentInformation.adyenPaymentMethod;
+    paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
 
     if (paymentInformation.isCreditCard) {
       // If the card wasn't a stored card we need to convert sfccCardType

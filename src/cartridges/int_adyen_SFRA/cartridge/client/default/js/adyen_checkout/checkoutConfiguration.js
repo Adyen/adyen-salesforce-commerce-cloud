@@ -92,6 +92,7 @@ function getGooglePayConfig() {
 }
 
 function getGiftCardConfig() {
+  let giftcardBalance;
   return {
     showPayButton: true,
     onBalanceCheck: (resolve, reject, data) => {
@@ -106,22 +107,56 @@ function getGiftCardConfig() {
           console.log('inside success');
           console.log(JSON.stringify(data));
           console.log(JSON.stringify(data.resultCode));
+          giftcardBalance = data.balance;
           if(data.resultCode && data.resultCode === "Success") {
             resolve(data);
           } else if(data.resultCode && data.resultCode === "NotEnoughBalance"){
-            console.log('just before reject');
-            reject(data);
+            resolve(data);
           }
           else {
-            console.error('Unexpected result code');
+            reject();
           }
         },
+        fail: () => {
+          reject();
+        }
       });
     },
     onOrderRequest: (resolve, reject, data) => {
-      console.log('inside onOrderRequest');
       // Make a POST /orders request
       // Create an order for the total transaction amount
+      console.log('inside onOrderRequest');
+      console.log('data is ' + JSON.stringify(data));
+      const giftCardData = data.paymentMethod;
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-SplitPayments',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: (data) => {
+          console.log('inside success');
+          console.log(JSON.stringify(data));
+          console.log(JSON.stringify(data.resultCode));
+          if(data.resultCode === "Success") {
+            const splitPaymentsOrder = {pspReference: data.pspReference, orderData: data.orderData};
+            store.splitPaymentsOrder = splitPaymentsOrder;
+            // make payments call including giftcard data and order data
+            const partialPaymentRequest = {
+              paymentMethod: giftCardData,
+              // amount: data.remainingAmount,
+              amount: giftcardBalance,
+              splitPaymentsOrder: splitPaymentsOrder,
+            }
+            console.log('partialPaymentRequest ' + JSON.stringify(partialPaymentRequest));
+            helpers.makePartialPayment(partialPaymentRequest);
+          }
+        },
+        fail: (e) => {
+          console.log('inside fail');
+          console.error(e.toString())
+        }
+      });
     },
     onOrderCancel: function(Order) {
       // Make a POST /orders/cancel request

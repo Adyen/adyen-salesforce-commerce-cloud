@@ -26,8 +26,8 @@ function setNode(paymentMethodID) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      // console.log('about to render ' + paymentMethodID);
-      // console.log(...args);
+      console.log('about to render ' + paymentMethodID);
+      console.log(...args);
       // ALl nodes created for the checkout component are enriched with shopper personal details
       const node = store.checkout.create(...args, {
         data: {

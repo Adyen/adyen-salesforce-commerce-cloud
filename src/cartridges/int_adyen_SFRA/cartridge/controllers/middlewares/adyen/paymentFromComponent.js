@@ -44,6 +44,7 @@ function paymentFromComponent(req, res, next) {
     );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
+    // paymentInstrument.custom.adyenSplitPaymentsOrder = req.form.data; todo: fill it in
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);

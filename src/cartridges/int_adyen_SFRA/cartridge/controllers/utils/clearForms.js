@@ -28,6 +28,7 @@ function clearForms() {
 function clearAdyenData(paymentInstrument) {
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
+    paymentInstrument.custom.adyenSplitPaymentsOrder = null;
     paymentInstrument.custom.adyenMD = null;
     paymentInstrument.custom.adyenAction = null;
   });

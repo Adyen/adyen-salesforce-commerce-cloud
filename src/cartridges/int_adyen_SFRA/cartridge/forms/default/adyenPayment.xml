@@ -20,4 +20,5 @@
 
     <!--Generic Component-->
     <field formid="adyenStateData" type="string" mandatory="false" />
+    <field formid="adyenSplitPaymentsOrder" type="string" mandatory="false" />
 </form>
