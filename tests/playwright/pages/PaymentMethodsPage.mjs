@@ -21,8 +21,12 @@ export default class PaymentMethodsPage {
       '#component_ideal .adyen-checkout__dropdown__button',
     );
     const issuer = testSuccess
-      ? this.page.locator('#component_ideal .adyen-checkout__dropdown__list li')
-      : this.page.locator('#component_ideal li[data-value="1160"]');
+      ? this.page.locator(
+          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
+        )
+      : this.page.locator(
+          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
+        );
 
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();

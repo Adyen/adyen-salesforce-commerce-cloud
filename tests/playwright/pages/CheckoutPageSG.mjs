@@ -197,6 +197,10 @@ export default class CheckoutPageSFRA {
     });
   };
 
+  expectIdealSuccess = async () => {
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
+  };
+
   expectRefusal = async () => {
     await expect(this.errorMessage).not.toBeEmpty();
   };
