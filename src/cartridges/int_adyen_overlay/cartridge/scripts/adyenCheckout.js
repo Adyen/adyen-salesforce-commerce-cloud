@@ -82,13 +82,21 @@ function createPaymentRequest(args) {
       }
     }
 
-    const myAmount = AdyenHelper.getCurrencyValueForApi(
-        paymentInstrument.paymentTransaction.amount,
-    ).getValueOrNull(); // args.Amount * 100;
-    paymentRequest.amount = {
-      currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-      value: myAmount,
-    };
+    // Add split payments order if applicable
+    if (paymentInstrument.custom.adyenSplitPaymentsOrder) {
+      Logger.getLogger('Adyen').error('adding split payments order');
+      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+      Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));
+    } else {
+      const myAmount = AdyenHelper.getCurrencyValueForApi(
+          paymentInstrument.paymentTransaction.amount,
+      ).getValueOrNull(); // args.Amount * 100;
+      paymentRequest.amount = {
+        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        value: myAmount,
+      };
+    }
 
     const paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
@@ -123,7 +131,7 @@ function createPaymentRequest(args) {
     }
 
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-
+    Logger.getLogger('Adyen').error('payment request is ' + JSON.stringify(paymentRequest));
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
@@ -249,6 +257,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       paymentResponse.adyenErrorMessage = errorMessage;
       Logger.getLogger('Adyen').info('Payment result: Refused');
     }
+    Logger.getLogger('Adyen').error('payments call result is ' + JSON.stringify(paymentResponse));
     return paymentResponse;
   } catch (e) {
     Logger.getLogger('Adyen').fatal(

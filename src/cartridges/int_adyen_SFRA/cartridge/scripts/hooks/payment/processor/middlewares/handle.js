@@ -2,6 +2,7 @@ const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
+const Logger = require('dw/system/Logger');
 
 function handle(basket, paymentInformation) {
   const currentBasket = basket;
@@ -19,7 +20,7 @@ function handle(basket, paymentInformation) {
     paymentInstrument.custom.adyenPaymentMethod =
       paymentInformation.adyenPaymentMethod;
     paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
-
+    Logger.getLogger('Adyen').error('splitPaymentsOrder in handle ' + JSON.stringify(paymentInformation.splitPaymentsOrder));
     if (paymentInformation.isCreditCard) {
       // If the card wasn't a stored card we need to convert sfccCardType
       const sfccCardType = !paymentInformation.creditCardToken

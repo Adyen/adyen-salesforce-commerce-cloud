@@ -139,14 +139,12 @@ function getGiftCardConfig() {
           console.log(JSON.stringify(data));
           console.log(JSON.stringify(data.resultCode));
           if(data.resultCode === "Success") {
-            const splitPaymentsOrder = {pspReference: data.pspReference, orderData: data.orderData};
-            store.splitPaymentsOrder = splitPaymentsOrder;
             // make payments call including giftcard data and order data
             const partialPaymentRequest = {
               paymentMethod: giftCardData,
               // amount: data.remainingAmount,
               amount: giftcardBalance,
-              splitPaymentsOrder: splitPaymentsOrder,
+              splitPaymentsOrder: {pspReference: data.pspReference, orderData: data.orderData},
             }
             console.log('partialPaymentRequest ' + JSON.stringify(partialPaymentRequest));
             helpers.makePartialPayment(partialPaymentRequest);

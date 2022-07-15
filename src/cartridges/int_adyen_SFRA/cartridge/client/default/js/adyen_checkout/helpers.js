@@ -58,6 +58,10 @@ function makePartialPayment(data) {
     success(response) {
       // check response if it includes orderData or remaining amount it means it is a split payment
       console.log('paymentFromComponent response is ' + JSON.stringify(response));
+      console.log('remainingAmount ' + JSON.stringify(response.order.remainingAmount));
+      const splitPaymentsOrder = {pspReference: response.order.pspReference, orderData: response.order.orderData};
+      store.splitPaymentsOrderObj = {splitPaymentsOrder: splitPaymentsOrder};
+      store.splitPaymentsOrderObj.remainingAmount = response.order.remainingAmount;
       setOrderFormData(response);
 
       if (response.fullResponse?.action) {

@@ -11,6 +11,7 @@ module.exports.validateComponents = function validateComponents() {
     store.stateData,
   );
   document.querySelector('#adyenSplitPaymentsOrder').value = JSON.stringify(
-      store.splitPaymentsOrder,
+      store.splitPaymentsOrderObj,
   );
+  console.log('store.splitPaymentsOrderObj ' + JSON.stringify(store.splitPaymentsOrderObj));
 };
