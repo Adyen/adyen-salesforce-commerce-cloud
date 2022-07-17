@@ -85,6 +85,7 @@ function createPaymentRequest(args) {
     // Add split payments order if applicable
     if (paymentInstrument.custom.adyenSplitPaymentsOrder) {
       Logger.getLogger('Adyen').error('adding split payments order');
+      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder ' + JSON.stringify(paymentInstrument.custom.adyenSplitPaymentsOrder));
       paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
       paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
       Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));

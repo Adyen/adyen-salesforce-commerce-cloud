@@ -566,9 +566,12 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
-        result,
-    );
+    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
+        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
+    } else {
+        Logger.getLogger('Adyen').error("went to else");
+        paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
+    }
 
     return true;
   },
