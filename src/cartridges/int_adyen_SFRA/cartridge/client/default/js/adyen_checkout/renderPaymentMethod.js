@@ -21,6 +21,7 @@ function getPersonalDetails() {
 }
 
 function setNode(paymentMethodID) {
+console.log('paymentMethodID inside setnode ' + paymentMethodID);
   const createNode = (...args) => {
     if (!store.componentsObj[paymentMethodID]) {
       store.componentsObj[paymentMethodID] = {};
@@ -51,6 +52,7 @@ function setNode(paymentMethodID) {
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
+console.log("inside getPaymentMethodID " + paymentMethod);
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
@@ -139,10 +141,11 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   isStored,
   path,
   description = null,
+  rerender = false,
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const li = document.createElement('li');
+  let li = document.createElement('li');
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
@@ -157,17 +160,23 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
     isSchemeNotStored,
   };
 
+  console.log('options are ' + JSON.stringify(options));
   const imagePath = getImagePath(options);
   const liContents = getListContents({ ...options, imagePath, description });
 
-  li.innerHTML = liContents;
-  li.classList.add('paymentMethod');
-
+  if(rerender) {
+  console.log('inside rerender');
+    li = document.querySelector(`#rb_${paymentMethodID}`).closest("li");
+  } else {
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+    paymentMethodsUI.append(li);
+  }
+   console.log('li  ' + li);
   handlePayment(options);
   configureContainer(options);
 
   li.append(container);
-  paymentMethodsUI.append(li);
 
   const node = store.componentsObj[paymentMethodID]?.node;
   if (node) {

@@ -1,5 +1,6 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
+const { renderPaymentMethod } = require('./renderPaymentMethod');
 const store = require('../../../../store');
 
 function getCardConfig() {
@@ -148,6 +149,12 @@ function getGiftCardConfig() {
             }
             console.log('partialPaymentRequest ' + JSON.stringify(partialPaymentRequest));
             helpers.makePartialPayment(partialPaymentRequest);
+
+            store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
+            delete store.componentsObj["giftcard"];
+            document.querySelector("#component_giftcard").remove();
+            renderPaymentMethod({type: "giftcard"}, false, store.checkoutConfiguration.session.imagePath, null, true);
+            document.querySelector("#component_giftcard").style.display = "block";
           }
         },
         fail: (e) => {

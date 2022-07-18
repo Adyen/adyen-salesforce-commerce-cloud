@@ -64,12 +64,6 @@ function makePartialPayment(data) {
       store.splitPaymentsOrderObj.remainingAmount = response.order.remainingAmount;
       setOrderFormData(response);
 
-      if (response.fullResponse?.action) {
-        component.handleAction(response.fullResponse.action);
-      }
-      if (response.paymentError || response.error) {
-        component.handleError();
-      }
     },
   }).fail(() => {});
 }

@@ -135,6 +135,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   store.checkoutConfiguration.session = {
     id: session.id,
     sessionData: session.sessionData,
+    imagePath: session.imagePath,
+    adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   setCheckoutConfiguration(store.checkout.options);
