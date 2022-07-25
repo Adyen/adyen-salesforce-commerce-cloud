@@ -174,6 +174,7 @@ export default class CheckoutPageSFRA5 {
     const secondSession = await context.newPage();
 
     await secondSession.goto(checkoutLocation);
+    return secondSession;
   };
 
   expectSuccess = async () => {
@@ -184,7 +185,7 @@ export default class CheckoutPageSFRA5 {
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 
-  expectIdealSuccess = async () => {
+  expectNonRedirectSuccess = async () => {
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 

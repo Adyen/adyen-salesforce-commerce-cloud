@@ -96,7 +96,7 @@ export default class PaymentMethodsPage {
   };
 
   submitSimulator = async () => {
-    await this.page.locator('input[type="submit"]').click();
+    await this.page.locator('#mainSubmit').click();
   };
 
   initiateCardPayment = async (cardInput) => {
@@ -428,8 +428,8 @@ export default class PaymentMethodsPage {
   };
 
   initiateSEPAPayment = async () => {
-    const nameInput = Selector('input[name="sepa.ownerName"]');
-    const ibanInput = Selector('input[name="sepa.ibanNumber"]');
+    const nameInput = this.page.locator('input[name="sepa.ownerName"]');
+    const ibanInput = this.page.locator('input[name="sepa.ibanNumber"]');
 
     await this.page.click('#rb_sepadirectdebit');
     await nameInput.type(paymentData.SepaDirectDebit.accountName);

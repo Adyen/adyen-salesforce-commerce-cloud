@@ -184,7 +184,7 @@ export default class CheckoutPageSFRA {
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 
-  expectIdealSuccess = async () => {
+  expectNonRedirectSuccess = async () => {
     await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
   };
 

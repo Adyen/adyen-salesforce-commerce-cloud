@@ -177,6 +177,7 @@ export default class CheckoutPageSFRA {
   };
 
   goBackAndSubmitShipping = async () => {
+    await this.page.waitForNavigation('load', { timeout: 10000 });
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -198,7 +199,7 @@ export default class CheckoutPageSFRA {
     });
   };
 
-  expectIdealSuccess = async () => {
+  expectNonRedirectSuccess = async () => {
     await this.expectSuccess();
   };
 
