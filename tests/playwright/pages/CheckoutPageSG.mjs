@@ -19,6 +19,7 @@ export default class CheckoutPageSFRA {
     this.orderConfirmationDetails = page.locator('.order-confirmation-details');
 
     this.errorMessage = page.locator('.error-form');
+    this.thankYouMessage = page.locator('.order-thank-you-msg');
     this.shippingSubmit = page.locator(
       'button[name="dwfrm_singleshipping_shippingAddress_save"]',
     );
@@ -198,7 +199,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectIdealSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
+    await this.expectSuccess();
   };
 
   expectRefusal = async () => {
