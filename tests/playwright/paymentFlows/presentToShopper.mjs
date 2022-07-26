@@ -7,7 +7,6 @@ export class PresentToShoppers {
 
   doMultiBancoPayment = async () => {
     await this.paymentMethodsPage.initiateMultiBancoPayment();
-    return await paymentMethodsPage.MultiBancoVoucherExists();
   };
 
   doBoletoPayment = async () => {
