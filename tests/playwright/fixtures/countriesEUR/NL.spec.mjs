@@ -11,7 +11,7 @@ let pendingPayments;
 const shopperData = new ShopperData();
 
 for (const environment of environments) {
-  test.describe(`${environment.name} EUR NL`, () => {
+  test.describe.parallel(`${environment.name} EUR NL`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
 
