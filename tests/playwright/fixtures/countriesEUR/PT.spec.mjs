@@ -29,12 +29,15 @@ for (const environment of environments) {
       await checkoutPage.expectVoucher();
     });
 
+    // MBWay redirection is too flaky, skipping until it's fixed.
     test.skip('MBWay Success', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
 
       await checkoutPage.setEmail();
       await pendingPayments.doMBWayPayment();
       await checkoutPage.completeCheckout();
+
+      await pendingPayments.waitForThirdPartyPaymentLoader();
       await checkoutPage.expectSuccess();
     });
   });

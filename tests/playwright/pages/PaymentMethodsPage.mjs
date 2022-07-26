@@ -402,7 +402,6 @@ export default class PaymentMethodsPage {
 
   initiateMBWayPayment = async () => {
     await this.page.click('input[value="mbway"]');
-    await this.page.click('#component_mbway button');
   };
 
   initiateGooglePayPayment = async () => {
