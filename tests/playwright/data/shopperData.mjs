@@ -21,7 +21,7 @@ export class ShopperData {
       firstName: 'Jean',
       lastName: 'Dubois',
     },
-    dateOfBirth: '1990-01-01',
+    dateOfBirth: '01-01-1990',
     telephone: '0612345678',
     shopperEmail: 'jean@dubois.fr',
     address: {

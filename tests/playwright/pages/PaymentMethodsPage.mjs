@@ -172,16 +172,23 @@ export default class PaymentMethodsPage {
     await this.page(`li[data-value="${nrInstallments}"]`).click();
   };
 
+  fillOneyForm = async (shopper) => {
+    //Filling the form in checkout side
+    await this.page.locator('input[value="MALE"]').click();
+    await this.page
+      .locator('input[name="dateOfBirth"]')
+      .type(shopper.dateOfBirth);
+    await this.page
+      .locator('.adyen-checkout__input--shopperEmail')
+      .type(shopper.shopperEmail);
+  };
   initiateOneyPayment = async (shopper) => {
-    const oneyGender = this.page.locator(
-      '#component_facilypay_4x input[value="MALE"]',
+    const oneyForm = this.page.locator('#component_facilypay_4x');
+    const oneyGender = oneyForm.locator('//input[@value="MALE"]/../label');
+    const oneyDateOfBirth = oneyForm.locator(
+      '.adyen-checkout__input--dateOfBirth',
     );
-    const oneyDateOfBirth = this.page.locator(
-      '#component_facilypay_4x .adyen-checkout__input--dateOfBirth',
-    );
-    const oneyEmail = this.page.locator(
-      '#component_facilypay_4x input[name="shopperEmail"]',
-    );
+    const oneyEmail = oneyForm.locator('input[name="shopperEmail"]');
 
     await this.page.locator('#rb_facilypay_4x').click();
     await oneyGender.click();
