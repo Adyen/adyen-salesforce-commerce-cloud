@@ -96,6 +96,10 @@ export default class PaymentMethodsPage {
   };
 
   submitSimulator = async () => {
+    await this.page.locator('input[type="submit"]').click();
+  };
+
+  submitBankSimulator = async () => {
     await this.page.locator('#mainSubmit').click();
   };
 

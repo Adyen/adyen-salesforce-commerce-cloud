@@ -18,7 +18,7 @@ export class PendingPayments {
   };
 
   completeBankTransferRedirect = async () => {
-    await this.paymentMethodsPage.submitSimulator();
+    await this.paymentMethodsPage.submitBankSimulator();
   };
 
   doQRCodePayment = async (paymentMethod, envName) => {
