@@ -113,7 +113,7 @@ export class ShopperData {
       city: 'Stockholm',
       country: 'SE',
       stateOrProvince: '',
-      postalCode: '115 21',
+      postalCode: '11521',
       street: 'Galärvarvsvägen',
       houseNumberOrName: '14',
     },
