@@ -149,7 +149,7 @@ for (const environment of environments) {
       await goToBillingWithFullCartLoggedInUser();
     });
 
-    test.only('3DS2 oneClick test success', async () => {
+    test('3DS2 oneClick test success', async () => {
       if (environment.name === 'SG') test.fixme();
 
       await cards.doCardPaymentOneclick(cardData.threeDs2);
