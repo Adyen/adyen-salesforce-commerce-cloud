@@ -143,6 +143,8 @@ export default class CheckoutPageSFRA {
   };
 
   setEmail = async () => {
+    await this.page.waitForLoadState('networkidle');
+    await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
   };
 

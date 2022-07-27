@@ -133,6 +133,7 @@ export default class CheckoutPageSFRA5 {
     feature, which leads the email field to be missed, hence the flakiness.
     Waiting until the full page load prevents this situation */
     await this.page.waitForLoadState('networkidle');
+    await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
   };
 
