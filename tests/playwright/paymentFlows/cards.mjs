@@ -1,4 +1,4 @@
-import PaymentMethodsPage from '../pages/paymentMethodsPage.mjs';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 export class Cards {
   constructor(page) {
     this.page = page;
