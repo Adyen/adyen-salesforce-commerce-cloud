@@ -27,7 +27,7 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test.only('UPI Failure', async ({ page }) => {
+    test('UPI Failure', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doBillDeskPayment('billdesk_upi');
       await checkoutPage.completeCheckout();
