@@ -44,6 +44,8 @@ for (const environment of environments) {
     });
 
     test('Card payment no 3DS failure', async () => {
+      if (environment.name === 'SG') test.fixme();
+
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -147,7 +149,9 @@ for (const environment of environments) {
       await goToBillingWithFullCartLoggedInUser();
     });
 
-    test('3DS2 oneClick test success', async () => {
+    test.only('3DS2 oneClick test success', async () => {
+      if (environment.name === 'SG') test.fixme();
+
       await cards.doCardPaymentOneclick(cardData.threeDs2);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
@@ -155,6 +159,8 @@ for (const environment of environments) {
     });
 
     test('3DS2 oneClick test failure', async () => {
+      if (environment.name === 'SG') test.fixme();
+
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.cvc = '123';
       await cards.doCardPaymentOneclick(cardDataInvalid);
@@ -164,6 +170,8 @@ for (const environment of environments) {
     });
 
     test('co-branded BCMC/Maestro oneClick test success', async () => {
+      if (environment.name === 'SG') test.fixme();
+
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds1Verification();
