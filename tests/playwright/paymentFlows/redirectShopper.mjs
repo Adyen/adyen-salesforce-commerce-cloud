@@ -34,7 +34,7 @@ export class RedirectShopper {
   };
 
   doKlarnaPayment = async () => {
-    await this.paymentMethodsPage.initiateKlarnaPayment(null);
+    await this.paymentMethodsPage.initiateKlarnaPayment(undefined);
   };
 
   completeKlarnaRedirect = async (success) => {
@@ -77,8 +77,8 @@ export class RedirectShopper {
     }
   };
 
-  doGiropayPayment = async (page) => {
-    await page.click('#rb_giropay');
+  doGiropayPayment = async () => {
+    await this.page.click('#rb_giropay');
   };
 
   completeGiropayRedirect = async (paymentData, success) => {

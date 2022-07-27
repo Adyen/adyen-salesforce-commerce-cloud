@@ -202,6 +202,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =
@@ -212,57 +213,87 @@ export default class PaymentMethodsPage {
     await klarnaSelector.click();
   };
 
-  /* Let's try to get Klarna HPP parts from the other framework later
+  // Let's try to get Klarna HPP parts from the other framework later
+  waitForKlarnaLoad = async () => {
+    await this.page.waitForNavigation({
+      url: /.*playground.klarna/,
+      timeout: 15000,
+      waitUntil: 'networkidle',
+    });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+  };
+
+  async continueOnKlarna() {
+    await this.waitForKlarnaLoad();
+    this.klarnaIframe = this.page.frameLocator(
+      '#klarna-hpp-instance-fullscreen',
+    );
+
+    this.klarnaBuyButton = this.page.locator('#buy-button');
+    this.klarnaContinueButton = this.klarnaIframe.locator('#onContinue');
+    this.klarnaVerificationCodeInput = this.klarnaIframe.locator('#otp_field');
+
+    await this.klarnaBuyButton.waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.klarnaBuyButton.click();
+
+    /* Commenting out this section since the phone number comes
+    prefilled nowadays
+
+    await this.klarnaPhoneInput.waitFor({
+      state: "visible",
+      timeout: 10000,
+    });
+    await this.klarnaPhoneInput.fill(); */
+
+    await this.klarnaContinueButton.waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.klarnaContinueButton.click();
+    await this.klarnaVerificationCodeInput.waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.klarnaVerificationCodeInput.fill('123456');
+  }
 
   confirmKlarnaPayNowPayment = async () => {
-    const ibanSelector = this.page.locator('#iban');
-    await Selector('#payment-method-selector')();
-    await t
-      .click('#buy-button')
-      .switchToIframe('#klarna-hpp-instance-fullscreen')
-      .typeText('#addressCollector-date_of_birth', '01011991')
-      .click('#dd-identification-dialog__footer-button-wrapper button');
-    if (await ibanSelector.exists) {
-      await t
-        .typeText(ibanSelector, 'DE11520513735120710131')
-        .click('#aligned-content__button__0');
-    }
-    await t.click('#aligned-content__button__0').switchToMainWindow();
+    await this.continueOnKlarna();
+    await this.page
+      .frameLocator('#klarna-hpp-instance-fullscreen')
+      .locator('#dd-confirmation-dialog__bottom button')
+      .click();
   };
 
   confirmKlarnaAccountPayment = async () => {
-    await Selector('#payment-method-selector')();
-    await t
-      .click('#buy-button')
-      .switchToIframe('#klarna-hpp-instance-fullscreen')
-      .typeText(
-        '#baseaccount_kp-purchase-approval-form-date-of-birth',
-        '01011991',
-      )
-      .click('#baseaccount_kp-purchase-approval__bottom')
-      .switchToMainWindow();
+    await this.continueOnKlarna();
+    const klarnaHppIframe = this.page.frameLocator(
+      '#klarna-hpp-instance-fullscreen',
+    );
+    await klarnaHppIframe
+      .locator('#fixedsumcredit_kp-purchase-review-secci-toggle__box')
+      .click();
+    await klarnaHppIframe
+      .locator('#fixedsumcredit_kp-purchase-review-continue-button')
+      .click();
   };
 
   confirmKlarnaPayment = async () => {
-    await Selector('#payment-method-selector')();
-    await t
-      .click(Selector('#buy-button'))
-      .switchToIframe('#klarna-hpp-instance-fullscreen')
-      .typeText(
-        Selector('#invoice_kp-purchase-approval-form-date-of-birth'),
-        '01011991',
-      )
-      .click(Selector('#invoice_kp-purchase-approval-form-continue-button'))
-      .switchToMainWindow();
+    await this.continueOnKlarna();
+    await this.page
+      .frameLocator('#klarna-hpp-instance-fullscreen')
+      .locator('#invoice_kp-purchase-review-continue-button')
+      .click();
   };
 
-    cancelKlarnaDirectEBankingPayment = async () => {
-    await t
-      .click(Selector('.back-to-merchant cancel-transaction'))
-      .click(Selector('#CancelTransaction'));
+  cancelKlarnaDirectEBankingPayment = async () => {
+    // await t
+    //   .click(Selector('.back-to-merchant cancel-transaction'))
+    //   .click(Selector('#CancelTransaction'));
   };
-
-  */
 
   confirmKlarnaPaymentWithIDNumber = async () => {
     this.klarnaBuyButton = this.page.locator('#buy-button');
@@ -293,15 +324,20 @@ export default class PaymentMethodsPage {
   };
 
   cancelKlarnaPayment = async () => {
+    await this.waitForKlarnaLoad();
     await this.page.click('#back-button');
   };
 
   confirmGiropayPayment = async (giroPayData) => {
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+
     const giroBank = this.page.locator('#ui-id-1 li a');
     const giroBankDropdown = this.page.locator('#tags');
-    await giroBankDropdown.waitFor({ state: 'visible', timeout: 5000 });
+
+    await giroBankDropdown.waitFor({ state: 'visible', timeout: 10000 });
     await giroBankDropdown.type(giroPayData.bankName);
 
+    await giroBank.waitFor({ state: 'visible', timeout: 5000 });
     await giroBank.click();
     await this.page.click('input[name="continueBtn"]');
     await this.page.click('#yes');
