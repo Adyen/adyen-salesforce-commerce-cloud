@@ -140,11 +140,12 @@ export default class CheckoutPageSFRA {
     }
 
     await this.checkoutPageUseShippingAddressForBillingCheckBox.click();
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
   setEmail = async () => {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
   };

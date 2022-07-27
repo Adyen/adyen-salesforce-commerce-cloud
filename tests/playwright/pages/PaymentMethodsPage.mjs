@@ -105,7 +105,7 @@ export default class PaymentMethodsPage {
 
   initiateCardPayment = async (cardInput) => {
     await this.page.locator('#rb_scheme').click();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
     await this.page
       .locator('.adyen-checkout__card__holderName__input')
