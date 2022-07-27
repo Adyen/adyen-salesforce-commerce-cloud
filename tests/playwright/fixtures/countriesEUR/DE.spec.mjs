@@ -81,6 +81,5 @@ for (const environment of environments) {
       await redirectShopper.completeGiropayRedirect(paymentData.GiroPay, false);
       await checkoutPage.expectRefusal();
     });
-    // };
   });
 }
