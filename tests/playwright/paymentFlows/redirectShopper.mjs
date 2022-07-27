@@ -90,7 +90,7 @@ export class RedirectShopper {
   };
 
   doEPSPayment = async () => {
-    await this.paymentMethodsPage.initiateEPSPayment(success);
+    await this.paymentMethodsPage.initiateEPSPayment();
   };
 
   completeEPSRedirect = async (success) => {

@@ -364,9 +364,9 @@ export default class PaymentMethodsPage {
     const epsDropDown = this.page.locator(
       '#component_eps .adyen-checkout__dropdown__button',
     );
-    const epsIssuer = this.page.locator(
-      '#component_eps .adyen-checkout__dropdown__list li',
-    );
+    const epsIssuer = this.page
+      .locator('#component_eps .adyen-checkout__dropdown__list li')
+      .first();
 
     await this.page.click('#rb_eps');
     await epsInput.click();
@@ -384,10 +384,12 @@ export default class PaymentMethodsPage {
 
   confirmSimulator = async () => {
     //Confirm the simulator
+    this.page.locator('button[value="authorised"]').click();
   };
 
   cancelSimulator = async () => {
     //Cancel the simulator
+    this.page.locator('button[value="refused"]').click();
   };
 
   cancelAffirmPayment = async () => {

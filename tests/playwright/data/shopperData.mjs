@@ -62,7 +62,7 @@ export class ShopperData {
       city: 'Tirol',
       country: 'AT',
       stateOrProvince: '',
-      postalCode: '1010',
+      postalCode: '10105',
       street: 'Bremschlstrasse',
       houseNumberOrName: '37',
     },
