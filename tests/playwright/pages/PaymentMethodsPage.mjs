@@ -335,9 +335,10 @@ export default class PaymentMethodsPage {
     const giroBankDropdown = this.page.locator('#tags');
 
     await giroBankDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    await giroBankDropdown.type(giroPayData.bankName);
+    await giroBankDropdown.type(giroPayData.bankName, { delay: 50 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
-    await giroBank.waitFor({ state: 'visible', timeout: 5000 });
+    await giroBank.waitFor({ state: 'visible', timeout: 10000 });
     await giroBank.click();
     await this.page.click('input[name="continueBtn"]');
     await this.page.click('#yes');
