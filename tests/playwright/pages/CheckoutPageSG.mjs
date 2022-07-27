@@ -80,11 +80,12 @@ export default class CheckoutPageSFRA {
     );
     this.voucherCode = page.locator('#voucherResult');
 
-    this.qrLoaderAmount = page.locator(
+    this.qrLoader = this.page.locator('.adyen-checkout__qr-loader');
+    this.qrLoaderAmount = this.qrLoader.locator(
       '.adyen-checkout__qr-loader__payment_amount',
     );
-    /* TODO: The qr image selector is not ideal, needs to be updated after initial migration */
-    this.qrImg = page.locator('img[alt="Skanna QR-kod"]');
+
+    this.qrImg = this.qrLoader.locator('//img[contains(@alt,"QR")]');
   }
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
@@ -214,6 +215,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectQRcode = async () => {
+    await this.qrLoader.waitFor({ state: 'attached', timeout: 10000 });
     await expect(this.qrLoaderAmount).toBeVisible({ timeout: 10000 });
     await expect(this.qrImg).toBeVisible({ timeout: 10000 });
   };
