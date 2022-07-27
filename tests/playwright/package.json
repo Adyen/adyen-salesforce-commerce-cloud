@@ -109,6 +109,7 @@
     "ws": "^8.4.2"
   },
   "scripts": {
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "test:ci": "npx playwright test --project=chromium --workers=4 --config=sfcc.config.js"
   }
 }
