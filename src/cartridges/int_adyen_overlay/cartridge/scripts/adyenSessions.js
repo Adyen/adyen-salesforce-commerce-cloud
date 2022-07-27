@@ -28,6 +28,7 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoice
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
+const UUIDUtils = require('dw/util/UUIDUtils');
 
 function createSession(basket, customer, countryCode) {
   try {
@@ -115,8 +116,15 @@ function createSession(basket, customer, countryCode) {
     service.addHeader('Content-type', 'application/json');
     service.addHeader('charset', 'UTF-8');
     service.addHeader('X-API-key', xapikey);
+    service.addHeader('Idempotency-Key', UUIDUtils.createUUID());
 
-    const callResult = service.call(JSON.stringify(sessionsRequest));
+    const maxRetries = 3;
+
+    let callResult;
+    for(let nrRetries=0; nrRetries<maxRetries && !callResult?.isOk(); nrRetries++) {
+      callResult = service.call(JSON.stringify(sessionsRequest));
+    }
+
     if (!callResult.isOk()) {
       throw new Error(
           `/paymentMethods call error code${callResult
