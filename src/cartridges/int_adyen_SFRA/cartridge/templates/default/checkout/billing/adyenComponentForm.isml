@@ -50,6 +50,7 @@
      <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
      <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
+     <input id="ratePayTest" type="hidden" name="test" value="${JSON.stringify(pdict.AdyenHelper.getRatePayID())}"/>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
      <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
      <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
@@ -63,12 +64,10 @@
      <iscomment>
          Adyen RatePay Device Fingerprint Code
      </iscomment>
-     <isif condition="${empty(session.privacy.ratePayFingerprint)}">
          <script language="JavaScript">
              var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'}
          </script>
-         <script type="text/javascript" src="//d.ratepay.com/${ratePayValues.ratePayID}/di.js"></script>
-     </isif>
+         <script type="text/javascript" src="https://d.ratepay.com/${ratePayValues.ratePayID}/di.js"></script>
      <iscomment>
          Adyen Generic Device Fingerprint Code
      </iscomment>
