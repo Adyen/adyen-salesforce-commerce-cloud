@@ -42,7 +42,7 @@ export default class PaymentMethodsPage {
 
     // Click PayPal radio button
     await this.page.click('#rb_paypal');
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
