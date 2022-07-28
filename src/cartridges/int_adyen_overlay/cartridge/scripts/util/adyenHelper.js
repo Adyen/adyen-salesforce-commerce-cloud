@@ -28,6 +28,7 @@ const CustomerMgr = require('dw/customer/CustomerMgr');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
+const UUIDUtils = require('dw/util/UUIDUtils');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -721,6 +722,41 @@ var adyenHelperObj = {
       isSuccessful: false,
     };
   },
+
+  executeCall(serviceType, requestObject) {
+    const service = this.getService(serviceType);
+    if (service === null) {
+      throw new Error(`Could not create ${serviceType} service object`)
+    }
+    const maxRetries = constants.MAX_API_RETRIES;
+    const apiKey = AdyenConfigs.getAdyenApiKey();
+    const uuid = UUIDUtils.createUUID();
+    service.addHeader('Content-type', 'application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-KEY', apiKey);
+    service.addHeader('Idempotency-Key', uuid);
+
+    let callResult;
+    // retry the call until we reach max retries OR the callresult is OK
+    for(let nrRetries=0; nrRetries<maxRetries && !callResult?.isOk(); nrRetries++) {
+      callResult = service.call(JSON.stringify(requestObject));
+    }
+
+    if (!callResult.isOk()) {
+      throw new Error(
+          `${serviceType} service call error code${callResult
+              .getError()
+              .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+      );
+    }
+
+    const resultObject = callResult.object;
+    if (!resultObject || !resultObject.getText()) {
+      throw new Error('No correct response from ${serviceType} service call');
+    }
+
+    return JSON.parse(resultObject.getText());
+  }
 };
 
 module.exports = adyenHelperObj;

@@ -28,16 +28,9 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoice
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
-const UUIDUtils = require('dw/util/UUIDUtils');
 
 function createSession(basket, customer, countryCode) {
   try {
-    const service = AdyenHelper.getService(
-        constants.SERVICE.SESSIONS
-    );
-    if (!service) {
-      throw new Error('Could not do /sessions call');
-    }
 
     let sessionsRequest = {};
 
@@ -85,7 +78,6 @@ function createSession(basket, customer, countryCode) {
       }
     }
 
-
     if (countryCode) {
       sessionsRequest.countryCode = countryCode;
     }
@@ -112,33 +104,7 @@ function createSession(basket, customer, countryCode) {
 
     sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
-    const xapikey = AdyenConfigs.getAdyenApiKey();
-    service.addHeader('Content-type', 'application/json');
-    service.addHeader('charset', 'UTF-8');
-    service.addHeader('X-API-key', xapikey);
-    service.addHeader('Idempotency-Key', UUIDUtils.createUUID());
-
-    const maxRetries = 3;
-
-    let callResult;
-    for(let nrRetries=0; nrRetries<maxRetries && !callResult?.isOk(); nrRetries++) {
-      callResult = service.call(JSON.stringify(sessionsRequest));
-    }
-
-    if (!callResult.isOk()) {
-      throw new Error(
-          `/paymentMethods call error code${callResult
-              .getError()
-              .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-      );
-    }
-
-    const resultObject = callResult.object;
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error('No correct response from /sessions call');
-    }
-
-    return JSON.parse(resultObject.getText());
+    return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
