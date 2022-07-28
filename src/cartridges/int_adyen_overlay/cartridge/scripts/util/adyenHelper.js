@@ -752,7 +752,7 @@ var adyenHelperObj = {
 
     const resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
-      throw new Error('No correct response from ${serviceType} service call');
+      throw new Error(`No correct response from ${serviceType} service call`);
     }
 
     return JSON.parse(resultObject.getText());
