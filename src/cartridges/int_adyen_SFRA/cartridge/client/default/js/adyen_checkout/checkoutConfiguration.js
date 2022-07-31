@@ -111,14 +111,18 @@ function getGiftCardConfig() {
           giftcardBalance = data.balance;
           if(data.resultCode && data.resultCode === "Success") {
             resolve(data);
+
           } else if(data.resultCode && data.resultCode === "NotEnoughBalance"){
             resolve(data);
           }
           else {
+          console.log('about to reject');
+          console.log('data is ' + JSON.stringify(data));
             reject();
           }
         },
-        fail: () => {
+        fail: (e) => {
+        console.log('onBalanceCheck inside fail ' + e.toString());
           reject();
         }
       });
@@ -155,6 +159,28 @@ function getGiftCardConfig() {
             document.querySelector("#component_giftcard").remove();
             renderPaymentMethod({type: "giftcard"}, false, store.checkoutConfiguration.session.imagePath, null, true);
             document.querySelector("#component_giftcard").style.display = "block";
+
+
+            const remainingAmountContainer = document.createElement("div");
+            const remainingAmountPar = document.createElement("p");
+            const remainingAmountElement = document.createElement("div");
+            const remainingAmountText = document.createElement("span");
+            remainingAmountContainer.classList.add("col-4.line-item-total-price");
+            remainingAmountPar.classList.add("line-item-pricing-info");
+            remainingAmountElement.classList.add("price");
+            remainingAmountText.classList.add("line-item-total-text.line-item-total-price-label");
+            remainingAmountText.innerText = "Remaining Amount"; //todo: use localisation
+            remainingAmountElement.innerHTML = JSON.stringify(store.splitPaymentsOrderObj.remainingAmount);
+            remainingAmountContainer.appendChild(remainingAmountPar);
+            remainingAmountPar.appendChild(remainingAmountText);
+            remainingAmountContainer.appendChild(remainingAmountElement);
+            const pricingContainer = document.querySelector(".row.align-items-start");
+            pricingContainer.appendChild(remainingAmountContainer);
+//                const totalPriceContainer = document.querySelector(".col-4.line-item-total-price");
+//                let toWrap = totalPriceContainer.querySelector("div");
+//                let wrapper = document.createElement('del');
+//                toWrap.parentNode.appendChild(wrapper);
+//                wrapper.appendChild(toWrap);
           }
         },
         fail: (e) => {

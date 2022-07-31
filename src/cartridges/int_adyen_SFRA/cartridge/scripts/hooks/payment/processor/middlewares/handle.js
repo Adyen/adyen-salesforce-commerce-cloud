@@ -7,13 +7,11 @@ const Logger = require('dw/system/Logger');
 function fillPaymentInstrument(paymentInstrument, paymentInformation) {
 //     paymentInstrument.custom.adyenPaymentData = paymentInstrument.custom.adyenPaymentData ? {...paymentInstrument.custom.adyenPaymentData, ...paymentInformation.stateData} : paymentInformation.stateData;
      paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+          Logger.getLogger('Adyen').error('non giftcard paymentInstrument.custom.adyenPaymentData ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
 //          Logger.getLogger('Adyen').error('after  adyenPaymentData');
-     if(paymentInformation.splitPaymentsOrder) {
-        paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
-        paymentInstrument.custom.adyenPaymentMethod += ` + ${paymentInformation.adyenPaymentMethod}`;
-     } else {
-        paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
-     }
+
+     paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
+
      Logger.getLogger('Adyen').error('splitPaymentsOrder in handle ' + JSON.stringify(paymentInformation.splitPaymentsOrder));
 
      if (paymentInformation.isCreditCard) {
@@ -25,12 +23,12 @@ function fillPaymentInstrument(paymentInstrument, paymentInformation) {
        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
        paymentInstrument.setCreditCardType(sfccCardType);
 
-       if(paymentInstrument.custom.adyenPaymentMethod.includes("split payment")) {
-          paymentInstrument.custom.adyenPaymentMethod += ` ${sfccCardType}`;
-       }
-       else {
+//       if(paymentInstrument.custom.adyenPaymentMethod.includes("split payment")) {
+//          paymentInstrument.custom.adyenPaymentMethod += ` ${sfccCardType}`;
+//       }
+//       else {
         paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-       }
+//       }
 
        if (paymentInformation.creditCardToken) {
          paymentInstrument.setCreditCardExpirationMonth(
@@ -51,24 +49,26 @@ function handle(basket, paymentInformation) {
   const cardErrors = {};
   const serverErrors = [];
 
-  let paymentInstrument;
+//  let paymentInstrument;
   Transaction.wrap(() => {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-        if(item.custom.adyenSplitPaymentsOrder) {
-          paymentInstrument = item;
-          return;
-        }
-        else {
+        Logger.getLogger('Adyen').error('item ' + item);
+        if(!item.custom.adyenSplitPaymentsOrder) {
+//          paymentInstrument = item;
+//          return;
+//        }
+//        else {
+        Logger.getLogger('Adyen').error('removing item PM');
           currentBasket.removePaymentInstrument(item);
         }
     });
-    if(!paymentInstrument) {
-        paymentInstrument = currentBasket.createPaymentInstrument(
+//    if(!paymentInstrument) {
+        let paymentInstrument = currentBasket.createPaymentInstrument(
           constants.METHOD_ADYEN_COMPONENT,
           currentBasket.totalGrossPrice,
         );
-    };
-    Logger.getLogger('Adyen').error('about to fill pm');
+//    };
+    Logger.getLogger('Adyen').error('non giftcard paymentInstrument ' + paymentInstrument);
     fillPaymentInstrument(paymentInstrument, paymentInformation);
   });
 

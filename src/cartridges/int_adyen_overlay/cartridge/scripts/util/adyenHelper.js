@@ -394,6 +394,8 @@ var adyenHelperObj = {
 
   // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject(order, paymentInstrument) {
+    Logger.getLogger('Adyen').error(paymentInstrument);
+    Logger.getLogger('Adyen').error("adyenPaymentData " + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
@@ -566,12 +568,12 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
-        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
-    } else {
-        Logger.getLogger('Adyen').error("went to else");
-        paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
-    }
+//    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
+//        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
+//    } else {
+//        Logger.getLogger('Adyen').error("went to else");
+      paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
+//    }
 
     return true;
   },
