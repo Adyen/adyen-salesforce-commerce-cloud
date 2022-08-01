@@ -223,7 +223,8 @@ var adyenHelperObj = {
 
   isOpenInvoiceMethod(paymentMethod) {
     if (
-        paymentMethod.indexOf('afterpay') > -1 ||
+        paymentMethod.indexOf('afterpay') 
+        -1 ||
         paymentMethod.indexOf('klarna') > -1 ||
         paymentMethod.indexOf('ratepay') > -1 ||
         paymentMethod.indexOf('facilypay') > -1 ||
@@ -738,7 +739,7 @@ var adyenHelperObj = {
 
     let callResult;
     // retry the call until we reach max retries OR the callresult is OK
-    for(let nrRetries=0; nrRetries<maxRetries && !callResult?.isOk(); nrRetries++) {
+    for(let nrRetries=0; nrRetries < maxRetries && !callResult?.isOk(); nrRetries++) {
       callResult = service.call(JSON.stringify(requestObject));
     }
 
