@@ -34,6 +34,7 @@ function createPaymentInstrument(customer) {
     paymentInstrument.custom.adyenPaymentData =
       paymentForm.adyenStateData.value;
   });
+    Logger.getLogger('Adyen').error('being filled when it should not savePayment');
 
   return paymentInstrument;
 }

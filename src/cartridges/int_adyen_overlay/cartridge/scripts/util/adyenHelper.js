@@ -395,11 +395,15 @@ var adyenHelperObj = {
   // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject(order, paymentInstrument) {
     Logger.getLogger('Adyen').error(paymentInstrument);
-    Logger.getLogger('Adyen').error("adyenPaymentData " + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
+    Logger.getLogger('Adyen').error("adyenPaymentData without stringify " + paymentInstrument.custom.adyenPaymentData);
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
+    Logger.getLogger('Adyen').error('jsonObject  ' + JSON.stringify(jsonObject));
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
+
+    Logger.getLogger('Adyen').error('filtered stateData ' + JSON.stringify(stateData));
+
     let reference = 'recurringPayment-account';
     let orderToken = 'recurringPayment-token'
     if (order && order.getOrderNo()) {

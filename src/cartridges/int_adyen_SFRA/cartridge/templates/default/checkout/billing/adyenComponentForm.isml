@@ -62,8 +62,7 @@
      <u id="giftCardLabel">+ Add a giftcard</u>
      <ul id="paymentMethodsList"></ul>
 
-
-
+    <isinclude template="adyenActionModal" />
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code
