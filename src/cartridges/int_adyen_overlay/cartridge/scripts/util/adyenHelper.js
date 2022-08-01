@@ -211,12 +211,9 @@ var adyenHelperObj = {
       returnValue.ratePayID = ratePayMerchantID;
     }
 
-    //if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint === null) {
       var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
       returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
       session.privacy.ratePayFingerprint = returnValue.sessionID;
-   // }
-
     return returnValue;
   },
 
