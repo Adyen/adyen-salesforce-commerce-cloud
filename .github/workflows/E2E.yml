@@ -50,6 +50,7 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run build
   end-to-end-testing:
+    needs: setup-the-cartridge
     runs-on: macos-latest
     strategy:
       fail-fast: false
