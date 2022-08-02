@@ -87,3 +87,8 @@ jobs:
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+      - name: Archive test result artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report
+          path: adyen-salesforce-commerce-cloud/tests/playwright/test-report
