@@ -11,9 +11,9 @@ server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
 server.post('Save', csrfProtection.generateToken, (req, res, next) => {
   const requestBody = JSON.parse(req.body);
 
-  Object.entries(requestBody).forEach((key, value) => {
+  requestBody.settings.forEach((setting) => {
     Transaction.wrap(() => {
-      AdyenConfigs.setCustomPreference(key, value);
+      AdyenConfigs.setCustomPreference(setting.key, setting.value);
     });
   });
   return next();
