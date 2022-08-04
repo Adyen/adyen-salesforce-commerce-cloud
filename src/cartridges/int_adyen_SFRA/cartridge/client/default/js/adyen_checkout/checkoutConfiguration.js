@@ -155,9 +155,9 @@ function getGiftCardConfig() {
             helpers.makePartialPayment(partialPaymentRequest);
 
 //            giftCardNode.unmount(`component_giftcard`);
-            store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
-            delete store.componentsObj["giftcard"];
-            $('#action-modal').modal('hide');
+//            store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
+//            delete store.componentsObj["giftcard"];
+            $('#giftcard-modal').modal('hide');
             document.querySelector("#giftCardLabel").style.display = "none";
 //            document.querySelector("#component_giftcard").remove();
 //            renderPaymentMethod({type: "giftcard"}, false, store.checkoutConfiguration.session.imagePath, null, true);
@@ -179,6 +179,7 @@ function getGiftCardConfig() {
             remainingAmountContainer.appendChild(remainingAmountElement);
             const pricingContainer = document.querySelector(".row.align-items-start");
             pricingContainer.appendChild(remainingAmountContainer);
+
 //                const totalPriceContainer = document.querySelector(".col-4.line-item-total-price");
 //                let toWrap = totalPriceContainer.querySelector("div");
 //                let wrapper = document.createElement('del');
@@ -198,7 +199,7 @@ function getGiftCardConfig() {
     onSubmit: function() {
 //        store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
 //        delete store.componentsObj["giftcard"];
-        $('#action-modal').modal('hide');
+        $('#giftcard-modal').modal('hide');
         store.selectedMethod = "giftcard";
 //        store.brand =
         document.querySelector('input[name="brandCode"]').checked = false;

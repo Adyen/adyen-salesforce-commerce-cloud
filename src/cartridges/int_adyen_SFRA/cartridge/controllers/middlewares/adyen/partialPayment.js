@@ -50,8 +50,8 @@ function makePartialPayment(req, res, next) {
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
             paymentInstrument.custom.adyenPaymentData = partialPaymentRequest.paymentMethod;
             paymentInstrument.custom.adyenSplitPaymentsOrder = request.splitPaymentsOrder;
-//            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
-            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
+            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
+//            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
             Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentMethod is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentMethod));
         });
 //        const order = COHelpers.createOrder(currentBasket);

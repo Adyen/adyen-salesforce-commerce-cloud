@@ -62,7 +62,12 @@
      <u id="giftCardLabel">+ Add a giftcard</u>
      <ul id="paymentMethodsList"></ul>
 
-    <isinclude template="adyenActionModal" />
+    <div class="modal fade" id="giftcard-modal" role="dialog">
+       <div class="modal-dialog" id="adyenModalDialog">
+            <div id="giftcard-container"></div>
+            <button id="closeGiftCardModal">X</button>
+       </div>
+    </div>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code
