@@ -47,6 +47,8 @@ module.exports = {
     EU: 'EU',
   },
 
+  MAX_API_RETRIES: 3,
+
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
