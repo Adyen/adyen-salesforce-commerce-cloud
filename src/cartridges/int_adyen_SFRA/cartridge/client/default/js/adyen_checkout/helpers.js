@@ -6,9 +6,11 @@ function assignPaymentMethodValue() {
   const paymentMethodlabelId = store.brand
     ? `#lb_${store.selectedMethod}_${store.brand}`
     : `#lb_${store.selectedMethod}`;
-  adyenPaymentMethod.value = document.querySelector(
-    paymentMethodlabelId,
-  ).innerHTML;
+    if(adyenPaymentMethod) {
+      adyenPaymentMethod.value = document.querySelector(
+        paymentMethodlabelId,
+      ).innerHTML;
+    }
 }
 
 function setOrderFormData(response) {

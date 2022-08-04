@@ -47,6 +47,7 @@ function paymentFromComponent(req, res, next) {
     // paymentInstrument.custom.adyenSplitPaymentsOrder = req.form.data; todo: fill it in
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
+      Logger.getLogger('Adyen').error('being filled when it should not fromComponent');
   const order = COHelpers.createOrder(currentBasket);
 
   let result;

@@ -62,7 +62,9 @@ function renderStoredPaymentMethods(data, imagePath) {
 
 function renderPaymentMethods(data, imagePath, adyenDescriptions) {
   data.paymentMethods.forEach((pm) => {
-    renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
+//    if(pm.type !== "giftcard") {
+       renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
+//    }
   });
 }
 
@@ -122,6 +124,44 @@ function setInstallments(amount) {
   } catch (e) {} // eslint-disable-line no-empty
 }
 
+function renderGiftCard(paymentMethod) {
+    let giftCardNode;
+    const giftcardContainer =  document.querySelector("#giftcard-container");
+    const giftCardLabel =  document.querySelector("#giftCardLabel");
+    const closeGiftCardModal =  document.createElement("button");
+    closeGiftCardModal.id = "closeGiftCardModal";
+    closeGiftCardModal.innerText = "X";
+//    document.querySelector("#adyenModalDialog").appendChild(giftcardContainer);
+//    document.querySelector("#adyenModalDialog").appendChild(closeGiftCardModal);
+    giftCardLabel.addEventListener('click', () => {
+//        $('#dwfrm_billing').trigger('submit');
+        if (store.formErrorsExist) {
+          return;
+        }
+        $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
+        giftcardContainer.innerText = "";
+        console.log('inside giftcardContainer onclick');
+        giftCardNode = store.checkout.create(paymentMethod.type).mount(giftcardContainer);
+    });
+
+    closeGiftCardModal.onclick = () => {
+        console.log('inside close');
+        $('##giftcard-modal').modal('hide');
+        giftCardNode.unmount(`component_giftcard`);
+    }
+
+//    closeGiftCardModal.addEventListener('click', () => {
+//        console.log('inside close');
+//        $('##giftcard-modal').modal('hide');
+//        giftCardNode.unmount(`component_giftcard`);
+////        document.querySelector("#component_giftcard").remove();
+////        renderPaymentMethod({type: "giftcard"}, false, store.checkoutConfiguration.session.imagePath, null, true);
+////        document.querySelector("#component_giftcard").style.display = "block";
+//    });
+
+    store.componentsObj["giftcard"] = {node: giftCardNode};
+}
+
 /**
  * Calls createSession and then renders the retrieved payment methods (including card component)
  */
@@ -144,6 +184,14 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
+    console.log('paymentMethodsResponse ' + JSON.stringify(store.checkout.paymentMethodsResponse.paymentMethods));
+    store.checkout.paymentMethodsResponse.paymentMethods.some(pm => {
+        if(pm.type === "giftcard") {
+            console.log('inside giftcard if statement')
+            renderGiftCard(pm);
+        }
+    });
+
   renderStoredPaymentMethods(
     store.checkout.paymentMethodsResponse,
     session.imagePath,
@@ -164,4 +212,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );
+
+  console.log('store.componentsObj["giftcard"] ' + store.componentsObj["giftcard"]);
+  console.log('store.componentsObj ' + store.componentsObj);
 };

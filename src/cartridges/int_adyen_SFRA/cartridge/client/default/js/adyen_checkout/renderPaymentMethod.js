@@ -42,6 +42,10 @@ console.log('paymentMethodID inside setnode ' + paymentMethodID);
         },
       });
       store.componentsObj[paymentMethodID].node = node;
+
+      if(paymentMethodID === "giftcard") {
+        document.querySelector("#rb_giftcard").parentNode.style.display = "none";
+      }
     } catch (e) {
       console.error('no component... ' + e.toString());
       /* No component for payment method */

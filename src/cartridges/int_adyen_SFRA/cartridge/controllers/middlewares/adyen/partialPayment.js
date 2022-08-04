@@ -31,6 +31,7 @@ function makePartialPayment(req, res, next) {
 
 
         const currentBasket = BasketMgr.getCurrentBasket();
+        Logger.getLogger('Adyen').error('currentBasket inside makePartialPayment ' + currentBasket);
         let paymentInstrument;
         Transaction.wrap(() => {
             collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
@@ -40,13 +41,17 @@ function makePartialPayment(req, res, next) {
                 constants.METHOD_ADYEN_COMPONENT,
                 currentBasket.totalGrossPrice,
             );
+
+            Logger.getLogger('Adyen').error('gift card PM is ' + paymentInstrument);
+
             const { paymentProcessor } = PaymentMgr.getPaymentMethod(
                 paymentInstrument.paymentMethod,
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
             paymentInstrument.custom.adyenPaymentData = partialPaymentRequest.paymentMethod;
             paymentInstrument.custom.adyenSplitPaymentsOrder = request.splitPaymentsOrder;
-            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}` ;
+            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
+//            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
             Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentMethod is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentMethod));
         });
 //        const order = COHelpers.createOrder(currentBasket);
