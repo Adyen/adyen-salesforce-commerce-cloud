@@ -88,14 +88,16 @@ function createPaymentRequest(args) {
       Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder ' + JSON.stringify(paymentInstrument.custom.adyenSplitPaymentsOrder));
       paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
 
-//      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
-      const myAmount = AdyenHelper.getCurrencyValueForApi(
-          paymentInstrument.paymentTransaction.amount,
-      ).getValueOrNull(); // args.Amount * 100;
-      paymentRequest.amount = {
-        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-        value: myAmount,
-      };
+      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount ' + JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount);
+      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount with stringify ' + JSON.stringify(JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount));
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+//      const myAmount = AdyenHelper.getCurrencyValueForApi(
+//          paymentInstrument.paymentTransaction.amount,
+//      ).getValueOrNull(); // args.Amount * 100;
+//      paymentRequest.amount = {
+//        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+//        value: myAmount,
+//      };
 
       Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));
     } else {

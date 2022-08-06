@@ -164,27 +164,37 @@ function getGiftCardConfig() {
 //            document.querySelector("#component_giftcard").style.display = "block";
 
 
-            const remainingAmountContainer = document.createElement("div");
-            const remainingAmountPar = document.createElement("p");
-            const remainingAmountElement = document.createElement("div");
-            const remainingAmountText = document.createElement("span");
-            remainingAmountContainer.classList.add("col-4.line-item-total-price");
-            remainingAmountPar.classList.add("line-item-pricing-info");
-            remainingAmountElement.classList.add("price");
-            remainingAmountText.classList.add("line-item-total-text.line-item-total-price-label");
-            remainingAmountText.innerText = "Remaining Amount"; //todo: use localisation
-            remainingAmountElement.innerHTML = store.splitPaymentsOrderObj.remainingAmount;
-            remainingAmountContainer.appendChild(remainingAmountPar);
-            remainingAmountPar.appendChild(remainingAmountText);
-            remainingAmountContainer.appendChild(remainingAmountElement);
-            const pricingContainer = document.querySelector(".row.align-items-start");
-            pricingContainer.appendChild(remainingAmountContainer);
+            const toWrap = document.querySelector(".grand-total-sum");
+            let wrapper = document.createElement('del');
+            toWrap.parentNode.appendChild(wrapper);
+            wrapper.appendChild(toWrap);
 
-//                const totalPriceContainer = document.querySelector(".col-4.line-item-total-price");
-//                let toWrap = totalPriceContainer.querySelector("div");
-//                let wrapper = document.createElement('del');
-//                toWrap.parentNode.appendChild(wrapper);
-//                wrapper.appendChild(toWrap);
+            const remainingAmountContainer = document.createElement("div");
+            const remainingAmountStart = document.createElement("div");
+            const remainingAmountEnd = document.createElement("div");
+            const remainingAmountStartP = document.createElement("p");
+            const remainingAmountEndP = document.createElement("p");
+            const remainingAmountStartSpan = document.createElement("span");
+            const remainingAmountEndSpan = document.createElement("span");
+
+            remainingAmountContainer.classList.add("row", "grand-total", "leading-lines");
+            remainingAmountStart.classList.add("col-6", "start-lines");
+            remainingAmountEnd.classList.add("col-6", "end-lines");
+            remainingAmountStartP.classList.add("order-receipt-label");
+            remainingAmountEndP.classList.add("text-right");
+            remainingAmountEndSpan.classList.add("grand-total-sum");
+
+            remainingAmountStartSpan.innerText = "Remaining Amount"; //todo: use localisation
+            remainingAmountEndSpan.innerText = store.splitPaymentsOrderObj.remainingAmount;
+
+            remainingAmountContainer.appendChild(remainingAmountStart);
+            remainingAmountContainer.appendChild(remainingAmountEnd);
+            remainingAmountStart.appendChild(remainingAmountStartP);
+            remainingAmountEnd.appendChild(remainingAmountEndP);
+            remainingAmountStartP.appendChild(remainingAmountStartSpan);
+            remainingAmountEndP.appendChild(remainingAmountEndSpan);
+            const pricingContainer = document.querySelector(".card-body.order-total-summary");
+            pricingContainer.appendChild(remainingAmountContainer);
           }
         },
         fail: (e) => {
