@@ -7,6 +7,7 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
+const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -82,8 +83,8 @@ function makePartialPayment(req, res, next) {
             paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(response);
         });
 //        Logger.getLogger('Adyen').error('paymentInstrument.paymentTransaction.custom.Adyen_log ' + JSON.stringify(paymentInstrument.paymentTransaction.custom.Adyen_log));
-//        Logger.getLogger('Adyen').error('partial payment response is ' + JSON.stringify(response));
-
+        const remainingAmount = new Money(response.order.remainingAmount.value, response.order.remainingAmount.currency).divide(100);
+        response.remainingAmountFormatted = remainingAmount.toFormattedString();
         res.json(response);
         return next();
     } catch (error) {

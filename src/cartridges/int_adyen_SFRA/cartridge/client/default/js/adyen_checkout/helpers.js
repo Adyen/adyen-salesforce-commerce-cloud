@@ -63,7 +63,7 @@ function makePartialPayment(data) {
       console.log('remainingAmount ' + JSON.stringify(response.order.remainingAmount));
       const splitPaymentsOrder = {pspReference: response.order.pspReference, orderData: response.order.orderData};
       store.splitPaymentsOrderObj = {splitPaymentsOrder: splitPaymentsOrder};
-      store.splitPaymentsOrderObj.remainingAmount = response.order.remainingAmount;
+      store.splitPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
       setOrderFormData(response);
 
     },

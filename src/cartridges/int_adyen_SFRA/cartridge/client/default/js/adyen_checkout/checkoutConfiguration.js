@@ -173,7 +173,7 @@ function getGiftCardConfig() {
             remainingAmountElement.classList.add("price");
             remainingAmountText.classList.add("line-item-total-text.line-item-total-price-label");
             remainingAmountText.innerText = "Remaining Amount"; //todo: use localisation
-            remainingAmountElement.innerHTML = JSON.stringify(store.splitPaymentsOrderObj.remainingAmount);
+            remainingAmountElement.innerHTML = store.splitPaymentsOrderObj.remainingAmount;
             remainingAmountContainer.appendChild(remainingAmountPar);
             remainingAmountPar.appendChild(remainingAmountText);
             remainingAmountContainer.appendChild(remainingAmountElement);
