@@ -6,15 +6,15 @@ const BasketMgr = require('dw/order/BasketMgr');
 
 function createSplitPaymentsOrder(req, res, next) {
     try {
-        Logger.getLogger('Adyen').error('inside  createSplitPaymentsOrder');
+//        Logger.getLogger('Adyen').error('inside  createSplitPaymentsOrder');
         const currentBasket = BasketMgr.getCurrentBasket();
         const request = JSON.parse(req.body);
-        Logger.getLogger('Adyen').error('request is ' + JSON.stringify(request));
+//        Logger.getLogger('Adyen').error('request is ' + JSON.stringify(request));
         let paymentMethod;
         if (request.paymentMethod) {
             paymentMethod = request.paymentMethod;
         }
-        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
+//        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const splitPaymentsRequest = {
             merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -24,11 +24,11 @@ function createSplitPaymentsOrder(req, res, next) {
             },
             reference: currentBasket.getUUID(),
         };
-        Logger.getLogger('Adyen').error('splitPaymentsRequest is ' + JSON.stringify(splitPaymentsRequest));
+//        Logger.getLogger('Adyen').error('splitPaymentsRequest is ' + JSON.stringify(splitPaymentsRequest));
 
         const response = adyenCheckout.doCreateSplitPaymentOrderCall(splitPaymentsRequest);
 
-        Logger.getLogger('Adyen').error('split payments response is ' + JSON.stringify(response));
+//        Logger.getLogger('Adyen').error('split payments response is ' + JSON.stringify(response));
 
         res.json(response);
         return next();

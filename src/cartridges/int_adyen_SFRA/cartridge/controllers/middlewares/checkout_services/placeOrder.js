@@ -2,6 +2,8 @@
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
+const Logger = require('dw/system/Logger');
+
 /* ### Custom Adyen cartridge end ### */
 
 function placeOrder(req, res, next) {
@@ -124,6 +126,7 @@ function placeOrder(req, res, next) {
 
     // Creates a new order.
     var order = COHelpers.createOrder(currentBasket);
+    Logger.getLogger('Adyen').error('order just created  ' + order);
     if (!order) {
         res.json({
             error: true,

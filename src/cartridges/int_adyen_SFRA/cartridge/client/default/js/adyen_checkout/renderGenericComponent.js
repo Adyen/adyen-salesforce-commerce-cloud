@@ -128,26 +128,30 @@ function renderGiftCard(paymentMethod) {
     let giftCardNode;
     const giftcardContainer =  document.querySelector("#giftcard-container");
     const giftCardLabel =  document.querySelector("#giftCardLabel");
-    const closeGiftCardModal =  document.createElement("button");
+    const closeGiftCardModal =  document.querySelector("#closeGiftCardModal");
     closeGiftCardModal.id = "closeGiftCardModal";
     closeGiftCardModal.innerText = "X";
 //    document.querySelector("#adyenModalDialog").appendChild(giftcardContainer);
 //    document.querySelector("#adyenModalDialog").appendChild(closeGiftCardModal);
     giftCardLabel.addEventListener('click', () => {
 //        $('#dwfrm_billing').trigger('submit');
-        if (store.formErrorsExist) {
-          return;
+//        if (store.formErrorsExist) {
+//          return;
+//        }
+        if(giftcardContainer.innerHTML) {
+            return;
         }
         $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
         giftcardContainer.innerText = "";
         console.log('inside giftcardContainer onclick');
         giftCardNode = store.checkout.create(paymentMethod.type).mount(giftcardContainer);
+        store.componentsObj["giftcard"] = {node: giftCardNode};
     });
 
     closeGiftCardModal.onclick = () => {
         console.log('inside close');
-        $('##giftcard-modal').modal('hide');
-        giftCardNode.unmount(`component_giftcard`);
+        $('#giftcard-modal').modal('hide');
+        store.componentsObj["giftcard"].node.unmount(`component_giftcard`);
     }
 
 //    closeGiftCardModal.addEventListener('click', () => {
@@ -159,7 +163,6 @@ function renderGiftCard(paymentMethod) {
 ////        document.querySelector("#component_giftcard").style.display = "block";
 //    });
 
-    store.componentsObj["giftcard"] = {node: giftCardNode};
 }
 
 /**

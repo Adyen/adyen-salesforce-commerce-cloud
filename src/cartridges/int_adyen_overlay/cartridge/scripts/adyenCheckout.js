@@ -87,7 +87,16 @@ function createPaymentRequest(args) {
       Logger.getLogger('Adyen').error('adding split payments order');
       Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder ' + JSON.stringify(paymentInstrument.custom.adyenSplitPaymentsOrder));
       paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
-      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+
+//      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+      const myAmount = AdyenHelper.getCurrencyValueForApi(
+          paymentInstrument.paymentTransaction.amount,
+      ).getValueOrNull(); // args.Amount * 100;
+      paymentRequest.amount = {
+        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        value: myAmount,
+      };
+
       Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));
     } else {
       const myAmount = AdyenHelper.getCurrencyValueForApi(
@@ -190,7 +199,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
-      Logger.getLogger('Adyen').error('return payments response object');
       return responseObject;
     }
 

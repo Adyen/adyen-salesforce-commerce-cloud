@@ -8,12 +8,12 @@ function callCheckBalance(req, res, next) {
     try {
         const currentBasket = BasketMgr.getCurrentBasket();
         const request = JSON.parse(req.body);
-        Logger.getLogger('Adyen').error('request is ' + JSON.stringify(request));
+//        Logger.getLogger('Adyen').error('request is ' + JSON.stringify(request));
         let paymentMethod;
         if (request.paymentMethod) {
             paymentMethod = request.paymentMethod;
         }
-        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
+//        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const checkBalanceRequest = {
             merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -24,7 +24,7 @@ function callCheckBalance(req, res, next) {
             reference: currentBasket.getUUID(),
             paymentMethod: paymentMethod,
         };
-        Logger.getLogger('Adyen').error('checkBalanceRequest is ' + JSON.stringify(checkBalanceRequest));
+//        Logger.getLogger('Adyen').error('checkBalanceRequest is ' + JSON.stringify(checkBalanceRequest));
 
         const response = adyenCheckout.doCheckBalanceCall(checkBalanceRequest);
 

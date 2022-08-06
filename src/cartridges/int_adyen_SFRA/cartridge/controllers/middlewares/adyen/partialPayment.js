@@ -14,11 +14,23 @@ const collections = require('*/cartridge/scripts/util/collections');
 
 function makePartialPayment(req, res, next) {
     try {
-        Logger.getLogger('Adyen').error('inside  makePartialPayment');
+                Logger.getLogger('Adyen').error("inside makePartialPayment");
+//                let response = {
+//                order: {
+//                                    orderData: {},
+//                                    remainingAmount: {currency: "USD", amount: 5000.00},
+//                                    pspReference: "4273908jfdsio",
+//                }
+//                };
+//                res.json(response);
+//                return next();
+
+
         const request = JSON.parse(req.body);
-        Logger.getLogger('Adyen').error('request is ' + JSON.stringify(request));
 
         const {paymentMethod, splitPaymentsOrder, amount} = request;
+
+                Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const partialPaymentRequest = {
             merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -27,12 +39,15 @@ function makePartialPayment(req, res, next) {
             paymentMethod,
             order: splitPaymentsOrder,
         };
-        Logger.getLogger('Adyen').error('partialPaymentrequest is ' + JSON.stringify(partialPaymentRequest));
+//        Logger.getLogger('Adyen').error('partialPaymentrequest is ' + JSON.stringify(partialPaymentRequest));
 
+                Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const currentBasket = BasketMgr.getCurrentBasket();
-        Logger.getLogger('Adyen').error('currentBasket inside makePartialPayment ' + currentBasket);
+//        Logger.getLogger('Adyen').error('currentBasket inside makePartialPayment ' + currentBasket);
         let paymentInstrument;
+
+
         Transaction.wrap(() => {
             collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
                 currentBasket.removePaymentInstrument(item);
@@ -42,28 +57,32 @@ function makePartialPayment(req, res, next) {
                 currentBasket.totalGrossPrice,
             );
 
+
             Logger.getLogger('Adyen').error('gift card PM is ' + paymentInstrument);
 
             const { paymentProcessor } = PaymentMgr.getPaymentMethod(
                 paymentInstrument.paymentMethod,
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-            paymentInstrument.custom.adyenPaymentData = partialPaymentRequest.paymentMethod;
-            paymentInstrument.custom.adyenSplitPaymentsOrder = request.splitPaymentsOrder;
+            paymentInstrument.custom.adyenPaymentData = JSON.stringify({paymentMethod: paymentMethod});
+
+            paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(splitPaymentsOrder);
             paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
 //            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
-            Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentMethod is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentMethod));
+            Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentData is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
         });
+                        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
+
 //        const order = COHelpers.createOrder(currentBasket);
 
 
-        const response = adyenCheckout.doPaymentsCall(0, 0, partialPaymentRequest);
+         response = adyenCheckout.doPaymentsCall(0, 0, partialPaymentRequest);
 
         Transaction.wrap(() => {
             paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(response);
         });
-        Logger.getLogger('Adyen').error('paymentInstrument.paymentTransaction.custom.Adyen_log ' + JSON.stringify(paymentInstrument.paymentTransaction.custom.Adyen_log));
-        Logger.getLogger('Adyen').error('partial payment response is ' + JSON.stringify(response));
+//        Logger.getLogger('Adyen').error('paymentInstrument.paymentTransaction.custom.Adyen_log ' + JSON.stringify(paymentInstrument.paymentTransaction.custom.Adyen_log));
+//        Logger.getLogger('Adyen').error('partial payment response is ' + JSON.stringify(response));
 
         res.json(response);
         return next();
