@@ -49,10 +49,9 @@ function handle(basket, paymentInformation) {
 
    if(paymentInformation.splitPaymentsOrder) { //for separate payment processors
       paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
-      paymentInstrument.custom.adyenPaymentMethod += ` + ${paymentInformation.adyenPaymentMethod}`;
-   } else {
-      paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
    }
+   paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
+
 //     paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod; //for 1 payment processor
 
      if (paymentInformation.isCreditCard) {
@@ -64,12 +63,12 @@ function handle(basket, paymentInformation) {
        paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
        paymentInstrument.setCreditCardType(sfccCardType);
 
-        if(paymentInstrument.custom.adyenPaymentMethod.includes("split payment")) { //for 1 PM
-          paymentInstrument.custom.adyenPaymentMethod += ` ${sfccCardType}`;
-       }
-       else {
+//        if(paymentInstrument.custom.adyenPaymentMethod.includes("split payment")) { //for 1 PM
+//          paymentInstrument.custom.adyenPaymentMethod += ` ${sfccCardType}`;
+//       }
+//       else {
         paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-        }
+//        }
 //        paymentInstrument.custom.adyenPaymentMethod = sfccCardType; //for separate PMs
 
        if (paymentInformation.creditCardToken) {

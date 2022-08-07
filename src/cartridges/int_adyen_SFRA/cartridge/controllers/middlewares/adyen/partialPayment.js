@@ -65,14 +65,16 @@ function makePartialPayment(req, res, next) {
                 paymentInstrument.paymentMethod,
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-            paymentInstrument.custom.adyenPaymentData = JSON.stringify({paymentMethod: paymentMethod});
+//            paymentInstrument.custom.adyenPaymentData = JSON.stringify({paymentMethod: paymentMethod});
 
             paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(splitPaymentsOrder);
-            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
+//            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
 //            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
-            Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentData is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
+            paymentInstrument.custom.adyenGiftCardUsed = true;
+            paymentInstrument.custom.adyenGiftCardAmount = JSON.stringify(amount);
+//            Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentData is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
         });
-                        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
+//                        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
 //        const order = COHelpers.createOrder(currentBasket);
 
