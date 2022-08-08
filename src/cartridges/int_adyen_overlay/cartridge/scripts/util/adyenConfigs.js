@@ -38,6 +38,8 @@ function setCustomPreference(field, value) {
 
 const adyenConfigsObj = {
 
+    setCustomPreference,
+
     getAdyenEnvironment() {
         return getCustomPreference('Adyen_Mode').value;
     },
