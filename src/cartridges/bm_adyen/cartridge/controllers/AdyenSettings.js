@@ -11,12 +11,11 @@ server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
 server.post('Save', csrfProtection.generateToken, (req, res, next) => {
   const requestBody = JSON.parse(req.body);
 
-  const sfra6CompatibilityBoolean =
-    requestBody.adyenSFRA6Compatibility === 'true';
-
-  Transaction.begin();
-  AdyenConfigs.setAdyenSFRA6Compatibility(sfra6CompatibilityBoolean);
-  Transaction.commit();
+  requestBody.settings.forEach((setting) => {
+    Transaction.wrap(() => {
+      AdyenConfigs.setCustomPreference(setting.key, setting.value);
+    });
+  });
   return next();
 });
 
