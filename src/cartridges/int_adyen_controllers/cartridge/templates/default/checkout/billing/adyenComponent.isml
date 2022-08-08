@@ -79,7 +79,7 @@
     <iscomment>
         Adyen RatePay Device Fingerprint Code
     </iscomment>
-    <isif condition="${empty(session.privacy.ratePayFingerprint)}">
+    <isif condition="${!empty(ratePayValues.ratePayID)}">
         <script language="JavaScript">
             var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'};
         </script>
