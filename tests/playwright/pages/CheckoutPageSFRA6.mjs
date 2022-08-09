@@ -12,7 +12,7 @@ export default class CheckoutPageSFRA {
     this.successMessage = page.locator('.add-to-cart-messages');
     this.checkoutUrl =
       '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
-    this.checkoutGuest = page.locator('.checkout-as-guest');
+    this.checkoutGuest = page.locator('.submit-customer');
 
     this.loginUrl = '/customer/account';
     this.emailInput = page.locator('#email');
@@ -20,7 +20,7 @@ export default class CheckoutPageSFRA {
     this.submitButton = page.locator('#send2');
     this.customerAccountPage = page.locator('.account.customer-account-index');
 
-    this.checkoutPageUserEmailInput = page.locator('input[name="loginEmail"]');
+    this.checkoutPageUserEmailInput = page.locator('#email-guest');
     this.checkoutPageUserPasswordInput = page.locator(
       'input[name="loginPassword"]',
     );
@@ -56,7 +56,6 @@ export default class CheckoutPageSFRA {
 
     this.submitPaymentButton = page.locator('.submit-payment');
     this.placeOrderButton = page.locator('.place-order');
-    this.checkoutPageUserEmailInput = page.locator('#email');
 
     this.errorMessage = page.locator('.error-message-text');
     this.thankYouMessage = page.locator('.order-thank-you-msg');
@@ -87,11 +86,12 @@ export default class CheckoutPageSFRA {
     await this.successMessage.waitFor({ visible: true, timeout: 10000 });
 
     await this.navigateToCheckout(locale);
+    await this.setEmail();
     await this.checkoutGuest.click();
   };
 
   getCheckoutUrl(locale) {
-    return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
+    return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Begin`;
   }
 
   addProductToCart = async (locale) => {
