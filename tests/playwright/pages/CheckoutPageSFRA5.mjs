@@ -56,7 +56,6 @@ export default class CheckoutPageSFRA5 {
 
     this.submitPaymentButton = page.locator('.submit-payment');
     this.placeOrderButton = page.locator('.place-order');
-    this.checkoutPageUserEmailInput = page.locator('#email');
 
     this.errorMessage = page.locator('.error-message-text');
     this.thankYouMessage = page.locator('.order-thank-you-msg');
