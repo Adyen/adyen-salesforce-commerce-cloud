@@ -20,6 +20,8 @@ export default class CheckoutPageSFRA {
     this.submitButton = page.locator('#send2');
     this.customerAccountPage = page.locator('.account.customer-account-index');
 
+    this.customerInfoSection = page.locator('.customer-label');
+
     this.checkoutPageUserEmailInput = page.locator('#email-guest');
     this.checkoutPageUserPasswordInput = page.locator(
       'input[name="loginPassword"]',
@@ -101,6 +103,9 @@ export default class CheckoutPageSFRA {
   };
 
   setShopperDetails = async (shopperDetails) => {
+    await this.customerInfoSection.waitFor({ visible: true, timeout: 10000 });
+
+
     await this.checkoutPageUserFirstNameInput.type(
       shopperDetails.shopperName.firstName,
     );
@@ -126,6 +131,8 @@ export default class CheckoutPageSFRA {
         shopperDetails.address.stateOrProvince,
       );
     }
+    this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
+
     await this.shippingSubmit.click();
   };
 
@@ -156,7 +163,6 @@ export default class CheckoutPageSFRA {
   };
 
   completeCheckout = async () => {
-    await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
   };
