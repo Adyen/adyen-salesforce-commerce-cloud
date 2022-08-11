@@ -83,7 +83,10 @@ for (const environment of environments) {
 
     test('Google Pay Success', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
-      await checkoutPage.setEmail();
+      // SFRA 6 email setting flow is different
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      }
       await pendingPayments.doGooglePayPayment();
     });
   });
