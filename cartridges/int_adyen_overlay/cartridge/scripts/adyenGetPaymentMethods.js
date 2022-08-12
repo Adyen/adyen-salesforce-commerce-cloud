@@ -31,12 +31,6 @@ var constants = require('*/cartridge/adyenConstants/constants');
 
 function getMethods(basket, customer, countryCode) {
   try {
-    var service = AdyenHelper.getService(constants.SERVICE.CHECKOUTPAYMENTMETHODS);
-
-    if (!service) {
-      throw new Error('Could not do /paymentMethods call');
-    }
-
     var paymentAmount;
     var currencyCode; // paymentMethods call from checkout
 
@@ -78,23 +72,7 @@ function getMethods(basket, customer, countryCode) {
     }
 
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
-    var xapikey = AdyenConfigs.getAdyenApiKey();
-    service.addHeader('Content-type', 'application/json');
-    service.addHeader('charset', 'UTF-8');
-    service.addHeader('X-API-key', xapikey);
-    var callResult = service.call(JSON.stringify(paymentMethodsRequest));
-
-    if (!callResult.isOk()) {
-      throw new Error("/paymentMethods call error code".concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
-    }
-
-    var resultObject = callResult.object;
-
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error('No correct response from /paymentMethods call');
-    }
-
-    return JSON.parse(resultObject.getText());
+    return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (e) {
     Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
