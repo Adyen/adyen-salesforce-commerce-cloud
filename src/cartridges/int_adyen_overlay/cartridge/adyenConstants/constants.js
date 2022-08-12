@@ -55,5 +55,5 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
 
   CHECKOUT_COMPONENT_VERSION: '5.18.0',
-  VERSION: '22.1.0',
+  VERSION: '22.1.1',
 };
