@@ -22,11 +22,11 @@ export default class PaymentMethodsPage {
     );
     const issuer = testSuccess
       ? this.page.locator(
-          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
-        )
+        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
+      )
       : this.page.locator(
-          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
-        );
+        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
+      );
 
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();
@@ -477,8 +477,8 @@ export default class PaymentMethodsPage {
   };
 
   initiateSEPAPayment = async () => {
-    const nameInput = this.page.locator('input[name="sepa.ownerName"]');
-    const ibanInput = this.page.locator('input[name="sepa.ibanNumber"]');
+    const nameInput = this.page.locator('//input[contains(@name,"ownerName")]');
+    const ibanInput = this.page.locator('//input[contains(@name,"ibanNumber")]');
 
     await this.page.click('#rb_sepadirectdebit');
     await nameInput.type(paymentData.SepaDirectDebit.accountName);
