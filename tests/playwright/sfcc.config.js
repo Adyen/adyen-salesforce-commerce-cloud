@@ -38,7 +38,7 @@ const config = {
     actionTimeout: 20000,
 
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.SFCC_HOSTNAME,
+    baseURL: `https://${process.env.SFCC_HOSTNAME}`,
     httpCredentials: {
       username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
       password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
