@@ -89,6 +89,14 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
+  getAdyenApplePayTokenisationEnabled: function () {
+    return getCustomPreference('AdyenApplePayTokenisationEnabled');
+  },
+
+  getAdyenSalePaymentMethods: function () {
+    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
+  },
+
   getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },

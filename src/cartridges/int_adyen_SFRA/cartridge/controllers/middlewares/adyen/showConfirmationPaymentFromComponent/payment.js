@@ -89,14 +89,43 @@ function handleAuthorisedPayment(
   return next();
 }
 
+function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
+  // Authorised: The payment authorisation was successfully completed.
+  if (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(result.resultCode) > -1
+  ) {
+    return handleAuthorisedPayment(
+      order,
+      result,
+      adyenPaymentInstrument,
+      options,
+    );
+  }
+  return handlePaymentError(order, options);
+}
+
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     constants.METHOD_ADYEN_COMPONENT,
   );
-  const result = options.req.form?.result;
+  const result = JSON.parse(options.req.form?.result);
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
+  const paymentMethodVariant =
+    result?.fullResponse?.additionalData?.paymentMethodVariant;
+
+  if (result.error) {
+    return handlePaymentError(order, options);
+  }
+  // Check result for Apple Pay, does not require /payments/details
+  if (AdyenHelper.isApplePay(paymentMethodVariant)) {
+    return handlePaymentResult(result, order, adyenPaymentInstrument, options);
+  }
 
   let finalResult;
   if (!hasStateData) {
@@ -124,22 +153,12 @@ function handlePayment(stateData, order, options) {
   });
   finalResult = finalResult || detailsCall.result;
 
-  // Authorised: The payment authorisation was successfully completed.
-  if (
-    [
-      constants.RESULTCODES.AUTHORISED,
-      constants.RESULTCODES.PENDING,
-      constants.RESULTCODES.RECEIVED,
-    ].indexOf(finalResult.resultCode) > -1
-  ) {
-    return handleAuthorisedPayment(
-      order,
-      finalResult,
-      adyenPaymentInstrument,
-      options,
-    );
-  }
-  return handlePaymentError(order, options);
+  return handlePaymentResult(
+    finalResult,
+    order,
+    adyenPaymentInstrument,
+    options,
+  );
 }
 
 module.exports = handlePayment;

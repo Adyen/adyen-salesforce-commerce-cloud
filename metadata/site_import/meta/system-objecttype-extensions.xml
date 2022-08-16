@@ -339,6 +339,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenApplePayTokenisationEnabled">
+                <display-name xml:lang="x-default">Tokenize Apple Pay payments</display-name>
+                <description xml:lang="x-default">Tokenize payment details for Apple Pay</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenCreditCardInstallments">
                 <display-name xml:lang="x-default">Credit Card Installments</display-name>
                 <description xml:lang="x-default">If installments are required please create the configuration value using this link: https://adyen.github.io/adyen-salesforce-commerce-cloud</description>
@@ -577,6 +585,7 @@
 
                 <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
+                <attribute attribute-id="AdyenApplePayTokenisationEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
