@@ -41,12 +41,12 @@ function paymentFromComponent(data, component = {}) {
 
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
+      } else if (response.isApplePay) {
+        document.querySelector('#result').value = JSON.stringify(response);
+        document.querySelector('#showConfirmationForm').submit();
       } else if (response.paymentError || response.error) {
         document.querySelector('#result').value = JSON.stringify(response);
         component.handleError();
-      } else {
-        document.querySelector('#result').value = JSON.stringify(response);
-        document.querySelector('#showConfirmationForm').submit();
       }
     },
   });

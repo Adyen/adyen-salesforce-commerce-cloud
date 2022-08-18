@@ -6,10 +6,28 @@ const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+function setApplePayData(result, order) {
+  if (result.fullResponse) {
+    const adyenPaymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    Transaction.wrap(() => {
+      adyenPaymentInstrument.custom.adyenAction = JSON.stringify(
+        result.fullResponse,
+      );
+    });
+    result.fullResponse = AdyenHelper.createAdyenCheckoutResponse(
+      result.fullResponse,
+    );
+  }
+  result.isApplePay = true;
+}
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
@@ -64,6 +82,10 @@ function paymentFromComponent(req, res, next) {
       PaymentInstrument: paymentInstrument,
     });
   });
+
+  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod.type)) {
+    result = setApplePayData(result, order);
+  }
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     Logger.getLogger('Adyen').error(

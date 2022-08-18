@@ -13,7 +13,8 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 
-function handlePaymentError(order, { res, next }) {
+function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
+  clearForms.clearAdyenData(adyenPaymentInstrument);
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
@@ -48,13 +49,14 @@ function handleAuthorisedPayment(
   adyenPaymentInstrument,
   { req, res, next },
 ) {
+  clearForms.clearAdyenData(adyenPaymentInstrument);
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
 
   // Places the order
   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
   if (placeOrderResult.error) {
-    return handlePaymentError(order, { res, next });
+    return handlePaymentError(order, adyenPaymentInstrument, { res, next });
   }
 
   const currentLocale = Locale.getLocale(req.locale.id);
@@ -105,7 +107,21 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
       options,
     );
   }
-  return handlePaymentError(order, options);
+  return handlePaymentError(order, adyenPaymentInstrument, options);
+}
+
+// Check result for Apple Pay, does not require /payments/details
+function checkApplePayResponse(adyenPaymentInstrument, result) {
+  const paymentMethodVariant =
+    adyenPaymentInstrument.custom.adyenAction?.additionalData
+      ?.paymentMethodVariant;
+  if (
+    AdyenHelper.isApplePay(paymentMethodVariant) &&
+    result?.fullResponse?.isFinal
+  ) {
+    return JSON.parse(adyenPaymentInstrument.custom.adyenAction);
+  }
+  return false;
 }
 
 // eslint-disable-next-line complexity
@@ -116,23 +132,28 @@ function handlePayment(stateData, order, options) {
   const result = JSON.parse(options.req.form?.result);
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
-  const paymentMethodVariant =
-    result?.fullResponse?.additionalData?.paymentMethodVariant;
 
   if (result.error) {
-    return handlePaymentError(order, options);
-  }
-  // Check result for Apple Pay, does not require /payments/details
-  if (AdyenHelper.isApplePay(paymentMethodVariant)) {
-    return handlePaymentResult(result, order, adyenPaymentInstrument, options);
+    return handlePaymentError(order, adyenPaymentInstrument, options);
   }
 
   let finalResult;
   if (!hasStateData) {
+    const applePayResponse = checkApplePayResponse(
+      adyenPaymentInstrument,
+      result,
+    );
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
       finalResult = JSON.parse(result);
+    } else if (applePayResponse) {
+      return handlePaymentResult(
+        applePayResponse,
+        order,
+        adyenPaymentInstrument,
+        options,
+      );
     } else {
-      return handlePaymentError(order, options);
+      return handlePaymentError(order, adyenPaymentInstrument, options);
     }
   }
 
@@ -140,7 +161,7 @@ function handlePayment(stateData, order, options) {
     Logger.getLogger('Adyen').error(
       `Could not call payment/details for failed order ${order.orderNo}`,
     );
-    return handlePaymentError(order, options);
+    return handlePaymentError(order, adyenPaymentInstrument, options);
   }
 
   const detailsCall = handlePaymentsDetailsCall(
