@@ -140,8 +140,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    // set custom payment method field to sync with OMS
-    order.custom.Adyen_paymentMethod = paymentRequest.paymentMethod.type;
+    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    order.custom.Adyen_paymentMethod = paymentRequest?.paymentMethod.brand || paymentRequest?.paymentMethod.type;
     
     const responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
 
