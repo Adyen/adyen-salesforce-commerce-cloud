@@ -1,41 +1,85 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
-  // add event for save button availability on form change.
-  form.addEventListener('change', () => {
+  const changedSettings = [];
+
+  function settingChanged(key, value) {
+    const settingIndex = changedSettings.findIndex((setting) => {
+      return setting.key === key;
+    });
+
+    if(settingIndex >= 0) {
+      changedSettings[settingIndex] = {key, value};
+    } else {
+      changedSettings.push({key,value});
+    }
+  }
+
+  function enableSaveButton() {
     submitButton.classList.remove('disabled');
     submitButton.classList.add('enabled');
+    form.removeEventListener('input', enableSaveButton);
+  }
+
+  // add event for save button availability on form change.
+  form.addEventListener('input', enableSaveButton);
+
+  // add event listener to maintain form updates
+  form.addEventListener('change', (event) => {
+    const name = event.target.name;
+    let value = event.target.value
+
+    if(event.target.type === 'radio') {
+      //convert radio strings to boolean if true or false
+      if(event.target.value === 'true') {
+        value = true;
+      }
+      if(event.target.value === 'false') {
+        value = false;
+      }
+
+    }
+    settingChanged(name, value);
   });
 
   // add event to submit button to send form and present results
-  submitButton.addEventListener('click', () => {
-    const formData = new FormData(form);
-    const requestBody = {};
-    formData.entries().forEach((formPair) => {
-      const key = formPair[0];
-      const value = formPair[1];
-      requestBody[key] = value;
-    });
-
-    fetch('AdyenSettings-Save', {
+  submitButton.addEventListener('click', async () => {
+    const response = await fetch('AdyenSettings-Save', {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
       method: 'POST',
-      body: JSON.stringify(requestBody),
-    }).then(() => {
-      // console.log(response);
+      body: JSON.stringify({
+        settings: changedSettings
+      }),
     });
+    const data = await response.json();
+    if(data.success) {
+      //TODO: show feedback to user, disable save button, reattach button enablement event
+    }
 
-    // $.ajax({
-    //   type: 'POST',
-    //   url: 'AdyenSettings-Save',
-    //   data: JSON.stringify({ formData }),
-    //   contentType: 'application/json; charset=utf-8',
-    //   async: false,
-    //   success(data) {
-    //     console.log(data);
-    //   },
-    // });
+    // file upload butttons event listeners for adyen giving card
+    function openDialogCharityBackgroundUrl() {
+      document.getElementById('charityBackgroundUrl').click();
+    }
+
+    function openDialogAdyenGivingLogoUrl() {
+        document.getElementById('adyenGivingLogoUrl').click();
+    }
+
+    document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
+
+    document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
+
+    document.getElementById('flexSwitchCheckChecked').onchange = function() {
+      document.getElementById('charityName').disabled = !this.checked;
+      document.getElementById('charityMerchantAccount').disabled = !this.checked;
+      document.getElementById('donationAmounts').disabled = !this.checked;
+      document.getElementById('charityDescription').disabled = !this.checked;
+      document.getElementById('charityWebsite').disabled = !this.checked;
+      document.getElementById('charityBackgroundUrl').disabled = !this.checked;
+      document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
+  };
+    
   });
 });

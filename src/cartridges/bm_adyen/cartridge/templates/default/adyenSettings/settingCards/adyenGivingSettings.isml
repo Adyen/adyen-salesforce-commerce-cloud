@@ -1,67 +1,97 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 
-<div id="adyenGivingSettings" class="card bg-white mt-4">
+<div id="adyenGivingSettings" class="card bg-white mt-4 adyen-giving">
     <div class="card-body">
-        <h5 class="card-title">
+        <h5 class="card-title mb-0">
             Adyen Giving <small class="text-secondary">(optional)</small>
         </h5>
-        <h7 class="card-subtitle text-muted">
-            With Adyen Giving feature, you can give your shoppers the option to donate to a charity as part of your payment flow. 
-            Not sure how to register? Contact your <a class="text-primary" href="https://www.adyen.com/contact" target="_blank">Adyen Account Manager or Support</a>.
+        <h7 class="card-subtitle">
+            <div class="first-subtitle">
+                With Adyen Giving feature, you can give your shoppers the option to donate to a charity as part of your payment flow. 
+                Not sure how to register? Contact your <a class="text-primary" href="https://www.adyen.com/contact" target="_blank">Adyen Account Manager or Support</a>.
+            </div>
         </h7>
         <div class="mt-2">
             <div class="form-group">
-                <label class="font-weight-bold" for="adyenGivingButton">Adyen Giving</label>
+                <label class="form-title mb-0" for="adyenGivingButton">Adyen Giving</label>
                 <div class="row">
                     <div class="col-sm-9">
-                        <small id="adyenGivingButtonHelp" class="form-text text-muted mb-1">You need a charity account to enable Adyen Giving. Do you want to enable Adyen Giving?</small>
+                        <small id="adyenGivingButtonHelp" class="form-text mb-1"> You need a charity account to enable Adyen Giving. Do you want to enable Adyen Giving?</small>
                     </div>
-                    <div class="col-sm-3">
-                        <button type="button" id="adyenGivingButton" aria-describedby="adyenGivingButtonHelp"  class="btn btn-link border">No, disable</button>
+                    <!--<div class="col-sm-3">
+                        <button type="button" id="adyenGivingButton" aria-describedby="adyenGivingButtonHelp"  class="btn btn-outline-primary">No, disable</button>
+                    </div>-->
+                    <div class="switch-button">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="AdyenGiving_enabled" id="flexSwitchCheckChecked" unchecked>
+                        </div>
                     </div>
+                    
+                    
                 </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="charityName">Charity name</label>
-                <small id="charityNameHelp" class="form-text text-muted mb-1">Enter the name of the charity displayed on the Adyen Giving component</small>
-                <input type="text" class="form-control" name="adyenGivingCharityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName()}">
+                <label class="form-title mb-0" for="charityName">Charity name</label>
+                <small id="charityNameHelp" class="form-text mb-1">Enter the name of the charity displayed on the Adyen Giving component</small>
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenGiving_charityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName()}" disabled>
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="charityMerchantAccount">Charity merchant account</label>
-                <small id="charityMerchantAccountHelp" class="form-text text-muted mb-1">Enter your Adyen merchant account name for charity</small>
-                <input type="text" class="form-control" name="adyenGivingCharityAccont" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount()}">
+                <label class="form-title mb-0" for="charityMerchantAccount">Charity merchant account</label>
+                <small id="charityMerchantAccountHelp" class="form-text mb-1">Enter your Adyen merchant account name for charity</small>
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenGiving_charityAccount" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount()}" disabled>
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="donationAmounts">Amounts for donation</label>
-                <small id="donationAmountsHelp" class="form-text text-muted mb-1">Enter the suggested amounts that the shopper can choose to donate</small>
-                <input type="text" class="form-control" name="adyenGivingDonationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Comma separated values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts()}">
+                <label class="form-title mb-0" for="donationAmounts">Amounts for donation</label>
+                <small id="donationAmountsHelp" class="form-text mb-1">Enter the suggested amounts that the shopper can choose to donate</small>
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenGiving_donationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Comma separated values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts()}" disabled>
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="charityDescription">Description</label>
-                <small id="charityDescriptionHelp" class="form-text text-muted mb-1">Enter the description of the charity</small>
-                <input type="text" class="form-control" name="adyenGivingCharityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription()}">
+                <label class="form-title mb-0" for="charityDescription">Description</label>
+                <small id="charityDescriptionHelp" class="form-text mb-1">Enter the description of the charity</small>
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenGiving_charityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription()}" disabled="">
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="charityWebsite">Charity website</label>
-                <small id="charityWebsiteHelp" class="form-text text-muted mb-1">Enter the link to the charity website</small>
-                <input type="text" class="form-control" name="adyenGivingCharityWebsite" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite()}">
+                <label class="form-title mb-0" for="charityWebsite">Charity website</label>
+                <small id="charityWebsiteHelp" class="form-text mb-1">Enter the link to the charity website</small>
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenGiving_charityUrl" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite()}" disabled>
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="backgroundFile">Background image for Adyen Giving component</label>
-                <input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
+                <label class="form-title mb-0" for="backgroundFile">Background image for Adyen Giving component</label>
+                <!input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
+                <div class="wrapper-class "id="wrapper">
+                    <input id='charityBackgroundUrl' name="AdyenGiving_backgroundUrl" type='file' disabled hidden/>
+                    <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/> 
+                    <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Drop files or click here to upload. </div>
+                </div>
             </div>
             
             <div class="form-group">
-                <label class="font-weight-bold" for="logoFile">Logo in Adyen Giving component</label>
-                <input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
+                <label class="form-title mb-0" for="logoFile">Logo in Adyen Giving component</label>
+                <!input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
+                
+                <div class="wrapper-class "id="wrapper">
+                    <input id='adyenGivingLogoUrl' name="AdyenGiving_logoUrl" type='file' disabled hidden/>
+                    <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/> 
+                    <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Drop files or click here to upload. </div disabled="true">
+                </div>
             </div>
-        </div>
+    </div>
     </div>
 </div>
