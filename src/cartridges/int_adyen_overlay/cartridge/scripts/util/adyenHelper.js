@@ -557,10 +557,17 @@ var adyenHelperObj = {
 
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails(paymentInstrument, order, result) {
-    if (result.pspReference) {
-      paymentInstrument.paymentTransaction.transactionID = result.pspReference;
-      order.custom.Adyen_pspReference = result.pspReference;
+    let pspRef;
+    if(session.privacy.giftCardResponse) {
+        pspRef = JSON.parse(session.privacy.giftCardResponse).pspReference;
+    } else if (result.pspReference) {
+        pspRef = result.pspReference;
     }
+    paymentInstrument.paymentTransaction.transactionID = pspRef;
+    order.custom.Adyen_pspReference = pspRef;
+
+//    session.privacy.giftCardResponse = null;
+
     if (result.paymentMethod) {
       order.custom.Adyen_paymentMethod = result.paymentMethod;
     } else if (result.additionalData && result.additionalData.paymentMethod) {
@@ -572,13 +579,13 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
-        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
-    } else {
-        Logger.getLogger('Adyen').error("went to else");
-      paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
-    }
-//    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result); //for separate
+//    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
+//        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
+//    } else {
+//        Logger.getLogger('Adyen').error("went to else");
+//      paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
+//    }
+    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result); //for separate
 
     return true;
   },

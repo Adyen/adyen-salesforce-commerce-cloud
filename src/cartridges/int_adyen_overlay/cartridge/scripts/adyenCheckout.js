@@ -87,7 +87,18 @@ function createPaymentRequest(args) {
       Logger.getLogger('Adyen').error('adding split payments order');
       Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder ' + JSON.stringify(paymentInstrument.custom.adyenSplitPaymentsOrder));
       paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
+
+      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount ' + JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount);
+      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount with stringify ' + JSON.stringify(JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount));
       paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+//      const myAmount = AdyenHelper.getCurrencyValueForApi(
+//          paymentInstrument.paymentTransaction.amount,
+//      ).getValueOrNull(); // args.Amount * 100;
+//      paymentRequest.amount = {
+//        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+//        value: myAmount,
+//      };
+
       Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));
     } else {
       const myAmount = AdyenHelper.getCurrencyValueForApi(
@@ -190,7 +201,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
-      Logger.getLogger('Adyen').error('return payments response object');
       return responseObject;
     }
 
@@ -350,6 +360,47 @@ function doCheckBalanceCall(checkBalanceRequest) {
   return responseObject;
 }
 
+function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
+  const callResult = executeCall(
+      constants.SERVICE.CANCELPARTIALPAYMENTORDER,
+      cancelOrderRequest,
+  );
+  if (callResult.isOk() === false) {
+    Logger.getLogger('Adyen').error(
+        `Adyen: Call error code${callResult
+            .getError()
+            .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+    );
+    return {
+      error: true,
+      invalidRequest: true,
+    };
+  }
+
+  const resultObject = callResult.object;
+  if (!resultObject || !resultObject.getText()) {
+    Logger.getLogger('Adyen').error(
+        `Error in /paymentMethods/balance response, response: ${JSON.stringify(
+            resultObject,
+        )}`,
+    );
+    return { error: true };
+  }
+
+  // build the response object
+  let responseObject;
+  try {
+    responseObject = JSON.parse(resultObject.getText());
+  } catch (ex) {
+    Logger.getLogger('Adyen').error(
+        `error parsing response object ${ex.message}`,
+    );
+    return { error: true };
+  }
+
+  return responseObject;
+}
+
 function doCreateSplitPaymentOrderCall(splitPaymentRequest) {
   const callResult = executeCall(
       constants.SERVICE.SPLITPAYMENTSORDER,
@@ -409,5 +460,6 @@ module.exports = {
   doPaymentsCall,
   doPaymentsDetailsCall,
   doCheckBalanceCall,
+  doCancelPartialPaymentOrderCall,
   doCreateSplitPaymentOrderCall,
 };

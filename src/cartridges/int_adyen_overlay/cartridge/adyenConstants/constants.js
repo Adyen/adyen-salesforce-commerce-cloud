@@ -33,6 +33,7 @@ module.exports = {
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
     CHECKBALANCE: 'AdyenCheckBalance',
+    CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     SPLITPAYMENTSORDER: 'AdyenSplitPaymentsOrder',
   },
   MODE: {
@@ -54,6 +55,6 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
 
-  CHECKOUT_COMPONENT_VERSION: '5.6.1',
+  CHECKOUT_COMPONENT_VERSION: '5.18.0',
   VERSION: '22.1.0',
 };

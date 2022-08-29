@@ -27,6 +27,9 @@ function setOrderFormData(response) {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component = {}) {
+  if(store.splitPaymentsOrderObj) {
+    data = {...data, splitPaymentsOrder: store.splitPaymentsOrderObj}
+  }
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -63,7 +66,7 @@ function makePartialPayment(data) {
       console.log('remainingAmount ' + JSON.stringify(response.order.remainingAmount));
       const splitPaymentsOrder = {pspReference: response.order.pspReference, orderData: response.order.orderData};
       store.splitPaymentsOrderObj = {splitPaymentsOrder: splitPaymentsOrder};
-      store.splitPaymentsOrderObj.remainingAmount = response.order.remainingAmount;
+      store.splitPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
       setOrderFormData(response);
 
     },

@@ -2,6 +2,10 @@
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
+const Logger = require('dw/system/Logger');
+const PaymentMgr = require('dw/order/PaymentMgr');
+const Money = require('dw/value/Money');
+
 /* ### Custom Adyen cartridge end ### */
 
 function placeOrder(req, res, next) {
@@ -124,6 +128,7 @@ function placeOrder(req, res, next) {
 
     // Creates a new order.
     var order = COHelpers.createOrder(currentBasket);
+    Logger.getLogger('Adyen').error('order just created  ' + order);
     if (!order) {
         res.json({
             error: true,
@@ -139,6 +144,30 @@ function placeOrder(req, res, next) {
 
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
+
+        Logger.getLogger('Adyen').error('session.privacy.giftCardResponse ' + session.privacy.giftCardResponse);
+    //Check if gift card was used
+    if(session.privacy.giftCardResponse) {
+        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
+        let paymentInstrument;
+        const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
+        Transaction.wrap(() => {
+            paymentInstrument = order.createPaymentInstrument(
+                constants.METHOD_ADYEN_COMPONENT,
+                new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100),
+            );
+            const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+                paymentInstrument.paymentMethod,
+            );
+          paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+          paymentInstrument.custom.adyenPaymentMethod = `giftcard` ;
+          paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
+        })
+
+        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
+
+        session.privacy.giftCardResponse = null;
+    }
     /* ### Custom Adyen cartridge end ### */
 
     // Handle custom processing post authorization

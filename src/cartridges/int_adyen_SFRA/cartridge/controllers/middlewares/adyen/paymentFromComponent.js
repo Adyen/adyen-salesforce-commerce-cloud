@@ -4,6 +4,7 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
+const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -44,7 +45,13 @@ function paymentFromComponent(req, res, next) {
     );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
-    // paymentInstrument.custom.adyenSplitPaymentsOrder = req.form.data; todo: fill it in
+
+
+      Logger.getLogger('Adyen').error('reqDataObj.splitPaymentsOrder ' + JSON.stringify(reqDataObj.splitPaymentsOrder));
+    if(reqDataObj.splitPaymentsOrder) {
+      Logger.getLogger('Adyen').error('inside reqDataObj.splitPaymentsOrder');
+      paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(reqDataObj.splitPaymentsOrder);
+    }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
       Logger.getLogger('Adyen').error('being filled when it should not fromComponent');
@@ -72,6 +79,30 @@ function paymentFromComponent(req, res, next) {
       });
     }
   }
+
+    Logger.getLogger('Adyen').error('session.privacy.giftCardResponse ' + session.privacy.giftCardResponse);
+    //Check if gift card was used
+    if(session.privacy.giftCardResponse) {
+        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
+        let paymentInstrument;
+        const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
+        Transaction.wrap(() => {
+            paymentInstrument = order.createPaymentInstrument(
+                constants.METHOD_ADYEN_COMPONENT,
+                new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100),
+            );
+            const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+                paymentInstrument.paymentMethod,
+            );
+          paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+          paymentInstrument.custom.adyenPaymentMethod = `giftcard` ;
+          paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
+        })
+
+        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
+
+        session.privacy.giftCardResponse = null;
+    }
 
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;

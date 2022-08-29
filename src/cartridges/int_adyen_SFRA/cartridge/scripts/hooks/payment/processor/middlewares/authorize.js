@@ -37,16 +37,6 @@ function paymentErrorHandler(result) {
  * @return {Object} returns an error object
  */
 function authorize(order, paymentInstrument, paymentProcessor) {
-//        const currentBasket = BasketMgr.getCurrentBasket();
-//        Logger.getLogger('Adyen').error('inside authorize');
-//        Logger.getLogger('Adyen').error('currentBasket inside authorize ' + currentBasket);
-//      Transaction.wrap(() => {
-//        collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-//            Logger.getLogger('Adyen').error('item ' + item);
-//        });
-//      });
-
-
   Transaction.wrap(() => {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
