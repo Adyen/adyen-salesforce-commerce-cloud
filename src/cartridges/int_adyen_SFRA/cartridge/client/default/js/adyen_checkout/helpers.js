@@ -62,7 +62,6 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-      // check response if it includes orderData or remaining amount it means it is a split payment
       const splitPaymentsOrder = {
         pspReference: response.order.pspReference,
         orderData: response.order.orderData,

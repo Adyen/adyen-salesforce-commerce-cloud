@@ -137,7 +137,6 @@ function getGiftCardConfig() {
             // make payments call including giftcard data and order data
             const partialPaymentRequest = {
               paymentMethod: giftCardData,
-              // amount: data.remainingAmount,
               amount: giftcardBalance,
               splitPaymentsOrder: {
                 pspReference: data.pspReference,
@@ -146,22 +145,8 @@ function getGiftCardConfig() {
             };
             helpers.makePartialPayment(partialPaymentRequest);
 
-            //            giftCardNode.unmount(`component_giftcard`);
-            //            store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
-            //            delete store.componentsObj["giftcard"];
             $('#giftcard-modal').modal('hide');
             document.querySelector('#giftCardLabel').classList.add('invisible');
-
-            //            document.querySelector("#component_giftcard").remove();
-            //            renderPaymentMethod({type: "giftcard"},
-            // false, store.checkoutConfiguration.session.imagePath, null, true);
-            //            document.querySelector("#component_giftcard").style.display = "block";
-
-            // to strikethrough old price
-            //            const toWrap = document.querySelector(".grand-total-sum");
-            //            let wrapper = document.createElement('del');
-            //            toWrap.parentNode.appendChild(wrapper);
-            //            wrapper.appendChild(toWrap);
 
             const remainingAmountContainer = document.createElement('div');
             const remainingAmountStart = document.createElement('div');
@@ -250,11 +235,8 @@ function getGiftCardConfig() {
       });
     },
     onSubmit() {
-      //        store.componentsObj["giftcard"].node.unmount(`component_giftcard`)
-      //        delete store.componentsObj["giftcard"];
       $('#giftcard-modal').modal('hide');
       store.selectedMethod = 'giftcard';
-      //        store.brand =
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },

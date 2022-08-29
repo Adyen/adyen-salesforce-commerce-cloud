@@ -58,7 +58,6 @@ function getPaymentMethodID(isStored, paymentMethod) {
   }
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
-    // return `${paymentMethod.type}_${paymentMethod.brand}`;
     return 'giftcard';
   }
   return paymentMethod.type;

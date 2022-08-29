@@ -129,18 +129,11 @@ function renderGiftCard(paymentMethod) {
   const closeGiftCardModal = document.querySelector('#closeGiftCardModal');
   closeGiftCardModal.id = 'closeGiftCardModal';
   closeGiftCardModal.innerText = 'X';
-  //    document.querySelector("#adyenModalDialog").appendChild(giftcardContainer);
-  //    document.querySelector("#adyenModalDialog").appendChild(closeGiftCardModal);
   giftCardLabel.addEventListener('click', () => {
-    //        $('#dwfrm_billing').trigger('submit');
-    //        if (store.formErrorsExist) {
-    //          return;
-    //        }
     if (giftcardContainer.innerHTML) {
       return;
     }
     $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
-    //        giftcardContainer.innerText = "";
     giftcardContainer.innerHTML = '';
     giftCardNode = store.checkout
       .create(paymentMethod.type)
@@ -152,16 +145,6 @@ function renderGiftCard(paymentMethod) {
     $('#giftcard-modal').modal('hide');
     store.componentsObj.giftcard.node.unmount('component_giftcard');
   };
-
-  //    closeGiftCardModal.addEventListener('click', () => {
-  //        console.log('inside close');
-  //        $('##giftcard-modal').modal('hide');
-  //        giftCardNode.unmount(`component_giftcard`);
-  /// /       document.querySelector("#component_giftcard").remove();
-  /// renderPaymentMethod({type: "giftcard"}, false,
-  // store.checkoutConfiguration.session.imagePath, null, true);
-  /// /       document.querySelector("#component_giftcard").style.display = "block";
-  //    });
 }
 
 /**
