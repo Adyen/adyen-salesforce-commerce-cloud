@@ -3,53 +3,44 @@ const HookMgr = require('dw/system/HookMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const OrderMgr = require('dw/order/OrderMgr');
 
-// eslint-disable-next-line complexity
-function getPayments(order) {
-  let result = {};
-  const { paymentInstruments } = order;
-  for (let i = 0; i < paymentInstruments.length; i += 1) {
-    const paymentInstrument = paymentInstruments[i];
-    if (!paymentInstrument.custom.adyenPaymentData) {
-      continue; // eslint-disable-line no-continue
-    }
-    const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-      paymentInstrument.paymentMethod,
-    );
-    let authorizationResult;
-    if (paymentProcessor === null) {
+const getAuthorizationResult = (pProcessor, order, pInstrument) => {
+  const hookName = `app.payment.processor.${pProcessor.ID.toLowerCase()}`;
+  const customAuthorizeHook = () =>
+    HookMgr.callHook(hookName, 'Authorize', order, pInstrument, pProcessor);
+
+  return HookMgr.hasHook(hookName)
+    ? customAuthorizeHook()
+    : HookMgr.callHook('app.payment.processor.default', 'Authorize');
+};
+
+const getPayments = (order) =>
+  order.paymentInstruments.toArray().reduce((acc, paymentInstrument) => {
+    if (!acc.error) {
+      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+        paymentInstrument.paymentMethod,
+      );
+
+      if (paymentProcessor) {
+        const authorizationResult = getAuthorizationResult(
+          paymentProcessor,
+          order,
+          paymentInstrument,
+        );
+
+        if (authorizationResult.error) {
+          Transaction.wrap(() => {
+            OrderMgr.failOrder(order, true);
+          });
+        }
+
+        return authorizationResult;
+      }
+
       Transaction.begin();
       paymentInstrument.paymentTransaction.setTransactionID(order.orderNo);
       Transaction.commit();
-    } else {
-      if (
-        HookMgr.hasHook(
-          `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`,
-        )
-      ) {
-        authorizationResult = HookMgr.callHook(
-          `app.payment.processor.${paymentProcessor.ID.toLowerCase()}`,
-          'Authorize',
-          order,
-          paymentInstrument,
-          paymentProcessor,
-        );
-      } else {
-        authorizationResult = HookMgr.callHook(
-          'app.payment.processor.default',
-          'Authorize',
-        );
-      }
-      result = authorizationResult;
-      if (authorizationResult.error) {
-        Transaction.wrap(() => {
-          OrderMgr.failOrder(order);
-        });
-        result.error = true;
-        break;
-      }
     }
-  }
-  return result;
-}
+    return acc;
+  }, {});
 
 module.exports = getPayments;

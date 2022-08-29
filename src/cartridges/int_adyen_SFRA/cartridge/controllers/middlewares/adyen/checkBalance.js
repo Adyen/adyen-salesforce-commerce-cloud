@@ -30,7 +30,9 @@ function callCheckBalance(req, res, next) {
     res.json(response);
     return next();
   } catch (error) {
-    Logger.getLogger('Adyen').error('Failed to check gift card balance ' + error.toString());
+    Logger.getLogger('Adyen').error(
+      `Failed to check gift card balance ${error.toString()}`,
+    );
     return next();
   }
 }
