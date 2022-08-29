@@ -106,7 +106,6 @@ function processForm(req, paymentForm, viewFormData) {
   const brand = JSON.stringify(req.form.brandCode);
   const isCreditCard =
     req.form.brandCode === 'scheme' || brand?.indexOf('storedCard') > -1;
-  //    Logger.getLogger('Adyen').error("isCreditCard " + isCreditCard);
   const creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {

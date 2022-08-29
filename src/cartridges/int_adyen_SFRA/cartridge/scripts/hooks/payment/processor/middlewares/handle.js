@@ -1,5 +1,4 @@
 const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -19,17 +18,7 @@ function handle(basket, paymentInformation) {
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
-    Logger.getLogger('Adyen').error(
-      `paymentInstrument.custom.adyenPaymentData ${JSON.stringify(
-        paymentInstrument.custom.adyenPaymentData,
-      )}`,
-    );
-    Logger.getLogger('Adyen').error(
-      `paymentInformation ${JSON.stringify(paymentInformation)}`,
-    );
-
     if (paymentInformation.splitPaymentsOrder) {
-      // for separate payment processors
       paymentInstrument.custom.adyenSplitPaymentsOrder =
         paymentInformation.splitPaymentsOrder;
     }

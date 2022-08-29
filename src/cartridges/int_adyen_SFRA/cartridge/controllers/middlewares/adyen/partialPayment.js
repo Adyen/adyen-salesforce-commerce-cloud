@@ -19,9 +19,6 @@ function makePartialPayment(req, res, next) {
     };
 
     const response = adyenCheckout.doPaymentsCall(0, 0, partialPaymentRequest);
-    Logger.getLogger('Adyen').error(
-      `partial response ${JSON.stringify(response)}`,
-    );
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
         pspReference: response.pspReference,
@@ -29,9 +26,6 @@ function makePartialPayment(req, res, next) {
         ...response.amount,
       }); // entire response exceeds string length
     });
-    Logger.getLogger('Adyen').error(
-      `session.privacy.giftCardResponse ${session.privacy.giftCardResponse}`,
-    );
 
     const remainingAmount = new Money(
       response.order.remainingAmount.value,

@@ -394,15 +394,10 @@ var adyenHelperObj = {
 
   // creates a request object to send to the Adyen Checkout API
   createAdyenRequestObject(order, paymentInstrument) {
-    Logger.getLogger('Adyen').error(paymentInstrument);
-    Logger.getLogger('Adyen').error("adyenPaymentData without stringify " + paymentInstrument.custom.adyenPaymentData);
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
-    Logger.getLogger('Adyen').error('jsonObject  ' + JSON.stringify(jsonObject));
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
-
-    Logger.getLogger('Adyen').error('filtered stateData ' + JSON.stringify(stateData));
 
     let reference = 'recurringPayment-account';
     let orderToken = 'recurringPayment-token'
@@ -566,8 +561,6 @@ var adyenHelperObj = {
     paymentInstrument.paymentTransaction.transactionID = pspRef;
     order.custom.Adyen_pspReference = pspRef;
 
-//    session.privacy.giftCardResponse = null;
-
     if (result.paymentMethod) {
       order.custom.Adyen_paymentMethod = result.paymentMethod;
     } else if (result.additionalData && result.additionalData.paymentMethod) {
@@ -579,12 +572,6 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-//    if(paymentInstrument.paymentTransaction.custom.Adyen_log) {
-//        paymentInstrument.paymentTransaction.custom.Adyen_log += "\n" + JSON.stringify(result)
-//    } else {
-//        Logger.getLogger('Adyen').error("went to else");
-//      paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
-//    }
     paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result); //for separate
 
     return true;

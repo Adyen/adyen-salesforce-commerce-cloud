@@ -46,22 +46,13 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-    Logger.getLogger('Adyen').error(
-      `reqDataObj.splitPaymentsOrder ${JSON.stringify(
-        reqDataObj.splitPaymentsOrder,
-      )}`,
-    );
     if (reqDataObj.splitPaymentsOrder) {
-      Logger.getLogger('Adyen').error('inside reqDataObj.splitPaymentsOrder');
       paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(
         reqDataObj.splitPaymentsOrder,
       );
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
-  Logger.getLogger('Adyen').error(
-    'being filled when it should not fromComponent',
-  );
   const order = COHelpers.createOrder(currentBasket);
 
   let result;
@@ -87,9 +78,6 @@ function paymentFromComponent(req, res, next) {
     }
   }
 
-  Logger.getLogger('Adyen').error(
-    `session.privacy.giftCardResponse ${session.privacy.giftCardResponse}`,
-  );
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
     let giftcardPM;
@@ -110,10 +98,6 @@ function paymentFromComponent(req, res, next) {
       giftcardPM.paymentTransaction.custom.Adyen_log =
         session.privacy.giftCardResponse;
     });
-
-    Logger.getLogger('Adyen').error(
-      `order.paymentInstruments.length ${order.paymentInstruments.length}`,
-    );
 
     session.privacy.giftCardResponse = null;
   }

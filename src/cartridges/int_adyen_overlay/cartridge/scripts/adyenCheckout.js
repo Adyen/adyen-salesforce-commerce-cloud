@@ -84,22 +84,8 @@ function createPaymentRequest(args) {
 
     // Add split payments order if applicable
     if (paymentInstrument.custom.adyenSplitPaymentsOrder) {
-      Logger.getLogger('Adyen').error('adding split payments order');
-      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder ' + JSON.stringify(paymentInstrument.custom.adyenSplitPaymentsOrder));
       paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
-
-      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount ' + JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount);
-      Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenSplitPaymentsOrder.remainingAmount with stringify ' + JSON.stringify(JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount));
       paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
-//      const myAmount = AdyenHelper.getCurrencyValueForApi(
-//          paymentInstrument.paymentTransaction.amount,
-//      ).getValueOrNull(); // args.Amount * 100;
-//      paymentRequest.amount = {
-//        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-//        value: myAmount,
-//      };
-
-      Logger.getLogger('Adyen').error('paymentRequest.amount ' + JSON.stringify(paymentRequest.amount));
     } else {
       const myAmount = AdyenHelper.getCurrencyValueForApi(
           paymentInstrument.paymentTransaction.amount,
@@ -143,7 +129,6 @@ function createPaymentRequest(args) {
     }
 
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-    Logger.getLogger('Adyen').error('payment request is ' + JSON.stringify(paymentRequest));
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
@@ -245,7 +230,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
-        Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -266,9 +250,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         errorMessage += ` (${responseObject.refusalReason})`;
       }
       paymentResponse.adyenErrorMessage = errorMessage;
-      Logger.getLogger('Adyen').info('Payment result: Refused');
     }
-    Logger.getLogger('Adyen').error('payments call result is ' + JSON.stringify(paymentResponse));
     return paymentResponse;
   } catch (e) {
     Logger.getLogger('Adyen').fatal(

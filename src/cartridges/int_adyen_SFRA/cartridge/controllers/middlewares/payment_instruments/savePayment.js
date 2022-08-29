@@ -4,7 +4,6 @@ const CustomerMgr = require('dw/customer/CustomerMgr');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const PaymentMgr = require('dw/order/PaymentMgr');
-const Logger = require('dw/system/Logger');
 const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
@@ -35,9 +34,6 @@ function createPaymentInstrument(customer) {
     paymentInstrument.custom.adyenPaymentData =
       paymentForm.adyenStateData.value;
   });
-  Logger.getLogger('Adyen').error(
-    'being filled when it should not savePayment',
-  );
 
   return paymentInstrument;
 }
