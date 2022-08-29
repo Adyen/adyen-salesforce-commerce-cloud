@@ -49,7 +49,6 @@ function handleAuthorisedPayment(
   adyenPaymentInstrument,
   { req, res, next },
 ) {
-  clearForms.clearAdyenData(adyenPaymentInstrument);
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
 
@@ -70,6 +69,7 @@ function handleAuthorisedPayment(
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
+  clearForms.clearAdyenData(adyenPaymentInstrument);
   clearForms.clearForms();
   // determines SFRA version for backwards compatibility
   if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
@@ -133,7 +133,10 @@ function handlePayment(stateData, order, options) {
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
-  if (result.error) {
+  if (result.error || order.status.value === Order.ORDER_STATUS_FAILED) {
+    Logger.getLogger('Adyen').error(
+      `Could not call payment/details for order ${order.orderNo}`,
+    );
     return handlePaymentError(order, adyenPaymentInstrument, options);
   }
 
@@ -143,7 +146,10 @@ function handlePayment(stateData, order, options) {
       adyenPaymentInstrument,
       result,
     );
-    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+    if (
+      result &&
+      JSON.stringify(result).indexOf(constants.PAYMENTMETHODS.AMAZONPAY) > -1
+    ) {
       finalResult = JSON.parse(result);
     } else if (applePayResponse) {
       return handlePaymentResult(
@@ -155,13 +161,6 @@ function handlePayment(stateData, order, options) {
     } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }
-  }
-
-  if (order.status.value === Order.ORDER_STATUS_FAILED) {
-    Logger.getLogger('Adyen').error(
-      `Could not call payment/details for failed order ${order.orderNo}`,
-    );
-    return handlePaymentError(order, adyenPaymentInstrument, options);
   }
 
   const detailsCall = handlePaymentsDetailsCall(
