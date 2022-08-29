@@ -42,8 +42,6 @@ function paymentFromComponent(data, component = {}) {
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
-      // check response if it includes orderData or remaining amount it means it is a split payment
-
       setOrderFormData(response);
 
       if (response.fullResponse?.action) {

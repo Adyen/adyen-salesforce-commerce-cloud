@@ -62,9 +62,7 @@ function renderStoredPaymentMethods(data, imagePath) {
 
 function renderPaymentMethods(data, imagePath, adyenDescriptions) {
   data.paymentMethods.forEach((pm) => {
-    //    if(pm.type !== "giftcard") {
     renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
-    //    }
   });
 }
 
