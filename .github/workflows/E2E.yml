@@ -3,7 +3,7 @@ name: E2E
 on: [push]
 
 jobs:
-  end-to-end-testing:
+  setup-the-cartridge:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -26,7 +26,7 @@ jobs:
       - name: setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -49,11 +49,46 @@ jobs:
       - name: push cartridge code
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run build
+  end-to-end-testing:
+    needs: setup-the-cartridge
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: "v5.3.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA5"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA5"
+          - sfra-version: "v6.1.0"
+            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA6"
+            code-version-secret: "SFCC_CODE_VERSION_SFRA6"
+    steps:
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: install e2e test dependencies
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        run: npm i
+      - name: setup playwright dependencies
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        run: npx playwright install --with-deps
       - name: run e2e tests
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run test:e2e
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        run: npm run test:ci
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+          PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+      - name: Archive test result artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report
+          path: adyen-salesforce-commerce-cloud/tests/playwright/test-report
