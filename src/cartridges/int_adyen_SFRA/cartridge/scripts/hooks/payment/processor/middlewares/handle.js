@@ -1,8 +1,8 @@
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
-const Logger = require('dw/system/Logger');
 
 function handle(basket, paymentInformation) {
   const currentBasket = basket;
@@ -13,44 +13,53 @@ function handle(basket, paymentInformation) {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
     });
-     const paymentInstrument = currentBasket.createPaymentInstrument(
+    const paymentInstrument = currentBasket.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice,
     );
-     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+    paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
-          Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentData ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
-          Logger.getLogger('Adyen').error('paymentInformation ' + JSON.stringify(paymentInformation));
+    Logger.getLogger('Adyen').error(
+      `paymentInstrument.custom.adyenPaymentData ${JSON.stringify(
+        paymentInstrument.custom.adyenPaymentData,
+      )}`,
+    );
+    Logger.getLogger('Adyen').error(
+      `paymentInformation ${JSON.stringify(paymentInformation)}`,
+    );
 
-   if(paymentInformation.splitPaymentsOrder) { //for separate payment processors
-      paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
-   }
-   paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
-
-     if (paymentInformation.isCreditCard) {
-       // If the card wasn't a stored card we need to convert sfccCardType
-       const sfccCardType = !paymentInformation.creditCardToken
-         ? AdyenHelper.getSFCCCardType(paymentInformation.cardType)
-         : paymentInformation.cardType;
-
-       paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
-       paymentInstrument.setCreditCardType(sfccCardType);
-
-        paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-
-       if (paymentInformation.creditCardToken) {
-         paymentInstrument.setCreditCardExpirationMonth(
-           paymentInformation.expirationMonth,
-         );
-         paymentInstrument.setCreditCardExpirationYear(
-           paymentInformation.expirationYear,
-         );
-         paymentInstrument.setCreditCardToken(
-           paymentInformation.creditCardToken,
-         );
-       }
+    if (paymentInformation.splitPaymentsOrder) {
+      // for separate payment processors
+      paymentInstrument.custom.adyenSplitPaymentsOrder =
+        paymentInformation.splitPaymentsOrder;
     }
-   });
+    paymentInstrument.custom.adyenPaymentMethod =
+      paymentInformation.adyenPaymentMethod;
+
+    if (paymentInformation.isCreditCard) {
+      // If the card wasn't a stored card we need to convert sfccCardType
+      const sfccCardType = !paymentInformation.creditCardToken
+        ? AdyenHelper.getSFCCCardType(paymentInformation.cardType)
+        : paymentInformation.cardType;
+
+      paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
+      paymentInstrument.setCreditCardType(sfccCardType);
+
+      paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
+
+      if (paymentInformation.creditCardToken) {
+        paymentInstrument.setCreditCardExpirationMonth(
+          paymentInformation.expirationMonth,
+        );
+        paymentInstrument.setCreditCardExpirationYear(
+          paymentInformation.expirationYear,
+        );
+        paymentInstrument.setCreditCardToken(
+          paymentInformation.creditCardToken,
+        );
+      }
+    }
+  });
 
   return { fieldErrors: cardErrors, serverErrors, error: false };
 }

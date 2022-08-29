@@ -21,14 +21,11 @@ function getPersonalDetails() {
 }
 
 function setNode(paymentMethodID) {
-console.log('paymentMethodID inside setnode ' + paymentMethodID);
   const createNode = (...args) => {
     if (!store.componentsObj[paymentMethodID]) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      console.log('about to render ' + paymentMethodID);
-      console.log(...args);
       // ALl nodes created for the checkout component are enriched with shopper personal details
       const node = store.checkout.create(...args, {
         data: {
@@ -43,11 +40,11 @@ console.log('paymentMethodID inside setnode ' + paymentMethodID);
       });
       store.componentsObj[paymentMethodID].node = node;
 
-      if(paymentMethodID === "giftcard") {
-        document.querySelector("#rb_giftcard").parentNode.style.display = "none";
+      if (paymentMethodID === 'giftcard') {
+        document.querySelector('#rb_giftcard').parentNode.style.display =
+          'none';
       }
     } catch (e) {
-      console.error('no component... ' + e.toString());
       /* No component for payment method */
     }
   };
@@ -56,14 +53,13 @@ console.log('paymentMethodID inside setnode ' + paymentMethodID);
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
-console.log("inside getPaymentMethodID " + paymentMethod);
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
     // return `${paymentMethod.type}_${paymentMethod.brand}`;
-    return `giftcard`;
+    return 'giftcard';
   }
   return paymentMethod.type;
 }
@@ -164,19 +160,16 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
     isSchemeNotStored,
   };
 
-  console.log('options are ' + JSON.stringify(options));
   const imagePath = getImagePath(options);
   const liContents = getListContents({ ...options, imagePath, description });
 
-  if(rerender) {
-  console.log('inside rerender');
-    li = document.querySelector(`#rb_${paymentMethodID}`).closest("li");
+  if (rerender) {
+    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
   } else {
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
     paymentMethodsUI.append(li);
   }
-   console.log('li  ' + li);
   handlePayment(options);
   configureContainer(options);
 

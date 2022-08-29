@@ -11,7 +11,7 @@ function clearCustomSessionFields() {
   session.privacy.adyenPaymentMethod = null;
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
-//  session.privacy.giftCardResponse = null;
+  //  session.privacy.giftCardResponse = null;
 }
 
 /**
