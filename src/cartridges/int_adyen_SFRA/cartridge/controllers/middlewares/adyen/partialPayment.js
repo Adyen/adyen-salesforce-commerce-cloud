@@ -15,23 +15,9 @@ const collections = require('*/cartridge/scripts/util/collections');
 
 function makePartialPayment(req, res, next) {
     try {
-                Logger.getLogger('Adyen').error("inside makePartialPayment");
-//                let response = {
-//                order: {
-//                                    orderData: {},
-//                                    remainingAmount: {currency: "USD", amount: 5000.00},
-//                                    pspReference: "4273908jfdsio",
-//                }
-//                };
-//                res.json(response);
-//                return next();
-
-
         const request = JSON.parse(req.body);
 
         const {paymentMethod, splitPaymentsOrder, amount} = request;
-
-                Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const partialPaymentRequest = {
             merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -40,12 +26,14 @@ function makePartialPayment(req, res, next) {
             paymentMethod,
             order: splitPaymentsOrder,
         };
-//        Logger.getLogger('Adyen').error('partialPaymentrequest is ' + JSON.stringify(partialPaymentRequest));
 
                 Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
         const currentBasket = BasketMgr.getCurrentBasket();
 //        Logger.getLogger('Adyen').error('currentBasket inside makePartialPayment ' + currentBasket);
+
+
+
         let paymentInstrument;
 
 
@@ -70,8 +58,8 @@ function makePartialPayment(req, res, next) {
             paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(splitPaymentsOrder);
 //            paymentInstrument.custom.adyenPaymentMethod = `split payment: ${request.paymentMethod.type} ${request.paymentMethod.brand ? request.paymentMethod.brand : ""}`; //1 payment processor
 //            paymentInstrument.custom.adyenPaymentMethod = `${request.paymentMethod.type}` ; // for 2 payment processors
-            paymentInstrument.custom.adyenGiftCardUsed = true;
-            paymentInstrument.custom.adyenGiftCardAmount = JSON.stringify(amount);
+//            paymentInstrument.custom.adyenGiftCardUsed = true;
+//            paymentInstrument.custom.adyenGiftCardAmount = JSON.stringify(amount);
 //            Logger.getLogger('Adyen').error('paymentInstrument.custom.adyenPaymentData is ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
         });
 //                        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
@@ -80,11 +68,19 @@ function makePartialPayment(req, res, next) {
 
 
          response = adyenCheckout.doPaymentsCall(0, 0, partialPaymentRequest);
-
+        //todo: if partial response is not authorised then cancel split payments order (or leave to auto cancel, just make sure frontend handles the case)
+        Logger.getLogger('Adyen').error('partial response ' + JSON.stringify(response));
         Transaction.wrap(() => {
             paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(response);
+            session.privacy.giftCardResponse = JSON.stringify({pspReference: response.pspReference, ...response.order, ...response.amount}); //entire response exceeds string length
         });
+                Logger.getLogger('Adyen').error('session.privacy.giftCardResponse ' + session.privacy.giftCardResponse);
 //        Logger.getLogger('Adyen').error('paymentInstrument.paymentTransaction.custom.Adyen_log ' + JSON.stringify(paymentInstrument.paymentTransaction.custom.Adyen_log));
+
+
+
+
+
         const remainingAmount = new Money(response.order.remainingAmount.value, response.order.remainingAmount.currency).divide(100);
         response.remainingAmountFormatted = remainingAmount.toFormattedString();
         res.json(response);

@@ -4,6 +4,10 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const BasketMgr = require('dw/order/BasketMgr');
 
+function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes*60000);
+}
+
 function createSplitPaymentsOrder(req, res, next) {
     try {
 //        Logger.getLogger('Adyen').error('inside  createSplitPaymentsOrder');
@@ -16,6 +20,9 @@ function createSplitPaymentsOrder(req, res, next) {
         }
 //        Logger.getLogger('Adyen').error('paymentMethod is ' + JSON.stringify(paymentMethod));
 
+        let date = new Date();
+        date = addMinutes(date, 30);
+
         const splitPaymentsRequest = {
             merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
             amount: {
@@ -23,6 +30,7 @@ function createSplitPaymentsOrder(req, res, next) {
                 value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value,
             },
             reference: currentBasket.getUUID(),
+            expiresAt: date.toISOString(),
         };
 //        Logger.getLogger('Adyen').error('splitPaymentsRequest is ' + JSON.stringify(splitPaymentsRequest));
 

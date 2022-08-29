@@ -134,6 +134,7 @@ function renderGiftCard(paymentMethod) {
 //    document.querySelector("#adyenModalDialog").appendChild(giftcardContainer);
 //    document.querySelector("#adyenModalDialog").appendChild(closeGiftCardModal);
     giftCardLabel.addEventListener('click', () => {
+        console.log('inside click!');
 //        $('#dwfrm_billing').trigger('submit');
 //        if (store.formErrorsExist) {
 //          return;
@@ -142,7 +143,8 @@ function renderGiftCard(paymentMethod) {
             return;
         }
         $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
-        giftcardContainer.innerText = "";
+//        giftcardContainer.innerText = "";
+        giftcardContainer.innerHTML = "";
         console.log('inside giftcardContainer onclick');
         giftCardNode = store.checkout.create(paymentMethod.type).mount(giftcardContainer);
         store.componentsObj["giftcard"] = {node: giftCardNode};
