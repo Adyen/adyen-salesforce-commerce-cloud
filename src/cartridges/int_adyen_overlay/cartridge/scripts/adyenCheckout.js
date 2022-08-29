@@ -243,126 +243,24 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
 }
 
 function doCheckBalanceCall(checkBalanceRequest) {
-  const callResult = executeCall(
+  return AdyenHelper.executeCall(
       constants.SERVICE.CHECKBALANCE,
       checkBalanceRequest,
   );
-  if (callResult.isOk() === false) {
-    Logger.getLogger('Adyen').error(
-        `Adyen: Call error code${callResult
-            .getError()
-            .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-    );
-    return {
-      error: true,
-      invalidRequest: true,
-    };
-  }
-
-  const resultObject = callResult.object;
-  if (!resultObject || !resultObject.getText()) {
-    Logger.getLogger('Adyen').error(
-        `Error in /paymentMethods/balance response, response: ${JSON.stringify(
-            resultObject,
-        )}`,
-    );
-    return { error: true };
-  }
-
-  // build the response object
-  let responseObject;
-  try {
-    responseObject = JSON.parse(resultObject.getText());
-  } catch (ex) {
-    Logger.getLogger('Adyen').error(
-        `error parsing response object ${ex.message}`,
-    );
-    return { error: true };
-  }
-
-  return responseObject;
 }
 
 function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
-  const callResult = executeCall(
+  return AdyenHelper.executeCall(
       constants.SERVICE.CANCELPARTIALPAYMENTORDER,
       cancelOrderRequest,
   );
-  if (callResult.isOk() === false) {
-    Logger.getLogger('Adyen').error(
-        `Adyen: Call error code${callResult
-            .getError()
-            .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-    );
-    return {
-      error: true,
-      invalidRequest: true,
-    };
-  }
-
-  const resultObject = callResult.object;
-  if (!resultObject || !resultObject.getText()) {
-    Logger.getLogger('Adyen').error(
-        `Error in /paymentMethods/balance response, response: ${JSON.stringify(
-            resultObject,
-        )}`,
-    );
-    return { error: true };
-  }
-
-  // build the response object
-  let responseObject;
-  try {
-    responseObject = JSON.parse(resultObject.getText());
-  } catch (ex) {
-    Logger.getLogger('Adyen').error(
-        `error parsing response object ${ex.message}`,
-    );
-    return { error: true };
-  }
-
-  return responseObject;
 }
 
 function doCreateSplitPaymentOrderCall(splitPaymentRequest) {
-  const callResult = executeCall(
+  return AdyenHelper.executeCall(
       constants.SERVICE.SPLITPAYMENTSORDER,
       splitPaymentRequest,
   );
-  if (callResult.isOk() === false) {
-    Logger.getLogger('Adyen').error(
-        `Adyen: Call error code${callResult
-            .getError()
-            .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-    );
-    return {
-      error: true,
-      invalidRequest: true,
-    };
-  }
-
-  const resultObject = callResult.object;
-  if (!resultObject || !resultObject.getText()) {
-    Logger.getLogger('Adyen').error(
-        `Error in /orders response, response: ${JSON.stringify(
-            resultObject,
-        )}`,
-    );
-    return { error: true };
-  }
-
-  // build the response object
-  let responseObject;
-  try {
-    responseObject = JSON.parse(resultObject.getText());
-  } catch (ex) {
-    Logger.getLogger('Adyen').error(
-        `error parsing response object ${ex.message}`,
-    );
-    return { error: true };
-  }
-
-  return responseObject;
 }
 
 module.exports = {
