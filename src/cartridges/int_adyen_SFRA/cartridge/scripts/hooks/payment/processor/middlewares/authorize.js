@@ -3,8 +3,6 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const collections = require('*/cartridge/scripts/util/collections');
-const BasketMgr = require('dw/order/BasketMgr');
 
 function errorHandler() {
   const serverErrors = [
@@ -41,8 +39,14 @@ function authorize(order, paymentInstrument, paymentProcessor) {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
   });
 
-    Logger.getLogger('Adyen').error(`paymentInstrument inside authorize ${paymentInstrument}`);
-    Logger.getLogger('Adyen').error('adyenPaymentData belonging to it ' + JSON.stringify(paymentInstrument.custom.adyenPaymentData));
+  Logger.getLogger('Adyen').error(
+    `paymentInstrument inside authorize ${paymentInstrument}`,
+  );
+  Logger.getLogger('Adyen').error(
+    `adyenPaymentData belonging to it ${JSON.stringify(
+      paymentInstrument.custom.adyenPaymentData,
+    )}`,
+  );
 
   Transaction.begin();
   const result = adyenCheckout.createPaymentRequest({

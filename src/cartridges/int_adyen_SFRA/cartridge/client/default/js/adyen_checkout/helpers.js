@@ -6,11 +6,11 @@ function assignPaymentMethodValue() {
   const paymentMethodlabelId = store.brand
     ? `#lb_${store.selectedMethod}_${store.brand}`
     : `#lb_${store.selectedMethod}`;
-    if(adyenPaymentMethod) {
-      adyenPaymentMethod.value = document.querySelector(
-        paymentMethodlabelId,
-      ).innerHTML;
-    }
+  if (adyenPaymentMethod) {
+    adyenPaymentMethod.value = document.querySelector(
+      paymentMethodlabelId,
+    ).innerHTML;
+  }
 }
 
 function setOrderFormData(response) {
@@ -27,19 +27,22 @@ function setOrderFormData(response) {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component = {}) {
-  if(store.splitPaymentsOrderObj) {
-    data = {...data, splitPaymentsOrder: store.splitPaymentsOrderObj}
+  let requestData = data;
+  if (store.splitPaymentsOrderObj) {
+    requestData = {
+      ...data,
+      splitPaymentsOrder: store.splitPaymentsOrderObj,
+    };
   }
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
-      data: JSON.stringify(data),
+      data: JSON.stringify(requestData),
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
     success(response) {
       // check response if it includes orderData or remaining amount it means it is a split payment
-      console.log('paymentFromComponent response is ' + JSON.stringify(response));
 
       setOrderFormData(response);
 
@@ -55,20 +58,21 @@ function paymentFromComponent(data, component = {}) {
 
 function makePartialPayment(data) {
   $.ajax({
-    url: "Adyen-partialPayment",
+    url: 'Adyen-partialPayment',
     type: 'POST',
     data: JSON.stringify(data),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
       // check response if it includes orderData or remaining amount it means it is a split payment
-      console.log('paymentFromComponent response is ' + JSON.stringify(response));
-      console.log('remainingAmount ' + JSON.stringify(response.order.remainingAmount));
-      const splitPaymentsOrder = {pspReference: response.order.pspReference, orderData: response.order.orderData};
-      store.splitPaymentsOrderObj = {splitPaymentsOrder: splitPaymentsOrder};
-      store.splitPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
+      const splitPaymentsOrder = {
+        pspReference: response.order.pspReference,
+        orderData: response.order.orderData,
+      };
+      store.splitPaymentsOrderObj = { splitPaymentsOrder };
+      store.splitPaymentsOrderObj.remainingAmount =
+        response.remainingAmountFormatted;
       setOrderFormData(response);
-
     },
   }).fail(() => {});
 }

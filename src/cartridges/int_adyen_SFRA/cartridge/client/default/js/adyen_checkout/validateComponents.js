@@ -10,10 +10,9 @@ module.exports.validateComponents = function validateComponents() {
   document.querySelector('#adyenStateData').value = JSON.stringify(
     store.stateData,
   );
-  if(store.splitPaymentsOrderObj) {
+  if (store.splitPaymentsOrderObj) {
     document.querySelector('#adyenSplitPaymentsOrder').value = JSON.stringify(
-          store.splitPaymentsOrderObj,
-      );
+      store.splitPaymentsOrderObj,
+    );
   }
-  console.log('store.splitPaymentsOrderObj ' + JSON.stringify(store.splitPaymentsOrderObj));
 };

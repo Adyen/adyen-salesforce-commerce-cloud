@@ -85,7 +85,11 @@ server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 /**
  * Called by Adyen to cancel a partial payment order.
  */
-server.post('CancelPartialPaymentOrder', server.middleware.https, adyen.cancelPartialPaymentOrder);
+server.post(
+  'CancelPartialPaymentOrder',
+  server.middleware.https,
+  adyen.cancelPartialPaymentOrder,
+);
 
 /**
  * Called by Adyen to initiate a split (partial) payment

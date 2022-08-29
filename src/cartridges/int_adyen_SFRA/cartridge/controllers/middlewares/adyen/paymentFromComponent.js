@@ -46,15 +46,22 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-
-      Logger.getLogger('Adyen').error('reqDataObj.splitPaymentsOrder ' + JSON.stringify(reqDataObj.splitPaymentsOrder));
-    if(reqDataObj.splitPaymentsOrder) {
+    Logger.getLogger('Adyen').error(
+      `reqDataObj.splitPaymentsOrder ${JSON.stringify(
+        reqDataObj.splitPaymentsOrder,
+      )}`,
+    );
+    if (reqDataObj.splitPaymentsOrder) {
       Logger.getLogger('Adyen').error('inside reqDataObj.splitPaymentsOrder');
-      paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(reqDataObj.splitPaymentsOrder);
+      paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(
+        reqDataObj.splitPaymentsOrder,
+      );
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
-      Logger.getLogger('Adyen').error('being filled when it should not fromComponent');
+  Logger.getLogger('Adyen').error(
+    'being filled when it should not fromComponent',
+  );
   const order = COHelpers.createOrder(currentBasket);
 
   let result;
@@ -80,29 +87,36 @@ function paymentFromComponent(req, res, next) {
     }
   }
 
-    Logger.getLogger('Adyen').error('session.privacy.giftCardResponse ' + session.privacy.giftCardResponse);
-    //Check if gift card was used
-    if(session.privacy.giftCardResponse) {
-        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
-        let paymentInstrument;
-        const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
-        Transaction.wrap(() => {
-            paymentInstrument = order.createPaymentInstrument(
-                constants.METHOD_ADYEN_COMPONENT,
-                new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100),
-            );
-            const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-                paymentInstrument.paymentMethod,
-            );
-          paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-          paymentInstrument.custom.adyenPaymentMethod = `giftcard` ;
-          paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
-        })
+  Logger.getLogger('Adyen').error(
+    `session.privacy.giftCardResponse ${session.privacy.giftCardResponse}`,
+  );
+  // Check if gift card was used
+  if (session.privacy.giftCardResponse) {
+    let giftcardPM;
+    const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse)
+      .amount;
+    Transaction.wrap(() => {
+      giftcardPM = order.createPaymentInstrument(
+        constants.METHOD_ADYEN_COMPONENT,
+        new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(
+          100,
+        ),
+      );
+      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+        giftcardPM.paymentMethod,
+      );
+      giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
+      giftcardPM.custom.adyenPaymentMethod = 'giftcard';
+      giftcardPM.paymentTransaction.custom.Adyen_log =
+        session.privacy.giftCardResponse;
+    });
 
-        Logger.getLogger('Adyen').error('order.paymentInstruments.length ' + order.paymentInstruments.length);
+    Logger.getLogger('Adyen').error(
+      `order.paymentInstruments.length ${order.paymentInstruments.length}`,
+    );
 
-        session.privacy.giftCardResponse = null;
-    }
+    session.privacy.giftCardResponse = null;
+  }
 
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
