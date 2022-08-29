@@ -1,5 +1,4 @@
 const BasketMgr = require('dw/order/BasketMgr');
-const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
