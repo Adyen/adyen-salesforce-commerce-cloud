@@ -560,7 +560,7 @@ var adyenHelperObj = {
     let pspRef;
     if(session.privacy.giftCardResponse) {
         pspRef = JSON.parse(session.privacy.giftCardResponse).pspReference;
-    } else if (result.pspReference) { //todo: it should be the psp for the entire split payments order in case a gift card was applied
+    } else if (result.pspReference) {
         pspRef = result.pspReference;
     }
     paymentInstrument.paymentTransaction.transactionID = pspRef;

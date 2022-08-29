@@ -27,6 +27,9 @@ function setOrderFormData(response) {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component = {}) {
+  if(store.splitPaymentsOrderObj) {
+    data = {...data, splitPaymentsOrder: store.splitPaymentsOrderObj}
+  }
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
