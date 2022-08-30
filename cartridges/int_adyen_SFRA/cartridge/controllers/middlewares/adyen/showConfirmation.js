@@ -101,10 +101,10 @@ function showConfirmation(req, res, next) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
         Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
         return payment.handlePaymentError(order, 'placeOrder', options);
-      } // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
-
+      }
 
       setPaymentMethodField(adyenPaymentInstrument, order);
+      clearForms.clearAdyenData(adyenPaymentInstrument);
       var detailsResult = getPaymentsDetailsResult(adyenPaymentInstrument, redirectResult, payload, req);
       return handlePaymentsDetailsResult(adyenPaymentInstrument, detailsResult, order, options);
     }

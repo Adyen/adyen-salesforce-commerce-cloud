@@ -319,8 +319,7 @@
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>oj9GsQ</default-value>
+                <default-value></default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>

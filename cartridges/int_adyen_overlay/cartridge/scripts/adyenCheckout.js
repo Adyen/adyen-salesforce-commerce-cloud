@@ -149,36 +149,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   var errorMessage = '';
 
   try {
-    var callResult = executeCall(constants.SERVICE.PAYMENT, paymentRequest);
-
-    if (callResult.isOk() === false) {
-      Logger.getLogger('Adyen').error("Adyen: Call error code".concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
-      paymentResponse.adyenErrorMessage = Resource.msg('confirm.error.declined', 'checkout', null);
-      return {
-        error: true,
-        args: paymentResponse
-      };
-    }
-
-    var resultObject = callResult.object;
-
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error("No correct response from ".concat(constants.SERVICE.PAYMENT, ", result: ").concat(JSON.stringify(resultObject)));
-    } // build the response object
-
-
-    var responseObject;
-
-    try {
-      responseObject = JSON.parse(resultObject.getText());
-    } catch (ex) {
-      Logger.getLogger('Adyen').error("error parsing response object ".concat(ex.message));
-      return {
-        error: true
-      };
-    } // There is no order for zero auth transactions.
+    var responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest); // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
-
 
     if (!order) {
       return responseObject;
@@ -232,61 +204,23 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   } catch (e) {
     Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return {
-      error: true
+      error: true,
+      args: {
+        adyenErrorMessage: Resource.msg('confirm.error.declined', 'checkout', null)
+      }
     };
   }
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
-  var callResult = executeCall(constants.SERVICE.PAYMENTDETAILS, paymentDetailsRequest);
-
-  if (callResult.isOk() === false) {
-    Logger.getLogger('Adyen').error("Adyen: Call error code".concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
-    return {
-      error: true,
-      invalidRequest: true
-    };
-  }
-
-  var resultObject = callResult.object;
-
-  if (!resultObject || !resultObject.getText()) {
-    Logger.getLogger('Adyen').error("Error in /payment/details response, response: ".concat(JSON.stringify(resultObject)));
-    return {
-      error: true
-    };
-  } // build the response object
-
-
-  var responseObject;
-
   try {
-    responseObject = JSON.parse(resultObject.getText());
+    return AdyenHelper.executeCall(constants.SERVICE.PAYMENTDETAILS, paymentDetailsRequest);
   } catch (ex) {
     Logger.getLogger('Adyen').error("error parsing response object ".concat(ex.message));
     return {
       error: true
     };
   }
-
-  return responseObject;
-}
-
-function executeCall(serviceType, requestObject) {
-  var service = AdyenHelper.getService(serviceType);
-
-  if (service === null) {
-    return {
-      error: true
-    };
-  }
-
-  var apiKey = AdyenConfigs.getAdyenApiKey();
-  service.addHeader('Content-type', 'application/json');
-  service.addHeader('charset', 'UTF-8');
-  service.addHeader('X-API-KEY', apiKey);
-  var callResult = service.call(JSON.stringify(requestObject));
-  return callResult;
 }
 
 module.exports = {

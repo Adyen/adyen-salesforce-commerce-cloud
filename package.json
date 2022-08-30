@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "22.1.0",
+  "version": "22.1.1",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
@@ -20,8 +20,7 @@
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
-    "test:coverage": "jest ./src --coverage",
-    "test:e2e": "testcafe -c 3 chrome:headless tests -q attemptLimit=3,successThreshold=1 --skip-js-errors"
+    "test:coverage": "jest ./src --coverage"
   },
   "engines": {
     "node": ">=4.0"
@@ -29,7 +28,6 @@
   "dependencies": {
     "cleave.js": "^1.0.1",
     "mobx": "^5.15.4",
-    "testcafe": "^1.16.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
@@ -70,7 +68,6 @@
     "stylelint": "^13.5.0",
     "stylelint-config-standard": "^12.0.0",
     "stylelint-scss": "^3.17.2",
-    "testcafe": "^1.16.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.1.2"
   },

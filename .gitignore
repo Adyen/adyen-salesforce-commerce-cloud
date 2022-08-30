@@ -5,3 +5,4 @@ dw.json
 /.vscode/
 /coverage/
 screenshots/
+playwright-report/
