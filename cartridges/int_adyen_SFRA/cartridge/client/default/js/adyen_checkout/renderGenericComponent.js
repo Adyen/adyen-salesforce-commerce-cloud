@@ -167,6 +167,35 @@ function setInstallments(amount) {
   } catch (e) {} // eslint-disable-line no-empty
 
 }
+
+function renderGiftCard(paymentMethod) {
+  var giftCardNode;
+  var giftcardContainer = document.querySelector('#giftcard-container');
+  var giftCardLabel = document.querySelector('#giftCardLabel');
+  var closeGiftCardModal = document.querySelector('#closeGiftCardModal');
+  closeGiftCardModal.id = 'closeGiftCardModal';
+  closeGiftCardModal.innerText = 'X';
+  giftCardLabel.addEventListener('click', function () {
+    if (giftcardContainer.innerHTML) {
+      return;
+    }
+
+    $('#giftcard-modal').modal({
+      backdrop: 'static',
+      keyboard: false
+    });
+    giftcardContainer.innerHTML = '';
+    giftCardNode = store.checkout.create(paymentMethod.type).mount(giftcardContainer);
+    store.componentsObj.giftcard = {
+      node: giftCardNode
+    };
+  });
+
+  closeGiftCardModal.onclick = function () {
+    $('#giftcard-modal').modal('hide');
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+  };
+}
 /**
  * Calls createSession and then renders the retrieved payment methods (including card component)
  */
@@ -195,7 +224,9 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             session = _context.sent;
             store.checkoutConfiguration.session = {
               id: session.id,
-              sessionData: session.sessionData
+              sessionData: session.sessionData,
+              imagePath: session.imagePath,
+              adyenDescriptions: session.adyenDescriptions
             };
             _context.next = 9;
             return AdyenCheckout(store.checkoutConfiguration);
@@ -206,6 +237,13 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             setInstallments(store.checkout.options.amount);
             setAmazonPayConfig(store.checkout.paymentMethodsResponse);
             document.querySelector('#paymentMethodsList').innerHTML = '';
+            store.checkout.paymentMethodsResponse.paymentMethods.some(function (pm) {
+              if (pm.type === 'giftcard') {
+                renderGiftCard(pm);
+              }
+
+              return null;
+            });
             renderStoredPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath);
             renderPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath, session.adyenDescriptions);
             renderPosTerminals(session.adyenConnectedTerminals);
@@ -214,7 +252,7 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             helpers.displaySelectedMethod(firstPaymentMethod.value);
             helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
 
-          case 21:
+          case 22:
           case "end":
             return _context.stop();
         }

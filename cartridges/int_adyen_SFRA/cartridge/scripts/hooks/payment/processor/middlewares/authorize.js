@@ -62,6 +62,11 @@ function authorize(order, paymentInstrument, paymentProcessor) {
     return paymentErrorHandler(result);
   }
 
+  if (session.privacy.giftCardResponse && !paymentInstrument.custom.adyenSplitPaymentsOrder) {
+    Logger.getLogger('Adyen').error('in Authorize adding missing split payments log');
+    paymentInstrument.custom.adyenSplitPaymentsOrder = session.privacy.giftCardResponse;
+  }
+
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
   Transaction.commit();
   return {

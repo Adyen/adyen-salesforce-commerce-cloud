@@ -96,14 +96,20 @@ function createPaymentRequest(args) {
           value: numOfInstallments
         };
       }
+    } // Add split payments order if applicable
+
+
+    if (paymentInstrument.custom.adyenSplitPaymentsOrder) {
+      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+    } else {
+      var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull();
+      paymentRequest.amount = {
+        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        value: myAmount
+      };
     }
 
-    var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull(); // args.Amount * 100;
-
-    paymentRequest.amount = {
-      currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-      value: myAmount
-    };
     var paymentMethodType = paymentRequest.paymentMethod.type; // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
 
@@ -178,7 +184,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
-        Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -197,7 +202,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       }
 
       paymentResponse.adyenErrorMessage = errorMessage;
-      Logger.getLogger('Adyen').info('Payment result: Refused');
     }
 
     return paymentResponse;
@@ -221,65 +225,25 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
       error: true
     };
   }
-
-  return responseObject;
 }
 
 function doCheckBalanceCall(checkBalanceRequest) {
-  var callResult = executeCall(constants.SERVICE.CHECKBALANCE, checkBalanceRequest);
-
-  if (callResult.isOk() === false) {
-    Logger.getLogger('Adyen').error("Adyen: Call error code".concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
-    return {
-      error: true,
-      invalidRequest: true
-    };
-  }
-
-  var resultObject = callResult.object;
-
-  if (!resultObject || !resultObject.getText()) {
-    Logger.getLogger('Adyen').error("Error in /paymentMethods/balance response, response: ".concat(JSON.stringify(resultObject)));
-    return {
-      error: true
-    };
-  } // build the response object
-
-
-  var responseObject;
-
-  try {
-    responseObject = JSON.parse(resultObject.getText());
-  } catch (ex) {
-    Logger.getLogger('Adyen').error("error parsing response object ".concat(ex.message));
-    return {
-      error: true
-    };
-  }
-
-  return responseObject;
+  return AdyenHelper.executeCall(constants.SERVICE.CHECKBALANCE, checkBalanceRequest);
 }
 
-function executeCall(serviceType, requestObject) {
-  var service = AdyenHelper.getService(serviceType);
+function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.CANCELPARTIALPAYMENTORDER, cancelOrderRequest);
+}
 
-  if (service === null) {
-    return {
-      error: true
-    };
-  }
-
-  var apiKey = AdyenConfigs.getAdyenApiKey();
-  service.addHeader('Content-type', 'application/json');
-  service.addHeader('charset', 'UTF-8');
-  service.addHeader('X-API-KEY', apiKey);
-  var callResult = service.call(JSON.stringify(requestObject));
-  return callResult;
+function doCreateSplitPaymentOrderCall(splitPaymentRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.SPLITPAYMENTSORDER, splitPaymentRequest);
 }
 
 module.exports = {
   createPaymentRequest: createPaymentRequest,
   doPaymentsCall: doPaymentsCall,
   doPaymentsDetailsCall: doPaymentsDetailsCall,
-  doCheckBalanceCall: doCheckBalanceCall
+  doCheckBalanceCall: doCheckBalanceCall,
+  doCancelPartialPaymentOrderCall: doCancelPartialPaymentOrderCall,
+  doCreateSplitPaymentOrderCall: doCreateSplitPaymentOrderCall
 };

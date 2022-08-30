@@ -80,7 +80,8 @@ function getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod
       cardNumber: paymentForm.creditCardFields.cardNumber.value,
       adyenPaymentMethod: adyenPaymentMethod,
       adyenIssuerName: adyenIssuerName,
-      stateData: paymentForm.adyenPaymentFields.adyenStateData.value
+      stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
+      splitPaymentsOrder: paymentForm.adyenPaymentFields.adyenSplitPaymentsOrder.value
     },
     saveCard: paymentForm.creditCardFields.saveCard.checked
   });
@@ -107,7 +108,7 @@ function getPaymentMethodFromForm(paymentForm) {
 
 function processForm(req, paymentForm, viewFormData) {
   var brand = JSON.stringify(req.form.brandCode);
-  var isCreditCard = req.form.brandCode === 'scheme' || brand.indexOf('storedCard') > -1;
+  var isCreditCard = req.form.brandCode === 'scheme' || (brand === null || brand === void 0 ? void 0 : brand.indexOf('storedCard')) > -1;
   var creditCardErrors = getCreditCardErrors(req, isCreditCard, paymentForm);
 
   if (Object.keys(creditCardErrors).length) {

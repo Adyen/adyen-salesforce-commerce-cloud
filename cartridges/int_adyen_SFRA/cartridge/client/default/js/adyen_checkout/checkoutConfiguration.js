@@ -16,6 +16,9 @@ var _require = require('../commons'),
     onBrand = _require.onBrand,
     onFieldValid = _require.onFieldValid;
 
+var _require2 = require('./renderPaymentMethod'),
+    renderPaymentMethod = _require2.renderPaymentMethod;
+
 var store = require('../../../../store');
 
 function getCardConfig() {
@@ -104,39 +107,132 @@ function getGooglePayConfig() {
 }
 
 function getGiftCardConfig() {
+  var giftcardBalance;
   return {
     showPayButton: true,
-    onBalanceCheck: function onBalanceCheck(resolve, reject, data) {
-      console.log('inside onBalanceCheck');
+    onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
       $.ajax({
         type: 'POST',
         url: 'Adyen-CheckBalance',
-        data: JSON.stringify(data),
+        data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
         success: function success(data) {
-          console.log('inside success');
-          console.log(JSON.stringify(data));
-          console.log(JSON.stringify(data.resultCode));
+          giftcardBalance = data.balance;
 
-          if (data.resultCode && data.resultCode === "Success") {
+          if (data.resultCode === 'Success') {
             resolve(data);
-          } else if (data.resultCode && data.resultCode === "NotEnoughBalance") {
-            console.log('just before reject');
-            reject(data);
+          } else if (data.resultCode === 'NotEnoughBalance') {
+            resolve(data);
           } else {
-            console.error('Unexpected result code');
+            reject();
+          }
+        },
+        fail: function fail() {
+          reject();
+        }
+      });
+    },
+    onOrderRequest: function onOrderRequest(resolve, reject, requestData) {
+      // Make a POST /orders request
+      // Create an order for the total transaction amount
+      var giftCardData = requestData.paymentMethod;
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-SplitPayments',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: function success(data) {
+          if (data.resultCode === 'Success') {
+            // make payments call including giftcard data and order data
+            var partialPaymentRequest = {
+              paymentMethod: giftCardData,
+              amount: giftcardBalance,
+              splitPaymentsOrder: {
+                pspReference: data.pspReference,
+                orderData: data.orderData
+              }
+            };
+            helpers.makePartialPayment(partialPaymentRequest);
+            showRemainingAmount();
           }
         }
       });
     },
-    onOrderRequest: function onOrderRequest(resolve, reject, data) {
-      console.log('inside onOrderRequest'); // Make a POST /orders request
-      // Create an order for the total transaction amount
-    },
-    onOrderCancel: function onOrderCancel(Order) {// Make a POST /orders/cancel request
+    onSubmit: function onSubmit() {
+      $('#giftcard-modal').modal('hide');
+      store.selectedMethod = 'giftcard';
+      document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').click();
     }
   };
+}
+
+function removeGiftCard() {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-CancelPartialPaymentOrder',
+    data: JSON.stringify(store.splitPaymentsOrderObj),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success: function success(res) {
+      store.splitPaymentsOrderObj = null;
+
+      if (res.resultCode === 'Received') {
+        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
+        document.querySelector('#giftCardLabel').classList.remove('invisible'); // re render gift card component
+
+        store.componentsObj.giftcard.node.unmount('component_giftcard');
+        delete store.componentsObj.giftcard;
+        document.querySelector('#component_giftcard').remove();
+        renderPaymentMethod({
+          type: 'giftcard'
+        }, false, store.checkoutConfiguration.session.imagePath, null, true);
+        document.querySelector('#component_giftcard').style.display = 'block';
+      }
+    }
+  });
+}
+
+function showRemainingAmount() {
+  $('#giftcard-modal').modal('hide');
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+  var remainingAmountContainer = document.createElement('div');
+  var remainingAmountStart = document.createElement('div');
+  var remainingAmountEnd = document.createElement('div');
+  var cancelGiftCard = document.createElement('div');
+  var remainingAmountStartP = document.createElement('p');
+  var remainingAmountEndP = document.createElement('p');
+  var cancelGiftCardP = document.createElement('p');
+  var remainingAmountStartSpan = document.createElement('span');
+  var cancelGiftCardSpan = document.createElement('span');
+  var remainingAmountEndSpan = document.createElement('span');
+  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
+  remainingAmountStart.classList.add('col-6', 'start-lines');
+  remainingAmountEnd.classList.add('col-6', 'end-lines');
+  remainingAmountStartP.classList.add('order-receipt-label');
+  cancelGiftCardP.classList.add('order-receipt-label');
+  remainingAmountEndP.classList.add('text-right');
+  remainingAmountEndSpan.classList.add('grand-total-sum');
+  cancelGiftCard.id = 'cancelGiftCardContainer';
+  remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
+
+  cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
+
+  remainingAmountEndSpan.innerText = store.splitPaymentsOrderObj.remainingAmount;
+  cancelGiftCard.addEventListener('click', removeGiftCard);
+  remainingAmountContainer.appendChild(remainingAmountStart);
+  remainingAmountContainer.appendChild(remainingAmountEnd);
+  remainingAmountContainer.appendChild(cancelGiftCard);
+  remainingAmountStart.appendChild(remainingAmountStartP);
+  cancelGiftCard.appendChild(cancelGiftCardP);
+  remainingAmountEnd.appendChild(remainingAmountEndP);
+  remainingAmountStartP.appendChild(remainingAmountStartSpan);
+  cancelGiftCardP.appendChild(cancelGiftCardSpan);
+  remainingAmountEndP.appendChild(remainingAmountEndSpan);
+  var pricingContainer = document.querySelector('.card-body.order-total-summary');
+  pricingContainer.appendChild(remainingAmountContainer);
 }
 
 function handleOnChange(state) {
@@ -256,6 +352,7 @@ module.exports = {
   getCardConfig: getCardConfig,
   getPaypalConfig: getPaypalConfig,
   getGooglePayConfig: getGooglePayConfig,
+  getGiftCardConfig: getGiftCardConfig,
   setCheckoutConfiguration: setCheckoutConfiguration,
   actionHandler: actionHandler
 };

@@ -32,7 +32,9 @@ module.exports = {
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
-    CHECKBALANCE: 'AdyenCheckBalance'
+    CHECKBALANCE: 'AdyenCheckBalance',
+    CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
+    SPLITPAYMENTSORDER: 'AdyenSplitPaymentsOrder'
   },
   MODE: {
     TEST: 'TEST',

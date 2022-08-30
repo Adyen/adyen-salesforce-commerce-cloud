@@ -1,6 +1,6 @@
 "use strict";
 
-var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
+var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
@@ -49,6 +49,8 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
     _initializerDefineProperty(this, "componentState", _descriptor9, this);
 
     _initializerDefineProperty(this, "brand", _descriptor10, this);
+
+    _initializerDefineProperty(this, "splitPaymentsOrderObj", _descriptor11, this);
   }
 
   _createClass(Store, [{
@@ -145,6 +147,11 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
     return {};
   }
 }), _descriptor10 = _applyDecoratedDescriptor(_class.prototype, "brand", [observable], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: null
+}), _descriptor11 = _applyDecoratedDescriptor(_class.prototype, "splitPaymentsOrderObj", [observable], {
   configurable: true,
   enumerable: true,
   writable: true,

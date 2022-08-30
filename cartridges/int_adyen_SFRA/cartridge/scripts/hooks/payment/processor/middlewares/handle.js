@@ -18,6 +18,11 @@ function handle(basket, paymentInformation) {
     });
     var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+
+    if (paymentInformation.splitPaymentsOrder) {
+      paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
+    }
+
     paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;
 
     if (paymentInformation.isCreditCard) {
@@ -41,4 +46,4 @@ function handle(basket, paymentInformation) {
   };
 }
 
-module.exports = handle; // export default Handle;
+module.exports = handle;

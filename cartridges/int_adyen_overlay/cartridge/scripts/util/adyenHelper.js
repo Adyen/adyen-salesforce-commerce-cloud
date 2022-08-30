@@ -518,10 +518,9 @@ var adyenHelperObj = {
   },
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
-    if (result.pspReference) {
-      paymentInstrument.paymentTransaction.transactionID = result.pspReference;
-      order.custom.Adyen_pspReference = result.pspReference;
-    }
+    var pspRef = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).pspReference : result.pspReference;
+    paymentInstrument.paymentTransaction.transactionID = pspRef;
+    order.custom.Adyen_pspReference = pspRef;
 
     if (result.paymentMethod) {
       order.custom.Adyen_paymentMethod = result.paymentMethod;

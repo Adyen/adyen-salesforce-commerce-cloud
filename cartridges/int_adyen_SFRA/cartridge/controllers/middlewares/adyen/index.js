@@ -16,6 +16,12 @@ var callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessi
 
 var checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
 
+var cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
+
+var splitPayments = require('*/cartridge/controllers/middlewares/adyen/splitPayments');
+
+var partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
+
 module.exports = {
   showConfirmation: showConfirmation,
   paymentFromComponent: paymentFromComponent,
@@ -24,5 +30,8 @@ module.exports = {
   paymentsDetails: paymentsDetails,
   redirect3ds1Response: redirect3ds1Response,
   callCreateSession: callCreateSession,
-  checkBalance: checkBalance
+  checkBalance: checkBalance,
+  cancelPartialPaymentOrder: cancelPartialPaymentOrder,
+  splitPayments: splitPayments,
+  partialPayment: partialPayment
 };

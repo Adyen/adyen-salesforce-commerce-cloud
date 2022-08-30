@@ -8,6 +8,10 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var _require = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices'),
     processPayment = _require.processPayment,
     isNotAdyen = _require.isNotAdyen;
+
+var PaymentMgr = require('dw/order/PaymentMgr');
+
+var Money = require('dw/value/Money');
 /* ### Custom Adyen cartridge end ### */
 
 
@@ -162,9 +166,26 @@ function placeOrder(req, res, next) {
   req.session.privacyCache.set('currentOrderNumber', order.orderNo);
   req.session.privacyCache.set('currentOrderToken', order.orderToken); // Handles payment authorization
 
-  var handlePaymentResult = adyenHelpers.handlePayments(order);
+  var handlePaymentResult = adyenHelpers.handlePayments(order); //Check if gift card was used
+
+  if (session.privacy.giftCardResponse) {
+    var paymentInstrument;
+    var paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
+    Transaction.wrap(function () {
+      paymentInstrument = order.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100));
+
+      var _PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod),
+          paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
+
+      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.custom.adyenPaymentMethod = "giftcard";
+      paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
+    });
+    session.privacy.giftCardResponse = null;
+  }
   /* ### Custom Adyen cartridge end ### */
   // Handle custom processing post authorization
+
 
   var options = {
     req: req,

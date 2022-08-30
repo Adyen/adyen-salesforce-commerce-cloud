@@ -1,12 +1,21 @@
 "use strict";
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var store = require('../../../../store');
 
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName'); // if currently selected paymentMethod contains a brand it will be part of the label ID
 
   var paymentMethodlabelId = store.brand ? "#lb_".concat(store.selectedMethod, "_").concat(store.brand) : "#lb_".concat(store.selectedMethod);
-  adyenPaymentMethod.value = document.querySelector(paymentMethodlabelId).innerHTML;
+
+  if (adyenPaymentMethod) {
+    adyenPaymentMethod.value = document.querySelector(paymentMethodlabelId).innerHTML;
+  }
 }
 
 function setOrderFormData(response) {
@@ -24,12 +33,16 @@ function setOrderFormData(response) {
  */
 
 
-function paymentFromComponent(data, component) {
+function paymentFromComponent(data) {
+  var component = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var requestData = store.splitPaymentsOrderObj ? _objectSpread(_objectSpread({}, data), {}, {
+    splitPaymentsOrder: store.splitPaymentsOrderObj
+  }) : data;
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
-      data: JSON.stringify(data),
+      data: JSON.stringify(requestData),
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value
     },
     success: function success(response) {
@@ -44,6 +57,27 @@ function paymentFromComponent(data, component) {
       if (response.paymentError || response.error) {
         component.handleError();
       }
+    }
+  });
+}
+
+function makePartialPayment(data) {
+  $.ajax({
+    url: 'Adyen-partialPayment',
+    type: 'POST',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success: function success(response) {
+      var splitPaymentsOrder = {
+        pspReference: response.order.pspReference,
+        orderData: response.order.orderData
+      };
+      store.splitPaymentsOrderObj = {
+        splitPaymentsOrder: splitPaymentsOrder
+      };
+      store.splitPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
+      setOrderFormData(response);
     }
   }).fail(function () {});
 }
@@ -121,5 +155,6 @@ module.exports = {
   displaySelectedMethod: displaySelectedMethod,
   showValidation: showValidation,
   createShowConfirmationForm: createShowConfirmationForm,
-  getInstallmentValues: getInstallmentValues
+  getInstallmentValues: getInstallmentValues,
+  makePartialPayment: makePartialPayment
 };
