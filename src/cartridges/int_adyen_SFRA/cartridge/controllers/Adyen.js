@@ -73,10 +73,6 @@ server.post(
  */
 server.post('Notify', server.middleware.https, adyen.notify);
 
-function getExternalPlatformVersion() {
-  return EXTERNAL_PLATFORM_VERSION;
-}
-
 /**
  * Called by Adyen to check balance of gift card.
  */
@@ -97,6 +93,10 @@ server.post(
 server.post('SplitPayments', server.middleware.https, adyen.splitPayments);
 
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
+
+function getExternalPlatformVersion() {
+  return EXTERNAL_PLATFORM_VERSION;
+}
 
 module.exports = server.exports();
 

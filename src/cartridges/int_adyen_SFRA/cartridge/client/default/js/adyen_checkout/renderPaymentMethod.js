@@ -56,9 +56,10 @@ function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
-  if (paymentMethod.brand) {
-    // gift cards all share the same type. Brand is used to differentiate between them
-    return 'giftcard';
+  if(paymentMethod.type === "giftcard") {
+      return 'giftcard';
+  } else if (paymentMethod.brand) {
+    return `${paymentMethod.type}_${paymentMethod.brand}`
   }
   return paymentMethod.type;
 }
@@ -144,7 +145,6 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  let li = document.createElement('li');
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
@@ -162,9 +162,11 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const imagePath = getImagePath(options);
   const liContents = getListContents({ ...options, imagePath, description });
 
+  let li;
   if (rerender) {
     li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
   } else {
+    li = document.createElement('li');
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
     paymentMethodsUI.append(li);

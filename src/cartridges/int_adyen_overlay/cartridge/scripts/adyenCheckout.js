@@ -89,7 +89,7 @@ function createPaymentRequest(args) {
     } else {
       const myAmount = AdyenHelper.getCurrencyValueForApi(
           paymentInstrument.paymentTransaction.amount,
-      ).getValueOrNull(); // args.Amount * 100;
+      ).getValueOrNull();
       paymentRequest.amount = {
         currency: paymentInstrument.paymentTransaction.amount.currencyCode,
         value: myAmount,

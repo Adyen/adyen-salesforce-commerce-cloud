@@ -551,12 +551,7 @@ var adyenHelperObj = {
 
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails(paymentInstrument, order, result) {
-    let pspRef;
-    if(session.privacy.giftCardResponse) {
-        pspRef = JSON.parse(session.privacy.giftCardResponse).pspReference;
-    } else if (result.pspReference) {
-        pspRef = result.pspReference;
-    }
+    const pspRef = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).pspReference: result.pspReference ;
     paymentInstrument.paymentTransaction.transactionID = pspRef;
     order.custom.Adyen_pspReference = pspRef;
 
@@ -571,7 +566,7 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result); //for separate
+    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
 
     return true;
   },

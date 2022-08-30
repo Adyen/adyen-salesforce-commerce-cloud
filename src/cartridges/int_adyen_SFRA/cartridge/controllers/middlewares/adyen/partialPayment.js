@@ -18,7 +18,7 @@ function makePartialPayment(req, res, next) {
       order: splitPaymentsOrder,
     };
 
-    const response = adyenCheckout.doPaymentsCall(0, 0, partialPaymentRequest);
+    const response = adyenCheckout.doPaymentsCall(null, null, partialPaymentRequest); //no order created yet and no PI needed yet (for giftcards it will be created on Order level)
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
         pspReference: response.pspReference,
@@ -33,11 +33,10 @@ function makePartialPayment(req, res, next) {
     ).divide(100);
     response.remainingAmountFormatted = remainingAmount.toFormattedString();
     res.json(response);
-    return next();
   } catch (error) {
-    Logger.getLogger('Adyen').error('Failed to create partial payment');
-    Logger.getLogger('Adyen').error(error);
-    return next();
+    Logger.getLogger('Adyen').error(`Failed to create partial payment.. ${error.toString()}`);
+  } finally {
+     return next();
   }
 }
 

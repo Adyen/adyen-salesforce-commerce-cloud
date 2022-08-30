@@ -80,11 +80,10 @@ function paymentFromComponent(req, res, next) {
 
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
-    let giftcardPM;
     const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse)
       .amount;
     Transaction.wrap(() => {
-      giftcardPM = order.createPaymentInstrument(
+      const giftcardPM = order.createPaymentInstrument(
         constants.METHOD_ADYEN_COMPONENT,
         new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(
           100,

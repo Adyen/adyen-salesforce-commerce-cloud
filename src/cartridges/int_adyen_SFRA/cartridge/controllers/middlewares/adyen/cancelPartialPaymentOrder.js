@@ -18,7 +18,7 @@ function cancelPartialPaymentOrder(req, res, next) {
       cancelOrderRequest,
     );
 
-    if (response.resultCode && response.resultCode === 'Received') {
+    if (response.resultCode === 'Received') {
       const currentBasket = BasketMgr.getCurrentBasket();
       Transaction.wrap(() => {
         collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
@@ -31,10 +31,11 @@ function cancelPartialPaymentOrder(req, res, next) {
     }
 
     res.json(response);
-    return next();
   } catch (error) {
-    return next();
-  }
+    Logger.getLogger('Adyen').error(`Could not cancel partial payments order.. ${error.toString()}`)
+  } finally {
+      return next();
+    }
 }
 
 module.exports = cancelPartialPaymentOrder;
