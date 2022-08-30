@@ -82,10 +82,10 @@ function createPaymentRequest(args) {
       }
     }
 
-    // Add split payments order if applicable
-    if (paymentInstrument.custom.adyenSplitPaymentsOrder) {
-      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).splitPaymentsOrder;
-      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenSplitPaymentsOrder).remainingAmount;
+    // Add partial payments order if applicable
+    if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
+      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
     } else {
       const myAmount = AdyenHelper.getCurrencyValueForApi(
           paymentInstrument.paymentTransaction.amount,
@@ -256,10 +256,10 @@ function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
   );
 }
 
-function doCreateSplitPaymentOrderCall(splitPaymentRequest) {
+function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
   return AdyenHelper.executeCall(
-      constants.SERVICE.SPLITPAYMENTSORDER,
-      splitPaymentRequest,
+      constants.SERVICE.PARTIALPAYMENTSORDER,
+      partialPaymentRequest,
   );
 }
 
@@ -269,5 +269,5 @@ module.exports = {
   doPaymentsDetailsCall,
   doCheckBalanceCall,
   doCancelPartialPaymentOrderCall,
-  doCreateSplitPaymentOrderCall,
+  doCreatePartialPaymentOrderCall,
 };

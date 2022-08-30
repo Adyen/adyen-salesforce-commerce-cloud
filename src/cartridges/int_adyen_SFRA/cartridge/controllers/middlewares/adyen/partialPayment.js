@@ -8,14 +8,14 @@ function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.body);
 
-    const { paymentMethod, splitPaymentsOrder, amount } = request;
+    const { paymentMethod, partialPaymentsOrder, amount } = request;
 
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount,
       reference: 'partialPaymentRef',
       paymentMethod,
-      order: splitPaymentsOrder,
+      order: partialPaymentsOrder,
     };
 
     const response = adyenCheckout.doPaymentsCall(

@@ -34,7 +34,7 @@ module.exports = {
     ADYENGIVING: 'AdyenGiving',
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
-    SPLITPAYMENTSORDER: 'AdyenSplitPaymentsOrder',
+    PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
   },
   MODE: {
     TEST: 'TEST',

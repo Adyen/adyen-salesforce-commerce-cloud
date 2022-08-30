@@ -9,13 +9,13 @@ function addMinutes(minutes) {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-function createSplitPaymentsOrder(req, res, next) {
+function createPartialPaymentsOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
 
     const date = addMinutes(30);
 
-    const splitPaymentsRequest = {
+    const partialPaymentsRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
         currency: currentBasket.currencyCode,
@@ -27,18 +27,18 @@ function createSplitPaymentsOrder(req, res, next) {
       expiresAt: date.toISOString(),
     };
 
-    const response = adyenCheckout.doCreateSplitPaymentOrderCall(
-      splitPaymentsRequest,
+    const response = adyenCheckout.doCreatePartialPaymentOrderCall(
+      partialPaymentsRequest,
     );
 
     res.json(response);
   } catch (error) {
     Logger.getLogger('Adyen').error(
-      `Failed to create split payments order.. ${error.toString()}`,
+      `Failed to create partial payments order.. ${error.toString()}`,
     );
   }
 
   return next();
 }
 
-module.exports = createSplitPaymentsOrder;
+module.exports = createPartialPaymentsOrder;

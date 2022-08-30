@@ -68,10 +68,14 @@ server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 
 server.post('CancelPartialPaymentOrder', server.middleware.https, adyen.cancelPartialPaymentOrder);
 /**
- * Called by Adyen to initiate a split (partial) payment
+ * Called by Adyen to create a partial payments order
  */
 
-server.post('SplitPayments', server.middleware.https, adyen.splitPayments);
+server.post('PartialPaymentsOrder', server.middleware.https, adyen.partialPaymentsOrder);
+/**
+ * Called by Adyen to make apply a giftcard
+ */
+
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 function getExternalPlatformVersion() {

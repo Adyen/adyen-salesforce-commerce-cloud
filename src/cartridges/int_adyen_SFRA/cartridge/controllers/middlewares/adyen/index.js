@@ -7,7 +7,7 @@ const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/
 const callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
 const checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
 const cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
-const splitPayments = require('*/cartridge/controllers/middlewares/adyen/splitPayments');
+const partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
 const partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
 
 module.exports = {
@@ -20,6 +20,6 @@ module.exports = {
   callCreateSession,
   checkBalance,
   cancelPartialPaymentOrder,
-  splitPayments,
+  partialPaymentsOrder,
   partialPayment,
 };

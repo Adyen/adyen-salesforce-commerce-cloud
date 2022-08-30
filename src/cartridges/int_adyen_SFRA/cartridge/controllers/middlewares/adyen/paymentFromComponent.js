@@ -46,9 +46,9 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-    if (reqDataObj.splitPaymentsOrder) {
-      paymentInstrument.custom.adyenSplitPaymentsOrder = JSON.stringify(
-        reqDataObj.splitPaymentsOrder,
+    if (reqDataObj.partialPaymentsOrder) {
+      paymentInstrument.custom.adyenPartialPaymentsOrder = JSON.stringify(
+        reqDataObj.partialPaymentsOrder,
       );
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;

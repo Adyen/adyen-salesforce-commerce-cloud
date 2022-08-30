@@ -50,7 +50,7 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
 
     _initializerDefineProperty(this, "brand", _descriptor10, this);
 
-    _initializerDefineProperty(this, "splitPaymentsOrderObj", _descriptor11, this);
+    _initializerDefineProperty(this, "partialPaymentsOrderObj", _descriptor11, this);
   }
 
   _createClass(Store, [{
@@ -151,7 +151,7 @@ var Store = (_class = (_temp = /*#__PURE__*/function () {
   enumerable: true,
   writable: true,
   initializer: null
-}), _descriptor11 = _applyDecoratedDescriptor(_class.prototype, "splitPaymentsOrderObj", [observable], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class.prototype, "partialPaymentsOrderObj", [observable], {
   configurable: true,
   enumerable: true,
   writable: true,

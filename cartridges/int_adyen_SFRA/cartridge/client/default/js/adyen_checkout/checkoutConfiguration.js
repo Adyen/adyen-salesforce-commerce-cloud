@@ -106,78 +106,15 @@ function getGooglePayConfig() {
   };
 }
 
-function getGiftCardConfig() {
-  var giftcardBalance;
-  return {
-    showPayButton: true,
-    onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
-      $.ajax({
-        type: 'POST',
-        url: 'Adyen-CheckBalance',
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
-        async: false,
-        success: function success(data) {
-          giftcardBalance = data.balance;
-
-          if (data.resultCode === 'Success') {
-            resolve(data);
-          } else if (data.resultCode === 'NotEnoughBalance') {
-            resolve(data);
-          } else {
-            reject();
-          }
-        },
-        fail: function fail() {
-          reject();
-        }
-      });
-    },
-    onOrderRequest: function onOrderRequest(resolve, reject, requestData) {
-      // Make a POST /orders request
-      // Create an order for the total transaction amount
-      var giftCardData = requestData.paymentMethod;
-      $.ajax({
-        type: 'POST',
-        url: 'Adyen-SplitPayments',
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
-        async: false,
-        success: function success(data) {
-          if (data.resultCode === 'Success') {
-            // make payments call including giftcard data and order data
-            var partialPaymentRequest = {
-              paymentMethod: giftCardData,
-              amount: giftcardBalance,
-              splitPaymentsOrder: {
-                pspReference: data.pspReference,
-                orderData: data.orderData
-              }
-            };
-            helpers.makePartialPayment(partialPaymentRequest);
-            showRemainingAmount();
-          }
-        }
-      });
-    },
-    onSubmit: function onSubmit() {
-      $('#giftcard-modal').modal('hide');
-      store.selectedMethod = 'giftcard';
-      document.querySelector('input[name="brandCode"]').checked = false;
-      document.querySelector('button[value="submit-payment"]').click();
-    }
-  };
-}
-
 function removeGiftCard() {
   $.ajax({
     type: 'POST',
     url: 'Adyen-CancelPartialPaymentOrder',
-    data: JSON.stringify(store.splitPaymentsOrderObj),
+    data: JSON.stringify(store.partialPaymentsOrderObj),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success: function success(res) {
-      store.splitPaymentsOrderObj = null;
+      store.partialPaymentsOrderObj = null;
 
       if (res.resultCode === 'Received') {
         document.querySelector('#cancelGiftCardContainer').parentNode.remove();
@@ -220,7 +157,7 @@ function showRemainingAmount() {
 
   cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
 
-  remainingAmountEndSpan.innerText = store.splitPaymentsOrderObj.remainingAmount;
+  remainingAmountEndSpan.innerText = store.partialPaymentsOrderObj.remainingAmount;
   cancelGiftCard.addEventListener('click', removeGiftCard);
   remainingAmountContainer.appendChild(remainingAmountStart);
   remainingAmountContainer.appendChild(remainingAmountEnd);
@@ -233,6 +170,69 @@ function showRemainingAmount() {
   remainingAmountEndP.appendChild(remainingAmountEndSpan);
   var pricingContainer = document.querySelector('.card-body.order-total-summary');
   pricingContainer.appendChild(remainingAmountContainer);
+}
+
+function getGiftCardConfig() {
+  var giftcardBalance;
+  return {
+    showPayButton: true,
+    onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-CheckBalance',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: function success(data) {
+          giftcardBalance = data.balance;
+
+          if (data.resultCode === 'Success') {
+            resolve(data);
+          } else if (data.resultCode === 'NotEnoughBalance') {
+            resolve(data);
+          } else {
+            reject();
+          }
+        },
+        fail: function fail() {
+          reject();
+        }
+      });
+    },
+    onOrderRequest: function onOrderRequest(resolve, reject, requestData) {
+      // Make a POST /orders request
+      // Create an order for the total transaction amount
+      var giftCardData = requestData.paymentMethod;
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-PartialPaymentsOrder',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: function success(data) {
+          if (data.resultCode === 'Success') {
+            // make payments call including giftcard data and order data
+            var partialPaymentRequest = {
+              paymentMethod: giftCardData,
+              amount: giftcardBalance,
+              partialPaymentsOrder: {
+                pspReference: data.pspReference,
+                orderData: data.orderData
+              }
+            };
+            helpers.makePartialPayment(partialPaymentRequest);
+            showRemainingAmount();
+          }
+        }
+      });
+    },
+    onSubmit: function onSubmit() {
+      $('#giftcard-modal').modal('hide');
+      store.selectedMethod = 'giftcard';
+      document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').click();
+    }
+  };
 }
 
 function handleOnChange(state) {

@@ -80,7 +80,7 @@
         <user-id></user-id>
         <password/>
     </service-credential>
-    <service-credential service-credential-id="AdyenSplitPaymentsOrder">
+    <service-credential service-credential-id="AdyenPartialPaymentsOrder">
         <url>https://checkout-test.adyen.com/v69/orders</url>
         <user-id></user-id>
         <password/>
@@ -186,14 +186,14 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenGiving</credential-id>
     </service>
-    <service service-id="AdyenSplitPaymentsOrder">
+    <service service-id="AdyenPartialPaymentsOrder">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
         <log-prefix>adyen</log-prefix>
         <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
-        <credential-id>AdyenSplitPaymentsOrder</credential-id>
+        <credential-id>AdyenPartialPaymentsOrder</credential-id>
     </service>
     <service service-id="AdyenCancelPartialPaymentOrder">
         <service-type>HTTP</service-type>

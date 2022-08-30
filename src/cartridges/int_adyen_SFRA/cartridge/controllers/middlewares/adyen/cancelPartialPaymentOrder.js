@@ -8,11 +8,11 @@ const collections = require('*/cartridge/scripts/util/collections');
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     const request = JSON.parse(req.body);
-    const { splitPaymentsOrder } = request;
+    const { partialPaymentsOrder } = request;
 
     const cancelOrderRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      order: splitPaymentsOrder,
+      order: partialPaymentsOrder,
     };
 
     const response = adyenCheckout.doCancelPartialPaymentOrderCall(
@@ -23,7 +23,7 @@ function cancelPartialPaymentOrder(req, res, next) {
       const currentBasket = BasketMgr.getCurrentBasket();
       Transaction.wrap(() => {
         collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-          if (item.custom.adyenSplitPaymentsOrder) {
+          if (item.custom.adyenPartialPaymentsOrder) {
             currentBasket.removePaymentInstrument(item);
           }
         });

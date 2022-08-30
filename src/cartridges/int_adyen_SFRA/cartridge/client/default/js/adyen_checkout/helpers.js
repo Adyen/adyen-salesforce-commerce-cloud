@@ -27,8 +27,8 @@ function setOrderFormData(response) {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component = {}) {
-  const requestData = store.splitPaymentsOrderObj
-    ? { ...data, splitPaymentsOrder: store.splitPaymentsOrderObj }
+  const requestData = store.partialPaymentsOrderObj
+    ? { ...data, partialPaymentsOrder: store.partialPaymentsOrderObj }
     : data;
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -58,12 +58,12 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-      const splitPaymentsOrder = {
+      const partialPaymentsOrder = {
         pspReference: response.order.pspReference,
         orderData: response.order.orderData,
       };
-      store.splitPaymentsOrderObj = { splitPaymentsOrder };
-      store.splitPaymentsOrderObj.remainingAmount =
+      store.partialPaymentsOrderObj = { partialPaymentsOrder };
+      store.partialPaymentsOrderObj.remainingAmount =
         response.remainingAmountFormatted;
       setOrderFormData(response);
     },

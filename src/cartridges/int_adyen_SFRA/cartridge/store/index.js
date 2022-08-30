@@ -23,7 +23,7 @@ class Store {
 
   @observable brand;
 
-  @observable splitPaymentsOrderObj;
+  @observable partialPaymentsOrderObj;
 
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;

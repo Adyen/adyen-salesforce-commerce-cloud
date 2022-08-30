@@ -88,10 +88,17 @@ server.post(
 );
 
 /**
- * Called by Adyen to initiate a split (partial) payment
+ * Called by Adyen to create a partial payments order
  */
-server.post('SplitPayments', server.middleware.https, adyen.splitPayments);
+server.post(
+  'PartialPaymentsOrder',
+  server.middleware.https,
+  adyen.partialPaymentsOrder,
+);
 
+/**
+ * Called by Adyen to make apply a giftcard
+ */
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 function getExternalPlatformVersion() {

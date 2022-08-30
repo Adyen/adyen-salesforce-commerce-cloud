@@ -35,8 +35,8 @@ function setOrderFormData(response) {
 
 function paymentFromComponent(data) {
   var component = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var requestData = store.splitPaymentsOrderObj ? _objectSpread(_objectSpread({}, data), {}, {
-    splitPaymentsOrder: store.splitPaymentsOrderObj
+  var requestData = store.partialPaymentsOrderObj ? _objectSpread(_objectSpread({}, data), {}, {
+    partialPaymentsOrder: store.partialPaymentsOrderObj
   }) : data;
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -69,14 +69,14 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success: function success(response) {
-      var splitPaymentsOrder = {
+      var partialPaymentsOrder = {
         pspReference: response.order.pspReference,
         orderData: response.order.orderData
       };
-      store.splitPaymentsOrderObj = {
-        splitPaymentsOrder: splitPaymentsOrder
+      store.partialPaymentsOrderObj = {
+        partialPaymentsOrder: partialPaymentsOrder
       };
-      store.splitPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
+      store.partialPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
       setOrderFormData(response);
     }
   }).fail(function () {});

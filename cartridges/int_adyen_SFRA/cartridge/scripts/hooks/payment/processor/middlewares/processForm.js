@@ -81,7 +81,7 @@ function getViewData(viewFormData, paymentForm, isCreditCard, adyenPaymentMethod
       adyenPaymentMethod: adyenPaymentMethod,
       adyenIssuerName: adyenIssuerName,
       stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
-      splitPaymentsOrder: paymentForm.adyenPaymentFields.adyenSplitPaymentsOrder.value
+      partialPaymentsOrder: paymentForm.adyenPaymentFields.adyenPartialPaymentsOrder.value
     },
     saveCard: paymentForm.creditCardFields.saveCard.checked
   });

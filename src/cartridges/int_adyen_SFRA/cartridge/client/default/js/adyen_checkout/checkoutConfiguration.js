@@ -97,11 +97,11 @@ function removeGiftCard() {
   $.ajax({
     type: 'POST',
     url: 'Adyen-CancelPartialPaymentOrder',
-    data: JSON.stringify(store.splitPaymentsOrderObj),
+    data: JSON.stringify(store.partialPaymentsOrderObj),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(res) {
-      store.splitPaymentsOrderObj = null;
+      store.partialPaymentsOrderObj = null;
       if (res.resultCode === 'Received') {
         document.querySelector('#cancelGiftCardContainer').parentNode.remove();
         document.querySelector('#giftCardLabel').classList.remove('invisible');
@@ -151,7 +151,7 @@ function showRemainingAmount() {
   remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
   cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
   remainingAmountEndSpan.innerText =
-    store.splitPaymentsOrderObj.remainingAmount;
+    store.partialPaymentsOrderObj.remainingAmount;
 
   cancelGiftCard.addEventListener('click', removeGiftCard);
 
@@ -202,7 +202,7 @@ function getGiftCardConfig() {
       const giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: 'Adyen-SplitPayments',
+        url: 'Adyen-PartialPaymentsOrder',
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -212,7 +212,7 @@ function getGiftCardConfig() {
             const partialPaymentRequest = {
               paymentMethod: giftCardData,
               amount: giftcardBalance,
-              splitPaymentsOrder: {
+              partialPaymentsOrder: {
                 pspReference: data.pspReference,
                 orderData: data.orderData,
               },

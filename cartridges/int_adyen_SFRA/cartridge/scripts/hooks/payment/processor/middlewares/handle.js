@@ -19,8 +19,8 @@ function handle(basket, paymentInformation) {
     var paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
 
-    if (paymentInformation.splitPaymentsOrder) {
-      paymentInstrument.custom.adyenSplitPaymentsOrder = paymentInformation.splitPaymentsOrder;
+    if (paymentInformation.partialPaymentsOrder) {
+      paymentInstrument.custom.adyenPartialPaymentsOrder = paymentInformation.partialPaymentsOrder;
     }
 
     paymentInstrument.custom.adyenPaymentMethod = paymentInformation.adyenPaymentMethod;

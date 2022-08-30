@@ -51,7 +51,7 @@
      <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
-     <input id="adyenSplitPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenSplitPaymentsOrder.htmlName}"/>
+     <input id="adyenPartialPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenPartialPaymentsOrder.htmlName}"/>
      <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
      <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
 

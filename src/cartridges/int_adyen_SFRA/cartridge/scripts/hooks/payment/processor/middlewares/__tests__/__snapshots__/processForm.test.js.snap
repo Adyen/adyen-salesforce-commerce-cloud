@@ -19,7 +19,7 @@ Object {
       "cardNumber": "mockedCardNumber",
       "cardType": "mockedCardType",
       "isCreditCard": true,
-      "splitPaymentsOrder": "mockedOrder",
+      "partialPaymentsOrder": "mockedOrder",
       "stateData": "mockedStateData",
     },
     "paymentMethod": Object {
@@ -44,8 +44,8 @@ Object {
       "expirationMonth": "mocked_cc_exp_month",
       "expirationYear": "mocked_cc_exp_year",
       "isCreditCard": false,
+      "partialPaymentsOrder": "mockedOrder",
       "securityCode": "mocked_security_code",
-      "splitPaymentsOrder": "mockedOrder",
       "stateData": "{\\"paymentMethod\\":{\\"storedPaymentMethodId\\":\\"mocked_id\\"}}",
     },
     "paymentMethod": Object {

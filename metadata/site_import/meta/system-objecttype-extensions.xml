@@ -84,8 +84,8 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyenSplitPaymentsOrder">
-                <display-name xml:lang="x-default">adyenSplitPaymentsOrder</display-name>
+            <attribute-definition attribute-id="adyenPartialPaymentsOrder">
+                <display-name xml:lang="x-default">adyenPartialPaymentsOrder</display-name>
                 <description xml:lang="x-default">split payments order data</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
