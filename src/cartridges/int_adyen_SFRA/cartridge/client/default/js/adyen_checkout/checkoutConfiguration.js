@@ -93,6 +93,83 @@ function getGooglePayConfig() {
   };
 }
 
+function removeGiftCard() {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-CancelPartialPaymentOrder',
+    data: JSON.stringify(store.splitPaymentsOrderObj),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(res) {
+      store.splitPaymentsOrderObj = null;
+      if (res.resultCode === 'Received') {
+        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
+        document.querySelector('#giftCardLabel').classList.remove('invisible');
+
+        // re render gift card component
+        store.componentsObj.giftcard.node.unmount('component_giftcard');
+        delete store.componentsObj.giftcard;
+
+        document.querySelector('#component_giftcard').remove();
+        renderPaymentMethod(
+          { type: 'giftcard' },
+          false,
+          store.checkoutConfiguration.session.imagePath,
+          null,
+          true,
+        );
+        document.querySelector('#component_giftcard').style.display = 'block';
+      }
+    },
+  });
+}
+
+function showRemainingAmount() {
+  $('#giftcard-modal').modal('hide');
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+
+  const remainingAmountContainer = document.createElement('div');
+  const remainingAmountStart = document.createElement('div');
+  const remainingAmountEnd = document.createElement('div');
+  const cancelGiftCard = document.createElement('div');
+  const remainingAmountStartP = document.createElement('p');
+  const remainingAmountEndP = document.createElement('p');
+  const cancelGiftCardP = document.createElement('p');
+  const remainingAmountStartSpan = document.createElement('span');
+  const cancelGiftCardSpan = document.createElement('span');
+  const remainingAmountEndSpan = document.createElement('span');
+
+  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
+  remainingAmountStart.classList.add('col-6', 'start-lines');
+  remainingAmountEnd.classList.add('col-6', 'end-lines');
+  remainingAmountStartP.classList.add('order-receipt-label');
+  cancelGiftCardP.classList.add('order-receipt-label');
+  remainingAmountEndP.classList.add('text-right');
+  remainingAmountEndSpan.classList.add('grand-total-sum');
+  cancelGiftCard.id = 'cancelGiftCardContainer';
+
+  remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
+  cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
+  remainingAmountEndSpan.innerText =
+    store.splitPaymentsOrderObj.remainingAmount;
+
+  cancelGiftCard.addEventListener('click', removeGiftCard);
+
+  remainingAmountContainer.appendChild(remainingAmountStart);
+  remainingAmountContainer.appendChild(remainingAmountEnd);
+  remainingAmountContainer.appendChild(cancelGiftCard);
+  remainingAmountStart.appendChild(remainingAmountStartP);
+  cancelGiftCard.appendChild(cancelGiftCardP);
+  remainingAmountEnd.appendChild(remainingAmountEndP);
+  remainingAmountStartP.appendChild(remainingAmountStartSpan);
+  cancelGiftCardP.appendChild(cancelGiftCardSpan);
+  remainingAmountEndP.appendChild(remainingAmountEndSpan);
+  const pricingContainer = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+  pricingContainer.appendChild(remainingAmountContainer);
+}
+
 function getGiftCardConfig() {
   let giftcardBalance;
   return {
@@ -108,9 +185,7 @@ function getGiftCardConfig() {
           giftcardBalance = data.balance;
           if (data.resultCode === 'Success') {
             resolve(data);
-          } else if (
-            data.resultCode === 'NotEnoughBalance'
-          ) {
+          } else if (data.resultCode === 'NotEnoughBalance') {
             resolve(data);
           } else {
             reject();
@@ -156,95 +231,6 @@ function getGiftCardConfig() {
       document.querySelector('button[value="submit-payment"]').click();
     },
   };
-}
-
-function removeGiftCard() {
-    $.ajax({
-      type: 'POST',
-      url: 'Adyen-CancelPartialPaymentOrder',
-      data: JSON.stringify(store.splitPaymentsOrderObj),
-      contentType: 'application/json; charset=utf-8',
-      async: false,
-      success(res) {
-        store.splitPaymentsOrderObj = null;
-        if (res.resultCode === 'Received') {
-          document
-            .querySelector('#cancelGiftCardContainer')
-            .parentNode.remove();
-          document
-            .querySelector('#giftCardLabel')
-            .classList.remove('invisible');
-
-          // re render gift card component
-          store.componentsObj.giftcard.node.unmount(
-            'component_giftcard',
-          );
-          delete store.componentsObj.giftcard;
-
-          document.querySelector('#component_giftcard').remove();
-          renderPaymentMethod(
-            { type: 'giftcard' },
-            false,
-            store.checkoutConfiguration.session.imagePath,
-            null,
-            true,
-          );
-          document.querySelector(
-            '#component_giftcard',
-          ).style.display = 'block';
-        }
-      },
-    });
-}
-
-function showRemainingAmount() {
-    $('#giftcard-modal').modal('hide');
-    document.querySelector('#giftCardLabel').classList.add('invisible');
-
-    const remainingAmountContainer = document.createElement('div');
-    const remainingAmountStart = document.createElement('div');
-    const remainingAmountEnd = document.createElement('div');
-    const cancelGiftCard = document.createElement('div');
-    const remainingAmountStartP = document.createElement('p');
-    const remainingAmountEndP = document.createElement('p');
-    const cancelGiftCardP = document.createElement('p');
-    const remainingAmountStartSpan = document.createElement('span');
-    const cancelGiftCardSpan = document.createElement('span');
-    const remainingAmountEndSpan = document.createElement('span');
-
-    remainingAmountContainer.classList.add(
-      'row',
-      'grand-total',
-      'leading-lines',
-    );
-    remainingAmountStart.classList.add('col-6', 'start-lines');
-    remainingAmountEnd.classList.add('col-6', 'end-lines');
-    remainingAmountStartP.classList.add('order-receipt-label');
-    cancelGiftCardP.classList.add('order-receipt-label');
-    remainingAmountEndP.classList.add('text-right');
-    remainingAmountEndSpan.classList.add('grand-total-sum');
-    cancelGiftCard.id = 'cancelGiftCardContainer';
-
-    remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
-    cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
-    remainingAmountEndSpan.innerText =
-      store.splitPaymentsOrderObj.remainingAmount;
-
-    cancelGiftCard.addEventListener('click', removeGiftCard);
-
-    remainingAmountContainer.appendChild(remainingAmountStart);
-    remainingAmountContainer.appendChild(remainingAmountEnd);
-    remainingAmountContainer.appendChild(cancelGiftCard);
-    remainingAmountStart.appendChild(remainingAmountStartP);
-    cancelGiftCard.appendChild(cancelGiftCardP);
-    remainingAmountEnd.appendChild(remainingAmountEndP);
-    remainingAmountStartP.appendChild(remainingAmountStartSpan);
-    cancelGiftCardP.appendChild(cancelGiftCardSpan);
-    remainingAmountEndP.appendChild(remainingAmountEndSpan);
-    const pricingContainer = document.querySelector(
-      '.card-body.order-total-summary',
-    );
-    pricingContainer.appendChild(remainingAmountContainer);
 }
 
 function handleOnChange(state) {

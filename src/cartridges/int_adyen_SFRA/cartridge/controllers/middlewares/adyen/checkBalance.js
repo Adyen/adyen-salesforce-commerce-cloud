@@ -8,7 +8,9 @@ function callCheckBalance(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
     const request = JSON.parse(req.body);
-    const paymentMethod = request.paymentMethod ? request.paymentMethod : "giftcard";
+    const paymentMethod = request.paymentMethod
+      ? request.paymentMethod
+      : 'giftcard';
 
     const checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -29,9 +31,8 @@ function callCheckBalance(req, res, next) {
     Logger.getLogger('Adyen').error(
       `Failed to check gift card balance ${error.toString()}`,
     );
-  } finally {
-     return next();
   }
+  return next();
 }
 
 module.exports = callCheckBalance;

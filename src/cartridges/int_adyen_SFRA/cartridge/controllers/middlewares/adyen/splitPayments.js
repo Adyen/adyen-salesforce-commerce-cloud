@@ -5,7 +5,7 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 function addMinutes(minutes) {
-    const date = new Date();
+  const date = new Date();
   return new Date(date.getTime() + minutes * 60000);
 }
 
@@ -33,10 +33,12 @@ function createSplitPaymentsOrder(req, res, next) {
 
     res.json(response);
   } catch (error) {
-    Logger.getLogger('Adyen').error(`Failed to create split payments order.. ${error.toString()}`);
-  } finally {
-      return next();
+    Logger.getLogger('Adyen').error(
+      `Failed to create split payments order.. ${error.toString()}`,
+    );
   }
+
+  return next();
 }
 
 module.exports = createSplitPaymentsOrder;

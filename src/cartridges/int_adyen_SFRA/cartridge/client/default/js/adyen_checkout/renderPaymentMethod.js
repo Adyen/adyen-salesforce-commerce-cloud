@@ -56,10 +56,11 @@ function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
-  if(paymentMethod.type === "giftcard") {
-      return 'giftcard';
-  } else if (paymentMethod.brand) {
-    return `${paymentMethod.type}_${paymentMethod.brand}`
+  if (paymentMethod.type === 'giftcard') {
+    return 'giftcard';
+  }
+  if (paymentMethod.brand) {
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
   }
   return paymentMethod.type;
 }

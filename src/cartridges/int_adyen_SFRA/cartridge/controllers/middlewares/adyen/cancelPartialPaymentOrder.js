@@ -1,5 +1,6 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const collections = require('*/cartridge/scripts/util/collections');
@@ -32,10 +33,12 @@ function cancelPartialPaymentOrder(req, res, next) {
 
     res.json(response);
   } catch (error) {
-    Logger.getLogger('Adyen').error(`Could not cancel partial payments order.. ${error.toString()}`)
-  } finally {
-      return next();
-    }
+    Logger.getLogger('Adyen').error(
+      `Could not cancel partial payments order.. ${error.toString()}`,
+    );
+  }
+
+  return next();
 }
 
 module.exports = cancelPartialPaymentOrder;
