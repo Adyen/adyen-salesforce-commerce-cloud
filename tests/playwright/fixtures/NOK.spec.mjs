@@ -35,7 +35,8 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Trustly Success', async ({ page }) => {
+    // Skipping Trustly due to instable sandbox
+    test.skip('Trustly Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doTrustlyPayment();
       await checkoutPage.completeCheckout();
@@ -43,7 +44,7 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test('Trustly Fail', async ({ page }) => {
+    test.skip('Trustly Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doTrustlyPayment();
       await checkoutPage.completeCheckout();
