@@ -45,6 +45,7 @@ module.exports = {
     US: 'US',
     AU: 'AU',
     EU: 'EU',
+    IN: 'IN',
   },
 
   MAX_API_RETRIES: 3,
@@ -53,6 +54,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
+  CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: '5.18.0',
   VERSION: '22.1.1',
