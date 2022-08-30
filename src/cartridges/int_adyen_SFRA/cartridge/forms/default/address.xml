@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <field formid="addressId" label="label.input.addressid" type="string" mandatory="true"
+           max-length="20" missing-error="error.message.required" range-error="error.message.20orless"/>
+    <field formid="firstName" label="label.input.firstname.profile" type="string" mandatory="true" binding="firstName"
+           max-length="50" missing-error="address.firstname.missing" range-error="error.message.50orless"/>
+    <field formid="lastName" label="label.input.lastname.profile" type="string" mandatory="true" binding="lastName" max-length="50"
+           missing-error="address.lastname.missing" range-error="error.message.50orless"/>
+    <field formid="address1" label="label.input.address1" type="string" mandatory="true" binding="address1" max-length="50"
+           missing-error="address.address1.missing" range-error="error.message.50orless"/>
+    <field formid="address2" label="label.input.address2" type="string" mandatory="false" binding="address2"
+           max-length="50" range-error="error.message.50orless"/>
+    <field formid="city" label="label.input.city" type="string" mandatory="true" binding="city" min-length="2"
+           max-length="50" missing-error="address.city.missing" range-error="error.message.between2and50"/>
+
+    <!--  postal code -->
+    <field formid="postalCode" label="label.input.zipcode" type="string" mandatory="true" min-length="4" max-length="10"
+           binding="postalCode"
+           range-error="error.message.between5and10"
+           missing-error="address.zipcode.missing"
+           parse-error="error.message.parse.zip"/>
+
+    <!-- use set of supported countries -->
+    <field formid="country" label="label.input.country" type="string" mandatory="true" binding="countryCode"
+           missing-error="address.country.missing">
+        <options>
+            <option optionid="US" label="select.option.country.unitedstates" value="US"/>
+            <option optionid="PT" label="Portugal" value="PT"/>
+            <option optionid="BR" label="Brazil" value="BR"/>
+            <option optionid="DE" label="Germany" value="DE"/>
+            <option optionid="NL" label="Netherlands" value="NL"/>
+            <option optionid="FR" label="France" value="FR"/>
+            <option optionid="GB" label="United Kingdom" value="GB"/>
+            <option optionid="NO" label="Norway" value="NO"/>
+            <option optionid="DK" label="Denmark" value="DK"/>
+            <option optionid="SE" label="Sweden" value="SE"/>
+            <option optionid="IN" label="India" value="IN"/>
+            <option optionid="JP" label="Japan" value="JP"/>
+            <option optionid="BE" label="Belgium" value="BE"/>
+
+        </options>
+    </field>
+
+    <!-- use global state list -->
+    <include formid="states" name="states" missing-error="address.state.missing" parse-error="error.message.required" value-error="error.message.required"/>
+
+    <!-- phone is mandatory for addresses -->
+    <field formid="phone" label="label.input.phonenumber" description="address.phone.example" type="string" mandatory="true"
+           binding="phone" min-length="10" max-length="20"
+           missing-error="address.phone.missing"
+           range-error="error.message.between10and20"
+           parse-error="error.message.parse.phone"/>
+
+    <!-- actions provided by the edit shipping address dialog -->
+    <action formid="apply" valid-form="true"/>
+    <action formid="remove" valid-form="false"/>
+</form>
