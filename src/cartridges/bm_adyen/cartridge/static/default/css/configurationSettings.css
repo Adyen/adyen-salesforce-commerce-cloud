@@ -155,7 +155,7 @@
     padding: 12px;
     gap: 20px;
 
-    width: 289px;
+    width: 309px;
     height: 60px;
 
 /* text/white */
@@ -174,11 +174,6 @@
 }
 
 .btn-toolbar .btn-group .first{
-    width: 69px;
-    height: 20px;
-
-/* Body */
-
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 400;
@@ -201,14 +196,13 @@
 
 }
 
+.btn-toolbar .btn-group .first:hover, .btn-toolbar .btn-group .first:focus{
+    background: rgb(184, 225, 252);
+}
+
+
 .btn-toolbar .btn-group .second{
 /* Staging */
-
-
-    width: 49px;
-    height: 20px;
-
-/* Body */
 
     font-family: 'Fakt';
     font-style: normal;
@@ -230,14 +224,13 @@
     flex-grow: 0;
 }
 
+.btn-toolbar .btn-group .second:hover, .btn-toolbar .btn-group .second:focus{
+    background: rgb(184, 225, 252);
+}
+
 
 .btn-toolbar .btn-group .third{
     /* Production */
-
-
-    width: 69px;
-    height: 20px;
-
 /* Body */
 
     font-family: 'Fakt';
@@ -245,10 +238,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-/* identical to box height, or 143% */
 
-
-/* grey / grey-60 */
 
     color: #394962;
 
@@ -258,6 +248,10 @@
     flex: none;
     order: 0;
     flex-grow: 0;
+}
+
+.btn-toolbar .btn-group .third:hover, .btn-toolbar .btn-group .third:focus{
+    background: rgb(184, 225, 252);
 }
 
 
@@ -358,9 +352,20 @@
     border-radius: 8.5px;
 }
 
+/*#navigationList a:hover {
+    background-color: #0ABF53;;
+}
+
+#navigationList a:clicked {
+  background-color: yellow;
+}
+*/
+
 html {
   scroll-padding-top: 6rem;
+  overflow-x: hidden;
 }
+
 
 
 #fileDropBoxCharitybackground, #fileDropBoxGivingLogo{
@@ -380,6 +385,44 @@ html {
     border-radius: 10.0px 10.0px 10.0px 10.0px;
 }
 
-.list-group-item:hover, .list-group-item.active{
+.list-group-item:hover{
     background: rgb(184, 225, 252);
+}
+
+.form-buttons{
+    padding-right:105px;
+}
+
+#settingsFormCancelButton{
+    top:20px;
+    /* label */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    display: flex;
+    align-items: center;
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+    border-radius: 6px;
+}
+
+#settingsFormSubmitButton{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
 }
