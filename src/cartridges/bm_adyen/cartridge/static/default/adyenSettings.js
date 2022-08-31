@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
+  const cancelButton = document.querySelector('#settingsFormCancelButton');
+  const formButtons = document.getElementsByClassName('formButton');
   const changedSettings = [];
 
   function settingChanged(key, value) {
@@ -15,22 +17,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function enableSaveButton() {
-    submitButton.classList.remove('disabled');
-    submitButton.classList.add('enabled');
-    form.removeEventListener('input', enableSaveButton);
+  function enableformButtons() {
+    for(const button of formButtons) {
+      button.classList.remove('disabled');
+      button.classList.add('enabled');
+      form.removeEventListener('input', enableformButtons);
+    }
+  }
+
+  function diableFormButtons() {
+    for(const button of formButtons) {
+      button.classList.remove('enabled');
+      button.classList.add('disabled');
+      form.removeEventListener('input', enableformButtons);
+    }
   }
 
   // add event for save button availability on form change.
-  form.addEventListener('input', enableSaveButton);
+  form.addEventListener('input', enableformButtons);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
     const name = event.target.name;
     let value = event.target.value
 
+    // get checked boolean value for checkboxes
+    if(event.target.type === 'checkbox') {
+      value = event.target.checked;
+    }
+
+    //convert radio button strings to boolean if values are 'true' or 'false'
     if(event.target.type === 'radio') {
-      //convert radio strings to boolean if true or false
       if(event.target.value === 'true') {
         value = true;
       }
@@ -44,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // add event to submit button to send form and present results
   submitButton.addEventListener('click', async () => {
+    // disable form buttons and reattach event listener for enabling it on form change
+    diableFormButtons();
+    form.addEventListener('input', enableformButtons);
+
     const response = await fetch('AdyenSettings-Save', {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -55,31 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const data = await response.json();
     if(data.success) {
-      //TODO: show feedback to user, disable save button, reattach button enablement event
+      const alertBar = document.getElementById('saveChangesAlert');
+      alertBar.classList.add('show');
+      window.setTimeout(() => {
+        alertBar.classList.remove('show');
+      }, 2000);
     }
-
-    // file upload butttons event listeners for adyen giving card
-    function openDialogCharityBackgroundUrl() {
-      document.getElementById('charityBackgroundUrl').click();
-    }
-
-    function openDialogAdyenGivingLogoUrl() {
-        document.getElementById('adyenGivingLogoUrl').click();
-    }
-
-    document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
-
-    document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
-
-    document.getElementById('flexSwitchCheckChecked').onchange = function() {
-      document.getElementById('charityName').disabled = !this.checked;
-      document.getElementById('charityMerchantAccount').disabled = !this.checked;
-      document.getElementById('donationAmounts').disabled = !this.checked;
-      document.getElementById('charityDescription').disabled = !this.checked;
-      document.getElementById('charityWebsite').disabled = !this.checked;
-      document.getElementById('charityBackgroundUrl').disabled = !this.checked;
-      document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
-  };
-    
   });
+
+  cancelButton.addEventListener('click', async () => {
+    location.reload();
+  });
+
+  // file upload butttons event listeners for adyen giving card
+  function openDialogCharityBackgroundUrl() {
+    document.getElementById('charityBackgroundUrl').click();
+  }
+
+  function openDialogAdyenGivingLogoUrl() {
+      document.getElementById('adyenGivingLogoUrl').click();
+  }
+
+  document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
+
+  document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
+
+  document.getElementById('flexSwitchCheckChecked').onchange = function() {
+    document.getElementById('charityName').disabled = !this.checked;
+    document.getElementById('charityMerchantAccount').disabled = !this.checked;
+    document.getElementById('donationAmounts').disabled = !this.checked;
+    document.getElementById('charityDescription').disabled = !this.checked;
+    document.getElementById('charityWebsite').disabled = !this.checked;
+    document.getElementById('charityBackgroundUrl').disabled = !this.checked;
+    document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
+  };
 });

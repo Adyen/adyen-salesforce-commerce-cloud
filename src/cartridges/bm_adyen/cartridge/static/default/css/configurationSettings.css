@@ -16,7 +16,7 @@
     padding-left: 48px;
 }
 
-.form-title {
+.form-title{
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 600;
@@ -45,11 +45,12 @@
     font-size: 24px;
     line-height: 32px;
     color: #00112C
-    width: 699px;
     height: 32px;
     padding-left: 48px;
     padding-right: 51px;
 }
+
+
 
 .card-body .card-subtitle {
     font-family: 'Fakt';
@@ -114,6 +115,11 @@
     z-index: 10;
 }
 
+
+#saveChangesAlert {
+    bottom: 2%;
+    -index: 10;
+}
 
 .btn-toolbar{
 /* Header */
@@ -315,9 +321,9 @@
     box-shadow: none !important;
 }
 
-.fa-eye{
+.bi-eye, .bi-eye-slash{
     position: absolute;
-    margin-top: 9px;
+    margin-top: 6px;
     margin-right: 70px;
     left: auto; 
     right: 10px;
@@ -338,18 +344,6 @@
     padding-right: 51px;
 }
 
-#fileDropBox1, #fileDropBox2{
-    width: 320px;
-    height: 69px;
-    border: 1px dashed gray;
-    color: #69778C;
-    border-radius: 7px;
-    font-family: 'Fakt';
-    text-align: center;
-    background:#F3F6F9;
-    padding: 20px 0;
-}
-
 .line-divider{
     padding-left: 48px;
     padding-right: 51px;
@@ -362,4 +356,30 @@
     top: auto;
     bottom: auto;
     border-radius: 8.5px;
+}
+
+html {
+  scroll-padding-top: 6rem;
+}
+
+
+#fileDropBoxCharitybackground, #fileDropBoxGivingLogo{
+    width: 320px;
+    height: 69px;
+    border: 1px dashed gray;
+    color: #69778C;
+    border-radius: 7px;
+    font-family: 'Fakt';
+    text-align: center;
+    background:#F3F6F9;
+    padding: 20px 0;
+}
+
+.list-group-item {
+    border: 1.0px solid rgb(204, 204, 204);
+    border-radius: 10.0px 10.0px 10.0px 10.0px;
+}
+
+.list-group-item:hover, .list-group-item.active{
+    background: rgb(184, 225, 252);
 }

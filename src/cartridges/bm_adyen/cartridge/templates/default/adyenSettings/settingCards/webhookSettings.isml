@@ -22,7 +22,7 @@
                 <small id="notificationsUserHelp" class="form-text mb-1">After you've created an username for notification in Adyen Customer Area, you can enter your username in the following field.
                 </small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_notification_user" id="notificationsUser" aria-describedby="notificationsUserHelp" placeholder="user012" value="${AdyenConfigs.getAdyenNotificationUser()}">
+                    <input type="text" class="form-control" name="Adyen_notification_user" id="notificationsUser" aria-describedby="notificationsUserHelp" placeholder="user012" value="${AdyenConfigs.getAdyenNotificationUser() || ''}">
                 </div>
             </div>
 
@@ -34,12 +34,10 @@
                     <i class="far fa-eye" id="togglePassword"></i>
                 </span>
                 <div class="input-fields">
-                    <input type="password" class="form-control" name="Adyen_notification_password" id="notificationsPassword" aria-describedby="notificationsPasswordHelp" placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword()}">
+                    <input type="password" class="form-control" name="Adyen_notification_password" id="notificationsPassword" aria-describedby="notificationsPasswordHelp" placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword() || ''}">
                 </div>
             </div>
             
         </div>
     </div>
 </div>
-
-

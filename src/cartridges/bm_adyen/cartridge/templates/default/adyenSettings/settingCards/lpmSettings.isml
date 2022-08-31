@@ -15,7 +15,7 @@
                 <label class="form-title mb-0" for="saleFlow">Payment methods with SALE flow <small class="text-secondary">(optional)</small></label>
                 <small id="saleFlowHelp" class="form-text mb-1">Enter the payment methods you selected in Customer Area. The payment methods should be written in lowercase. If you are using multiple payment methods, please use a comma to separate them.</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenSalePaymentMethods" id="saleFlow" aria-describedby="saleFlowHelp" placeholder="e.g. ideal, sepadirectdebit, paypal" value="${AdyenConfigs.getAdyenSalePaymentMethods()}">
+                    <input type="text" class="form-control" name="AdyenSalePaymentMethods" id="saleFlow" aria-describedby="saleFlowHelp" placeholder="e.g. ideal, sepadirectdebit, paypal" value="${AdyenConfigs.getAdyenSalePaymentMethods().join(', ')}">
                 </div>
                 
             </div>
@@ -24,7 +24,7 @@
                 <label class="form-title mb-0" for="ratePayId">RatePay ID</label>
                 <small id="ratePayIdHelp" class="form-text mb-1">Enter the unique RatePAY ID provided by your Ratepay integration consultant</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenRatePayID" id="ratePayId" aria-describedby="ratePayIdHelp" placeholder="oj9GsQ" value="${AdyenConfigs.getRatePayMerchantID()}">    
+                    <input type="text" class="form-control" name="AdyenRatePayID" id="ratePayId" aria-describedby="ratePayIdHelp" placeholder="oj9GsQ" value="${AdyenConfigs.getRatePayMerchantID() || ''}">    
                 </div>
                 
             </div>

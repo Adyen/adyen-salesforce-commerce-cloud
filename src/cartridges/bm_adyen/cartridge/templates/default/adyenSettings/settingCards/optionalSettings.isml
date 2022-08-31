@@ -38,7 +38,7 @@
                 <label class="form-title mb-0" for="commodityCode">Commodity code</label>
                 <small id="commodityCodeHelp" class="form-text mb-1">Enter the <a class="text-primary" href="https://www.unspsc.org/search-code" target="_blank">UNSPSC commodity code</a> for your products or services</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenLevel23_CommodityCode" id="commodityCode" aria-describedby="commodityCodeHelp" value="${AdyenConfigs.getAdyenLevel23CommodityCode()}">
+                    <input type="text" class="form-control" name="AdyenLevel23_CommodityCode" id="commodityCode" aria-describedby="commodityCodeHelp" value="${AdyenConfigs.getAdyenLevel23CommodityCode() || ''}">
                 </div>
             </div>
 
@@ -66,7 +66,7 @@
                 <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
                 <small id="systemIntegratorHelp" class="form-text mb-1">If your integration with Adyen is built by a system integrator, let us know their name, so that we can offer you better support.</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_IntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName()}">
+                    <input type="text" class="form-control" name="Adyen_IntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName() || ''}">
                 </div>
             </div>
         </div>

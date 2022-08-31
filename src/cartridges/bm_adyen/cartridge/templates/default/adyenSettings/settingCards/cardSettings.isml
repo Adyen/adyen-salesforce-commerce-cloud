@@ -50,7 +50,7 @@
                     to create the required configuration value.
                 </small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments()}">    
+                    <input type="text" class="form-control" name="AdyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments() || ''}">    
                 </div>
                 
             </div>

@@ -21,7 +21,7 @@ const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 function getCustomPreference(field) {
     let customPreference = null;
-    if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
+    if (0 && adyenCurrentSite.getCustomPreferenceValue(field)) {
         customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
     }
     return customPreference;
@@ -125,7 +125,7 @@ const adyenConfigsObj = {
     },
 
     getAdyenSalePaymentMethods: function () {
-        return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
+        return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : [];
     },
 
     getAdyenGivingEnabled() {

@@ -11,9 +11,6 @@
   </head>
   <header class="header row bg-white mt-4 mb-4">
 
-    
-
-
 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
     <div class="col-sm-1 offset-md-1">
         <img src="${URLUtils.staticURL('icons/adyen.svg')}" class ="img-fluid" alt="adyen-logo" />
@@ -36,39 +33,42 @@
     
   </header>
   <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50">
-    <div class="mb-5">
-        <div class="row bg-light pb-5">
-          <div class="col-sm-1"></div>
-          <div class="col-md-3">
-            <div class="sticky-top">
-              <isinclude template="adyenSettings/navigationCard"/>
-              <isinclude template="adyenSettings/quickLinksCard"/>
-            </div>
-          </div>
-          <div class="col-sm-1"></div>
-          <div class="col-lg-5" >
-            <form id="settingsForm">
-              <isinclude template="adyenSettings/settingCards/requiredSettings"/>
-
-              <isinclude template="adyenSettings/settingCards/webhookSettings"/>
-            
-              <isinclude template="adyenSettings/settingCards/cardSettings"/>
-              
-              <isinclude template="adyenSettings/settingCards/lpmSettings"/>
-              
-              <isinclude template="adyenSettings/settingCards/posSettings"/>
-              
-              <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
-              
-              <isinclude template="adyenSettings/settingCards/optionalSettings"/>
-            </form>
+    <div id="pageContents" class="mb-5">
+      <div class="row bg-light pb-5">
+        <div class="col-sm-1"></div>
+        <div class="col-md-3">
+          <div class="sticky-top">
+            <isinclude template="adyenSettings/navigationCard"/>
+            <isinclude template="adyenSettings/quickLinksCard"/>
           </div>
         </div>
+        <div class="col-sm-1"></div>
+        <div class="col-lg-5" >
+          <form id="settingsForm">
+            <isinclude template="adyenSettings/settingCards/requiredSettings"/>
+
+            <isinclude template="adyenSettings/settingCards/webhookSettings"/>
+          
+            <isinclude template="adyenSettings/settingCards/cardSettings"/>
+            
+            <isinclude template="adyenSettings/settingCards/lpmSettings"/>
+            
+            <isinclude template="adyenSettings/settingCards/posSettings"/>
+            
+            <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
+            
+            <isinclude template="adyenSettings/settingCards/optionalSettings"/>
+          </form>
+        </div>
+      </div>
+      <div id="saveChangesAlert" class="alert alert-success alert-dismissible fade fixed-bottom" role="alert">
+        Your Changes have been saved
+      </div>
     </div>
     <footer class="footer fixed-bottom bg-white">
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <button type="button" class="btn btn-outline-dark">Cancel</button>
-        <button type="submit" id="settingsFormSubmitButton" class="btn btn-primary border disabled">Save Changes</button>
+        <button type="button" id="settingsFormCancelButton" class="btn btn-outline-dark disabled formButton">Cancel</button>
+        <button type="submit" id="settingsFormSubmitButton" class="btn btn-primary border disabled formButton">Save Changes</button>
       </div>
     </footer>
   </body>
