@@ -15,7 +15,7 @@
             <label class="form-title mb-0" for="storeID">StoreID for Terminal API <small class="text-secondary">(optional)</small></label>
             <small id="storeIDHelp" class="form-text mb-1">Enter your storeID value to make your terminals ready to use the Adyen Terminal API</small>
             <div class="input-fields">
-                <input type="text" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()}"/>
+                <input type="text" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
             </div>
             </div>
         </div>

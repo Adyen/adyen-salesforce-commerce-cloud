@@ -1,6 +1,7 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 
+
 <div id="adyenGivingSettings" class="card bg-white mt-4 adyen-giving">
     <div class="card-body">
         <h5 class="card-title mb-0">
@@ -19,16 +20,11 @@
                     <div class="col-sm-9">
                         <small id="adyenGivingButtonHelp" class="form-text mb-1"> You need a charity account to enable Adyen Giving. Do you want to enable Adyen Giving?</small>
                     </div>
-                    <!--<div class="col-sm-3">
-                        <button type="button" id="adyenGivingButton" aria-describedby="adyenGivingButtonHelp"  class="btn btn-outline-primary">No, disable</button>
-                    </div>-->
                     <div class="switch-button">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="AdyenGiving_enabled" id="flexSwitchCheckChecked" unchecked>
                         </div>
                     </div>
-                    
-                    
                 </div>
             </div>
             
@@ -36,7 +32,7 @@
                 <label class="form-title mb-0" for="charityName">Charity name</label>
                 <small id="charityNameHelp" class="form-text mb-1">Enter the name of the charity displayed on the Adyen Giving component</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenGiving_charityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName()}" disabled>
+                    <input type="text" class="form-control" name="AdyenGiving_charityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName() || ''}" disabled>
                 </div>
             </div>
             
@@ -44,7 +40,7 @@
                 <label class="form-title mb-0" for="charityMerchantAccount">Charity merchant account</label>
                 <small id="charityMerchantAccountHelp" class="form-text mb-1">Enter your Adyen merchant account name for charity</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenGiving_charityAccount" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount()}" disabled>
+                    <input type="text" class="form-control" name="AdyenGiving_charityAccount" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount() || ''}" disabled>
                 </div>
             </div>
             
@@ -52,7 +48,7 @@
                 <label class="form-title mb-0" for="donationAmounts">Amounts for donation</label>
                 <small id="donationAmountsHelp" class="form-text mb-1">Enter the suggested amounts that the shopper can choose to donate</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenGiving_donationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Comma separated values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts()}" disabled>
+                    <input type="text" class="form-control" name="AdyenGiving_donationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Comma separated values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts() || ''}" disabled>
                 </div>
             </div>
             
@@ -60,7 +56,7 @@
                 <label class="form-title mb-0" for="charityDescription">Description</label>
                 <small id="charityDescriptionHelp" class="form-text mb-1">Enter the description of the charity</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenGiving_charityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription()}" disabled="">
+                    <input type="text" class="form-control" name="AdyenGiving_charityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription() || ''}" disabled="">
                 </div>
             </div>
             
@@ -68,7 +64,7 @@
                 <label class="form-title mb-0" for="charityWebsite">Charity website</label>
                 <small id="charityWebsiteHelp" class="form-text mb-1">Enter the link to the charity website</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="AdyenGiving_charityUrl" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite()}" disabled>
+                    <input type="text" class="form-control" name="AdyenGiving_charityUrl" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite() || ''}" disabled>
                 </div>
             </div>
             
@@ -92,6 +88,6 @@
                     <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Drop files or click here to upload. </div disabled="true">
                 </div>
             </div>
-    </div>
+        </div>
     </div>
 </div>

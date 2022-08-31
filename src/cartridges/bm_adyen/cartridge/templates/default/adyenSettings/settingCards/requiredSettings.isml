@@ -35,7 +35,7 @@
                     Once you generated an API key, enter this key in the field below.
                 </small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_API_Key" id="apiKey" aria-describedby="apiKeyHelp" placeholder="" value="${AdyenConfigs.getAdyenApiKey()}">
+                    <input type="text" class="form-control" name="Adyen_API_Key" id="apiKey" aria-describedby="apiKeyHelp" placeholder="" value="${AdyenConfigs.getAdyenApiKey() || ''}">
                 </div>
             </div>
             
@@ -62,7 +62,7 @@
                 <label class="form-title mb-0" for="merchantAccount">Merchant Account</label>
                 <small id="merchantAccountHelp" class="form-text mb-1">You can enable <b>Management API</b> to get access to all the merchant accounts from your account structure. However, you can only select one merchant account for each storefront.</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_merchantCode" id="merchantAccount " aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount()}">
+                    <input type="text" class="form-control" name="Adyen_merchantCode" id="merchantAccount " aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
                     You can automatically fill in this input field by enabling the <b>Management API</b> button above.
                 </small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_ClientKey" id="clienKey" aria-describedby="clienKeyHelp" placeholder="" value="${AdyenConfigs.getAdyenClientKey()}">
+                    <input type="text" class="form-control" name="Adyen_ClientKey" id="clienKey" aria-describedby="clienKeyHelp" placeholder="" value="${AdyenConfigs.getAdyenClientKey() || ''}">
                 </div>
             </div>            
         </div>
