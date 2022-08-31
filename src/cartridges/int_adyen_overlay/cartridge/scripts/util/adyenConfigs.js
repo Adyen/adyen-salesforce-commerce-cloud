@@ -21,7 +21,7 @@ const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 function getCustomPreference(field) {
     let customPreference = null;
-    if (0 && adyenCurrentSite.getCustomPreferenceValue(field)) {
+    if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
         customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
     }
     return customPreference;
