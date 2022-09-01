@@ -27,6 +27,7 @@ const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
+const StringUtils = require('dw/util/StringUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -112,6 +113,18 @@ function createPaymentRequest(args) {
       args.addTaxPercentage = true;
       if(paymentRequest.paymentMethod.type.indexOf('klarna') > -1){
         args.addTaxPercentage = false;
+        const address = order.getBillingAddress();
+        const otherDeliveryAddress = {
+          shipping_method: order.getDefaultShipment().shippingMethod.displayName,
+          shipping_type: order.getDefaultShipment().shippingMethod.description,
+          first_name: address.firstName,
+          last_name: address.lastName,
+          street_address: `${address.address1} ${address.address2}`,
+          postal_code: address.postalCode,
+          city: address.city,
+          country: address.countryCode.value,
+        }
+        paymentRequest.additionalData['openinvoicedata.merchantData'] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
