@@ -140,6 +140,9 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
+    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    order.custom.Adyen_paymentMethod = paymentRequest?.paymentMethod.brand || paymentRequest?.paymentMethod.type;
+    
     const responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
 
     // There is no order for zero auth transactions.
@@ -158,13 +161,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       : '';
     paymentResponse.adyenAmount = paymentRequest.amount.value;
     paymentResponse.decision = 'ERROR';
-
-    if (responseObject.additionalData) {
-      order.custom.Adyen_paymentMethod = responseObject.additionalData
-        .paymentMethod
-        ? responseObject.additionalData.paymentMethod
-        : null;
-    }
 
     const acceptedResultCodes = [
       constants.RESULTCODES.AUTHORISED,

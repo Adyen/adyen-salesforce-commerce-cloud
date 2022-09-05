@@ -288,15 +288,6 @@ function handle(customObj) {
 
       order.custom.Adyen_eventCode = customObj.custom.eventCode;
 
-      // Payment Method must be persistent. When payment is cancelled,
-      // Adyen sends an empty string here
-      if (
-        empty(order.custom.Adyen_paymentMethod) &&
-        !empty(customObj.custom.paymentMethod)
-      ) {
-        order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
-      }
-
       // Add a note with all details
       order.addNote('Adyen Payment Notification', createLogMessage(customObj));
     }
