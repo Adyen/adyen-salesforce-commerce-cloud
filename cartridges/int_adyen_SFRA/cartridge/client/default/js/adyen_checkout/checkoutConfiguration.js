@@ -172,46 +172,7 @@ function showRemainingAmount() {
     discountsContainer.appendChild(container);
   });
   var pricingContainer = document.querySelector('.card-body.order-total-summary');
-  pricingContainer.appendChild(discountsContainer); //  const remainingAmountContainer = document.createElement('div');
-  //  const remainingAmountStart = document.createElement('div');
-  //  const remainingAmountEnd = document.createElement('div');
-  //  const cancelGiftCard = document.createElement('div');
-  //  const remainingAmountStartP = document.createElement('p');
-  //  const remainingAmountEndP = document.createElement('p');
-  //  const cancelGiftCardP = document.createElement('p');
-  //  const remainingAmountStartSpan = document.createElement('span');
-  //  const cancelGiftCardSpan = document.createElement('span');
-  //  const remainingAmountEndSpan = document.createElement('span');
-  //
-  //  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
-  //  remainingAmountStart.classList.add('col-6', 'start-lines');
-  //  remainingAmountEnd.classList.add('col-6', 'end-lines');
-  //  remainingAmountStartP.classList.add('order-receipt-label');
-  //  cancelGiftCardP.classList.add('order-receipt-label');
-  //  remainingAmountEndP.classList.add('text-right');
-  //  remainingAmountEndSpan.classList.add('grand-total-sum');
-  //  cancelGiftCard.id = 'cancelGiftCardContainer';
-  //
-  //  remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
-  //  cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
-  //  remainingAmountEndSpan.innerText =
-  //    store.partialPaymentsOrderObj.remainingAmount;
-  //
-  //  cancelGiftCard.addEventListener('click', removeGiftCard);
-  //
-  //  remainingAmountContainer.appendChild(remainingAmountStart);
-  //  remainingAmountContainer.appendChild(remainingAmountEnd);
-  //  remainingAmountContainer.appendChild(cancelGiftCard);
-  //  remainingAmountStart.appendChild(remainingAmountStartP);
-  //  cancelGiftCard.appendChild(cancelGiftCardP);
-  //  remainingAmountEnd.appendChild(remainingAmountEndP);
-  //  remainingAmountStartP.appendChild(remainingAmountStartSpan);
-  //  cancelGiftCardP.appendChild(cancelGiftCardSpan);
-  //  remainingAmountEndP.appendChild(remainingAmountEndSpan);
-  //  const pricingContainer = document.querySelector(
-  //    '.card-body.order-total-summary',
-  //  );
-  //  pricingContainer.appendChild(remainingAmountContainer);
+  pricingContainer.appendChild(discountsContainer);
 }
 
 function getGiftCardConfig() {

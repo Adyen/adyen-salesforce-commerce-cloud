@@ -7,7 +7,7 @@ module.exports = {
   METHOD_ADYEN_COMPONENT: 'AdyenComponent',
   GIFTCARD_CONSTANTS: {
     GIFTCARDAMOUNT: 'Giftcard Amount',
-    REMAININGAMOUNT: "Remaining Amount",
+    REMAININGAMOUNT: 'Remaining Amount',
     CANCELGIFTCARD: 'Cancel Giftcard?'
   }
 };
