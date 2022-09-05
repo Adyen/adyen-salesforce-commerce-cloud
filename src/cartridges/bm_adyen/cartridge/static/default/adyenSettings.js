@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   cancelButton.addEventListener('click', async () => {
-    location.reload();
+    window.location.reload();
   });
 
   // file upload butttons event listeners for adyen giving card
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .getElementById('fileDropBoxGivingLogo')
     .addEventListener('click', openDialogAdyenGivingLogoUrl);
 
-  document.getElementById('flexSwitchCheckChecked').onchange = function () {
+  document.getElementById('flexSwitchCheckChecked').onchange = () => {
     document.getElementById('charityName').disabled = !this.checked;
     document.getElementById('charityMerchantAccount').disabled = !this.checked;
     document.getElementById('donationAmounts').disabled = !this.checked;
