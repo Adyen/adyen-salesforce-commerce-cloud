@@ -69,6 +69,7 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success: function success(response) {
+      console.log('response ' + JSON.stringify(response));
       var partialPaymentsOrder = {
         pspReference: response.order.pspReference,
         orderData: response.order.orderData
@@ -77,7 +78,9 @@ function makePartialPayment(data) {
         partialPaymentsOrder: partialPaymentsOrder
       };
       store.partialPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
+      store.partialPaymentsOrderObj.discountedAmount = response.discountAmountFormatted;
       setOrderFormData(response);
+      console.log('response ' + JSON.stringify(store.partialPaymentsOrderObj.discountedAmount));
     }
   }).fail(function () {});
 }

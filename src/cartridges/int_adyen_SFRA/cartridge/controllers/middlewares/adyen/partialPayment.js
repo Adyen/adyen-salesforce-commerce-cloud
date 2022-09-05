@@ -36,6 +36,12 @@ function makePartialPayment(req, res, next) {
       response.order.remainingAmount.currency,
     ).divide(100);
     response.remainingAmountFormatted = remainingAmount.toFormattedString();
+
+    const discountAmount = new Money(
+      response.amount.value,
+      response.amount.currency,
+    ).divide(100);
+    response.discountAmountFormatted = discountAmount.toFormattedString();
     res.json(response);
   } catch (error) {
     Logger.getLogger('Adyen').error(

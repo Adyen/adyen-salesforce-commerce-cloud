@@ -44,8 +44,8 @@ Object {
       "expirationMonth": "mocked_cc_exp_month",
       "expirationYear": "mocked_cc_exp_year",
       "isCreditCard": false,
-      "securityCode": "mocked_security_code",
       "partialPaymentsOrder": "mockedOrder",
+      "securityCode": "mocked_security_code",
       "stateData": "{\\"paymentMethod\\":{\\"storedPaymentMethodId\\":\\"mocked_id\\"}}",
     },
     "paymentMethod": Object {
