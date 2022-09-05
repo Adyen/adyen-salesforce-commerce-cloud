@@ -70,23 +70,28 @@
                 
                 <div class="form-group">
                     <label class="form-title mb-0" for="backgroundFile">Background image for Adyen Giving component</label>
-                    <!input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
+                    <div class="input-fields">
+                        <input type="text" class="form-control" name="AdyenGiving_backgroundUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl() || ''}">
+                    </div>
+                    <!-- <!input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
                     <div class="wrapper-class "id="wrapper">
                         <input id='charityBackgroundUrl' name="AdyenGiving_backgroundUrl" type='file' hidden/>
                         <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/> 
                         <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Drop files or click here to upload. </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="form-group">
                     <label class="form-title mb-0" for="logoFile">Logo in Adyen Giving component</label>
-                    <!input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
-                    
+                    <div class="input-fields">
+                        <input type="text" class="form-control" name="AdyenGiving_logoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl() || ''}">
+                    </div>
+                    <!-- <!input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
                     <div class="wrapper-class "id="wrapper">
                         <input id='adyenGivingLogoUrl' name="AdyenGiving_logoUrl" type='file' hidden/>
                         <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/> 
                         <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Drop files or click here to upload. </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
