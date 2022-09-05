@@ -16,10 +16,13 @@
         <img src="${URLUtils.staticURL('icons/adyen.svg')}" class ="img-fluid" alt="adyen-logo" />
     </div>
     
-    <div class="btn-group" role="group" aria-label="First group">
-        <button type="button" class="btn first">Sandbox</button>
-        <button type="button" class="btn second">Staging</button>
-        <button type="button" class="btn third">Production</button>
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        <input id="btnCheckSandbox" type="radio" class="btn-check" ${dw.system.System.getInstanceType() == dw.system.System.DEVELOPMENT_SYSTEM ? 'checked': ''}>
+        <label class="btn btn-outline-primary" for="btnCheckSandbox">Sandbox</label>
+        <input id="btnCheckStaging" type="radio" class="btn-check" ${dw.system.System.getInstanceType() == dw.system.System.STAGING_SYSTEM ? 'checked': ''}>
+        <label class="btn btn-outline-primary" for="btnCheckStaging">Staging</label>
+        <input id="btnCheckProduction" type="radio" class="btn-check" ${dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM ? 'checked': ''}>
+        <label class="btn btn-outline-primary" for="btnCheckProduction">Production</label>
     </div>
     
     
