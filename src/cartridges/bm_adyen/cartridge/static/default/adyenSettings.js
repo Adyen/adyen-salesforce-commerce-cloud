@@ -38,23 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
-    const { name } = event.target;
-    let { value } = event.target;
+    const { target } = event;
+    const { name } = target;
 
-    // get checked boolean value for checkboxes
-    if (event.target.type === 'checkbox') {
-      value = event.target.checked;
-    }
+    // get checked boolean value for checkboxes and radio buttons
+    const isCheckedType = ['checkbox', 'radio'].some(
+      (type) => type === target.type,
+    );
 
-    // convert radio button strings to boolean if values are 'true' or 'false'
-    if (event.target.type === 'radio') {
-      if (event.target.value === 'true') {
-        value = true;
-      }
-      if (event.target.value === 'false') {
-        value = false;
-      }
-    }
+    const value = isCheckedType ? target.checked : target.value;
+
     settingChanged(name, value);
   });
 
