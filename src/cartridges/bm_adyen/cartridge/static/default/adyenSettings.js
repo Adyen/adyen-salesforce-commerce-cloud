@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitButton = document.querySelector('#settingsFormSubmitButton');
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
+  const testConnectionButton = document.querySelector('#testConnectionButton');
   const changedSettings = [];
 
   function settingChanged(key, value) {
@@ -49,6 +50,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const value = isCheckedType ? target.checked : target.value;
 
     settingChanged(name, value);
+  });
+
+  // add event listener to test connection based on current form contents
+  testConnectionButton.addEventListener('click', async () => {
+    const response = await fetch('AdyenSettings-TestConnection', {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        xApiKey: document.getElementById('apiKey').value,
+        merchantAccount: document.getElementById('merchantAccount').value,
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    // TODO: Feedback to user
   });
 
   // add event to submit button to send form and present results
