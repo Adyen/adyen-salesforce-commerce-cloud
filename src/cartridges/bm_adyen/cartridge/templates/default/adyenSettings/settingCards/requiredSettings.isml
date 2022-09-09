@@ -62,7 +62,7 @@
                 <label class="form-title mb-0" for="merchantAccount">Merchant Account</label>
                 <small id="merchantAccountHelp" class="form-text mb-1">You can enable <b>Management API</b> to get access to all the merchant accounts from your account structure. However, you can only select one merchant account for each storefront.</small>
                 <div class="input-fields">
-                    <input type="text" class="form-control" name="Adyen_merchantCode" id="merchantAccount " aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
+                    <input type="text" class="form-control" name="Adyen_merchantCode" id="merchantAccount" aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
                 </div>
             </div>
 
