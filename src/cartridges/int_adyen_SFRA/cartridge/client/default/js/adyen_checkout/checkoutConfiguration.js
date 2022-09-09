@@ -5,7 +5,6 @@ const store = require('../../../../store');
 function getCardConfig() {
   return {
     enableStoreDetails: window.showStoreDetails,
-    showBrandsUnderCardNumber: false,
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId

@@ -10,7 +10,7 @@
         window.Configuration = {
             locale: "${request.locale}",
             clientKey: "${AdyenConfigs.getAdyenClientKey}",
-            environment: "${AdyenHelper.getCheckoutEnvironment()}"
+            environment: "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}"
         };
         window.adyenGivingAvailable = "${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}"
         window.orderNo = '${pdict.Order.orderNo}';

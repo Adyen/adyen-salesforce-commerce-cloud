@@ -14,8 +14,6 @@ var URLUtils = require('dw/web/URLUtils');
 
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
 var _require = require('*/cartridge/scripts/updateSavedCards'),
     updateSavedCards = _require.updateSavedCards;
 
@@ -75,7 +73,7 @@ function begin(req, res, next) {
   }
 
   var clientKey = AdyenConfigs.getAdyenClientKey();
-  var environment = AdyenHelper.getCheckoutEnvironment();
+  var environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
   var installments = AdyenConfigs.getCreditCardInstallments();
   var adyenClientKey = AdyenConfigs.getAdyenClientKey();
   var googleMerchantID = AdyenConfigs.getGoogleMerchantID();

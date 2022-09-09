@@ -228,26 +228,62 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
-    return {
-      error: true,
-      args: {adyenErrorMessage: Resource.msg(
-        'confirm.error.declined',
-        'checkout',
-        null,
-      )},
-    };
+    return { error: true };
   }
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
+  const callResult = executeCall(
+      constants.SERVICE.PAYMENTDETAILS,
+    paymentDetailsRequest,
+  );
+  if (callResult.isOk() === false) {
+    Logger.getLogger('Adyen').error(
+      `Adyen: Call error code${callResult
+        .getError()
+        .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+    );
+    return {
+      error: true,
+      invalidRequest: true,
+    };
+  }
+
+  const resultObject = callResult.object;
+  if (!resultObject || !resultObject.getText()) {
+    Logger.getLogger('Adyen').error(
+      `Error in /payment/details response, response: ${JSON.stringify(
+        resultObject,
+      )}`,
+    );
+    return { error: true };
+  }
+
+  // build the response object
+  let responseObject;
   try {
-    return AdyenHelper.executeCall(constants.SERVICE.PAYMENTDETAILS, paymentDetailsRequest);
+    responseObject = JSON.parse(resultObject.getText());
   } catch (ex) {
     Logger.getLogger('Adyen').error(
       `error parsing response object ${ex.message}`,
     );
     return { error: true };
   }
+
+  return responseObject;
+}
+
+function executeCall(serviceType, requestObject) {
+  const service = AdyenHelper.getService(serviceType);
+  if (service === null) {
+    return { error: true };
+  }
+  const apiKey = AdyenConfigs.getAdyenApiKey();
+  service.addHeader('Content-type', 'application/json');
+  service.addHeader('charset', 'UTF-8');
+  service.addHeader('X-API-KEY', apiKey);
+  const callResult = service.call(JSON.stringify(requestObject));
+  return callResult;
 }
 
 module.exports = {

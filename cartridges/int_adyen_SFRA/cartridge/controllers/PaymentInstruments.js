@@ -12,8 +12,6 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
 var _require = require('*/cartridge/scripts/updateSavedCards'),
     updateSavedCards = _require.updateSavedCards;
 
@@ -36,7 +34,7 @@ server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
 
 server.prepend('AddPayment', csrfProtection.generateToken, consentTracking.consent, userLoggedIn.validateLoggedIn, function (req, res, next) {
   var clientKey = AdyenConfigs.getAdyenClientKey();
-  var environment = AdyenHelper.getCheckoutEnvironment();
+  var environment = AdyenConfigs.getAdyenEnvironment().toLowerCase();
   var viewData = res.getViewData();
   viewData.adyen = {
     clientKey: clientKey,

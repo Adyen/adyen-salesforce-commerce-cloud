@@ -4,7 +4,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
   const testConnectionButton = document.querySelector('#testConnectionButton');
+  const togglePassword = document.querySelector('#togglePassword');
+  const toggleApi = document.querySelector('#toggleApi');
+  const formBody = document.querySelector('#formBody');
+  const password = document.querySelector('#notificationsPassword');
+  const merchAccount = document.getElementById('merchantAccount');
+  const classicPageButton = document.querySelector('#classicButton');
+  const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
+  const isValid = 'is-valid';
+  const isInvalid = 'is-invalid';
+  const adyenGivingBackground = document.querySelector(
+    '#fileDropBoxCharitybackground',
+  );
+  const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
+  const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -12,10 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     if (settingIndex >= 0) {
-      changedSettings[settingIndex] = { key, value };
+      changedSettings[settingIndex] = {
+        key,
+        value,
+      };
     } else {
-      changedSettings.push({ key, value });
+      changedSettings.push({
+        key,
+        value,
+      });
     }
+  }
+
+  // redirect to classic page
+  function getLink() {
+    window.open(window.classicConfigPageUrl);
   }
 
   function enableformButtons() {
@@ -34,18 +59,143 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function saveAndHideAlerts() {
+    document.getElementById('settingsFormSubmitButton').click();
+    document.getElementById('saveChangesAlert').hide();
+    document.getElementById('notSavedChangesAlert').hide();
+  }
+
+  function showAlertsOnSave() {
+    document.getElementById('saveChangesAlert').show();
+    document.getElementById('notSavedChangesAlert').show();
+  }
+
+  // if browser is safari it sets custom padding
+  function checkBrowserSupport() {
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      formBody.style.setProperty('padding-top', '3rem');
+    }
+  }
+
+  function showPassword() {
+    const type =
+      password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
+
+  function showApiKey() {
+    const type =
+      apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
+    apiKeyVal.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
+
+  // open Adyen Giving Background upload page
+  function uploadAdyenGivingBackground() {
+    const openedWindow = window.open(
+      window.adyenGivingBackgroundUrl,
+      'backgroundPopUp',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindow.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  // open Adyen Giving Logo upload page
+  function uploadAdyenGivingLogo() {
+    const openedWindowLogo = window.open(
+      window.adyenGivingLogoUrl,
+      'logoPopUp',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindowLogo.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  function getImageName(imageUrl) {
+    const parts = imageUrl.split('/');
+    const imageName = parts.pop();
+    return imageName;
+  }
+
+  function createImageNameStyling(list, imageName) {
+    document.getElementById(list).innerHTML = '';
+    const unorderedList = document.getElementById(list);
+    const nameOfImage = getImageName(imageName);
+    if (nameOfImage?.length > 0) {
+      const checkMarkImage = document.createElement('img');
+      checkMarkImage.src = window.successImage;
+      const text = document.createTextNode(nameOfImage);
+      const listElement = document.createElement('li');
+      listElement.appendChild(checkMarkImage);
+      listElement.appendChild(document.createTextNode(' '));
+      listElement.appendChild(text);
+      unorderedList.appendChild(listElement);
+    }
+  }
+
+  function printBackgroundImageName() {
+    createImageNameStyling('backgroundList', window.backgroundValueField);
+  }
+
+  function printLogoImageName() {
+    createImageNameStyling('logoList', window.logoValueField);
+  }
+
+  testConnectionButton.addEventListener('click', saveAndHideAlerts);
+
+  classicPageButton.addEventListener('click', getLink);
+
+  form.addEventListener('input', enableformButtons);
+
+  submitButton.addEventListener('click', showAlertsOnSave);
+
+  window.addEventListener('load', checkBrowserSupport);
+
+  togglePassword.addEventListener('click', showPassword);
+
+  toggleApi.addEventListener('click', showApiKey);
+
+  adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
+
+  adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);
+
+  window.addEventListener('load', printBackgroundImageName);
+
+  window.addEventListener('load', printLogoImageName);
+
+  adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
+
+  adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
-    const { target } = event;
-    const { name } = target;
+    const { name } = event.target;
+    let { value } = event.target; // get checked boolean value for checkboxes
 
-    // get checked boolean value for checkboxes and radio buttons
-    const isCheckedType = ['checkbox', 'radio'].some(
-      (type) => type === target.type,
-    );
+    if (event.target.type === 'checkbox') {
+      value = event.target.checked;
+    }
 
-    const value = isCheckedType ? target.checked : target.value;
+    // convert radio button strings to boolean if values are 'true' or 'false'
+    if (event.target.type === 'radio') {
+      if (event.target.value === 'true') {
+        value = true;
+      }
+
+      if (event.target.value === 'false') {
+        value = false;
+      }
+    }
 
     settingChanged(name, value);
   });
@@ -63,18 +213,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }),
     });
     const data = await response.json();
-    console.log(data);
-    // TODO: Feedback to user
+
+    if (data.success) {
+      merchAccount.classList.add(isValid);
+      merchAccount.classList.remove(isInvalid);
+      apiKeyVal.classList.add(isValid);
+      apiKeyVal.classList.remove(isInvalid);
+    } else {
+      merchAccount.classList.add(isInvalid);
+      merchAccount.classList.remove(isValid);
+      apiKeyVal.classList.add(isInvalid);
+      apiKeyVal.classList.remove(isValid);
+    }
   });
 
-  // add event to submit button to send form and present results
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
     form.addEventListener('input', enableformButtons);
     const response = await fetch('AdyenSettings-Save', {
       headers: {
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
       },
       method: 'POST',
       body: JSON.stringify({
@@ -82,48 +241,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }),
     });
     const data = await response.json();
+
     if (data.success) {
       const alertBar = document.getElementById('saveChangesAlert');
       alertBar.classList.add('show');
       window.setTimeout(() => {
         alertBar.classList.remove('show');
       }, 2000);
-    }
-    else{
+    } else {
       const cancelAlertBar = document.getElementById('notSavedChangesAlert');
       cancelAlertBar.classList.add('show');
       window.setTimeout(() => {
-        alertBar.classList.remove('show');
+        cancelAlertBar.classList.remove('show');
       }, 2000);
     }
   });
+
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
-
-  function openDialogCharityBackgroundUrl() {
-    document.getElementById('charityBackgroundUrl').click();
-  }
-
-  function openDialogAdyenGivingLogoUrl() {
-    document.getElementById('adyenGivingLogoUrl').click();
-  }
-
-  document
-    .getElementById('fileDropBoxCharitybackground')
-    .addEventListener('click', openDialogCharityBackgroundUrl);
-
-  document
-    .getElementById('fileDropBoxGivingLogo')
-    .addEventListener('click', openDialogAdyenGivingLogoUrl);
-
-  document.getElementById('flexSwitchCheckChecked').onchange = () => {
-    document.getElementById('charityName').disabled = !this.checked;
-    document.getElementById('charityMerchantAccount').disabled = !this.checked;
-    document.getElementById('donationAmounts').disabled = !this.checked;
-    document.getElementById('charityDescription').disabled = !this.checked;
-    document.getElementById('charityWebsite').disabled = !this.checked;
-    document.getElementById('charityBackgroundUrl').disabled = !this.checked;
-    document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
-  };
 });

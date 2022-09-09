@@ -32,6 +32,12 @@ const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethod
 
 function createSession(basket, customer, countryCode) {
   try {
+    const service = AdyenHelper.getService(
+        constants.SERVICE.SESSIONS
+    );
+    if (!service) {
+      throw new Error('Could not do /sessions call');
+    }
 
     let sessionsRequest = {};
 
@@ -79,6 +85,7 @@ function createSession(basket, customer, countryCode) {
       }
     }
 
+
     if (countryCode) {
       sessionsRequest.countryCode = countryCode;
     }
@@ -105,7 +112,26 @@ function createSession(basket, customer, countryCode) {
 
     sessionsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
 
-    return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
+    const xapikey = AdyenConfigs.getAdyenApiKey();
+    service.addHeader('Content-type', 'application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-key', xapikey);
+
+    const callResult = service.call(JSON.stringify(sessionsRequest));
+    if (!callResult.isOk()) {
+      throw new Error(
+          `/paymentMethods call error code${callResult
+              .getError()
+              .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+      );
+    }
+
+    const resultObject = callResult.object;
+    if (!resultObject || !resultObject.getText()) {
+      throw new Error('No correct response from /sessions call');
+    }
+
+    return JSON.parse(resultObject.getText());
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

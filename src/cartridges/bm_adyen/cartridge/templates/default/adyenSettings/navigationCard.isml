@@ -3,8 +3,8 @@
 <div class="card bg-white mt-4">
     <div id="navigationList" class="card-body list-group">
         <a class="list-group-item navigation-item border-0" href="#requiredSettings">
-        <img src="${URLUtils.staticURL('icons/rules.svg')}" width="20" height="20" class="rounded float-start mr-3"/> 
-        Required settings
+        <img src="${URLUtils.staticURL('icons/rules.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Account settings
         </a>
         <a class="list-group-item navigation-item border-0" href="#webhookSettings">
         <img src="${URLUtils.staticURL('icons/notification.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
@@ -20,7 +20,7 @@
         </a>
         <a class="list-group-item navigation-item border-0" href="#posSettings">
         <img src="${URLUtils.staticURL('icons/pos.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
-        POS settings
+        In-person payments settings
         </a>
         <a class="list-group-item navigation-item border-0" href="#adyenGivingSettings">
         <img src="${URLUtils.staticURL('icons/adyen-giving.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
@@ -28,7 +28,7 @@
         </a>
         <a class="list-group-item navigation-item border-0" href="#optionalSettings">
         <img src="${URLUtils.staticURL('icons/settings.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
-        Optional settings
+        Additional settings
         </a>
     </div>
 </div>

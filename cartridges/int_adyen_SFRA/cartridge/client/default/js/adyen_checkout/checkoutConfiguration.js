@@ -21,7 +21,6 @@ var store = require('../../../../store');
 function getCardConfig() {
   return {
     enableStoreDetails: window.showStoreDetails,
-    showBrandsUnderCardNumber: false,
     onChange: function onChange(state) {
       store.isValid = state.isValid;
       var method = state.data.paymentMethod.storedPaymentMethodId ? "storedCard".concat(state.data.paymentMethod.storedPaymentMethodId) : store.selectedMethod;

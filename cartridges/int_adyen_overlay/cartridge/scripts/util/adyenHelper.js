@@ -41,8 +41,6 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 var Transaction = require('dw/system/Transaction');
-
-var UUIDUtils = require('dw/util/UUIDUtils');
 /* eslint no-var: off */
 
 
@@ -84,6 +82,22 @@ var adyenHelperObj = {
     }
 
     return null;
+  },
+  // get the Adyen Url based on which environment is configured (live or test)
+  getAdyenUrl: function getAdyenUrl() {
+    var returnValue = '';
+
+    switch (AdyenConfigs.getAdyenEnvironment()) {
+      case constants.MODE.TEST:
+        returnValue = constants.ADYEN_TEST_URL;
+        break;
+
+      case constants.MODE.LIVE:
+        returnValue = constants.ADYEN_LIVE_URL;
+        break;
+    }
+
+    return returnValue;
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
     var paymentMethod = order.custom.Adyen_paymentMethod;
@@ -128,37 +142,33 @@ var adyenHelperObj = {
     var checkoutCSS = this.getLoadingContext();
     return "".concat(checkoutCSS, "sdk/").concat(constants.CHECKOUT_COMPONENT_VERSION, "/adyen.css");
   },
-  // get the current region-based checkout environment
-  getCheckoutEnvironment: function getCheckoutEnvironment() {
+  // get the loading context based on the current environment (live or test)
+  getLoadingContext: function getLoadingContext() {
     var returnValue = '';
 
     switch (AdyenConfigs.getAdyenEnvironment()) {
       case constants.MODE.TEST:
-        returnValue = constants.CHECKOUT_ENVIRONMENT_TEST;
+        returnValue = constants.LOADING_CONTEXT_TEST;
         break;
 
       case constants.MODE.LIVE:
         var frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
 
         if (frontEndRegion === constants.FRONTEND_REGIONS.US) {
-          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_US;
+          returnValue = constants.LOADING_CONTEXT_LIVE_US;
           break;
         }
 
         if (frontEndRegion === constants.FRONTEND_REGIONS.AU) {
-          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
+          returnValue = constants.LOADING_CONTEXT_LIVE_AU;
           break;
         }
 
-        returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
+        returnValue = constants.LOADING_CONTEXT_LIVE_EU;
         break;
     }
 
     return returnValue;
-  },
-  // get the loading context based on the current environment (live or test)
-  getLoadingContext: function getLoadingContext() {
-    return "https://checkoutshopper-".concat(adyenHelperObj.getCheckoutEnvironment(), ".adyen.com/checkoutshopper/");
   },
   // get the hash used to verify redirect requests
   getAdyenHash: function getAdyenHash(value, salt) {
@@ -200,16 +210,19 @@ var adyenHelperObj = {
     var ratePayMerchantID = AdyenConfigs.getRatePayMerchantID();
 
     if (ratePayMerchantID) {
-      returnValue.ratePayID = ratePayMerchantID;
+      returnValue.ratePayId = ratePayMerchantID;
     }
 
-    var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
-    returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
-    session.privacy.ratePayFingerprint = returnValue.sessionID;
+    if (!session.privacy.ratePayFingerprint || session.privacy.ratePayFingerprint === null) {
+      var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
+      returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
+      session.privacy.ratePayFingerprint = returnValue.sessionID;
+    }
+
     return returnValue;
   },
   isOpenInvoiceMethod: function isOpenInvoiceMethod(paymentMethod) {
-    if (paymentMethod.indexOf('afterpay') - 1 || paymentMethod.indexOf('klarna') > -1 || paymentMethod.indexOf('ratepay') > -1 || paymentMethod.indexOf('facilypay') > -1 || paymentMethod === 'zip' || paymentMethod === 'affirm' || paymentMethod === 'clearpay') {
+    if (paymentMethod.indexOf('afterpay') > -1 || paymentMethod.indexOf('klarna') > -1 || paymentMethod.indexOf('ratepay') > -1 || paymentMethod.indexOf('facilypay') > -1 || paymentMethod === 'zip' || paymentMethod === 'affirm' || paymentMethod === 'clearpay') {
       return true;
     }
 
@@ -658,40 +671,6 @@ var adyenHelperObj = {
       isFinal: true,
       isSuccessful: false
     };
-  },
-  executeCall: function executeCall(serviceType, requestObject) {
-    var service = this.getService(serviceType);
-
-    if (service === null) {
-      throw new Error("Could not create ".concat(serviceType, " service object"));
-    }
-
-    var maxRetries = constants.MAX_API_RETRIES;
-    var apiKey = AdyenConfigs.getAdyenApiKey();
-    var uuid = UUIDUtils.createUUID();
-    service.addHeader('Content-type', 'application/json');
-    service.addHeader('charset', 'UTF-8');
-    service.addHeader('X-API-KEY', apiKey);
-    service.addHeader('Idempotency-Key', uuid);
-    var callResult; // retry the call until we reach max retries OR the callresult is OK
-
-    for (var nrRetries = 0; nrRetries < maxRetries && !((_callResult = callResult) !== null && _callResult !== void 0 && _callResult.isOk()); nrRetries++) {
-      var _callResult;
-
-      callResult = service.call(JSON.stringify(requestObject));
-    }
-
-    if (!callResult.isOk()) {
-      throw new Error("".concat(serviceType, " service call error code").concat(callResult.getError().toString(), " Error => ResponseStatus: ").concat(callResult.getStatus(), " | ResponseErrorText: ").concat(callResult.getErrorMessage(), " | ResponseText: ").concat(callResult.getMsg()));
-    }
-
-    var resultObject = callResult.object;
-
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error("No correct response from ".concat(serviceType, " service call"));
-    }
-
-    return JSON.parse(resultObject.getText());
   }
 };
 module.exports = adyenHelperObj;
