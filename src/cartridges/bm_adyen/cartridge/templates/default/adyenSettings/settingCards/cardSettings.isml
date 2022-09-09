@@ -3,48 +3,56 @@
 
 <div id="cardSettings" class="card bg-white mt-4">
     <div class="card-body">
-        <h5 class="card-title">
+        <h5 class="card-title mb-0">
             Card settings
         </h5>
-        <h7 class="card-subtitle text-muted">
-            In the following steps, you can configure the credit card settings that you want to offer in your Salesforce Commerce Cloud store.
+        <h7 class="card-subtitle">
+            <div class="first-subtitle">In the following steps, you can configure the credit card settings that you want to offer in your Salesforce Commerce Cloud store.</div>
         </h7>
 
         <div class="mt-2">
             <div class="form-group">
-                <label class="font-weight-bold" for="cardHolderNameEnabled">Card holder name</label>
-                <small id="cardHolderNameEnabledHelp" class="form-text text-muted mb-1">This setting allows you to show input field for card holder name. Do you want to enable this setting?</small>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="adyenCardholderName" id="cardHolderYes" value=true ${AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
-                    <label class="form-check-label" for="cardHolderYes">Yes</label>
+                <label class="form-title mb-0" for="cardHolderNameEnabled">Card holder name</label>
+                <small id="cardHolderNameEnabledHelp" class="form-text mb-1">This setting allows you to show input field for card holder name. Do you want to enable this setting?</small>
+                <div class="radio-buttons">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="AdyenCardHolderName_enabled" id="cardHolderYes" value=true ${AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
+                        <label class="form-check-label" for="cardHolderYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="AdyenCardHolderName_enabled" id="cardHolderNo" value=false ${!AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
+                        <label class="form-check-label" for="cardHolderNo">No</label>
+                    </div>            
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="adyenCardholderName" id="cardHolderNo" value=false ${!AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
-                    <label class="form-check-label" for="cardHolderNo">No</label>
+
+            </div>
+
+            <div class="form-group">
+                <label class="form-title mb-0" for="3dSecure">3D Secure 2</label>
+                <small id="3dSecureHelp" class="form-text mb-1">With 3D Secure 2 (3DS2), the card issuer performs the authentication within your app or payment form. Do you want to enable 3DS2?</small>
+                <div class="radio-buttons">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Adyen3DS2Enabled" id="3dSecureYes" value=true ${AdyenConfigs.getAdyen3DS2Enabled() ? 'checked': ''}>
+                        <label class="form-check-label" for="3dSecureYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Adyen3DS2Enabled" id="3dSecureNo" value=false ${!AdyenConfigs.getAdyen3DS2Enabled() ? 'checked': ''}>
+                        <label class="form-check-label" for="3dSecureNo">No</label>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="font-weight-bold" for="3dSecure">3D Secure 2</label>
-                <small id="3dSecureHelp" class="form-text text-muted mb-1">With 3D Secure 2 (3DS2), the card issuer performs the authentication within your app or payment form. Do you want to enable 3DS2?</small>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="adyen3DS2Enabled" id="3dSecureYes" value=true ${AdyenConfigs.getAdyen3DS2Enabled() ? 'checked': ''}>
-                    <label class="form-check-label" for="3dSecureYes">Yes</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="adyen3DS2Enabled" id="3dSecureNo" value=false ${!AdyenConfigs.getAdyen3DS2Enabled() ? 'checked': ''}>
-                    <label class="form-check-label" for="3dSecureNo">No</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="font-weight-bold" for="installments">Credit card installments</label>
-                <small id="installmentsHelp" class="form-text text-muted mb-1">
+                <label class="form-title mb-0" for="installments">Credit card installments</label>
+                <small id="installmentsHelp" class="form-text mb-1">
                     You can leave this field empty if you're not using installments. 
                     If installments are required, go to <a class="text-primary" href="https://adyen.github.io/adyen-salesforce-commerce-cloud/" target="_blank">our GitHub</a> 
                     to create the required configuration value.
                 </small>
-                <input type="text" class="form-control" name="adyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments()}">
+                <div class="input-fields">
+                    <input type="text" class="form-control" name="AdyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments() || ''}">    
+                </div>
+                
             </div>
         </div>
     </div>

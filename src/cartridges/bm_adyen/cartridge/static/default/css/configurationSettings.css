@@ -1,0 +1,428 @@
+.input-fields{
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+/*.form-group .form-check-inline{
+    padding-left: 70px;
+}
+*/
+.first-subtitle{
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+.radio-buttons{
+    padding-left: 48px;
+}
+
+.form-title{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    color: #00112C;
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+.links-header {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+    color: #20304C;
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+.card-body .card-title {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+    color: #00112C
+    height: 32px;
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+
+
+.card-body .card-subtitle {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: #69778C;
+    width: 699px;
+}
+
+
+.form-group .form-text {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #20304C;
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+
+.form-check-input, .form-check-label{
+    width: 26px;
+    height: 20px;
+
+/* Body */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+/* identical to box height, or 143% */
+
+    display: flex;
+    align-items: center;
+
+/* grey / grey-70 */
+
+    color: #20304C
+    padding-left: 48px;
+    padding-right: 51px;
+
+}
+
+.list-group .navigation-item {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+    display: flex;
+    align-items: center;
+    color: #394962;
+    }
+
+.row .sticky-top {
+    top: 10%;
+    z-index: 10;
+}
+
+
+#saveChangesAlert {
+    bottom: 2%;
+    -index: 10;
+}
+
+.btn-toolbar{
+/* Header */
+
+/* Auto layout */
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 107px;
+    gap: 10px;
+
+    position: absolute;
+    width: 1434px;
+    height: 85px;
+    left: 2px;
+    top: 92px;
+
+/* white */
+
+    background: #FFFFFF;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.06);
+}
+
+.btn-toolbar .btn-group{
+    box-sizing: border-box;
+
+/* Auto layout */
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 20px;
+
+    width: 309px;
+    height: 60px;
+
+/* text/white */
+
+    background: #FFFFFF;
+/* SF-color-gray-3 */
+
+    border: 1px solid #F3F2F2;
+    border-radius: 12px;
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.btn-toolbar .btn-group .first{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+/* identical to box height, or 143% */
+
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    outline: none;
+
+}
+
+.btn-toolbar .btn-group .first:hover, .btn-toolbar .btn-group .first:focus{
+    background: rgb(184, 225, 252);
+}
+
+
+.btn-toolbar .btn-group .second{
+/* Staging */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+/* identical to box height, or 143% */
+
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.btn-toolbar .btn-group .second:hover, .btn-toolbar .btn-group .second:focus{
+    background: rgb(184, 225, 252);
+}
+
+
+.btn-toolbar .btn-group .third{
+    /* Production */
+/* Body */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+
+
+    color: #394962;
+
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.btn-toolbar .btn-group .third:hover, .btn-toolbar .btn-group .third:focus{
+    background: rgb(184, 225, 252);
+}
+
+
+.btn-toolbar .sec-group{
+    right: 2;
+}
+
+.btn-toolbar .sec-group .btn-light{
+/* label */
+
+
+    width: 135px;
+    height: 28px;
+
+/* Fakt Semi-bold 13px */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 17px;
+/* identical to box height, or 131% */
+
+    display: flex;
+    align-items: center;
+    text-align: right;
+
+
+/* text/white */
+
+    background: #FFFFFF;
+/* SF-color-gray-3 */
+
+    border: 1px solid #F3F2F2;
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+    border-radius: 6px;
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin-top: 10px;
+    position:absolute;
+    right: 75px;
+    
+}
+
+.img-fluid{
+    margin-top: 10px;
+}
+
+
+.first, .second, .third {
+    outline: none;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.bi-eye, .bi-eye-slash{
+    position: absolute;
+    margin-top: 6px;
+    margin-right: 70px;
+    left: auto; 
+    right: 10px;
+}
+
+.paperclip{
+    position: absolute;
+    right: auto; 
+    margin-left: 22px;
+    margin-top: 24px;
+}
+
+.form-group .wrapper-class{
+    width:320px;
+    height: 69px;
+    margin-top:10px;   
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+.line-divider{
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+.switch-button{
+    position: absolute;
+    left: 90%;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    border-radius: 8.5px;
+}
+
+/*#navigationList a:hover {
+    background-color: #0ABF53;;
+}
+
+#navigationList a:clicked {
+  background-color: yellow;
+}
+*/
+
+html {
+  scroll-padding-top: 6rem;
+  overflow-x: hidden;
+}
+
+
+
+#fileDropBoxCharitybackground, #fileDropBoxGivingLogo{
+    width: 320px;
+    height: 69px;
+    border: 1px dashed gray;
+    color: #69778C;
+    border-radius: 7px;
+    font-family: 'Fakt';
+    text-align: center;
+    background:#F3F6F9;
+    padding: 20px 0;
+}
+
+.list-group-item {
+    border: 1.0px solid rgb(204, 204, 204);
+    border-radius: 10.0px 10.0px 10.0px 10.0px;
+}
+
+.list-group-item:hover{
+    background: rgb(184, 225, 252);
+}
+
+.form-buttons{
+    padding-right:105px;
+}
+
+#settingsFormCancelButton{
+    top:20px;
+    /* label */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    display: flex;
+    align-items: center;
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+    border-radius: 6px;
+}
+
+#settingsFormSubmitButton{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+}

@@ -1,5 +1,6 @@
 const server = require('server');
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
@@ -8,14 +9,27 @@ server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
   return next();
 });
 
-server.post('Save', csrfProtection.generateToken, (req, res, next) => {
+server.post('Save', server.middleware.https, (req, res, next) => {
   const requestBody = JSON.parse(req.body);
 
-  requestBody.settings.forEach((setting) => {
-    Transaction.wrap(() => {
-      AdyenConfigs.setCustomPreference(setting.key, setting.value);
+  try {
+    requestBody.settings.forEach((setting) => {
+      Transaction.wrap(() => {
+        AdyenConfigs.setCustomPreference(setting.key, setting.value);
+      });
     });
-  });
+    res.json({
+      success: true,
+    });
+  } catch (error) {
+    Logger.getLogger('Adyen').error(
+      `Error while saving settings in BM configuration: ${error}`,
+    );
+    res.json({
+      success: false,
+    });
+  }
+
   return next();
 });
 

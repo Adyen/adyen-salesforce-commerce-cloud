@@ -125,7 +125,7 @@ const adyenConfigsObj = {
     },
 
     getAdyenSalePaymentMethods: function () {
-        return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
+        return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : [];
     },
 
     getAdyenGivingEnabled() {
