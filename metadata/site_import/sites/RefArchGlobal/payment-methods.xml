@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
+      <payment-method method-id="AdyenPOS">
+        <name xml:lang="x-default">AdyenPOS</name>
+        <description xml:lang="x-default">Adyen POS</description>
+        <enabled-flag>false</enabled-flag>
+        <processor-id>Adyen_POS</processor-id>
+    </payment-method>
+    <payment-method method-id="AdyenComponent">
+        <name xml:lang="x-default">AdyenComponent</name>
+        <description xml:lang="x-default">Adyen Generic Component</description>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>Adyen_Component</processor-id>
+    </payment-method>
+</payment-settings>
