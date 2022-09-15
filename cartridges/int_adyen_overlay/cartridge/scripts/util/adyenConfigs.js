@@ -32,39 +32,15 @@ function getCustomPreference(field) {
   return customPreference;
 }
 
-function setCustomPreference(field, value) {
-  var customPreference = null;
-
-  if (adyenCurrentSite) {
-    adyenCurrentSite.setCustomPreferenceValue(field, value);
-    customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
-  }
-
-  return customPreference;
-}
-
 var adyenConfigsObj = {
-  setCustomPreference: setCustomPreference,
   getAdyenEnvironment: function getAdyenEnvironment() {
     return getCustomPreference('Adyen_Mode').value;
-  },
-  setAdyenEnvironment: function setAdyenEnvironment(value) {
-    return setCustomPreference('Adyen_Mode', value).value;
   },
   getAdyenMerchantAccount: function getAdyenMerchantAccount() {
     return getCustomPreference('Adyen_merchantCode');
   },
   getAdyenSFRA6Compatibility: function getAdyenSFRA6Compatibility() {
     return getCustomPreference('Adyen_SFRA6_Compatibility');
-  },
-  setAdyenSFRA6Compatibility: function setAdyenSFRA6Compatibility(value) {
-    return setCustomPreference('Adyen_SFRA6_Compatibility', value);
-  },
-  getAdyenNotificationUser: function getAdyenNotificationUser() {
-    return getCustomPreference('Adyen_notification_user');
-  },
-  getAdyenNotificationPassword: function getAdyenNotificationPassword() {
-    return getCustomPreference('Adyen_notification_password');
   },
   getAdyen3DS2Enabled: function getAdyen3DS2Enabled() {
     return getCustomPreference('Adyen3DS2Enabled');
@@ -109,7 +85,7 @@ var adyenConfigsObj = {
     return getCustomPreference('AdyenLevel23_CommodityCode');
   },
   getAdyenSalePaymentMethods: function getAdyenSalePaymentMethods() {
-    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : [];
+    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
   },
   getAdyenGivingEnabled: function getAdyenGivingEnabled() {
     return getCustomPreference('AdyenGiving_enabled');
