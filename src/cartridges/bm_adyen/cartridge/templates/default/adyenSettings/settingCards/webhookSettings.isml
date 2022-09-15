@@ -12,22 +12,14 @@
             </h5>
             <h7 class="card-subtitle">
                 <div class="first-subtitle">
-                    To receive authorisation status updates, you need to first set up your username and password for
-                    webhook notifications in your Adyen
-                    <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area</a>. Learn
-                    more about
-                    <a class="text-primary"
-                        href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-5-receive-payment-status-updates"
-                        target="_blank">how to set up these notification credentials</a>.
+                    To receive authorization status updates, you need to <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-5-receive-payment-status-updates" target="_blank">set up your webhook notification credentials</a> in your Customer Area.
                 </div>
             </h7>
 
             <div class="mt-2">
                 <div class="form-group">
                     <label class="form-title mb-0" for="notificationsUser">Webhook username</label>
-                    <small id="notificationsUserHelp" class="form-text mb-1">After you've created an username for
-                        notification in Adyen Customer Area, you can enter your username in the following field.
-                    </small>
+                    <small id="notificationsUserHelp" class="form-text mb-1">This is the username you created under the Developers section in the Customer Area.</small>
                     <div class="input-fields">
                         <input type="text" class="form-control" name="Adyen_notification_user" id="notificationsUser"
                             aria-describedby="notificationsUserHelp" placeholder="user012"
@@ -37,9 +29,7 @@
 
                 <div class="form-group">
                     <label class="form-title mb-0" for="notificationsPassword">Webhook password</label>
-                    <small id="notificationsPasswordHelp" class="form-text mb-1">After you've created a password for
-                        notification in Adyen Customer Area, you can enter your password in the following field.
-                    </small>
+                    <small id="notificationsPasswordHelp" class="form-text mb-1">This is the password you created under the Developers section in the Customer Area.</small>
                     <span>
                         <i class="bi bi-eye-slash" id="togglePassword"></i>
                     </span>
@@ -49,24 +39,6 @@
                             placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword()}">
                     </div>
                 </div>
-
-                <script>
-                    const togglePassword = document.querySelector("#togglePassword");
-                    const password = document.querySelector("#notificationsPassword");
-
-                    togglePassword.addEventListener("click", function () {
-                        const type = password.getAttribute("type") === "password" ? "text" : "password";
-                        password.setAttribute("type", type);
-
-                        this.classList.toggle("bi-eye");
-                    });
-
-                    // prevent form submit
-                    const form = document.querySelector("form");
-                    form.addEventListener('submit', function (e) {
-                        e.preventDefault();
-                    });
-                </script>
 
             </div>
         </div>

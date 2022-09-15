@@ -3,10 +3,6 @@
     padding-right: 51px;
 }
 
-/*.form-group .form-check-inline{
-    padding-left: 70px;
-}
-*/
 .first-subtitle{
     padding-left: 48px;
     padding-right: 51px;
@@ -34,8 +30,6 @@
     font-size: 15px;
     line-height: 21px;
     color: #20304C;
-    padding-left: 48px;
-    padding-right: 51px;
 }
 
 .card-body .card-title {
@@ -44,13 +38,11 @@
     font-weight: 600;
     font-size: 24px;
     line-height: 32px;
-    color: #00112C
+    color: #00112C;
     height: 32px;
     padding-left: 48px;
     padding-right: 51px;
 }
-
-
 
 .card-body .card-subtitle {
     font-family: 'Fakt';
@@ -61,7 +53,6 @@
     color: #69778C;
     width: 699px;
 }
-
 
 .form-group .form-text {
     font-family: 'Fakt';
@@ -79,24 +70,15 @@
     width: 26px;
     height: 20px;
 
-/* Body */
-
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-/* identical to box height, or 143% */
 
     display: flex;
     align-items: center;
-
-/* grey / grey-70 */
-
-    color: #20304C
-    padding-left: 48px;
-    padding-right: 51px;
-
+    color: #20304C;
 }
 
 .list-group .navigation-item {
@@ -108,178 +90,53 @@
     display: flex;
     align-items: center;
     color: #394962;
-    }
+}
 
 .row .sticky-top {
     top: 10%;
     z-index: 10;
 }
 
-/*
-#saveChangesAlert {
-    bottom: 2%;
-    -index: 10;
-}
-*/
-
 .btn-toolbar{
-/* Header */
-
-/* Auto layout */
-
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 12px 107px;
     gap: 10px;
 
-    position: absolute;
     width: 1434px;
-    height: 85px;
+    height: 75px;
     left: 2px;
     top: 92px;
-
-/* white */
 
     background: #FFFFFF;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.06);
 }
-
-/*
-.btn-toolbar .btn-group{
-
-
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    padding: 12px;
-    gap: 20px;
-
-    width: 309px;
-    height: 60px;
-
-
-    background: #FFFFFF;
-
-    border: 1px solid #F3F2F2;
-    border-radius: 12px;
-
-
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-}
-
-.btn-toolbar .btn-group .first{
-    font-family: 'Fakt';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-
-    color: #394962;
-
-
-
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-    outline: none;
-
-}
-
-.btn-toolbar .btn-group .first:hover, .btn-toolbar .btn-group .first:focus{
-    background: rgb(184, 225, 252);
-}
-
-
-.btn-toolbar .btn-group .second{
-
-
-    font-family: 'Fakt';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-
-
-    color: #394962;
-
-
-
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-}
-
-.btn-toolbar .btn-group .second:hover, .btn-toolbar .btn-group .second:focus{
-    background: rgb(184, 225, 252);
-}
-
-
-.btn-toolbar .btn-group .third{
-
-
-    font-family: 'Fakt';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-
-
-    color: #394962;
-
-
-
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-}
-
-.btn-toolbar .btn-group .third:hover, .btn-toolbar .btn-group .third:focus{
-    background: rgb(184, 225, 252);
-}
-*/
 
 .btn-toolbar .sec-group{
     padding-left: 70%;
 }
 
 .btn-toolbar .sec-group .btn-light{
-/* label */
-
-
     width: 135px;
     height: 28px;
-
-/* Fakt Semi-bold 13px */
 
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 600;
     font-size: 13px;
     line-height: 17px;
-/* identical to box height, or 131% */
 
     display: flex;
     align-items: center;
     text-align: right;
 
-
-/* text/white */
-
     background: #FFFFFF;
-/* SF-color-gray-3 */
-
     border: 1px solid #F3F2F2;
-
-/* grey / grey-60 */
-
     color: #394962;
 
     border-radius: 6px;
-
-/* Inside auto layout */
     margin-top: 10px;
 
 }
@@ -288,7 +145,6 @@
     margin-top: 10px;
 }
 
-
 .first, .second, .third {
     outline: none;
     border: 0 !important;
@@ -296,26 +152,28 @@
 }
 
 .bi-eye, .bi-eye-slash{
-    position: absolute;
-    margin-top: 6px;
-    margin-right: 70px;
-    left: auto; 
-    right: 10px;
+    position: absolute !important;
+    margin-top: 6px !important;
+    margin-right: 70px !important;
+    left: 75px !important;
 }
 
-.paperclip{
-    position: absolute;
-    right: auto; 
-    margin-left: 22px;
-    margin-top: 24px;
+#notificationsPassword{
+  padding-left: 30px;  
 }
 
-.form-group .wrapper-class{
-    width:320px;
-    height: 69px;
-    margin-top:10px;   
-    padding-left: 48px;
-    padding-right: 51px;
+#toggleApi{
+    margin-top: -30px !important;
+    left: 75px;
+}
+
+#toggleApi:active{
+    margin-top: -30px !important;
+    left: 75px;
+}
+
+#apiKey{
+    padding-left: 30px;  
 }
 
 .line-divider{
@@ -332,37 +190,14 @@
     border-radius: 8.5px;
 }
 
-/*#navigationList a:hover {
-    background-color: #0ABF53;;
-}
-
-#navigationList a:clicked {
-  background-color: yellow;
-}
-*/
-
 html {
   scroll-padding-top: 6rem;
   overflow-x: hidden;
 }
 
-
-
-#fileDropBoxCharitybackground, #fileDropBoxGivingLogo{
-    width: 320px;
-    height: 69px;
-    border: 1px dashed gray;
-    color: #69778C;
-    border-radius: 7px;
-    font-family: 'Fakt';
-    text-align: center;
-    background:#F3F6F9;
-    padding: 20px 0;
-}
-
 .list-group-item {
     border: 1.0px solid rgb(204, 204, 204);
-    border-radius: 10.0px 10.0px 10.0px 10.0px;
+    /*border-radius: 10.0px 10.0px 10.0px 10.0px;*/
 }
 
 .list-group-item:hover{
@@ -376,22 +211,17 @@ html {
 
 #settingsFormCancelButton{
     top:20px;
-    /* label */
-
+    
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 600;
     font-size: 15px;
     line-height: 21px;
-/* identical to box height, or 140% */
 
     display: flex;
     align-items: center;
 
-/* grey / grey-60 */
-
     color: #394962;
-
     border-radius: 6px;
 }
 
@@ -401,13 +231,11 @@ html {
     font-weight: 600;
     font-size: 15px;
     line-height: 21px;
-/* identical to box height, or 140% */
 
     display: flex;
     align-items: center;
     border-radius: 6px;
 }
-
 
 #bm_content_column{
     padding-bottom: 0;
@@ -419,7 +247,7 @@ html {
     left: 0;
     margin: auto; // Centers alert component
     right: 0;
-    text-align: center; // Centers 'Alert Test' text
+    text-align: center; 
     top: 1em;
     
     background: #00112C;
@@ -438,6 +266,7 @@ html {
     order: 0;
     align-self: stretch;
     flex-grow: 0;
+    padding: 0.15rem;
 }
 
 #saveChangesAlert .img-fluid {
@@ -455,7 +284,7 @@ html {
     margin: auto; // Centers alert component
     position: absolute; // So that it will display relative to the entire page
     right: 0;
-    text-align: center; // Centers 'Alert Test' text
+    text-align: center; 
     top: 1em;
     
     background: #00112C;
@@ -477,27 +306,18 @@ html {
 
 #settingsFormCancelButton{
     top:20px;
-    /* label */
-
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 600;
     font-size: 15px;
     line-height: 21px;
-/* identical to box height, or 140% */
 
     display: flex;
     align-items: center;
-
-/* grey / grey-60 */
-
     color: #394962;
 
     border-radius: 6px;
-    
     background: #FFFFFF;
-/* grey / grey-20 */
-
     border: 1px solid #DCE0E5;
 }
 
@@ -509,32 +329,36 @@ html {
     font-weight: 600;
     font-size: 15px;
     line-height: 21px;
-/* identical to box height, or 140% */
-
-    
     display: flex;
     align-items: center;
     border-radius: 6px;
 }
 
-/*
-#acc_settings_logo{
-    position: absolute;
-    width: 124px;
-    height: 30px;
-    top: 2px;
-}
-
-
-*/
-
 #logos{
     margin:0 auto;
     justify-content:flex-start;
     display:flex;
+    width:100%;
+    height:100%;
+    left:3.2%;
 }
 
 #adyen-logo{
     margin-right: 20px;
 }
 
+
+#apiKey{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#invalidFeedbackApi{
+    position: absolute;
+    bottom: 60px;
+}
+
+#testConnectionButton{
+    position: relative;
+    bottom: -10px;
+}
