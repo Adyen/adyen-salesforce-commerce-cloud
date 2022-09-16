@@ -102,7 +102,8 @@ function createSession(basket, customer, countryCode) {
       sessionsRequest.shopperReference = customerID;
     }
 
-    sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+    //sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+    sessionsRequest.blockedPaymentMethods = AdyenHelper.getBlockedPaymentMethods();
 
     return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
   } catch (e) {

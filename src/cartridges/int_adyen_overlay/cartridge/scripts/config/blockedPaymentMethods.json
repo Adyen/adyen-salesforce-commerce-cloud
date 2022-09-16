@@ -1,5 +1,6 @@
 {
   "blockedPaymentMethods": [
+    "ideal",
     "applepay",
     "wechatpayMiniProgram",
     "wechatpayQR",
