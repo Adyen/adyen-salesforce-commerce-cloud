@@ -206,7 +206,7 @@ var adyenHelperObj = {
     return availablePaymentMethods.indexOf(paymentMethod) !== -1;
   },
 
-  getBlockedPaymentMethods: function getBlockedPaymentMethods() {
+function getBlockedPaymentMethods() {
     var blockedMethods = jsonData.blockedPaymentMethods;
     return blockedMethods;
   },
