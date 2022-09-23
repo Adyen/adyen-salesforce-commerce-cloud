@@ -555,10 +555,10 @@ var adyenHelperObj = {
     paymentInstrument.paymentTransaction.transactionID = pspRef;
     order.custom.Adyen_pspReference = pspRef;
 
-    if (result.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.paymentMethod;
-    } else if (result.additionalData && result.additionalData.paymentMethod) {
+    if (result.additionalData && result.additionalData.paymentMethod) {
       order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+    } else if (result.paymentMethod) {
+      order.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode

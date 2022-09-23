@@ -156,7 +156,7 @@ function placeOrder(req, res, next) {
                 paymentInstrument.paymentMethod,
             );
           paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-          paymentInstrument.custom.adyenPaymentMethod = `giftcard` ;
+          paymentInstrument.custom.adyenPaymentMethod = JSON.parse(session.privacy.giftCardResponse).paymentMethod.brand;
           paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
         })
 

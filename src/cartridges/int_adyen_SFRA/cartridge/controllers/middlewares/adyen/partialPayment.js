@@ -28,6 +28,7 @@ function makePartialPayment(req, res, next) {
         pspReference: response.pspReference,
         ...response.order,
         ...response.amount,
+        paymentMethod: response.paymentMethod,
       }); // entire response exceeds string length
     });
 
