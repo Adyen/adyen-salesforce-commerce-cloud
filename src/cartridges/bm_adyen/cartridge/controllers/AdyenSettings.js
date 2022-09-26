@@ -30,7 +30,6 @@ server.post('Save', server.middleware.https, (req, res, next) => {
       success: false,
     });
   }
-
   return next();
 });
 

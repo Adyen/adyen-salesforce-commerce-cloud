@@ -55,6 +55,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // add event listener to test connection based on current form contents
   testConnectionButton.addEventListener('click', async () => {
     const response = await fetch('AdyenSettings-TestConnection', {
+      settings: changedSettings,
+    });
+    const data = await response.json();
+    if (data.success) {
+      const alertBar = document.getElementById('saveChangesAlert');
+      alertBar.classList.add('show');
+      window.setTimeout(() => {
+        alertBar.classList.remove('show');
+      }, 2000);
+    }
+  });
+
+  // add event to submit button to send form and present results
+  submitButton.addEventListener('click', async () => {
+    // disable form buttons and reattach event listener for enabling it on form change
+    disableFormButtons();
+    form.addEventListener('input', enableformButtons);
+
+    const response = await fetch('AdyenSettings-Save', {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
