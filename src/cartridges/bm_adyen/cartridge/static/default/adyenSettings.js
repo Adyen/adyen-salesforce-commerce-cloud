@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const cancelAlertBar = document.getElementById('notSavedChangesAlert');
       cancelAlertBar.classList.add('show');
       window.setTimeout(() => {
-        alertBar.classList.remove('show');
+        cancelAlertBar.classList.remove('show');
       }, 2000);
     }
   });
