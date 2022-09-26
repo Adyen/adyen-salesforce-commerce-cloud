@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const testConnectionButton = document.querySelector('#testConnectionButton');
   const togglePassword = document.querySelector("#togglePassword");
   const toggleApi = document.querySelector("#toggleApi");
+  const formBody = document.querySelector('#formBody');
   const password = document.querySelector("#notificationsPassword");
   const merchAccount = document.getElementById("merchantAccount");
   const apiKeyVal = document.getElementById('apiKey');
@@ -61,11 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('notSavedChangesAlert').show();
   }
 
+  function renderSafari(){
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)){
+      formBody.style.setProperty('padding-top', '3rem');
+    }
+  }
+
   testConnectionButton.addEventListener('click', clickAndHide); // add event listener to hide the alerts in case of test connection
 
   form.addEventListener('input', enableformButtons); // add event listener to maintain form updates
 
   submitButton.addEventListener('click', showAlerts); // add event listener to show alerts just in case of save button clicked
+
+  window.addEventListener('load',renderSafari); // add event listerner to properly render css in case browser is safari 
 
   form.addEventListener('change', event => {
     const name = event.target.name;

@@ -34,7 +34,6 @@
         const addition2 = "#site_preference_group_attributes";
         const addition3 = "!id!Adyen";
         const finalLink = token +"#" + addition1 + addition2 + addition3;
-        /*location.href = finalLink;*/
         window.open(finalLink)
     }
               </script>
@@ -44,7 +43,7 @@
 
 
 
-        <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50" class="bg-light">
+        <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50" id="formBody" class="bg-light">
 
           <div id="saveChangesAlert" class="alert alert-success alert-dismissible fade collapse text-center sticky-top w-5 h-10" role="alert">
             <img src="${URLUtils.staticURL('icons/icon-success.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />

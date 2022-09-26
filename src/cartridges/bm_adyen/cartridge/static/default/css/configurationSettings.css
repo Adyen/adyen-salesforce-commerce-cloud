@@ -128,9 +128,7 @@
     font-size: 13px;
     line-height: 17px;
 
-    display: flex;
     align-items: center;
-    text-align: right;
 
     background: #FFFFFF;
     border: 1px solid #F3F2F2;
@@ -138,7 +136,6 @@
 
     border-radius: 6px;
     margin-top: 10px;
-
 }
 
 .img-fluid{
@@ -163,12 +160,7 @@
 }
 
 #toggleApi{
-    margin-top: -30px !important;
-    left: 75px;
-}
-
-#toggleApi:active{
-    margin-top: -30px !important;
+    margin-top: 5px !important;
     left: 75px;
 }
 
@@ -197,7 +189,6 @@ html {
 
 .list-group-item {
     border: 1.0px solid rgb(204, 204, 204);
-    /*border-radius: 10.0px 10.0px 10.0px 10.0px;*/
 }
 
 .list-group-item:hover{

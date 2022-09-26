@@ -64,7 +64,7 @@
                             <div class="input-fields">
                                 <input type="text" class="form-control required" name="Adyen_merchantCode" id="merchantAccount" onchange="testConnectionButton.disabled=false;" aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
                                     <div class="valid-feedback"></div>
-                                    <div class="invalid-feedback">Make sure the combination of merchant account and API key is correct!</div>
+                                    <div class="invalid-feedback">Please make sure the combination of merchant account and API key is correct.</div>
                                 </div>
                             </div>
 
@@ -73,21 +73,19 @@
                                 <label class="form-title mb-0" for="apiKey">Api key of Web service</label>
                                 <small id="apiKeyHelp" class="form-text mb-1">This is the API key you generated in the <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area</a>.</small>
                                 <div class="input-fields">
+                                    <span>
+                                        <i class="bi bi-eye-slash bi-eye-slash2" id="toggleApi"></i>
+                                    </span>
+
                                     <input type="password" class="form-control required" name="Adyen_API_Key" id="apiKey" aria-describedby="apiKeyHelp" onchange="testConnectionButton.disabled=false;"  placeholder="" value="${AdyenConfigs.getAdyenApiKey() || ''}">
                                     <div class="valid-feedback"></div>
                                     <div class="invalid-feedback">
                                         <div id="invalidFeedbackApi">
-                                            Make sure the combination of merchant account and API key is correct!
+                                            Please make sure the combination of merchant account and API key is correct.
                                         </div>
                                     </div>
-                                    <span>
-                                        <div id="apiToggleDiv">
-                                            <i class="bi bi-eye-slash bi-eye-slash2" id="toggleApi"></i>
-                                        </div>
-                                    </span>
                                     </div>
-                                    
-                                </div>
+                            </div>
 
 
                                 <div class="form-group">
