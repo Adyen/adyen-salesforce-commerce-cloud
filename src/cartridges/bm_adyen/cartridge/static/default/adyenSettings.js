@@ -14,32 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
   testConnectionButton.disabled = true;
 
   function settingChanged(key, value) {
-    const settingIndex = changedSettings.findIndex(
-      (setting) => setting.key === key,
-    );
+    const settingIndex = changedSettings.findIndex(setting => {
+      return setting.key === key;
+    });
 
     if (settingIndex >= 0) {
-      changedSettings[settingIndex] = { key, value };
+      changedSettings[settingIndex] = {
+        key,
+        value
+      };
     } else {
-      changedSettings.push({ key, value });
+      changedSettings.push({
+        key,
+        value
+      });
     }
   }
 
   function enableformButtons() {
-    formButtons.forEach((button) => {
+    for (const button of formButtons) {
       button.classList.remove('disabled');
       button.classList.add('enabled');
       form.removeEventListener('input', enableformButtons);
-    });
+    }
+
+    ;
   }
 
   function disableFormButtons() {
-    formButtons.forEach((button) => {
+    for (const button of formButtons) {
       button.classList.remove('enabled');
       button.classList.add('disabled');
       form.removeEventListener('input', enableformButtons);
-    });
-  }
+    }
+  } // add event for save button availability on form change.
+
 
   function clickAndHide() {
     document.getElementById('settingsFormSubmitButton').click();
@@ -67,22 +76,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('load',renderSafari); // add event listerner to properly render css in case browser is safari 
 
-  // add event listener to maintain form updates
-  form.addEventListener('change', (event) => {
-    const { target } = event;
-    const { name } = target;
+  form.addEventListener('change', event => {
+    const name = event.target.name;
+    let value = event.target.value; // get checked boolean value for checkboxes
 
-    // get checked boolean value for checkboxes and radio buttons
-    const isCheckedType = ['checkbox', 'radio'].some(
-      (type) => type === target.type,
-    );
+    if (event.target.type === 'checkbox') {
+      value = event.target.checked;
+    } //convert radio button strings to boolean if values are 'true' or 'false'
 
-    const value = isCheckedType ? target.checked : target.value;
+
+    if (event.target.type === 'radio') {
+      if (event.target.value === 'true') {
+        value = true;
+      }
+
+      if (event.target.value === 'false') {
+        value = false;
+      }
+    }
 
     settingChanged(name, value);
-  });
+  }); 
   
+  // add event to submit button to send form and present results
   // add event listener to test connection based on current form contents
+  // prevent form submit
+
   testConnectionButton.addEventListener('click', async () => {
     const response = await fetch('AdyenSettings-TestConnection', {
       headers: {
@@ -108,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
       apiKeyVal.classList.remove("is-valid");
     }
   });
-  
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
@@ -138,10 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     }
   });
-
   cancelButton.addEventListener('click', async () => {
-    window.location.reload();
-  }); 
+    location.reload();
+  }); // file upload butttons event listeners for adyen giving card
 
   togglePassword.addEventListener("click", function () {
     const type = password.getAttribute("type") === "password" ? "text" : "password";
@@ -154,8 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     apiKeyVal.setAttribute("type", type);
     this.classList.toggle("bi-eye");
   });
-  
-// file upload butttons event listeners for adyen giving card
+
   function openDialogCharityBackgroundUrl() {
     document.getElementById('charityBackgroundUrl').click();
   }
@@ -164,15 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adyenGivingLogoUrl').click();
   }
 
-  document
-    .getElementById('fileDropBoxCharitybackground')
-    .addEventListener('click', openDialogCharityBackgroundUrl);
+  document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
+  document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
 
-  document
-    .getElementById('fileDropBoxGivingLogo')
-    .addEventListener('click', openDialogAdyenGivingLogoUrl);
-
-  document.getElementById('flexSwitchCheckChecked').onchange = () => {
+  document.getElementById('flexSwitchCheckChecked').onchange = function () {
     document.getElementById('charityName').disabled = !this.checked;
     document.getElementById('charityMerchantAccount').disabled = !this.checked;
     document.getElementById('donationAmounts').disabled = !this.checked;
