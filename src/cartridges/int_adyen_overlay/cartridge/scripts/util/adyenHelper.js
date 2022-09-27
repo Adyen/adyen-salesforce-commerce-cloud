@@ -29,8 +29,6 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
-const jsonData = require('*/cartridge/scripts/config/blockedPaymentMethods.json'); 
-
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -204,11 +202,6 @@ var adyenHelperObj = {
       'directdebit_GB',
     ];
     return availablePaymentMethods.indexOf(paymentMethod) !== -1;
-  },
-
-getBlockedPaymentMethods() {
-    var blockedMethods = jsonData.blockedPaymentMethods;
-    return blockedMethods;
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
