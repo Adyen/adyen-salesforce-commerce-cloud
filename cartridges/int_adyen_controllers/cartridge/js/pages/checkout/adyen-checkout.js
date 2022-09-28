@@ -696,6 +696,7 @@ function getQRCodeConfig() {
 function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
+    showBrandsUnderCardNumber: false,
     onBrand: function onBrand(brandObject) {
       $('#cardType').val(brandObject.brand);
     },
