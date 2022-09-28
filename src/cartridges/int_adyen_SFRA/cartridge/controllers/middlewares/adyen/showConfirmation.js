@@ -116,8 +116,8 @@ function showConfirmation(req, res, next) {
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
 
+      // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
       setPaymentMethodField(adyenPaymentInstrument, order);
-      clearForms.clearAdyenData(adyenPaymentInstrument);
 
       const detailsResult = getPaymentsDetailsResult(
         adyenPaymentInstrument,

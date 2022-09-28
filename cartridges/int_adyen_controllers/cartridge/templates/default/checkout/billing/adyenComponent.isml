@@ -20,7 +20,7 @@
     window.sessionsResponse = JSON.parse(sessionsRes);
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
+    var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.returnURL = "${URLUtils.https('COBilling-Start')}";
@@ -79,7 +79,7 @@
     <iscomment>
         Adyen RatePay Device Fingerprint Code
     </iscomment>
-    <isif condition="${!empty(ratePayValues.ratePayID)}">
+    <isif condition="${empty(session.privacy.ratePayFingerprint)}">
         <script language="JavaScript">
             var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'};
         </script>
