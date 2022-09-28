@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       button.classList.add('disabled');
       form.removeEventListener('input', enableformButtons);
     }
-  } // add event for save button availability on form change.
+  }
 
 
   function clickAndHide() {
@@ -98,10 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     settingChanged(name, value);
   }); 
   
-  // add event to submit button to send form and present results
   // add event listener to test connection based on current form contents
-  // prevent form submit
-
   testConnectionButton.addEventListener('click', async () => {
     const response = await fetch('AdyenSettings-TestConnection', {
       headers: {
@@ -180,10 +177,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adyenGivingLogoUrl').click();
   }
 
-  document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
-  document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
+  document
+    .getElementById('fileDropBoxCharitybackground')
+    .addEventListener('click', openDialogCharityBackgroundUrl);
 
-  document.getElementById('flexSwitchCheckChecked').onchange = function () {
+  document
+    .getElementById('fileDropBoxGivingLogo')
+    .addEventListener('click', openDialogAdyenGivingLogoUrl);
+
+  document.getElementById('flexSwitchCheckChecked').onchange = () => {
     document.getElementById('charityName').disabled = !this.checked;
     document.getElementById('charityMerchantAccount').disabled = !this.checked;
     document.getElementById('donationAmounts').disabled = !this.checked;
