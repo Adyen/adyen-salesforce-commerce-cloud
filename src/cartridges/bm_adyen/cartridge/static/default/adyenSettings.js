@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('notSavedChangesAlert').show();
   }
 
-  //if browser is safari and sets custom padding
+  //if browser is safari it sets custom padding
   function checkBrowserSupport() {
     if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
       formBody.style.setProperty('padding-top', '3rem');
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   cancelButton.addEventListener('click', async () => {
-    location.reload();
+    window.location.reload();
   });
 
   togglePassword.addEventListener('click', function () {
