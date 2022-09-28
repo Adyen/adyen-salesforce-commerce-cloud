@@ -12,7 +12,6 @@ server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
 });
 
 server.post('Save', server.middleware.https, (req, res, next) => {
-<<<<<<< HEAD
   try {
     const requestBody = JSON.parse(req.body);
     requestBody.settings.forEach((setting) => {
@@ -76,26 +75,6 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
       message: 'an unknown error has occcured',
       success: false,
     });
-=======
-  const requestBody = JSON.parse(req.body);
-
-  try {
-    requestBody.settings.forEach((setting) => {
-      Transaction.wrap(() => {
-        AdyenConfigs.setCustomPreference(setting.key, setting.value);
-      });
-    });
-    res.json({
-      success: true,
-    });
-  } catch (error) {
-    Logger.getLogger('Adyen').error(
-      `Error while saving settings in BM configuration: ${error}`,
-    );
-    res.json({
-      success: false,
-    });
->>>>>>> origin/bm_config_page
   }
 
   return next();
