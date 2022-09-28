@@ -98,10 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     settingChanged(name, value);
   }); 
   
-  // add event to submit button to send form and present results
   // add event listener to test connection based on current form contents
-  // prevent form submit
-
   testConnectionButton.addEventListener('click', async () => {
     const response = await fetch('AdyenSettings-TestConnection', {
       headers: {
@@ -127,6 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
       apiKeyVal.classList.remove("is-valid");
     }
   });
+  
+  // add event to submit button to send form and present results
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
@@ -158,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   cancelButton.addEventListener('click', async () => {
     location.reload();
-  }); // file upload butttons event listeners for adyen giving card
+  }); 
 
   togglePassword.addEventListener("click", function () {
     const type = password.getAttribute("type") === "password" ? "text" : "password";
