@@ -84,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }),
     });
     const data = await response.json();
-    console.log(data);
     // TODO: Feedback to user
   });
 
