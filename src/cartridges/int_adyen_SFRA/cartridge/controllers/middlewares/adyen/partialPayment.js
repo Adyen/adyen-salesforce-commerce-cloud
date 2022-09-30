@@ -23,9 +23,11 @@ function makePartialPayment(req, res, next) {
       null,
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
+
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
-        pspReference: response.pspReference,
+        giftCardpspReference: response.pspReference,
+        orderPSPReference: response.order.pspReference,
         ...response.order,
         ...response.amount,
         paymentMethod: response.paymentMethod,

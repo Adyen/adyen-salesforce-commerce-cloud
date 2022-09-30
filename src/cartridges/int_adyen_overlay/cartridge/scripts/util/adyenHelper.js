@@ -78,7 +78,10 @@ var adyenHelperObj = {
   },
 
   getAdyenGivingConfig(order) {
-    const paymentMethod = order.custom.Adyen_paymentMethod;
+    const paymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    const paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
     if (
         !AdyenConfigs.getAdyenGivingEnabled() ||
         !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
@@ -99,7 +102,8 @@ var adyenHelperObj = {
       currency: session.currency.currencyCode,
       values: configuredAmounts,
     });
-    givingConfigs.pspReference = order.custom.Adyen_pspReference;
+    givingConfigs.pspReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
+
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if (givingConfigs[config] === null) {
@@ -551,14 +555,13 @@ var adyenHelperObj = {
 
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails(paymentInstrument, order, result) {
-    const pspRef = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).pspReference: result.pspReference ;
-    paymentInstrument.paymentTransaction.transactionID = pspRef;
-    order.custom.Adyen_pspReference = pspRef;
+    paymentInstrument.paymentTransaction.transactionID = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference : result.pspReference;
+    paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
 
     if (result.additionalData && result.additionalData.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      order.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode

@@ -165,7 +165,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     paymentResponse.decision = 'ERROR';
 
     if (responseObject.additionalData) {
-      order.custom.Adyen_paymentMethod = responseObject.additionalData
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = responseObject.additionalData
         .paymentMethod
         ? responseObject.additionalData.paymentMethod
         : null;
