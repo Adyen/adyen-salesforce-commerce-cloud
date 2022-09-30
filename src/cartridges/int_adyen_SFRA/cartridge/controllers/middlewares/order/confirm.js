@@ -38,7 +38,8 @@ function handleAdyenGiving(req, res, order) {
     clientKey,
     environment,
     adyenGivingAvailable: true,
-    pspReference: paymentInstrument.paymentTransaction.custom.Adyen_pspReference,
+    pspReference:
+      paymentInstrument.paymentTransaction.custom.Adyen_pspReference,
     donationAmounts: JSON.stringify(donationAmounts),
     charityName,
     charityDescription,
@@ -57,7 +58,8 @@ function confirm(req, res, next) {
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
-    const paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
+    const paymentMethod =
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
 
     if (
       AdyenHelper.getAdyenGivingConfig(order) &&
