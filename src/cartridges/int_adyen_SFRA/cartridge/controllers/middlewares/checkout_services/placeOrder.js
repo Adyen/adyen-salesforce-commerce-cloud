@@ -146,7 +146,8 @@ function placeOrder(req, res, next) {
     //Check if gift card was used
     if(session.privacy.giftCardResponse) {
         let paymentInstrument;
-        const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
+        const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
+        const paidGiftcardAmount = parsedGiftCardObj.amount;
         Transaction.wrap(() => {
             paymentInstrument = order.createPaymentInstrument(
                 constants.METHOD_ADYEN_COMPONENT,
@@ -156,9 +157,10 @@ function placeOrder(req, res, next) {
                 paymentInstrument.paymentMethod,
             );
           paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-          paymentInstrument.custom.adyenPaymentMethod = JSON.parse(session.privacy.giftCardResponse).paymentMethod.brand;
+
+          paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.paymentMethod?.brand || parsedGiftCardObj.additionalData?.paymentMethod?.brand || 'giftcard';
           paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
-          paymentInstrument.paymentTransaction.custom.Adyen_pspReference = JSON.parse(session.privacy.giftCardResponse).giftCardpspReference;
+          paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCardpspReference;
         })
 
         session.privacy.giftCardResponse = null;
