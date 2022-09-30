@@ -192,3 +192,11 @@
 .invisible {
     display: none;
 }
+
+#cancelGiftCardContainer {
+    cursor: pointer;
+}
+
+#giftCardLabel {
+    cursor: pointer;
+}
