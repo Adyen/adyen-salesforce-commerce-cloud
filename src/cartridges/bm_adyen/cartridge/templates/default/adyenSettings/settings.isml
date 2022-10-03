@@ -28,14 +28,14 @@
               </div>
 
               <script>
-    function getLink(){
-        let token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-        const addition1 = "/?preference";
-        const addition2 = "#site_preference_group_attributes";
-        const addition3 = "!id!Adyen";
-        const finalLink = token +"#" + addition1 + addition2 + addition3;
-        window.open(finalLink)
-    }
+                function getLink(){
+                  let token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
+                  const addition1 = "/?preference";
+                  const addition2 = "#site_preference_group_attributes";
+                  const addition3 = "!id!Adyen";
+                  const finalLink = token +"#" + addition1 + addition2 + addition3;
+                  window.open(finalLink)
+                }
               </script>
             </div>
           </div>
