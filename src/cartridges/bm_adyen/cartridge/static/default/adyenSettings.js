@@ -59,20 +59,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('notSavedChangesAlert').show();
   }
 
-  //if browser is safari it sets custom padding
+  // if browser is safari it sets custom padding
   function checkBrowserSupport() {
     if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
       formBody.style.setProperty('padding-top', '3rem');
     }
   }
 
-  testConnectionButton.addEventListener('click', hideAlertsOnTest); 
+  testConnectionButton.addEventListener('click', hideAlertsOnTest);
 
-  form.addEventListener('input', enableformButtons); 
+  form.addEventListener('input', enableformButtons);
 
-  submitButton.addEventListener('click', showAlertsOnSave); 
+  submitButton.addEventListener('click', showAlertsOnSave);
 
-  window.addEventListener('load', checkBrowserSupport); 
+  window.addEventListener('load', checkBrowserSupport);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -151,19 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     }
   });
-  
+
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
 
-  togglePassword.addEventListener('click', function () {
+  togglePassword.addEventListener('click', async () => {
     const type =
       password.getAttribute('type') === 'password' ? 'text' : 'password';
     password.setAttribute('type', type);
     this.classList.toggle('bi-eye');
   });
 
-  toggleApi.addEventListener('click', function () {
+  toggleApi.addEventListener('click', async () => {
     const type =
       apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
     apiKeyVal.setAttribute('type', type);
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .getElementById('fileDropBoxGivingLogo')
     .addEventListener('click', openDialogAdyenGivingLogoUrl);
 
-  document.getElementById('flexSwitchCheckChecked').onchange = function () {
+  document.getElementById('flexSwitchCheckChecked').onchange = () => {
     document.getElementById('charityName').disabled = !this.checked;
     document.getElementById('charityMerchantAccount').disabled = !this.checked;
     document.getElementById('donationAmounts').disabled = !this.checked;
