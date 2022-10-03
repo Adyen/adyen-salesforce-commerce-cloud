@@ -7,7 +7,7 @@
             Card settings
         </h5>
         <h7 class="card-subtitle">
-            <div class="first-subtitle">Choose the payment features you want to offer to your shoppers.</div>
+            <div class="first-subtitle">Choose additional payment features you want to offer to your shoppers.</div>
         </h7>
 
         <div class="mt-2">
@@ -45,7 +45,7 @@
             <div class="form-group">
                 <label class="form-title mb-0" for="installments">Credit card installments <small class="text-secondary">(optional)</small></label>
                 <small id="installmentsHelp" class="form-text mb-1">
-                    If you’re offering an installments option to your shoppers, go to <a class="text-primary" href="https://adyen.github.io/adyen-salesforce-commerce-cloud/" target="_blank">our GitHub</a> to create the required configuration value and paste it over here.
+                    If you’re offering an installments option to your shoppers, go to <a class="text-primary" href="https://adyen.github.io/adyen-salesforce-commerce-cloud/" target="_blank">our GitHub</a> to create the required configuration value and paste it here.
                 </small>
                 <div class="input-fields">
                     <input type="text" class="form-control" name="AdyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments() || ''}">    

@@ -42,7 +42,8 @@
             <div class="form-group border-top mt-4">
                 <label class="form-title mt-4" for="basketFields">Basket fields</label>
                 <small id="basketFieldsHelp" class="form-text mb-1">
-                    Enable basket fields with <a class="text-primary" href="https://www.unspsc.org/faqs" target="_blank">custom risk rules</a> to help you identify fraudulent purchases.
+                    We got you covered with our Revenue protect, risk engine. But if you want to create specific basket fields items in your risk set up, you can.
+                    Please <a class="text-primary" href="https://docs.adyen.com/risk-management/configure-manual-risk/configure-custom-risk-rules#adyen-provided-fields" target="_blank">set up</a> these custom fields in the Adyen Customer Area and enable this setting.
                 </small>
                 
                 <div class="radio-buttons">
@@ -60,7 +61,7 @@
             
             <div class="form-group">
                 <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
-                <small id="systemIntegratorHelp" class="form-text mb-1">Let us know the system integrator responsible for your integration to get custom support.</small>
+                <small id="systemIntegratorHelp" class="form-text mb-1">Please let us know the name of your system integrator/digital agency responsible for this integration so we can give you better customer support.</small>
                 <div class="input-fields">
                     <input type="text" class="form-control" name="Adyen_IntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName() || ''}">
                 </div>
