@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
   testConnectionButton.disabled = true;
+  const isValid = 'is-valid';
+  const isInvalid = 'is-invalid';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -111,15 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (data.success) {
-      merchAccount.classList.add('is-valid');
-      merchAccount.classList.remove('is-invalid');
-      apiKeyVal.classList.add('is-valid');
-      apiKeyVal.classList.remove('is-invalid');
+      merchAccount.classList.add(isValid);
+      merchAccount.classList.remove(isInvalid);
+      apiKeyVal.classList.add(isValid);
+      apiKeyVal.classList.remove(isInvalid);
     } else {
-      merchAccount.classList.add('is-invalid');
-      merchAccount.classList.remove('is-valid');
-      apiKeyVal.classList.add('is-invalid');
-      apiKeyVal.classList.remove('is-valid');
+      merchAccount.classList.add(isInvalid);
+      merchAccount.classList.remove(isValid);
+      apiKeyVal.classList.add(isInvalid);
+      apiKeyVal.classList.remove(isValid);
     }
   });
   submitButton.addEventListener('click', async () => {
