@@ -3,7 +3,7 @@
 <div id="optionalSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
-         Optional settings
+         Additional settings <small class="text-secondary">(optional)</small>
       </h5>
       <h7 class="card-subtitle">
          <div class="first-subtitle">Improve your business’s transparency and security.</div>
@@ -52,7 +52,7 @@
          </div>
          <div class="form-group">
             <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
-            <small id="systemIntegratorHelp" class="form-text mb-1">Please let us know the name of your system integrator/digital agency responsible for this integration so we can give you better customer support.</small>
+            <small id="systemIntegratorHelp" class="form-text mb-1">Let us know the name of the company that built your integration with Adyen to get custom support.</small>
             <div class="input-fields">
                <input type="text" class="form-control" name="Adyen_IntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName() || ''}">
             </div>
