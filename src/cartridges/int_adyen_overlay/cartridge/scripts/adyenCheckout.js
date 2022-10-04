@@ -124,6 +124,7 @@ function createPaymentRequest(args) {
           city: address.city,
           country: address.countryCode.value,
         }
+        // openinvoicedata.merchantData holds merchant data. It takes data in a Base64 encoded string.
         paymentRequest.additionalData['openinvoicedata.merchantData'] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
