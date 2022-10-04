@@ -68,6 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function showPassword() {
+    const type =
+      password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
+
+  function showApiKey() {
+    const type =
+      apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
+    apiKeyVal.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
+
   testConnectionButton.addEventListener('click', hideAlertsOnTest);
 
   form.addEventListener('input', enableformButtons);
@@ -75,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
   submitButton.addEventListener('click', showAlertsOnSave);
 
   window.addEventListener('load', checkBrowserSupport);
+
+  togglePassword.addEventListener('click', showPassword);
+
+  toggleApi.addEventListener('click', showApiKey);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -156,20 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
-  });
-
-  togglePassword.addEventListener('click', async () => {
-    const type =
-      password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    this.classList.toggle('bi-eye');
-  });
-
-  toggleApi.addEventListener('click', async () => {
-    const type =
-      apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
-    apiKeyVal.setAttribute('type', type);
-    this.classList.toggle('bi-eye');
   });
 
   function openDialogCharityBackgroundUrl() {
