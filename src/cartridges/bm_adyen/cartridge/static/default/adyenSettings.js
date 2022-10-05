@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formBody = document.querySelector('#formBody');
   const password = document.querySelector('#notificationsPassword');
   const merchAccount = document.getElementById('merchantAccount');
+  const classicPageButton = document.querySelector('#classicButton');
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
   testConnectionButton.disabled = true;
@@ -31,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
         value,
       });
     }
+  }
+
+  // redirect to classic page
+  function getLink() {
+    window.open(window.classicConfigPageUrl);
   }
 
   function enableformButtons() {
@@ -84,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   testConnectionButton.addEventListener('click', hideAlertsOnTest);
 
+  classicPageButton.addEventListener('click', getLink);
+
   form.addEventListener('input', enableformButtons);
 
   submitButton.addEventListener('click', showAlertsOnSave);
@@ -101,8 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (event.target.type === 'checkbox') {
       value = event.target.checked;
-    } // convert radio button strings to boolean if values are 'true' or 'false'
+    }
 
+    // convert radio button strings to boolean if values are 'true' or 'false'
     if (event.target.type === 'radio') {
       if (event.target.value === 'true') {
         value = true;
@@ -175,29 +184,4 @@ document.addEventListener('DOMContentLoaded', () => {
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
-
-  function openDialogCharityBackgroundUrl() {
-    document.getElementById('charityBackgroundUrl').click();
-  }
-
-  function openDialogAdyenGivingLogoUrl() {
-    document.getElementById('adyenGivingLogoUrl').click();
-  }
-
-  document
-    .getElementById('fileDropBoxCharitybackground')
-    .addEventListener('click', openDialogCharityBackgroundUrl);
-  document
-    .getElementById('fileDropBoxGivingLogo')
-    .addEventListener('click', openDialogAdyenGivingLogoUrl);
-
-  document.getElementById('flexSwitchCheckChecked').onchange = () => {
-    document.getElementById('charityName').disabled = !this.checked;
-    document.getElementById('charityMerchantAccount').disabled = !this.checked;
-    document.getElementById('donationAmounts').disabled = !this.checked;
-    document.getElementById('charityDescription').disabled = !this.checked;
-    document.getElementById('charityWebsite').disabled = !this.checked;
-    document.getElementById('charityBackgroundUrl').disabled = !this.checked;
-    document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
-  };
 });
