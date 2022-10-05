@@ -219,7 +219,7 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(partialPaymentRequest);
             console.log('partialPaymentResponse ' + JSON.stringify(partialPaymentResponse));
-            if(partialPaymentResponse.error) {
+            if(partialPaymentResponse?.error) {
                 reject();
             } else {
                 showRemainingAmount();
