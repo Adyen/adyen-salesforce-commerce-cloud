@@ -39,11 +39,6 @@ function setNode(paymentMethodID) {
         },
       });
       store.componentsObj[paymentMethodID].node = node;
-
-      if (paymentMethodID === 'giftcard') {
-        document.querySelector('#rb_giftcard').parentNode.style.display =
-          'none';
-      }
     } catch (e) {
       /* No component for payment method */
     }
@@ -147,6 +142,11 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+
+  if(paymentMethodID === "giftcard") {
+    return;
+  }
+
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
 

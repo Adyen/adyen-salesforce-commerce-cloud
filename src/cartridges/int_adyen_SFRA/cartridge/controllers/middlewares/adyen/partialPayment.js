@@ -24,6 +24,8 @@ function makePartialPayment(req, res, next) {
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
+    Logger.getLogger('Adyen').error('response ' + JSON.stringify(response));
+
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
         giftCardpspReference: response.pspReference,
@@ -44,6 +46,7 @@ function makePartialPayment(req, res, next) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payment.. ${error.toString()}`,
     );
+    res.json({error: true});
   }
   return next();
 }
