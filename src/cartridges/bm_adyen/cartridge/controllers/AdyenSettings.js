@@ -72,7 +72,7 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
     );
     res.json({
       error: true,
-      message: 'an unknown error has occcured',
+      message: 'an unknown error has occurred',
       success: false,
     });
   }
