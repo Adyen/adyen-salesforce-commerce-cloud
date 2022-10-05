@@ -8,6 +8,13 @@
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script>
+         let token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
+         const addition1 = "/?preference";
+         const addition2 = "#site_preference_group_attributes";
+         const addition3 = "!id!Adyen";
+         window.classicConfigPageUrl = token +"#" + addition1 + addition2 + addition3;
+      </script>
    </head>
    <header class="header row bg-white mt-4 mb-4">
       <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
@@ -16,19 +23,8 @@
             <img src="${URLUtils.staticURL('icons/account-setting-tag.svg')}" class ="img-fluid" id="acc_settings_logo" alt="adyen-logo" />
          </div>
          <div class="sec-group">
-            <button type="button" onclick="getLink()" id="classicButton" class="btn btn-light">View classic page</button>
+            <button type="button" id="classicButton" class="btn btn-light">View classic page</button>
          </div>
-         <script>
-            function getLink(){
-              let token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-              const addition1 = "/?preference";
-              const addition2 = "#site_preference_group_attributes";
-              const addition3 = "!id!Adyen";
-              const finalLink = token +"#" + addition1 + addition2 + addition3;
-              window.open(finalLink)
-            }
-         </script>
-      </div>
       </div>
    </header>
    <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50" id="formBody" class="bg-light">
