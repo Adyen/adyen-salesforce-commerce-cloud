@@ -105,11 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (event.target.type === 'radio') {
       if (event.target.value === 'true') {
-        value = event.target.value;
+        value = true;
       }
 
       if (event.target.value === 'false') {
-        value = event.target.value;
+        value = false;
       }
     }
 
