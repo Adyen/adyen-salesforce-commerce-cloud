@@ -20,7 +20,7 @@
             <label class="form-title mb-0" for="ratePayId">RatePay ID <small class="text-secondary">(optional)</small></label>
             <small id="ratePayIdHelp" class="form-text mb-1">This is an open invoice and secured direct debit provider available in Germany, Austria, Switzerland, and the Netherlands. Enter the unique ID provided by your Ratepay integration consultant.</small>
             <div class="input-fields">
-               <input type="text" class="form-control" name="AdyenRatePayID" id="ratePayId" aria-describedby="ratePayIdHelp" placeholder="oj9GsQ" value="${AdyenConfigs.getRatePayMerchantID() || ''}">    
+               <input type="text" class="form-control" name="AdyenRatePayID" id="ratePayId" aria-describedby="ratePayIdHelp" placeholder="e.g. oj9GsQ" value="${AdyenConfigs.getRatePayMerchantID() || ''}">    
             </div>
          </div>
          <div class="form-group">
