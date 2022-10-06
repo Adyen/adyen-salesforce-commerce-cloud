@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const classicPageButton = document.querySelector('#classicButton');
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
-  testConnectionButton.disabled = true;
   const isValid = 'is-valid';
   const isInvalid = 'is-invalid';
 
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('settingsFormSubmitButton').click();
     document.getElementById('saveChangesAlert').hide();
     document.getElementById('notSavedChangesAlert').hide();
-    document.getElementById('testConnectionButton').disabled = true;
   }
 
   function showAlertsOnSave() {
