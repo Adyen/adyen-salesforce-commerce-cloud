@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const formBody = document.querySelector('#formBody');
   const password = document.querySelector('#notificationsPassword');
   const merchAccount = document.getElementById('merchantAccount');
+  const classicPageButton = document.querySelector('#classicButton');
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
-  testConnectionButton.disabled = true;
+  const isValid = 'is-valid';
+  const isInvalid = 'is-invalid';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -29,6 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         value,
       });
     }
+  }
+
+  // redirect to classic page
+  function getLink() {
+    window.open(window.classicConfigPageUrl);
   }
 
   function enableformButtons() {
@@ -51,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('settingsFormSubmitButton').click();
     document.getElementById('saveChangesAlert').hide();
     document.getElementById('notSavedChangesAlert').hide();
-    document.getElementById('testConnectionButton').disabled = true;
   }
 
   function showAlertsOnSave() {
@@ -59,20 +65,40 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('notSavedChangesAlert').show();
   }
 
-  //if browser is safari it sets custom padding
+  // if browser is safari it sets custom padding
   function checkBrowserSupport() {
     if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
       formBody.style.setProperty('padding-top', '3rem');
     }
   }
 
-  testConnectionButton.addEventListener('click', hideAlertsOnTest); 
+  function showPassword() {
+    const type =
+      password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
 
-  form.addEventListener('input', enableformButtons); 
+  function showApiKey() {
+    const type =
+      apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
+    apiKeyVal.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
 
-  submitButton.addEventListener('click', showAlertsOnSave); 
+  testConnectionButton.addEventListener('click', hideAlertsOnTest);
 
-  window.addEventListener('load', checkBrowserSupport); 
+  classicPageButton.addEventListener('click', getLink);
+
+  form.addEventListener('input', enableformButtons);
+
+  submitButton.addEventListener('click', showAlertsOnSave);
+
+  window.addEventListener('load', checkBrowserSupport);
+
+  togglePassword.addEventListener('click', showPassword);
+
+  toggleApi.addEventListener('click', showApiKey);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -81,15 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (event.target.type === 'checkbox') {
       value = event.target.checked;
-    } // convert radio button strings to boolean if values are 'true' or 'false'
+    }
 
+    // convert radio button strings to boolean if values are 'true' or 'false'
     if (event.target.type === 'radio') {
       if (event.target.value === 'true') {
-        value = event.target.value;
+        value = true;
       }
 
       if (event.target.value === 'false') {
-        value = event.target.value;
+        value = false;
       }
     }
 
@@ -111,15 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (data.success) {
-      merchAccount.classList.add('is-valid');
-      merchAccount.classList.remove('is-invalid');
-      apiKeyVal.classList.add('is-valid');
-      apiKeyVal.classList.remove('is-invalid');
+      merchAccount.classList.add(isValid);
+      merchAccount.classList.remove(isInvalid);
+      apiKeyVal.classList.add(isValid);
+      apiKeyVal.classList.remove(isInvalid);
     } else {
-      merchAccount.classList.add('is-invalid');
-      merchAccount.classList.remove('is-valid');
-      apiKeyVal.classList.add('is-invalid');
-      apiKeyVal.classList.remove('is-valid');
+      merchAccount.classList.add(isInvalid);
+      merchAccount.classList.remove(isValid);
+      apiKeyVal.classList.add(isInvalid);
+      apiKeyVal.classList.remove(isValid);
     }
   });
   submitButton.addEventListener('click', async () => {
@@ -151,47 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     }
   });
-  
+
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
-
-  togglePassword.addEventListener('click', function () {
-    const type =
-      password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    this.classList.toggle('bi-eye');
-  });
-
-  toggleApi.addEventListener('click', function () {
-    const type =
-      apiKeyVal.getAttribute('type') === 'password' ? 'text' : 'password';
-    apiKeyVal.setAttribute('type', type);
-    this.classList.toggle('bi-eye');
-  });
-
-  function openDialogCharityBackgroundUrl() {
-    document.getElementById('charityBackgroundUrl').click();
-  }
-
-  function openDialogAdyenGivingLogoUrl() {
-    document.getElementById('adyenGivingLogoUrl').click();
-  }
-
-  document
-    .getElementById('fileDropBoxCharitybackground')
-    .addEventListener('click', openDialogCharityBackgroundUrl);
-  document
-    .getElementById('fileDropBoxGivingLogo')
-    .addEventListener('click', openDialogAdyenGivingLogoUrl);
-
-  document.getElementById('flexSwitchCheckChecked').onchange = function () {
-    document.getElementById('charityName').disabled = !this.checked;
-    document.getElementById('charityMerchantAccount').disabled = !this.checked;
-    document.getElementById('donationAmounts').disabled = !this.checked;
-    document.getElementById('charityDescription').disabled = !this.checked;
-    document.getElementById('charityWebsite').disabled = !this.checked;
-    document.getElementById('charityBackgroundUrl').disabled = !this.checked;
-    document.getElementById('adyenGivingLogoUrl').disabled = !this.checked;
-  };
 });
