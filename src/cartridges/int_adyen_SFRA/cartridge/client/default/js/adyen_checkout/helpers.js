@@ -59,9 +59,7 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-        console.log('response ' + JSON.stringify(response));
       if(response.error) {
-        console.log('inside res.error');
         error = {error: true};
       } else {
         const partialPaymentsOrder = {

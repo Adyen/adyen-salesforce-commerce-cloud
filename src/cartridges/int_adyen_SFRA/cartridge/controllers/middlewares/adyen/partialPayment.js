@@ -3,6 +3,7 @@ const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const URLUtils = require('dw/web/URLUtils');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -23,8 +24,6 @@ function makePartialPayment(req, res, next) {
       null,
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
-
-    Logger.getLogger('Adyen').error('response ' + JSON.stringify(response));
 
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({

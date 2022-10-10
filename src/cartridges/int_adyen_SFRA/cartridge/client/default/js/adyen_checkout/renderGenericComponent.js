@@ -170,10 +170,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  console.log('about to do .forEach')
   for(let pm of store.checkout.paymentMethodsResponse.paymentMethods) {
       if (pm.type === 'giftcard') {
-          console.log(JSON.stringify(pm))
         renderGiftCard(pm);
         break;
       }
