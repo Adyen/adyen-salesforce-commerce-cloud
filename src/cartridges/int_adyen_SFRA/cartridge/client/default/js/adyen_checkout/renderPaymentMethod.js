@@ -131,7 +131,7 @@ function handleInput({ paymentMethodID }) {
     helpers.displaySelectedMethod(event.target.value);
   };
 }
-
+// eslint-disable-next-line complexity
 module.exports.renderPaymentMethod = function renderPaymentMethod(
   paymentMethod,
   isStored,
@@ -143,7 +143,7 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
 
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
 
-  if(paymentMethodID === "giftcard") {
+  if (paymentMethodID === 'giftcard') {
     return;
   }
 

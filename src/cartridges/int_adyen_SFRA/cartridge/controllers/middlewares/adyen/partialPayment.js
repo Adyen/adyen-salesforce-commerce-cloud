@@ -3,7 +3,6 @@ const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const URLUtils = require('dw/web/URLUtils');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -45,7 +44,7 @@ function makePartialPayment(req, res, next) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payment.. ${error.toString()}`,
     );
-    res.json({error: true});
+    res.json({ error: true });
   }
   return next();
 }

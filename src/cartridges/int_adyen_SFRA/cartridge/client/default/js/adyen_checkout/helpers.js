@@ -59,8 +59,8 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-      if(response.error) {
-        error = {error: true};
+      if (response.error) {
+        error = { error: true };
       } else {
         const partialPaymentsOrder = {
           pspReference: response.order.pspReference,
@@ -73,7 +73,7 @@ function makePartialPayment(data) {
       }
     },
   }).fail(() => {});
-   return error;
+  return error;
 }
 
 function resetPaymentMethod() {

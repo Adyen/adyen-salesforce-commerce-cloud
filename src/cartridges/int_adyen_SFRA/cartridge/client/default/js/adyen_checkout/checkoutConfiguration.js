@@ -216,11 +216,13 @@ function getGiftCardConfig() {
                 orderData: data.orderData,
               },
             };
-            const partialPaymentResponse = helpers.makePartialPayment(partialPaymentRequest);
-            if(partialPaymentResponse?.error) {
-                reject();
+            const partialPaymentResponse = helpers.makePartialPayment(
+              partialPaymentRequest,
+            );
+            if (partialPaymentResponse?.error) {
+              reject();
             } else {
-                showRemainingAmount();
+              showRemainingAmount();
             }
           }
         },
