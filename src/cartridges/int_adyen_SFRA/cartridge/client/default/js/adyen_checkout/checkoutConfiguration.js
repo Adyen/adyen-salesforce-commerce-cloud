@@ -145,7 +145,6 @@ function showRemainingAmount() {
   remainingAmountStartP.classList.add('order-receipt-label');
   cancelGiftCardP.classList.add('order-receipt-label');
   remainingAmountEndP.classList.add('text-right');
-  remainingAmountEndSpan.classList.add('grand-total-sum');
   cancelGiftCard.id = 'cancelGiftCardContainer';
 
   remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
@@ -217,9 +216,14 @@ function getGiftCardConfig() {
                 orderData: data.orderData,
               },
             };
-            helpers.makePartialPayment(partialPaymentRequest);
-
-            showRemainingAmount();
+            const partialPaymentResponse = helpers.makePartialPayment(
+              partialPaymentRequest,
+            );
+            if (partialPaymentResponse?.error) {
+              reject();
+            } else {
+              showRemainingAmount();
+            }
           }
         },
       });

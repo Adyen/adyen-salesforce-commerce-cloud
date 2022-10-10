@@ -44,6 +44,7 @@ function makePartialPayment(req, res, next) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payment.. ${error.toString()}`,
     );
+    res.json({ error: true });
   }
   return next();
 }

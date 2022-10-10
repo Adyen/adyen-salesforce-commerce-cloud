@@ -51,6 +51,7 @@ function paymentFromComponent(data, component = {}) {
 }
 
 function makePartialPayment(data) {
+  let error;
   $.ajax({
     url: 'Adyen-partialPayment',
     type: 'POST',
@@ -58,16 +59,21 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-      const partialPaymentsOrder = {
-        pspReference: response.order.pspReference,
-        orderData: response.order.orderData,
-      };
-      store.partialPaymentsOrderObj = { partialPaymentsOrder };
-      store.partialPaymentsOrderObj.remainingAmount =
-        response.remainingAmountFormatted;
-      setOrderFormData(response);
+      if (response.error) {
+        error = { error: true };
+      } else {
+        const partialPaymentsOrder = {
+          pspReference: response.order.pspReference,
+          orderData: response.order.orderData,
+        };
+        store.partialPaymentsOrderObj = { partialPaymentsOrder };
+        store.partialPaymentsOrderObj.remainingAmount =
+          response.remainingAmountFormatted;
+        setOrderFormData(response);
+      }
     },
   }).fail(() => {});
+  return error;
 }
 
 function resetPaymentMethod() {
