@@ -228,9 +228,10 @@ function getGiftCardConfig() {
         },
       });
     },
-    onSubmit() {
+    onSubmit(state) {
       $('#giftcard-modal').modal('hide');
       store.selectedMethod = 'giftcard';
+      store.brand = state.data?.paymentMethod?.brand;
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },

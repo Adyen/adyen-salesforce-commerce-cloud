@@ -3,6 +3,7 @@ const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -37,8 +38,20 @@ function makePartialPayment(req, res, next) {
     const remainingAmount = new Money(
       response.order.remainingAmount.value,
       response.order.remainingAmount.currency,
-    ).divide(100);
-    response.remainingAmountFormatted = remainingAmount.toFormattedString();
+    );
+
+    let fractionDigits = AdyenHelper.getFractionDigits(
+      remainingAmount.currencyCode,
+    );
+    let divideBy = 1;
+    while (fractionDigits > 0) {
+      divideBy *= 10;
+      fractionDigits -= 1;
+    }
+
+    response.remainingAmountFormatted = remainingAmount
+      .divide(divideBy)
+      .toFormattedString();
     res.json(response);
   } catch (error) {
     Logger.getLogger('Adyen').error(

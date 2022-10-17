@@ -3,13 +3,11 @@ const store = require('../../../../store');
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
-  const paymentMethodlabelId = store.brand
-    ? `#lb_${store.selectedMethod}_${store.brand}`
-    : `#lb_${store.selectedMethod}`;
+  const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
   if (adyenPaymentMethod) {
-    adyenPaymentMethod.value = document.querySelector(
-      paymentMethodlabelId,
-    ).innerHTML;
+    adyenPaymentMethod.value = store.brand
+      ? store.brand
+      : document.querySelector(paymentMethodlabelId)?.innerHTML;
   }
 }
 
