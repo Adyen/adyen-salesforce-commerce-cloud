@@ -1,6 +1,5 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
-const { renderPaymentMethod } = require('./renderPaymentMethod');
 const store = require('../../../../store');
 
 function getCardConfig() {
@@ -102,55 +101,63 @@ function removeGiftCard() {
     async: false,
     success(res) {
       store.partialPaymentsOrderObj = null;
+      document.querySelector('#adyenPartialPaymentsOrder').value = null;
       if (res.resultCode === 'Received') {
         document.querySelector('#cancelGiftCardContainer').parentNode.remove();
         document.querySelector('#giftCardLabel').classList.remove('invisible');
-
-        // re render gift card component
         store.componentsObj.giftcard.node.unmount('component_giftcard');
-        delete store.componentsObj.giftcard;
-
-        document.querySelector('#component_giftcard').remove();
-        renderPaymentMethod(
-          { type: 'giftcard' },
-          false,
-          store.checkoutConfiguration.session.imagePath,
-          null,
-          true,
-        );
-        document.querySelector('#component_giftcard').style.display = 'block';
       }
     },
   });
 }
 
-function showRemainingAmount() {
-  $('#giftcard-modal').modal('hide');
-  document.querySelector('#giftCardLabel').classList.add('invisible');
-
+function createElementsToShowRemainingGiftCardAmount() {
+  const mainContainer = document.createElement('div');
   const remainingAmountContainer = document.createElement('div');
   const remainingAmountStart = document.createElement('div');
   const remainingAmountEnd = document.createElement('div');
-  const cancelGiftCard = document.createElement('div');
+  const discountedAmountContainer = document.createElement('div');
+  const discountedAmountStart = document.createElement('div');
+  const discountedAmountEnd = document.createElement('div');
+  const cancelGiftCard = document.createElement('a');
   const remainingAmountStartP = document.createElement('p');
   const remainingAmountEndP = document.createElement('p');
+  const discountedAmountStartP = document.createElement('p');
+  const discountedAmountEndP = document.createElement('p');
   const cancelGiftCardP = document.createElement('p');
   const remainingAmountStartSpan = document.createElement('span');
+  const discountedAmountStartSpan = document.createElement('span');
   const cancelGiftCardSpan = document.createElement('span');
   const remainingAmountEndSpan = document.createElement('span');
+  const discountedAmountEndSpan = document.createElement('span');
 
   remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
   remainingAmountStart.classList.add('col-6', 'start-lines');
   remainingAmountEnd.classList.add('col-6', 'end-lines');
   remainingAmountStartP.classList.add('order-receipt-label');
+  discountedAmountContainer.classList.add(
+    'row',
+    'grand-total',
+    'leading-lines',
+  );
+  discountedAmountStart.classList.add('col-6', 'start-lines');
+  discountedAmountEnd.classList.add('col-6', 'end-lines');
+  discountedAmountStartP.classList.add('order-receipt-label');
   cancelGiftCardP.classList.add('order-receipt-label');
   remainingAmountEndP.classList.add('text-right');
+  discountedAmountEndP.classList.add('text-right');
   cancelGiftCard.id = 'cancelGiftCardContainer';
+  cancelGiftCard.role = 'button';
+  discountedAmountContainer.id = 'discountedAmountContainer';
+  remainingAmountContainer.id = 'remainingAmountContainer';
 
-  remainingAmountStartSpan.innerText = 'Remaining Amount'; // todo: use localisation
-  cancelGiftCardSpan.innerText = 'cancel giftcard?'; // todo: use localisation
+  remainingAmountStartSpan.innerText = window.remainingAmountGiftCardResource;
+  discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
+  cancelGiftCardSpan.innerText = window.cancelGiftCardResource;
   remainingAmountEndSpan.innerText =
     store.partialPaymentsOrderObj.remainingAmount;
+  discountedAmountEndSpan.innerText =
+    store.partialPaymentsOrderObj.discountedAmount;
 
   cancelGiftCard.addEventListener('click', removeGiftCard);
 
@@ -158,15 +165,33 @@ function showRemainingAmount() {
   remainingAmountContainer.appendChild(remainingAmountEnd);
   remainingAmountContainer.appendChild(cancelGiftCard);
   remainingAmountStart.appendChild(remainingAmountStartP);
+
+  discountedAmountContainer.appendChild(discountedAmountStart);
+  discountedAmountContainer.appendChild(discountedAmountEnd);
+  discountedAmountStart.appendChild(discountedAmountStartP);
+
   cancelGiftCard.appendChild(cancelGiftCardP);
   remainingAmountEnd.appendChild(remainingAmountEndP);
   remainingAmountStartP.appendChild(remainingAmountStartSpan);
+  discountedAmountEnd.appendChild(discountedAmountEndP);
+  discountedAmountStartP.appendChild(discountedAmountStartSpan);
   cancelGiftCardP.appendChild(cancelGiftCardSpan);
   remainingAmountEndP.appendChild(remainingAmountEndSpan);
+  discountedAmountEndP.appendChild(discountedAmountEndSpan);
+
   const pricingContainer = document.querySelector(
     '.card-body.order-total-summary',
   );
-  pricingContainer.appendChild(remainingAmountContainer);
+  mainContainer.appendChild(discountedAmountContainer);
+  mainContainer.appendChild(remainingAmountContainer);
+  mainContainer.appendChild(cancelGiftCard);
+  pricingContainer.appendChild(mainContainer);
+}
+
+function showRemainingAmount() {
+  $('#giftcard-modal').modal('hide');
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+  createElementsToShowRemainingGiftCardAmount();
 }
 
 function getGiftCardConfig() {

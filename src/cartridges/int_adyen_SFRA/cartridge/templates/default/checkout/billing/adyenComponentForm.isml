@@ -21,6 +21,10 @@
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+
+      window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
+      window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
+      window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -59,7 +63,7 @@
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
-     <u id="giftCardLabel" class="invisible">+ Add a giftcard</u>
+     <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
      <ul id="paymentMethodsList"></ul>
 
     <div class="modal fade" id="giftcard-modal" role="dialog">

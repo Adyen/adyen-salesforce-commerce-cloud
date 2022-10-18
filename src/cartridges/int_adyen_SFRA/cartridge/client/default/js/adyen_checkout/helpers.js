@@ -67,6 +67,8 @@ function makePartialPayment(data) {
         store.partialPaymentsOrderObj = { partialPaymentsOrder };
         store.partialPaymentsOrderObj.remainingAmount =
           response.remainingAmountFormatted;
+        store.partialPaymentsOrderObj.discountedAmount =
+          response.discountAmountFormatted;
         setOrderFormData(response);
       }
     },
