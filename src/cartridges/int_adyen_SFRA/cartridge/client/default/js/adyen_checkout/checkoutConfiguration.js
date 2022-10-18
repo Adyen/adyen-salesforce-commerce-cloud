@@ -113,13 +113,14 @@ function removeGiftCard() {
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
+  const mainContainer = document.createElement('div');
   const remainingAmountContainer = document.createElement('div');
   const remainingAmountStart = document.createElement('div');
   const remainingAmountEnd = document.createElement('div');
   const discountedAmountContainer = document.createElement('div');
   const discountedAmountStart = document.createElement('div');
   const discountedAmountEnd = document.createElement('div');
-  const cancelGiftCard = document.createElement('u');
+  const cancelGiftCard = document.createElement('a');
   const remainingAmountStartP = document.createElement('p');
   const remainingAmountEndP = document.createElement('p');
   const discountedAmountStartP = document.createElement('p');
@@ -145,10 +146,9 @@ function createElementsToShowRemainingGiftCardAmount() {
   discountedAmountStartP.classList.add('order-receipt-label');
   cancelGiftCardP.classList.add('order-receipt-label');
   remainingAmountEndP.classList.add('text-right');
-  remainingAmountEndSpan.classList.add('grand-total-sum');
   discountedAmountEndP.classList.add('text-right');
-  discountedAmountEndSpan.classList.add('grand-total-sum');
   cancelGiftCard.id = 'cancelGiftCardContainer';
+  cancelGiftCard.role = 'button';
   discountedAmountContainer.id = 'discountedAmountContainer';
   remainingAmountContainer.id = 'remainingAmountContainer';
 
@@ -183,9 +183,10 @@ function createElementsToShowRemainingGiftCardAmount() {
   const pricingContainer = document.querySelector(
     '.card-body.order-total-summary',
   );
-  pricingContainer.appendChild(discountedAmountContainer);
-  pricingContainer.appendChild(remainingAmountContainer);
-  pricingContainer.appendChild(cancelGiftCard);
+  mainContainer.appendChild(discountedAmountContainer);
+  mainContainer.appendChild(remainingAmountContainer);
+  mainContainer.appendChild(cancelGiftCard);
+  pricingContainer.appendChild(mainContainer);
 }
 
 function showRemainingAmount() {

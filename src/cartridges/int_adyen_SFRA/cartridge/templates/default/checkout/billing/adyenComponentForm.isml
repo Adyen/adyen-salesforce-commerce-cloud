@@ -63,7 +63,7 @@
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
-     <u id="giftCardLabel" class="invisible">+ Add a giftcard</u>
+     <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
      <ul id="paymentMethodsList"></ul>
 
     <div class="modal fade" id="giftcard-modal" role="dialog">
