@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (data.success) {
-      const alertBar = document.getElementById('Alert');
+      const alertBar = document.getElementById('saveChangesAlert');
       alertBar.classList.add('show');
       window.setTimeout(() => {
         alertBar.classList.remove('show');

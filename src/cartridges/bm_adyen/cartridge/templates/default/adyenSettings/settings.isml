@@ -42,12 +42,6 @@
          Your settings could not be saved :( Try again.
       </div>
 
-      <div id="savedImageAlert" class="alert alert-success alert-dismissible fade collapse text-center sticky-top w-25" role="alert">
-         <img src="${URLUtils.staticURL('icons/icon-success.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />
-         Image got uploaded.
-      </div>
-
-
       <div id="pageContents" class="mb-5 bg-light">
          <div class="row bg-light pb-5">
             <div class="col-sm-1"></div>
