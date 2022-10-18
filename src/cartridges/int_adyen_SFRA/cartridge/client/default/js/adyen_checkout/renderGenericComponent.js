@@ -145,6 +145,7 @@ function renderGiftCard(paymentMethod) {
     $('#giftcard-modal').modal('hide');
     store.componentsObj.giftcard.node.unmount('component_giftcard');
   };
+  document.querySelector('#giftCardLabel').classList.remove('invisible');
 }
 
 /**
@@ -169,12 +170,13 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  store.checkout.paymentMethodsResponse.paymentMethods.some((pm) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const pm of store.checkout.paymentMethodsResponse.paymentMethods) {
     if (pm.type === 'giftcard') {
       renderGiftCard(pm);
+      break;
     }
-    return null;
-  });
+  }
 
   renderStoredPaymentMethods(
     store.checkout.paymentMethodsResponse,

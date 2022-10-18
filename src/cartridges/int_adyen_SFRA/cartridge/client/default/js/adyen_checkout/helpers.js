@@ -3,13 +3,11 @@ const store = require('../../../../store');
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
-  const paymentMethodlabelId = store.brand
-    ? `#lb_${store.selectedMethod}_${store.brand}`
-    : `#lb_${store.selectedMethod}`;
+  const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
   if (adyenPaymentMethod) {
-    adyenPaymentMethod.value = document.querySelector(
-      paymentMethodlabelId,
-    ).innerHTML;
+    adyenPaymentMethod.value = store.brand
+      ? store.brand
+      : document.querySelector(paymentMethodlabelId)?.innerHTML;
   }
 }
 
@@ -51,6 +49,7 @@ function paymentFromComponent(data, component = {}) {
 }
 
 function makePartialPayment(data) {
+  let error;
   $.ajax({
     url: 'Adyen-partialPayment',
     type: 'POST',
@@ -58,18 +57,23 @@ function makePartialPayment(data) {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(response) {
-      const partialPaymentsOrder = {
-        pspReference: response.order.pspReference,
-        orderData: response.order.orderData,
-      };
-      store.partialPaymentsOrderObj = { partialPaymentsOrder };
-      store.partialPaymentsOrderObj.remainingAmount =
-        response.remainingAmountFormatted;
-      store.partialPaymentsOrderObj.discountedAmount =
-        response.discountAmountFormatted;
-      setOrderFormData(response);
+      if (response.error) {
+        error = { error: true };
+      } else {
+        const partialPaymentsOrder = {
+          pspReference: response.order.pspReference,
+          orderData: response.order.orderData,
+        };
+        store.partialPaymentsOrderObj = { partialPaymentsOrder };
+        store.partialPaymentsOrderObj.remainingAmount =
+          response.remainingAmountFormatted;
+        store.partialPaymentsOrderObj.discountedAmount =
+          response.discountAmountFormatted;
+        setOrderFormData(response);
+      }
     },
   }).fail(() => {});
+  return error;
 }
 
 function resetPaymentMethod() {

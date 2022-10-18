@@ -93,7 +93,9 @@ function paymentFromComponent(req, res, next) {
         giftcardPM.paymentMethod,
       );
       giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
-      giftcardPM.custom.adyenPaymentMethod = 'giftcard';
+      paymentInstrument.custom.adyenPaymentMethod = JSON.parse(
+        session.privacy.giftCardResponse,
+      ).paymentMethod.brand;
       giftcardPM.paymentTransaction.custom.Adyen_log =
         session.privacy.giftCardResponse;
     });
