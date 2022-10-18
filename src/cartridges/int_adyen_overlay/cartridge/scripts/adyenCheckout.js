@@ -114,9 +114,10 @@ function createPaymentRequest(args) {
       if(paymentRequest.paymentMethod.type.indexOf('klarna') > -1){
         args.addTaxPercentage = false;
         const address = order.getBillingAddress();
+        const shippingMethod = order.getDefaultShipment()?.shippingMethod;
         const otherDeliveryAddress = {
-          shipping_method: order.getDefaultShipment().shippingMethod.displayName,
-          shipping_type: order.getDefaultShipment().shippingMethod.description,
+          shipping_method: shippingMethod?.displayName,
+          shipping_type: shippingMethod?.description,
           first_name: address.firstName,
           last_name: address.lastName,
           street_address: `${address.address1} ${address.address2}`,
