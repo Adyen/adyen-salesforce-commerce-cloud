@@ -102,25 +102,11 @@ function removeGiftCard() {
     async: false,
     success(res) {
       store.partialPaymentsOrderObj = null;
+      document.querySelector('#adyenPartialPaymentsOrder').value = null;
       if (res.resultCode === 'Received') {
-        document.querySelector('#cancelGiftCardContainer').remove();
-        document.querySelector('#discountedAmountContainer').remove();
-        document.querySelector('#remainingAmountContainer').remove();
+        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
         document.querySelector('#giftCardLabel').classList.remove('invisible');
-
-        // re render gift card component
         store.componentsObj.giftcard.node.unmount('component_giftcard');
-        delete store.componentsObj.giftcard;
-
-        document.querySelector('#component_giftcard').remove();
-        renderPaymentMethod(
-          { type: 'giftcard' },
-          false,
-          store.checkoutConfiguration.session.imagePath,
-          null,
-          true,
-        );
-        document.querySelector('#component_giftcard').style.display = 'block';
       }
     },
   });
