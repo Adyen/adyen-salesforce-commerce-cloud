@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const changedSettings = [];
   const isValid = 'is-valid';
   const isInvalid = 'is-invalid';
+  const adyenGivingBackground = document.querySelector(
+    '#fileDropBoxCharitybackground',
+  );
+  const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -86,6 +90,76 @@ document.addEventListener('DOMContentLoaded', () => {
     this.classList.toggle('bi-eye');
   }
 
+  // open Adyen Giving Background upload page
+  function uploadAdyenGivingBackground() {
+    const params = 'resizable=no,width=1000,height=500,left=100,top=100';
+    const openedWindow = window.open(
+      window.adyenGivingBackgroundUrl,
+      'test',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindow.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  // open Adyen Giving Logo upload page
+  function uploadAdyenGivingLogo() {
+    const params = 'resizable=no,width=1000,height=500,left=100,top=100';
+    const openedWindowLogo = window.open(
+      window.adyenGivingLogoUrl,
+      'test',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindowLogo.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  function getImageName(imageUrl) {
+    const parts = imageUrl.split('/');
+    const imageName = parts.pop();
+    return imageName;
+  }
+
+  function printBackgroundImageName() {
+    document.getElementById('backgroundFileName').innerHTML = '';
+    const ul = document.getElementById('backgroundFileName');
+    const nameOfImage = getImageName(window.backgroundValueField);
+    if (nameOfImage?.length > 0) {
+      const elem = document.createElement('img');
+      elem.src = window.successImage;
+      const text = document.createTextNode(nameOfImage);
+      const li = document.createElement('li');
+      li.appendChild(elem);
+      li.appendChild(document.createTextNode(' '));
+      li.appendChild(text);
+      ul.appendChild(li);
+    }
+  }
+
+  function printLogoImageName() {
+    document.getElementById('logoFileName').innerHTML = '';
+    const ul = document.getElementById('logoFileName');
+    const nameOfImage = getImageName(window.logoValueField);
+    if (nameOfImage?.length > 0) {
+      const elem = document.createElement('img');
+      elem.src = window.successImage;
+      const text = document.createTextNode(nameOfImage);
+      const li = document.createElement('li');
+      li.appendChild(elem);
+      li.appendChild(document.createTextNode(' '));
+      li.appendChild(text);
+      ul.appendChild(li);
+    }
+  }
+
   testConnectionButton.addEventListener('click', hideAlertsOnTest);
 
   classicPageButton.addEventListener('click', getLink);
@@ -99,6 +173,14 @@ document.addEventListener('DOMContentLoaded', () => {
   togglePassword.addEventListener('click', showPassword);
 
   toggleApi.addEventListener('click', showApiKey);
+
+  adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
+
+  adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);
+
+  window.addEventListener('load', printBackgroundImageName);
+
+  window.addEventListener('load', printLogoImageName);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -149,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       apiKeyVal.classList.remove(isValid);
     }
   });
+
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
@@ -165,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (data.success) {
-      const alertBar = document.getElementById('saveChangesAlert');
+      const alertBar = document.getElementById('Alert');
       alertBar.classList.add('show');
       window.setTimeout(() => {
         alertBar.classList.remove('show');

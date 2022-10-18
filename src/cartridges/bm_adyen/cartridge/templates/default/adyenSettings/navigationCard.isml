@@ -20,7 +20,7 @@
         </a>
         <a class="list-group-item navigation-item border-0" href="#posSettings">
         <img src="${URLUtils.staticURL('icons/pos.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
-        POS settings
+        In-person payments settings
         </a>
         <a class="list-group-item navigation-item border-0" href="#adyenGivingSettings">
         <img src="${URLUtils.staticURL('icons/adyen-giving.svg')}" width="20" height="20" class="rounded float-start mr-3"/>

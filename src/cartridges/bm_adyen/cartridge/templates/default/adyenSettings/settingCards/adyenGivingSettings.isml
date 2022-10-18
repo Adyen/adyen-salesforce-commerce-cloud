@@ -1,6 +1,11 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 <div id="adyenGivingSettings" class="card bg-white mt-4 adyen-giving">
+   <script>
+      window.successImage = "${URLUtils.staticURL('icons/checkmark-circle-fill.svg')}";
+      window.logoValueField = "${AdyenConfigs.getAdyenGivingLogoUrl() || ''}";
+      window.backgroundValueField = "${AdyenConfigs.getAdyenGivingBackgroundUrl() || ''}";
+   </script>
    <div class="card-body">
       <h5 class="card-title mb-0">Adyen Giving <small class="text-secondary">(optional)</small></h5>
       <h7 class="card-subtitle">
@@ -63,29 +68,34 @@
                <label class="form-title mb-0" for="backgroundFile">Background image for Adyen Giving component</label>
                <small id="backgroundImageHelo" class="form-text mb-1">Go to the classic page view on the top of this section to set up your Adyen Giving and upload the image there.<br>
                Once you save the configuration, the image will be automatically updated here.</small>
-               <div class="input-fields">
-                  <input type="text" class="form-control" name="AdyenGiving_backgroundUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl() || ''}" disabled>
+               <script>
+                  //Token and path can be found in settings.isml file
+                  window.adyenGivingBackgroundUrl = background_token +"#" + addition1 + addition4 + addition5;
+               </script>
+               <div class="wrapper-class "id="wrapper">
+                  <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
+                  <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Click here to upload. </div>
+                  <div id="adyenGiving_background" class="form-group">
+                     <ul id="backgroundFileName"></ul>
+                  </div>
                </div>
-               <!-- <!input type="text" class="form-control" name="adyenGivingBackgrondUrl" id="backgroundFile" value="${AdyenConfigs.getAdyenGivingBackgroundUrl()}">
-                  <div class="wrapper-class "id="wrapper">
-                      <input id='charityBackgroundUrl' name="AdyenGiving_backgroundUrl" type='file' hidden/>
-                      <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
-                      <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Drop files or click here to upload. </div>
-                  </div> -->
+               <br>
             </div>
             <div class="form-group">
                <label class="form-title mb-0" for="logoFile">Logo in Adyen Giving component</label>
                <small id="backgroundImageHelo" class="form-text mb-1">Go to the classic page view on the top of this section to set up your Adyen Giving and upload the image there.<br>
                Once you save the configuration, the image will be automatically updated here.</small>
-               <div class="input-fields">
-                  <input type="text" class="form-control" name="AdyenGiving_logoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl() || ''}" disabled>
+               <script>
+                  //Token and path can be found in settings.isml file
+                  window.adyenGivingLogoUrl = logo_token +"#" + addition1 + addition4 + addition6;
+               </script>
+               <div class="wrapper-class "id="wrapper">
+                  <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
+                  <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Click here to upload. </div>
+                  <div id="adyenGiving_logo" class="form-group">
+                     <ul id="logoFileName"></ul>
+                  </div>
                </div>
-               <!-- <!input type="text" class="form-control" name="adyenGivingLogoUrl" id="logoFile" value="${AdyenConfigs.getAdyenGivingLogoUrl()}">
-                  <div class="wrapper-class "id="wrapper">
-                      <input id='adyenGivingLogoUrl' name="AdyenGiving_logoUrl" type='file' hidden/>
-                      <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
-                      <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Drop files or click here to upload. </div>
-                  </div> -->
             </div>
          </div>
       </div>
