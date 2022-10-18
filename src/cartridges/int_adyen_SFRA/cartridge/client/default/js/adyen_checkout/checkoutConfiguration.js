@@ -1,6 +1,5 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
-const { renderPaymentMethod } = require('./renderPaymentMethod');
 const store = require('../../../../store');
 
 function getCardConfig() {

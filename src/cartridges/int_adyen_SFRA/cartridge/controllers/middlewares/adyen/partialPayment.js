@@ -6,15 +6,13 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getDivisorForCurrency(amount) {
-    let fractionDigits = AdyenHelper.getFractionDigits(
-      amount.currencyCode,
-    );
-    let divideBy = 1;
-    while (fractionDigits > 0) {
-      divideBy *= 10;
-      fractionDigits -= 1;
-    }
-    return divideBy;
+  let fractionDigits = AdyenHelper.getFractionDigits(amount.currencyCode);
+  let divideBy = 1;
+  while (fractionDigits > 0) {
+    divideBy *= 10;
+    fractionDigits -= 1;
+  }
+  return divideBy;
 }
 
 function makePartialPayment(req, res, next) {
