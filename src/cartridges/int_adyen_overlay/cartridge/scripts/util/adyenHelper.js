@@ -146,6 +146,10 @@ var adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }
+        if(frontEndRegion === constants.FRONTEND_REGIONS.IN ) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }

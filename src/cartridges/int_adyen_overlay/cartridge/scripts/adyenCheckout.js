@@ -129,6 +129,7 @@ function createPaymentRequest(args) {
     }
 
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
+
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
@@ -145,6 +146,9 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
+    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    order.custom.Adyen_paymentMethod = paymentRequest?.paymentMethod.brand || paymentRequest?.paymentMethod.type;
+
     const responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
 
     // There is no order for zero auth transactions.
@@ -194,6 +198,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
+        Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -214,6 +219,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         errorMessage += ` (${responseObject.refusalReason})`;
       }
       paymentResponse.adyenErrorMessage = errorMessage;
+      Logger.getLogger('Adyen').info('Payment result: Refused');
     }
     return paymentResponse;
   } catch (e) {

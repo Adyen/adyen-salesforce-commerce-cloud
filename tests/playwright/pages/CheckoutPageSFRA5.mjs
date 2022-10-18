@@ -20,7 +20,7 @@ export default class CheckoutPageSFRA5 {
     this.submitButton = page.locator('#send2');
     this.customerAccountPage = page.locator('.account.customer-account-index');
 
-    this.checkoutPageUserEmailInput = page.locator('input[name="loginEmail"]');
+    this.checkoutPageUserEmailInput = page.locator('#email');
     this.checkoutPageUserPasswordInput = page.locator(
       'input[name="loginPassword"]',
     );
@@ -56,7 +56,6 @@ export default class CheckoutPageSFRA5 {
 
     this.submitPaymentButton = page.locator('.submit-payment');
     this.placeOrderButton = page.locator('.place-order');
-    this.checkoutPageUserEmailInput = page.locator('#email');
 
     this.errorMessage = page.locator('.error-message-text');
     this.thankYouMessage = page.locator('.order-thank-you-msg');

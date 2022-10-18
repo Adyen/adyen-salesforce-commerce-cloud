@@ -410,6 +410,9 @@
                     <value-definition>
                         <value>AU</value>
                     </value-definition>
+                    <value-definition>
+                        <value>IN</value>
+                    </value-definition>
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_notification_password">

@@ -66,7 +66,9 @@ for (const environment of environments) {
       await redirectShopper.completeKlarnaAccountRedirect(false);
       await checkoutPage.expectRefusal();
     });
-    test('Giropay Success', async ({ page }) => {
+
+    // Skip GiroPay due to certification issue on their sandbox
+    test.skip('Giropay Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
@@ -74,7 +76,7 @@ for (const environment of environments) {
       await checkoutPage.expectNonRedirectSuccess();
     });
 
-    test('Giropay Fail', async ({ page }) => {
+    test.skip('Giropay Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment(page);
       await checkoutPage.completeCheckout();

@@ -22,11 +22,11 @@ export default class PaymentMethodsPage {
     );
     const issuer = testSuccess
       ? this.page.locator(
-          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
-        )
+        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
+      )
       : this.page.locator(
-          '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
-        );
+        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
+      );
 
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();
@@ -407,28 +407,45 @@ export default class PaymentMethodsPage {
   };
 
   confirmTrustlyPayment = async () => {
-    await this.page.click('img[alt="DNB"]');
-    await this.page.click('.button_next');
+    await this.page.click("text=DNB");
+    await this.page.click("button[data-testid='continue-button']");
+    await this.page.locator("div[data-testid='spinner']").waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.page.click("button[data-testid='continue-button']");
     await this.page.locator('input[name="loginid"]').type('idabarese51');
-    await this.page.click('.button_next');
+    await this.page.click("button[data-testid='continue-button']");
+    await this.page.locator("div[data-testid='spinner']").waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.page.locator("div[data-testid='spinner']").waitFor({
+      state: 'detached',
+      timeout: 10000,
+    });
 
     const oneTimeCodeLocator = await this.page.locator(
-      "//span[@class='message_label' and contains(text(),'Engangskode')]/../span[@class='message_value']",
+      "h3",
     );
     let oneTimeCode = await oneTimeCodeLocator.innerText();
 
     await this.page
-      .locator('input[name="challenge_response"]')
+      .locator("input[data-testid='Input-password-challenge_response']")
       .type(oneTimeCode);
-    await this.page.click('.button_next');
-    await this.page.click('.button_next');
+    await this.page.click("button[data-testid='continue-button']");
+    await this.page.locator("div[data-testid='spinner']").waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+    await this.page.click("button[data-testid='continue-button']");
 
     await this.page.waitForLoadState('load');
     oneTimeCodeLocator.waitFor({ state: 'visible', timeout: 20000 });
     oneTimeCode = await oneTimeCodeLocator.innerText();
 
-    await this.page.locator('input[type="password"]').type(oneTimeCode);
-    await this.page.click('.button_next');
+    await this.page.locator("input[data-testid='Input-password-challenge_response']").type(oneTimeCode);
+    await this.page.click("button[data-testid='continue-button']");
   };
 
   cancelTrustlyPayment = async () => {
@@ -477,8 +494,8 @@ export default class PaymentMethodsPage {
   };
 
   initiateSEPAPayment = async () => {
-    const nameInput = this.page.locator('input[name="sepa.ownerName"]');
-    const ibanInput = this.page.locator('input[name="sepa.ibanNumber"]');
+    const nameInput = this.page.locator('//input[contains(@name,"ownerName")]');
+    const ibanInput = this.page.locator('//input[contains(@name,"ibanNumber")]');
 
     await this.page.click('#rb_sepadirectdebit');
     await nameInput.type(paymentData.SepaDirectDebit.accountName);
