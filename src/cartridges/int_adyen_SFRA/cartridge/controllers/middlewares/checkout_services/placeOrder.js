@@ -144,12 +144,9 @@ function placeOrder(req, res, next) {
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
 
-    //Check if gift card was used
-    if(session.privacy.giftCardResponse) {
+    function createGiftcardPM(parsedGiftCardObj, divideBy) {
         let paymentInstrument;
-        const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
         const paidGiftcardAmount = {value: parsedGiftCardObj.value, currency: parsedGiftCardObj.currency};
-        const divideBy = AdyenHelper.getDivisorForCurrency(paidGiftcardAmount);
         const paidGiftcardAmountFormatted = new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(divideBy);
         Transaction.wrap(() => {
             paymentInstrument = order.createPaymentInstrument(
@@ -165,7 +162,21 @@ function placeOrder(req, res, next) {
           paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
           paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCardpspReference;
         })
+    }
+    //Check if gift card was used
+    if(session.privacy.giftCardResponse) {
+        const mainPaymentInstrument = order.getPaymentInstruments(
+            constants.METHOD_ADYEN_COMPONENT,
+        )[0];
+        const divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
+        const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
+        const amount = {value: parsedGiftCardObj.remainingAmount.value, currency: parsedGiftCardObj.remainingAmount.currency};
+        const formattedAmount = new Money(amount.value, amount.currency).divide(divideBy);
+        Transaction.wrap(() => {
+            mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
+        });
 
+        createGiftcardPM(parsedGiftCardObj, divideBy);
         session.privacy.giftCardResponse = null;
     }
     /* ### Custom Adyen cartridge end ### */
