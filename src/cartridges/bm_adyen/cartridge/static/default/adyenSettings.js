@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function hideAlertsOnTest() {
+  function saveAndHideAlerts() {
     document.getElementById('settingsFormSubmitButton').click();
     document.getElementById('saveChangesAlert').hide();
     document.getElementById('notSavedChangesAlert').hide();
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createImageNameStyling('logoList', window.logoValueField);
   }
 
-  testConnectionButton.addEventListener('click', hideAlertsOnTest);
+  testConnectionButton.addEventListener('click', saveAndHideAlerts);
 
   classicPageButton.addEventListener('click', getLink);
 
@@ -172,6 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('load', printBackgroundImageName);
 
   window.addEventListener('load', printLogoImageName);
+
+  adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
+
+  adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
