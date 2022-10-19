@@ -1,5 +1,6 @@
 /* ### Custom Adyen cartridge start ### */
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
 const PaymentMgr = require('dw/order/PaymentMgr');
@@ -147,11 +148,13 @@ function placeOrder(req, res, next) {
     if(session.privacy.giftCardResponse) {
         let paymentInstrument;
         const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
-        const paidGiftcardAmount = parsedGiftCardObj.amount;
+        const paidGiftcardAmount = {value: parsedGiftCardObj.value, currency: parsedGiftCardObj.currency};
+        const divideBy = AdyenHelper.getDivisorForCurrency(paidGiftcardAmount);
+        const paidGiftcardAmountFormatted = new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(divideBy);
         Transaction.wrap(() => {
             paymentInstrument = order.createPaymentInstrument(
                 constants.METHOD_ADYEN_COMPONENT,
-                new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100),
+                paidGiftcardAmountFormatted,
             );
             const { paymentProcessor } = PaymentMgr.getPaymentMethod(
                 paymentInstrument.paymentMethod,

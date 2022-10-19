@@ -5,16 +5,6 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
-function getDivisorForCurrency(amount) {
-  let fractionDigits = AdyenHelper.getFractionDigits(amount.currencyCode);
-  let divideBy = 1;
-  while (fractionDigits > 0) {
-    divideBy *= 10;
-    fractionDigits -= 1;
-  }
-  return divideBy;
-}
-
 function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.body);
@@ -54,7 +44,7 @@ function makePartialPayment(req, res, next) {
       response.order.remainingAmount.currency,
     );
 
-    const divideBy = getDivisorForCurrency(remainingAmount);
+    const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
     response.remainingAmountFormatted = remainingAmount
       .divide(divideBy)
       .toFormattedString();

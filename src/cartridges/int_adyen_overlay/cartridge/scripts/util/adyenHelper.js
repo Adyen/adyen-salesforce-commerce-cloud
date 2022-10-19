@@ -625,6 +625,16 @@ var adyenHelperObj = {
     return format;
   },
 
+  getDivisorForCurrency(amount) {
+    let fractionDigits = adyenHelperObj.getFractionDigits(amount.currencyCode);
+    let divideBy = 1;
+    while (fractionDigits > 0) {
+      divideBy *= 10;
+      fractionDigits -= 1;
+    }
+    return divideBy;
+  },
+
   getApplicationInfo() {
     let externalPlatformVersion = '';
     const applicationInfo = {};
