@@ -66,34 +66,32 @@
             </div>
             <div class="form-group">
                <label class="form-title mb-0" for="backgroundFile">Background image for Adyen Giving component</label>
-               <small id="backgroundImageHelo" class="form-text mb-1">Go to the classic page view on the top of this section to set up your Adyen Giving and upload the image there.<br>
-               Once you save the configuration, the image will be automatically updated here.</small>
+               <small id="backgroundImageHelo" class="form-text mb-1">Your image needs to be in PNG, JPG, JPEG, or SVG format.</small>
                <script>
                   //Token and path can be found in settings.isml file
-                  window.adyenGivingBackgroundUrl = background_token +"#" + addition1 + addition4 + addition5;
+                  window.adyenGivingBackgroundUrl = token +"#" + commonPath + storagePath + backgroundImageStorage;
                </script>
                <div class="wrapper-class "id="wrapper">
                   <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
                   <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Click here to upload. </div>
                   <div id="adyenGiving_background" class="form-group">
-                     <ul id="backgroundFileName"></ul>
+                     <ul id="backgroundList"></ul>
                   </div>
                </div>
                <br>
             </div>
             <div class="form-group">
                <label class="form-title mb-0" for="logoFile">Logo in Adyen Giving component</label>
-               <small id="backgroundImageHelo" class="form-text mb-1">Go to the classic page view on the top of this section to set up your Adyen Giving and upload the image there.<br>
-               Once you save the configuration, the image will be automatically updated here.</small>
+               <small id="backgroundImageHelo" class="form-text mb-1">Your image needs to be in PNG, JPG, JPEG, or SVG format.</small>
                <script>
                   //Token and path can be found in settings.isml file
-                  window.adyenGivingLogoUrl = logo_token +"#" + addition1 + addition4 + addition6;
+                  window.adyenGivingLogoUrl = token +"#" + commonPath + storagePath + logoImageStorage;
                </script>
                <div class="wrapper-class "id="wrapper">
                   <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
                   <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Click here to upload. </div>
                   <div id="adyenGiving_logo" class="form-group">
-                     <ul id="logoFileName"></ul>
+                     <ul id="logoList"></ul>
                   </div>
                </div>
             </div>

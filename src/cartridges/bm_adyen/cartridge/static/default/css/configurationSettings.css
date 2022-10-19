@@ -381,23 +381,17 @@ html {
     margin-top: 24px;
 }
 
-#backgroundFileName{
+#backgroundList{
     position: absolute;
-}
-
-#logoFileName{
-    position: absolute;
-}
-
-
-ul{
-    list-style-type: none;
-}
-
-#backgroundFileName{
     padding-left: 0;
 }
 
-#logoFileName{
+#logoList{
+    position: absolute;
     padding-left:0;
+
+}
+
+ul{
+    list-style-type: none;
 }

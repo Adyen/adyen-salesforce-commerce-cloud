@@ -10,15 +10,13 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <script>
          const token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-         const logo_token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-         const background_token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-         const addition1 = "/?preference";
-         const addition2 = "#site_preference_group_attributes";
-         const addition3 = "!id!Adyen";
-         const addition4 = "#edit_across_sites";
-         const addition5 = "!id!c_AdyenGiving_backgroundUrl!instance_type!sandbox!group_id!Adyen";
-         const addition6 = "!id!c_AdyenGiving_logoUrl!instance_type!sandbox!group_id!Adyen";
-         window.classicConfigPageUrl = token +"#" + addition1 + addition2 + addition3;
+         const commonPath = "/?preference";
+         const classicPagePath = "#site_preference_group_attributes";
+         const classicPageSubpath = "!id!Adyen";
+         const storagePath = "#edit_across_sites";
+         const backgroundImageStorage = "!id!c_AdyenGiving_backgroundUrl!instance_type!sandbox!group_id!Adyen";
+         const logoImageStorage = "!id!c_AdyenGiving_logoUrl!instance_type!sandbox!group_id!Adyen";
+         window.classicConfigPageUrl = token +"#" + commonPath + classicPagePath + classicPageSubpath;
       </script>
    </head>
    <header class="header row bg-white mt-4 mb-4">

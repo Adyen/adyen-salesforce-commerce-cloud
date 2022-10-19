@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '#fileDropBoxCharitybackground',
   );
   const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
+  const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -92,10 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // open Adyen Giving Background upload page
   function uploadAdyenGivingBackground() {
-    const params = 'resizable=no,width=1000,height=500,left=100,top=100';
     const openedWindow = window.open(
       window.adyenGivingBackgroundUrl,
-      'test',
+      'backgroundPopUp',
       params,
     );
     const loop = setInterval(() => {
@@ -108,10 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // open Adyen Giving Logo upload page
   function uploadAdyenGivingLogo() {
-    const params = 'resizable=no,width=1000,height=500,left=100,top=100';
     const openedWindowLogo = window.open(
       window.adyenGivingLogoUrl,
-      'test',
+      'logoPopUp',
       params,
     );
     const loop = setInterval(() => {
@@ -128,36 +127,28 @@ document.addEventListener('DOMContentLoaded', () => {
     return imageName;
   }
 
-  function printBackgroundImageName() {
-    document.getElementById('backgroundFileName').innerHTML = '';
-    const ul = document.getElementById('backgroundFileName');
-    const nameOfImage = getImageName(window.backgroundValueField);
+  function createImageNameStyling(list, imageName) {
+    document.getElementById(list).innerHTML = '';
+    const unorderedList = document.getElementById(list);
+    const nameOfImage = getImageName(imageName);
     if (nameOfImage?.length > 0) {
-      const elem = document.createElement('img');
-      elem.src = window.successImage;
+      const checkMarkImage = document.createElement('img');
+      checkMarkImage.src = window.successImage;
       const text = document.createTextNode(nameOfImage);
-      const li = document.createElement('li');
-      li.appendChild(elem);
-      li.appendChild(document.createTextNode(' '));
-      li.appendChild(text);
-      ul.appendChild(li);
+      const listElement = document.createElement('li');
+      listElement.appendChild(checkMarkImage);
+      listElement.appendChild(document.createTextNode(' '));
+      listElement.appendChild(text);
+      unorderedList.appendChild(listElement);
     }
   }
 
+  function printBackgroundImageName() {
+    createImageNameStyling('backgroundList', window.backgroundValueField);
+  }
+
   function printLogoImageName() {
-    document.getElementById('logoFileName').innerHTML = '';
-    const ul = document.getElementById('logoFileName');
-    const nameOfImage = getImageName(window.logoValueField);
-    if (nameOfImage?.length > 0) {
-      const elem = document.createElement('img');
-      elem.src = window.successImage;
-      const text = document.createTextNode(nameOfImage);
-      const li = document.createElement('li');
-      li.appendChild(elem);
-      li.appendChild(document.createTextNode(' '));
-      li.appendChild(text);
-      ul.appendChild(li);
-    }
+    createImageNameStyling('logoList', window.logoValueField);
   }
 
   testConnectionButton.addEventListener('click', hideAlertsOnTest);
