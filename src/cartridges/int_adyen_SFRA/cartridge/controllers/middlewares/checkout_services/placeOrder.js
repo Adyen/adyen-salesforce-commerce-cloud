@@ -5,6 +5,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Money = require('dw/value/Money');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 /* ### Custom Adyen cartridge end ### */
 
@@ -177,7 +178,6 @@ function placeOrder(req, res, next) {
         });
 
         createGiftcardPM(parsedGiftCardObj, divideBy);
-        session.privacy.giftCardResponse = null;
     }
     /* ### Custom Adyen cartridge end ### */
 
@@ -252,6 +252,12 @@ function placeOrder(req, res, next) {
         COHelpers.sendConfirmationEmail(order, req.locale.id);
     }
 
+    const mainPaymentInstrument = order.getPaymentInstruments(
+                constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    session.privacy.giftCardResponse = null;
+    mainPaymentInstrument && clearForms.clearPaymentTransactionData(mainPaymentInstrument);
+    mainPaymentInstrument && clearForms.clearAdyenData(mainPaymentInstrument);
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 

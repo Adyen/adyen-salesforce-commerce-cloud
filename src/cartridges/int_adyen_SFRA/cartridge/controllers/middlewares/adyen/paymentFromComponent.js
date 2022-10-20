@@ -9,6 +9,7 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
@@ -36,6 +37,7 @@ function paymentFromComponent(req, res, next) {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
     });
+
     paymentInstrument = currentBasket.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice,
@@ -80,29 +82,53 @@ function paymentFromComponent(req, res, next) {
 
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
-    const paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse)
-      .amount;
+    const divideBy = AdyenHelper.getDivisorForCurrency(
+      currentBasket.totalGrossPrice,
+    );
+    const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
+    const remainingAmount = {
+      value: parsedGiftCardObj.remainingAmount.value,
+      currency: parsedGiftCardObj.remainingAmount.currency,
+    };
+    const formattedAmount = new Money(
+      remainingAmount.value,
+      remainingAmount.currency,
+    ).divide(divideBy);
+    const mainPaymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    // update amount from order total to PM total
+    Transaction.wrap(() => {
+      mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount);
+    });
+
+    const paidGiftcardAmount = {
+      value: parsedGiftCardObj.value,
+      currency: parsedGiftCardObj.currency,
+    };
+    const formattedGiftcardAmount = new Money(
+      paidGiftcardAmount.value,
+      paidGiftcardAmount.currency,
+    ).divide(divideBy);
     Transaction.wrap(() => {
       const giftcardPM = order.createPaymentInstrument(
         constants.METHOD_ADYEN_COMPONENT,
-        new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(
-          100,
-        ),
+        formattedGiftcardAmount,
       );
       const { paymentProcessor } = PaymentMgr.getPaymentMethod(
         giftcardPM.paymentMethod,
       );
       giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentMethod = JSON.parse(
-        session.privacy.giftCardResponse,
-      ).paymentMethod.brand;
+      giftcardPM.custom.adyenPaymentMethod =
+        parsedGiftCardObj.paymentMethod?.brand ||
+        parsedGiftCardObj.additionalData?.paymentMethod?.brand ||
+        'giftcard';
       giftcardPM.paymentTransaction.custom.Adyen_log =
         session.privacy.giftCardResponse;
+      giftcardPM.paymentTransaction.custom.Adyen_pspReference =
+        parsedGiftCardObj.giftCardpspReference;
     });
-
-    session.privacy.giftCardResponse = null;
   }
-
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
   res.json(result);
