@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // add event for save button availability on form change.
-  form.addEventListener('input', enableformButtons);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -74,10 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
     form.addEventListener('input', enableformButtons);
-
     const response = await fetch('AdyenSettings-Save', {
       headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
       },
       method: 'POST',
       body: JSON.stringify({
@@ -92,13 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
         alertBar.classList.remove('show');
       }, 2000);
     }
+    else{
+      const cancelAlertBar = document.getElementById('notSavedChangesAlert');
+      cancelAlertBar.classList.add('show');
+      window.setTimeout(() => {
+        alertBar.classList.remove('show');
+      }, 2000);
+    }
   });
-
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
 
-  // file upload butttons event listeners for adyen giving card
   function openDialogCharityBackgroundUrl() {
     document.getElementById('charityBackgroundUrl').click();
   }

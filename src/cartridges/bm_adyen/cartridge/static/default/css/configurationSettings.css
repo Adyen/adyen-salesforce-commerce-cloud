@@ -115,11 +115,12 @@
     z-index: 10;
 }
 
-
+/*
 #saveChangesAlert {
     bottom: 2%;
     -index: 10;
 }
+*/
 
 .btn-toolbar{
 /* Header */
@@ -144,10 +145,9 @@
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.06);
 }
 
+/*
 .btn-toolbar .btn-group{
-    box-sizing: border-box;
 
-/* Auto layout */
 
     display: flex;
     flex-direction: row;
@@ -158,15 +158,12 @@
     width: 309px;
     height: 60px;
 
-/* text/white */
 
     background: #FFFFFF;
-/* SF-color-gray-3 */
 
     border: 1px solid #F3F2F2;
     border-radius: 12px;
 
-/* Inside auto layout */
 
     flex: none;
     order: 0;
@@ -179,15 +176,10 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-/* identical to box height, or 143% */
-
-
-/* grey / grey-60 */
 
     color: #394962;
 
 
-/* Inside auto layout */
 
     flex: none;
     order: 0;
@@ -202,22 +194,18 @@
 
 
 .btn-toolbar .btn-group .second{
-/* Staging */
+
 
     font-family: 'Fakt';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-/* identical to box height, or 143% */
 
-
-/* grey / grey-60 */
 
     color: #394962;
 
 
-/* Inside auto layout */
 
     flex: none;
     order: 0;
@@ -230,8 +218,7 @@
 
 
 .btn-toolbar .btn-group .third{
-    /* Production */
-/* Body */
+
 
     font-family: 'Fakt';
     font-style: normal;
@@ -243,7 +230,6 @@
     color: #394962;
 
 
-/* Inside auto layout */
 
     flex: none;
     order: 0;
@@ -253,10 +239,10 @@
 .btn-toolbar .btn-group .third:hover, .btn-toolbar .btn-group .third:focus{
     background: rgb(184, 225, 252);
 }
-
+*/
 
 .btn-toolbar .sec-group{
-    right: 2;
+    padding-left: 70%;
 }
 
 .btn-toolbar .sec-group .btn-light{
@@ -294,14 +280,8 @@
     border-radius: 6px;
 
 /* Inside auto layout */
-
-    flex: none;
-    order: 0;
-    flex-grow: 0;
     margin-top: 10px;
-    position:absolute;
-    right: 75px;
-    
+
 }
 
 .img-fluid{
@@ -390,7 +370,8 @@ html {
 }
 
 .form-buttons{
-    padding-right:105px;
+    padding-right:5%;
+    padding-top:9px;
 }
 
 #settingsFormCancelButton{
@@ -426,3 +407,134 @@ html {
     align-items: center;
     border-radius: 6px;
 }
+
+
+#bm_content_column{
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+#saveChangesAlert{
+    width: 420px;
+    left: 0;
+    margin: auto; // Centers alert component
+    right: 0;
+    text-align: center; // Centers 'Alert Test' text
+    top: 1em;
+    
+    background: #00112C;
+    box-shadow: 0px 8px 8px rgba(0, 17, 44, 0.02), 0px 2px 4px rgba(0, 17, 44, 0.04);
+    border-radius: 8px;
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+    color: #FFFFFF;
+    height: auto;
+    
+    align-items: center;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+#saveChangesAlert .img-fluid {
+    position: static;
+    padding-bottom: 12px;
+}
+
+#notSavedChangesAlert .img-fluid {
+    position: static;
+    padding-bottom: 12px;
+}
+
+#notSavedChangesAlert{
+    left: 0;
+    margin: auto; // Centers alert component
+    position: absolute; // So that it will display relative to the entire page
+    right: 0;
+    text-align: center; // Centers 'Alert Test' text
+    top: 1em;
+    
+    background: #00112C;
+    box-shadow: 0px 8px 8px rgba(0, 17, 44, 0.02), 0px 2px 4px rgba(0, 17, 44, 0.04);
+    border-radius: 8px;
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+    color: #FFFFFF;
+
+}
+
+.footer{
+    position: absolute;
+    height: 52px;
+}
+
+#settingsFormCancelButton{
+    top:20px;
+    /* label */
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    display: flex;
+    align-items: center;
+
+/* grey / grey-60 */
+
+    color: #394962;
+
+    border-radius: 6px;
+    
+    background: #FFFFFF;
+/* grey / grey-20 */
+
+    border: 1px solid #DCE0E5;
+}
+
+#settingsFormSubmitButton{
+    bottom:10px;
+
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 21px;
+/* identical to box height, or 140% */
+
+    
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+}
+
+/*
+#acc_settings_logo{
+    position: absolute;
+    width: 124px;
+    height: 30px;
+    top: 2px;
+}
+
+
+*/
+
+#logos{
+    margin:0 auto;
+    justify-content:flex-start;
+    display:flex;
+}
+
+#adyen-logo{
+    margin-right: 20px;
+}
+
