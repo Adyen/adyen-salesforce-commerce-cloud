@@ -27,6 +27,7 @@ const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
+const StringUtils = require('dw/util/StringUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -112,6 +113,20 @@ function createPaymentRequest(args) {
       args.addTaxPercentage = true;
       if(paymentRequest.paymentMethod.type.indexOf('klarna') > -1){
         args.addTaxPercentage = false;
+        const address = order.getBillingAddress();
+        const shippingMethod = order.getDefaultShipment()?.shippingMethod;
+        const otherDeliveryAddress = {
+          shipping_method: shippingMethod?.displayName,
+          shipping_type: shippingMethod?.description,
+          first_name: address.firstName,
+          last_name: address.lastName,
+          street_address: `${address.address1} ${address.address2}`,
+          postal_code: address.postalCode,
+          city: address.city,
+          country: address.countryCode.value,
+        }
+        // openinvoicedata.merchantData holds merchant data. It takes data in a Base64 encoded string.
+        paymentRequest.additionalData['openinvoicedata.merchantData'] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
@@ -140,43 +155,10 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    const callResult = executeCall(constants.SERVICE.PAYMENT, paymentRequest);
-    if (callResult.isOk() === false) {
-      Logger.getLogger('Adyen').error(
-        `Adyen: Call error code${callResult
-          .getError()
-          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-      );
-      paymentResponse.adyenErrorMessage = Resource.msg(
-        'confirm.error.declined',
-        'checkout',
-        null,
-      );
-      return {
-        error: true,
-        args: paymentResponse,
-      };
-    }
-
-    const resultObject = callResult.object;
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error(
-        `No correct response from ${
-            constants.SERVICE.PAYMENT
-        }, result: ${JSON.stringify(resultObject)}`,
-      );
-    }
-
-    // build the response object
-    let responseObject;
-    try {
-      responseObject = JSON.parse(resultObject.getText());
-    } catch (ex) {
-      Logger.getLogger('Adyen').error(
-        `error parsing response object ${ex.message}`,
-      );
-      return { error: true };
-    }
+    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    order.custom.Adyen_paymentMethod = paymentRequest?.paymentMethod.brand || paymentRequest?.paymentMethod.type;
+    
+    const responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
 
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
@@ -194,13 +176,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       : '';
     paymentResponse.adyenAmount = paymentRequest.amount.value;
     paymentResponse.decision = 'ERROR';
-
-    if (responseObject.additionalData) {
-      order.custom.Adyen_paymentMethod = responseObject.additionalData
-        .paymentMethod
-        ? responseObject.additionalData.paymentMethod
-        : null;
-    }
 
     const acceptedResultCodes = [
       constants.RESULTCODES.AUTHORISED,

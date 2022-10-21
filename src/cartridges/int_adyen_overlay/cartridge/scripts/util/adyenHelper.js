@@ -141,6 +141,10 @@ var adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }
+        if(frontEndRegion === constants.FRONTEND_REGIONS.IN ) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
@@ -554,11 +558,6 @@ var adyenHelperObj = {
     if (result.pspReference) {
       paymentInstrument.paymentTransaction.transactionID = result.pspReference;
       order.custom.Adyen_pspReference = result.pspReference;
-    }
-    if (result.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.paymentMethod;
-    } else if (result.additionalData && result.additionalData.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode

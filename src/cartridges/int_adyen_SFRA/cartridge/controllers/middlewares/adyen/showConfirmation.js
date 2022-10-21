@@ -1,5 +1,4 @@
 const Logger = require('dw/system/Logger');
-const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
@@ -60,17 +59,6 @@ function handlePaymentsDetailsResult(
   return payment.handlePaymentError(order, 'placeOrder', options);
 }
 
-function setPaymentMethodField(adyenPaymentInstrument, order) {
-  if (adyenPaymentInstrument.custom.adyenPaymentData) {
-    // Adyen_paymentMethod is used in Adyen Giving
-    Transaction.wrap(() => {
-      order.custom.Adyen_paymentMethod = JSON.parse(
-        adyenPaymentInstrument.custom.adyenPaymentData,
-      ).paymentMethod?.type;
-    });
-  }
-}
-
 function isOrderAlreadyProcessed(order) {
   return (
     order.status.value !== Order.ORDER_STATUS_CREATED &&
@@ -116,8 +104,7 @@ function showConfirmation(req, res, next) {
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
 
-      // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
-      setPaymentMethodField(adyenPaymentInstrument, order);
+      clearForms.clearAdyenData(adyenPaymentInstrument);
 
       const detailsResult = getPaymentsDetailsResult(
         adyenPaymentInstrument,

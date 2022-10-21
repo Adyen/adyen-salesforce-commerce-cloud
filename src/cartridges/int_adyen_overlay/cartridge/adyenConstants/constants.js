@@ -45,12 +45,14 @@ module.exports = {
     US: 'US',
     AU: 'AU',
     EU: 'EU',
+    IN: 'IN',
   },
 
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
+  CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: '5.6.1',
   VERSION: '22.1.0',

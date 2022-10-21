@@ -171,14 +171,6 @@ function showConfirmation() {
           adyenPaymentInstrument.paymentTransaction.custom.Adyen_authResult,
       );
 
-      if(adyenPaymentInstrument.custom.adyenPaymentData) {
-        // making sure Adyen_paymentMethod is populated before calling clearAdyenData()
-        // Adyen_paymentMethod is used in Adyen Giving
-        Transaction.wrap(() => {
-          order.custom.Adyen_paymentMethod = JSON.parse(adyenPaymentInstrument.custom.adyenPaymentData).paymentMethod?.type;
-        });
-      }
-
       if (hasQuerystringDetails) {
         const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
         detailsResult = adyenCheckout.doPaymentsDetailsCall({details});
