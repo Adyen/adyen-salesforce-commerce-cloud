@@ -62,6 +62,7 @@ async function initializeBillingEvents() {
     checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
       card: getCardConfig(),
+      bcmc: getCardConfig(),
       storedCard: getCardConfig(),
       boletobancario: {
         personalDetailsRequired: true, // turn personalDetails section on/off

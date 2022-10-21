@@ -105,7 +105,7 @@ const adyenConfigsObj = {
     },
 
     getAdyenFrontendRegion() {
-        return getCustomPreference('Adyen_Frontend_Region');
+        return getCustomPreference('Adyen_Frontend_Region').value;
     },
 
     getAdyenBasketFieldsEnabled() {
