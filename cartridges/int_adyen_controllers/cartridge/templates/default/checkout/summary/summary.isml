@@ -18,7 +18,7 @@
 <script>
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = "${AdyenConfigs.getAdyenEnvironment().toLowerCase()}";
+    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
     var locale = "${request.locale}";
     window.Configuration = {clientKey, loadingContext, environment, locale};
     window.summarySubmitUrl = "${URLUtils.https('COSummary-Submit')}";

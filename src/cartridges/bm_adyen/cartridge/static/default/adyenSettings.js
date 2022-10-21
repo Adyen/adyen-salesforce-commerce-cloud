@@ -4,21 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
   const testConnectionButton = document.querySelector('#testConnectionButton');
-  const togglePassword = document.querySelector('#togglePassword');
-  const toggleApi = document.querySelector('#toggleApi');
-  const formBody = document.querySelector('#formBody');
-  const password = document.querySelector('#notificationsPassword');
-  const merchAccount = document.getElementById('merchantAccount');
-  const classicPageButton = document.querySelector('#classicButton');
-  const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
-  const isValid = 'is-valid';
-  const isInvalid = 'is-invalid';
-  const adyenGivingBackground = document.querySelector(
-    '#fileDropBoxCharitybackground',
-  );
-  const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
-  const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -48,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
       button.classList.remove('disabled');
       button.classList.add('enabled');
       form.removeEventListener('input', enableformButtons);
-    });
+    }
   }
 
-  function disableFormButtons() {
-    formButtons.forEach((button) => {
+  function diableFormButtons() {
+    for (const button of formButtons) {
       button.classList.remove('enabled');
       button.classList.add('disabled');
       form.removeEventListener('input', enableformButtons);
@@ -147,40 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
     createImageNameStyling('backgroundList', window.backgroundValueField);
   }
 
-  function printLogoImageName() {
-    createImageNameStyling('logoList', window.logoValueField);
-  }
+  form.addEventListener('input', enableformButtons); // add event listener to maintain form updates
 
-  testConnectionButton.addEventListener('click', saveAndHideAlerts);
-
-  classicPageButton.addEventListener('click', getLink);
-
-  form.addEventListener('input', enableformButtons);
-
-  submitButton.addEventListener('click', showAlertsOnSave);
-
-  window.addEventListener('load', checkBrowserSupport);
-
-  togglePassword.addEventListener('click', showPassword);
-
-  toggleApi.addEventListener('click', showApiKey);
-
-  adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
-
-  adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);
-
-  window.addEventListener('load', printBackgroundImageName);
-
-  window.addEventListener('load', printLogoImageName);
-
-  adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
-
-  adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
-
-  // add event listener to maintain form updates
-  form.addEventListener('change', (event) => {
-    const { name } = event.target;
-    let { value } = event.target; // get checked boolean value for checkboxes
+  form.addEventListener('change', event => {
+    const name = event.target.name;
+    let value = event.target.value; // get checked boolean value for checkboxes
 
     if (event.target.type === 'checkbox') {
       value = event.target.checked;
@@ -198,35 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     settingChanged(name, value);
-  });
-
-  // add event listener to test connection based on current form contents
-  testConnectionButton.addEventListener('click', async () => {
-    const response = await fetch('AdyenSettings-TestConnection', {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        xApiKey: document.getElementById('apiKey').value,
-        merchantAccount: document.getElementById('merchantAccount').value,
-      }),
-    });
-    const data = await response.json();
+  }); // add event to submit button to send form and present results
 
     if (data.success) {
-      merchAccount.classList.add(isValid);
-      merchAccount.classList.remove(isInvalid);
-      apiKeyVal.classList.add(isValid);
-      apiKeyVal.classList.remove(isInvalid);
+      merchAccount.classList.add("is-valid");
+      merchAccount.classList.remove('is-invalid');
+      apiKeyVal.classList.add("is-valid");
+      apiKeyVal.classList.remove('is-invalid');
     } else {
-      merchAccount.classList.add(isInvalid);
-      merchAccount.classList.remove(isValid);
-      apiKeyVal.classList.add(isInvalid);
-      apiKeyVal.classList.remove(isValid);
+      merchAccount.classList.add("is-invalid");
+      merchAccount.classList.remove("is-valid");
+      apiKeyVal.classList.add("is-invalid");
+      apiKeyVal.classList.remove("is-valid");
     }
   });
-
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
@@ -248,7 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
       window.setTimeout(() => {
         alertBar.classList.remove('show');
       }, 2000);
-    } else {
+    }
+    else{
       const cancelAlertBar = document.getElementById('notSavedChangesAlert');
       cancelAlertBar.classList.add('show');
       window.setTimeout(() => {
@@ -258,6 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   cancelButton.addEventListener('click', async () => {
-    window.location.reload();
-  });
-});
+    location.reload();
+  }); // file upload butttons event listeners for adyen giving card
+
+  function openDialogCharityBackgroundUrl() {
+    document.getElementById('charityBackgroundUrl').click();
+  }
+
+  function openDialogAdyenGivingLogoUrl() {
+    document.getElementById('adyenGivingLogoUrl').click();
+  }
+
+  document.getElementById('fileDropBoxCharitybackground').addEventListener('click', openDialogCharityBackgroundUrl);
+  document.getElementById('fileDropBoxGivingLogo').addEventListener('click', openDialogAdyenGivingLogoUrl);
