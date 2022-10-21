@@ -1,6 +1,7 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function getCardConfig() {
   return {
@@ -102,7 +103,7 @@ function removeGiftCard() {
     success(res) {
       store.partialPaymentsOrderObj = null;
       document.querySelector('#adyenPartialPaymentsOrder').value = null;
-      if (res.resultCode === 'Received') {
+      if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer').parentNode.remove();
         document.querySelector('#giftCardLabel').classList.remove('invisible');
         store.componentsObj.giftcard.node.unmount('component_giftcard');
@@ -207,9 +208,9 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          if (data.resultCode === 'Success') {
+          if (data.resultCode === constants.SUCCESS) {
             resolve(data);
-          } else if (data.resultCode === 'NotEnoughBalance') {
+          } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
           } else {
             reject();
@@ -256,7 +257,7 @@ function getGiftCardConfig() {
     },
     onSubmit(state) {
       $('#giftcard-modal').modal('hide');
-      store.selectedMethod = 'giftcard';
+      store.selectedMethod = state.data.paymentMethod.type;
       store.brand = state.data?.paymentMethod?.brand;
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();

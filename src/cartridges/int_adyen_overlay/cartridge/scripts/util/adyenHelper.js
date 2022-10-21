@@ -562,7 +562,7 @@ var adyenHelperObj = {
     paymentInstrument.paymentTransaction.transactionID = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference : result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
 
-    if (result.additionalData && result.additionalData.paymentMethod) {
+    if (result.additionalData?.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
@@ -627,12 +627,7 @@ var adyenHelperObj = {
 
   getDivisorForCurrency(amount) {
     let fractionDigits = adyenHelperObj.getFractionDigits(amount.currencyCode);
-    let divideBy = 1;
-    while (fractionDigits > 0) {
-      divideBy *= 10;
-      fractionDigits -= 1;
-    }
-    return divideBy;
+    return Math.pow(10, fractionDigits);
   },
 
   getApplicationInfo() {
