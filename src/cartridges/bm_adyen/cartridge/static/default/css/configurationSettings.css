@@ -353,3 +353,45 @@ html {
     position: relative;
     bottom: -10px;
 }
+
+.form-group .wrapper-class{
+    width:320px;
+    height: 69px;
+    margin-top:10px;   
+    padding-left: 48px;
+    padding-right: 51px;
+}
+
+#fileDropBoxCharitybackground, #fileDropBoxGivingLogo{
+    width: 320px;
+    height: 69px;
+    border: 1px dashed gray;
+    color: #69778C;
+    border-radius: 7px;
+    font-family: 'Fakt';
+    text-align: center;
+    background:#F3F6F9;
+    padding: 20px 0;
+}
+
+.paperclip{
+    position: absolute;
+    right: auto; 
+    margin-left: 22px;
+    margin-top: 24px;
+}
+
+#backgroundList{
+    position: absolute;
+    padding-left: 0;
+}
+
+#logoList{
+    position: absolute;
+    padding-left:0;
+
+}
+
+ul{
+    list-style-type: none;
+}

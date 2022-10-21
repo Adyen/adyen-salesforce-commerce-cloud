@@ -3,7 +3,7 @@
 <div id="posSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
-         Point of sale (POS) settings
+         In-person payments settings <small class="text-secondary">(optional)</small>
       </h5>
       <h7 class="card-subtitle">
          <div class="first-subtitle">Set up your POS to process payments in your web store.</div>

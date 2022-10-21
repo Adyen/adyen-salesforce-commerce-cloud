@@ -9,11 +9,14 @@
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <script>
-         let token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
-         const addition1 = "/?preference";
-         const addition2 = "#site_preference_group_attributes";
-         const addition3 = "!id!Adyen";
-         window.classicConfigPageUrl = token +"#" + addition1 + addition2 + addition3;
+         const token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
+         const commonPath = "/?preference";
+         const classicPagePath = "#site_preference_group_attributes";
+         const classicPageSubpath = "!id!Adyen";
+         const storagePath = "#edit_across_sites";
+         const backgroundImageStorage = "!id!c_AdyenGiving_backgroundUrl!instance_type!sandbox!group_id!Adyen";
+         const logoImageStorage = "!id!c_AdyenGiving_logoUrl!instance_type!sandbox!group_id!Adyen";
+         window.classicConfigPageUrl = token +"#" + commonPath + classicPagePath + classicPageSubpath;
       </script>
    </head>
    <header class="header row bg-white mt-4 mb-4">
@@ -36,6 +39,7 @@
          <img src="${URLUtils.staticURL('icons/icon-error.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />
          Your settings could not be saved :( Try again.
       </div>
+
       <div id="pageContents" class="mb-5 bg-light">
          <div class="row bg-light pb-5">
             <div class="col-sm-1"></div>

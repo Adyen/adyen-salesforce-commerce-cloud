@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const changedSettings = [];
   const isValid = 'is-valid';
   const isInvalid = 'is-invalid';
+  const adyenGivingBackground = document.querySelector(
+    '#fileDropBoxCharitybackground',
+  );
+  const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
+  const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -54,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function hideAlertsOnTest() {
+  function saveAndHideAlerts() {
     document.getElementById('settingsFormSubmitButton').click();
     document.getElementById('saveChangesAlert').hide();
     document.getElementById('notSavedChangesAlert').hide();
@@ -86,7 +91,67 @@ document.addEventListener('DOMContentLoaded', () => {
     this.classList.toggle('bi-eye');
   }
 
-  testConnectionButton.addEventListener('click', hideAlertsOnTest);
+  // open Adyen Giving Background upload page
+  function uploadAdyenGivingBackground() {
+    const openedWindow = window.open(
+      window.adyenGivingBackgroundUrl,
+      'backgroundPopUp',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindow.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  // open Adyen Giving Logo upload page
+  function uploadAdyenGivingLogo() {
+    const openedWindowLogo = window.open(
+      window.adyenGivingLogoUrl,
+      'logoPopUp',
+      params,
+    );
+    const loop = setInterval(() => {
+      if (openedWindowLogo.closed) {
+        window.location.reload();
+        clearInterval(loop);
+      }
+    }, 1000);
+  }
+
+  function getImageName(imageUrl) {
+    const parts = imageUrl.split('/');
+    const imageName = parts.pop();
+    return imageName;
+  }
+
+  function createImageNameStyling(list, imageName) {
+    document.getElementById(list).innerHTML = '';
+    const unorderedList = document.getElementById(list);
+    const nameOfImage = getImageName(imageName);
+    if (nameOfImage?.length > 0) {
+      const checkMarkImage = document.createElement('img');
+      checkMarkImage.src = window.successImage;
+      const text = document.createTextNode(nameOfImage);
+      const listElement = document.createElement('li');
+      listElement.appendChild(checkMarkImage);
+      listElement.appendChild(document.createTextNode(' '));
+      listElement.appendChild(text);
+      unorderedList.appendChild(listElement);
+    }
+  }
+
+  function printBackgroundImageName() {
+    createImageNameStyling('backgroundList', window.backgroundValueField);
+  }
+
+  function printLogoImageName() {
+    createImageNameStyling('logoList', window.logoValueField);
+  }
+
+  testConnectionButton.addEventListener('click', saveAndHideAlerts);
 
   classicPageButton.addEventListener('click', getLink);
 
@@ -99,6 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
   togglePassword.addEventListener('click', showPassword);
 
   toggleApi.addEventListener('click', showApiKey);
+
+  adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
+
+  adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);
+
+  window.addEventListener('load', printBackgroundImageName);
+
+  window.addEventListener('load', printLogoImageName);
+
+  adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
+
+  adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
@@ -149,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
       apiKeyVal.classList.remove(isValid);
     }
   });
+
   submitButton.addEventListener('click', async () => {
     // disable form buttons and reattach event listener for enabling it on form change
     disableFormButtons();
