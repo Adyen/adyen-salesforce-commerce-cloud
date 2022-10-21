@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
+const constants = require('../constants');
 
 function getFallback(paymentMethod) {
   const fallback = {};
@@ -51,8 +52,8 @@ function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
-  if (paymentMethod.type === 'giftcard') {
-    return 'giftcard';
+  if (paymentMethod.type === constants.GIFTCARD) {
+    return constants.GIFTCARD;
   }
   if (paymentMethod.brand) {
     return `${paymentMethod.type}_${paymentMethod.brand}`;
@@ -143,7 +144,7 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
 
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
 
-  if (paymentMethodID === 'giftcard') {
+  if (paymentMethodID === constants.GIFTCARD) {
     return;
   }
 

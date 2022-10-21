@@ -5,6 +5,7 @@ module.exports = {
   METHOD_ADYEN_POS: 'AdyenPOS',
   METHOD_ADYEN_COMPONENT: 'AdyenComponent',
   RECEIVED: 'Received',
-  NOTENOUGHBALANCE :'NotEnoughBalance',
+  NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
+  GIFTCARD: 'giftcard',
 };

@@ -3,6 +3,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function callCheckBalance(req, res, next) {
   try {
@@ -10,7 +11,7 @@ function callCheckBalance(req, res, next) {
     const request = JSON.parse(req.body);
     const paymentMethod = request.paymentMethod
       ? request.paymentMethod
-      : 'giftcard';
+      : constants.ACTIONTYPES.GIFTCARD;
 
     const checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),

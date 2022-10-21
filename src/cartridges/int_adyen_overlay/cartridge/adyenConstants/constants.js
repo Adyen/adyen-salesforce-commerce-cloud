@@ -20,6 +20,7 @@ module.exports = {
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
+    GIFTCARD: 'giftcard',
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
 
