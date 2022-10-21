@@ -119,10 +119,7 @@ function paymentFromComponent(req, res, next) {
         giftcardPM.paymentMethod,
       );
       giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
-      giftcardPM.custom.adyenPaymentMethod =
-        parsedGiftCardObj.paymentMethod?.brand ||
-        parsedGiftCardObj.additionalData?.paymentMethod?.brand ||
-        'giftcard';
+      giftcardPM.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
       giftcardPM.paymentTransaction.custom.Adyen_log =
         session.privacy.giftCardResponse;
       giftcardPM.paymentTransaction.custom.Adyen_pspReference =
