@@ -97,7 +97,7 @@ server.post(
 );
 
 /**
- * Called by Adyen to make apply a giftcard
+ * Called by Adyen to apply a giftcard
  */
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 

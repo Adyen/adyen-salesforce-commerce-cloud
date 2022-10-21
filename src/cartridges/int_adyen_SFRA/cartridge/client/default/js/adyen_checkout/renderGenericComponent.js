@@ -123,6 +123,7 @@ function setInstallments(amount) {
 }
 
 function renderGiftCard(paymentMethod) {
+  store.giftcardBrand = paymentMethod.name;
   let giftCardNode;
   const giftcardContainer = document.querySelector('#giftcard-container');
   const giftCardLabel = document.querySelector('#giftCardLabel');
@@ -170,10 +171,10 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const pm of store.checkout.paymentMethodsResponse.paymentMethods) {
-    if (pm.type === 'giftcard') {
-      renderGiftCard(pm);
+  const PMs = store.checkout.paymentMethodsResponse.paymentMethods;
+  for (let i = 0; i < PMs.length; i += 1) {
+    if (PMs[i].type === 'giftcard') {
+      renderGiftCard(PMs[i]);
       break;
     }
   }

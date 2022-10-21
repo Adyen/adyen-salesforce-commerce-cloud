@@ -1,6 +1,7 @@
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
+const BasketMgr = require('dw/order/BasketMgr');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -8,13 +9,18 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.body);
+    const currentBasket = BasketMgr.getCurrentBasket();
 
-    const { paymentMethod, partialPaymentsOrder, amount } = request;
-
+    const {
+      paymentMethod,
+      partialPaymentsOrder,
+      amount,
+      giftcardBrand,
+    } = request;
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount,
-      reference: 'partialPaymentRef',
+      reference: currentBasket.getUUID(),
       paymentMethod,
       order: partialPaymentsOrder,
     };
@@ -32,6 +38,7 @@ function makePartialPayment(req, res, next) {
         ...response.order,
         ...response.amount,
         paymentMethod: response.paymentMethod,
+        brand: giftcardBrand,
       }); // entire response exceeds string length
     });
 

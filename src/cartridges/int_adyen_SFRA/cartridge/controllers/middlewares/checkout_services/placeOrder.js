@@ -159,7 +159,7 @@ function placeOrder(req, res, next) {
             );
           paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 
-          paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.paymentMethod?.brand || parsedGiftCardObj.additionalData?.paymentMethod?.brand || 'giftcard';
+          paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
           paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
           paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCardpspReference;
         })

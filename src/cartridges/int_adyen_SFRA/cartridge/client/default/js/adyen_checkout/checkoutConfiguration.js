@@ -240,6 +240,7 @@ function getGiftCardConfig() {
                 pspReference: data.pspReference,
                 orderData: data.orderData,
               },
+              giftcardBrand: store.giftcardBrand,
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
