@@ -178,3 +178,25 @@
     margin-left: 40%;
     width: max-content;
 }
+
+#giftcard-container {
+    padding: 2em;
+}
+
+#closeGiftCardModal {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.invisible {
+    display: none;
+}
+
+#cancelGiftCardContainer {
+    cursor: pointer;
+}
+
+#giftCardLabel {
+    cursor: pointer;
+}

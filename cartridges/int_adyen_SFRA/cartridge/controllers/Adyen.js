@@ -57,6 +57,26 @@ server.post('PaymentFromComponent', server.middleware.https, adyen.paymentFromCo
  */
 
 server.post('Notify', server.middleware.https, adyen.notify);
+/**
+ * Called by Adyen to check balance of gift card.
+ */
+
+server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
+/**
+ * Called by Adyen to cancel a partial payment order.
+ */
+
+server.post('CancelPartialPaymentOrder', server.middleware.https, adyen.cancelPartialPaymentOrder);
+/**
+ * Called by Adyen to create a partial payments order
+ */
+
+server.post('PartialPaymentsOrder', server.middleware.https, adyen.partialPaymentsOrder);
+/**
+ * Called by Adyen to make apply a giftcard
+ */
+
+server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;

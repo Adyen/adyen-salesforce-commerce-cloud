@@ -16,6 +16,12 @@ var _require = require('../commons'),
     onBrand = _require.onBrand,
     onFieldValid = _require.onFieldValid;
 
+var _require2 = require('../constants'),
+    GIFTCARD_CONSTANTS = _require2.GIFTCARD_CONSTANTS;
+
+var _require3 = require('./renderPaymentMethod'),
+    renderPaymentMethod = _require3.renderPaymentMethod;
+
 var store = require('../../../../store');
 
 function getCardConfig() {
@@ -100,6 +106,135 @@ function getGooglePayConfig() {
     },
     showPayButton: true,
     buttonColor: 'white'
+  };
+}
+
+function removeGiftCard() {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-CancelPartialPaymentOrder',
+    data: JSON.stringify(store.partialPaymentsOrderObj),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success: function success(res) {
+      store.partialPaymentsOrderObj = null;
+
+      if (res.resultCode === 'Received') {
+        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
+        document.querySelector('#giftCardLabel').classList.remove('invisible'); // re render gift card component
+
+        store.componentsObj.giftcard.node.unmount('component_giftcard');
+        delete store.componentsObj.giftcard;
+        document.querySelector('#component_giftcard').remove();
+        renderPaymentMethod({
+          type: 'giftcard'
+        }, false, store.checkoutConfiguration.session.imagePath, null, true);
+        document.querySelector('#component_giftcard').style.display = 'block';
+      }
+    }
+  });
+}
+
+function showRemainingAmount() {
+  $('#giftcard-modal').modal('hide');
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+  var discountsContainer = document.createElement('div');
+  Object.values(GIFTCARD_CONSTANTS).forEach(function (element) {
+    var container = document.createElement('div');
+    var amountTextP = document.createElement('p');
+    var amountTextSpan = document.createElement('span');
+    container.classList.add('row', 'grand-total', 'leading-lines');
+    amountTextP.classList.add('order-receipt-label');
+    amountTextSpan.innerText = element;
+
+    if (element !== GIFTCARD_CONSTANTS.CANCELGIFTCARD) {
+      var amountTextDiv = document.createElement('div');
+      var amountValueDiv = document.createElement('div');
+      var amountValueP = document.createElement('p');
+      var amountValueSpan = document.createElement('span');
+      amountTextDiv.classList.add('col-6', 'start-lines');
+      amountValueDiv.classList.add('col-6', 'end-lines');
+      amountValueP.classList.add('text-right');
+      amountValueSpan.classList.add('grand-total-sum');
+      amountValueSpan.innerText = element === GIFTCARD_CONSTANTS.GIFTCARDAMOUNT ? "-".concat(store.partialPaymentsOrderObj.discountedAmount) : store.partialPaymentsOrderObj.remainingAmount;
+      container.appendChild(amountTextDiv);
+      amountTextDiv.appendChild(amountTextP);
+      container.appendChild(amountValueDiv);
+      amountValueDiv.appendChild(amountValueP);
+      amountValueP.appendChild(amountValueSpan);
+    } else {
+      container.id = 'cancelGiftCardContainer';
+      container.addEventListener('click', removeGiftCard);
+      container.appendChild(amountTextP);
+    }
+
+    amountTextP.appendChild(amountTextSpan);
+    discountsContainer.appendChild(container);
+  });
+  var pricingContainer = document.querySelector('.card-body.order-total-summary');
+  pricingContainer.appendChild(discountsContainer);
+}
+
+function getGiftCardConfig() {
+  var giftcardBalance;
+  return {
+    showPayButton: true,
+    onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-CheckBalance',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: function success(data) {
+          giftcardBalance = data.balance;
+
+          if (data.resultCode === 'Success') {
+            resolve(data);
+          } else if (data.resultCode === 'NotEnoughBalance') {
+            resolve(data);
+          } else {
+            reject();
+          }
+        },
+        fail: function fail() {
+          reject();
+        }
+      });
+    },
+    onOrderRequest: function onOrderRequest(resolve, reject, requestData) {
+      // Make a POST /orders request
+      // Create an order for the total transaction amount
+      var giftCardData = requestData.paymentMethod;
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-PartialPaymentsOrder',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: function success(data) {
+          if (data.resultCode === 'Success') {
+            // make payments call including giftcard data and order data
+            var partialPaymentRequest = {
+              paymentMethod: giftCardData,
+              amount: giftcardBalance,
+              partialPaymentsOrder: {
+                pspReference: data.pspReference,
+                orderData: data.orderData
+              }
+            };
+            helpers.makePartialPayment(partialPaymentRequest);
+            showRemainingAmount();
+          }
+        }
+      });
+    },
+    onSubmit: function onSubmit() {
+      $('#giftcard-modal').modal('hide');
+      store.selectedMethod = 'giftcard';
+      document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').click();
+    }
   };
 }
 
@@ -211,7 +346,8 @@ function setCheckoutConfiguration() {
     paywithgoogle: getGooglePayConfig(),
     googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
-    amazonpay: getAmazonpayConfig()
+    amazonpay: getAmazonpayConfig(),
+    giftcard: getGiftCardConfig()
   };
 }
 
@@ -219,6 +355,7 @@ module.exports = {
   getCardConfig: getCardConfig,
   getPaypalConfig: getPaypalConfig,
   getGooglePayConfig: getGooglePayConfig,
+  getGiftCardConfig: getGiftCardConfig,
   setCheckoutConfiguration: setCheckoutConfiguration,
   actionHandler: actionHandler
 };

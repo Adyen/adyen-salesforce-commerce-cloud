@@ -21,6 +21,10 @@
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+
+      window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
+      window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
+      window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -51,6 +55,7 @@
      <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+     <input id="adyenPartialPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenPartialPaymentsOrder.htmlName}"/>
      <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
      <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
 
@@ -58,7 +63,15 @@
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
+     <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
      <ul id="paymentMethodsList"></ul>
+
+    <div class="modal fade" id="giftcard-modal" role="dialog">
+       <div class="modal-dialog" id="adyenModalDialog">
+            <div id="giftcard-container"></div>
+            <button id="closeGiftCardModal">X</button>
+       </div>
+    </div>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code

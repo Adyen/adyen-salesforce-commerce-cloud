@@ -21,6 +21,9 @@ export const getPaymentForm = jest.fn(() => ({
     adyenStateData: {
       value: 'mockedStateData',
     },
+    adyenPartialPaymentsOrder: {
+        value: 'mockedOrder'
+    }
   },
 }));
 

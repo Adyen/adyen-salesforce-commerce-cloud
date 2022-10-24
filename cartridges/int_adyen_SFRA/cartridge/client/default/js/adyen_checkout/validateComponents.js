@@ -10,4 +10,8 @@ module.exports.validateComponents = function validateComponents() {
   }
 
   document.querySelector('#adyenStateData').value = JSON.stringify(store.stateData);
+
+  if (store.partialPaymentsOrderObj) {
+    document.querySelector('#adyenPartialPaymentsOrder').value = JSON.stringify(store.partialPaymentsOrderObj);
+  }
 };

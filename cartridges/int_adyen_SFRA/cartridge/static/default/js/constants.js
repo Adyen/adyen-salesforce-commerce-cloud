@@ -94,7 +94,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\n// Adyen constants\nmodule.exports = {\n  METHOD_ADYEN: 'Adyen',\n  METHOD_ADYEN_POS: 'AdyenPOS',\n  METHOD_ADYEN_COMPONENT: 'AdyenComponent'\n};\n\n//# sourceURL=webpack:///./cartridges/int_adyen_SFRA/cartridge/client/default/js/constants.js?");
+eval("\n\n// Adyen constants\nmodule.exports = {\n  METHOD_ADYEN: 'Adyen',\n  METHOD_ADYEN_POS: 'AdyenPOS',\n  METHOD_ADYEN_COMPONENT: 'AdyenComponent',\n  GIFTCARD_CONSTANTS: {\n    GIFTCARDAMOUNT: 'Giftcard Amount',\n    REMAININGAMOUNT: \"Remaining Amount\",\n    CANCELGIFTCARD: 'Cancel Giftcard?'\n  }\n};\n\n//# sourceURL=webpack:///./cartridges/int_adyen_SFRA/cartridge/client/default/js/constants.js?");
 
 /***/ })
 

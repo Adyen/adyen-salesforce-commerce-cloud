@@ -12,6 +12,8 @@ var OrderMgr = require('dw/order/OrderMgr');
 
 var URLUtils = require('dw/web/URLUtils');
 
+var Money = require('dw/value/Money');
+
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
@@ -52,6 +54,11 @@ function paymentFromComponent(req, res, next) {
 
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
+
+    if (reqDataObj.partialPaymentsOrder) {
+      paymentInstrument.custom.adyenPartialPaymentsOrder = JSON.stringify(reqDataObj.partialPaymentsOrder);
+    }
+
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   var order = COHelpers.createOrder(currentBasket);
@@ -73,6 +80,22 @@ function paymentFromComponent(req, res, next) {
         OrderMgr.failOrder(order, true);
       });
     }
+  } // Check if gift card was used
+
+
+  if (session.privacy.giftCardResponse) {
+    var paidGiftcardAmount = JSON.parse(session.privacy.giftCardResponse).amount;
+    Transaction.wrap(function () {
+      var giftcardPM = order.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(100));
+
+      var _PaymentMgr$getPaymen2 = PaymentMgr.getPaymentMethod(giftcardPM.paymentMethod),
+          paymentProcessor = _PaymentMgr$getPaymen2.paymentProcessor;
+
+      giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
+      giftcardPM.custom.adyenPaymentMethod = 'giftcard';
+      giftcardPM.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
+    });
+    session.privacy.giftCardResponse = null;
   }
 
   result.orderNo = order.orderNo;

@@ -80,6 +80,21 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPartialPaymentsOrder">
+        <url>https://checkout-test.adyen.com/v69/orders</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCancelPartialPaymentOrder">
+        <url>https://checkout-test.adyen.com/v69/orders/cancel</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCheckBalance">
+        <url>https://checkout-test.adyen.com/v69/paymentMethods/balance</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
 
     <service-profile service-profile-id="Adyen">
         <timeout-millis>30000</timeout-millis>
@@ -170,5 +185,32 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenGiving</credential-id>
+    </service>
+    <service service-id="AdyenPartialPaymentsOrder">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPartialPaymentsOrder</credential-id>
+    </service>
+    <service service-id="AdyenCancelPartialPaymentOrder">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenCancelPartialPaymentOrder</credential-id>
+    </service>
+    <service service-id="AdyenCheckBalance">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenCheckBalance</credential-id>
     </service>
 </services>

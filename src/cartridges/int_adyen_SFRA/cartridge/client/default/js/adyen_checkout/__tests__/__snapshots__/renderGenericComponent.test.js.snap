@@ -19,7 +19,9 @@ Object {
     },
   },
   "session": Object {
+    "adyenDescriptions": Object {},
     "id": "mock_id",
+    "imagePath": "example.com",
     "sessionData": "mock_session_data",
   },
 }

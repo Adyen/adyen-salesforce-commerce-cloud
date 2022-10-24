@@ -20,6 +20,7 @@ module.exports = {
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
+    GIFTCARD: 'giftcard',
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
 
@@ -32,6 +33,9 @@ module.exports = {
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
+    CHECKBALANCE: 'AdyenCheckBalance',
+    CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
+    PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
   },
   MODE: {
     TEST: 'TEST',

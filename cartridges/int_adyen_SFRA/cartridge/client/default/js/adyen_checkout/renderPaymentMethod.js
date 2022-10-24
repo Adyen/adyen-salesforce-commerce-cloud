@@ -19,9 +19,7 @@ var store = require('../../../../store');
 var helpers = require('./helpers');
 
 function getFallback(paymentMethod) {
-  var fallback = {
-    giftcard: "\n        <input type=\"hidden\" class=\"brand\" name=\"brand\" value=\"".concat(paymentMethod.brand, "\"/>\n        <input type=\"hidden\" class=\"type\" name=\"type\" value=\"").concat(paymentMethod.type, "\"/>")
-  };
+  var fallback = {};
 
   if (fallback[paymentMethod.type]) {
     store.componentsObj[paymentMethod.type] = {};
@@ -67,6 +65,10 @@ function setNode(paymentMethodID) {
       }]));
 
       store.componentsObj[paymentMethodID].node = node;
+
+      if (paymentMethodID === 'giftcard') {
+        document.querySelector('#rb_giftcard').parentNode.style.display = 'none';
+      }
     } catch (e) {
       /* No component for payment method */
     }
@@ -80,8 +82,11 @@ function getPaymentMethodID(isStored, paymentMethod) {
     return "storedCard".concat(paymentMethod.id);
   }
 
+  if (paymentMethod.type === 'giftcard') {
+    return 'giftcard';
+  }
+
   if (paymentMethod.brand) {
-    // gift cards all share the same type. Brand is used to differentiate between them
     return "".concat(paymentMethod.type, "_").concat(paymentMethod.brand);
   }
 
@@ -193,8 +198,8 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(paymentMethod,
   var _store$componentsObj$;
 
   var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var rerender = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
   var paymentMethodsUI = document.querySelector('#paymentMethodsList');
-  var li = document.createElement('li');
   var paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
   var isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   var container = document.createElement('div');
@@ -212,12 +217,20 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(paymentMethod,
     imagePath: imagePath,
     description: description
   }));
-  li.innerHTML = liContents;
-  li.classList.add('paymentMethod');
+  var li;
+
+  if (rerender) {
+    li = document.querySelector("#rb_".concat(paymentMethodID)).closest('li');
+  } else {
+    li = document.createElement('li');
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+    paymentMethodsUI.append(li);
+  }
+
   handlePayment(options);
   configureContainer(options);
   li.append(container);
-  paymentMethodsUI.append(li);
   var node = (_store$componentsObj$ = store.componentsObj[paymentMethodID]) === null || _store$componentsObj$ === void 0 ? void 0 : _store$componentsObj$.node;
 
   if (node) {

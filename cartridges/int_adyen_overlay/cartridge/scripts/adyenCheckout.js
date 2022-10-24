@@ -96,14 +96,20 @@ function createPaymentRequest(args) {
           value: numOfInstallments
         };
       }
+    } // Add partial payments order if applicable
+
+
+    if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
+      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
+    } else {
+      var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull();
+      paymentRequest.amount = {
+        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        value: myAmount
+      };
     }
 
-    var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull(); // args.Amount * 100;
-
-    paymentRequest.amount = {
-      currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-      value: myAmount
-    };
     var paymentMethodType = paymentRequest.paymentMethod.type; // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
 
@@ -178,7 +184,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
-        Logger.getLogger('Adyen').info('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -197,7 +202,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       }
 
       paymentResponse.adyenErrorMessage = errorMessage;
-      Logger.getLogger('Adyen').info('Payment result: Refused');
     }
 
     return paymentResponse;
@@ -223,8 +227,23 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
   }
 }
 
+function doCheckBalanceCall(checkBalanceRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.CHECKBALANCE, checkBalanceRequest);
+}
+
+function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.CANCELPARTIALPAYMENTORDER, cancelOrderRequest);
+}
+
+function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.PARTIALPAYMENTSORDER, partialPaymentRequest);
+}
+
 module.exports = {
   createPaymentRequest: createPaymentRequest,
   doPaymentsCall: doPaymentsCall,
-  doPaymentsDetailsCall: doPaymentsDetailsCall
+  doPaymentsDetailsCall: doPaymentsDetailsCall,
+  doCheckBalanceCall: doCheckBalanceCall,
+  doCancelPartialPaymentOrderCall: doCancelPartialPaymentOrderCall,
+  doCreatePartialPaymentOrderCall: doCreatePartialPaymentOrderCall
 };

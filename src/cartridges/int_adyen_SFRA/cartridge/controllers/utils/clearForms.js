@@ -11,6 +11,7 @@ function clearCustomSessionFields() {
   session.privacy.adyenPaymentMethod = null;
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
+  session.privacy.giftCardResponse = null;
 }
 
 /**
@@ -28,6 +29,7 @@ function clearForms() {
 function clearAdyenData(paymentInstrument) {
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
+    paymentInstrument.custom.adyenPartialPaymentsOrder = null;
     paymentInstrument.custom.adyenMD = null;
     paymentInstrument.custom.adyenAction = null;
   });
