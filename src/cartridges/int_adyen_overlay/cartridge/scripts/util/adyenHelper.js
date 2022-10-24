@@ -717,7 +717,7 @@ var adyenHelperObj = {
       };
     }
 
-    if (checkoutresponse.resultCode === 'Received') {
+    if (checkoutresponse.resultCode === constants.RESULTCODES.RECEIVED) {
       return {
         isFinal: false,
       };
