@@ -61,5 +61,5 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: '5.26.0',
-  VERSION: '22.1.1',
+  VERSION: '22.2.0',
 };

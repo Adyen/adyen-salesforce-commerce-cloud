@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "22.1.1",
+  "version": "22.2.0",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
