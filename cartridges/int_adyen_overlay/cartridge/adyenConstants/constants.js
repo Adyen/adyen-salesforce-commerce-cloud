@@ -1,6 +1,7 @@
 "use strict";
 
 // Adyen constants
+
 module.exports = {
   METHOD_ADYEN: 'Adyen',
   METHOD_ADYEN_POS: 'AdyenPOS',
@@ -20,7 +21,8 @@ module.exports = {
     REFUSED: 'Refused'
   },
   ACTIONTYPES: {
-    VOUCHER: 'voucher'
+    VOUCHER: 'voucher',
+    GIFTCARD: 'giftcard'
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
   SERVICE: {
@@ -45,13 +47,15 @@ module.exports = {
   FRONTEND_REGIONS: {
     US: 'US',
     AU: 'AU',
-    EU: 'EU'
+    EU: 'EU',
+    IN: 'IN'
   },
   MAX_API_RETRIES: 3,
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
-  CHECKOUT_COMPONENT_VERSION: '5.18.0',
-  VERSION: '22.1.1'
+  CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
+  CHECKOUT_COMPONENT_VERSION: '5.26.0',
+  VERSION: '22.2.0'
 };

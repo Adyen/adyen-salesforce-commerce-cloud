@@ -6,8 +6,7 @@ var req;
 var res;
 beforeEach(function () {
   var _require = require('../../index'),
-      order = _require.order;
-
+    order = _require.order;
   confirm = order.confirm;
   jest.clearAllMocks();
   res = {
@@ -29,7 +28,6 @@ afterEach(function () {
 describe('Confirm', function () {
   it('should do nothing if giving is not enabled', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     AdyenHelper.getAdyenGivingConfig.mockImplementation(function () {
       return null;
     });
@@ -38,7 +36,6 @@ describe('Confirm', function () {
   });
   it('should do nothing if giving is not available', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     AdyenHelper.isAdyenGivingAvailable.mockImplementation(function () {
       return false;
     });

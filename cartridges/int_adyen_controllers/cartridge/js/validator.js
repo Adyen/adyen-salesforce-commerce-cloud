@@ -5,8 +5,8 @@ var regex = {
   phone: {},
   postal: {},
   notCC: /^(?!(([0-9 -]){13,19})).*$/
-}; // global form validator settings
-
+};
+// global form validator settings
 var settings = {
   errorClass: 'error',
   errorElement: 'span',
@@ -23,64 +23,58 @@ var settings = {
  * @param {String} value The phone number which will be validated
  * @param {String} el The input field
  */
-
 var validatePhone = function validatePhone(value, el) {
   var country = $(el).closest('form').find('.country');
-
   if (country.length === 0 || country.val().length === 0 || !regex.phone[country.val().toLowerCase()]) {
     return true;
   }
-
   var rgx = regex.phone[country.val().toLowerCase()];
   var isOptional = this.optional(el);
   var isValid = rgx.test($.trim(value));
   return isOptional || isValid;
 };
+
 /**
  * @function
  * @description Validates that a credit card owner is not a Credit card number
  * @param {String} value The owner field which will be validated
  * @param {String} el The input field
  */
-
-
 var validateOwner = function validateOwner(value) {
   var isValid = regex.notCC.test($.trim(value));
   return isValid;
 };
+
 /**
  * Add phone validation method to jQuery validation plugin.
  * Text fields must have 'phone' css class to be validated as phone
  */
-
-
 $.validator.addMethod('phone', validatePhone, Resources.INVALID_PHONE);
+
 /**
  * Add CCOwner validation method to jQuery validation plugin.
  * Text fields must have 'owner' css class to be validated as not a credit card
  */
-
 $.validator.addMethod('owner', validateOwner, Resources.INVALID_OWNER);
+
 /**
  * Add gift cert amount validation method to jQuery validation plugin.
  * Text fields must have 'gift-cert-amont' css class to be validated
  */
-
 $.validator.addMethod('gift-cert-amount', function (value, el) {
   var isOptional = this.optional(el);
   var isValid = !isNaN(value) && parseFloat(value) >= 5 && parseFloat(value) <= 5000;
   return isOptional || isValid;
 }, Resources.GIFT_CERT_AMOUNT_INVALID);
+
 /**
  * Add positive number validation method to jQuery validation plugin.
  * Text fields must have 'positivenumber' css class to be validated as positivenumber
  */
-
 $.validator.addMethod('positivenumber', function (value) {
   if ($.trim(value).length === 0) {
     return true;
   }
-
   return !isNaN(value) && Number(value) >= 0;
 }, ''); // '' should be replaced with error message if needed
 

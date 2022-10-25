@@ -18,12 +18,10 @@ function processForm(req, paymentForm, viewFormData) {
     viewData: viewData
   };
 }
+
 /**
  * By default no save payment information is supported
  */
-
-
 function savePaymentInformation() {}
-
 exports.processForm = processForm;
 exports.savePaymentInformation = savePaymentInformation;

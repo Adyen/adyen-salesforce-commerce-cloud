@@ -1,0 +1,33 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="card border-0 mt-5">
+    <h6 class="card-header bg-light links-header border-0 py-1">
+        Quick Links
+    </h6>
+    <div id="linksList" class="card-body list-group bg-light py-1">
+        <a class="bg-light text-primary list-group-item list-group-item-action border-0 pt-0" href="https://docs.adyen.com/" target="_blank">
+            Go to documentation
+            <sup>
+                <img src="${URLUtils.staticURL('icons/external-link-small.svg')}" width="20" height="20"/>
+            </sup>
+        </a>
+        <a class="bg-light text-primary list-group-item list-group-item-action border-0 pt-0" href="https://ca-live.adyen.com/" target="_blank">
+            Go to Customer Area
+            <sup>
+                <img src="${URLUtils.staticURL('icons/external-link-small.svg')}" width="20" height="20"/>
+            </sup>
+        </a>
+        <a class="bg-light text-primary list-group-item list-group-item-action border-0 pt-0" href="https://www.adyen.com/social-responsibility/giving" target="_blank">
+            Go to Adyen Giving
+            <sup>
+                <img src="${URLUtils.staticURL('icons/external-link-small.svg')}" width="20" height="20"/>
+            </sup>
+        </a>
+        <a class="bg-light text-primary list-group-item list-group-item-action border-0 pt-0" href="https://www.adyen.com/en_GB/payment-methods" target="_blank">
+            Go to Adyen payment methods
+            <sup>
+                <img src="${URLUtils.staticURL('icons/external-link-small.svg')}" width="20" height="20"/>
+            </sup>
+        </a>
+    </div>
+</div>

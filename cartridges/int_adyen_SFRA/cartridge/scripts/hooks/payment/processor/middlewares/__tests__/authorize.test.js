@@ -14,8 +14,7 @@ afterEach(function () {
 describe('Authorize', function () {
   it('should return when create payment request fails', function () {
     var _require = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require.createPaymentRequest;
-
+      createPaymentRequest = _require.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         error: {}
@@ -26,8 +25,7 @@ describe('Authorize', function () {
   });
   it('should authorize 3DS payments', function () {
     var _require2 = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require2.createPaymentRequest;
-
+      createPaymentRequest = _require2.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         resultCode: 'RedirectShopper',
@@ -45,8 +43,7 @@ describe('Authorize', function () {
   });
   it('should authorize 3DS2 payments', function () {
     var _require3 = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require3.createPaymentRequest;
-
+      createPaymentRequest = _require3.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         threeDS2: 'mockedthreeDS2',
@@ -61,8 +58,7 @@ describe('Authorize', function () {
   });
   it('should authorize redirectShopper payments', function () {
     var _require4 = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require4.createPaymentRequest;
-
+      createPaymentRequest = _require4.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         resultCode: 'RedirectShopper',
@@ -78,8 +74,7 @@ describe('Authorize', function () {
   });
   it('should handle the create payment request decision accept', function () {
     var _require5 = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require5.createPaymentRequest;
-
+      createPaymentRequest = _require5.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         decision: 'ACCEPT'
@@ -90,8 +85,7 @@ describe('Authorize', function () {
   });
   it('should handle create payment request decisions other than accept', function () {
     var _require6 = require('*/cartridge/scripts/adyenCheckout'),
-        createPaymentRequest = _require6.createPaymentRequest;
-
+      createPaymentRequest = _require6.createPaymentRequest;
     createPaymentRequest.mockImplementation(function () {
       return {
         decision: "DON'T ACCEPT"

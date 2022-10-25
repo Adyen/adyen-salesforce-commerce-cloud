@@ -50,7 +50,6 @@ function getCurrentBasket() {
     paymentInstruments: {}
   };
 }
-
 module.exports = {
   getCurrentBasket: getCurrentBasket
 };

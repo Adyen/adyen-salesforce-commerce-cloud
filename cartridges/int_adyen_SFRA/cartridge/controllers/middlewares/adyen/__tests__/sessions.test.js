@@ -1,14 +1,10 @@
 "use strict";
 
 var callCreateSession = require('../sessions');
-
 var _require = require('*/cartridge/scripts/adyenSessions'),
-    createSession = _require.createSession;
-
+  createSession = _require.createSession;
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
 var paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
-
 var res;
 var req;
 var next = jest.fn();

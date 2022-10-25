@@ -1,33 +1,19 @@
 "use strict";
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 require('./adyen-giving');
-
 require('./amazon');
-
 require('./summary');
-
 var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];
 var installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
 var maskedCardNumber;
@@ -45,11 +31,9 @@ var paypalTerminatedEarly = false;
  * @function
  * @description Initializes Adyen Secured Fields  Billing events
  */
-
 function initializeBillingEvents() {
   return _initializeBillingEvents.apply(this, arguments);
 }
-
 function _initializeBillingEvents() {
   _initializeBillingEvents = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
     return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -59,12 +43,10 @@ function _initializeBillingEvents() {
             $('#billing-submit').on('click', function () {
               var isAdyenPOS = document.querySelector('.payment-method-options :checked').value === 'AdyenPOS';
               var isAdyen = document.querySelector('.payment-method-options :checked').value === 'AdyenComponent';
-
               if (isAdyenPOS) {
                 document.querySelector('#dwfrm_adyPaydata_terminalId').value = document.querySelector('#terminalList').value;
                 return true;
               }
-
               if (isAdyen) {
                 var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
                 var paymentMethodLabel = document.querySelector("#lb_".concat(selectedMethod)).innerHTML;
@@ -73,37 +55,28 @@ function _initializeBillingEvents() {
                 return showValidation();
               }
             });
-
             if (!window.sessionsResponse) {
               _context2.next = 16;
               break;
             }
-
             sessionsResponse = window.sessionsResponse;
             checkoutConfiguration = window.Configuration;
-
-            checkoutConfiguration.onChange = function (state
-            /* , component */
-            ) {
+            checkoutConfiguration.onChange = function (state /* , component */) {
               var type = state.data.paymentMethod.type;
-
               if (selectedMethod === "googlepay" && type === "paywithgoogle") {
                 type = "googlepay";
               }
-
               isValid = state.isValid;
-
               if (!componentsObj[type]) {
                 componentsObj[type] = {};
               }
-
               componentsObj[type].isValid = isValid;
               componentsObj[type].stateData = state.data;
             };
-
             checkoutConfiguration.showPayButton = false;
             checkoutConfiguration.paymentMethodsConfiguration = {
               card: getCardConfig(),
+              bcmc: getCardConfig(),
               storedCard: getCardConfig(),
               boletobancario: {
                 personalDetailsRequired: true,
@@ -111,8 +84,8 @@ function _initializeBillingEvents() {
                 billingAddressRequired: false,
                 // turn billingAddress section on/off
                 showEmailAddress: false // allow shopper to specify their email address
-
               },
+
               paywithgoogle: getGooglePayConfig(),
               googlepay: getGooglePayConfig(),
               paypal: {
@@ -127,10 +100,8 @@ function _initializeBillingEvents() {
                     paypalTerminatedEarly = false;
                     return actions.resolve();
                   }
-
                   paypalTerminatedEarly = true;
                   $('#dwfrm_billing').trigger('submit');
-
                   if (formErrorsExist) {
                     paypalTerminatedEarly = false;
                     return actions.reject();
@@ -148,13 +119,12 @@ function _initializeBillingEvents() {
                     merchantReference: document.querySelector('#merchantReference').value
                   }, component);
                 },
-                onError: function onError() {
+                onError: function /* error, component */
+                onError() {
                   paypalTerminatedEarly = false;
                   $('#dwfrm_billing').trigger('submit');
                 },
-                onAdditionalDetails: function onAdditionalDetails(state
-                /* , component */
-                ) {
+                onAdditionalDetails: function onAdditionalDetails(state /* , component */) {
                   paypalTerminatedEarly = false;
                   document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(state.data);
                   $('#dwfrm_billing').trigger('submit');
@@ -165,21 +135,18 @@ function _initializeBillingEvents() {
                 onSubmit: function onSubmit(state, component) {
                   $('#dwfrm_billing').trigger('submit');
                   assignPaymentMethodValue();
-
                   if (formErrorsExist) {
                     return false;
                   }
-
                   document.getElementById('component_mbway').querySelector('button').disabled = true;
                   paymentFromComponent(state.data, component);
                   document.querySelector('#adyenStateData').value = JSON.stringify(state.data);
                 },
-                onError: function onError() {
+                onError: function /* error, component */
+                onError() {
                   $('#dwfrm_billing').trigger('submit');
                 },
-                onAdditionalDetails: function onAdditionalDetails(state
-                /* , component */
-                ) {
+                onAdditionalDetails: function onAdditionalDetails(state /* , component */) {
                   document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(state.data);
                   $('#dwfrm_billing').trigger('submit');
                 }
@@ -190,30 +157,25 @@ function _initializeBillingEvents() {
               pix: getQRCodeConfig(),
               amazonpay: getAmazonpayConfig()
             };
-
             if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
               checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration.merchantIdentifier = window.googleMerchantID;
               checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration.merchantIdentifier = window.googleMerchantID;
             }
-
             if (window.cardholderNameBool !== 'null') {
               checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
               checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
             }
-
             checkoutConfiguration.session = {
               id: window.sessionsResponse.id,
               sessionData: window.sessionsResponse.sessionData
             };
             _context2.next = 12;
             return AdyenCheckout(checkoutConfiguration);
-
           case 12:
             checkout = _context2.sent;
             paymentMethodsResponse = checkout.paymentMethodsResponse;
             document.querySelector('#paymentMethodsList').innerHTML = '';
             renderGenericComponent();
-
           case 16:
           case "end":
             return _context2.stop();
@@ -223,7 +185,6 @@ function _initializeBillingEvents() {
   }));
   return _initializeBillingEvents.apply(this, arguments);
 }
-
 function zeroAuth(data, checkout) {
   $.ajax({
     url: window.zeroAuthURL,
@@ -236,7 +197,6 @@ function zeroAuth(data, checkout) {
         document.querySelector('#buttonsContainer').style.display = 'none';
         checkout.createFromAction(data.zeroAuthResult.action).mount('#newCard');
       }
-
       if (data.zeroAuthResult.resultCode === 'Authorised') {
         window.location.href = window.paymentInstrumentsList;
       } else if (data.zeroAuthResult.resultCode === 'Refused') {
@@ -245,7 +205,6 @@ function zeroAuth(data, checkout) {
     }
   });
 }
-
 function paymentsDetails(state) {
   $.ajax({
     type: 'post',
@@ -266,16 +225,14 @@ function paymentsDetails(state) {
     }
   });
 }
+
 /**
  * @function
  * @description Initializes Adyen Checkout My Account events
  */
-
-
 function initializeAccountEvents() {
   return _initializeAccountEvents.apply(this, arguments);
 }
-
 function _initializeAccountEvents() {
   _initializeAccountEvents = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
     var newCard, adyenStateData, isValid, node;
@@ -284,15 +241,12 @@ function _initializeAccountEvents() {
         switch (_context3.prev = _context3.next) {
           case 0:
             checkoutConfiguration = window.Configuration;
-
             checkoutConfiguration.onAdditionalDetails = function (state) {
               paymentsDetails(state);
             };
-
             checkoutConfiguration.session = window.sessionData;
             _context3.next = 5;
             return AdyenCheckout(checkoutConfiguration);
-
           case 5:
             checkout = _context3.sent;
             newCard = document.getElementById('newCard');
@@ -307,16 +261,13 @@ function _initializeAccountEvents() {
             }).mount(newCard);
             $('#applyBtn').on('click', function (e) {
               e.preventDefault();
-
               if (!isValid) {
                 node.showValidation();
                 return false;
               }
-
               document.querySelector('#adyenStateData').value = JSON.stringify(adyenStateData);
               zeroAuth(adyenStateData, checkout);
             });
-
           case 10:
           case "end":
             return _context3.stop();
@@ -326,28 +277,24 @@ function _initializeAccountEvents() {
   }));
   return _initializeAccountEvents.apply(this, arguments);
 }
-
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   adyenPaymentMethod.value = document.querySelector("#lb_".concat(selectedMethod)).innerHTML;
 }
+
 /**
  * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
-
-
 function unmountComponents() {
   var promises = Object.entries(componentsObj).map(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
-        key = _ref2[0],
-        val = _ref2[1];
-
+      key = _ref2[0],
+      val = _ref2[1];
     delete componentsObj[key];
     return resolveUnmount(key, val);
   });
   return Promise.all(promises);
 }
-
 function resolveUnmount(key, val) {
   try {
     return Promise.resolve(val.node.unmount("component_".concat(key)));
@@ -356,41 +303,33 @@ function resolveUnmount(key, val) {
     return Promise.resolve(false);
   }
 }
-
 function displaySelectedMethod(type) {
   selectedMethod = type;
   resetPaymentMethod();
-
   if (['paypal', 'paywithgoogle', 'googlepay', 'mbway', 'amazonpay'].concat(qrCodeMethods).indexOf(type) > -1) {
     document.querySelector('#billing-submit').disabled = true;
   } else {
     document.querySelector('#billing-submit').disabled = false;
   }
-
   document.querySelector("#component_".concat(type)).setAttribute('style', 'display:block');
 }
-
 function resetPaymentMethod() {
   $('.additionalFields').hide();
 }
-
 function showValidation() {
   if (componentsObj[selectedMethod] && !componentsObj[selectedMethod].isValid) {
     componentsObj[selectedMethod].node.showValidation();
     return false;
   }
-
   return true;
 }
+
 /**
  * Assigns stateData value to the hidden stateData input field
  * so it's sent to the backend for processing
  */
-
-
 function validateComponents() {
   var stateData;
-
   if (componentsObj[selectedMethod] && componentsObj[selectedMethod].stateData) {
     stateData = componentsObj[selectedMethod].stateData;
   } else {
@@ -401,34 +340,29 @@ function validateComponents() {
       }
     };
     var brandElm = document.querySelector("#component_".concat(selectedMethod, " .brand"));
-
     if (brandElm && brandElm.value) {
       stateData.paymentMethod.brand = brandElm.value;
     }
   }
-
   document.querySelector('#adyenStateData').value = JSON.stringify(stateData);
 }
+
 /**
  * Contains fallback components for payment methods that don't have an Adyen web component yet
  */
-
-
 function getFallback(paymentMethod) {
   var fallback = {
     giftcard: "\n      <input type=\"hidden\" class=\"brand\" name=\"brand\" value=\"".concat(paymentMethod.brand, "\"/>\n      <input type=\"hidden\" class=\"type\" name=\"type\" value=\"").concat(paymentMethod.type, "\"/>")
   };
   return fallback[paymentMethod.type];
 }
+
 /**
  * Renders all payment methods (including card component) retrieved from Adyen session
  */
-
-
 function renderGenericComponent() {
   return _renderGenericComponent.apply(this, arguments);
 }
-
 function _renderGenericComponent() {
   _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
     var amazonpay, i, paymentMethod, firstPaymentMethod;
@@ -440,49 +374,39 @@ function _renderGenericComponent() {
               _context4.next = 3;
               break;
             }
-
             _context4.next = 3;
             return unmountComponents();
-
           case 3:
             checkoutConfiguration.paymentMethodsResponse = paymentMethodsResponse.paymentMethods;
-
             if (sessionsResponse.amount) {
               checkoutConfiguration.amount = sessionsResponse.amount;
               checkoutConfiguration.paymentMethodsConfiguration.paypal.amount = sessionsResponse.amount;
               checkoutConfiguration.paymentMethodsConfiguration.amazonpay.amount = sessionsResponse.amount;
               setInstallments(sessionsResponse.amount);
             }
-
             if (sessionsResponse.countryCode) {
               checkoutConfiguration.countryCode = sessionsResponse.countryCode;
             }
-
             amazonpay = paymentMethodsResponse.paymentMethods.find(function (paymentMethod) {
               return paymentMethod.type === 'amazonpay';
             });
-
             if (amazonpay) {
               checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration = amazonpay.configuration;
             }
-
             if (paymentMethodsResponse.storedPaymentMethods) {
               for (i = 0; i < checkout.paymentMethodsResponse.storedPaymentMethods.length; i++) {
                 paymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[i];
-
                 if (paymentMethod.supportedShopperInteractions.includes('Ecommerce')) {
                   renderPaymentMethod(paymentMethod, true, sessionsResponse.imagePath);
                 }
               }
             }
-
             paymentMethodsResponse.paymentMethods.forEach(function (pm) {
               renderPaymentMethod(pm, false, sessionsResponse.imagePath);
             });
             firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
             firstPaymentMethod.checked = true;
             displaySelectedMethod(firstPaymentMethod.value);
-
           case 13:
           case "end":
             return _context4.stop();
@@ -492,20 +416,16 @@ function _renderGenericComponent() {
   }));
   return _renderGenericComponent.apply(this, arguments);
 }
-
 function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
     return "storedCard".concat(paymentMethod.id);
   }
-
   if (paymentMethod.brand) {
     // gift cards all share the same type. Brand is used to differentiate between them
     return "".concat(paymentMethod.type, "_").concat(paymentMethod.brand);
   }
-
   return paymentMethod.type;
 }
-
 function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   var paymentMethodsUI = document.querySelector('#paymentMethodsList');
   var li = document.createElement('li');
@@ -525,7 +445,6 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   container.setAttribute('style', 'display:none');
   li.append(container);
   paymentMethodsUI.append(li);
-
   if (paymentMethod.type !== 'paywithgoogle') {
     node && node.mount(container);
   } else {
@@ -535,7 +454,6 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
   }
 
   var input = document.querySelector("#rb_".concat(paymentMethodID));
-
   input.onchange = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee(event) {
       return _regenerator["default"].wrap(function _callee$(_context) {
@@ -549,9 +467,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
                   merchantReference: document.querySelector('#merchantReference').value
                 });
               }
-
               displaySelectedMethod(event.target.value);
-
             case 2:
             case "end":
               return _context.stop();
@@ -559,38 +475,30 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
         }
       }, _callee);
     }));
-
     return function (_x) {
       return _ref3.apply(this, arguments);
     };
   }();
-
   if (paymentMethodID === 'giropay') {
     container.innerHTML = '';
   }
-
   if (componentsObj[paymentMethodID] && !container.childNodes[0] && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
     componentsObj[paymentMethodID].isValid = true;
   }
 }
-
 function renderCheckoutComponent(storedPaymentMethodBool, checkout, paymentMethod, container, paymentMethodID) {
   if (storedPaymentMethodBool) {
     return createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
   }
-
   var fallback = getFallback(paymentMethod);
-
   if (fallback) {
     var template = document.createElement('template');
     template.innerHTML = fallback;
     container.append(template.content);
     return;
   }
-
   return createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID);
 }
-
 function getPersonalDetails() {
   var shippingAddress = sessionsResponse.shippingAddress;
   return {
@@ -599,7 +507,6 @@ function getPersonalDetails() {
     telephoneNumber: shippingAddress.phone
   };
 }
-
 function createCheckoutComponent(checkout, paymentMethod, container, paymentMethodID) {
   try {
     var nodeData = Object.assign(paymentMethod, {
@@ -613,24 +520,19 @@ function createCheckoutComponent(checkout, paymentMethod, container, paymentMeth
       }
     });
     var node = checkout.create(paymentMethod.type, nodeData);
-
     if (!componentsObj[paymentMethodID]) {
       componentsObj[paymentMethodID] = {};
     }
-
     componentsObj[paymentMethodID].node = node;
     return node;
   } catch (e) {} // eslint-disable-line no-empty
-
-
   return false;
 }
+
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-
-
 function paymentFromComponent(data, component) {
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -642,7 +544,6 @@ function paymentFromComponent(data, component) {
         document.querySelector('#orderToken').value = data.result.orderToken;
         document.querySelector('#merchantReference').value = data.result.orderNo;
       }
-
       if (data.result && data.result.fullResponse && data.result.fullResponse.action) {
         component.handleAction(data.result.fullResponse.action);
       } else {
@@ -650,9 +551,8 @@ function paymentFromComponent(data, component) {
         $('#dwfrm_billing').trigger('submit');
       }
     }
-  }).fail(function () {});
+  }).fail(function /* xhr, textStatus */ () {});
 }
-
 $('#dwfrm_billing').submit(function (e) {
   if (['paypal', 'mbway', 'amazonpay'].concat(qrCodeMethods).indexOf(selectedMethod) > -1 && !document.querySelector('#paymentFromComponentStateData').value) {
     e.preventDefault();
@@ -669,30 +569,24 @@ $('#dwfrm_billing').submit(function (e) {
     });
   }
 });
-
 function getQRCodeConfig() {
   return {
     showPayButton: true,
     onSubmit: function onSubmit(state, component) {
       $('#dwfrm_billing').trigger('submit');
-
       if (formErrorsExist) {
         return;
       }
-
       assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(state.data);
       paymentFromComponent(state.data, component);
     },
-    onAdditionalDetails: function onAdditionalDetails(state
-    /* , component */
-    ) {
+    onAdditionalDetails: function onAdditionalDetails(state /* , component */) {
       document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(state.data);
       $('#dwfrm_billing').trigger('submit');
     }
   };
 }
-
 function getCardConfig() {
   return {
     enableStoreDetails: showStoreDetails,
@@ -715,7 +609,6 @@ function getCardConfig() {
     }
   };
 }
-
 function getGooglePayConfig() {
   return {
     environment: window.Configuration.environment,
@@ -731,7 +624,6 @@ function getGooglePayConfig() {
     buttonColor: 'white'
   };
 }
-
 function getAmazonpayConfig() {
   return {
     showPayButton: true,
@@ -750,7 +642,6 @@ function getAmazonpayConfig() {
     },
     onClick: function onClick(resolve, reject) {
       $('#dwfrm_billing').trigger('submit');
-
       if (formErrorsExist) {
         reject();
       } else {
@@ -761,53 +652,43 @@ function getAmazonpayConfig() {
     onError: function onError() {}
   };
 }
-
 function getInstallmentValues(maxValue) {
   var values = [];
-
   for (var i = 1; i <= maxValue; i += 1) {
     values.push(i);
   }
-
   return values;
 }
-
 function setInstallments(amount) {
   try {
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
-
     var _ref4 = window.installments ? window.installments.replace(/\[|]/g, '').split(',') : [null, null],
-        _ref5 = _slicedToArray(_ref4, 2),
-        minAmount = _ref5[0],
-        numOfInstallments = _ref5[1];
-
+      _ref5 = _slicedToArray(_ref4, 2),
+      minAmount = _ref5[0],
+      numOfInstallments = _ref5[1];
     if (minAmount <= amount.value) {
       checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
         card: {}
       }; // eslint-disable-next-line max-len
-
       checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = getInstallmentValues(numOfInstallments);
       checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
     }
   } catch (e) {} // eslint-disable-line no-empty
-
 }
+
 /**
  * @function
  * @description Initializes Adyen CSE billing events
  */
 
-
 exports.initBilling = function () {
   initializeBillingEvents();
 };
-
 exports.initAccount = function () {
   initializeAccountEvents();
 };
-
 exports.renderGenericComponent = function () {
   renderGenericComponent();
 };

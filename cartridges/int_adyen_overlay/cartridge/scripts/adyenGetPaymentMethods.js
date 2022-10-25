@@ -20,20 +20,18 @@
  *
  * Send request to adyen to get payment methods based on country code and currency
  */
+
 // script include
 var Logger = require('dw/system/Logger');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-
 var constants = require('*/cartridge/adyenConstants/constants');
-
 function getMethods(basket, customer, countryCode) {
   try {
     var paymentAmount;
-    var currencyCode; // paymentMethods call from checkout
+    var currencyCode;
 
+    // paymentMethods call from checkout
     if (basket) {
       currencyCode = basket.currencyCode;
       paymentAmount = basket.getTotalGrossPrice().isAvailable() ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()) : new dw.value.Money(1000, currencyCode);
@@ -42,7 +40,6 @@ function getMethods(basket, customer, countryCode) {
       currencyCode = session.currency.currencyCode;
       paymentAmount = new dw.value.Money(0, currencyCode);
     }
-
     var paymentMethodsRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
@@ -50,34 +47,28 @@ function getMethods(basket, customer, countryCode) {
         value: paymentAmount.value
       }
     };
-
     if (countryCode) {
       paymentMethodsRequest.countryCode = countryCode;
     }
-
     if (request.getLocale()) {
       paymentMethodsRequest.shopperLocale = request.getLocale();
-    } // check logged in shopper for oneClick
+    }
 
-
+    // check logged in shopper for oneClick
     var profile = customer && customer.registered && customer.getProfile() ? customer.getProfile() : null;
     var customerID = null;
-
     if (profile && profile.getCustomerNo()) {
       customerID = profile.getCustomerNo();
     }
-
     if (customerID) {
       paymentMethodsRequest.shopperReference = customerID;
     }
-
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
     return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (e) {
     Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
 }
-
 module.exports = {
   getMethods: getMethods
 };

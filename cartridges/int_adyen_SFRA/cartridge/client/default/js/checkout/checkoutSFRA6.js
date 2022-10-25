@@ -1,23 +1,16 @@
 "use strict";
 
 var customerHelpers = require('base/checkout/customer');
-
 var addressHelpers = require('base/checkout/address');
-
 var shippingHelpers = require('base/checkout/shipping');
-
 var billingHelpers = require('base/checkout/billing');
-
 var summaryHelpers = require('base/checkout/summary');
-
 var formHelpers = require('base/checkout/formErrors');
-
 var scrollAnimate = require('base/components/scrollAnimate');
-
-var billing = require('./billing'); // ### Custom Adyen cartridge start ###
-
-
-var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge end ###
+var billing = require('./billing');
+// ### Custom Adyen cartridge start ###
+var adyenCheckout = require('../adyenCheckout');
+// ### Custom Adyen cartridge end ###
 
 /**
  * Create the jQuery Checkout Plugin.
@@ -31,14 +24,13 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
  * Billing info and payment info are used a bit synonymously in this code.
  *
  */
-
-
 (function ($) {
   $.fn.checkout = function () {
-    var plugin = this; //
+    var plugin = this;
+
+    //
     // Collect form data from user input
     //
-
     var formData = {
       // Customer Data
       customer: {},
@@ -50,27 +42,27 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
       payment: {},
       // Gift Codes
       giftCode: {}
-    }; //
+    };
+
+    //
     // The different states/stages of checkout
     //
-
     var checkoutStages = ['customer', 'shipping', 'payment', 'placeOrder', 'submitted'];
+
     /**
      * Updates the URL to determine stage
      * @param {number} currentStage - The current stage the user is currently on in the checkout
      */
-
     function updateUrl(currentStage) {
       history.pushState(checkoutStages[currentStage], document.title, location.pathname + '?stage=' + checkoutStages[currentStage] + '#' + checkoutStages[currentStage]);
-    } //
+    }
+
+    //
     // Local member methods of the Checkout plugin
     //
-
-
     var members = {
       // initialize the currentStage variable for the first time
       currentStage: 0,
-
       /**
        * Set or update the checkout stage (AKA the shipping, billing, payment, etc... steps)
        * @returns {Object} a promise
@@ -83,10 +75,10 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           //
           // Clear Previous Errors
           //
-          customerHelpers.methods.clearErrors(); //
+          customerHelpers.methods.clearErrors();
+          //
           // Submit the Customer Form
           //
-
           var customerFormSelector = customerHelpers.methods.isGuestFormActive() ? customerHelpers.vars.GUEST_FORM : customerHelpers.vars.REGISTERED_FORM;
           var customerForm = $(customerFormSelector);
           $.ajax({
@@ -103,9 +95,8 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             error: function error(err) {
               if (err.responseJSON && err.responseJSON.redirectUrl) {
                 window.location.href = err.responseJSON.redirectUrl;
-              } // Server error submitting form
-
-
+              }
+              // Server error submitting form
               defer.reject(err.responseJSON);
             }
           });
@@ -114,18 +105,18 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           //
           // Clear Previous Errors
           //
-          formHelpers.clearPreviousErrors('.shipping-form'); //
+          formHelpers.clearPreviousErrors('.shipping-form');
+
+          //
           // Submit the Shipping Address Form
           //
-
           var isMultiShip = $('#checkout-main').hasClass('multi-ship');
           var formSelector = isMultiShip ? '.multi-shipping .active form' : '.single-shipping .shipping-form';
           var form = $(formSelector);
-
           if (isMultiShip && form.length === 0) {
             // disable the next:Payment button here
-            $('body').trigger('checkout:disableButton', '.next-step-button button'); // in case the multi ship form is already submitted
-
+            $('body').trigger('checkout:disableButton', '.next-step-button button');
+            // in case the multi ship form is already submitted
             var url = $('#checkout-main').attr('data-checkout-get-url');
             $.ajax({
               url: url,
@@ -133,7 +124,6 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
               success: function success(data) {
                 // enable the next:Payment button here
                 $('body').trigger('checkout:enableButton', '.next-step-button button');
-
                 if (!data.error) {
                   $('body').trigger('checkout:updateCheckoutView', {
                     order: data.order,
@@ -152,8 +142,8 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
               },
               error: function error() {
                 // enable the next:Payment button here
-                $('body').trigger('checkout:enableButton', '.next-step-button button'); // Server error submitting form
-
+                $('body').trigger('checkout:enableButton', '.next-step-button button');
+                // Server error submitting form
                 defer.reject();
               }
             });
@@ -165,8 +155,8 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
               callback: function callback(data) {
                 shippingFormData = data;
               }
-            }); // disable the next:Payment button here
-
+            });
+            // disable the next:Payment button here
             $('body').trigger('checkout:disableButton', '.next-step-button button');
             $.ajax({
               url: form.attr('action'),
@@ -180,22 +170,20 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
               error: function error(err) {
                 // enable the next:Payment button here
                 $('body').trigger('checkout:enableButton', '.next-step-button button');
-
                 if (err.responseJSON && err.responseJSON.redirectUrl) {
                   window.location.href = err.responseJSON.redirectUrl;
-                } // Server error submitting form
-
-
+                }
+                // Server error submitting form
                 defer.reject(err.responseJSON);
               }
             });
           }
-
           return defer;
         } else if (stage === 'payment') {
           //
           // Submit the Billing Address Form
           //
+
           formHelpers.clearPreviousErrors('.payment-form');
           var billingAddressForm = $('#dwfrm_billing .billing-address-block :input').serialize();
           $('body').trigger('checkout:serializeBilling', {
@@ -230,13 +218,11 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             }
           });
           var paymentForm = billingAddressForm + '&' + contactInfoForm + '&' + paymentInfoForm;
-
           if ($('.data-checkout-stage').data('customer-type') === 'registered') {
             // if payment method is credit card
             if ($('.payment-information').data('payment-method-id') === 'CREDIT_CARD') {
               if (!$('.payment-information').data('is-new-payment')) {
                 var cvvCode = $('.saved-payment-instrument.' + 'selected-payment .saved-payment-security-code').val();
-
                 if (cvvCode === '') {
                   var cvvElement = $('.saved-payment-instrument.' + 'selected-payment ' + '.form-control');
                   cvvElement.addClass('is-invalid');
@@ -244,15 +230,13 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
                   defer.reject();
                   return defer;
                 }
-
                 var $savedPaymentInstrument = $('.saved-payment-instrument' + '.selected-payment');
                 paymentForm += '&storedPaymentUUID=' + $savedPaymentInstrument.data('uuid');
                 paymentForm += '&securityCode=' + cvvCode;
               }
             }
-          } // disable the next:Place Order button here
-
-
+          }
+          // disable the next:Place Order button here
           $('body').trigger('checkout:disableButton', '.next-step-button button');
           $.ajax({
             url: $('#dwfrm_billing').attr('action'),
@@ -260,8 +244,8 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             data: paymentForm,
             success: function success(data) {
               // enable the next:Place Order button here
-              $('body').trigger('checkout:enableButton', '.next-step-button button'); // look for field validation errors
-
+              $('body').trigger('checkout:enableButton', '.next-step-button button');
+              // look for field validation errors
               if (data.error) {
                 if (data.fieldErrors.length) {
                   data.fieldErrors.forEach(function (error) {
@@ -270,7 +254,6 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
                     }
                   });
                 }
-
                 if (data.serverErrors.length) {
                   data.serverErrors.forEach(function (error) {
                     $('.error-message').show();
@@ -278,11 +261,9 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
                     scrollAnimate($('.error-message'));
                   });
                 }
-
                 if (data.cartError) {
                   window.location.href = data.redirectUrl;
                 }
-
                 defer.reject();
               } else {
                 //
@@ -292,15 +273,12 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
                   order: data.order,
                   customer: data.customer
                 });
-
                 if (data.renderedPaymentInstruments) {
                   $('.stored-payments').empty().html(data.renderedPaymentInstruments);
                 }
-
                 if (data.customer.registeredUser && data.customer.customerPaymentInstruments.length) {
                   $('.cancel-new-payment').removeClass('checkout-hidden');
                 }
-
                 scrollAnimate();
                 defer.resolve(data);
               }
@@ -308,7 +286,6 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             error: function error(err) {
               // enable the next:Place Order button here
               $('body').trigger('checkout:enableButton', '.next-step-button button');
-
               if (err.responseJSON && err.responseJSON.redirectUrl) {
                 window.location.href = err.responseJSON.redirectUrl;
               }
@@ -324,7 +301,6 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             success: function success(data) {
               // enable the placeOrder button here
               $('body').trigger('checkout:enableButton', '.next-step-button button');
-
               if (data.error) {
                 if (data.cartError) {
                   window.location.href = data.redirectUrl;
@@ -332,11 +308,12 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
                 } else {
                   // go to appropriate stage and display error message
                   defer.reject(data);
-                } // ### Custom Adyen cartridge start ###
-
+                }
+                // ### Custom Adyen cartridge start ###
               } else if (data.adyenAction) {
                 window.orderToken = data.orderToken;
-                adyenCheckout.actionHandler(data.adyenAction); // ### Custom Adyen cartridge end ###
+                adyenCheckout.actionHandler(data.adyenAction);
+                // ### Custom Adyen cartridge end ###
               } else {
                 var redirect = $('<form>').appendTo(document.body).attr({
                   method: 'POST',
@@ -361,9 +338,7 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           });
           return defer;
         }
-
         var p = $('<div>').promise(); // eslint-disable-line
-
         setTimeout(function () {
           p.done(); // eslint-disable-line
         }, 500);
@@ -386,22 +361,25 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
         $('body').on('click', '.submit-customer', function (e) {
           e.preventDefault();
           members.nextStage();
-        }); //
+        });
+
+        //
         // Handle Payment option selection
         //
-
         $('input[name$="paymentMethod"]', plugin).on('change', function () {
           $('.credit-card-form').toggle($(this).val() === 'CREDIT_CARD');
-        }); //
+        });
+
+        //
         // Handle Next State button click
         //
-
         $(plugin).on('click', '.next-step-button button', function () {
           members.nextStage();
-        }); //
+        });
+
+        //
         // Handle Edit buttons on shipping and payment summary cards
         //
-
         $('.customer-summary .edit-button', plugin).on('click', function () {
           members.gotoStage('customer');
         });
@@ -409,19 +387,20 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           if (!$('#checkout-main').hasClass('multi-ship')) {
             $('body').trigger('shipping:selectSingleShipping');
           }
-
           members.gotoStage('shipping');
         });
         $('.payment-summary .edit-button', plugin).on('click', function () {
           members.gotoStage('payment');
-        }); //
+        });
+
+        //
         // remember stage (e.g. shipping)
         //
+        updateUrl(members.currentStage);
 
-        updateUrl(members.currentStage); //
+        //
         // Listen for foward/back button press and move to correct checkout-stage
         //
-
         $(window).on('popstate', function (e) {
           //
           // Back button when event state less than current state in ordered
@@ -433,13 +412,13 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
             // Forward button  pressed
             members.handleNextStage(false);
           }
-        }); //
+        });
+
+        //
         // Set the form data
         //
-
         plugin.data('formData', formData);
       },
-
       /**
        * The next checkout state step updates the css for showing correct buttons etc...
        */
@@ -455,16 +434,13 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           if (data) {
             if (data.errorStage) {
               members.gotoStage(data.errorStage.stage);
-
               if (data.errorStage.step === 'billingAddress') {
                 var $billingAddressSameAsShipping = $('input[name$="_shippingAddressUseAsBillingAddress"]');
-
                 if ($billingAddressSameAsShipping.is(':checked')) {
                   $billingAddressSameAsShipping.prop('checked', false);
                 }
               }
             }
-
             if (data.errorMessage) {
               $('.error-message').show();
               $('.error-message-text').text(data.errorMessage);
@@ -472,7 +448,6 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           }
         });
       },
-
       /**
        * The next checkout state step updates the css for showing correct buttons etc...
        *
@@ -481,19 +456,19 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
       handleNextStage: function handleNextStage(bPushState) {
         if (members.currentStage < checkoutStages.length - 1) {
           // move stage forward
-          members.currentStage++; //
+          members.currentStage++;
+
+          //
           // show new stage in url (e.g.payment)
           //
-
           if (bPushState) {
             updateUrl(members.currentStage);
           }
-        } // Set the next stage on the DOM
+        }
 
-
+        // Set the next stage on the DOM
         $(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
       },
-
       /**
        * Previous State
        */
@@ -503,10 +478,8 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
           members.currentStage--;
           updateUrl(members.currentStage);
         }
-
         $(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
       },
-
       /**
        * Use window history to go to a checkout stage
        * @param {string} stageName - the checkout state to goto
@@ -516,22 +489,21 @@ var adyenCheckout = require('../adyenCheckout'); // ### Custom Adyen cartridge e
         updateUrl(members.currentStage);
         $(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
       }
-    }; //
+    };
+
+    //
     // Initialize the checkout
     //
-
     members.initialize();
     return this;
   };
 })(jQuery);
-
 module.exports = {
   updateCheckoutView: function updateCheckoutView() {
     $('body').on('checkout:updateCheckoutView', function (e, data) {
       if (data.csrfToken) {
         $("input[name*='csrf_token']").val(data.csrfToken);
       }
-
       customerHelpers.methods.updateCustomerInformation(data.customer, data.order);
       shippingHelpers.methods.updateMultiShipInformation(data.order);
       summaryHelpers.updateTotals(data.order.totals);
@@ -539,11 +511,9 @@ module.exports = {
         shippingHelpers.methods.updateShippingInformation(shipping, data.order, data.customer, data.options);
       });
       var currentStage = window.location.search.substring(window.location.search.indexOf('=') + 1);
-
       if (currentStage === ('shipping' || 'payment')) {
         adyenCheckout.renderGenericComponent();
       }
-
       billingHelpers.methods.updateBillingInformation(data.order, data.customer, data.options);
       billing.methods.updatePaymentInformation(data.order, data.options);
       summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
