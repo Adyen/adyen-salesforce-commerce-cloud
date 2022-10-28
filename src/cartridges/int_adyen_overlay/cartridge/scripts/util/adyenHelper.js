@@ -398,7 +398,7 @@ var adyenHelperObj = {
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
     let reference = 'recurringPayment-account';
-    let orderToken = 'recurringPayment-token'
+    let orderToken = 'recurringPayment-token';
     if (order && order.getOrderNo()) {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
@@ -724,7 +724,7 @@ var adyenHelperObj = {
   executeCall(serviceType, requestObject) {
     const service = this.getService(serviceType);
     if (service === null) {
-      throw new Error(`Could not create ${serviceType} service object`)
+      throw new Error(`Could not create ${serviceType} service object`);
     }
     const maxRetries = constants.MAX_API_RETRIES;
     const apiKey = AdyenConfigs.getAdyenApiKey();

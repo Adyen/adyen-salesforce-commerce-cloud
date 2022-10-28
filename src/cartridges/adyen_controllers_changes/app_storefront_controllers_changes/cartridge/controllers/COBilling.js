@@ -30,7 +30,6 @@ var AdyenHelper = require("int_adyen_overlay/cartridge/scripts/util/adyenHelper"
 var AdyenConfigs = require("int_adyen_overlay/cartridge/scripts/util/adyenConfigs");
 var constants = require("*/cartridge/adyenConstants/constants");
 // ### Custom Adyen cartridge end ###
-var BasketMgr = require('dw/order/BasketMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 
 

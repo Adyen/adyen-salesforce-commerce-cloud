@@ -75,7 +75,7 @@ function createSession(basket, customer, countryCode) {
           currency: session.currency.currencyCode,
           value: 0,
         },
-      }
+      };
     }
 
     if (countryCode) {
