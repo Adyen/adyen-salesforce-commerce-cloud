@@ -120,6 +120,8 @@ export default class CheckoutPageSFRA5 {
     );
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+
+    await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
     if (shopperDetails.address.stateOrProvince !== '') {
       await this.checkoutPageUserStateSelect.selectOption(
         shopperDetails.address.stateOrProvince,
