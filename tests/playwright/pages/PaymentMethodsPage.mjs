@@ -107,24 +107,26 @@ export default class PaymentMethodsPage {
     await this.page.locator('#rb_scheme').click();
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
-    await this.page
+    const ccComponentWrapper = this.page.locator("#component_scheme");
+
+    await ccComponentWrapper
       .locator('.adyen-checkout__card__holderName__input')
       .fill(cardInput.holderName);
 
-    const cardNumberInputField = this.page
+    const cardNumberInputField = ccComponentWrapper
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
       .locator('.input-field');
     await cardNumberInputField.click();
     await cardNumberInputField.fill(cardInput.cardNumber);
 
-    const expirationDateInputField = this.page
+    const expirationDateInputField = ccComponentWrapper
       .frameLocator('.adyen-checkout__card__exp-date__input iframe')
       .locator('.input-field');
     await expirationDateInputField.click();
     await expirationDateInputField.fill(cardInput.expirationDate);
 
     if (cardInput.cvc !== '') {
-      const cvcInputField = this.page
+      const cvcInputField = ccComponentWrapper
         .frameLocator('.adyen-checkout__card__cvc__input iframe')
         .locator('.input-field');
       await cvcInputField.click();
@@ -169,7 +171,7 @@ export default class PaymentMethodsPage {
       '.adyen-checkout__installments',
     );
     await installmentsDiv.locator('button').click();
-    await this.page(`li[data-value="${nrInstallments}"]`).click();
+    await this.page.locator(`li[data-value="${nrInstallments}"]`).click();
   };
 
   fillOneyForm = async (shopper) => {
