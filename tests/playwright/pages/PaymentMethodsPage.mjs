@@ -483,7 +483,7 @@ export default class PaymentMethodsPage {
 
   initiateBoletoPayment = async () => {
     const socialSecurityInput = this.page.locator(
-      'input[name="socialSecurityNumber"]',
+      '#component_boletobancario input[name="socialSecurityNumber"]',
     );
     await this.page.click('#rb_boletobancario');
     await socialSecurityInput.type('56861752509');
