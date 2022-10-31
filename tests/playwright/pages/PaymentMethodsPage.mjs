@@ -395,7 +395,7 @@ export default class PaymentMethodsPage {
 
   cancelAffirmPayment = async () => {
     this.page.on('dialog', (dialog) => dialog.accept());
-    await this.page.click('#close-button');
+    await this.page.click("button[data-testid='nav-close-button']");
   };
 
   confirmVippsPayment = async () => {
