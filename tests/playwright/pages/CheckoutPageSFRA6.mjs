@@ -126,13 +126,18 @@ export default class CheckoutPageSFRA {
     );
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-    if (shopperDetails.address.stateOrProvince !== '') {
-      await this.checkoutPageUserStateSelect.selectOption(
-        shopperDetails.address.stateOrProvince,
-      );
-    }
-    this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
 
+
+    if (await this.checkoutPageUserStateSelect.isVisible()) {
+      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      if (shopperDetails.address.stateOrProvince !== '') {
+        await this.checkoutPageUserStateSelect.selectOption(
+          shopperDetails.address.stateOrProvince,
+        );
+      }
+    }
+
+    this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
     await this.shippingSubmit.click();
   };
 
