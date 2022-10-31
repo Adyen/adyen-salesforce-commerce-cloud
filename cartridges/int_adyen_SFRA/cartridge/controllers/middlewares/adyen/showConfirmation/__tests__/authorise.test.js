@@ -1,14 +1,10 @@
 "use strict";
 
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-
 jest.mock('../payment');
 jest.mock('../order');
-
 var handleAuthorised = require('../authorise');
-
 var payment = require('../payment');
-
 var req;
 beforeEach(function () {
   jest.clearAllMocks();

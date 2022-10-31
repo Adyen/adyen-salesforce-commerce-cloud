@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <!-- field for credit card type -->
+    <field formid="type" label="creditcard.type" type="string" mandatory="true" binding="creditCardType"
+        missing-error="creditcard.typemissing">
+        <options optionid-binding="cardType" value-binding="cardType" label-binding="name"/>
+    </field>
+
+	<!-- field for credit card number -->
+    <field formid="number" label="creditcard.number" type="string" mandatory="true" masked="4" max-length="16"
+	    description="creditcard.numberexample" binding="creditCardNumber"
+	    missing-error="creditcard.numbermissingerror" value-error="creditcard.numbervalueerror"/>
+	    
+	<group formid="expiration"> 
+		<!-- field for credit card expiration month -->
+	    <field formid="month" label="resource.month" type="integer" mandatory="true" binding="creditCardExpirationMonth"
+	      	missing-error="creditcard.monthmissingerror" value-error="creditcard.yearvalueerror">
+	        <options>
+	            <option label="month.january" 	value="01"/>
+	            <option label="month.february" 	value="02"/>
+	            <option label="month.march" 	value="03"/>
+	            <option label="month.april" 	value="04"/>
+	            <option label="month.may" 		value="05"/>
+	            <option label="month.june" 		value="06"/>
+	            <option label="month.july" 		value="07"/>
+	            <option label="month.august" 	value="08"/>
+	            <option label="month.september" value="09"/>
+	            <option label="month.october"   value="10"/>
+	            <option label="month.november"  value="11"/>
+	            <option label="month.december"  value="12"/>
+	        </options>
+	    </field>
+	
+		<!-- 
+			field for credit card expiration year; 
+			a value error (credit card is expired is only displayed for this field) 
+		-->
+	    <field formid="year" label="resource.year" type="integer" mandatory="true" binding="creditCardExpirationYear"
+	      	missing-error="creditcard.yearmissingerror">
+	        <options>
+	            <option optionid="2016" label="year.2016" value="2016"/>
+	            <option optionid="2017" label="year.2017" value="2017"/>
+	            <option optionid="2018" label="year.2018" value="2018"/>
+	            <option optionid="2019" label="year.2019" value="2019"/>
+	            <option optionid="2020" label="year.2020" value="2020"/>
+	            <option optionid="2021" label="year.2021" value="2021"/>
+	            <option optionid="2022" label="year.2022" value="2022"/>            
+	        </options>
+	    </field>
+	</group>
+
+	<!-- field for credit card owner -->
+    <field formid="owner" label="creditcard.ownerlabel" type="string" mandatory="true" max-length="40" binding="creditCardHolder"
+     	missing-error="creditcard.ownermissingerror"/>
+
+	<field formid="adyenEncryptedCardNumber" type="string" mandatory="false" binding="adyenEncryptedCardNumber"/>
+	<field formid="adyenEncryptedExpiryMonth" type="string" mandatory="false" binding="adyenEncryptedExpiryMonth"/>
+	<field formid="adyenEncryptedExpiryYear" type="string" mandatory="false" binding="adyenEncryptedExpiryYear"/>
+	<field formid="adyenEncryptedSecurityCode" type="string" mandatory="false" binding="adyenEncryptedSecurityCode"/>
+	<field formid="browserInfo" type="string" mandatory="false" binding="browserInfo"/>
+	<!-- field for credit card security code -->
+    <field formid="cvn" label="creditcard.cvnlabel" type="string" mandatory="true" masked="0"
+     	missing-error="creditcard.cvnmissingerror" value-error="creditcard.cvnrangeerror"/>
+ 
+	<!-- optional flags -->
+	<field formid="saveCard" label="creditcard.savecard" type="boolean" mandatory="false" default-value="true" />
+	<!-- field for credit card recurring payments / tokenization -->
+	<field formid="selectedCardID" mandatory="false" type="string"/>
+
+	<!-- confirm action to save the card details -->
+    <action formid="confirm" valid-form="true"/>
+
+</form>

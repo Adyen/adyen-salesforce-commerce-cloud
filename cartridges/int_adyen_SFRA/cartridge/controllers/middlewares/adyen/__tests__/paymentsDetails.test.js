@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      adyen = _require.adyen;
-
+    adyen = _require.adyen;
   paymentsDetails = adyen.paymentsDetails;
   jest.clearAllMocks();
   res = {
@@ -24,18 +23,14 @@ afterEach(function () {
 describe('Confirm paymentsDetails', function () {
   it('should fail with invalid stringified JSON body in request', function () {
     var URLUtils = require('dw/web/URLUtils');
-
     req.body = 'invalid_json_mock';
     paymentsDetails(req, res, jest.fn());
     expect(URLUtils.url.mock.calls[0]).toEqual(['Error-ErrorCode', 'err', 'general']);
   });
   it('should fail when doPaymentsDetailsCall results in an error', function () {
     var URLUtils = require('dw/web/URLUtils');
-
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementationOnce(function () {
       throw new Error('mock_error');
     });
@@ -46,11 +41,8 @@ describe('Confirm paymentsDetails', function () {
   });
   it('should fail when createAdyenCheckoutResponse results in an error', function () {
     var URLUtils = require('dw/web/URLUtils');
-
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementationOnce(function () {
       return {};
     });
@@ -64,11 +56,8 @@ describe('Confirm paymentsDetails', function () {
   });
   it('should call paymentDetails request and response handler', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     var URLUtils = require('dw/web/URLUtils');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: 'mocked_resultCode',

@@ -10,7 +10,6 @@ jest.mock('../utils/index', function () {
   };
 });
 /* eslint-disable global-require */
-
 var handlePayments;
 var order;
 var orderNumber;

@@ -2,16 +2,11 @@
 
 /* eslint-disable global-require */
 var _require = require('../../index'),
-    begin = _require.checkout.begin;
-
+  begin = _require.checkout.begin;
 var OrderMgr = require('dw/order/OrderMgr');
-
 var BasketMgr = require('dw/order/BasketMgr');
-
 var Logger = require('dw/system/Logger');
-
 var Transaction = require('dw/system/Transaction');
-
 var res;
 var req;
 beforeEach(function () {
@@ -41,8 +36,7 @@ beforeEach(function () {
 describe('Begin', function () {
   it('should update saved cards', function () {
     var _require2 = require('*/cartridge/scripts/updateSavedCards'),
-        updateSavedCards = _require2.updateSavedCards;
-
+      updateSavedCards = _require2.updateSavedCards;
     req.currentCustomer.raw.isAuthenticated.mockImplementation(function () {
       return true;
     });

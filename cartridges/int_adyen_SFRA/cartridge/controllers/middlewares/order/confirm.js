@@ -1,21 +1,17 @@
 "use strict";
 
 var OrderMgr = require('dw/order/OrderMgr');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs'); // order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
+// order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
 // This was a GET call with a querystring containing ID & token in earlier versions.
-
-
 function getOrderId(req) {
   return req.form && req.form.orderID ? req.form.orderID : req.querystring.ID;
 }
-
 function getOrderToken(req) {
   return req.form && req.form.orderToken ? req.form.orderToken : req.querystring.token;
 }
-
 function handleAdyenGiving(req, res, order) {
   var clientKey = AdyenConfigs.getAdyenClientKey();
   var environment = AdyenHelper.getCheckoutEnvironment();
@@ -44,21 +40,16 @@ function handleAdyenGiving(req, res, order) {
   };
   res.setViewData(viewData);
 }
-
 function confirm(req, res, next) {
   var orderId = getOrderId(req);
   var orderToken = getOrderToken(req);
-
   if (orderId && orderToken) {
     var order = OrderMgr.getOrder(orderId, orderToken);
     var paymentMethod = order.custom.Adyen_paymentMethod;
-
     if (AdyenHelper.getAdyenGivingConfig(order) && AdyenHelper.isAdyenGivingAvailable(paymentMethod)) {
       handleAdyenGiving(req, res, order);
     }
   }
-
   return next();
 }
-
 module.exports = confirm;

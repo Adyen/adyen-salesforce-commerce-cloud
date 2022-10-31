@@ -1,9 +1,7 @@
 "use strict";
 
 var constants = require('*/cartridge/adyenConstants/constants');
-
 var collections = require('*/cartridge/scripts/util/collections');
-
 function processPayment(order, handlePaymentResult, req, res, emit) {
   res.json({
     error: false,
@@ -13,7 +11,6 @@ function processPayment(order, handlePaymentResult, req, res, emit) {
   });
   emit('route:Complete');
 }
-
 function isNotAdyen(currentBasket) {
   var isAdyenBool = false;
   collections.forEach(currentBasket.getPaymentInstruments(), function (paymentInstrument) {
@@ -23,7 +20,6 @@ function isNotAdyen(currentBasket) {
   });
   return !isAdyenBool;
 }
-
 module.exports = {
   processPayment: processPayment,
   isNotAdyen: isNotAdyen

@@ -1,17 +1,13 @@
 "use strict";
 
 var Logger = require('dw/system/Logger');
-
 var URLUtils = require('dw/web/URLUtils');
-
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
 var constants = require('*/cartridge/adyenConstants/constants');
+
 /*
  * Redirects to list of added cards on success. Otherwise redirects to add payment with error
  */
-
-
 function redirect(req, res, next) {
   try {
     var redirectResult = req.httpParameterMap.get('redirectResult').stringValue;
@@ -21,13 +17,11 @@ function redirect(req, res, next) {
       }
     };
     var result = adyenCheckout.doPaymentsDetailsCall(jsonRequest);
-
     if (result.resultCode === constants.RESULTCODES.AUTHORISED) {
       res.redirect(URLUtils.url('PaymentInstruments-List'));
     } else {
       res.redirect(URLUtils.url('PaymentInstruments-AddPayment', 'isAuthorised', 'false'));
     }
-
     return next();
   } catch (e) {
     Logger.getLogger('Adyen').error("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
@@ -35,5 +29,4 @@ function redirect(req, res, next) {
     return next();
   }
 }
-
 module.exports = redirect;

@@ -1,13 +1,9 @@
 "use strict";
 
 var OrderMgr = require('dw/order/OrderMgr');
-
 var URLUtils = require('dw/web/URLUtils');
-
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
 var handlePayment = require('../payment');
-
 var res;
 var next;
 var req;

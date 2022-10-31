@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      adyen = _require.adyen;
-
+    adyen = _require.adyen;
   showConfirmationPaymentFromComponent = adyen.showConfirmationPaymentFromComponent;
   jest.clearAllMocks();
   res = {
@@ -32,9 +31,7 @@ afterEach(function () {
 describe('Show Confirmation Payment From Component', function () {
   test.each(['Authorised', 'Pending', 'Received'])('should handle successful payment: %p', function (a) {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: a
@@ -45,11 +42,8 @@ describe('Show Confirmation Payment From Component', function () {
   });
   it('should redirect on placeOrder error', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: 'Authorised'
@@ -65,9 +59,7 @@ describe('Show Confirmation Payment From Component', function () {
   });
   it('should redirect on unsuccessful payment', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: 'Not_Authorised'

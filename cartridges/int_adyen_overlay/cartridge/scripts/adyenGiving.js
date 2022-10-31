@@ -20,19 +20,14 @@
  *
  * Make a donation to Adyen giving
  */
+
 // script include
 var Logger = require('dw/system/Logger');
-
 var OrderMgr = require('dw/order/OrderMgr');
-
 var Transaction = require('dw/system/Transaction');
-
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-
 var constants = require('*/cartridge/adyenConstants/constants');
-
 function donate(donationReference, donationAmount, originalReference) {
   try {
     var requestObject = {
@@ -52,7 +47,6 @@ function donate(donationReference, donationAmount, originalReference) {
     Logger.getLogger('Adyen').error("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
 }
-
 module.exports = {
   donate: donate
 };

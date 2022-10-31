@@ -1,7 +1,6 @@
 "use strict";
 
 var _processForm = require("mockData/processForm");
-
 /* eslint-disable global-require */
 var processForm;
 var req;

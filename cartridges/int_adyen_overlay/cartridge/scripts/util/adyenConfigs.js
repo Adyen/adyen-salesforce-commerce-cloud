@@ -19,19 +19,14 @@
  * See the LICENSE file for more info.
  */
 var dwsystem = require('dw/system');
-
 var adyenCurrentSite = dwsystem.Site.getCurrent();
-
 function getCustomPreference(field) {
   var customPreference = null;
-
   if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
     customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
   }
-
   return customPreference;
 }
-
 var adyenConfigsObj = {
   getAdyenEnvironment: function getAdyenEnvironment() {
     return getCustomPreference('Adyen_Mode').value;
@@ -107,12 +102,10 @@ var adyenConfigsObj = {
   },
   getAdyenGivingBackgroundUrl: function getAdyenGivingBackgroundUrl() {
     var _getCustomPreference;
-
     return (_getCustomPreference = getCustomPreference('AdyenGiving_backgroundUrl')) === null || _getCustomPreference === void 0 ? void 0 : _getCustomPreference.getAbsURL();
   },
   getAdyenGivingLogoUrl: function getAdyenGivingLogoUrl() {
     var _getCustomPreference2;
-
     return (_getCustomPreference2 = getCustomPreference('AdyenGiving_logoUrl')) === null || _getCustomPreference2 === void 0 ? void 0 : _getCustomPreference2.getAbsURL();
   }
 };

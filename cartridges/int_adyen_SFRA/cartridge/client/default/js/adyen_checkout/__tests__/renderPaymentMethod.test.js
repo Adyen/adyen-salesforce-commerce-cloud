@@ -1,10 +1,8 @@
 "use strict";
 
 var _require = require('../renderPaymentMethod'),
-    renderPaymentMethod = _require.renderPaymentMethod;
-
+  renderPaymentMethod = _require.renderPaymentMethod;
 var store = require('../../../../../store');
-
 var mount;
 describe('Render Payment Method', function () {
   beforeEach(function () {
