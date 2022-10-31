@@ -4,6 +4,7 @@ import { environments } from '../data/environments.mjs';
 import { Cards } from '../paymentFlows/cards.mjs';
 import { ShopperData } from '../data/shopperData.mjs';
 import { CardData } from '../data/cardData.mjs';
+import { PresentToShoppers } from '../paymentFlows/presentToShopper.mjs';
 
 const shopperData = new ShopperData();
 const cardData = new CardData();
@@ -13,7 +14,9 @@ let accountPage;
 let cards;
 
 for (const environment of environments) {
-  test.describe.skip(`${environment.name} BRL`, () => {
+  test.describe(`${environment.name} BRL`, () => {
+    if (environment.name === 'SG') test.fixme();
+
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
       checkoutPage = new environment.CheckoutPage(page);
@@ -40,8 +43,8 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Boleto Success', async () => {
-      await doBoletoPayment();
+    test.fixme('Boleto Success', async ({ page }) => {
+      await new PresentToShoppers(page).doBoletoPayment();
       await checkoutPage.completeCheckout();
       await checkoutPage.expectVoucher();
     });
