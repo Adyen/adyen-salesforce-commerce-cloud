@@ -8,7 +8,11 @@
  */
 
 /* API includes */
+var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Logger = require('dw/system/Logger');
+var PaymentMgr = require('dw/order/PaymentMgr');
+var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
+var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
 
