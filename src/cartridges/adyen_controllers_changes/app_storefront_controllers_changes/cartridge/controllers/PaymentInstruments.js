@@ -272,6 +272,50 @@ function getAdyenPaymentInstruments() {
 // ### Custom Adyen cartridge start ###
 
 /*
+* Verifies if the entered credit card details are valid.
+*
+* @returns {boolean} true in case of success, otherwise false.
+*/
+// ### Custom Adyen cartridge start ###
+function verifyCreditCard() {
+    var newCreditCardForm = app.getForm('paymentinstruments.creditcards.newcreditcard');
+
+    if(getAdyenPaymentInstruments()) {
+        return true;
+    }
+    var expirationMonth = newCreditCardForm.get('expiration.month').value();
+    var expirationYear = newCreditCardForm.get('expiration.year').value();
+    var cardNumber = newCreditCardForm.get('number').value();
+    var paymentCard = PaymentMgr.getPaymentCard(newCreditCardForm.get('type').value());
+    var verifyPaymentCardResult = paymentCard.verify(expirationMonth, expirationYear, cardNumber);
+
+    if (verifyPaymentCardResult.error === true) {
+
+        if (!newCreditCardForm.isValid()) {
+            return false;
+        }
+
+        if (verifyPaymentCardResult.code === Status.OK) {
+            return true;
+        }
+
+        // Invalidate the payment card form elements.
+        for (var i = 0; i < verifyPaymentCardResult.items.length; i++) {
+            if (verifyPaymentCardResult.items[i].code === PaymentStatusCodes.CREDITCARD_INVALID_CARD_NUMBER) {
+                newCreditCardForm.get('number').invalidate();
+            } else if (verifyPaymentCardResult.items[i].code === PaymentStatusCodes.CREDITCARD_INVALID_EXPIRATION_DATE) {
+                newCreditCardForm.get('expiration.month').invalidate();
+                newCreditCardForm.get('expiration.year').invalidate();
+            }
+        }
+        return false;
+    }
+
+    return true;
+}
+// ### Custom Adyen cartridge end ###
+
+/*
  * Web exposed methods
  */
 /** Renders a list of the saved credit card payment instruments of the current customer.

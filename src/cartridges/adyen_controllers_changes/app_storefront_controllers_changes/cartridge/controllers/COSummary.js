@@ -18,6 +18,9 @@ var app = require('~/cartridge/scripts/app');
 var guard = require('~/cartridge/scripts/guard');
 
 var Cart = app.getModel('Cart');
+// ### Custom Adyen cartridge start ###
+var AdyenController = require("int_adyen_controllers/cartridge/controllers/Adyen");
+// ### Custom Adyen cartridge end ###
 
 /**
  * Renders the summary page prior to order creation.
