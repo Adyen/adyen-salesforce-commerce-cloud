@@ -271,11 +271,11 @@ function getAdyenPaymentInstruments() {
 }
 // ### Custom Adyen cartridge start ###
 
-/*
-* Verifies if the entered credit card details are valid.
-*
-* @returns {boolean} true in case of success, otherwise false.
-*/
+/**
+ * Verifies if the entered credit card details are valid.
+ *
+ * @returns {boolean} true in case of success, otherwise false.
+ */
 // ### Custom Adyen cartridge start ###
 function verifyCreditCard() {
     var newCreditCardForm = app.getForm('paymentinstruments.creditcards.newcreditcard');
