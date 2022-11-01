@@ -120,10 +120,14 @@ export default class CheckoutPageSFRA5 {
     );
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-    if (shopperDetails.address.stateOrProvince !== '') {
-      await this.checkoutPageUserStateSelect.selectOption(
-        shopperDetails.address.stateOrProvince,
-      );
+
+    if (await this.checkoutPageUserStateSelect.isVisible()) {
+      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      if (shopperDetails.address.stateOrProvince !== '') {
+        await this.checkoutPageUserStateSelect.selectOption(
+          shopperDetails.address.stateOrProvince,
+        );
+      }
     }
     await this.shippingSubmit.click();
   };
