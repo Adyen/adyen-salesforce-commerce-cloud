@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      paymentInstruments = _require.paymentInstruments;
-
+    paymentInstruments = _require.paymentInstruments;
   deletePayment = paymentInstruments.deletePayment;
   jest.clearAllMocks();
   res = {
@@ -31,7 +30,6 @@ afterEach(function () {
 describe('Delete Payment', function () {
   it('should do nothing if there is no payment', function () {
     var CustomerMgr = require('dw/customer/CustomerMgr');
-
     res.getViewData.mockImplementation(function () {
       return false;
     });
@@ -40,10 +38,8 @@ describe('Delete Payment', function () {
   });
   it('should not delete payment if theres no token', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-
     var _require2 = require('*/cartridge/scripts/adyenDeleteRecurringPayment'),
-        deleteRecurringPayment = _require2.deleteRecurringPayment;
-
+      deleteRecurringPayment = _require2.deleteRecurringPayment;
     AdyenHelper.getCardToken.mockImplementation(function () {
       return false;
     });
@@ -52,8 +48,7 @@ describe('Delete Payment', function () {
   });
   it('should delete recurring payment', function () {
     var _require3 = require('*/cartridge/scripts/adyenDeleteRecurringPayment'),
-        deleteRecurringPayment = _require3.deleteRecurringPayment;
-
+      deleteRecurringPayment = _require3.deleteRecurringPayment;
     deletePayment(req, res, jest.fn());
     expect(deleteRecurringPayment).toBeCalledTimes(1);
   });

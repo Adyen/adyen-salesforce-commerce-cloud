@@ -84,6 +84,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenPartialPaymentsOrder">
+                <display-name xml:lang="x-default">adyenPartialPaymentsOrder</display-name>
+                <description xml:lang="x-default">partial payments order data</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenAdditionalPaymentData">
                 <display-name xml:lang="x-default">adyenAdditionalPaymentData</display-name>
                 <description xml:lang="x-default">Additional data for payment method</description>
@@ -319,7 +328,8 @@
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value></default-value>
+                <min-length>0</min-length>
+                <default-value>oj9GsQ</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
@@ -400,6 +410,9 @@
                     </value-definition>
                     <value-definition>
                         <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>IN</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>

@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      paymentInstruments = _require.paymentInstruments;
-
+    paymentInstruments = _require.paymentInstruments;
   savePayment = paymentInstruments.savePayment;
   jest.clearAllMocks();
   res = {
@@ -27,9 +26,7 @@ afterEach(function () {
 describe('Save Payment', function () {
   it('should do nothing if payment processor is not Adyen', function () {
     var PaymentMgr = require('dw/order/PaymentMgr');
-
     var server = require('server');
-
     PaymentMgr.getPaymentMethod.mockImplementation(function () {
       return {
         getPaymentProcessor: jest.fn(function () {
@@ -51,7 +48,6 @@ describe('Save Payment', function () {
   });
   it('should fail if zeroAuth has error', function () {
     var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
-
     adyenZeroAuth.zeroAuthPayment.mockImplementation(function () {
       return {
         error: true
@@ -64,7 +60,6 @@ describe('Save Payment', function () {
   });
   it('should fail if resultCode is not Authorised', function () {
     var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
-
     adyenZeroAuth.zeroAuthPayment.mockImplementation(function () {
       return {
         resultCode: 'Not_Authorised'
@@ -83,7 +78,6 @@ describe('Save Payment', function () {
   });
   it('should return redirectAction and succeed', function () {
     var adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
-
     adyenZeroAuth.zeroAuthPayment.mockReturnValue({
       resultCode: 'RedirectShopper',
       action: {

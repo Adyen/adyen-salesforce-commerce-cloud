@@ -28,6 +28,7 @@ export default class AccountPageSFRA {
         .locator('.input-field')
         .type(cardInput.cvc);
     }
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.page.click('button[name="save"]');
   };
 

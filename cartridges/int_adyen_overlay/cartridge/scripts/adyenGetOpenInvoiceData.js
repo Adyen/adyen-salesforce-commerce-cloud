@@ -22,35 +22,27 @@
  * A signature is calculated based on the configured HMAC code
  */
 require('dw/crypto');
-
 require('dw/system');
-
 require('dw/order');
-
 require('dw/util');
-
 require('dw/value');
-
 require('dw/net');
+require('dw/web');
 
-require('dw/web'); // script include
-
-
+// script include
 var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
-
 function getLineItems(_ref) {
   var order = _ref.Order,
-      basket = _ref.Basket,
-      addTaxPercentage = _ref.addTaxPercentage;
+    basket = _ref.Basket,
+    addTaxPercentage = _ref.addTaxPercentage;
   if (!(order || basket)) return null;
   var orderOrBasket = order || basket;
-  var allLineItems = orderOrBasket.getProductLineItems(); // Add all product and shipping line items to request
+  var allLineItems = orderOrBasket.getProductLineItems();
 
+  // Add all product and shipping line items to request
   var lineItems = [];
-
   for (var item in allLineItems) {
     var lineItem = allLineItems[item];
-
     if (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem || lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass === dw.campaign.Promotion.PROMOTION_CLASS_ORDER) {
       var lineItemObject = {};
       var description = LineItemHelper.getDescription(lineItem);
@@ -69,10 +61,8 @@ function getLineItems(_ref) {
       lineItems.push(lineItemObject);
     }
   }
-
   return lineItems;
 }
-
 module.exports = {
   getLineItems: getLineItems
 };

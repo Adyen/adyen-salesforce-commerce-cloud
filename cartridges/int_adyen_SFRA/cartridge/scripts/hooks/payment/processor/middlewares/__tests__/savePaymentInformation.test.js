@@ -5,10 +5,8 @@ var req;
 var savePaymentInformation;
 var currentBasket;
 var billingData;
-
 var _require = require('*/cartridge/scripts/checkout/checkoutHelpers'),
-    savePaymentInstrumentToWallet = _require.savePaymentInstrumentToWallet;
-
+  savePaymentInstrumentToWallet = _require.savePaymentInstrumentToWallet;
 beforeEach(function () {
   savePaymentInformation = require('../savePaymentInformation');
   jest.clearAllMocks();

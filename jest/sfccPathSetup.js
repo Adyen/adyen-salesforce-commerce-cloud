@@ -190,3 +190,18 @@ jest.mock('*/cartridge/adyenConstants/paymentMethodDescriptions', () => {
   return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/paymentMethodDescriptions');
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/checkBalance', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/checkBalance');
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/partialPayment', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/partialPayment');
+}, {virtual: true});

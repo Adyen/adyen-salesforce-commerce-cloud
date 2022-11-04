@@ -78,7 +78,10 @@ var adyenHelperObj = {
   },
 
   getAdyenGivingConfig(order) {
-    const paymentMethod = order.custom.Adyen_paymentMethod;
+    const paymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    const paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
     if (
         !AdyenConfigs.getAdyenGivingEnabled() ||
         !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
@@ -99,7 +102,8 @@ var adyenHelperObj = {
       currency: session.currency.currencyCode,
       values: configuredAmounts,
     });
-    givingConfigs.pspReference = order.custom.Adyen_pspReference;
+    givingConfigs.pspReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
+
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if (givingConfigs[config] === null) {
@@ -140,6 +144,10 @@ var adyenHelperObj = {
         }
         if(frontEndRegion === constants.FRONTEND_REGIONS.AU ) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
+          break;
+        }
+        if(frontEndRegion === constants.FRONTEND_REGIONS.IN ) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
           break;
         }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
@@ -397,6 +405,7 @@ var adyenHelperObj = {
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
+
     let reference = 'recurringPayment-account';
     let orderToken = 'recurringPayment-token'
     if (order && order.getOrderNo()) {
@@ -550,14 +559,13 @@ var adyenHelperObj = {
 
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails(paymentInstrument, order, result) {
-    if (result.pspReference) {
-      paymentInstrument.paymentTransaction.transactionID = result.pspReference;
-      order.custom.Adyen_pspReference = result.pspReference;
-    }
-    if (result.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.paymentMethod;
-    } else if (result.additionalData && result.additionalData.paymentMethod) {
-      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+    paymentInstrument.paymentTransaction.transactionID = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference : result.pspReference;
+    paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
+
+    if (result.additionalData?.paymentMethod) {
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+    } else if (result.paymentMethod) {
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
@@ -565,9 +573,7 @@ var adyenHelperObj = {
         : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
-        result,
-    );
+    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
 
     return true;
   },
@@ -617,6 +623,11 @@ var adyenHelperObj = {
         break;
     }
     return format;
+  },
+
+  getDivisorForCurrency(amount) {
+    let fractionDigits = adyenHelperObj.getFractionDigits(amount.currencyCode);
+    return Math.pow(10, fractionDigits);
   },
 
   getApplicationInfo() {
@@ -706,7 +717,7 @@ var adyenHelperObj = {
       };
     }
 
-    if (checkoutresponse.resultCode === 'Received') {
+    if (checkoutresponse.resultCode === constants.RESULTCODES.RECEIVED) {
       return {
         isFinal: false,
       };

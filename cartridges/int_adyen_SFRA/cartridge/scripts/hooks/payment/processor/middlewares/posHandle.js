@@ -1,11 +1,8 @@
 "use strict";
 
 var Transaction = require('dw/system/Transaction');
-
 var collections = require('*/cartridge/scripts/util/collections');
-
 var constants = require('*/cartridge/adyenConstants/constants');
-
 function posHandle(basket) {
   Transaction.wrap(function () {
     collections.forEach(basket.getPaymentInstruments(), function (item) {
@@ -18,5 +15,4 @@ function posHandle(basket) {
     error: false
   };
 }
-
 module.exports = posHandle;

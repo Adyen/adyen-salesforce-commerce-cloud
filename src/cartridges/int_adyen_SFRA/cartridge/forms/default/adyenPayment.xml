@@ -9,4 +9,5 @@
     <!--Adyen Component-->
     <field formid="adyenStateData" type="string" mandatory="false" />
     <field formid="adyenFingerprint" label="Fingerprint" type="string" mandatory="false"/>
+    <field formid="adyenPartialPaymentsOrder" type="string" mandatory="false" />
 </form>
