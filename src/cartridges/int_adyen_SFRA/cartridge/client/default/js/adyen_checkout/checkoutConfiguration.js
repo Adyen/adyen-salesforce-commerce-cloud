@@ -267,13 +267,13 @@ function getGiftCardConfig() {
 
 function handleOnChange(state) {
   let { type } = state.data.paymentMethod;
-  let multipleTxVariantsMethods = constants.MULTIPLE_TX_VARIANT_METHODS;
+  const multipleTxVariantsMethods = constants.MULTIPLE_TX_VARIANT_METHODS;
   // Bug in the UPI component, as soon as its fixed this line of code is not needed anymore
-  store.componentsObj["upi"].isValid = false;
+  store.componentsObj.upi.isValid = false;
   if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
     type = 'googlepay';
   }
-  if (multipleTxVariantsMethods.includes(store.selectedMethod)){
+  if (multipleTxVariantsMethods.includes(store.selectedMethod)) {
     type = store.selectedMethod;
   }
   store.isValid = state.isValid;
