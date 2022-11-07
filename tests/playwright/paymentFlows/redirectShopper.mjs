@@ -17,6 +17,10 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
   };
 
+  doUPIPayment = async (paymentMethod, success){
+    await this.paymentMethodsPage.initiateUPIPayment(paymentMethod, success);
+  }
+
   completeBillDeskRedirect = async (success) => {
     await this.paymentMethodsPage.billdeskSimulator(success);
   };

@@ -88,6 +88,20 @@ export default class PaymentMethodsPage {
     await issuer.click();
   };
 
+  initiateUPIPayment = async (paymentMethod, success = true) => {
+    await this.page.locator(`#rb_upi`).click();
+    if (paymentMethod == "upi_collect") {
+      await this.page.locator("#upi-button-vpa").click();
+
+      success == true ? await this.page.locator("#component_upi input").fill("testvpa@icici")
+        : await this.page.locator("#component_upi input").fill("notCorrectWillFail");
+    }
+    if (paymentMethod == "upi_qr") {
+      await this.page.locator("#upi-button-qrCode").click();
+    }
+  };
+
+
   billdeskSimulator = async (success) => {
     const select = await this.page.locator('#BankStatus');
     const result = success ? 'Success' : 'Failure';
