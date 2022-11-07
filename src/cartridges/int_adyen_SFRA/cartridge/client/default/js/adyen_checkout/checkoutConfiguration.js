@@ -103,10 +103,11 @@ function removeGiftCard() {
     success(res) {
       store.partialPaymentsOrderObj = null;
       document.querySelector('#adyenPartialPaymentsOrder').value = null;
+      window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
       if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer').parentNode.remove();
         document.querySelector('#giftCardLabel').classList.remove('invisible');
-        store.componentsObj.giftcard.node.unmount('component_giftcard');
+        store.componentsObj?.giftcard?.node.unmount('component_giftcard');
       }
     },
   });
@@ -354,4 +355,5 @@ module.exports = {
   getGiftCardConfig,
   setCheckoutConfiguration,
   actionHandler,
+  createElementsToShowRemainingGiftCardAmount,
 };

@@ -4,6 +4,9 @@ const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
 const { createSession } = require('../commons');
 const constants = require('../constants');
+const {
+  createElementsToShowRemainingGiftCardAmount,
+} = require('./checkoutConfiguration');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -71,6 +74,11 @@ function renderGiftCard(paymentMethod) {
     store.componentsObj.giftcard.node.unmount('component_giftcard');
   };
   document.querySelector('#giftCardLabel').classList.remove('invisible');
+}
+
+function applyGiftCard() {
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+  createElementsToShowRemainingGiftCardAmount();
 }
 
 function renderStoredPaymentMethod(imagePath) {
@@ -171,6 +179,9 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  store.partialPaymentsOrderObj = JSON.parse(
+    window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED),
+  );
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -186,6 +197,10 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     session.adyenDescriptions,
   );
   renderPosTerminals(session.adyenConnectedTerminals);
+
+  if (store.partialPaymentsOrderObj) {
+    applyGiftCard();
+  }
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',

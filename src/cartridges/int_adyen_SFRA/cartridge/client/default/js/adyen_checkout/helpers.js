@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -18,6 +19,22 @@ function setOrderFormData(response) {
   if (response.orderToken) {
     document.querySelector('#orderToken').value = response.orderToken;
   }
+}
+
+function setPartialPaymentOrderObject(response) {
+  const partialPaymentsOrder = {
+    pspReference: response.order.pspReference,
+    orderData: response.order.orderData,
+  };
+  store.partialPaymentsOrderObj = { partialPaymentsOrder };
+  store.partialPaymentsOrderObj.remainingAmount =
+    response.remainingAmountFormatted;
+  store.partialPaymentsOrderObj.discountedAmount =
+    response.discountAmountFormatted;
+  window.sessionStorage.setItem(
+    constants.GIFTCARD_DATA_ADDED,
+    JSON.stringify(store.partialPaymentsOrderObj),
+  );
 }
 
 /**
@@ -60,15 +77,7 @@ function makePartialPayment(data) {
       if (response.error) {
         error = { error: true };
       } else {
-        const partialPaymentsOrder = {
-          pspReference: response.order.pspReference,
-          orderData: response.order.orderData,
-        };
-        store.partialPaymentsOrderObj = { partialPaymentsOrder };
-        store.partialPaymentsOrderObj.remainingAmount =
-          response.remainingAmountFormatted;
-        store.partialPaymentsOrderObj.discountedAmount =
-          response.discountAmountFormatted;
+        setPartialPaymentOrderObject(response);
         setOrderFormData(response);
       }
     },
