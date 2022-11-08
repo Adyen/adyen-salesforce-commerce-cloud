@@ -78,8 +78,8 @@ function createPaymentRequest(args) {
     // Add installments
     if (AdyenConfigs.getCreditCardInstallments()) {
       const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
-      if(numOfInstallments !== undefined) {
-        paymentRequest.installments = {value: numOfInstallments}
+      if (numOfInstallments !== undefined) {
+        paymentRequest.installments = {value: numOfInstallments};
       }
     }
 
