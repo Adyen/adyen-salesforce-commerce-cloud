@@ -246,6 +246,7 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
+              data.expiresAt,
             );
             if (partialPaymentResponse?.error) {
               reject();

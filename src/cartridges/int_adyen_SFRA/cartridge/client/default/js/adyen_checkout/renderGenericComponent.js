@@ -77,8 +77,16 @@ function renderGiftCard(paymentMethod) {
 }
 
 function applyGiftCard() {
-  document.querySelector('#giftCardLabel').classList.add('invisible');
-  createElementsToShowRemainingGiftCardAmount();
+  const now = new Date().toISOString();
+  if (
+    store.partialPaymentsOrderObj?.expiresAt &&
+    now < store.partialPaymentsOrderObj?.expiresAt
+  ) {
+    document.querySelector('#giftCardLabel').classList.add('invisible');
+    createElementsToShowRemainingGiftCardAmount();
+  } else {
+    window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
+  }
 }
 
 function renderStoredPaymentMethod(imagePath) {
@@ -198,9 +206,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   );
   renderPosTerminals(session.adyenConnectedTerminals);
 
-  if (store.partialPaymentsOrderObj) {
-    applyGiftCard();
-  }
+  applyGiftCard();
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
