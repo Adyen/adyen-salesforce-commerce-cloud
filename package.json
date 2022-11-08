@@ -71,14 +71,6 @@
     "webpack": "^5.74.0",
     "webpack-cli": "^3.1.2"
   },
-  "resolutions": {
-    "minimist": "1.2.6",
-    "minimatch": "3.0.5",
-    "node-notifier": "8.0.1",
-    "glob-parent": "5.1.2",
-    "yargs-parser": "5.0.1",
-    "braces": "2.3.1"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
