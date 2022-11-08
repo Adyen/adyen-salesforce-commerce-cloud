@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      adyen = _require.adyen;
-
+    adyen = _require.adyen;
   redirect3ds1Response = adyen.redirect3ds1Response;
   jest.clearAllMocks();
   res = {
@@ -30,9 +29,7 @@ afterEach(function () {
 describe('Redirect 3DS1 Response', function () {
   it('should redirect to PaymentInstruments-List on resultCode Authorised', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     req.querystring = {
       redirectResult: 'mockedRedirectresult'
     };
@@ -48,9 +45,7 @@ describe('Redirect 3DS1 Response', function () {
   });
   it('should redirect to PaymentInstruments-AddPayment on other resultCodes', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     req.querystring = {
       redirectResult: 'mockedRedirectresult'
     };
@@ -66,9 +61,7 @@ describe('Redirect 3DS1 Response', function () {
   });
   it('should handle missing querystring contents.', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     var URLUtils = require('dw/web/URLUtils');
-
     req.querystring = null;
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {

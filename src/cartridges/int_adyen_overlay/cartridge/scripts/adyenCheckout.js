@@ -27,6 +27,7 @@ const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
+const StringUtils = require('dw/util/StringUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -77,18 +78,24 @@ function createPaymentRequest(args) {
     // Add installments
     if (AdyenConfigs.getCreditCardInstallments()) {
       const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
-      if(numOfInstallments !== undefined) {
-        paymentRequest.installments = {value: numOfInstallments}
+      if (numOfInstallments !== undefined) {
+        paymentRequest.installments = {value: numOfInstallments};
       }
     }
 
-    const myAmount = AdyenHelper.getCurrencyValueForApi(
-        paymentInstrument.paymentTransaction.amount,
-    ).getValueOrNull(); // args.Amount * 100;
-    paymentRequest.amount = {
-      currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-      value: myAmount,
-    };
+    // Add partial payments order if applicable
+    if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
+      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
+      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
+    } else {
+      const myAmount = AdyenHelper.getCurrencyValueForApi(
+          paymentInstrument.paymentTransaction.amount,
+      ).getValueOrNull();
+      paymentRequest.amount = {
+        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        value: myAmount,
+      };
+    }
 
     const paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
@@ -112,6 +119,20 @@ function createPaymentRequest(args) {
       args.addTaxPercentage = true;
       if(paymentRequest.paymentMethod.type.indexOf('klarna') > -1){
         args.addTaxPercentage = false;
+        const address = order.getBillingAddress();
+        const shippingMethod = order.getDefaultShipment()?.shippingMethod;
+        const otherDeliveryAddress = {
+          shipping_method: shippingMethod?.displayName,
+          shipping_type: shippingMethod?.description,
+          first_name: address.firstName,
+          last_name: address.lastName,
+          street_address: `${address.address1} ${address.address2}`,
+          postal_code: address.postalCode,
+          city: address.city,
+          country: address.countryCode.value,
+        }
+        // openinvoicedata.merchantData holds merchant data. It takes data in a Base64 encoded string.
+        paymentRequest.additionalData['openinvoicedata.merchantData'] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
@@ -141,13 +162,13 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   let errorMessage = '';
   try {
     const responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
-
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
       return responseObject;
     }
-
+    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    order.custom.Adyen_paymentMethod = paymentRequest?.paymentMethod?.brand || paymentRequest?.paymentMethod?.type;
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action
       ? responseObject.action
@@ -160,7 +181,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     paymentResponse.decision = 'ERROR';
 
     if (responseObject.additionalData) {
-      order.custom.Adyen_paymentMethod = responseObject.additionalData
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = responseObject.additionalData
         .paymentMethod
         ? responseObject.additionalData.paymentMethod
         : null;
@@ -239,8 +260,32 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
   }
 }
 
+function doCheckBalanceCall(checkBalanceRequest) {
+  return AdyenHelper.executeCall(
+      constants.SERVICE.CHECKBALANCE,
+      checkBalanceRequest,
+  );
+}
+
+function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
+  return AdyenHelper.executeCall(
+      constants.SERVICE.CANCELPARTIALPAYMENTORDER,
+      cancelOrderRequest,
+  );
+}
+
+function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
+  return AdyenHelper.executeCall(
+      constants.SERVICE.PARTIALPAYMENTSORDER,
+      partialPaymentRequest,
+  );
+}
+
 module.exports = {
   createPaymentRequest,
   doPaymentsCall,
   doPaymentsDetailsCall,
+  doCheckBalanceCall,
+  doCancelPartialPaymentOrderCall,
+  doCreatePartialPaymentOrderCall,
 };

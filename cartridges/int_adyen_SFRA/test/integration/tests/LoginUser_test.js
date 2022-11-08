@@ -1,9 +1,7 @@
 "use strict";
 
 Feature('Credit card');
-
 var config = require('../config');
-
 Scenario('Logged in Credit card success', function (I) {
   I.amOnPage(config.Storefront.url);
   I.confirmTrackingConsent();

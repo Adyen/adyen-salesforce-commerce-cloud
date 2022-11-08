@@ -1,11 +1,8 @@
 "use strict";
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 /**
  *                       ######
  *                       ######
@@ -34,28 +31,20 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
  *
  */
 var Logger = require('dw/system/Logger');
-
 var Calendar = require('dw/util/Calendar');
-
 var StringUtils = require('dw/util/StringUtils');
-
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
-
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);
 }
-
 function notifyHttpParameterMap(hpm) {
   if (hpm === null) {
     Logger.getLogger('Adyen', 'adyen').fatal('Handling of Adyen notification has failed. No input parameters were provided.');
     return PIPELET_NEXT;
   }
-
   var notificationData = {};
-
   var _iterator = _createForOfIteratorHelper(hpm.getParameterNames().toArray()),
-      _step;
-
+    _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var parameterName = _step.value;
@@ -66,24 +55,20 @@ function notifyHttpParameterMap(hpm) {
   } finally {
     _iterator.f();
   }
-
   return notify(notificationData);
 }
-
 function notify(notificationData) {
   // Check the input parameters
   if (notificationData === null) {
     Logger.getLogger('Adyen', 'adyen').fatal('Handling of Adyen notification has failed. No input parameters were provided.');
     return PIPELET_NEXT;
   }
-
   try {
     var msg = createLogMessage(notificationData);
     Logger.getLogger('Adyen').debug(msg);
     var calObj = new Calendar();
     var keyValue = "".concat(notificationData.merchantReference, "-").concat(StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS'));
     var customObj = CustomObjectMgr.createCustomObject('adyenNotification', keyValue);
-
     for (var field in notificationData) {
       try {
         customObj.custom[field] = notificationData[field];
@@ -91,13 +76,11 @@ function notify(notificationData) {
         /* unknown field */
       }
     }
-
     switch (notificationData.eventCode) {
       case 'AUTHORISATION':
         // Save all request to custom attribute for Authorization event
         customObj.custom.Adyen_log = JSON.stringify(notificationData);
       // eslint-disable-next-line no-fallthrough
-
       case 'CANCELLATION':
       case 'CANCEL_OR_REFUND':
       case 'REFUND':
@@ -110,12 +93,10 @@ function notify(notificationData) {
         customObj.custom.updateStatus = 'PROCESS';
         Logger.getLogger('Adyen').info("Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PROCESS' status.", notificationData.merchantReference, notificationData.eventCode);
         break;
-
       default:
         customObj.custom.updateStatus = 'PENDING';
         Logger.getLogger('Adyen').info("Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PENDING' status.", notificationData.merchantReference, notificationData.eventCode);
     }
-
     return {
       success: true
     };
@@ -127,7 +108,6 @@ function notify(notificationData) {
     };
   }
 }
-
 function createLogMessage(notificationData) {
   var VERSION = '4d';
   var msg = '';
@@ -147,7 +127,6 @@ function createLogMessage(notificationData) {
   msg = "".concat(msg, "\nlive : ").concat(notificationData.live);
   return msg;
 }
-
 module.exports = {
   execute: execute,
   notify: notify,

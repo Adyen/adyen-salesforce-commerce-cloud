@@ -1,22 +1,14 @@
 "use strict";
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 var store = require('../../../store');
-
 var helpers = require('./adyen_checkout/helpers');
-
 function handleAuthorised(response) {
   var _response$fullRespons, _response$fullRespons2, _response$fullRespons3, _response$fullRespons4, _response$fullRespons5;
-
   document.querySelector('#result').value = JSON.stringify({
     pspReference: (_response$fullRespons = response.fullResponse) === null || _response$fullRespons === void 0 ? void 0 : _response$fullRespons.pspReference,
     resultCode: (_response$fullRespons2 = response.fullResponse) === null || _response$fullRespons2 === void 0 ? void 0 : _response$fullRespons2.resultCode,
@@ -24,29 +16,25 @@ function handleAuthorised(response) {
   });
   document.querySelector('#showConfirmationForm').submit();
 }
-
 function handleError() {
   document.querySelector('#result').value = JSON.stringify({
     error: true
   });
   document.querySelector('#showConfirmationForm').submit();
 }
-
 function handleAmazonResponse(response, component) {
   var _response$fullRespons6;
-
   if ((_response$fullRespons6 = response.fullResponse) !== null && _response$fullRespons6 !== void 0 && _response$fullRespons6.action) {
     component.handleAction(response.fullResponse.action);
   } else if (response.resultCode === window.resultCodeAuthorised) {
     handleAuthorised(response);
   } else {
     // first try the amazon decline flow
-    component.handleDeclineFlow(); // if this does not trigger a redirect, try the regular handleError flow
-
+    component.handleDeclineFlow();
+    // if this does not trigger a redirect, try the regular handleError flow
     handleError();
   }
 }
-
 function paymentFromComponent(data, component) {
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -63,11 +51,9 @@ function paymentFromComponent(data, component) {
     }
   });
 }
-
 function mountAmazonPayComponent() {
   return _mountAmazonPayComponent.apply(this, arguments);
 }
-
 function _mountAmazonPayComponent() {
   _mountAmazonPayComponent = _asyncToGenerator( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
     var amazonPayNode, checkout, amazonConfig, amazonPayComponent;
@@ -78,7 +64,6 @@ function _mountAmazonPayComponent() {
             amazonPayNode = document.getElementById('amazon-container');
             _context.next = 3;
             return AdyenCheckout(window.Configuration);
-
           case 3:
             checkout = _context.sent;
             amazonConfig = {
@@ -139,7 +124,6 @@ function _mountAmazonPayComponent() {
               keyboard: false
             });
             amazonPayComponent.submit();
-
           case 10:
           case "end":
             return _context.stop();
@@ -149,5 +133,4 @@ function _mountAmazonPayComponent() {
   }));
   return _mountAmazonPayComponent.apply(this, arguments);
 }
-
 mountAmazonPayComponent();

@@ -28,6 +28,7 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoice
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
+const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json'); 
 
 function createSession(basket, customer, countryCode) {
   try {
@@ -75,7 +76,7 @@ function createSession(basket, customer, countryCode) {
           currency: session.currency.currencyCode,
           value: 0,
         },
-      }
+      };
     }
 
     if (countryCode) {
@@ -102,7 +103,7 @@ function createSession(basket, customer, countryCode) {
       sessionsRequest.shopperReference = customerID;
     }
 
-    sessionsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+    sessionsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
 
     return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
   } catch (e) {

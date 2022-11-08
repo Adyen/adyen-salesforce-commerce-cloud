@@ -170,8 +170,6 @@ function handle(customObj) {
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
           }
-          setProcessedCOInfo(customObj);
-          return result;
         }
         break;
       case 'CANCELLATION':
@@ -287,15 +285,6 @@ function handle(customObj) {
       }
 
       order.custom.Adyen_eventCode = customObj.custom.eventCode;
-
-      // Payment Method must be persistent. When payment is cancelled,
-      // Adyen sends an empty string here
-      if (
-        empty(order.custom.Adyen_paymentMethod) &&
-        !empty(customObj.custom.paymentMethod)
-      ) {
-        order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
-      }
 
       // Add a note with all details
       order.addNote('Adyen Payment Notification', createLogMessage(customObj));

@@ -1,9 +1,7 @@
 "use strict";
 
 Feature("Credit card");
-
 var config = require("../config");
-
 Scenario("Guest Credit card success", function (I) {
   I.initiatePayment(function () {
     I.setCardDetails(config.cardSuccess);

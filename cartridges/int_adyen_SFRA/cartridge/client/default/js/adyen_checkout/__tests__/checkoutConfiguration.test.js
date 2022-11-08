@@ -1,13 +1,11 @@
 "use strict";
 
 var _require = require('../checkoutConfiguration'),
-    getCardConfig = _require.getCardConfig,
-    getPaypalConfig = _require.getPaypalConfig,
-    getGooglePayConfig = _require.getGooglePayConfig,
-    setCheckoutConfiguration = _require.setCheckoutConfiguration;
-
+  getCardConfig = _require.getCardConfig,
+  getPaypalConfig = _require.getPaypalConfig,
+  getGooglePayConfig = _require.getGooglePayConfig,
+  setCheckoutConfiguration = _require.setCheckoutConfiguration;
 var store = require('../../../../../store');
-
 var card;
 var paypal;
 var paywithgoogle;

@@ -33,8 +33,7 @@ afterEach(function () {
 describe('Get Payments', function () {
   it('should setTransactionID when there is no payment processor', function () {
     var _require = require('dw/order/PaymentMgr'),
-        getPaymentMethod = _require.getPaymentMethod;
-
+      getPaymentMethod = _require.getPaymentMethod;
     getPaymentMethod.mockImplementation(function () {
       return {
         paymentProcessor: null
@@ -45,8 +44,7 @@ describe('Get Payments', function () {
   });
   it('should return error when authorization result returns an error', function () {
     var _require2 = require('dw/system/HookMgr'),
-        callHook = _require2.callHook;
-
+      callHook = _require2.callHook;
     callHook.mockImplementation(function () {
       return {
         error: true

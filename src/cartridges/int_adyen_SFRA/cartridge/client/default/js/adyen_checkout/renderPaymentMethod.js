@@ -1,12 +1,9 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
+const constants = require('../constants');
 
 function getFallback(paymentMethod) {
-  const fallback = {
-    giftcard: `
-        <input type="hidden" class="brand" name="brand" value="${paymentMethod.brand}"/>
-        <input type="hidden" class="type" name="type" value="${paymentMethod.type}"/>`,
-  };
+  const fallback = {};
   if (fallback[paymentMethod.type]) {
     store.componentsObj[paymentMethod.type] = {};
   }
@@ -55,8 +52,10 @@ function getPaymentMethodID(isStored, paymentMethod) {
   if (isStored) {
     return `storedCard${paymentMethod.id}`;
   }
+  if (paymentMethod.type === constants.GIFTCARD) {
+    return constants.GIFTCARD;
+  }
   if (paymentMethod.brand) {
-    // gift cards all share the same type. Brand is used to differentiate between them
     return `${paymentMethod.type}_${paymentMethod.brand}`;
   }
   return paymentMethod.type;
@@ -133,17 +132,22 @@ function handleInput({ paymentMethodID }) {
     helpers.displaySelectedMethod(event.target.value);
   };
 }
-
+// eslint-disable-next-line complexity
 module.exports.renderPaymentMethod = function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
   description = null,
+  rerender = false,
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const li = document.createElement('li');
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+
+  if (paymentMethodID === constants.GIFTCARD) {
+    return;
+  }
+
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
 
@@ -160,14 +164,19 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const imagePath = getImagePath(options);
   const liContents = getListContents({ ...options, imagePath, description });
 
-  li.innerHTML = liContents;
-  li.classList.add('paymentMethod');
-
+  let li;
+  if (rerender) {
+    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
+  } else {
+    li = document.createElement('li');
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+    paymentMethodsUI.append(li);
+  }
   handlePayment(options);
   configureContainer(options);
 
   li.append(container);
-  paymentMethodsUI.append(li);
 
   const node = store.componentsObj[paymentMethodID]?.node;
   if (node) {

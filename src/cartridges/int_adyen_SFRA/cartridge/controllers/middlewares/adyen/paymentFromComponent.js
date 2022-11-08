@@ -4,10 +4,12 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
+const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
@@ -35,6 +37,7 @@ function paymentFromComponent(req, res, next) {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
     });
+
     paymentInstrument = currentBasket.createPaymentInstrument(
       constants.METHOD_ADYEN_COMPONENT,
       currentBasket.totalGrossPrice,
@@ -44,6 +47,12 @@ function paymentFromComponent(req, res, next) {
     );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
+
+    if (reqDataObj.partialPaymentsOrder) {
+      paymentInstrument.custom.adyenPartialPaymentsOrder = JSON.stringify(
+        reqDataObj.partialPaymentsOrder,
+      );
+    }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
@@ -71,6 +80,52 @@ function paymentFromComponent(req, res, next) {
     }
   }
 
+  // Check if gift card was used
+  if (session.privacy.giftCardResponse) {
+    const divideBy = AdyenHelper.getDivisorForCurrency(
+      currentBasket.totalGrossPrice,
+    );
+    const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
+    const remainingAmount = {
+      value: parsedGiftCardObj.remainingAmount.value,
+      currency: parsedGiftCardObj.remainingAmount.currency,
+    };
+    const formattedAmount = new Money(
+      remainingAmount.value,
+      remainingAmount.currency,
+    ).divide(divideBy);
+    const mainPaymentInstrument = order.getPaymentInstruments(
+      constants.METHOD_ADYEN_COMPONENT,
+    )[0];
+    // update amount from order total to PM total
+    Transaction.wrap(() => {
+      mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount);
+    });
+
+    const paidGiftcardAmount = {
+      value: parsedGiftCardObj.value,
+      currency: parsedGiftCardObj.currency,
+    };
+    const formattedGiftcardAmount = new Money(
+      paidGiftcardAmount.value,
+      paidGiftcardAmount.currency,
+    ).divide(divideBy);
+    Transaction.wrap(() => {
+      const giftcardPM = order.createPaymentInstrument(
+        constants.METHOD_ADYEN_COMPONENT,
+        formattedGiftcardAmount,
+      );
+      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+        giftcardPM.paymentMethod,
+      );
+      giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
+      giftcardPM.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
+      giftcardPM.paymentTransaction.custom.Adyen_log =
+        session.privacy.giftCardResponse;
+      giftcardPM.paymentTransaction.custom.Adyen_pspReference =
+        parsedGiftCardObj.giftCardpspReference;
+    });
+  }
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
   res.json(result);

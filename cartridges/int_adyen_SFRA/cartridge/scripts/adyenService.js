@@ -1,21 +1,13 @@
 "use strict";
 
 var Site = require('dw/system/Site');
-
 var Resource = require('dw/web/Resource');
-
 var HashMap = require('dw/util/HashMap');
-
 var Mail = require('dw/net/Mail');
-
 var Template = require('dw/util/Template');
-
 var Transaction = require('dw/system/Transaction');
-
 var Order = require('dw/order/Order');
-
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-
 function sendEmail(order) {
   var confirmationEmail = new Mail();
   var context = new HashMap();
@@ -35,23 +27,20 @@ function sendEmail(order) {
   confirmationEmail.send();
   order.custom.Adyen_CustomerEmail = null;
 }
-
 function submit(order) {
   try {
-    Transaction.begin(); // Places the order if not placed yet
-
+    Transaction.begin();
+    // Places the order if not placed yet
     if (order.status === Order.ORDER_STATUS_CREATED) {
       // custom fraudDetection
       var fraudDetectionStatus = {
         status: 'success'
       };
       var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-
       if (placeOrderResult.error) {
         return placeOrderResult;
       }
     }
-
     sendEmail(order);
     Transaction.commit();
     return {
@@ -64,7 +53,6 @@ function submit(order) {
     };
   }
 }
-
 module.exports = {
   submit: submit
 };

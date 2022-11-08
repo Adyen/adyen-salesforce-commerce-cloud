@@ -20,6 +20,7 @@ module.exports = {
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
+    GIFTCARD: 'giftcard',
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
 
@@ -32,6 +33,9 @@ module.exports = {
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
+    CHECKBALANCE: 'AdyenCheckBalance',
+    CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
+    PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
   },
   MODE: {
     TEST: 'TEST',
@@ -45,6 +49,7 @@ module.exports = {
     US: 'US',
     AU: 'AU',
     EU: 'EU',
+    IN: 'IN',
   },
 
   MAX_API_RETRIES: 3,
@@ -53,6 +58,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
+  CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: '5.28.3',
   VERSION: '22.2.0',

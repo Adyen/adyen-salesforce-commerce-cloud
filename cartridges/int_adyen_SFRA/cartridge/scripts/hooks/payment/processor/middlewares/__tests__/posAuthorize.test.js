@@ -22,7 +22,6 @@ afterEach(function () {
 describe('POS Authorize', function () {
   it('should return error if there is no terminal ID', function () {
     var getForm = require('server').forms.getForm;
-
     getForm.mockImplementation(function () {
       return {
         adyenPaymentFields: {
@@ -38,8 +37,7 @@ describe('POS Authorize', function () {
   });
   it('should return error if createTerminalPayment fails', function () {
     var _require = require('*/cartridge/scripts/adyenTerminalApi'),
-        createTerminalPayment = _require.createTerminalPayment;
-
+      createTerminalPayment = _require.createTerminalPayment;
     createTerminalPayment.mockImplementation(function () {
       return {
         error: true,
