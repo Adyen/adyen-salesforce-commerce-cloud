@@ -1,5 +1,4 @@
 const customerHelpers = require('base/checkout/customer');
-const addressHelpers = require('base/checkout/address');
 const shippingHelpers = require('base/checkout/shipping');
 const billingHelpers = require('base/checkout/billing');
 const summaryHelpers = require('base/checkout/summary');
