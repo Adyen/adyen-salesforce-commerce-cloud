@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+
+	<!-- flag indicating whether this checkout step is fulfilled -->
+	<field formid="fulfilled" type="boolean" default-value="false"/>
+
+	<!-- list of available addresses to select from -->
+	<list formid="addressList">
+
+		<!-- action for actually selecting the address -->
+		<action formid="useThisAddress" valid-form="false"/>
+
+	</list>
+
+	<!-- form for creating and editing billing address -->
+	<group formid="billingAddress" form-error="address.invalid" >
+
+		<!-- use fields from billing address definition -->
+		<include formid="addressFields" name="billingaddress"/>
+
+		<!-- optional flags -->
+		<field formid="addToAddressBook" label="checkout.addtoaddressbook" type="boolean" mandatory="false" />
+		<field formid="addToEmailList" label="checkout.addtoemaillist" type="boolean" mandatory="false" />
+
+		<!-- email field is contained in separate form group to enable binding to customer profile -->
+		<group formid="email">
+
+			<field formid="emailAddress" label="billing.email" type="string" mandatory="true" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" binding="email" max-length="50" missing-error="address.email.invalid" range-error="address.email.invalid" parse-error="address.email.invalid" value-error="address.email.invalid"/>
+
+		</group>
+
+	</group>
+
+	<!-- form for handling payment method selection -->
+	<group formid="paymentMethods">
+
+		<!--
+			the selected payment method, e.g. "CREDIT_CARD" or "PayPal", this field is
+			used to transport the payment method selection; validations then can be
+			made on the proper form group which defines the actual payment method attributes
+		-->
+		<field formid="selectedPaymentMethodID" type="string" default-value="AdyenComponent">
+			<options optionid-binding="ID" value-binding="ID" label-binding="name"/>
+		</field>
+
+		<!-- list of available credit cards to select from -->
+		<list formid="creditCardList">
+
+			<!-- action for actually selecting the credit card -->
+			<action formid="useThisCreditCard" valid-form="false"/>
+
+		</list>
+
+
+		<!-- fields for CreditCard selection -->
+		<include formid="creditCard" name="creditcard"/>
+
+		<!-- fields for BML selection -->
+		<include formid="bml" name="bml"/>
+
+	</group>
+	<field formid="couponCode" label="billingcoupon.couponenter" type="string" mandatory="false" missing-error="billingcoupon.couponinvalid" value-error="billingcoupon.couponinvalid" />
+
+	<!-- gift cert code entry -->
+	<field formid="giftCertCode" label="billinggiftcert.giftcertlabel" type="string" mandatory="false" missing-error="billinggiftcert.giftcertinvalid" value-error="billinggiftcert.giftcertinvalid" />
+
+	<action formid="redeemGiftCert" valid-form="false"/>
+	<action formid="checkBalance" valid-form="false"/>
+	<!-- general actions -->
+
+	<action formid="selectAddress" valid-form="false"/>
+	<action formid="creditCardSelect" valid-form="false"/>
+	<action formid="paymentSelect" valid-form="false"/>
+	<action formid="applyCoupon" valid-form="false"/>
+	<action formid="save" valid-form="false"/>
+
+</form>

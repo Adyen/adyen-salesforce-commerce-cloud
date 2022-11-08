@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+	<isinclude template="util/modules"/>
+	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
+	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
+	<div class="paymentslist">
+		<h1>${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
+		<a class="section-header-note add-card button" href="${URLUtils.url('PaymentInstruments-Add')}" title="${Resource.msg('account.paymentinstrumentlist.addcard.label','account',null)}">
+			${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}
+		</a>
+		<isif condition="${pdict.PaymentInstruments.size() > 0}">
+			<ul class="payment-list">
+				<isloop items="${pdict.CurrentForms.paymentinstruments.creditcards.storedcards}" var="creditcard" status="loopstate">
+				<li class="<isif condition="${loopstate.first}">first <iselseif condition="${loopstate.last}">last </isif>${pdict.PaymentInstruments[loopstate.count - 1].creditCardType}">
+					<isminicreditcard card="${creditcard.object}" show_expiration="${true}"/>
+					<form action="${URLUtils.url('PaymentInstruments-Delete')}" name="payment-remove" method="post" id="creditcards_${loopstate.count}">
+						<fieldset>
+							<button type="submit" class="button-text delete" value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}" name="${creditcard.remove.htmlName}">
+								${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}
+							</button>
+							<input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}"/>
+						</fieldset>
+					</form>
+				</li>
+				</isloop>
+			</ul>
+		</isif>
+	</div>
+</isdecorate>

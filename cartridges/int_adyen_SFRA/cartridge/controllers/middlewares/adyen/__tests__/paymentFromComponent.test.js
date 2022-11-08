@@ -6,8 +6,7 @@ var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      adyen = _require.adyen;
-
+    adyen = _require.adyen;
   paymentFromComponent = adyen.paymentFromComponent;
   jest.clearAllMocks();
   req = {
@@ -30,7 +29,6 @@ afterEach(function () {
 describe('Payment from Component', function () {
   it('should cancel transaction', function () {
     var URLUtils = require('dw/web/URLUtils');
-
     req.form.data.cancelTransaction = true;
     req.form.data = JSON.stringify(req.form.data);
     paymentFromComponent(req, res, jest.fn());

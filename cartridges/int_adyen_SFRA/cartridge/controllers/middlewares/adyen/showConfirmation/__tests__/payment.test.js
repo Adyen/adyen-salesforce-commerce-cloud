@@ -1,10 +1,8 @@
 "use strict";
 
 var OrderMgr = require('dw/order/OrderMgr');
-
 var _require = require('../payment'),
-    handlePaymentInstruments = _require.handlePaymentInstruments;
-
+  handlePaymentInstruments = _require.handlePaymentInstruments;
 var req;
 beforeEach(function () {
   req = {

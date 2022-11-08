@@ -5,6 +5,10 @@ const showConfirmationPaymentFromComponent = require('*/cartridge/controllers/mi
 const paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
 const redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
 const callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
+const checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
+const cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
+const partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
+const partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
 
 module.exports = {
   showConfirmation,
@@ -14,4 +18,8 @@ module.exports = {
   paymentsDetails,
   redirect3ds1Response,
   callCreateSession,
+  checkBalance,
+  cancelPartialPaymentOrder,
+  partialPaymentsOrder,
+  partialPayment,
 };

@@ -1,9 +1,7 @@
 "use strict";
 
 var proxyquire = require("proxyquire").noCallThru().noPreserveCache();
-
 var basketMgr = require("../dw/order/BasketMgr");
-
 var server = {
   forms: {
     getForm: function getForm(formName) {
@@ -57,7 +55,6 @@ var paymentInstrument = {
   METHOD_GIFT_CERTIFICATE: new String("METHOD_GIFT_CERTIFICATE"),
   METHOD_CREDIT_CARD: new String("CREDIT_CARD")
 };
-
 function proxyModel() {
   return proxyquire("../../../cartridge/scripts/checkout/adyenHelpers", {
     server: server,
@@ -113,5 +110,4 @@ function proxyModel() {
     "dw/system/Transaction": transaction
   });
 }
-
 module.exports = proxyModel();

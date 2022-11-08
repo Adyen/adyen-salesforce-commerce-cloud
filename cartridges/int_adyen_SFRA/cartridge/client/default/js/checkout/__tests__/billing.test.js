@@ -1,8 +1,7 @@
 "use strict";
 
 var _require = require('../billing'),
-    methods = _require.methods;
-
+  methods = _require.methods;
 describe('Billing', function () {
   it('should append html to payment details', function () {
     document.body.innerHTML = "\n      <div class=\"payment-details\">\n        <span>some_child</span>\n      </div>\n    ";

@@ -1,37 +1,37 @@
 [{
-    "id": "en_US",
-    "currencyCode": "USD"
+  "id": "en_US",
+  "currencyCode": "USD"
 }, {
-    "id": "en_GB",
-    "currencyCode": "GBP"
+  "id": "en_GB",
+  "currencyCode": "GBP"
 }, {
-    "id": "ja_JP",
-    "currencyCode": "JPY"
+  "id": "ja_JP",
+  "currencyCode": "JPY"
 }, {
-    "id": "zh_CN",
-    "currencyCode": "CNY"
+  "id": "zh_CN",
+  "currencyCode": "CNY"
 }, {
-    "id": "fr_FR",
-    "currencyCode": "EUR"
+  "id": "fr_FR",
+  "currencyCode": "EUR"
 }, {
-    "id": "it_IT",
-    "currencyCode": "EUR"
+  "id": "it_IT",
+  "currencyCode": "EUR"
 }, {
-    "id": "pt_BR",
-    "currencyCode": "BRL"
+  "id": "pt_BR",
+  "currencyCode": "BRL"
 }, {
-    "id": "nb_NO",
-    "currencyCode": "NOK"
+  "id": "nb_NO",
+  "currencyCode": "NOK"
 }, {
-    "id": "da_DK",
-    "currencyCode": "DKK"
+  "id": "da_DK",
+  "currencyCode": "DKK"
 }, {
-    "id": "sv_SE",
-    "currencyCode": "SEK"
+  "id": "sv_SE",
+  "currencyCode": "SEK"
 }, {
-    "id": "hi_IN",
-    "currencyCode": "INR"
+  "id": "hi_IN",
+  "currencyCode": "INR"
 }, {
-    "id": "ja_JP",
-    "currencyCode": "JPY"
+  "id": "ja_JP",
+  "currencyCode": "JPY"
 }]

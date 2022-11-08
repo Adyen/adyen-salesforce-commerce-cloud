@@ -1,16 +1,11 @@
 "use strict";
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 var _require = require('../helpers'),
-    paymentFromComponent = _require.paymentFromComponent;
-
+  paymentFromComponent = _require.paymentFromComponent;
 var component;
 beforeEach(function () {
   component = {
@@ -42,10 +37,8 @@ describe('Helpers', function () {
             });
             _context.next = 5;
             return paymentFromComponent(data, component);
-
           case 5:
             expect(component.handleAction).toBeCalledWith(data.fullResponse.action);
-
           case 6:
           case "end":
             return _context.stop();
@@ -74,10 +67,8 @@ describe('Helpers', function () {
             });
             _context2.next = 6;
             return paymentFromComponent(data, component);
-
           case 6:
             expect(data).toMatchSnapshot();
-
           case 7:
           case "end":
             return _context2.stop();
