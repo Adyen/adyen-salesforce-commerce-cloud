@@ -85,6 +85,7 @@ function applyGiftCard() {
     document.querySelector('#giftCardLabel').classList.add('invisible');
     createElementsToShowRemainingGiftCardAmount();
   } else {
+    store.partialPaymentsOrderObj = null;
     window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
   }
 }
