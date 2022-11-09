@@ -5,6 +5,7 @@ const { installmentLocales } = require('./localesUsingInstallments');
 const { createSession } = require('../commons');
 const constants = require('../constants');
 const {
+  removeGiftCard,
   createElementsToShowRemainingGiftCardAmount,
 } = require('./checkoutConfiguration');
 
@@ -78,15 +79,22 @@ function renderGiftCard(paymentMethod) {
 
 function applyGiftCard() {
   const now = new Date().toISOString();
-  if (
-    store.partialPaymentsOrderObj?.expiresAt &&
-    now < store.partialPaymentsOrderObj?.expiresAt
-  ) {
-    document.querySelector('#giftCardLabel').classList.add('invisible');
-    createElementsToShowRemainingGiftCardAmount();
-  } else {
+  const { amount } = store.checkoutConfiguration;
+  const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
+
+  const isPartialPaymentExpired = expiresAt && now > expiresAt;
+  const isCartModified =
+    amount.currency !== orderAmount.currency ||
+    amount.value !== orderAmount.value;
+
+  if (isPartialPaymentExpired) {
     store.partialPaymentsOrderObj = null;
     window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
+  } else if (isCartModified) {
+    removeGiftCard();
+  } else {
+    document.querySelector('#giftCardLabel').classList.add('invisible');
+    createElementsToShowRemainingGiftCardAmount();
   }
 }
 
@@ -207,7 +215,9 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   );
   renderPosTerminals(session.adyenConnectedTerminals);
 
-  applyGiftCard();
+  if (store.partialPaymentsOrderObj) {
+    applyGiftCard();
+  }
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',

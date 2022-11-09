@@ -247,6 +247,7 @@ function getGiftCardConfig() {
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
               data.expiresAt,
+              data.remainingAmount,
             );
             if (partialPaymentResponse?.error) {
               reject();
@@ -357,4 +358,5 @@ module.exports = {
   setCheckoutConfiguration,
   actionHandler,
   createElementsToShowRemainingGiftCardAmount,
+  removeGiftCard
 };

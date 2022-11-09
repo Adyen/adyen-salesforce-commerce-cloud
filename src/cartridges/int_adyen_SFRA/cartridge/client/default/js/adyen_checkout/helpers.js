@@ -31,6 +31,7 @@ function setPartialPaymentOrderObject(response) {
     response.remainingAmountFormatted;
   store.partialPaymentsOrderObj.discountedAmount =
     response.discountAmountFormatted;
+  store.partialPaymentsOrderObj.orderAmount = response.orderAmount;
   store.partialPaymentsOrderObj.expiresAt = response.expiresAt;
   window.sessionStorage.setItem(
     constants.GIFTCARD_DATA_ADDED,
@@ -66,7 +67,7 @@ function paymentFromComponent(data, component = {}) {
   });
 }
 
-function makePartialPayment(requestData, expiresAt) {
+function makePartialPayment(requestData, expiresAt, orderAmount) {
   let error;
   $.ajax({
     url: 'Adyen-partialPayment',
@@ -78,7 +79,7 @@ function makePartialPayment(requestData, expiresAt) {
       if (response.error) {
         error = { error: true };
       } else {
-        setPartialPaymentOrderObject({ ...response, expiresAt });
+        setPartialPaymentOrderObject({ ...response, expiresAt, orderAmount });
         setOrderFormData(response);
       }
     },
