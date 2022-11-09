@@ -1,7 +1,6 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
 const constants = require('../constants');
-const { MULTIPLE_TX_VARIANT_METHODS } = require('../constants');
 
 function getFallback(paymentMethod) {
   const fallback = {};
@@ -116,7 +115,7 @@ function setValid({ paymentMethodID, container }) {
   if (
     hasNoChildNodes({ paymentMethodID, container }) &&
     ['bcmc', 'scheme']
-      .concat(MULTIPLE_TX_VARIANT_METHODS)
+      .concat(constants.MULTIPLE_TX_VARIANT_METHODS)
       .indexOf(paymentMethodID) === -1
   ) {
     store.componentsObj[paymentMethodID].isValid = true;
