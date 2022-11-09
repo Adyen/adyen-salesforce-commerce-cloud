@@ -60,8 +60,14 @@ function renderGiftCard(paymentMethod) {
   closeGiftCardModal.id = 'closeGiftCardModal';
   closeGiftCardModal.innerText = 'X';
   giftCardLabel.addEventListener('click', () => {
+    const giftCardWarningMessageEl = document.querySelector(
+      '#giftCardWarningMessage',
+    );
     if (giftcardContainer.innerHTML) {
       return;
+    }
+    if (giftCardWarningMessageEl) {
+      giftCardWarningMessageEl.style.display = 'none';
     }
     $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
     giftcardContainer.innerHTML = '';

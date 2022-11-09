@@ -115,6 +115,7 @@ function removeGiftCard() {
 
 function showGiftCardWarningMessage() {
   const alertContainer = document.createElement('div');
+  alertContainer.setAttribute('id', 'giftCardWarningMessage');
   alertContainer.classList.add('alert', 'alert-warning', 'error-message');
   alertContainer.style.display = 'block';
   alertContainer.style.margin = '20px 0';
