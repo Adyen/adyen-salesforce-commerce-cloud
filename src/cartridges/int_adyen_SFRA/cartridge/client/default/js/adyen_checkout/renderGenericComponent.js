@@ -5,8 +5,9 @@ const { installmentLocales } = require('./localesUsingInstallments');
 const { createSession } = require('../commons');
 const constants = require('../constants');
 const {
-  removeGiftCard,
   createElementsToShowRemainingGiftCardAmount,
+  removeGiftCard,
+  showGiftCardWarningMessage,
 } = require('./checkoutConfiguration');
 
 function addPosTerminals(terminals) {
@@ -92,6 +93,7 @@ function applyGiftCard() {
     window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
   } else if (isCartModified) {
     removeGiftCard();
+    showGiftCardWarningMessage();
   } else {
     document.querySelector('#giftCardLabel').classList.add('invisible');
     createElementsToShowRemainingGiftCardAmount();

@@ -105,12 +105,31 @@ function removeGiftCard() {
       document.querySelector('#adyenPartialPaymentsOrder').value = null;
       window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
       if (res.resultCode === constants.RECEIVED) {
-        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
-        document.querySelector('#giftCardLabel').classList.remove('invisible');
+        document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
+        document.querySelector('#giftCardLabel')?.classList.remove('invisible');
         store.componentsObj?.giftcard?.node.unmount('component_giftcard');
       }
     },
   });
+}
+
+function showGiftCardWarningMessage() {
+  const alertContainer = document.createElement('div');
+  alertContainer.classList.add('alert', 'alert-warning', 'error-message');
+  alertContainer.style.display = 'block';
+  alertContainer.style.margin = '20px 0';
+  alertContainer.setAttribute('role', 'alert');
+
+  const alertContainerP = document.createElement('p');
+  alertContainerP.classList.add('error-message-text');
+  alertContainerP.textContent = window.giftCardWarningMessage;
+
+  alertContainer.appendChild(alertContainerP);
+
+  const orderTotalSummaryEl = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+  orderTotalSummaryEl.appendChild(alertContainer);
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
@@ -358,5 +377,6 @@ module.exports = {
   setCheckoutConfiguration,
   actionHandler,
   createElementsToShowRemainingGiftCardAmount,
-  removeGiftCard
+  removeGiftCard,
+  showGiftCardWarningMessage,
 };
