@@ -17,7 +17,7 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
   };
 
-  doUPIPayment = async (paymentMethod, success){
+  doUPIPayment = async (paymentMethod, success) => {
     await this.paymentMethodsPage.initiateUPIPayment(paymentMethod, success);
   }
 
