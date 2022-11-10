@@ -133,7 +133,7 @@ function handlePayment(stateData, order, options) {
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
-  if (result.error || order.status.value === Order.ORDER_STATUS_FAILED) {
+  if (result?.error || order.status.value === Order.ORDER_STATUS_FAILED) {
     Logger.getLogger('Adyen').error(
       `Could not call payment/details for order ${order.orderNo}`,
     );

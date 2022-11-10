@@ -26,12 +26,13 @@ function getPaypalConfig() {
     showPayButton: true,
     environment: window.Configuration.environment,
     onSubmit: (state, component) => {
-      helpers.assignPaymentMethodValue();
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        store.selectedPayment.stateData,
-      );
-
-      helpers.paymentFromComponent(state.data, component);
+      setTimeout(() => {
+        helpers.assignPaymentMethodValue();
+        document.querySelector('#adyenStateData').value = JSON.stringify(
+          store.selectedPayment.stateData,
+        );
+        helpers.paymentFromComponent(state.data, component);
+      }, 100);
     },
     onCancel: (data, component) => {
       store.paypalTerminatedEarly = false;
@@ -330,12 +331,6 @@ function getApplePayConfig() {
     onSubmit: (state, component) => {
       helpers.assignPaymentMethodValue();
       helpers.paymentFromComponent(state.data, component);
-    },
-    onError: (error, component) => {
-      if (component) {
-        component.setStatus('ready');
-      }
-      document.querySelector('#showConfirmationForm').submit();
     },
   };
 }
