@@ -22,17 +22,16 @@ function setOrderFormData(response) {
 }
 
 function setPartialPaymentOrderObject(response) {
-  const partialPaymentsOrder = {
-    pspReference: response.order.pspReference,
-    orderData: response.order.orderData,
+  store.partialPaymentsOrderObj = {
+    partialPaymentsOrder: {
+      pspReference: response.order.pspReference,
+      orderData: response.order.orderData,
+    },
+    remainingAmount: response.remainingAmountFormatted,
+    discountedAmount: response.discountAmountFormatted,
+    orderAmount: response.orderAmount,
+    expiresAt: response.expiresAt,
   };
-  store.partialPaymentsOrderObj = { partialPaymentsOrder };
-  store.partialPaymentsOrderObj.remainingAmount =
-    response.remainingAmountFormatted;
-  store.partialPaymentsOrderObj.discountedAmount =
-    response.discountAmountFormatted;
-  store.partialPaymentsOrderObj.orderAmount = response.orderAmount;
-  store.partialPaymentsOrderObj.expiresAt = response.expiresAt;
   window.sessionStorage.setItem(
     constants.GIFTCARD_DATA_ADDED,
     JSON.stringify(store.partialPaymentsOrderObj),
