@@ -76,11 +76,12 @@ export default class CheckoutPageSFRA5 {
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');
 
-    this.paymentModal = page.locator("#adyenModalDialog");
+    this.paymentModal = page.locator("#action-modal #adyenModalDialog");
   }
 
   isPaymentModalShown = async (imgAltValue) => {
-    return await this.paymentModal.locator(`img[alt='${imgAltValue}']`).isVisible();
+    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
+      .toBeVisible({ timeout: 10000 });
   }
 
   navigateToCheckout = async (locale) => {

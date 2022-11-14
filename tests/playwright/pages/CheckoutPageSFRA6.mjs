@@ -82,8 +82,8 @@ export default class CheckoutPageSFRA {
   }
 
   isPaymentModalShown = async (imgAltValue) => {
-    return await this.paymentModal.locator(`img[alt='${imgAltValue}']`)
-      .isVisible();
+    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
+      .toBeVisible({ timeout: 10000 });
   }
 
   navigateToCheckout = async (locale) => {

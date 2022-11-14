@@ -21,25 +21,23 @@ for (const environment of environments) {
 
     test('UPI Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('upi_collect');
+      await redirectShopper.doUPIPayment('upi_collect');
       await checkoutPage.completeCheckout();
-      expect(await checkoutPage.isPaymentModalShown("upi_collect")).toBeTruthy();
-
+      await checkoutPage.isPaymentModalShown("upi_collect");
     });
 
     test('UPI Failure', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('upi_collect', false);
+      await redirectShopper.doUPIPayment('upi_collect', false);
       await checkoutPage.completeCheckout();
       await checkoutPage.expectRefusal();
     });
 
     test('UPI QR Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('upi_qr');
+      await redirectShopper.doUPIPayment('upi_qr');
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      expect(await checkoutPage.isPaymentModalShown("upi_qr")).toBeTruthy();
+      await checkoutPage.expectQRcode();
     });
 
     test('Wallet Success', async ({ page }) => {
