@@ -477,7 +477,7 @@ function getCountryCode(currentBasket) {
 function sessions(customer) {
     try {
       const currentBasket = BasketMgr.getCurrentBasket();
-      const countryCode = getCountryCode(currentBasket, request.getLocale())
+      const countryCode = getCountryCode(currentBasket);
       const response = adyenSessions.createSession(
           currentBasket,
           AdyenHelper.getCustomer(customer),
