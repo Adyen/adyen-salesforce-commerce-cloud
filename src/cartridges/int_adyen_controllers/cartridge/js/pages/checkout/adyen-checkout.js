@@ -2,6 +2,7 @@ require('./adyen-giving');
 require('./amazon');
 require('./summary');
 
+var constants = require('../../adyenConstants');
 var qrCodeMethods = ['swish', 'wechatpayQR', 'bcmc_mobile', 'pix'];
 var installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
 var maskedCardNumber;
@@ -49,8 +50,12 @@ async function initializeBillingEvents() {
 
     checkoutConfiguration.onChange = function (state /* , component */) {
       var type = state.data.paymentMethod.type;
+      var multipleTxVariantsMethods = constants.MULTIPLE_TX_VARIANT_METHODS;
       if(selectedMethod === "googlepay" && type === "paywithgoogle") {
         type = "googlepay";
+      }
+      if (multipleTxVariantsMethods.includes(selectedMethod)){
+          type = selectedMethod;
       }
       isValid = state.isValid;
       if (!componentsObj[type]) {
@@ -481,7 +486,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     container.innerHTML = '';
   }
 
-  if (componentsObj[paymentMethodID] && !container.childNodes[0] && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
+  if (componentsObj[paymentMethodID] && !container.childNodes[0] && ['bcmc', 'scheme'].concat(constants.MULTIPLE_TX_VARIANT_METHODS).indexOf(paymentMethodID) === -1) {
     componentsObj[paymentMethodID].isValid = true;
   }
 }
