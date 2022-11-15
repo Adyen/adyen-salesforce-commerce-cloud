@@ -83,16 +83,25 @@ function createPaymentRequest(args) {
       }
     }
 
+    const myAmount = AdyenHelper.getCurrencyValueForApi(
+        paymentInstrument.paymentTransaction.amount,
+    ).getValueOrNull();
+    const currency = paymentInstrument.paymentTransaction.amount.currencyCode;
     // Add partial payments order if applicable
     if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
-      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
-      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
+      const adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
+      if(myAmount === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
+        paymentRequest.order = adyenPartialPaymentsOrder.order;
+        paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
+      } else {
+        AdyenHelper.
+        throw new Error("Someone's been meddling with their damn cart!");
+      }
+      
     } else {
-      const myAmount = AdyenHelper.getCurrencyValueForApi(
-          paymentInstrument.paymentTransaction.amount,
-      ).getValueOrNull();
+      
       paymentRequest.amount = {
-        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
+        currency,
         value: myAmount,
       };
     }
