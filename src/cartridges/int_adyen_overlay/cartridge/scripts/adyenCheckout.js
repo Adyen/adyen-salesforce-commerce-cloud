@@ -94,7 +94,7 @@ function createPaymentRequest(args) {
         paymentRequest.order = adyenPartialPaymentsOrder.order;
         paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
       } else {
-        throw new Error("Someone's been meddling with their damn cart!");
+        throw new Error("Cart has been edited after applying a gift card");
       }
     } else {
       paymentRequest.amount = {
