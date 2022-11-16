@@ -22,7 +22,6 @@ function placeOrder(req, res, next) {
     const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
     const currentBasket = BasketMgr.getCurrentBasket();
-
     if (!currentBasket) {
         res.json({
             error: true,

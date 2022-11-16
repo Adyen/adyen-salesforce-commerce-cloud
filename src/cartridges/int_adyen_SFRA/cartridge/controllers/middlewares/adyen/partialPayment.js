@@ -51,6 +51,15 @@ function makePartialPayment(req, res, next) {
       response.order.remainingAmount.currency,
     );
 
+    // Update cached session data
+    const partialPaymentsOrderData = JSON.parse(
+      session.privacy.partialPaymentData,
+    );
+    partialPaymentsOrderData.remainingAmount = response?.order?.remainingAmount;
+    session.privacy.partialPaymentData = JSON.stringify(
+      partialPaymentsOrderData,
+    );
+
     const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
     response.remainingAmountFormatted = remainingAmount
       .divide(divideBy)

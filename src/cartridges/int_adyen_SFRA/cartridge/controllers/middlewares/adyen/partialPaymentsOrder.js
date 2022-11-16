@@ -31,6 +31,16 @@ function createPartialPaymentsOrder(req, res, next) {
       partialPaymentsRequest,
     );
 
+    // Cache order data to reuse at payments
+    session.privacy.partialPaymentData = JSON.stringify({
+      order: {
+        orderData: response?.orderData,
+        pspReference: response?.pspReference,
+      },
+      remainingAmount: response?.remainingAmount,
+      amount: response?.amount,
+    });
+
     res.json(response);
   } catch (error) {
     Logger.getLogger('Adyen').error(

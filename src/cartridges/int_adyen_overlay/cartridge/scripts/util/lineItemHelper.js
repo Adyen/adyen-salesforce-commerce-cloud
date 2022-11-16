@@ -17,7 +17,6 @@
  * See the LICENSE file for more info.
  */
 
-require('dw/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const __LineItemHelper = {
