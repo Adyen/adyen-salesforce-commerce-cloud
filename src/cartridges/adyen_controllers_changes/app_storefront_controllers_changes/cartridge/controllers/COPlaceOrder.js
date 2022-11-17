@@ -201,7 +201,7 @@ function start() {
                         'merchantReference', order.orderNo,
                         'orderToken', order.orderToken,
                     ).toString(),
-                }
+                };
             }
             return orderPlacementStatus;
         }

@@ -19,7 +19,6 @@
  * Risk data fields
  */
 
-require('dw/order');
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 const __RiskDataHelper = {

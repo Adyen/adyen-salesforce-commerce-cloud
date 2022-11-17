@@ -78,22 +78,28 @@ function createPaymentRequest(args) {
     // Add installments
     if (AdyenConfigs.getCreditCardInstallments()) {
       const numOfInstallments = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments?.value;
-      if(numOfInstallments !== undefined) {
-        paymentRequest.installments = {value: numOfInstallments}
+      if (numOfInstallments !== undefined) {
+        paymentRequest.installments = {value: numOfInstallments};
       }
     }
 
+    const value = AdyenHelper.getCurrencyValueForApi(
+        paymentInstrument.paymentTransaction.amount,
+    ).getValueOrNull();
+    const currency = paymentInstrument.paymentTransaction.amount.currencyCode;
     // Add partial payments order if applicable
     if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
-      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
-      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
+      const adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
+      if(value === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
+        paymentRequest.order = adyenPartialPaymentsOrder.order;
+        paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
+      } else {
+        throw new Error("Cart has been edited after applying a gift card");
+      }
     } else {
-      const myAmount = AdyenHelper.getCurrencyValueForApi(
-          paymentInstrument.paymentTransaction.amount,
-      ).getValueOrNull();
       paymentRequest.amount = {
-        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-        value: myAmount,
+        currency,
+        value,
       };
     }
 

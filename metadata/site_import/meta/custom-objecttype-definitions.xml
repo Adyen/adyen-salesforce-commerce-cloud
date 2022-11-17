@@ -130,6 +130,10 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
                     <value-definition>
+                        <display xml:lang="x-default">SUCCESS</display>
+                        <value>SUCCESS</value>
+                    </value-definition>
+                    <value-definition>
                         <display xml:lang="x-default">PENDING</display>
                         <value>PENDING</value>
                     </value-definition>

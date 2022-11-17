@@ -19,13 +19,7 @@
  * Add all product and shipping line items to request
  */
 
-require('dw/crypto');
-require('dw/system');
-require('dw/order');
-require('dw/util');
-require('dw/value');
-require('dw/net');
-require('dw/web');
+
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');

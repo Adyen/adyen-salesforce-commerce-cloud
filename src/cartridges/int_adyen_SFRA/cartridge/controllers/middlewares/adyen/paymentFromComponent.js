@@ -49,9 +49,8 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentData = req.form.data;
 
     if (reqDataObj.partialPaymentsOrder) {
-      paymentInstrument.custom.adyenPartialPaymentsOrder = JSON.stringify(
-        reqDataObj.partialPaymentsOrder,
-      );
+      paymentInstrument.custom.adyenPartialPaymentsOrder =
+        session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
