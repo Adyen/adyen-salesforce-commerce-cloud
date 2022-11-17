@@ -26,7 +26,6 @@
     "node": ">=4.0"
   },
   "dependencies": {
-    "cleave.js": "^1.0.1",
     "mobx": "^5.15.4",
     "url": "^0.11.0"
   },
