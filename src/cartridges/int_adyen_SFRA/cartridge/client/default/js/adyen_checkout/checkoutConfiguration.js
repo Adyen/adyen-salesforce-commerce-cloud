@@ -26,13 +26,12 @@ function getPaypalConfig() {
     showPayButton: true,
     environment: window.Configuration.environment,
     onSubmit: (state, component) => {
-      setTimeout(() => {
-        helpers.assignPaymentMethodValue();
-        document.querySelector('#adyenStateData').value = JSON.stringify(
-          store.selectedPayment.stateData,
-        );
-        helpers.paymentFromComponent(state.data, component);
-      }, 100);
+      helpers.assignPaymentMethodValue();
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        store.selectedPayment.stateData,
+      );
+
+      helpers.paymentFromComponent(state.data, component);
     },
     onCancel: (data, component) => {
       store.paypalTerminatedEarly = false;
