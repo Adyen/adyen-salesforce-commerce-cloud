@@ -4,6 +4,11 @@ const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
 const { createSession } = require('../commons');
 const constants = require('../constants');
+const {
+  createElementsToShowRemainingGiftCardAmount,
+  removeGiftCard,
+  showGiftCardWarningMessage,
+} = require('./checkoutConfiguration');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -55,8 +60,14 @@ function renderGiftCard(paymentMethod) {
   closeGiftCardModal.id = 'closeGiftCardModal';
   closeGiftCardModal.innerText = 'X';
   giftCardLabel.addEventListener('click', () => {
+    const giftCardWarningMessageEl = document.querySelector(
+      '#giftCardWarningMessage',
+    );
     if (giftcardContainer.innerHTML) {
       return;
+    }
+    if (giftCardWarningMessageEl) {
+      giftCardWarningMessageEl.style.display = 'none';
     }
     $('#giftcard-modal').modal({ backdrop: 'static', keyboard: false });
     giftcardContainer.innerHTML = '';
@@ -71,6 +82,28 @@ function renderGiftCard(paymentMethod) {
     store.componentsObj.giftcard.node.unmount('component_giftcard');
   };
   document.querySelector('#giftCardLabel').classList.remove('invisible');
+}
+
+function applyGiftCard() {
+  const now = new Date().toISOString();
+  const { amount } = store.checkoutConfiguration;
+  const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
+
+  const isPartialPaymentExpired = expiresAt && now > expiresAt;
+  const isCartModified =
+    amount.currency !== orderAmount.currency ||
+    amount.value !== orderAmount.value;
+
+  if (isPartialPaymentExpired) {
+    store.partialPaymentsOrderObj = null;
+    window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
+  } else if (isCartModified) {
+    removeGiftCard();
+    showGiftCardWarningMessage();
+  } else {
+    document.querySelector('#giftCardLabel').classList.add('invisible');
+    createElementsToShowRemainingGiftCardAmount();
+  }
 }
 
 function renderStoredPaymentMethod(imagePath) {
@@ -171,6 +204,9 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  store.partialPaymentsOrderObj = JSON.parse(
+    window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED),
+  );
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -186,6 +222,10 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     session.adyenDescriptions,
   );
   renderPosTerminals(session.adyenConnectedTerminals);
+
+  if (store.partialPaymentsOrderObj) {
+    applyGiftCard();
+  }
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
