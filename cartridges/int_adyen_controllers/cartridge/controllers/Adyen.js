@@ -305,7 +305,9 @@ function showConfirmationPaymentFromComponent() {
     }
   }
   var details = stateData.details;
-  var paymentData = stateData.paymentData; // redirect to payment/details
+  var paymentData = stateData.paymentData;
+
+  // redirect to payment/details
   var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
   var requestObject = {
     details: details,
@@ -361,7 +363,7 @@ function getCountryCode(currentBasket) {
 function sessions(customer) {
   try {
     var currentBasket = BasketMgr.getCurrentBasket();
-    var countryCode = getCountryCode(currentBasket, request.getLocale());
+    var countryCode = getCountryCode(currentBasket);
     var _response2 = adyenSessions.createSession(currentBasket, AdyenHelper.getCustomer(customer), countryCode);
     var adyenURL = "".concat(AdyenHelper.getLoadingContext(), "images/logos/medium/");
     var connectedTerminals = getConnectedTerminals();

@@ -10,9 +10,11 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var _require = require('*/cartridge/scripts/updateSavedCards'),
   updateSavedCards = _require.updateSavedCards;
 var _require2 = require('*/cartridge/controllers/middlewares/index'),
-  paymentInstruments = _require2.paymentInstruments; /*
-                                                      * Prepends PaymentInstruments' 'List' function to list saved cards.
-                                                      */
+  paymentInstruments = _require2.paymentInstruments;
+
+/*
+ * Prepends PaymentInstruments' 'List' function to list saved cards.
+ */
 server.prepend('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
   updateSavedCards({
     CurrentCustomer: req.currentCustomer.raw

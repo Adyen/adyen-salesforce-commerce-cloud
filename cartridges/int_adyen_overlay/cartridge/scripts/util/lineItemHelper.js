@@ -19,7 +19,6 @@
  * See the LICENSE file for more info.
  */
 
-require('dw/order');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var __LineItemHelper = {
   getDescription: function getDescription(lineItem) {

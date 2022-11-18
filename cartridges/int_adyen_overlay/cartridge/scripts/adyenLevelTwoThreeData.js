@@ -24,13 +24,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * Add all product and shipping line items to request
  */
 
-require('dw/crypto');
-require('dw/system');
-require('dw/order');
-require('dw/util');
-require('dw/value');
-require('dw/net');
-require('dw/web');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 function getLineItems(_ref) {

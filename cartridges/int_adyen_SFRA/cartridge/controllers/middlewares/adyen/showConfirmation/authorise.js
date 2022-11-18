@@ -6,7 +6,9 @@ var OrderModel = require('*/cartridge/models/order');
 var handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 function handleAuthorised(adyenPaymentInstrument, detailsResult, order, options) {
-  var req = options.req; // custom fraudDetection
+  var req = options.req;
+
+  // custom fraudDetection
   var fraudDetectionStatus = {
     status: 'success'
   };

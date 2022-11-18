@@ -1,6 +1,7 @@
 "use strict";
 
-/* eslint-disable global-require */var _require = require('../../index'),
+/* eslint-disable global-require */
+var _require = require('../../index'),
   begin = _require.checkout.begin;
 var OrderMgr = require('dw/order/OrderMgr');
 var BasketMgr = require('dw/order/BasketMgr');

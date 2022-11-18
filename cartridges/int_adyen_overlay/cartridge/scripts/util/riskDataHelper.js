@@ -21,7 +21,6 @@
  * Risk data fields
  */
 
-require('dw/order');
 var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 var __RiskDataHelper = {
   createBasketContentFields: function createBasketContentFields(order) {

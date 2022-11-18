@@ -26,7 +26,9 @@ function handlePaymentError(order, _ref) {
 }
 function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
   var details = stateData.details,
-    paymentData = stateData.paymentData; // redirect to payment/details
+    paymentData = stateData.paymentData;
+
+  // redirect to payment/details
   var requestObject = {
     details: details,
     paymentData: paymentData

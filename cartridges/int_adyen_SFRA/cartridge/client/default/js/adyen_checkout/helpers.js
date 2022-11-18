@@ -4,6 +4,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var store = require('../../../../store');
+var constants = require('../constants');
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
@@ -20,6 +21,19 @@ function setOrderFormData(response) {
   if (response.orderToken) {
     document.querySelector('#orderToken').value = response.orderToken;
   }
+}
+function setPartialPaymentOrderObject(response) {
+  store.partialPaymentsOrderObj = {
+    partialPaymentsOrder: {
+      pspReference: response.order.pspReference,
+      orderData: response.order.orderData
+    },
+    remainingAmount: response.remainingAmountFormatted,
+    discountedAmount: response.discountAmountFormatted,
+    orderAmount: response.orderAmount,
+    expiresAt: response.expiresAt
+  };
+  window.sessionStorage.setItem(constants.GIFTCARD_DATA_ADDED, JSON.stringify(store.partialPaymentsOrderObj));
 }
 
 /**
@@ -50,12 +64,12 @@ function paymentFromComponent(data) {
     }
   });
 }
-function makePartialPayment(data) {
+function makePartialPayment(requestData, expiresAt, orderAmount) {
   var error;
   $.ajax({
     url: 'Adyen-partialPayment',
     type: 'POST',
-    data: JSON.stringify(data),
+    data: JSON.stringify(requestData),
     contentType: 'application/json; charset=utf-8',
     async: false,
     success: function success(response) {
@@ -64,15 +78,10 @@ function makePartialPayment(data) {
           error: true
         };
       } else {
-        var partialPaymentsOrder = {
-          pspReference: response.order.pspReference,
-          orderData: response.order.orderData
-        };
-        store.partialPaymentsOrderObj = {
-          partialPaymentsOrder: partialPaymentsOrder
-        };
-        store.partialPaymentsOrderObj.remainingAmount = response.remainingAmountFormatted;
-        store.partialPaymentsOrderObj.discountedAmount = response.discountAmountFormatted;
+        setPartialPaymentOrderObject(_objectSpread(_objectSpread({}, response), {}, {
+          expiresAt: expiresAt,
+          orderAmount: orderAmount
+        }));
         setOrderFormData(response);
       }
     }
