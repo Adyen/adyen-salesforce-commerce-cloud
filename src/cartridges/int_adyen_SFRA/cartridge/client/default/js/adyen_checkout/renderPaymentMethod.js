@@ -40,6 +40,7 @@ function setNode(paymentMethodID) {
         },
       });
       store.componentsObj[paymentMethodID].node = node;
+      store.componentsObj[paymentMethodID].isValid = node.isValid;
     } catch (e) {
       /* No component for payment method */
     }
@@ -107,14 +108,11 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
   return isSchemeNotStored ? cardImage : paymentMethodImage;
 }
 
-function hasNoChildNodes({ paymentMethodID, container }) {
-  return store.componentsObj[paymentMethodID] && !container.childNodes[0];
-}
-
-function setValid({ paymentMethodID, container }) {
+function setValid({ isStored, paymentMethodID }) {
   if (
-    hasNoChildNodes({ paymentMethodID, container }) &&
-    ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
+    isStored &&
+    ['bcmc', 'scheme']
+      .indexOf(paymentMethodID) > -1
   ) {
     store.componentsObj[paymentMethodID].isValid = true;
   }

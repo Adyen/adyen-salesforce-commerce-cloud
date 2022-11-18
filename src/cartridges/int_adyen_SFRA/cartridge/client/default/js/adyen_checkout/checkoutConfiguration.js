@@ -289,16 +289,12 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  let { type } = state.data.paymentMethod;
-  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
-    type = 'googlepay';
-  }
   store.isValid = state.isValid;
-  if (!store.componentsObj[type]) {
-    store.componentsObj[type] = {};
+  if (!store.componentsObj[store.selectedMethod]) {
+    store.componentsObj[store.selectedMethod] = {};
   }
-  store.componentsObj[type].isValid = store.isValid;
-  store.componentsObj[type].stateData = state.data;
+  store.componentsObj[store.selectedMethod].isValid = store.isValid;
+  store.componentsObj[store.selectedMethod].stateData = state.data;
 }
 
 const actionHandler = async (action) => {

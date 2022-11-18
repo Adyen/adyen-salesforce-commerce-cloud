@@ -48,16 +48,12 @@ async function initializeBillingEvents() {
     checkoutConfiguration = window.Configuration;
 
     checkoutConfiguration.onChange = function (state /* , component */) {
-      var type = state.data.paymentMethod.type;
-      if(selectedMethod === "googlepay" && type === "paywithgoogle") {
-        type = "googlepay";
-      }
       isValid = state.isValid;
-      if (!componentsObj[type]) {
-        componentsObj[type] = {};
+      if (!componentsObj[selectedMethod]) {
+        componentsObj[selectedMethod] = {};
       }
-      componentsObj[type].isValid = isValid;
-      componentsObj[type].stateData = state.data;
+      componentsObj[selectedMethod].isValid = isValid;
+      componentsObj[selectedMethod].stateData = state.data;
     };
     checkoutConfiguration.showPayButton = false;
     checkoutConfiguration.paymentMethodsConfiguration = {
@@ -481,7 +477,7 @@ function renderPaymentMethod(paymentMethod, storedPaymentMethodBool, path) {
     container.innerHTML = '';
   }
 
-  if (componentsObj[paymentMethodID] && !container.childNodes[0] && ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1) {
+  if (storedPaymentMethodBool && ['bcmc', 'scheme'].indexOf(paymentMethodID) > -1) {
     componentsObj[paymentMethodID].isValid = true;
   }
 }
@@ -547,6 +543,7 @@ function createCheckoutComponent(
       componentsObj[paymentMethodID] = {};
     }
     componentsObj[paymentMethodID].node = node;
+    componentsObj[paymentMethodID].isValid = node.isValid;
     return node;
   } catch (e) {} // eslint-disable-line no-empty
   return false;
