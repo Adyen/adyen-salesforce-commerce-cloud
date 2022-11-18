@@ -103,13 +103,34 @@ function removeGiftCard() {
     success(res) {
       store.partialPaymentsOrderObj = null;
       document.querySelector('#adyenPartialPaymentsOrder').value = null;
+      window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
       if (res.resultCode === constants.RECEIVED) {
-        document.querySelector('#cancelGiftCardContainer').parentNode.remove();
-        document.querySelector('#giftCardLabel').classList.remove('invisible');
-        store.componentsObj.giftcard.node.unmount('component_giftcard');
+        document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
+        document.querySelector('#giftCardLabel')?.classList.remove('invisible');
+        store.componentsObj?.giftcard?.node.unmount('component_giftcard');
       }
     },
   });
+}
+
+function showGiftCardWarningMessage() {
+  const alertContainer = document.createElement('div');
+  alertContainer.setAttribute('id', 'giftCardWarningMessage');
+  alertContainer.classList.add('alert', 'alert-warning', 'error-message');
+  alertContainer.style.display = 'block';
+  alertContainer.style.margin = '20px 0';
+  alertContainer.setAttribute('role', 'alert');
+
+  const alertContainerP = document.createElement('p');
+  alertContainerP.classList.add('error-message-text');
+  alertContainerP.textContent = window.giftCardWarningMessage;
+
+  alertContainer.appendChild(alertContainerP);
+
+  const orderTotalSummaryEl = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+  orderTotalSummaryEl.appendChild(alertContainer);
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
@@ -245,6 +266,8 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
+              data.expiresAt,
+              data.remainingAmount,
             );
             if (partialPaymentResponse?.error) {
               reject();
@@ -266,16 +289,12 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  let { type } = state.data.paymentMethod;
-  if (store.selectedMethod === 'googlepay' && type === 'paywithgoogle') {
-    type = 'googlepay';
-  }
   store.isValid = state.isValid;
-  if (!store.componentsObj[type]) {
-    store.componentsObj[type] = {};
+  if (!store.componentsObj[store.selectedMethod]) {
+    store.componentsObj[store.selectedMethod] = {};
   }
-  store.componentsObj[type].isValid = store.isValid;
-  store.componentsObj[type].stateData = state.data;
+  store.componentsObj[store.selectedMethod].isValid = store.isValid;
+  store.componentsObj[store.selectedMethod].stateData = state.data;
 }
 
 const actionHandler = async (action) => {
@@ -354,4 +373,7 @@ module.exports = {
   getGiftCardConfig,
   setCheckoutConfiguration,
   actionHandler,
+  createElementsToShowRemainingGiftCardAmount,
+  removeGiftCard,
+  showGiftCardWarningMessage,
 };

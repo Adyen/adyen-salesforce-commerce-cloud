@@ -20,7 +20,7 @@ function handle(basket, paymentInformation) {
 
     if (paymentInformation.partialPaymentsOrder) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
-        paymentInformation.partialPaymentsOrder;
+        session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.adyenPaymentMethod =
       paymentInformation.adyenPaymentMethod;

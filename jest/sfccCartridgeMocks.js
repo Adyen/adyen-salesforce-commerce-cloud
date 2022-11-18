@@ -92,7 +92,7 @@ jest.mock('*/cartridge/scripts/updateSavedCards', () => {
 jest.mock('*/cartridge/scripts/checkout/adyenHelpers', () => {
   return {
     validatePayment: jest.fn(() => ({ error: false })),
-    handlePayments: jest.fn(() => ({ error: false, action: {type: 'mockedAction'} }))
+    handlePayments: jest.fn(() => ({ error: false, action: {type: 'mockedAction'} })),
   };
 }, {virtual: true});
 
@@ -191,16 +191,17 @@ jest.mock('*/cartridge/scripts/hooks/fraudDetection', () => { return {} }, {virt
 jest.mock('*/cartridge/scripts/hooks/validateOrder', () => { return {}} , {virtual: true})
 jest.mock('*/cartridge/scripts/hooks/postAuthorizationHandling', () => { return {}} , {virtual: true})
 // cartridge/scripts/util mocks
-jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
-  return {
+jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     savePaymentDetails: jest.fn(),
     getAdyenHash: jest.fn((str, str2) => `${str} __ ${str2}`),
     getLoadingContext: jest.fn(() => 'mocked_loading_context'),
     getCurrencyValueForApi: jest.fn(() => ({
       value: 1000,
+      getValueOrNull: jest.fn(() => 1000),
     })),
     isAdyenGivingAvailable: jest.fn(() => true),
     getAdyenGivingConfig: jest.fn(() => true),
+    isOpenInvoiceMethod: jest.fn(() => false),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
     getCardToken: jest.fn(() => 'mocked_token'),
     getSFCCCardType: jest.fn(() => 'mocked_cardType'),
@@ -208,8 +209,17 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => {
     getCustomer: jest.fn(() => {}),
     createSignature: jest.fn( () => 'mocked_signature'),
     getCheckoutEnvironment: jest.fn(() => 'test'),
-  };
-}, {virtual: true});
+    createAdyenRequestObject: jest.fn(() => ({
+      paymentMethod: {
+        type: "scheme"
+      }
+    })),
+    createAddressObjects: jest.fn((_foo, _bar, input) => input),
+    createShopperObject: jest.fn((input) => input.paymentRequest),
+    executeCall: jest.fn(() => ({
+      resultCode: "Authorised"
+    })),
+  }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   return {
@@ -233,6 +243,11 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
     ),
     getAdyenGivingLogoUrl: jest.fn(() => 'mocked_logo_url'),
     getAdyenSFRA6Compatibility: jest.fn(() => false),
+    getAdyenBasketFieldsEnabled: jest.fn(() => false),
+    getAdyen3DS2Enabled: jest.fn(() => false),
+    getAdyenLevel23DataEnabled: jest.fn(() => false),
+    getAdyenSalePaymentMethods:jest.fn(() => []),
+
   };
 }, {virtual: true});
 

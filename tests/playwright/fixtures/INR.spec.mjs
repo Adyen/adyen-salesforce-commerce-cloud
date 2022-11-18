@@ -21,50 +21,23 @@ for (const environment of environments) {
 
     test('UPI Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_upi');
+      await redirectShopper.doUPIPayment('upi_collect');
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      await checkoutPage.expectSuccess();
+      await checkoutPage.isPaymentModalShown("upi_collect");
     });
 
     test('UPI Failure', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_upi');
+      await redirectShopper.doUPIPayment('upi_collect', false);
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(false);
       await checkoutPage.expectRefusal();
     });
 
-    test('Wallet Success', async ({ page }) => {
+    test('UPI QR Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_wallet');
+      await redirectShopper.doUPIPayment('upi_qr');
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Wallet Failure', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_wallet');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(false);
-      await checkoutPage.expectRefusal();
-    });
-
-    test('Billdesk Online Success', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_online');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Billdesk Online Failure', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_online');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(false);
-      await checkoutPage.expectRefusal();
+      await checkoutPage.expectQRcode();
     });
   });
 }

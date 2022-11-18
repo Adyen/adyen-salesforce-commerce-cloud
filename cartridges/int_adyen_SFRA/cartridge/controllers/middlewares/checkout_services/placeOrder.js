@@ -10,7 +10,10 @@ var _require = require('*/cartridge/controllers/middlewares/checkout_services/ad
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Money = require('dw/value/Money');
 var _require2 = require('*/cartridge/controllers/utils/index'),
-  clearForms = _require2.clearForms; /* ### Custom Adyen cartridge end ### */
+  clearForms = _require2.clearForms;
+
+/* ### Custom Adyen cartridge end ### */
+
 function placeOrder(req, res, next) {
   var _this = this,
     _handlePaymentResult$;

@@ -84,16 +84,21 @@ function createPaymentRequest(args) {
         };
       }
     }
-
+    var value = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull();
+    var currency = paymentInstrument.paymentTransaction.amount.currencyCode;
     // Add partial payments order if applicable
     if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
-      paymentRequest.order = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).partialPaymentsOrder;
-      paymentRequest.amount = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder).remainingAmount;
+      var adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder);
+      if (value === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
+        paymentRequest.order = adyenPartialPaymentsOrder.order;
+        paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
+      } else {
+        throw new Error("Cart has been edited after applying a gift card");
+      }
     } else {
-      var myAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull();
       paymentRequest.amount = {
-        currency: paymentInstrument.paymentTransaction.amount.currencyCode,
-        value: myAmount
+        currency: currency,
+        value: value
       };
     }
     var paymentMethodType = paymentRequest.paymentMethod.type;
@@ -170,7 +175,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     var acceptedResultCodes = [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED, constants.RESULTCODES.REDIRECTSHOPPER];
     var presentToShopperResultCodes = [constants.RESULTCODES.PRESENTTOSHOPPER];
     var refusedResultCodes = [constants.RESULTCODES.CANCELLED, constants.RESULTCODES.ERROR, constants.RESULTCODES.REFUSED];
-    var resultCode = paymentResponse.resultCode; // Check the response object from /payment call
+    var resultCode = paymentResponse.resultCode;
+    // Check the response object from /payment call
     if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       // if 3D Secure is used, the statuses will be updated later

@@ -57,7 +57,9 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     if (!order || !paymentInstrument) {
       throw new Error("Could not retrieve payment data, order = ".concat(JSON.stringify(order), ", paymentInstrument = ").concat(JSON.stringify(paymentInstrument)));
     }
-    var amount = paymentInstrument.paymentTransaction.amount; // serviceId should be a unique string
+    var amount = paymentInstrument.paymentTransaction.amount;
+
+    // serviceId should be a unique string
     var date = new Date();
     var dateString = date.getTime().toString();
     var serviceId = dateString.substr(dateString.length - 10);

@@ -31,11 +31,6 @@ var Store = (_class = /*#__PURE__*/function () {
     _initializerDefineProperty(this, "giftcardBrand", _descriptor12, this);
   }
   _createClass(Store, [{
-    key: "updateSelectedPayment",
-    value: function updateSelectedPayment(method, key, val) {
-      this.componentsObj[method][key] = val;
-    }
-  }, {
     key: "maskedCardNumber",
     get: function get() {
       return "".concat(this.MASKED_CC_PREFIX).concat(this.endDigits);
@@ -62,6 +57,11 @@ var Store = (_class = /*#__PURE__*/function () {
           brand: this.brand
         } : undefined)
       };
+    }
+  }, {
+    key: "updateSelectedPayment",
+    value: function updateSelectedPayment(method, key, val) {
+      this.componentsObj[method][key] = val;
     }
   }]);
   return Store;

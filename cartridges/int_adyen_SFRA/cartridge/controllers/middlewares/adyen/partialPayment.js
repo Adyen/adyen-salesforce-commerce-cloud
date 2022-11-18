@@ -12,6 +12,7 @@ var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 function makePartialPayment(req, res, next) {
   try {
+    var _response$order;
     var request = JSON.parse(req.body);
     var currentBasket = BasketMgr.getCurrentBasket();
     var paymentMethod = request.paymentMethod,
@@ -39,6 +40,11 @@ function makePartialPayment(req, res, next) {
 
     var discountAmount = new Money(response.amount.value, response.amount.currency);
     var remainingAmount = new Money(response.order.remainingAmount.value, response.order.remainingAmount.currency);
+
+    // Update cached session data
+    var partialPaymentsOrderData = JSON.parse(session.privacy.partialPaymentData);
+    partialPaymentsOrderData.remainingAmount = response === null || response === void 0 ? void 0 : (_response$order = response.order) === null || _response$order === void 0 ? void 0 : _response$order.remainingAmount;
+    session.privacy.partialPaymentData = JSON.stringify(partialPaymentsOrderData);
     var divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
     response.remainingAmountFormatted = remainingAmount.divide(divideBy).toFormattedString();
     response.discountAmountFormatted = discountAmount.divide(divideBy).toFormattedString();

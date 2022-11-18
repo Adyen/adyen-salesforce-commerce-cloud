@@ -125,8 +125,6 @@ function handle(customObj) {
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
           }
-          setProcessedCOInfo(customObj);
-          return result;
         }
         break;
       case 'CANCELLATION':

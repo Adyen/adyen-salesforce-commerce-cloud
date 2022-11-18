@@ -14,7 +14,7 @@
                     <parameters>
                         <parameter name="ExecuteScriptModule.Module">int_adyen_overlay/cartridge/scripts/job/notifications.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">processNotifications</parameter>
-                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
                 </step>
@@ -23,7 +23,7 @@
                     <parameters>
                         <parameter name="ExecuteScriptModule.Module">int_adyen_overlay/cartridge/scripts/job/notifications.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">clearNotifications</parameter>
-                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
                 </step>

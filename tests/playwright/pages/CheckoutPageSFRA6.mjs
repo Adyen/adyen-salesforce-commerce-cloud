@@ -77,6 +77,13 @@ export default class CheckoutPageSFRA {
     this.emailField = page.locator('#login-form-email');
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');
+
+    this.paymentModal = page.locator("#action-modal #adyenModalDialog");
+  }
+
+  isPaymentModalShown = async (imgAltValue) => {
+    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
+      .toBeVisible({ timeout: 10000 });
   }
 
   navigateToCheckout = async (locale) => {
@@ -126,13 +133,18 @@ export default class CheckoutPageSFRA {
     );
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-    if (shopperDetails.address.stateOrProvince !== '') {
-      await this.checkoutPageUserStateSelect.selectOption(
-        shopperDetails.address.stateOrProvince,
-      );
-    }
-    this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
 
+
+    if (await this.checkoutPageUserStateSelect.isVisible()) {
+      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      if (shopperDetails.address.stateOrProvince !== '') {
+        await this.checkoutPageUserStateSelect.selectOption(
+          shopperDetails.address.stateOrProvince,
+        );
+      }
+    }
+
+    this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
     await this.shippingSubmit.click();
   };
 

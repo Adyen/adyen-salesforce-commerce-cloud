@@ -19,13 +19,6 @@
  * Generate the parameters needed for the redirect to the Adyen Hosted Payment Page.
  * A signature is calculated based on the configured HMAC code
  */
-require('dw/crypto');
-require('dw/system');
-require('dw/order');
-require('dw/util');
-require('dw/value');
-require('dw/net');
-require('dw/web');
 
 // script include
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');

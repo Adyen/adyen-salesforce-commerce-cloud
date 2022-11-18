@@ -53,6 +53,7 @@ Object {
     },
   },
   "scheme": Object {
+    "isValid": undefined,
     "node": Object {
       "mount": [MockFunction] {
         "calls": Array [
@@ -129,7 +130,7 @@ Object {
     },
   },
   "storedCardmocked_id": Object {
-    "isValid": true,
+    "isValid": undefined,
     "node": Object {
       "mount": [MockFunction] {
         "calls": Array [
