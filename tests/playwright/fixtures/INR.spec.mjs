@@ -39,37 +39,5 @@ for (const environment of environments) {
       await checkoutPage.completeCheckout();
       await checkoutPage.expectQRcode();
     });
-
-    test('Wallet Success', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_wallet');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Wallet Failure', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_wallet');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(false);
-      await checkoutPage.expectRefusal();
-    });
-
-    test('Billdesk Online Success', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_online');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(true);
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Billdesk Online Failure', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doBillDeskPayment('billdesk_online');
-      await checkoutPage.completeCheckout();
-      await redirectShopper.completeBillDeskRedirect(false);
-      await checkoutPage.expectRefusal();
-    });
   });
 }
