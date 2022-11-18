@@ -36,8 +36,8 @@ function handleGiftCard(currentBasket, order) {
   );
   const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
   const remainingAmount = {
-    value: parsedGiftCardObj.remainingAmount.value,
-    currency: parsedGiftCardObj.remainingAmount.currency,
+    value: parsedGiftCardObj?.remainingAmount.value,
+    currency: parsedGiftCardObj?.remainingAmount.currency,
   };
   const formattedAmount = new Money(
     remainingAmount.value,
@@ -137,7 +137,6 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
-
 
   let result;
   Transaction.wrap(() => {

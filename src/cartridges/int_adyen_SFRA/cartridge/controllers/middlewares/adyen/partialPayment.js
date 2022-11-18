@@ -5,6 +5,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -30,6 +31,17 @@ function makePartialPayment(req, res, next) {
       null,
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
+
+    if (
+      response.error ||
+      response.resultCode !== constants.RESULTCODES.AUTHORISED
+    ) {
+      let errorMsg = 'partial payment request did not go through';
+      errorMsg += response.resultCode
+        ? `.. resultCode: ${response.resultCode}`
+        : '';
+      throw new Error(errorMsg);
+    }
 
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
