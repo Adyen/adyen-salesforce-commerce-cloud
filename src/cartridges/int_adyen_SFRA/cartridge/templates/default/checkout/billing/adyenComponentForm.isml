@@ -1,5 +1,4 @@
 <iscontent type="text/html"/>
-<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
@@ -31,6 +30,7 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/amazon.js');
+        assets.addCss('/css/adyenCss.css');
     </isscript>
 
     <script>
@@ -63,8 +63,24 @@
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
-     <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
-     <ul id="paymentMethodsList"></ul>
+    <div class="gift-card-selection">
+        <div class="gift-card-selection-row">
+            <p>Apply a gift card</p>
+            <label class="switch">
+              <input id="applyGiftCardChk" type="checkbox">
+              <span class="slider round"></span>
+            </label>
+        </div>
+        <hr>
+        <div class="gift-card-list">
+            <select id="giftCardList">
+                <option value="" selected="selected">Select a gift card</option>
+                <option>VVV</option>
+            </select>
+        </div>
+    </div>
+    <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
+    <ul id="paymentMethodsList"></ul>
 
     <div class="modal fade" id="giftcard-modal" role="dialog">
        <div class="modal-dialog" id="adyenModalDialog">
