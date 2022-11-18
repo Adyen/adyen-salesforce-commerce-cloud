@@ -331,12 +331,6 @@ function getApplePayConfig() {
       helpers.assignPaymentMethodValue();
       helpers.paymentFromComponent(state.data, component);
     },
-    onError: (error, component) => {
-      if (component) {
-        component.setStatus('ready');
-      }
-      document.querySelector('#showConfirmationForm').submit();
-    },
   };
 }
 
