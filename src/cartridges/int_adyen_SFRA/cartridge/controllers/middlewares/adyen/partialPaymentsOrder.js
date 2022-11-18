@@ -3,6 +3,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function addMinutes(minutes) {
   const date = new Date();
@@ -13,7 +14,7 @@ function createPartialPaymentsOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const date = addMinutes(30);
+    const date = addMinutes(constants.GIFTCARD_EXPIRATION_MINUTES);
 
     const partialPaymentsRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -41,7 +42,10 @@ function createPartialPaymentsOrder(req, res, next) {
       amount: response?.amount,
     });
 
-    res.json(response);
+    res.json({
+      ...response,
+      expiresAt: date.toISOString(),
+    });
   } catch (error) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payments order.. ${error.toString()}`,

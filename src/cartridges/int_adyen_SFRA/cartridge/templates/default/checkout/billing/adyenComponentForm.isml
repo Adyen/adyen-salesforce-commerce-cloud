@@ -24,6 +24,8 @@
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
       window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
+
+      window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
