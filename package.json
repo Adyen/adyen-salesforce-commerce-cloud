@@ -23,7 +23,7 @@
     "test:coverage": "jest ./src --coverage"
   },
   "engines": {
-    "node": ">=4.0"
+    "node": ">=14.0"
   },
   "dependencies": {
     "mobx": "^5.15.4",
