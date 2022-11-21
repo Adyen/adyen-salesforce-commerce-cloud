@@ -4,7 +4,7 @@ var dwsystem = require('dw/system');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 function getCustomPreference(field) {
   var customPreference = null;
-  if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
+  if (adyenCurrentSite) {
     customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
   }
   return customPreference;
