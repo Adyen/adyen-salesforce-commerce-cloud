@@ -34,7 +34,10 @@ function setPartialPaymentOrderObject(response) {
   };
   window.sessionStorage.setItem(
     constants.GIFTCARD_DATA_ADDED,
-    JSON.stringify(store.partialPaymentsOrderObj),
+    JSON.stringify({
+      ...store.partialPaymentsOrderObj,
+      ...store.giftcard,
+    }),
   );
 }
 

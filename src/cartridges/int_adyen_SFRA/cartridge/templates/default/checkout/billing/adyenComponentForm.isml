@@ -26,6 +26,7 @@
       window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 
       window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
+      window.removeGiftCardButtonText = "${Resource.msg('remove.giftCard', 'adyen', null)}";
 </script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
@@ -66,30 +67,27 @@
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <div class="gift-card-selection">
-        <div class="gift-card-selection-row">
-            <p>Apply a gift card</p>
-            <label class="switch">
-              <input id="applyGiftCardChk" type="checkbox">
-              <span class="slider round"></span>
-            </label>
+        <div class="heading">
+            <img id="headingImg" width="40" height="26" />
+            <p>${Resource.msg('title.giftCard', 'adyen', null)}</p>
         </div>
-        <hr>
-        <div class="gift-card-list">
-            <select id="giftCardList">
-                <option value="" selected="selected">Select a gift card</option>
-                <option>VVV</option>
+        <div id="giftCardsList" class="gift-cards-container"></div>
+        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--pay" type="button">
+            <span class="adyen-checkout__button__content">
+                <span class="adyen-checkout__button__text">
+                    ${Resource.msg('add.giftCard', 'adyen', null)}
+                </span>
+            </span>
+        </button>
+        <div id="giftCardSelectContainer" class="invisible">
+            <select id="giftCardSelect">
+                <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
             </select>
+            <div id="giftCardContainer"></div>
         </div>
     </div>
-    <a role="button" id="giftCardLabel" class="invisible">+ Add a giftcard</a>
-    <ul id="paymentMethodsList"></ul>
 
-    <div class="modal fade" id="giftcard-modal" role="dialog">
-       <div class="modal-dialog" id="adyenModalDialog">
-            <div id="giftcard-container"></div>
-            <button id="closeGiftCardModal">X</button>
-       </div>
-    </div>
+    <ul id="paymentMethodsList" class="payment-methods-container"></ul>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code

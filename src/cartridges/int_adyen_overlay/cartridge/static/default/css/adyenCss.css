@@ -19,16 +19,18 @@
 .paymentMethod {
     list-style-type: none;
     margin: 0.5em 0 0.5em 0;
+    border-bottom: 1px solid lightgray;
 }
 
 .paymentMethod_img {
     margin: 0 0.3125em 0 0.3125em;
     vertical-align: middle;
+    width: 40px;
+    height: 26px;
 }
 
 .additionalFields {
     display: inline-block;
-    margin: 0 0 0 0.625em;
 }
 
 .hiddenFields {
@@ -197,10 +199,6 @@
     cursor: pointer;
 }
 
-#giftCardLabel {
-    cursor: pointer;
-}
-
 /*Toggle Switch */
 .switch {
     position: relative;
@@ -270,27 +268,71 @@ input:checked + .slider:before {
     border-radius: 8px;
     border: 1px solid lightgray;
     padding: 10px;
+    background: white;
 }
 
 .gift-card-selection hr {
-    border: 1px solid lightgray;
     width: 100%;
 }
 
 .gift-card-selection select {
+    width: 100%;
+    margin: 10px 0;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid lightgray;
-    width: 100%;
 }
 
-.gift-card-selection .gift-card-selection-row {
+.gift-card-selection .heading {
+    display: flex;
+}
+
+.gift-card-selection p {
+    margin: 0;
+}
+
+.payment-methods-container {
+    padding: 10px;
+    margin: 20px 0;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    background: white;
+}
+
+.gift-cards-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.gift-cards-container .gift-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    margin: 5px 0;
 }
 
-.gift-card-selection .gift-card-selection-row p {
-    margin: 0;
+.gift-cards-container .brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.gift-cards-container .brand-container p {
+    margin: 0 10px;
+}
+
+.gift-cards-container .gift-card-action {
+    display: flex;
+    align-items: center;
+}
+
+.gift-cards-container .gift-card-action a {
+    cursor: pointer;
 }

@@ -101,12 +101,23 @@ function removeGiftCard() {
     contentType: 'application/json; charset=utf-8',
     async: false,
     success(res) {
+      const adyenPartialPaymentsOrder = document.querySelector(
+        '#adyenPartialPaymentsOrder',
+      );
+      const giftCardsList = document.querySelector('#giftCardsList');
+      const giftCardAddButton = document.querySelector('#giftCardAddButton');
+      const giftCardSelect = document.querySelector('#giftCardSelect');
+
+      adyenPartialPaymentsOrder.value = null;
+      giftCardsList.innerHTML = '';
+      giftCardAddButton.style.display = 'block';
+      giftCardSelect.value = null;
+
+      store.giftcard = null;
       store.partialPaymentsOrderObj = null;
-      document.querySelector('#adyenPartialPaymentsOrder').value = null;
       window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
       if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
-        document.querySelector('#giftCardLabel')?.classList.remove('invisible');
         store.componentsObj?.giftcard?.node.unmount('component_giftcard');
       }
     },
@@ -131,6 +142,29 @@ function showGiftCardWarningMessage() {
     '.card-body.order-total-summary',
   );
   orderTotalSummaryEl.appendChild(alertContainer);
+}
+
+function renderAddedGiftCard(giftCardData, imagePath) {
+  const giftCardsList = document.querySelector('#giftCardsList');
+  const giftCardAddButton = document.querySelector('#giftCardAddButton');
+
+  giftCardsList.innerHTML = `
+    <div class="gift-card">
+        <div class="brand-container">
+            <img src="${imagePath}${giftCardData.brand}.png" width="40" height="26" />
+            <p>${giftCardData.name}</p>
+        </div>
+        <div class="gift-card-action">
+            <a id="removeGiftCard">${window.removeGiftCardButtonText}</a>
+        </div>
+    </div>
+  `;
+
+  const removeGiftCardBtn = document.getElementById('removeGiftCard');
+  removeGiftCardBtn.addEventListener('click', () => {
+    removeGiftCard();
+  });
+  giftCardAddButton.style.display = 'none';
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
@@ -210,9 +244,18 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
-function showRemainingAmount() {
-  $('#giftcard-modal').modal('hide');
-  document.querySelector('#giftCardLabel').classList.add('invisible');
+function handlePartialPaymentSuccess() {
+  const giftCardSelectContainer = document.querySelector(
+    '#giftCardSelectContainer',
+  );
+  const giftCardSelect = document.querySelector('#giftCardSelect');
+  giftCardSelectContainer.classList.add('invisible');
+  giftCardSelect.value = null;
+  store.componentsObj.giftcard.node.unmount('component_giftcard');
+  renderAddedGiftCard(
+    store.giftcard,
+    store.checkoutConfiguration.session.imagePath,
+  );
   createElementsToShowRemainingGiftCardAmount();
 }
 
@@ -262,7 +305,7 @@ function getGiftCardConfig() {
                 pspReference: data.pspReference,
                 orderData: data.orderData,
               },
-              giftcardBrand: store.giftcardBrand,
+              giftcardBrand: store.giftcard?.brand,
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
@@ -272,14 +315,13 @@ function getGiftCardConfig() {
             if (partialPaymentResponse?.error) {
               reject();
             } else {
-              showRemainingAmount();
+              handlePartialPaymentSuccess();
             }
           }
         },
       });
     },
     onSubmit(state) {
-      $('#giftcard-modal').modal('hide');
       store.selectedMethod = state.data.paymentMethod.type;
       store.brand = state.data?.paymentMethod?.brand;
       document.querySelector('input[name="brandCode"]').checked = false;
@@ -380,4 +422,5 @@ module.exports = {
   createElementsToShowRemainingGiftCardAmount,
   removeGiftCard,
   showGiftCardWarningMessage,
+  renderAddedGiftCard,
 };
