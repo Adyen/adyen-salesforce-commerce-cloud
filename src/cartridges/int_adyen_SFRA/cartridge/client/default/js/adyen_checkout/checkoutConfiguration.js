@@ -148,22 +148,39 @@ function renderAddedGiftCard(giftCardData, imagePath) {
   const giftCardsList = document.querySelector('#giftCardsList');
   const giftCardAddButton = document.querySelector('#giftCardAddButton');
 
-  giftCardsList.innerHTML = `
-    <div class="gift-card">
-        <div class="brand-container">
-            <img src="${imagePath}${giftCardData.brand}.png" width="40" height="26" />
-            <p>${giftCardData.name}</p>
-        </div>
-        <div class="gift-card-action">
-            <a id="removeGiftCard">${window.removeGiftCardButtonText}</a>
-        </div>
-    </div>
-  `;
+  const giftCardDiv = document.createElement('div');
+  giftCardDiv.classList.add('gift-card');
 
-  const removeGiftCardBtn = document.getElementById('removeGiftCard');
-  removeGiftCardBtn.addEventListener('click', () => {
+  const brandContainer = document.createElement('div');
+  brandContainer.classList.add('brand-container');
+
+  const giftCardImg = document.createElement('img');
+  giftCardImg.src = `${imagePath}${giftCardData.brand}.png`;
+  giftCardImg.width = 40;
+  giftCardImg.height = 26;
+
+  const giftCardNameP = document.createElement('p');
+  giftCardNameP.textContent = giftCardData.name;
+
+  brandContainer.appendChild(giftCardImg);
+  brandContainer.appendChild(giftCardNameP);
+
+  const giftCardAction = document.createElement('div');
+  giftCardAction.classList.add('gift-card-action');
+
+  const removeAnchor = document.createElement('a');
+  removeAnchor.textContent = window.removeGiftCardButtonText;
+  removeAnchor.addEventListener('click', () => {
     removeGiftCard();
   });
+
+  giftCardAction.appendChild(removeAnchor);
+
+  giftCardDiv.appendChild(brandContainer);
+  giftCardDiv.appendChild(giftCardAction);
+
+  giftCardsList.appendChild(giftCardDiv);
+
   giftCardAddButton.style.display = 'none';
 }
 
