@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 const { renderPaymentMethod } = require('../renderPaymentMethod');
 const store = require('../../../../../store');
 

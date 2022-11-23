@@ -44,20 +44,20 @@ exports[`Render Payment Method should render payment method with shopper informa
 `;
 
 exports[`Render Payment Method should render payment method with shopper information fields 2`] = `
-Object {
-  "mocked_id": Object {
-    "node": Object {
-      "mocked_node": Object {
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
         "foo": "bar",
       },
     },
   },
-  "scheme": Object {
+  "scheme": {
     "isValid": undefined,
-    "node": Object {
+    "node": {
       "mount": [MockFunction] {
-        "calls": Array [
-          Array [
+        "calls": [
+          [
             <div
               class="additionalFields"
               id="component_scheme"
@@ -65,8 +65,8 @@ Object {
             />,
           ],
         ],
-        "results": Array [
-          Object {
+        "results": [
+          {
             "type": "return",
             "value": undefined,
           },
@@ -121,20 +121,20 @@ exports[`Render Payment Method should render stored payment method with missing 
 `;
 
 exports[`Render Payment Method should render stored payment method with missing shopper information fields 2`] = `
-Object {
-  "mocked_id": Object {
-    "node": Object {
-      "mocked_node": Object {
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
         "foo": "bar",
       },
     },
   },
-  "storedCardmocked_id": Object {
+  "storedCardmocked_id": {
     "isValid": undefined,
-    "node": Object {
+    "node": {
       "mount": [MockFunction] {
-        "calls": Array [
-          Array [
+        "calls": [
+          [
             <div
               class="additionalFields"
               id="component_storedCardmocked_id"
@@ -142,8 +142,8 @@ Object {
             />,
           ],
         ],
-        "results": Array [
-          Object {
+        "results": [
+          {
             "type": "return",
             "value": undefined,
           },
