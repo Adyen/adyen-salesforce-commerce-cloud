@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 const { methods } = require('../billing');
 
 describe('Billing', () => {

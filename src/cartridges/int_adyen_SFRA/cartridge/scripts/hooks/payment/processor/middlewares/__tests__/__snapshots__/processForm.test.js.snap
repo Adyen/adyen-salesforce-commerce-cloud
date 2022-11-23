@@ -10,10 +10,10 @@ exports[`processForm should return error when credit card validation fails 1`] =
 `;
 
 exports[`processForm should return viewData 1`] = `
-Object {
+{
   "error": false,
-  "viewData": Object {
-    "paymentInformation": Object {
+  "viewData": {
+    "paymentInformation": {
       "adyenIssuerName": "mocked_issuer_name",
       "adyenPaymentMethod": "mockedPaymentMethod",
       "cardNumber": "mockedCardNumber",
@@ -22,7 +22,7 @@ Object {
       "partialPaymentsOrder": "mockedOrder",
       "stateData": "mockedStateData",
     },
-    "paymentMethod": Object {
+    "paymentMethod": {
       "htmlName": "mockedPaymentMethod",
       "value": "mockedPaymentMethod",
     },

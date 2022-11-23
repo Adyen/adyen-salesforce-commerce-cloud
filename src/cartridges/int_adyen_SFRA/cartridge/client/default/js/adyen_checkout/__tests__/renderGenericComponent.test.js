@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 const { renderGenericComponent } = require('../renderGenericComponent');
 const { createSession } = require('../../commons');
 const store = require('../../../../../store');

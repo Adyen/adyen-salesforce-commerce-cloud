@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 const { paymentFromComponent } = require('../helpers');
 
 let component;
