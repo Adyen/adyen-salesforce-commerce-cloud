@@ -59,6 +59,8 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     '#giftCardSelectContainer',
   );
   const giftCardSelect = document.querySelector('#giftCardSelect');
+  const giftCardUl = document.querySelector('#giftCardUl');
+
   const headingImg = document.querySelector('#headingImg');
   headingImg.src = `${imagePath}genericgiftcard.png`;
 
@@ -67,9 +69,46 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
   );
 
   giftCardBrands.forEach((giftCard) => {
+    const newListItem = document.createElement('li');
+    newListItem.setAttribute('data-value', JSON.stringify(giftCard));
+
+    const span = document.createElement('span');
+    span.textContent = giftCard.name;
+    const img = document.createElement('img');
+    img.src = `${imagePath}${giftCard.brand}.png`;
+    img.width = 40;
+    img.height = 26;
+
+    newListItem.appendChild(span);
+    newListItem.appendChild(img);
+
+    giftCardUl.appendChild(newListItem);
+
+    newListItem.addEventListener('click', (event) => {
+      giftCardUl.className = 'invisible';
+      const selectedGiftCard = JSON.parse(event.target.dataset.value);
+      if (selectedGiftCard.brand !== store.giftcard?.brand) {
+        if (store.componentsObj?.giftcard) {
+          store.componentsObj.giftcard.node.unmount('component_giftcard');
+        }
+        store.giftcard = selectedGiftCard;
+        giftCardSelect.value = selectedGiftCard.brand;
+        giftCardContainer.innerHTML = '';
+        const giftCardNode = store.checkout
+          .create(constants.GIFTCARD, {
+            ...store.checkoutConfiguration.giftcard,
+            brand: store.giftcard.brand,
+            name: store.giftcard.name,
+          })
+          .mount(giftCardContainer);
+        store.componentsObj.giftcard = { node: giftCardNode };
+      }
+    });
+
     const newOption = document.createElement('option');
-    newOption.value = JSON.stringify(giftCard);
     newOption.textContent = giftCard.name;
+    newOption.value = giftCard.brand;
+    newOption.style.visibility = 'hidden';
     giftCardSelect.appendChild(newOption);
   });
 
@@ -87,23 +126,8 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     giftCardSelectContainer.classList.remove('invisible');
   });
 
-  giftCardSelect.addEventListener('change', (event) => {
-    const selectedGiftCard = JSON.parse(event.target.value);
-    if (store.giftcard?.brand !== selectedGiftCard.brand) {
-      if (store.componentsObj?.giftcard) {
-        store.componentsObj.giftcard.node.unmount('component_giftcard');
-      }
-      store.giftcard = selectedGiftCard;
-      giftCardContainer.innerHTML = '';
-      const giftCardNode = store.checkout
-        .create(constants.GIFTCARD, {
-          ...store.checkoutConfiguration.giftcard,
-          brand: store.giftcard.brand,
-          name: store.giftcard.name,
-        })
-        .mount(giftCardContainer);
-      store.componentsObj.giftcard = { node: giftCardNode };
-    }
+  giftCardSelect.addEventListener('click', () => {
+    giftCardUl.classList.toggle('invisible');
   });
 
   const giftCardAdded = window.sessionStorage.getItem(

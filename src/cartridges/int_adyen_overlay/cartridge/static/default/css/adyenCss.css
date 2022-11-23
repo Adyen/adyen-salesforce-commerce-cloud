@@ -19,7 +19,7 @@
 .paymentMethod {
     list-style-type: none;
     margin: 0.5em 0 0.5em 0;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #b9c4c9;
 }
 
 .paymentMethod_img {
@@ -261,12 +261,16 @@ input:checked + .slider:before {
 }
 
 /* Gift card Dropdown */
+#giftCardSelectContainer {
+    position: relative;
+}
+
 .gift-card-selection {
     display: flex;
     flex-direction: column;
     width: 100%;
     border-radius: 8px;
-    border: 1px solid lightgray;
+    border: 1px solid #b9c4c9;
     padding: 10px;
     background: white;
 }
@@ -280,7 +284,48 @@ input:checked + .slider:before {
     margin: 10px 0;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid lightgray;
+    border: 1px solid #b9c4c9;
+    outline: none;
+}
+
+.gift-card-selection select:hover {
+    border-color: #99a3ad;
+    cursor: pointer;
+}
+.gift-card-selection select:focus {
+    border-color: #0075FF;
+    box-shadow: 0 0 0 2px #99c2ff;
+}
+
+.gift-card-selection ul {
+    background: #fff;
+    list-style: none;
+    margin: 0 0 50px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 7px rgb(0 15 45 / 30%);
+    max-height: 375px;
+    z-index: 1;
+    top: 54px;
+    padding: 0;
+}
+
+.gift-card-selection ul li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.gift-card-selection ul li:hover {
+    background: rgba(230,233,235,.6);
+}
+
+.gift-card-selection select option {
+    display: none;
 }
 
 .gift-card-selection .heading {
@@ -291,10 +336,16 @@ input:checked + .slider:before {
     margin: 0;
 }
 
+.gift-card-selection .gift-card-input {
+    visibility: hidden;
+    position: absolute;
+    top: -40px;
+}
+
 .payment-methods-container {
     padding: 10px;
     margin: 20px 0;
-    border: 1px solid lightgray;
+    border: 1px solid #b9c4c9;
     border-radius: 8px;
     background: white;
 }
@@ -313,7 +364,7 @@ input:checked + .slider:before {
     justify-content: space-between;
     width: 100%;
     padding: 10px;
-    border: 1px solid lightgray;
+    border: 1px solid #b9c4c9;
     border-radius: 8px;
     margin: 5px 0;
 }

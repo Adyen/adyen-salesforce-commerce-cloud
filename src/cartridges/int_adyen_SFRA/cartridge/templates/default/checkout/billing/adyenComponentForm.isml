@@ -72,7 +72,7 @@
             <p>${Resource.msg('title.giftCard', 'adyen', null)}</p>
         </div>
         <div id="giftCardsList" class="gift-cards-container"></div>
-        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--pay" type="button">
+        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
             <span class="adyen-checkout__button__content">
                 <span class="adyen-checkout__button__text">
                     ${Resource.msg('add.giftCard', 'adyen', null)}
@@ -83,6 +83,7 @@
             <select id="giftCardSelect">
                 <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
             </select>
+            <ul id="giftCardUl" class="invisible"></ul>
             <div id="giftCardContainer"></div>
         </div>
     </div>
