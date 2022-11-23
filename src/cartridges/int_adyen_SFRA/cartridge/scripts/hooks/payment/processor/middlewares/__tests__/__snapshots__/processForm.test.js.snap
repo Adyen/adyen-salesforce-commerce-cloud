@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`processForm should return error when credit card validation fails 1`] = `
-Object {
+{
   "error": true,
-  "fieldErrors": Object {
+  "fieldErrors": {
     "creditCardErrors": "mockedCreditCardErrors",
   },
 }
@@ -32,10 +32,10 @@ Object {
 `;
 
 exports[`processForm should return viewData when authenticated and registered 1`] = `
-Object {
+{
   "error": false,
-  "viewData": Object {
-    "paymentInformation": Object {
+  "viewData": {
+    "paymentInformation": {
       "adyenIssuerName": "mocked_issuer_name",
       "adyenPaymentMethod": "mockedPaymentMethod",
       "cardNumber": "mocked_cc_number",
@@ -46,9 +46,9 @@ Object {
       "isCreditCard": false,
       "partialPaymentsOrder": "mockedOrder",
       "securityCode": "mocked_security_code",
-      "stateData": "{\\"paymentMethod\\":{\\"storedPaymentMethodId\\":\\"mocked_id\\"}}",
+      "stateData": "{"paymentMethod":{"storedPaymentMethodId":"mocked_id"}}",
     },
-    "paymentMethod": Object {
+    "paymentMethod": {
       "htmlName": "mockedPaymentMethod",
       "value": "mockedPaymentMethod",
     },

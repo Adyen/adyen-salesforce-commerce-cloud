@@ -11,9 +11,9 @@ Array [
 `;
 
 exports[`Payment from Component should return json response 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "orderNo": "mocked_orderNo",
       "orderToken": "mocked_orderToken",
       "resultCode": "Authorised",

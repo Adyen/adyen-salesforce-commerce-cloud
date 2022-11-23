@@ -39,7 +39,7 @@ Array [
 `;
 
 exports[`POS Authorize should return success response when createTerminalPayment passes 1`] = `
-Object {
+{
   "response": "mockedSuccessResponse",
 }
 `;
