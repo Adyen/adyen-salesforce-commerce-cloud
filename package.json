@@ -62,7 +62,7 @@
     "resolve-url-loader": "^3.0.0",
     "sgmf-scripts": "^2.4.2",
     "sinon": "^1.17.4",
-    "style-loader": "^0.23.1",
+    "style-loader": "^3.3.1",
     "stylelint": "^13.5.0",
     "stylelint-scss": "^3.17.2",
     "webpack": "^5.74.0"
