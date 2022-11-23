@@ -38,8 +38,8 @@ describe('Payment', () => {
     };
     handlePayment(stateData, order, { req, res, next });
     expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "Checkout-Begin",
           "stage",
           "payment",
@@ -54,8 +54,8 @@ describe('Payment', () => {
     const stateData = {};
     handlePayment(stateData, order, { req, res, next });
     expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "Checkout-Begin",
           "stage",
           "payment",

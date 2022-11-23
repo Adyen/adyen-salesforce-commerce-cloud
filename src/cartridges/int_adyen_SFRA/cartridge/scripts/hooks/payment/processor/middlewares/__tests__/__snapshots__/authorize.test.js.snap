@@ -31,11 +31,11 @@ Object {
 `;
 
 exports[`Authorize should return when create payment request fails 1`] = `
-Object {
+{
   "authorized": false,
   "error": true,
-  "fieldErrors": Array [],
-  "serverErrors": Array [
+  "fieldErrors": [],
+  "serverErrors": [
     "mocked_error.payment.processor.not.supported",
   ],
 }

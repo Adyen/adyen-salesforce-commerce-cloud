@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Show Confirmation Payment From Component should redirect on placeOrder error 1`] = `
-Array [
-  Array [
+[
+  [
     "Checkout-Begin",
     "stage",
     "payment",
@@ -13,8 +13,8 @@ Array [
 `;
 
 exports[`Show Confirmation Payment From Component should redirect on unsuccessful payment 1`] = `
-Array [
-  Array [
+[
+  [
     "Checkout-Begin",
     "stage",
     "payment",
