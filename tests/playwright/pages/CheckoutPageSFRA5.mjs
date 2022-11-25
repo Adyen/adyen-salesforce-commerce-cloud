@@ -77,6 +77,9 @@ export default class CheckoutPageSFRA5 {
     this.loginButton = page.locator('.login button[type="submit"]');
 
     this.paymentModal = page.locator("#action-modal #adyenModalDialog");
+
+    this.donationButton = page.locator('.adyen-checkout__button adyen-checkout__button--donate');
+    this.givingThankyouMessage = page.locator('.checkout__status__text');
   }
 
   isPaymentModalShown = async (imgAltValue) => {
@@ -232,5 +235,12 @@ export default class CheckoutPageSFRA5 {
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();
     await this.page.waitForNavigation({ waitUntil: 'load' });
+  };
+
+  makeSuccessfulDonation = async () => {
+    await this.donationButton.click();
+    await expect(
+      this.givingThankyouMessage,
+    ).toHaveText('Thanks for your support!', { timeout: 10000 });
   };
 }

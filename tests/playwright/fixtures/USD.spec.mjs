@@ -53,6 +53,13 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
+    test('Card payment no 3DS with adyen giving donation success', async() => {
+      await cards.doCardPayment(cardData.noThreeDs);
+      await checkoutPage.completeCheckout();
+      await checkoutPage.makeSuccessfulDonation();
+
+    });
+
     test('Card payment 3DS1 success', async () => {
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
