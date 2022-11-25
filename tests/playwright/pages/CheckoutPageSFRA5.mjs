@@ -78,7 +78,10 @@ export default class CheckoutPageSFRA5 {
 
     this.paymentModal = page.locator("#action-modal #adyenModalDialog");
 
-    this.donationButton = page.locator('.adyen-checkout__button adyen-checkout__button--donate');
+    this.donationAmountButton = page
+      .locator('.adyen-checkout__amounts input')
+      .nth(0);
+    this.donationButton = page.locator('.adyen-checkout__button__content span');
     this.givingThankyouMessage = page.locator('.checkout__status__text');
   }
 
@@ -238,9 +241,10 @@ export default class CheckoutPageSFRA5 {
   };
 
   makeSuccessfulDonation = async () => {
+    await this.donationAmountButton.click();
     await this.donationButton.click();
     await expect(
       this.givingThankyouMessage,
-    ).toHaveText('Thanks for your support!', { timeout: 10000 });
+    ).toContainText('Thanks for your support', { timeout: 10000 });
   };
 }
