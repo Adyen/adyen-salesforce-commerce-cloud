@@ -23,6 +23,7 @@
                </div>
             </div>
          </div>
+         <!--
          <div class="form-group">
             <label class="form-title mb-0" for="3dSecure">3D Secure 2 (3DS2)</label>
             <small id="3dSecureHelp" class="form-text mb-1">With 3DS2, the card issuer can perform authentication inside your app or payment form.</small>
@@ -37,6 +38,7 @@
                </div>
             </div>
          </div>
+         -->
          <div class="form-group">
             <label class="form-title mb-0" for="installments">Credit card installments <small class="text-secondary">(optional)</small></label>
             <small id="installmentsHelp" class="form-text mb-1">

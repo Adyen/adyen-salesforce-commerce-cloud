@@ -316,13 +316,6 @@
 
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="Adyen3DS2Enabled">
-                <display-name xml:lang="x-default">3DS2 Enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
@@ -575,7 +568,6 @@
                 <attribute attribute-id="Adyen_IntegratorName"/>
                 <attribute attribute-id="Adyen_StoreId"/>
 
-                <attribute attribute-id="Adyen3DS2Enabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>

@@ -36,9 +36,12 @@ function zeroAuthPayment(customer, paymentInstrument) {
       paymentInstrument,
     );
 
+    zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
+    /*
     if (AdyenConfigs.getAdyen3DS2Enabled()) {
       zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
     }
+    */
 
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
