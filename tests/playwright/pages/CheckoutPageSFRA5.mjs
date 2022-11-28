@@ -79,10 +79,9 @@ export default class CheckoutPageSFRA5 {
     this.paymentModal = page.locator("#action-modal #adyenModalDialog");
 
     this.donationAmountButton = page
-      .locator('.adyen-checkout__amounts input')
-      .nth(0);
-    this.donationButton = page.locator('.adyen-checkout__button__content span');
-    this.givingThankyouMessage = page.locator('.checkout__status__text');
+      .locator('.adyen-checkout__button').nth(0);
+    this.donationButton = page.locator('.adyen-checkout__button--donate');
+    this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
   }
 
   isPaymentModalShown = async (imgAltValue) => {
@@ -244,7 +243,7 @@ export default class CheckoutPageSFRA5 {
     await this.donationAmountButton.click();
     await this.donationButton.click();
     await expect(
-      this.givingThankyouMessage,
-    ).toContainText('Thanks for your support', { timeout: 10000 });
+      this.givingThankyouMessage
+    ).toContainText('Thanks for your support');
   };
 }
