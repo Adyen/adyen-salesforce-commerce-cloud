@@ -57,7 +57,6 @@ for (const environment of environments) {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.makeSuccessfulDonation();
-
     });
 
     test('Card payment 3DS1 success', async () => {
