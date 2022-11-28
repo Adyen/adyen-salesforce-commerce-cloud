@@ -176,8 +176,22 @@ function renderAddedGiftCard(giftCardData, imagePath) {
 
   giftCardAction.appendChild(removeAnchor);
 
-  giftCardDiv.appendChild(brandContainer);
-  giftCardDiv.appendChild(giftCardAction);
+  const brandAndRemoveActionWrapper = document.createElement('div');
+  brandAndRemoveActionWrapper.classList.add('wrapper');
+  brandAndRemoveActionWrapper.appendChild(brandContainer);
+  brandAndRemoveActionWrapper.appendChild(giftCardAction);
+
+  const giftCardAmountDiv = document.createElement('div');
+  giftCardAmountDiv.classList.add('wrapper');
+  const amountLabel = document.createElement('p');
+  amountLabel.textContent = window.discountedAmountGiftCardResource;
+  const amountValue = document.createElement('strong');
+  amountValue.textContent = store.partialPaymentsOrderObj.discountedAmount;
+  giftCardAmountDiv.appendChild(amountLabel);
+  giftCardAmountDiv.appendChild(amountValue);
+
+  giftCardDiv.appendChild(brandAndRemoveActionWrapper);
+  giftCardDiv.appendChild(giftCardAmountDiv);
 
   giftCardsList.appendChild(giftCardDiv);
 

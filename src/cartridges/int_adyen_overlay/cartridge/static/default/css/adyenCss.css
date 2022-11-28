@@ -360,13 +360,21 @@ input:checked + .slider:before {
 
 .gift-cards-container .gift-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     padding: 10px;
     border: 1px solid #b9c4c9;
     border-radius: 8px;
     margin: 5px 0;
+}
+
+.gift-cards-container .gift-card .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 2px 0;
 }
 
 .gift-cards-container .brand-container {
