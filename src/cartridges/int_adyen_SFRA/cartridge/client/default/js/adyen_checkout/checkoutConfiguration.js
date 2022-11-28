@@ -304,6 +304,10 @@ function getGiftCardConfig() {
         success: (data) => {
           giftcardBalance = data.balance;
           if (data.resultCode === constants.SUCCESS) {
+            const giftCardSelect = document.querySelector('#giftCardSelect');
+            if (giftCardSelect) {
+              giftCardSelect.classList.add('invisible');
+            }
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);

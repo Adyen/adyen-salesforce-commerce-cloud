@@ -297,7 +297,7 @@ input:checked + .slider:before {
     box-shadow: 0 0 0 2px #99c2ff;
 }
 
-.gift-card-selection ul {
+.gift-card-selection .list-cards {
     background: #fff;
     list-style: none;
     margin: 0 0 50px;

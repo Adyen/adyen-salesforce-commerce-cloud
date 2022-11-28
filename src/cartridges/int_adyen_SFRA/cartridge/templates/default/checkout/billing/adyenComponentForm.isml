@@ -83,7 +83,7 @@
             <select id="giftCardSelect">
                 <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
             </select>
-            <ul id="giftCardUl" class="invisible"></ul>
+            <ul id="giftCardUl" class="list-cards invisible"></ul>
             <div id="giftCardContainer"></div>
         </div>
     </div>

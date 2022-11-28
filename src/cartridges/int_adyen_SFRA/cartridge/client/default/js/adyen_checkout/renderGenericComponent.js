@@ -85,7 +85,7 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     giftCardUl.appendChild(newListItem);
 
     newListItem.addEventListener('click', (event) => {
-      giftCardUl.className = 'invisible';
+      giftCardUl.classList.add('invisible');
       const selectedGiftCard = JSON.parse(event.target.dataset.value);
       if (selectedGiftCard.brand !== store.giftcard?.brand) {
         if (store.componentsObj?.giftcard) {
