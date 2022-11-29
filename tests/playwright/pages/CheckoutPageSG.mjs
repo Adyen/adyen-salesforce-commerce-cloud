@@ -86,6 +86,10 @@ export default class CheckoutPageSFRA {
     );
 
     this.qrImg = this.qrLoader.locator('//img[contains(@alt,"QR")]');
+
+    this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
+    this.donationButton = page.locator('.adyen-checkout__button--donate');
+    this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
   }
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
@@ -252,5 +256,13 @@ export default class CheckoutPageSFRA {
       .fill(credentials.password);
 
     await this.page.click('button[name="dwfrm_login_login"]');
+  };
+
+  makeSuccessfulDonation = async () => {
+    await this.donationAmountButton.click();
+    await this.donationButton.click();
+    await expect(this.givingThankyouMessage).toContainText(
+      'Thanks for your support',
+    );
   };
 }
