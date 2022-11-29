@@ -271,8 +271,9 @@ input:checked + .slider:before {
     width: 100%;
     border-radius: 8px;
     border: 1px solid #b9c4c9;
-    padding: 10px;
+    padding: 16px;
     background: white;
+    position: relative;
 }
 
 .gift-card-selection hr {
@@ -281,7 +282,7 @@ input:checked + .slider:before {
 
 .gift-card-selection select {
     width: 100%;
-    margin: 10px 0;
+    margin: 10px 0 25px 0;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #b9c4c9;
@@ -328,8 +329,13 @@ input:checked + .slider:before {
     display: none;
 }
 
-.gift-card-selection .heading {
-    display: flex;
+.gift-card-selection .heading-img {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 26px;
 }
 
 .gift-card-selection p {
@@ -367,6 +373,7 @@ input:checked + .slider:before {
     border: 1px solid #b9c4c9;
     border-radius: 8px;
     margin: 5px 0;
+    box-shadow: 0 5px 10px 0 lightgrey;
 }
 
 .gift-cards-container .gift-card .wrapper {
@@ -374,7 +381,11 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin: 2px 0;
+    margin: 4px 0;
+}
+
+.gift-cards-container .gift-card .wrapper p {
+    font-size: 13px;
 }
 
 .gift-cards-container .brand-container {
@@ -394,4 +405,5 @@ input:checked + .slider:before {
 
 .gift-cards-container .gift-card-action a {
     cursor: pointer;
+    font-size: 13px;
 }

@@ -67,10 +67,7 @@
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <div class="gift-card-selection">
-        <div class="heading">
-            <img id="headingImg" width="40" height="26" />
-            <p>${Resource.msg('title.giftCard', 'adyen', null)}</p>
-        </div>
+        <img id="headingImg" class="heading-img" />
         <div id="giftCardsList" class="gift-cards-container"></div>
         <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
             <span class="adyen-checkout__button__content">
