@@ -155,9 +155,8 @@ function attachGiftCardFormListeners() {
     '#giftCardSelectContainer',
   );
 
-  if (giftCardUl?.getAttribute('listener') !== 'true') {
+  if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
-      giftCardUl.setAttribute('listener', true);
       giftCardUl.classList.toggle('invisible');
       const selectedGiftCard = {
         name: event.target.dataset.name,
@@ -188,12 +187,11 @@ function attachGiftCardFormListeners() {
     });
   }
 
-  if (giftCardAddButton?.getAttribute('listener') !== 'true') {
+  if (giftCardAddButton) {
     giftCardAddButton.addEventListener('click', () => {
       if (store.partialPaymentsOrderObj) {
         return;
       }
-      giftCardAddButton.setAttribute('listener', 'true');
       const giftCardWarningMessageEl = document.querySelector(
         '#giftCardWarningMessage',
       );
@@ -205,9 +203,8 @@ function attachGiftCardFormListeners() {
     });
   }
 
-  if (giftCardSelect?.getAttribute('listener') !== 'true') {
+  if (giftCardSelect) {
     giftCardSelect.addEventListener('click', () => {
-      giftCardSelect.setAttribute('listener', 'true');
       giftCardUl.classList.toggle('invisible');
     });
   }
