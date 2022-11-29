@@ -62,7 +62,9 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
   const giftCardUl = document.querySelector('#giftCardUl');
 
   const headingImg = document.querySelector('#headingImg');
-  headingImg.src = `${imagePath}genericgiftcard.png`;
+  if (headingImg) {
+    headingImg.src = `${imagePath}genericgiftcard.png`;
+  }
 
   const giftCardBrands = paymentMethodsResponse.paymentMethods.filter(
     (pm) => pm.type === constants.GIFTCARD,
