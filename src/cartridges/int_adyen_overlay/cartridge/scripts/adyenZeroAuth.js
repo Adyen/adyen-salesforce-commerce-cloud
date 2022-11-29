@@ -24,7 +24,6 @@ const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const Logger = require('dw/system/Logger');
 
