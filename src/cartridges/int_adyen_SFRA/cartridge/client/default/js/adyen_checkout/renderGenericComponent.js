@@ -52,22 +52,13 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
+function attachGiftCardListeners() {
+  const giftCardSelect = document.querySelector('#giftCardSelect');
+  const giftCardUl = document.querySelector('#giftCardUl');
   const giftCardContainer = document.querySelector('#giftCardContainer');
   const giftCardAddButton = document.querySelector('#giftCardAddButton');
   const giftCardSelectContainer = document.querySelector(
     '#giftCardSelectContainer',
-  );
-  const giftCardSelect = document.querySelector('#giftCardSelect');
-  const giftCardUl = document.querySelector('#giftCardUl');
-
-  const headingImg = document.querySelector('#headingImg');
-  if (headingImg) {
-    headingImg.src = `${imagePath}genericgiftcard.png`;
-  }
-
-  const giftCardBrands = paymentMethodsResponse.paymentMethods.filter(
-    (pm) => pm.type === constants.GIFTCARD,
   );
 
   if (giftCardUl) {
@@ -93,6 +84,42 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     });
   }
 
+  if (giftCardAddButton) {
+    giftCardAddButton.addEventListener('click', () => {
+      if (store.giftcard) {
+        return;
+      }
+      const giftCardWarningMessageEl = document.querySelector(
+        '#giftCardWarningMessage',
+      );
+      if (giftCardWarningMessageEl) {
+        giftCardWarningMessageEl.style.display = 'none';
+      }
+      giftCardAddButton.style.display = 'none';
+      giftCardSelectContainer.classList.remove('invisible');
+    });
+  }
+
+  if (giftCardSelect) {
+    giftCardSelect.addEventListener('click', () => {
+      giftCardUl.classList.toggle('invisible');
+    });
+  }
+}
+
+function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
+  const giftCardSelect = document.querySelector('#giftCardSelect');
+  const giftCardUl = document.querySelector('#giftCardUl');
+
+  const headingImg = document.querySelector('#headingImg');
+  if (headingImg) {
+    headingImg.src = `${imagePath}genericgiftcard.png`;
+  }
+
+  const giftCardBrands = paymentMethodsResponse.paymentMethods.filter(
+    (pm) => pm.type === constants.GIFTCARD,
+  );
+
   giftCardBrands.forEach((giftCard) => {
     const newListItem = document.createElement('li');
     newListItem.setAttribute('data-value', JSON.stringify(giftCard));
@@ -115,28 +142,6 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     newOption.style.visibility = 'hidden';
     giftCardSelect.appendChild(newOption);
   });
-
-  if (giftCardAddButton) {
-    giftCardAddButton.addEventListener('click', () => {
-      if (store.giftcard) {
-        return;
-      }
-      const giftCardWarningMessageEl = document.querySelector(
-        '#giftCardWarningMessage',
-      );
-      if (giftCardWarningMessageEl) {
-        giftCardWarningMessageEl.style.display = 'none';
-      }
-      giftCardAddButton.style.display = 'none';
-      giftCardSelectContainer.classList.remove('invisible');
-    });
-  }
-
-  if (giftCardSelect) {
-    giftCardSelect.addEventListener('click', () => {
-      giftCardUl.classList.toggle('invisible');
-    });
-  }
 
   const giftCardAdded = window.sessionStorage.getItem(
     constants.GIFTCARD_DATA_ADDED,
@@ -292,6 +297,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     store.checkout.paymentMethodsResponse,
     session.imagePath,
   );
+
+  attachGiftCardListeners();
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
