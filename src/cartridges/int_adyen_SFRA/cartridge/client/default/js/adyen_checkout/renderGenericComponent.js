@@ -70,26 +70,28 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     (pm) => pm.type === constants.GIFTCARD,
   );
 
-  giftCardUl.addEventListener('click', (event) => {
-    giftCardUl.classList.add('invisible');
-    const selectedGiftCard = JSON.parse(event.target.dataset.value);
-    if (selectedGiftCard.brand !== store.giftcard?.brand) {
-      if (store.componentsObj?.giftcard) {
-        store.componentsObj.giftcard.node.unmount('component_giftcard');
+  if (giftCardUl) {
+    giftCardUl.addEventListener('click', (event) => {
+      giftCardUl.classList.add('invisible');
+      const selectedGiftCard = JSON.parse(event.target.dataset.value);
+      if (selectedGiftCard.brand !== store.giftcard?.brand) {
+        if (store.componentsObj?.giftcard) {
+          store.componentsObj.giftcard.node.unmount('component_giftcard');
+        }
+        store.giftcard = selectedGiftCard;
+        giftCardSelect.value = selectedGiftCard.brand;
+        giftCardContainer.innerHTML = '';
+        const giftCardNode = store.checkout
+          .create(constants.GIFTCARD, {
+            ...store.checkoutConfiguration.giftcard,
+            brand: store.giftcard.brand,
+            name: store.giftcard.name,
+          })
+          .mount(giftCardContainer);
+        store.componentsObj.giftcard = { node: giftCardNode };
       }
-      store.giftcard = selectedGiftCard;
-      giftCardSelect.value = selectedGiftCard.brand;
-      giftCardContainer.innerHTML = '';
-      const giftCardNode = store.checkout
-        .create(constants.GIFTCARD, {
-          ...store.checkoutConfiguration.giftcard,
-          brand: store.giftcard.brand,
-          name: store.giftcard.name,
-        })
-        .mount(giftCardContainer);
-      store.componentsObj.giftcard = { node: giftCardNode };
-    }
-  });
+    });
+  }
 
   giftCardBrands.forEach((giftCard) => {
     const newListItem = document.createElement('li');
