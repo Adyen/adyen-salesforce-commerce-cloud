@@ -49,12 +49,6 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_notification_password');
   },
 
-  /*
-  getAdyen3DS2Enabled() {
-    return getCustomPreference('Adyen3DS2Enabled');
-  },
-  */
-
   getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');
   },

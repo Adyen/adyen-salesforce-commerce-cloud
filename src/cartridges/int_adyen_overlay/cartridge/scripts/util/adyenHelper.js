@@ -453,7 +453,6 @@ var adyenHelperObj = {
 
   // adds 3DS2 fields to an Adyen Checkout payments Request
   add3DS2Data(jsonObject) {
-    //jsonObject.additionalData.allow3DS2 = true;
     jsonObject.authenticationData = {};
     jsonObject.authenticationData.threeDSRequestData = {
       "nativeThreeDS" : "preferred"
