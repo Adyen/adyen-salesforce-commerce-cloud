@@ -155,7 +155,8 @@ function renderAddedGiftCard(giftCardData, imagePath) {
   brandContainer.classList.add('brand-container');
 
   const giftCardImg = document.createElement('img');
-  giftCardImg.setAttribute('src', `${imagePath}${giftCardData.brand}.png`);
+  const giftCardImgSrc = `${imagePath}${giftCardData.brand}.png`;
+  giftCardImg.setAttribute('src', giftCardImgSrc);
   giftCardImg.width = 40;
   giftCardImg.height = 26;
 
