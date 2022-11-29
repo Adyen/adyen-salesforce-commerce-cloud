@@ -25,8 +25,6 @@ class Store {
 
   @observable partialPaymentsOrderObj;
 
-  @observable giftcard;
-
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }
