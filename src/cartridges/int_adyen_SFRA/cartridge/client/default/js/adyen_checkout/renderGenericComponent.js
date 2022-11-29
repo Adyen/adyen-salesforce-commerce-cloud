@@ -116,23 +116,27 @@ function renderGiftCardComponent(paymentMethodsResponse, imagePath) {
     giftCardSelect.appendChild(newOption);
   });
 
-  giftCardAddButton.addEventListener('click', () => {
-    if (store.giftcard) {
-      return;
-    }
-    const giftCardWarningMessageEl = document.querySelector(
-      '#giftCardWarningMessage',
-    );
-    if (giftCardWarningMessageEl) {
-      giftCardWarningMessageEl.style.display = 'none';
-    }
-    giftCardAddButton.style.display = 'none';
-    giftCardSelectContainer.classList.remove('invisible');
-  });
+  if (giftCardAddButton) {
+    giftCardAddButton.addEventListener('click', () => {
+      if (store.giftcard) {
+        return;
+      }
+      const giftCardWarningMessageEl = document.querySelector(
+        '#giftCardWarningMessage',
+      );
+      if (giftCardWarningMessageEl) {
+        giftCardWarningMessageEl.style.display = 'none';
+      }
+      giftCardAddButton.style.display = 'none';
+      giftCardSelectContainer.classList.remove('invisible');
+    });
+  }
 
-  giftCardSelect.addEventListener('click', () => {
-    giftCardUl.classList.toggle('invisible');
-  });
+  if (giftCardSelect) {
+    giftCardSelect.addEventListener('click', () => {
+      giftCardUl.classList.toggle('invisible');
+    });
+  }
 
   const giftCardAdded = window.sessionStorage.getItem(
     constants.GIFTCARD_DATA_ADDED,
