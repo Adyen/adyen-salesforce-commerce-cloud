@@ -146,7 +146,7 @@ function showGiftCardWarningMessage() {
   orderTotalSummaryEl.appendChild(alertContainer);
 }
 
-function attachGiftCardFormListeners() {
+function getGiftCardElements() {
   const giftCardSelect = document.querySelector('#giftCardSelect');
   const giftCardUl = document.querySelector('#giftCardUl');
   const giftCardContainer = document.querySelector('#giftCardContainer');
@@ -154,6 +154,26 @@ function attachGiftCardFormListeners() {
   const giftCardSelectContainer = document.querySelector(
     '#giftCardSelectContainer',
   );
+  const giftCardsList = document.querySelector('#giftCardsList');
+
+  return {
+    giftCardSelect,
+    giftCardUl,
+    giftCardContainer,
+    giftCardAddButton,
+    giftCardSelectContainer,
+    giftCardsList,
+  };
+}
+
+function attachGiftCardFormListeners() {
+  const {
+    giftCardUl,
+    giftCardSelect,
+    giftCardContainer,
+    giftCardAddButton,
+    giftCardSelectContainer,
+  } = getGiftCardElements();
 
   if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
@@ -214,8 +234,7 @@ function renderGiftCardSelectForm() {
   const { paymentMethodsResponse } = store.checkout;
   const { imagePath } = store.checkoutConfiguration.session;
 
-  const giftCardSelect = document.querySelector('#giftCardSelect');
-  const giftCardUl = document.querySelector('#giftCardUl');
+  const { giftCardSelect, giftCardUl } = getGiftCardElements();
 
   const giftCardBrands = paymentMethodsResponse.paymentMethods.filter(
     (pm) => pm.type === constants.GIFTCARD,
@@ -251,8 +270,7 @@ function renderAddedGiftCard() {
   const giftCardData = store.partialPaymentsOrderObj.giftcard;
   const { imagePath } = store.checkoutConfiguration.session;
 
-  const giftCardsList = document.querySelector('#giftCardsList');
-  const giftCardAddButton = document.querySelector('#giftCardAddButton');
+  const { giftCardsList, giftCardAddButton } = getGiftCardElements();
 
   const giftCardDiv = document.createElement('div');
   giftCardDiv.classList.add('gift-card');
@@ -387,10 +405,7 @@ function createElementsToShowRemainingGiftCardAmount() {
 }
 
 function handlePartialPaymentSuccess() {
-  const giftCardSelectContainer = document.querySelector(
-    '#giftCardSelectContainer',
-  );
-  const giftCardSelect = document.querySelector('#giftCardSelect');
+  const { giftCardSelectContainer, giftCardSelect } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   store.componentsObj.giftcard.node.unmount('component_giftcard');
