@@ -458,9 +458,6 @@ var adyenHelperObj = {
         nativeThreeDS: "preferred",
       },
     }
-    jsonObject.authenticationData.threeDSRequestData = {
-      "nativeThreeDS" : "preferred"
-    }
     jsonObject.channel = 'web';
 
     const origin = `${request.getHttpProtocol()}://${request.getHttpHost()}`;
