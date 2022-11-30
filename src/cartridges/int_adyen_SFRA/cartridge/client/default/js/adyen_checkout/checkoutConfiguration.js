@@ -167,6 +167,11 @@ function getGiftCardElements() {
 }
 
 function attachGiftCardFormListeners() {
+  if (store.giftCardComponentListenersAdded) {
+    return;
+  }
+
+  store.giftCardComponentListenersAdded = true;
   const {
     giftCardUl,
     giftCardSelect,
@@ -209,6 +214,7 @@ function attachGiftCardFormListeners() {
 
   if (giftCardAddButton) {
     giftCardAddButton.addEventListener('click', () => {
+      giftCardAddButton.setAttribute('click-listener', 'true');
       if (store.partialPaymentsOrderObj) {
         return;
       }
@@ -230,11 +236,28 @@ function attachGiftCardFormListeners() {
   }
 }
 
+function removeGiftCardFormListeners() {
+  const {
+    giftCardUl,
+    giftCardSelect,
+    giftCardAddButton,
+  } = getGiftCardElements();
+
+  giftCardUl.replaceWith(giftCardUl.cloneNode(true));
+  giftCardSelect.replaceWith(giftCardSelect.cloneNode(true));
+  giftCardAddButton.replaceWith(giftCardAddButton.cloneNode(true));
+
+  store.giftCardComponentListenersAdded = false;
+}
+
 function renderGiftCardSelectForm() {
+  const { giftCardSelect, giftCardUl } = getGiftCardElements();
+  if (giftCardUl.innerHTML) {
+    return;
+  }
+
   const { paymentMethodsResponse } = store.checkout;
   const { imagePath } = store.checkoutConfiguration.session;
-
-  const { giftCardSelect, giftCardUl } = getGiftCardElements();
 
   const giftCardBrands = paymentMethodsResponse.paymentMethods.filter(
     (pm) => pm.type === constants.GIFTCARD,
@@ -264,6 +287,8 @@ function renderGiftCardSelectForm() {
     newOption.style.visibility = 'hidden';
     giftCardSelect.appendChild(newOption);
   });
+
+  attachGiftCardFormListeners();
 }
 
 function renderAddedGiftCard() {
@@ -322,6 +347,8 @@ function renderAddedGiftCard() {
   giftCardsList.appendChild(giftCardDiv);
 
   giftCardAddButton.style.display = 'none';
+
+  removeGiftCardFormListeners();
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
@@ -582,4 +609,5 @@ module.exports = {
   renderAddedGiftCard,
   renderGiftCardSelectForm,
   attachGiftCardFormListeners,
+  removeGiftCardFormListeners,
 };

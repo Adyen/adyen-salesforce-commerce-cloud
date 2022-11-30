@@ -11,6 +11,7 @@ const {
   showGiftCardWarningMessage,
   renderGiftCardSelectForm,
   attachGiftCardFormListeners,
+  removeGiftCardFormListeners,
 } = require('./checkoutConfiguration');
 
 function addPosTerminals(terminals) {
@@ -206,8 +207,6 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   } else {
     renderGiftCardSelectForm();
   }
-
-  attachGiftCardFormListeners();
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
