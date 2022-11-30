@@ -581,7 +581,6 @@ var adyenHelperObj = {
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
-    
     return true;
   },
 
