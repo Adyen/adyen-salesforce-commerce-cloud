@@ -342,12 +342,6 @@ input:checked + .slider:before {
     margin: 0;
 }
 
-.gift-card-selection .gift-card-input {
-    visibility: hidden;
-    position: absolute;
-    top: -40px;
-}
-
 .payment-methods-container {
     padding: 10px;
     margin: 20px 0;
