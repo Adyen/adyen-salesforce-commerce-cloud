@@ -10,7 +10,7 @@ const {
   renderAddedGiftCard,
   showGiftCardWarningMessage,
   renderGiftCardSelectForm,
-} = require('./checkoutConfiguration');
+} = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
