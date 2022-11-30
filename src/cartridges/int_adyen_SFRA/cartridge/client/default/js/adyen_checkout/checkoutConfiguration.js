@@ -252,7 +252,7 @@ function removeGiftCardFormListeners() {
 
 function renderGiftCardSelectForm() {
   const { giftCardSelect, giftCardUl } = getGiftCardElements();
-  if (giftCardUl.innerHTML) {
+  if (giftCardUl?.innerHTML) {
     return;
   }
 
