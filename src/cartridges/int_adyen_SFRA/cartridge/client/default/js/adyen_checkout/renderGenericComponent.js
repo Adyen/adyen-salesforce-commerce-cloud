@@ -10,8 +10,6 @@ const {
   renderAddedGiftCard,
   showGiftCardWarningMessage,
   renderGiftCardSelectForm,
-  attachGiftCardFormListeners,
-  removeGiftCardFormListeners,
 } = require('./checkoutConfiguration');
 
 function addPosTerminals(terminals) {

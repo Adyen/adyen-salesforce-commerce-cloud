@@ -608,6 +608,4 @@ module.exports = {
   showGiftCardWarningMessage,
   renderAddedGiftCard,
   renderGiftCardSelectForm,
-  attachGiftCardFormListeners,
-  removeGiftCardFormListeners,
 };
