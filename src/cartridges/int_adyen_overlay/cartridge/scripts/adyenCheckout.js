@@ -58,16 +58,13 @@ function createPaymentRequest(args) {
       paymentInstrument,
     );
 
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
         order,
       );
-    }
-
-    // Get 3DS2 data
-    if (AdyenConfigs.getAdyen3DS2Enabled()) {
-      paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
     // L2/3 Data

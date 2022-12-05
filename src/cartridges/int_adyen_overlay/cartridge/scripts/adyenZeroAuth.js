@@ -24,7 +24,6 @@ const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const Logger = require('dw/system/Logger');
 
@@ -36,9 +35,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
       paymentInstrument,
     );
 
-    if (AdyenConfigs.getAdyen3DS2Enabled()) {
-      zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
-    }
+    zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
 
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,

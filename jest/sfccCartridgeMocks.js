@@ -219,6 +219,9 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     executeCall: jest.fn(() => ({
       resultCode: "Authorised"
     })),
+    add3DS2Data: jest.fn((request) => {
+      return request
+    })
   }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
