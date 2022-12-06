@@ -217,8 +217,7 @@ function renderAddedGiftCard() {
   const giftCardImg = document.createElement('img');
   const giftCardImgSrc = `${imagePath}${giftCardData.brand}.png`;
   giftCardImg.setAttribute('src', giftCardImgSrc);
-  giftCardImg.width = 40;
-  giftCardImg.height = 26;
+  giftCardImg.classList.add('gift-card-logo');
 
   const giftCardNameP = document.createElement('p');
   giftCardNameP.textContent = giftCardData.name;
