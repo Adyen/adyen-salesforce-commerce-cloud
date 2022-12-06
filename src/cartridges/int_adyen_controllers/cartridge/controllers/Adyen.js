@@ -187,7 +187,6 @@ function showConfirmation() {
         Transaction.wrap(() => {
           AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, detailsResult);
         });
-        OrderModel.submit(order);
         clearForms();
         return app.getController('COSummary').ShowConfirmation(order);
       }
@@ -426,17 +425,22 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
 
-  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
-
-  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
+  if (order.status.value === Order.ORDER_STATUS_CREATED) {
+    finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
+  }
+  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult?.resultCode) > -1) {
     Transaction.wrap(() => {
       AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
-    OrderModel.submit(order);
     clearForms();
     app.getController('COSummary').ShowConfirmation(order);
     return {};
   }
+  // handles the refresh
+  else if (order.status.value === Order.ORDER_STATUS_CREATED || order.status.value === Order.ORDER_STATUS_NEW || order.status.value === Order.ORDER_STATUS_OPEN){
+    clearForms();
+    return app.getController('COSummary').ShowConfirmation(order);
+}
   // fail order
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
