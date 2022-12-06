@@ -13,7 +13,6 @@ const guard = require('app_storefront_controllers/cartridge/scripts/guard');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenSessions = require('*/cartridge/scripts/adyenSessions');
 
-const OrderModel = app.getModel('Order');
 const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
