@@ -347,6 +347,11 @@ input:checked + .slider:before {
     height: 26px;
 }
 
+.gift-card-warning-msg {
+    display: block;
+    margin: 20px 0;
+}
+
 .payment-methods-container {
     padding: 10px;
     margin: 20px 0;
