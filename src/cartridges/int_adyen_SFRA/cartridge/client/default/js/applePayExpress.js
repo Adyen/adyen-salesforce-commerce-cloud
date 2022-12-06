@@ -1,11 +1,4 @@
 async function mountApplePayComponent() {
-  const checkout = await AdyenCheckout({
-    locale: 'fr-FR',
-    environment: 'test',
-    clientKey: 'test_HAYFONPGBNHXLDS36KA4GNUHLQP5ZGDR'
-  });
-  console.log(checkout);
-
   const appleConfig = {
     showPayButton: true,
     onSubmit: (state, component) => {
@@ -15,9 +8,17 @@ async function mountApplePayComponent() {
       console.log('onAdditionalDetails', state);
     },
   };
+  const checkout = await AdyenCheckout({
+    locale: 'fr-FR',
+    environment: 'test',
+    clientKey: '',
+    paymentMethodsConfiguration: {
+      applepay: appleConfig,
+    },
+  });
+  console.log(checkout);
 
   const applePayComponent = checkout.create('applepay', appleConfig);
-
   applePayComponent
     .isAvailable()
     .then(() => {
