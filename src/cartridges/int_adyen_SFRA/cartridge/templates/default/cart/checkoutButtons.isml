@@ -1,0 +1,18 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
+
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/applePayExpress.js');
+</isscript>
+
+<div class="mb-sm-3">
+    <a href="${URLUtils.https('Checkout-Login')}"
+        class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
+        ${Resource.msg('button.checkout', 'cart', null)}
+    </a>
+    <div id="applepay-container"></div>
+</div>
