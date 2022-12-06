@@ -1,12 +1,27 @@
 "use strict";
 
 /**
+ *                       ######
+ *                       ######
+ * ############    ####( ######  #####. ######  ############   ############
+ * #############  #####( ######  #####. ######  #############  #############
+ *        ######  #####( ######  #####. ######  #####  ######  #####  ######
+ * ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ * ###### ######  #####( ######  #####. ######  #####          #####  ######
+ * #############  #############  #############  #############  #####  ######
+ *  ############   ############  #############   ############  #####  ######
+ *                                      ######
+ *                               #############
+ *                               ############
+ * Adyen Salesforce Commerce Cloud
+ * Copyright (c) 2021 Adyen B.V.
+ * This file is open source and available under the MIT license.
+ * See the LICENSE file for more info.
+ *
  * Risk data fields
  */
-require('dw/order');
 
 var LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
-
 var __RiskDataHelper = {
   createBasketContentFields: function createBasketContentFields(order) {
     var productLines = order.getProductLineItems().toArray();
@@ -16,7 +31,7 @@ var __RiskDataHelper = {
       var quantity = LineItemHelper.getQuantity(item);
       basketData["riskdata.basket.item".concat(itemNr, ".itemID")] = LineItemHelper.getId(item);
       basketData["riskdata.basket.item".concat(itemNr, ".productTitle")] = LineItemHelper.getDescription(item);
-      basketData["riskdata.basket.item".concat(itemNr, ".amountPerItem")] = LineItemHelper.getItemAmount(item).divide(quantity);
+      basketData["riskdata.basket.item".concat(itemNr, ".amountPerItem")] = LineItemHelper.getItemAmount(item).divide(quantity).value.toFixed();
       basketData["riskdata.basket.item".concat(itemNr, ".currency")] = item.adjustedNetPrice.currencyCode;
       basketData["riskdata.basket.item".concat(itemNr, ".upc")] = item.product ? item.product.UPC : '';
       basketData["riskdata.basket.item".concat(itemNr, ".sku")] = item.product ? item.product.manufacturerSKU : '';

@@ -1,15 +1,20 @@
-<isset name="AdyenGetOriginKey" value="${require('*/cartridge/scripts/adyenGetOriginKey')}" scope="page"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCSS.css')}" />
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
-<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 
 <script>
-    var originKey = "${AdyenGetOriginKey.getOriginKeyFromRequest(request.getHttpProtocol(), request.getHttpHost())}";
+    var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";
-    var environment = "${AdyenHelper.getAdyenEnvironment().toLowerCase()}";
+    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
     var locale = "${request.locale}";
-    window.Configuration = {originKey, loadingContext, environment, locale};
+    window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.sessionData = JSON.parse('${pdict.SessionData}'.replace(/&quot;/g, '\"'));
+    window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
+    window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
+    window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";
+    window.paymentInstrumentsListError = "${URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed')}";
 </script>
 
 <div>
@@ -20,7 +25,7 @@
 
     <div id="newCard"></div>
 
-    <div class="form-row form-row-button">
+    <div id="buttonsContainer" class="form-row form-row-button">
         <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
             ${Resource.msg('global.apply', 'locale', null)}
         </button>
@@ -28,5 +33,4 @@
             ${Resource.msg('global.cancel', 'locale', null)}
         </button>
     </div>
-
 </div>

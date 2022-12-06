@@ -21,6 +21,12 @@ class Store {
 
   @observable componentState = {};
 
+  @observable brand;
+
+  @observable partialPaymentsOrderObj;
+
+  @observable giftcardBrand;
+
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }
@@ -36,13 +42,16 @@ class Store {
   @computed get stateData() {
     return (
       this.selectedPayment?.stateData || {
-        paymentMethod: { type: this.selectedMethod },
+        paymentMethod: {
+          type: this.selectedMethod,
+          ...(this.brand ? { brand: this.brand } : undefined),
+        },
       }
     );
   }
 
-  updateSelectedPayment(key, val) {
-    this.selectedPayment[key] = val;
+  updateSelectedPayment(method, key, val) {
+    this.componentsObj[method][key] = val;
   }
 }
 

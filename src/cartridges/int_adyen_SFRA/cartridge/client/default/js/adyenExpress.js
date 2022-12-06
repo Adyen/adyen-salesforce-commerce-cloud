@@ -32,39 +32,46 @@ function doPaymentFromComponent(state, component) {
 }
 
 // updates all checkboxes to the same checked state. Enable/disable the express checkout components
-function shippingAgreementUpdated() {
-  // set all input checkboxes to enabled/disabled
-  const agreementCheckboxes = document.getElementsByClassName('acceptShipping');
-  for (
-    let agreementCheckboxesIndex = 0;
-    agreementCheckboxesIndex < agreementCheckboxes.length;
-    agreementCheckboxesIndex += 1
-  ) {
-    agreementCheckboxes[agreementCheckboxesIndex].checked = this.checked;
-  }
-  // set all express components to enabled/disabled
-  const expressComponents = document.getElementsByClassName('expressComponent');
-  const disabledOverlayClass = 'disabled';
-  for (
-    let expressComponentsIndex = 0;
-    expressComponentsIndex < expressComponents.length;
-    expressComponentsIndex += 1
-  ) {
-    if (this.checked) {
-      expressComponents[expressComponentsIndex].classList.remove(
-        disabledOverlayClass,
-      );
-    } else {
-      expressComponents[expressComponentsIndex].classList.add(
-        disabledOverlayClass,
-      );
-    }
-  }
-}
+//function shippingAgreementUpdated() {
+//  // set all input checkboxes to enabled/disabled
+//  const agreementCheckboxes = document.getElementsByClassName('acceptShipping');
+//  for (
+//    let agreementCheckboxesIndex = 0;
+//    agreementCheckboxesIndex < agreementCheckboxes.length;
+//    agreementCheckboxesIndex += 1
+//  ) {
+//    agreementCheckboxes[agreementCheckboxesIndex].checked = this.checked;
+//  }
+//  // set all express components to enabled/disabled
+//  const expressComponents = document.getElementsByClassName('expressComponent');
+//  const disabledOverlayClass = 'disabled';
+//  for (
+//    let expressComponentsIndex = 0;
+//    expressComponentsIndex < expressComponents.length;
+//    expressComponentsIndex += 1
+//  ) {
+//    if (this.checked) {
+//      expressComponents[expressComponentsIndex].classList.remove(
+//        disabledOverlayClass,
+//      );
+//    } else {
+//      expressComponents[expressComponentsIndex].classList.add(
+//        disabledOverlayClass,
+//      );
+//    }
+//  }
+//}
+
+
+// initial page setup run when the page has fully loaded
+$(document).ready(() => {
+    console.log('ready!');
 
 // store configuration
 store.checkoutConfiguration.amount = window.configuration.amount;
-store.checkoutConfiguration.environment = window.configuration.environment;
+//store.checkoutConfiguration.environment = window.configuration.environment;
+store.checkoutConfiguration.environment = "TEST";
+
 store.checkoutConfiguration.paymentMethodsConfiguration = {
   paypal: {
     onAdditionalDetails: (state) => {
@@ -83,7 +90,18 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
       document.body.appendChild(onAdditionalDetailsForm);
       onAdditionalDetailsForm.submit();
     },
+    onClick: (data, actions) => {
+        console.log('onclick!');
+    },
+    onError: (error, component) => {
+        console.log('inside onerror');
+        console.log(error.toString())
+      if (component) {
+        component.setStatus('ready');
+      }
+    },
     onSubmit: (state, component) => {
+        console.log('onsubmit');
       doPaymentFromComponent(state, component);
     },
     onCancel: () => {
@@ -103,26 +121,31 @@ store.checkoutConfiguration.paymentMethodsConfiguration = {
     },
   },
 };
-
-// initial page setup run when the page has fully loaded
-$(document).ready(() => {
   // address consent checkbox handling
-  $('.acceptShipping').change(shippingAgreementUpdated);
+//  $('.acceptShipping').change(shippingAgreementUpdated);
 
   // card and checkout component creation
-  const expressCheckoutNodes = document.getElementsByClassName(
-    'expressComponent',
-  );
-  const checkout = new AdyenCheckout(store.checkoutConfiguration);
-  for (
-    let expressCheckoutNodesIndex = 0;
-    expressCheckoutNodesIndex < expressCheckoutNodes.length;
-    expressCheckoutNodesIndex += 1
-  ) {
-    if (window.configuration.isPayPalExpressEnabled) {
-      checkout
-        .create('paypal')
-        .mount(expressCheckoutNodes[expressCheckoutNodesIndex]);
-    }
-  }
+//  const expressCheckoutNode = document.getElementsByClassName(
+//    'expressComponent',
+//  );
+    setTimeout(async () => {
+       AdyenCheckout(store.checkoutConfiguration)
+        .then( checkout => {
+         const expressCheckoutNode = document.querySelector('#expressComponent');
+         checkout.create('paypal').mount(expressCheckoutNode);
+        })
+        .catch(e => {
+        console.log('inside catch')
+        console.log(e.toString())
+        })
+    }, 1000);
+
+//  for (
+//    let expressCheckoutNodesIndex = 0;
+//    expressCheckoutNodesIndex < expressCheckoutNodes.length;
+//    expressCheckoutNodesIndex += 1
+//  ) {
+//    if (window.configuration.isPayPalExpressEnabled) {
+//    }
+//  }
 });

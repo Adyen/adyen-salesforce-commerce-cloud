@@ -1,3 +1,5 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="application/javascript"></script>
 <isinclude template="adyenExpress" />
 <div class="mb-sm-3">
     <a href="${URLUtils.https('Checkout-Login')}"

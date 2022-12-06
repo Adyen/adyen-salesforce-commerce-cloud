@@ -15,6 +15,7 @@ Array [
   Array [
     Object {
       "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
       "resultCode": "Authorised",
     },
   ],

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 const { renderPaymentMethod } = require('../renderPaymentMethod');
 const store = require('../../../../../store');
 
@@ -16,7 +19,7 @@ describe('Render Payment Method', () => {
       create: jest.fn(() => ({ mount })),
     };
   });
-  it('should render stored payment method', () => {
+  it('should render stored payment method with missing shopper information fields', () => {
     const paymentMethod = {
       id: 'mocked_id',
       brand: 'mocked_brand',
@@ -24,29 +27,69 @@ describe('Render Payment Method', () => {
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      true,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        true,
+        '/mocked_path/',
+        'mocked_description',
     );
     expect(mount).toBeCalledTimes(1);
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
   });
-  it('should render payment method', () => {
+
+  it('should render payment method with shopper information fields', () => {
+    document.body.innerHTML += `
+    <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
+      <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
+      <input id="shippingPhoneNumberdefault" value="shippingPhoneNumberdefaultMock" />
+      <input id="shippingAddressCitydefault" value="shippingAddressCitydefaultMock" />
+      <input id="shippingZipCodedefault" value="shippingZipCodedefaultMock" />
+      <input id="shippingCountrydefault" value="shippingCountrydefaultMock" />
+      <input id="shippingStatedefault" value="shippingStatedefaultMock" />
+      <input id="shippingAddressOnedefault" value="shippingAddressOnedefaultMock" />
+      <input id="shippingAddressTwodefault" value="shippingAddressTwodefaultMock" />
+            
+      <input id="billingAddressCity" value="billingAddressCityMock" />
+      <input id="billingZipCode" value="billingZipCodeMock" />
+      <input id="billingCountry" value="billingCountryMock" />
+      <input id="billingState" value="billingStateMock" />
+      <input id="billingAddressOne" value="billingAddressOneMock" />
+      <input id="billingAddressTwo" value="billingAddressTwoMock" />
+      
+      <span class="customer-summary-email">test@user.com</span>
+    `
     const paymentMethod = {
       type: 'scheme',
       name: 'mocked_name',
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      false,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        false,
+        '/mocked_path/',
+        'mocked_description',
     );
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
+    expect(store.checkout.create.mock.calls[0][1]).toEqual({
+      data: {
+        personalDetails: {
+          firstName: 'shippingFirstNamedefaultMock',
+          lastName: 'shippingLastNamedefaultMock',
+          telephoneNumber: 'shippingPhoneNumberdefaultMock',
+          shopperEmail: 'test@user.com',
+        },
+        firstName: 'shippingFirstNamedefaultMock',
+        lastName: 'shippingLastNamedefaultMock',
+        telephoneNumber: 'shippingPhoneNumberdefaultMock',
+        shopperEmail: 'test@user.com',
+      },
+      visibility: {
+        personalDetails: 'editable',
+        billingAddress: 'hidden',
+        deliveryAddress: 'hidden',
+      },
+    });
   });
 
   it('should handle input onChange for paypal', () => {
@@ -60,15 +103,15 @@ describe('Render Payment Method', () => {
       lastFour: '1234',
     };
     renderPaymentMethod(
-      paymentMethod,
-      false,
-      '/mocked_path/',
-      'mocked_description',
+        paymentMethod,
+        false,
+        '/mocked_path/',
+        'mocked_description',
     );
     const input = document.getElementById('rb_paypal');
     input.onchange({ target: { value: 'paypal' } });
     expect(
-      document.querySelector('button[value="submit-payment"]').disabled,
+        document.querySelector('button[value="submit-payment"]').disabled,
     ).toBeTruthy();
     expect(store.selectedMethod).toBe('paypal');
   });

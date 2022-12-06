@@ -46,7 +46,7 @@ module.exports = {
     "window": "readonly",
     "location": "readonly",
   },
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
@@ -67,7 +67,7 @@ module.exports = {
     "complexity": [
       "error",
       {
-        "max": 4,
+        "max": 5,
       },
     ],
     "eqeqeq": "error",

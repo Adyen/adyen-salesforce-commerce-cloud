@@ -1,0 +1,7 @@
+<div class="modal fade" id="action-modal" role="dialog">
+   <div class="modal-dialog" id="adyenModalDialog">
+        <div id="action-container"></div>
+        <div id="amazon-container"></div>
+        <div id="giftcard-container"></div>
+   </div>
+</div>

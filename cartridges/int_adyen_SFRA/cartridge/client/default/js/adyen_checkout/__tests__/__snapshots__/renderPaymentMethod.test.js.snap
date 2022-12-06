@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Render Payment Method should render payment method 1`] = `
+exports[`Render Payment Method should render payment method with shopper information fields 1`] = `
 <ul
   id="paymentMethodsList"
 >
@@ -43,7 +43,7 @@ exports[`Render Payment Method should render payment method 1`] = `
 </ul>
 `;
 
-exports[`Render Payment Method should render payment method 2`] = `
+exports[`Render Payment Method should render payment method with shopper information fields 2`] = `
 Object {
   "mocked_id": Object {
     "node": Object {
@@ -53,6 +53,7 @@ Object {
     },
   },
   "scheme": Object {
+    "isValid": undefined,
     "node": Object {
       "mount": [MockFunction] {
         "calls": Array [
@@ -76,7 +77,7 @@ Object {
 }
 `;
 
-exports[`Render Payment Method should render stored payment method 1`] = `
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 1`] = `
 <ul
   id="paymentMethodsList"
 >
@@ -119,7 +120,7 @@ exports[`Render Payment Method should render stored payment method 1`] = `
 </ul>
 `;
 
-exports[`Render Payment Method should render stored payment method 2`] = `
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 2`] = `
 Object {
   "mocked_id": Object {
     "node": Object {
@@ -129,7 +130,7 @@ Object {
     },
   },
   "storedCardmocked_id": Object {
-    "isValid": true,
+    "isValid": undefined,
     "node": Object {
       "mount": [MockFunction] {
         "calls": Array [

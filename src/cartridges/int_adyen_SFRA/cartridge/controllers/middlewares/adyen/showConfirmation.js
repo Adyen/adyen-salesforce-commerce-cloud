@@ -1,11 +1,70 @@
 const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
-const payment = require('./showConfirmation/payment');
-const { clearForms } = require('../../utils/index');
-const handleAuthorised = require('./showConfirmation/authorise');
+const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
+const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
+
+function getPaymentDetailsPayload(querystring) {
+  const details = querystring.redirectResult
+    ? { redirectResult: querystring.redirectResult }
+    : { payload: querystring.payload };
+  return {
+    details,
+  };
+}
+
+function getPaymentsDetailsResult(
+  adyenPaymentInstrument,
+  redirectResult,
+  payload,
+  req,
+) {
+  const hasQuerystringDetails = !!(redirectResult || payload);
+  // Saved response from Adyen-PaymentsDetails
+  let result = JSON.parse(
+    adyenPaymentInstrument.paymentTransaction.custom.Adyen_authResult,
+  );
+  if (hasQuerystringDetails) {
+    const requestObject = getPaymentDetailsPayload(req.querystring);
+    result = adyenCheckout.doPaymentsDetailsCall(requestObject);
+  }
+  clearForms.clearPaymentTransactionData(adyenPaymentInstrument);
+  return result;
+}
+
+function handlePaymentsDetailsResult(
+  adyenPaymentInstrument,
+  detailsResult,
+  order,
+  options,
+) {
+  if (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(detailsResult.resultCode) > -1
+  ) {
+    return handleAuthorised(
+      adyenPaymentInstrument,
+      detailsResult,
+      order,
+      options,
+    );
+  }
+  return payment.handlePaymentError(order, 'placeOrder', options);
+}
+
+function isOrderAlreadyProcessed(order) {
+  return (
+    order.status.value !== Order.ORDER_STATUS_CREATED &&
+    order.status.value !== Order.ORDER_STATUS_FAILED
+  );
+}
 
 /*
  * Makes a payment details call to Adyen and calls for the order confirmation to be shown
@@ -13,42 +72,54 @@ const handleAuthorised = require('./showConfirmation/authorise');
  */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
-
+  const {
+    redirectResult,
+    payload,
+    signature,
+    merchantReference,
+    orderToken,
+  } = req.querystring;
   try {
-    const order = OrderMgr.getOrder(req.querystring.merchantReference);
-    const paymentInstruments = order.getPaymentInstruments(
+    const order = OrderMgr.getOrder(merchantReference, orderToken);
+    const adyenPaymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
-    );
-    const {
-      details,
-      paymentData,
-      adyenPaymentInstrument,
-    } = payment.handlePaymentInstruments(paymentInstruments, options);
+    )[0];
 
-    // redirect to payment/details
-    const requestObject = {
-      details,
-      paymentData,
-    };
-
-    const result = adyenCheckout.doPaymentsDetailsCall(requestObject);
-    clearForms.clearAdyenData(adyenPaymentInstrument);
-
-    if (result.invalidRequest) {
-      Logger.getLogger('Adyen').error('Invalid /payments/details call');
-      return response.redirect(URLUtils.httpHome());
+    if (isOrderAlreadyProcessed(order)) {
+      Logger.getLogger('Adyen').debug(
+        'ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation',
+      );
+      res.redirect(URLUtils.url('Cart-Show'));
+      return next();
     }
-    // Authorised: The payment authorisation was successfully completed.
-    if (['Authorised', 'Pending', 'Received'].indexOf(result.resultCode) > -1) {
-      const merchantRefOrder = OrderMgr.getOrder(result.merchantReference);
-      return handleAuthorised(
-        merchantRefOrder,
-        result,
+
+    if (
+      adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
+      signature
+    ) {
+      if (order.status.value === Order.ORDER_STATUS_FAILED) {
+        Logger.getLogger('Adyen').error(
+          `Could not call payment/details for failed order ${order.orderNo}`,
+        );
+        return payment.handlePaymentError(order, 'placeOrder', options);
+      }
+
+      clearForms.clearAdyenData(adyenPaymentInstrument);
+
+      const detailsResult = getPaymentsDetailsResult(
         adyenPaymentInstrument,
+        redirectResult,
+        payload,
+        req,
+      );
+      return handlePaymentsDetailsResult(
+        adyenPaymentInstrument,
+        detailsResult,
+        order,
         options,
       );
     }
-    return payment.handlePaymentError(order, 'placeOrder', options);
+    throw new Error(`Incorrect signature for order ${merchantReference}`);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${

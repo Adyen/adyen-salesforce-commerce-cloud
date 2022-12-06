@@ -1,13 +1,9 @@
 "use strict";
 
 var OrderMgr = require('dw/order/OrderMgr');
-
 var URLUtils = require('dw/web/URLUtils');
-
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
 var handlePayment = require('../payment');
-
 var res;
 var next;
 var req;
@@ -25,10 +21,9 @@ beforeEach(function () {
   order = OrderMgr.getOrder();
   next = jest.fn();
 });
-var paymentErrorSnap = "\n  Array [\n    Array [\n      \"Checkout-Begin\",\n      \"stage\",\n      \"placeOrder\",\n      \"paymentError\",\n      \"mocked_error.payment.not.valid\",\n    ],\n  ]\n";
 describe('Payment', function () {
   it('should successfully handle payment', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Authorised'
     });
     var stateData = {
@@ -43,7 +38,7 @@ describe('Payment', function () {
     expect(res.redirect.mock.calls).toMatchSnapshot();
   });
   it('should handle payment error when not Authorised', function () {
-    adyenCheckout.doPaymentDetailsCall.mockReturnValue({
+    adyenCheckout.doPaymentsDetailsCall.mockReturnValue({
       resultCode: 'Not_Authorised'
     });
     var stateData = {
@@ -55,7 +50,7 @@ describe('Payment', function () {
       res: res,
       next: next
     });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      Array [\n        Array [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
   });
   it('should handle payment error when theres not state data', function () {
     var stateData = {};
@@ -64,6 +59,6 @@ describe('Payment', function () {
       res: res,
       next: next
     });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot(paymentErrorSnap);
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      Array [\n        Array [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
   });
 });

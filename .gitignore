@@ -1,7 +1,8 @@
 .idea
 .DS_Store
-/cartridges/
 node_modules
 dw.json
 /.vscode/
 /coverage/
+screenshots/
+playwright-report/

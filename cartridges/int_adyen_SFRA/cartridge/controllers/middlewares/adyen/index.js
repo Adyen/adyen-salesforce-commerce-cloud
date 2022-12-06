@@ -1,34 +1,26 @@
 "use strict";
 
-var adyen3d = require('./adyen3d');
-
-var adyen3ds2 = require('./adyen3ds2');
-
-var authorizeWithForm = require('./authorizeWithForm');
-
-var authorize3ds2 = require('./authorize3ds2');
-
-var redirect = require('./redirect');
-
-var showConfirmation = require('./showConfirmation');
-
-var getPaymentMethods = require('./getPaymentMethods');
-
-var paymentFromComponent = require('./paymentFromComponent');
-
-var notify = require('./notify');
-
-var showConfirmationPaymentFromComponent = require('./showConfirmationPaymentFromComponent');
-
+var showConfirmation = require('*/cartridge/controllers/middlewares/adyen/showConfirmation');
+var paymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/paymentFromComponent');
+var notify = require('*/cartridge/controllers/middlewares/adyen/notify');
+var showConfirmationPaymentFromComponent = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent');
+var paymentsDetails = require('*/cartridge/controllers/middlewares/adyen/paymentsDetails');
+var redirect3ds1Response = require('*/cartridge/controllers/middlewares/adyen/redirect3ds1Response');
+var callCreateSession = require('*/cartridge/controllers/middlewares/adyen/sessions');
+var checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalance');
+var cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
+var partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
+var partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
 module.exports = {
-  adyen3d: adyen3d,
-  adyen3ds2: adyen3ds2,
-  authorizeWithForm: authorizeWithForm,
-  authorize3ds2: authorize3ds2,
-  redirect: redirect,
   showConfirmation: showConfirmation,
-  getPaymentMethods: getPaymentMethods,
   paymentFromComponent: paymentFromComponent,
   notify: notify,
-  showConfirmationPaymentFromComponent: showConfirmationPaymentFromComponent
+  showConfirmationPaymentFromComponent: showConfirmationPaymentFromComponent,
+  paymentsDetails: paymentsDetails,
+  redirect3ds1Response: redirect3ds1Response,
+  callCreateSession: callCreateSession,
+  checkBalance: checkBalance,
+  cancelPartialPaymentOrder: cancelPartialPaymentOrder,
+  partialPaymentsOrder: partialPaymentsOrder,
+  partialPayment: partialPayment
 };

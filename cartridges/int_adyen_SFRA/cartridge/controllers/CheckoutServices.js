@@ -1,10 +1,7 @@
 "use strict";
 
 var server = require('server');
-
-var _require = require('./middlewares/index'),
-    checkoutServices = _require.checkoutServices;
-
 server.extend(module.superModule);
-server.prepend('PlaceOrder', server.middleware.https, checkoutServices.placeOrder);
+var placeOrder = require('*/cartridge/controllers/middlewares/checkout_services/placeOrder');
+server.prepend('PlaceOrder', server.middleware.https, placeOrder);
 module.exports = server.exports();

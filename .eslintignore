@@ -1,11 +1,23 @@
 bundle.js
 .eslintrc.js
+
+# Transpiled code
 /cartridges
+
+# Compiled web component bundle file
 src/cartridges/int_adyen_controllers/cartridge/js/pages/checkout/bundle.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
+
+# Extended SFRA core file
+src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA5.js
+src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA6.js
+src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder.js
+
+# Test files
 src/cartridges/int_adyen_SFRA/test
 *.test.js
 
 # remove lines below from ignore after refactor
 src/cartridges/int_adyen_overlay
 src/cartridges/int_adyen_controllers
+src/cartridges/adyen_controllers_changes

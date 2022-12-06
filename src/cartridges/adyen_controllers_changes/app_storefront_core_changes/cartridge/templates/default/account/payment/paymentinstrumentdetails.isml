@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="account/pt_account" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+
+	<h1>${Resource.msg('account.paymentinstrumentlist.addcard', 'account', null)}</h1>
+	<div class="dialog-required"> <span class="required-indicator">&#8226;</span> <em>${Resource.msg('global.requiredfield', 'locale', null)}</em></div>
+
+	<form id="CreditCardForm" name="CreditCardForm" action="${URLUtils.httpsContinue()}" class="form-horizontal" method="post" id="newcreditcard">
+		<fieldset>
+			<isscript>
+				var ownerAttributes = {
+					maxlength: 40,
+					size: 40
+				};
+				var numberAttributes = {
+					maxlength: 16,
+					size: 17
+				};
+			</isscript>
+
+            <isif condition="${dw.order.PaymentMgr.getPaymentMethod('AdyenComponent').isActive()
+            || (dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD')
+            && ['Adyen_Component', 'ADYEN_CREDIT'].indexOf(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) > -1) }">
+                <isinclude template="account/payment/adyenpaymentinstrumentdetails"/>
+            <iselse/>
+                <isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.owner}" type="input" attributes="${ownerAttributes}" />
+                <isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.type}" type="select"/>
+                <isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.number}" dynamicname="true" type="input" attributes="${numberAttributes}"/>
+                <div class="form-label-text">
+                    <span class="required-indicator">&#8226; </span>
+                    ${Resource.msg('account.paymentinstrumentdetails.expires','account',null)}
+                </div>
+                <isscript>
+                        var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+                </isscript>
+
+                <isdynamicform formobject="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.expiration}" formdata="${currentCountry.dynamicForms.expirationInfo}" />
+
+                <div class="form-row form-row-button">
+                    <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+                        ${Resource.msg('global.apply', 'locale', null)}
+                    </button>
+                    <button class="cancel cancel-button simple" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.cancel.htmlName}" value="${Resource.msg('global.cancel','locale',null)}">
+                        ${Resource.msg('global.cancel', 'locale', null)}
+                    </button>
+                </div>
+		    </isif>
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		</fieldset>
+	</form>
+
+	<div class="confirmation-container dialog-content" id="confirmation-container" style="display:none;">
+		<div class="error-form">${Resource.msg('account.paymentinstruments.forbidden', 'account', null)}</div>
+		<button type="button">${Resource.msg('global.close', 'locale', null)}</button>
+	</div>
+</isdecorate>

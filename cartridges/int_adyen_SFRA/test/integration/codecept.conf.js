@@ -1,18 +1,18 @@
 "use strict";
 
 exports.config = {
-  tests: "./tests/*_test.js",
-  output: "./output",
+  tests: './tests/*_test.js',
+  output: './output',
   helpers: {
     TestCafe: {
-      url: "https://www.yourstorefront.com",
+      url: 'https://www.yourstorefront.com',
       show: true
     }
   },
   include: {
-    I: "./customsteps.js"
+    I: './customsteps.js'
   },
   bootstrap: null,
   mocha: {},
-  name: "workspace"
+  name: 'workspace'
 };

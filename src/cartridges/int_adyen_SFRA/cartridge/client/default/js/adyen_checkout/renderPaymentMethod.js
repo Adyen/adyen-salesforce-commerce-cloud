@@ -1,13 +1,24 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
-const { qrCodeMethods } = require('./qrCodeMethods');
+const constants = require('../constants');
 
 function getFallback(paymentMethod) {
   const fallback = {};
-  if (fallback[paymentMethod]) {
-    store.componentsObj[paymentMethod] = {};
+  if (fallback[paymentMethod.type]) {
+    store.componentsObj[paymentMethod.type] = {};
   }
-  return fallback[paymentMethod];
+  return fallback[paymentMethod.type];
+}
+
+function getPersonalDetails() {
+  return {
+    firstName: document.querySelector('#shippingFirstNamedefault')?.value,
+    lastName: document.querySelector('#shippingLastNamedefault')?.value,
+    telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
+      ?.value,
+    shopperEmail: document.querySelector('.customer-summary-email')
+      ?.textContent,
+  };
 }
 
 function setNode(paymentMethodID) {
@@ -16,8 +27,20 @@ function setNode(paymentMethodID) {
       store.componentsObj[paymentMethodID] = {};
     }
     try {
-      const node = store.checkout.create(...args);
+      // ALl nodes created for the checkout component are enriched with shopper personal details
+      const node = store.checkout.create(...args, {
+        data: {
+          ...getPersonalDetails(),
+          personalDetails: getPersonalDetails(),
+        },
+        visibility: {
+          personalDetails: 'editable',
+          billingAddress: 'hidden',
+          deliveryAddress: 'hidden',
+        },
+      });
       store.componentsObj[paymentMethodID].node = node;
+      store.componentsObj[paymentMethodID].isValid = node.isValid;
     } catch (e) {
       /* No component for payment method */
     }
@@ -27,7 +50,16 @@ function setNode(paymentMethodID) {
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
-  return isStored ? `storedCard${paymentMethod.id}` : paymentMethod.type;
+  if (isStored) {
+    return `storedCard${paymentMethod.id}`;
+  }
+  if (paymentMethod.type === constants.GIFTCARD) {
+    return constants.GIFTCARD;
+  }
+  if (paymentMethod.brand) {
+    return `${paymentMethod.type}_${paymentMethod.brand}`;
+  }
+  return paymentMethod.type;
 }
 
 function getImage(isStored, paymentMethod) {
@@ -42,7 +74,7 @@ function getLabel(isStored, paymentMethod) {
 }
 
 function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
-  const fallback = getFallback(paymentMethod.type);
+  const fallback = getFallback(paymentMethod);
   const createTemplate = () => {
     const template = document.createElement('template');
     template.innerHTML = fallback;
@@ -76,14 +108,11 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
   return isSchemeNotStored ? cardImage : paymentMethodImage;
 }
 
-function hasNoChildNodes({ paymentMethodID, container }) {
-  return store.componentsObj[paymentMethodID] && !container.childNodes[0];
-}
-
-function setValid({ paymentMethodID, container }) {
+function setValid({ isStored, paymentMethodID }) {
   if (
-    hasNoChildNodes({ paymentMethodID, container }) &&
-    ['bcmc', 'scheme'].indexOf(paymentMethodID) === -1
+    isStored &&
+    ['bcmc', 'scheme']
+      .indexOf(paymentMethodID) > -1
   ) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
@@ -98,42 +127,25 @@ function configureContainer({ paymentMethodID, container }) {
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = async (event) => {
-    if (
-      document.querySelector('.adyen-checkout__qr-loader') &&
-      qrCodeMethods.indexOf(store.selectedMethod) > -1
-    ) {
-      const compName = store.selectedMethod;
-      const qrComponent = store.componentsObj[compName];
-
-      await Promise.resolve(qrComponent.node.unmount(`component_${compName}`));
-      delete store.componentsObj[compName];
-
-      setNode(compName)(compName);
-      const node = store.componentsObj[compName]?.node;
-      if (node) {
-        node.mount(document.querySelector(`#component_${compName}`));
-      }
-
-      helpers.paymentFromComponent({
-        cancelTransaction: true,
-        merchantReference: document.querySelector('#merchantReference').value,
-      });
-    }
-
     helpers.displaySelectedMethod(event.target.value);
   };
 }
-
+// eslint-disable-next-line complexity
 module.exports.renderPaymentMethod = function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
   description = null,
+  rerender = false,
 ) {
   const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const li = document.createElement('li');
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+
+  if (paymentMethodID === constants.GIFTCARD) {
+    return;
+  }
+
   const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
   const container = document.createElement('div');
 
@@ -148,16 +160,21 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   };
 
   const imagePath = getImagePath(options);
-  const liContents = getListContents({ ...options, imagePath });
+  const liContents = getListContents({ ...options, imagePath, description });
 
-  li.innerHTML = liContents;
-  li.classList.add('paymentMethod');
-
+  let li;
+  if (rerender) {
+    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
+  } else {
+    li = document.createElement('li');
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+    paymentMethodsUI.append(li);
+  }
   handlePayment(options);
   configureContainer(options);
 
   li.append(container);
-  paymentMethodsUI.append(li);
 
   const node = store.componentsObj[paymentMethodID]?.node;
   if (node) {

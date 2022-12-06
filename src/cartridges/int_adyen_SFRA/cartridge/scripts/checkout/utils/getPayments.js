@@ -3,17 +3,17 @@ const HookMgr = require('dw/system/HookMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const OrderMgr = require('dw/order/OrderMgr');
 
-const getAuthorizationResult = (pProcessor, orderNo, pInstrument) => {
+const getAuthorizationResult = (pProcessor, order, pInstrument) => {
   const hookName = `app.payment.processor.${pProcessor.ID.toLowerCase()}`;
   const customAuthorizeHook = () =>
-    HookMgr.callHook(hookName, 'Authorize', orderNo, pInstrument, pProcessor);
+    HookMgr.callHook(hookName, 'Authorize', order, pInstrument, pProcessor);
 
   return HookMgr.hasHook(hookName)
     ? customAuthorizeHook()
     : HookMgr.callHook('app.payment.processor.default', 'Authorize');
 };
 
-const getPayments = (order, orderNumber) =>
+const getPayments = (order) =>
   order.paymentInstruments.toArray().reduce((acc, paymentInstrument) => {
     if (!acc.error) {
       const { paymentProcessor } = PaymentMgr.getPaymentMethod(
@@ -23,7 +23,7 @@ const getPayments = (order, orderNumber) =>
       if (paymentProcessor) {
         const authorizationResult = getAuthorizationResult(
           paymentProcessor,
-          orderNumber,
+          order,
           paymentInstrument,
         );
 
@@ -37,7 +37,7 @@ const getPayments = (order, orderNumber) =>
       }
 
       Transaction.begin();
-      paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
+      paymentInstrument.paymentTransaction.setTransactionID(order.orderNo);
       Transaction.commit();
     }
     return acc;

@@ -1,0 +1,181 @@
+<div id="orderdetailstable">
+	<isset name="ShipmentCounter" value="" scope="PAGE">
+    <!--- Use each shipment to render product line items and associated shipping costs --->
+    <isloop iterator="${request.custom.Container.shipments}" alias="Group" status="loopstatus">   	
+    	<isif condition="${Group.productLineItems.size() > 0}">
+	    	<!--- variable to determine how many rows the shipping details column should consume --->
+        	<isset name="ShipmentCounter" value="${ShipmentCounter + 1}" scope="PAGE">       	
+        	<isscript>     
+				var plis : dw.util.Collection = Group.productLineItems;
+				var shipRowSpanCount : Number = plis.size();
+				var shipRowSpanValue : String = "1";
+				var iter : dw.util.Iterator = plis.iterator();
+				while (iter != null && iter.hasNext())
+				{
+					var pli : dw.order.ProductLineItme = iter.next();
+					shipRowSpanCount = shipRowSpanCount + pli.getBundledProductLineItems().size() + pli.getOptionProductLineItems().size();
+				}				
+				shipRowSpanValue = shipRowSpanCount.toFixed();
+			</isscript>    	
+        <!--- Display who we are shipping to --->
+        	<h3>
+        		Shipment&nbsp;<isprint value="${ShipmentCounter.length}">
+            </h3>
+		<!--- Render the products we are shipping --->
+            <table class="producttable">
+		<!--- header --->
+				<thead>
+					<tr>
+						<th>Product Details</th>
+						<th>Qty.</th>
+						<th>Total</th>
+						<th>Shipping Details</th>
+					</tr>
+				</thead>
+		<!--- Order Details Body --->
+				<tbody>          
+				<isloop iterator="${Group.productLineItems}" alias="productLineItem" status="plistatus">
+					<tr>
+						<td class="product">
+							<!--- if item has a category context, forward this category context --->
+							<isif condition="${productLineItem.categoryID != null}">
+								<a href="${URLUtils.https('ViewStorefront-PreviewProduct', 'pid', productLineItem.productID, 'cgid', productLineItem.categoryID)}" target="_blank">
+							<iselse>
+								<a href="${URLUtils.https('ViewStorefront-PreviewProduct', 'pid', productLineItem.productID)}" target="_blank">
+							</isif>
+								<isprint value="${productLineItem.productName}">
+							</a>
+							<div class="sku">
+								<span class="key">Item Number:</span><span class="value"><isprint value="${productLineItem.productID}"></span>
+							</div>
+		<!--- variations --->
+							<isif condition="${productLineItem.product != null}">
+								<isif condition="${productLineItem.product.isVariant}">
+									<isloop iterator="${productLineItem.product.variationModel.attributeDefinitions}" alias="VA">
+										<isset name="SelectedVariationValue" value="${productLineItem.product.variationModel.getSelectedValue(VA)}" scope="PAGE">
+										<div class="variation">
+											:
+											<isif condition="${SelectedVariationValue != null}">
+												<isprint value="${SelectedVariationValue.displayValue}">
+											<iselse>
+												-
+											</isif>		
+										</div>	
+									</isloop>
+								</isif>
+							</isif>
+		<!--- /variations --->					
+							<isif condition="${productLineItem.manufacturerName != null}">
+								<span class="manufacturername"><isprint value="${productLineItem.manufacturerName}"></span>
+							</isif>
+		<!--- product promotions --->
+							<isloop iterator="${productLineItem.priceAdjustments}" alias="pli">
+								<p class="bonus"><isprint value="${pli.lineItemText}"></p>
+							</isloop>
+		<!--- /product promotions --->					
+						</td>
+					    <td class="quantitycolumn">
+					    	<isif condition="${productLineItem.bonusProductLineItem}">
+					    		<span class="bonus">Bonus</span>
+					    	<iselse>
+					    		<isprint value="${productLineItem.quantity}">
+					    	</isif>
+				    	</td>
+					    <td class="price">
+				            <isprint value="${productLineItem.price}">
+		<!--- product promotion price --->
+							<isloop iterator="${productLineItem.priceAdjustments}" alias="pli">
+								<p class="bonus"><isprint value="${pli.price}"></p>
+							</isloop>
+		<!--- /product promotion price --->
+					    </td>
+		<!--- shipping address --->					    
+				  	<isif condition="${plistatus.isFirst()}">
+					    <td rowspan="${shipRowSpanValue}" width="25%" valign="top">
+					    	<isminishippingaddress p_shipment="${Group}" p_editable="${request.custom.ShipmentEditable}">
+					    </td>
+				    </isif>
+					</tr>
+		<!--- /shipping address --->
+		<!--- bundles --->
+			        <isif condition = "${productLineItem.bundledProductLineItems.size() > 0}">
+						<isloop iterator="${productLineItem.bundledProductLineItems}" alias="Bundle">
+						<tr class="odd">
+							<td>
+						       	<div class="itemname">
+									<isprint value="${Bundle.productName}">
+								</div>
+							</td>
+							<td class="quantitycolumn">
+								<isprint value="${Bundle.quantity}">
+							</td>
+						    <td class="price">included </td>
+						</tr>
+						</isloop>
+					</isif>
+		<!--- /bundles --->
+		<!--- options --->
+			        <isif condition = "${productLineItem.optionProductLineItems.size() > 0}">
+						<isloop iterator="${productLineItem.optionProductLineItems}" alias="Option">
+							<tr class="odd">
+								<td>
+							       	<div class="itemname">
+										Option Product&nbsp;-&nbsp;<isprint value="${Option.productName}">
+									</div>
+									<!--- product promotions --->
+									<isloop iterator="${Option.priceAdjustments}" alias="pli">
+										<p class="bonus"><isprint value="${pli.lineItemText}"></p>
+									</isloop>
+									<!--- /product promotions --->
+								</td>
+								<td class="quantitycolumn">
+									<isprint value="${Option.quantity}">
+								</td>
+							    <td class="price">
+						            <isprint value="${Option.price}">
+									<!--- product promotions --->
+									<isloop iterator="${Option.priceAdjustments}" alias="pli">
+										<p class="bonus"><isprint value="${pli.price}"></p>
+									</isloop>
+									<!--- /product promotions --->
+							    </td>
+							</tr>
+						</isloop>
+					</isif>
+		<!--- /options --->	
+			</isloop>
+			</tbody>
+		</table>		
+		</isif><!--- if product line items --->
+	</isloop>
+<!--- /Shipments --->
+<!--- GC Electronic Shipments --->
+	<isif condition="${request.custom.Container.allGiftCertificateLineItems.size() > 0}">
+       	<h3>Gift Certificates</h3>
+		<!--- Render the products we are shipping --->
+           <table class="producttable">
+		<!--- header --->
+			<thead>
+				<tr>
+					<th>Gift Certificate Details</th>
+					<th>Qty.</th>
+					<th>Total</th>
+					<th>Shipping Details</th>
+				</tr>
+			</thead>
+		<!--- Order Details Body --->
+			<tbody>
+					<isloop iterator="${request.custom.Container.allGiftCertificateLineItems}" alias="GiftCertificate" status="loopstatus">		
+			           <tr>
+			                <td class="product"><isprint value="${GiftCertificate.lineItemText}">&nbsp;for&nbsp;<isprint value="${GiftCertificate.recipientName}"></td>
+			                <td class="quantitycolumn">1</td>
+			                <td class="price"><isprint value="${GiftCertificate.basePrice}"></td>
+			                <td width="25%">Electronic Delivery to&nbsp;<isprint value="${GiftCertificate.recipientEmail}"></td>
+			            </tr>                   
+		            </isloop>
+				</tbody>
+			</table>			
+ 	</isif>
+	<!--- /GC Electronic Shipments --->
+	<div class="clear"><!-- FLOAT CLEAR --></div>
+</div>

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Render Payment Method should render payment method 1`] = `
+exports[`Render Payment Method should render payment method with shopper information fields 1`] = `
 <ul
   id="paymentMethodsList"
 >
@@ -43,20 +43,21 @@ exports[`Render Payment Method should render payment method 1`] = `
 </ul>
 `;
 
-exports[`Render Payment Method should render payment method 2`] = `
-Object {
-  "mocked_id": Object {
-    "node": Object {
-      "mocked_node": Object {
+exports[`Render Payment Method should render payment method with shopper information fields 2`] = `
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
         "foo": "bar",
       },
     },
   },
-  "scheme": Object {
-    "node": Object {
+  "scheme": {
+    "isValid": undefined,
+    "node": {
       "mount": [MockFunction] {
-        "calls": Array [
-          Array [
+        "calls": [
+          [
             <div
               class="additionalFields"
               id="component_scheme"
@@ -64,8 +65,8 @@ Object {
             />,
           ],
         ],
-        "results": Array [
-          Object {
+        "results": [
+          {
             "type": "return",
             "value": undefined,
           },
@@ -76,7 +77,7 @@ Object {
 }
 `;
 
-exports[`Render Payment Method should render stored payment method 1`] = `
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 1`] = `
 <ul
   id="paymentMethodsList"
 >
@@ -119,21 +120,21 @@ exports[`Render Payment Method should render stored payment method 1`] = `
 </ul>
 `;
 
-exports[`Render Payment Method should render stored payment method 2`] = `
-Object {
-  "mocked_id": Object {
-    "node": Object {
-      "mocked_node": Object {
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 2`] = `
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
         "foo": "bar",
       },
     },
   },
-  "storedCardmocked_id": Object {
-    "isValid": true,
-    "node": Object {
+  "storedCardmocked_id": {
+    "isValid": undefined,
+    "node": {
       "mount": [MockFunction] {
-        "calls": Array [
-          Array [
+        "calls": [
+          [
             <div
               class="additionalFields"
               id="component_storedCardmocked_id"
@@ -141,8 +142,8 @@ Object {
             />,
           ],
         ],
-        "results": Array [
-          Object {
+        "results": [
+          {
             "type": "return",
             "value": undefined,
           },

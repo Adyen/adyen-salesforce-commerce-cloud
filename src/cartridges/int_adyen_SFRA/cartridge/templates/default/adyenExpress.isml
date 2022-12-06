@@ -1,40 +1,37 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="application/javascript"></script>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+<script src="${URLUtils.httpsStatic('/js/adyenExpress.js')}" type="text/javascript"></script>
+<script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
+
 <div>
-    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
     <isset name="BasketMgr" value="${require('dw/order/BasketMgr')}" scope="pdict"/>
-    <isif condition="${pdict.BasketMgr.getCurrentBasket().getCustomer().registered && pdict.BasketMgr.getCurrentBasket().getCustomer().getAddressBook().preferredAddress !== null}">
-        <script type="text/javascript">
-            window.configuration = {
-                amount:{
-                    currency: '${pdict.BasketMgr.getCurrentBasket().currencyCode}',
-                    value: '${pdict.AdyenHelper.getCurrencyValueForApi(pdict.BasketMgr.getCurrentBasket().getTotalGrossPrice()).value}'
-                },
-                environment: '${pdict.AdyenHelper.getAdyenEnvironment()}',
-                isPayPalExpressEnabled: ${pdict.AdyenHelper.getAdyenPaypalExpressEnabled()},
-                paymentFromComponentURL: "${URLUtils.https('Adyen-ExpressPaymentFromComponent')}",
-                showConfirmationURL: "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}",
-                checkoutBeginURL: "${URLUtils.https('Checkout-Begin')}",
-            }
-        </script>
 
-        <link rel="stylesheet" href="${URLUtils.httpsStatic('/css/adyenCss.css')}">
-        <link rel="stylesheet" href="${URLUtils.httpsStatic('/css/adyenCSS.css')}">
-
-        <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
-        <script src="${URLUtils.httpsStatic('/js/bundle.js')}" type="text/javascript"></script>
-        <script src="${URLUtils.httpsStatic('/js/adyenExpress.js')}" type="text/javascript"></script>
-
-        <div class="card">
-            <div class="card-header">
-                <h3>${Resource.msg('cart.expressCheckout', 'cart', null)}</h3>
-            </div>
-            <div class="card-body">
-                <input type="checkbox" class="acceptShipping" name="acceptShipping"/>
-                <label class="acceptShippingLabel" for="acceptShipping">${Resource.msg('cart.expressAgreement', 'cart', null)}</label>
-                <div id="paymentError" class="card-error">
-                    <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
-                </div>
-                <div class="expressComponent disabled"></div>
-          </div>
+    <div class="card">
+        <div class="card-header">
+            <h3>${Resource.msg('cart.expressCheckout', 'cart', null)}</h3>
         </div>
-    </isif>
+        <div class="card-body">
+            <div id="paymentError" class="card-error">
+                <span>${Resource.msg('adyen.paymentFailed', 'adyen', null)}</span>
+            </div>
+            <div id="expressComponent"></div>
+      </div>
+    </div>
+
+    <script type="application/javascript">
+        console.log("${pdict.AdyenHelper.getCheckoutUrl()}")
+        window.configuration = {
+            amount:{
+                currency: '${pdict.BasketMgr.getCurrentBasket().currencyCode}',
+                value: '${pdict.AdyenHelper.getCurrencyValueForApi(pdict.BasketMgr.getCurrentBasket().getTotalGrossPrice()).value}'
+            },
+            environment: '${pdict.AdyenHelper.getAdyenEnvironment()}',
+            paymentFromComponentURL: "${URLUtils.https('Adyen-PaymentFromComponent')}",
+            showConfirmationURL: "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}",
+            checkoutBeginURL: "${URLUtils.https('Checkout-Begin')}",
+        }
+
+
+    </script>
 </div>

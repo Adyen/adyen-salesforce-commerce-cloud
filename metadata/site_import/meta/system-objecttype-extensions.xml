@@ -84,6 +84,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenPartialPaymentsOrder">
+                <display-name xml:lang="x-default">adyenPartialPaymentsOrder</display-name>
+                <description xml:lang="x-default">partial payments order data</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenAdditionalPaymentData">
                 <display-name xml:lang="x-default">adyenAdditionalPaymentData</display-name>
                 <description xml:lang="x-default">Additional data for payment method</description>
@@ -307,20 +316,6 @@
 
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="Adyen3DS2Enabled">
-                <display-name xml:lang="x-default">3DS2 Enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenSecuredFieldsEnabled">
-                <display-name xml:lang="x-default">Secured Fields enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
@@ -358,6 +353,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenLevel23DataEnabled">
+                <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenExpressPaymentMethods">
                 <display-name xml:lang="x-default">Enabled express paymentmethods</display-name>
                 <type>enum-of-string</type>
@@ -372,27 +374,6 @@
                         <value>paypal</value>
                     </value-definition>
                 </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenPayPalIntent">
-                <display-name xml:lang="x-default">PayPal auto capture</display-name>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <value>capture</value>
-                    </value-definition>
-                    <value-definition>
-                        <value>authorize</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="AdyenLevel23DataEnabled">
-                <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23_CommodityCode">
                 <display-name xml:lang="x-default">Commodity Code that best describes your products (only applicable for Level 2/3 Data Authorisation) https://www.unspsc.org/search-code</display-name>
@@ -422,6 +403,27 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Frontend_Region">
+                <display-name xml:lang="x-default">Region</display-name>
+                <description xml:lang="x-default">This should be set to the region closest to where your shoppers are located. It influences the speed at which front-end resources (Adyen Checkout Component) used throughout the checkout process will be retrieved.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>IN</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>
@@ -434,6 +436,15 @@
             <attribute-definition attribute-id="Adyen_notification_user">
                 <display-name xml:lang="x-default">Adyen Notifications User</display-name>
                 <description xml:lang="x-default">Adyen Notifications User for Basic Authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="AdyenSalePaymentMethods">
+                <display-name xml:lang="x-default">Payment methods with SALE flow</display-name>
+                <description xml:lang="x-default">Only applicable for Salesforce OMS. List the txvariants with Authorisation type SALE comma separated (e.g. ideal,sepadirectdebit,paypal).</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -519,43 +530,11 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonMerchantID">
-                <display-name xml:lang="x-default">Your Amazon MerchantID to accept live payments</display-name>
-                <description xml:lang="x-default">Amazon Pay merchant account identifier.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonPublicKeyID">
-                <display-name xml:lang="x-default">Your Amazon public key ID</display-name>
-                <description xml:lang="x-default">The publicKeyId from https://docs.adyen.com/payment-methods/amazon-pay/web-component#step-3 </description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_AmazonStoreID">
-                <display-name xml:lang="x-default">Your Amazon store ID to accept live payments</display-name>
-                <description xml:lang="x-default">Retrieve this value from Amazon Pay: https://sellercentral-europe.amazon.com/external-payments/amazon-pay/integration-central/lwa</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_ClientKey">
                 <display-name xml:lang="x-default">Your Adyen Client Key. Required to accept both live and test payments</display-name>
                 <description xml:lang="x-default">Retrieve this value from Customer Area</description>
                 <type>string</type>
                 <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_PaypalMerchantID">
-                <display-name xml:lang="x-default">Your PayPal MerchantID to accept live payments</display-name>
-                <description xml:lang="x-default">https://docs.adyen.com/payment-methods/paypal/web-component#show-paypal-in-your-payment-form</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
@@ -575,6 +554,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_SFRA6_Compatibility">
+                <display-name xml:lang="x-default">SFRA v6 compatibility enabled </display-name>
+                <description xml:lang="x-default">This setting should be enabled when using SFRA v6. Otherwise it should be disabled</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
@@ -582,35 +569,28 @@
                 <attribute attribute-id="Adyen_merchantCode"/>
                 <attribute attribute-id="Adyen_API_Key"/>
                 <attribute attribute-id="Adyen_Mode"/>
+                <attribute attribute-id="Adyen_Frontend_Region"/>
                 <attribute attribute-id="Adyen_ClientKey"/>
+                <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
 
                 <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
-
-                <attribute attribute-id="Adyen_PaypalMerchantID"/>
-                <attribute attribute-id="AdyenPayPalIntent"/>
 
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
 
                 <attribute attribute-id="AdyenRatePayID"/>
 
-                <attribute attribute-id="Adyen_AmazonPublicKeyID"/>
-                <attribute attribute-id="Adyen_AmazonMerchantID"/>
-                <attribute attribute-id="Adyen_AmazonStoreID"/>
-
                 <attribute attribute-id="Adyen_IntegratorName"/>
                 <attribute attribute-id="Adyen_StoreId"/>
 
-                <attribute attribute-id="AdyenSecuredFieldsEnabled"/>
-                <attribute attribute-id="Adyen3DS2Enabled"/>
-                <attribute attribute-id="AdyenRecurringEnabled"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
                 <attribute attribute-id="AdyenCardHolderName_enabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
-                <attribute attribute-id="AdyenExpressPaymentMethods"/>
+
+                <attribute attribute-id="AdyenSalePaymentMethods"/>
 
                 <attribute attribute-id="AdyenGiving_enabled"/>
                 <attribute attribute-id="AdyenGiving_charityName"/>

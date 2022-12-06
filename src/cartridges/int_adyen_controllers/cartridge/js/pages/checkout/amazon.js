@@ -1,24 +1,37 @@
 if(window.amazonCheckoutSessionId) {
-    const amazonPayNode = document.getElementById('amazon-container');
+    window.sessionsResponse = null;
+    const amazonPayNode = document.getElementById('amazonContainerSG');
+
+    function handleAuthorised(response) {
+        document.querySelector('#result').value = JSON.stringify({
+            pspReference: response.fullResponse.pspReference,
+            resultCode: response.fullResponse.resultCode,
+            paymentMethod: response.fullResponse.paymentMethod ? response.fullResponse.paymentMethod : response.fullResponse.additionalData.paymentMethod,
+        });
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
+            response,
+        );
+        document.querySelector('#showConfirmationForm').submit();
+    }
+
+    function handleError() {
+        document.querySelector('#result').value = JSON.stringify({
+            error: true,
+        });
+        document.querySelector('#paymentFromComponentStateData').value = JSON.stringify({error: true});
+        document.querySelector('#showConfirmationForm').submit();
+    }
 
     function handleAmazonResponse(response, component) {
         if (response.fullResponse && response.fullResponse.action) {
             component.handleAction(response.fullResponse.action);
-        } else if (response.resultCode === 'Authorised') {
-            document.querySelector('#result').value = JSON.stringify({
-                pspReference: response.fullResponse.pspReference,
-                resultCode: response.fullResponse.resultCode,
-                paymentMethod: response.fullResponse.additionalData.paymentMethod,
-            });
-            document.querySelector('#paymentFromComponentStateData').value = JSON.stringify(
-                response,
-            );
-            document.querySelector('#showConfirmationForm').submit();
-        } else if (response.error) {
-            document.querySelector('#result').value = JSON.stringify({
-                error: true,
-            });
-            $('#dwfrm_billing').trigger('submit');
+        } else if (response.resultCode === window.resultCodeAuthorised) {
+            handleAuthorised(response);
+        } else {
+            // first try the amazon decline flow
+            component.handleDeclineFlow();
+            // if this does not trigger a redirect, try the regular handleError flow
+            handleError();
         }
     }
 
@@ -53,12 +66,36 @@ if(window.amazonCheckoutSessionId) {
             );
             paymentFromComponent(state.data, component);
         },
+        onAdditionalDetails: (state) => {
+            state.data.paymentMethod = 'amazonpay';
+            $.ajax({
+                type: 'post',
+                url: window.paymentsDetailsURL,
+                data: JSON.stringify({
+                  data: state.data,
+                  orderToken: document.querySelector('#orderToken').value,
+                }),
+                contentType: 'application/; charset=utf-8',
+                success(data) {
+                    if (data.response.isSuccessful) {
+                        handleAuthorised(data.response);
+                    } else if (!data.response.isFinal && typeof data.response.action === 'object') {
+                        checkout.createFromAction(data.action).mount('#amazonContainerSG');
+                    } else {
+                        handleError();
+                    }
+                },
+            });
+        },
     };
 
-    const checkout = new AdyenCheckout(window.Configuration);
-    const amazonPayComponent = checkout
-        .create('amazonpay', amazonConfig)
-        .mount(amazonPayNode);
+    async function mountAmazonPayComponent() {
+        const checkout = await AdyenCheckout(window.Configuration);
+        const amazonPayComponent = checkout
+            .create('amazonpay', amazonConfig)
+            .mount(amazonPayNode);
+        amazonPayComponent.submit();
+    }
 
-    amazonPayComponent.submit();
+    mountAmazonPayComponent();
 }

@@ -1,5 +1,5 @@
-const savePayment = require('./savePayment');
-const deletePayment = require('./deletePayment');
+const savePayment = require('*/cartridge/controllers/middlewares/payment_instruments/savePayment');
+const deletePayment = require('*/cartridge/controllers/middlewares/payment_instruments/deletePayment');
 
 module.exports = {
   savePayment,

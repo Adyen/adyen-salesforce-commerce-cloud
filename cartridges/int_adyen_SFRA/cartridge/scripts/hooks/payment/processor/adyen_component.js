@@ -3,11 +3,11 @@
 /**
  *
  */
-var middlewares = require('./middlewares/index');
-
+var middlewares = require('*/cartridge/scripts/hooks/payment/processor/middlewares/index');
 function Handle(basket, paymentInformation) {
   return middlewares.handle(basket, paymentInformation);
 }
+
 /**
  * Authorizes a payment using a credit card. Customizations may use other processors and custom
  *      logic to authorize credit card payment.
@@ -17,11 +17,8 @@ function Handle(basket, paymentInformation) {
  *      payment method
  * @return {Object} returns an error object
  */
-
-
-function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-  return middlewares.authorize(orderNumber, paymentInstrument, paymentProcessor);
+function Authorize(order, paymentInstrument, paymentProcessor) {
+  return middlewares.authorize(order, paymentInstrument, paymentProcessor);
 }
-
 exports.Handle = Handle;
 exports.Authorize = Authorize;

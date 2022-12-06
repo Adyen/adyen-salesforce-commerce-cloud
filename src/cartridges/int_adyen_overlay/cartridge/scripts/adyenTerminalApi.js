@@ -26,20 +26,22 @@ const StringUtils = require('dw/util/StringUtils');
 const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function getTerminals() {
   try {
     const requestObject = {};
     const getTerminalRequest = {};
-    getTerminalRequest.merchantAccount = AdyenHelper.getAdyenMerchantAccount();
+    getTerminalRequest.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
 
     // storeId is optional
-    if (AdyenHelper.getAdyenStoreId() !== null) {
-      getTerminalRequest.store = AdyenHelper.getAdyenStoreId();
+    if (AdyenConfigs.getAdyenStoreId() !== null) {
+      getTerminalRequest.store = AdyenConfigs.getAdyenStoreId();
     }
 
     requestObject.request = getTerminalRequest;
-    return executeCall(AdyenHelper.SERVICE.CONNECTEDTERMINALS, requestObject);
+    return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
     Logger.getLogger('Adyen').error(
       `Adyen getTerminals: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
@@ -68,9 +70,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     const serviceId = dateString.substr(dateString.length - 10);
 
     const applicationInfoObject = {};
-    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo(
-      false,
-    );
+    applicationInfoObject.applicationInfo = AdyenHelper.getApplicationInfo();
     const applicationInfoBase64 = StringUtils.encodeBase64(
       JSON.stringify(applicationInfoObject),
     );
@@ -110,7 +110,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     terminalRequestObject.terminalId = terminalId;
 
     const paymentResult = executeCall(
-      AdyenHelper.SERVICE.POSPAYMENT,
+      constants.SERVICE.POSPAYMENT,
       terminalRequestObject,
     );
     if (paymentResult.error) {
@@ -192,7 +192,7 @@ function sendAbortRequest(serviceId, terminalId) {
       },
     },
   };
-  return executeCall(AdyenHelper.SERVICE.POSPAYMENT, abortRequestObject);
+  return executeCall(constants.SERVICE.POSPAYMENT, abortRequestObject);
 }
 
 function executeCall(serviceType, requestObject) {
@@ -201,7 +201,7 @@ function executeCall(serviceType, requestObject) {
     throw new Error(`Error creating terminal service ${serviceType}`);
   }
 
-  const apiKey = AdyenHelper.getAdyenApiKey();
+  const apiKey = AdyenConfigs.getAdyenApiKey();
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);

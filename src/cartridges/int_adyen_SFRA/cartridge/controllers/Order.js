@@ -1,7 +1,7 @@
 const server = require('server');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-const { order } = require('./middlewares/index');
+const { order } = require('*/cartridge/controllers/middlewares/index');
 
 server.extend(module.superModule);
 

@@ -1,17 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Show Confirmation should fail if resultCode is Received with Alipay payment 1`] = `
-Array [
-  Array [
-    "Checkout-Begin",
-    "stage",
-    "payment",
-    "paymentError",
-    "mocked_error.payment.not.valid",
-  ],
-]
-`;
-
 exports[`Show Confirmation should have payload 1`] = `
 Array [
   Array [
@@ -19,7 +7,6 @@ Array [
       "details": Object {
         "payload": "mocked_payload_result",
       },
-      "paymentData": "mocked_adyen_payment_data",
     },
   ],
 ]
@@ -32,7 +19,6 @@ Array [
       "details": Object {
         "redirectResult": "mocked_redirect_result",
       },
-      "paymentData": "mocked_adyen_payment_data",
     },
   ],
 ]

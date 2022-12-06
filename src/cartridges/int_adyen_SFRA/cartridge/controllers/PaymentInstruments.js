@@ -5,9 +5,12 @@ server.extend(module.superModule);
 const userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
-const { paymentInstruments } = require('./middlewares/index');
+const {
+  paymentInstruments,
+} = require('*/cartridge/controllers/middlewares/index');
 
 /*
  * Prepends PaymentInstruments' 'List' function to list saved cards.
@@ -33,8 +36,8 @@ server.prepend(
   consentTracking.consent,
   userLoggedIn.validateLoggedIn,
   (req, res, next) => {
-    const clientKey = AdyenHelper.getAdyenClientKey();
-    const environment = AdyenHelper.getAdyenEnvironment().toLowerCase();
+    const clientKey = AdyenConfigs.getAdyenClientKey();
+    const environment = AdyenHelper.getCheckoutEnvironment();
     const viewData = res.getViewData();
     viewData.adyen = {
       clientKey,

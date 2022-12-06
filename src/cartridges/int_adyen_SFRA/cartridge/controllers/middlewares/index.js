@@ -1,12 +1,10 @@
-const adyen = require('./adyen/index');
-const checkoutServices = require('./checkout_services/index');
-const checkout = require('./checkout/index');
-const order = require('./order/index');
-const paymentInstruments = require('./payment_instruments/index');
+const adyen = require('*/cartridge/controllers/middlewares/adyen/index');
+const checkout = require('*/cartridge/controllers/middlewares/checkout/index');
+const order = require('*/cartridge/controllers/middlewares/order/index');
+const paymentInstruments = require('*/cartridge/controllers/middlewares/payment_instruments/index');
 
 module.exports = {
   adyen,
-  checkoutServices,
   checkout,
   order,
   paymentInstruments,

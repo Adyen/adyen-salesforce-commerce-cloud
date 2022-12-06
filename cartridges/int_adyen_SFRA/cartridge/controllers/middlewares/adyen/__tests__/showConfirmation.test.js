@@ -2,20 +2,23 @@
 
 /* eslint-disable global-require */
 var showConfirmation;
+var adyenConfigs;
 var res;
 var req;
 beforeEach(function () {
   var _require = require('../../index'),
-      adyen = _require.adyen;
-
+    adyen = _require.adyen;
+  adyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
   res = {
-    redirect: jest.fn()
+    redirect: jest.fn(),
+    render: jest.fn()
   };
   req = {
     querystring: {
-      merchantReference: 'mocked_merchantReference'
+      merchantReference: "0",
+      signature: 'mocked_signature'
     },
     locale: {
       id: 'nl_NL'
@@ -24,49 +27,62 @@ beforeEach(function () {
 });
 afterEach(function () {
   jest.resetModules();
+  jest.clearAllMocks();
 });
 describe('Show Confirmation', function () {
   it('should have redirectResult', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     req.querystring.redirectResult = 'mocked_redirect_result';
     showConfirmation(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
   it('should have payload', function () {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
     req.querystring.payload = 'mocked_payload_result';
     showConfirmation(req, res, jest.fn());
-    expect(adyenCheckout.doPaymentDetailsCall.mock.calls).toMatchSnapshot();
+    expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
-  test.each(['Authorised', 'Pending', 'Received'])('should handle successful payment: %p', function (a) {
-    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
+  it('should return to checkout when signatures mismatch', function () {
+    req.querystring.payload = 'mocked_payload_result';
+    req.querystring.signature = 'mismatching_signature';
     var URLUtils = require('dw/web/URLUtils');
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    showConfirmation(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Error-ErrorCode');
+  });
+  it('should not continue processing when order is not open or failed', function () {
+    var URLUtils = require('dw/web/URLUtils');
+    req.querystring.merchantReference = 4;
+    showConfirmation(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Cart-Show');
+  });
+  test.each(['Authorised', 'Pending', 'Received'])('should handle successful payment: %p for SFRA6', function (a) {
+    var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(true);
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
         resultCode: a,
         paymentMethod: [],
         merchantReference: 'mocked_merchantReference'
       };
     });
+    req.querystring.redirectResult = 'mocked_redirect_result';
     showConfirmation(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
+    expect(res.render.mock.calls[0][0]).toBe('orderConfirmForm');
   });
-  it('should fail if resultCode is Received with Alipay payment', function () {
+  test.each(['Authorised', 'Pending', 'Received'])('should handle successful payment: %p for SFRA5', function (a) {
     var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-
+    adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(false);
     var URLUtils = require('dw/web/URLUtils');
-
-    adyenCheckout.doPaymentDetailsCall.mockImplementation(function () {
+    adyenCheckout.doPaymentsDetailsCall.mockImplementation(function () {
       return {
-        resultCode: 'Received',
-        paymentMethod: ['alipay_hk']
+        resultCode: a,
+        paymentMethod: [],
+        merchantReference: 'mocked_merchantReference'
       };
     });
+    req.querystring.redirectResult = 'mocked_redirect_result';
     showConfirmation(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
   });
 });

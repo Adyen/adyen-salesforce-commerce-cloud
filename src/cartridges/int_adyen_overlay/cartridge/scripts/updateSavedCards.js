@@ -27,6 +27,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 function updateSavedCards(args) {
   try {
@@ -40,7 +41,7 @@ function updateSavedCards(args) {
       return { error: true };
     }
 
-    if(AdyenHelper.getAdyenRecurringPaymentsEnabled()) {
+    if(AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
       const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
       // To make it compatible with upgrade from older versions (<= 19.2.2),
       // first delete payment instruments with METHOD_CREDIT_CARD

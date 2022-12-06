@@ -15,7 +15,7 @@ beforeEach(function () {
     adyenPaymentMethod: 'Credit Card',
     adyenIssuerName: null,
     stateData: 'mockedStateData',
-    storedPaymentUUID: null,
+    creditCardToken: 'mockedStoredCardToken',
     expirationMonth: {
       value: 'mockedMonth'
     },
@@ -34,8 +34,7 @@ describe('Handle', function () {
   });
   it('should set card details to payment instrument when payment method is credit card', function () {
     var _require = require('dw/order/BasketMgr'),
-        setCreditCardToken = _require.setCreditCardToken;
-
+      setCreditCardToken = _require.setCreditCardToken;
     handle(currentBasket, paymentInformation);
     expect(setCreditCardToken).toBeCalledTimes(1);
   });

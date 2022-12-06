@@ -4,6 +4,7 @@ const {
 } = require('./adyen_checkout/renderGenericComponent');
 const {
   setCheckoutConfiguration,
+  actionHandler,
 } = require('./adyen_checkout/checkoutConfiguration');
 const {
   assignPaymentMethodValue,
@@ -35,12 +36,6 @@ if (window.cardholderNameBool !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
 
-if (window.installments) {
-  try {
-    const installments = JSON.parse(window.installments);
-    store.checkoutConfiguration.paymentMethodsConfiguration.card.installments = installments;
-  } catch (e) {} // eslint-disable-line no-empty
-}
 if (
   window.googleMerchantID !== 'null' &&
   window.Configuration.environment === 'live'
@@ -49,10 +44,9 @@ if (
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[
     id
   ] = window.googleMerchantID;
-}
-if (window.paypalMerchantID !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.paypal.merchantId =
-    window.paypalMerchantID;
+  store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[
+    id
+  ] = window.googleMerchantID;
 }
 
 // Submit the payment
@@ -80,8 +74,7 @@ $('button[value="submit-payment"]').on('click', () => {
   return true;
 });
 
-/**
- * Assigns stateData value to the hidden stateData input field
- * so it's sent to the backend for processing
- */
-module.exports.methods = { renderGenericComponent };
+module.exports = {
+  renderGenericComponent,
+  actionHandler,
+};

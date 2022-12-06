@@ -3,19 +3,22 @@ const Resource = require('dw/web/Resource');
 const CustomerMgr = require('dw/customer/CustomerMgr');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const PaymentMgr = require('dw/order/PaymentMgr');
 const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
 const constants = require('*/cartridge/adyenConstants/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const {
+  paymentProcessorIDs,
+} = require('*/cartridge/controllers/middlewares/payment_instruments/paymentProcessorIDs');
 
 function containsValidResultCode(req) {
   return (
     [
-      'Authorised',
-      'IdentifyShopper',
-      'ChallengeShopper',
-      'RedirectShopper',
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.IDENTIFYSHOPPER,
+      constants.RESULTCODES.CHALLENGESHOPPER,
+      constants.RESULTCODES.REDIRECTSHOPPER,
     ].indexOf(req.resultCode) !== -1
   );
 }
@@ -43,11 +46,21 @@ function getResponseBody(action) {
   };
 }
 
+function isAdyen() {
+  return (
+    paymentProcessorIDs.indexOf(
+      PaymentMgr.getPaymentMethod('CREDIT_CARD')
+        ?.getPaymentProcessor()
+        ?.getID(),
+    ) > -1 ||
+    PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_COMPONENT).isActive()
+  );
+}
+
 function savePayment(req, res, next) {
-  if (!AdyenHelper.getAdyenSecuredFieldsEnabled()) {
+  if (!isAdyen()) {
     return next();
   }
-
   const customer = CustomerMgr.getCustomerByCustomerNumber(
     req.currentCustomer.profile.customerNo,
   );

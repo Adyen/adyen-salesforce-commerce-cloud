@@ -19,21 +19,16 @@
  * Add all product and shipping line items to request
  */
 
-require('dw/crypto');
-require('dw/system');
-require('dw/order');
-require('dw/util');
-require('dw/value');
-require('dw/net');
-require('dw/web');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
-function getLineItems({ Order: order }) {
-    if (!order) return null;
-    const allLineItems = order.getProductLineItems();
-    const shopperReference = getShopperReference(order);
+function getLineItems({ Order: order, Basket: basket }) {
+    if (!(order || basket)) return null;
+    const orderOrBasket = order || basket;
+    const allLineItems = orderOrBasket.getProductLineItems();
+    const shopperReference = getShopperReference(orderOrBasket);
 
     return allLineItems.toArray().reduce((acc, lineItem, index) => {
         const description = LineItemHelper.getDescription(lineItem);
@@ -41,7 +36,7 @@ function getLineItems({ Order: order }) {
         const quantity = LineItemHelper.getQuantity(lineItem);
         const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
         const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-        const commodityCode = AdyenHelper.getAdyenLevel23CommodityCode();
+        const commodityCode = AdyenConfigs.getAdyenLevel23CommodityCode();
         const currentLineItem = {
             [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: itemAmount.value.toFixed(),
             [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: parseFloat(itemAmount.value.toFixed()) + parseFloat(vatAmount.value.toFixed()),
@@ -60,12 +55,12 @@ function getLineItems({ Order: order }) {
     }, { 'enhancedSchemeData.totalTaxAmount': 0.0, 'enhancedSchemeData.customerReference': shopperReference.substring(0, 25) });
 }
 
-function getShopperReference(order) {
-    const customer = order.getCustomer();
+function getShopperReference(orderOrBasket) {
+    const customer = orderOrBasket.getCustomer();
     const isRegistered = customer && customer.registered;
     const profile = isRegistered && customer.getProfile();
     const profileCustomerNo = profile && profile.getCustomerNo();
-    const orderNo = profileCustomerNo || order.getCustomerNo();
+    const orderNo = profileCustomerNo || orderOrBasket.getCustomerNo();
     return orderNo || customer.getID() || 'no-unique-ref';
 }
 

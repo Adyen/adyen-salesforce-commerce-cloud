@@ -17,9 +17,14 @@
     var threeDS2Element = document.getElementById('threeDS2');
     var configuration = {
         locale: '${pdict.locale}',
-        originKey: '${pdict.originKey}',
+        clientKey: '${pdict.clientKey}',
         environment: '${pdict.environment}',
-        onAdditionalDetails: handleOnAdditionalDetails
+        onAdditionalDetails: handleOnAdditionalDetails,
+        paymentMethodsConfiguration: {
+            threeDS2: {
+                challengeWindowSize: '05' // '02' is the default size
+            },
+        }
     }
     var checkout = new AdyenCheckout(configuration);
     var threeDS2Node = checkout.createFromAction(action).mount(threeDS2Element);

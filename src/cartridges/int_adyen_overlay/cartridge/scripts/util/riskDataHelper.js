@@ -19,7 +19,6 @@
  * Risk data fields
  */
 
-require('dw/order');
 const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 
 const __RiskDataHelper = {
@@ -36,7 +35,7 @@ const __RiskDataHelper = {
         `riskdata.basket.item${itemNr}.productTitle`
       ] = LineItemHelper.getDescription(item);
       basketData[`riskdata.basket.item${itemNr}.amountPerItem`] =
-        LineItemHelper.getItemAmount(item).divide(quantity);
+        LineItemHelper.getItemAmount(item).divide(quantity).value.toFixed();
       basketData[`riskdata.basket.item${itemNr}.currency`] =
         item.adjustedNetPrice.currencyCode;
       basketData[`riskdata.basket.item${itemNr}.upc`] = item.product

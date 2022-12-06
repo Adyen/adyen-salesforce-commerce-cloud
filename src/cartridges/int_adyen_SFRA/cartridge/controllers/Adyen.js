@@ -1,59 +1,9 @@
 const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const adyenGiving = require('*/cartridge/scripts/adyenGiving');
-const { adyen } = require('./middlewares/index');
+const { adyen } = require('*/cartridge/controllers/middlewares/index');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
-
-/**
- * Complete a 3DS payment
- */
-server.get(
-  'Adyen3D',
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.adyen3d,
-);
-
-/**
- * Make /payments/details call to 3d verification system to complete authorization
- */
-server.post(
-  'AuthorizeWithForm',
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.authorizeWithForm,
-);
-
-/**
- * Complete a 3DS2 payment
- */
-server.get(
-  'Adyen3DS2',
-  consentTracking.consent,
-  csrfProtection.generateToken,
-  server.middleware.https,
-  adyen.adyen3ds2,
-);
-
-/**
- * Make second call to /payments/details with IdentifyShopper or ChallengeShopper token
- *
- * @returns rendering template or error
- */
-server.post(
-  'Authorize3DS2',
-  csrfProtection.generateToken,
-  csrfProtection.validateRequest,
-  server.middleware.https,
-  adyen.authorize3ds2,
-);
-
-/**
- * Redirect to Adyen after saving order etc.
- */
-server.get('Redirect', server.middleware.https, adyen.redirect);
 
 /**
  * Show confirmation after return from Adyen
@@ -63,12 +13,19 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
  */
-server.post('PaymentsDetails', server.middleware.https, adyen.paymentsDetails);
+server.post(
+  'PaymentsDetails',
+  server.middleware.https,
+  consentTracking.consent,
+  adyen.paymentsDetails,
+);
+
+server.get('Sessions', server.middleware.https, adyen.callCreateSession);
 
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */
-server.post(
+server.get(
   'Redirect3DS1Response',
   server.middleware.https,
   adyen.redirect3ds1Response,
@@ -81,15 +38,6 @@ server.post(
   'ShowConfirmationPaymentFromComponent',
   server.middleware.https,
   adyen.showConfirmationPaymentFromComponent,
-);
-
-/**
- * Make a request to Adyen to get payment methods based on countryCode
- */
-server.get(
-  'GetPaymentMethods',
-  server.middleware.https,
-  adyen.getPaymentMethods,
 );
 
 /**
@@ -133,6 +81,34 @@ server.post(
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);
+
+/**
+ * Called by Adyen to check balance of gift card.
+ */
+server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
+
+/**
+ * Called by Adyen to cancel a partial payment order.
+ */
+server.post(
+  'CancelPartialPaymentOrder',
+  server.middleware.https,
+  adyen.cancelPartialPaymentOrder,
+);
+
+/**
+ * Called by Adyen to create a partial payments order
+ */
+server.post(
+  'PartialPaymentsOrder',
+  server.middleware.https,
+  adyen.partialPaymentsOrder,
+);
+
+/**
+ * Called by Adyen to apply a giftcard
+ */
+server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;

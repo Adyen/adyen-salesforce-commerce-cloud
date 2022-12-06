@@ -1,14 +1,17 @@
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const Locale = require('dw/util/Locale');
 const Resource = require('dw/web/Resource');
+const Logger = require('dw/system/Logger');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
-const { clearForms } = require('../../../utils/index');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function handlePaymentError(order, { res, next }) {
   Transaction.wrap(() => {
@@ -18,7 +21,7 @@ function handlePaymentError(order, { res, next }) {
     URLUtils.url(
       'Checkout-Begin',
       'stage',
-      'placeOrder',
+      'payment',
       'paymentError',
       Resource.msg('error.payment.not.valid', 'checkout', null),
     ),
@@ -66,15 +69,23 @@ function handleAuthorisedPayment(
   });
 
   clearForms.clearForms();
-  res.redirect(
-    URLUtils.https(
-      'Order-Confirm',
-      'ID',
-      order.orderNo,
-      'token',
-      order.orderToken,
-    ).toString(),
-  );
+  // determines SFRA version for backwards compatibility
+  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+    res.render('orderConfirmForm', {
+      orderID: order.orderNo,
+      orderToken: order.orderToken,
+    });
+  } else {
+    res.redirect(
+      URLUtils.url(
+        'Order-Confirm',
+        'ID',
+        order.orderNo,
+        'token',
+        order.orderToken,
+      ).toString(),
+    );
+  }
   return next();
 }
 
@@ -95,6 +106,14 @@ function handlePayment(stateData, order, options) {
       return handlePaymentError(order, options);
     }
   }
+
+  if (order.status.value === Order.ORDER_STATUS_FAILED) {
+    Logger.getLogger('Adyen').error(
+      `Could not call payment/details for failed order ${order.orderNo}`,
+    );
+    return handlePaymentError(order, options);
+  }
+
   const detailsCall = handlePaymentsDetailsCall(
     stateData,
     adyenPaymentInstrument,
@@ -107,7 +126,11 @@ function handlePayment(stateData, order, options) {
 
   // Authorised: The payment authorisation was successfully completed.
   if (
-    ['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(finalResult.resultCode) > -1
   ) {
     return handleAuthorisedPayment(
       order,

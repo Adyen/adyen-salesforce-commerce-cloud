@@ -22,16 +22,11 @@
 // script include
 const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const constants = require('*/cartridge/adyenConstants/constants');
 
 function getMethods(basket, customer, countryCode) {
   try {
-    const service = AdyenHelper.getService(
-      AdyenHelper.SERVICE.CHECKOUTPAYMENTMETHODS,
-    );
-    if (!service) {
-      throw new Error('Could not do /paymentMethods call');
-    }
-
     let paymentAmount;
     let currencyCode;
 
@@ -44,11 +39,11 @@ function getMethods(basket, customer, countryCode) {
     } else {
       // paymentMethods call from My Account
       currencyCode = session.currency.currencyCode;
-      paymentAmount = new dw.value.Money(1000, currencyCode);
+      paymentAmount = new dw.value.Money(0, currencyCode);
     }
 
     const paymentMethodsRequest = {
-      merchantAccount: AdyenHelper.getAdyenMerchantAccount(),
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
         currency: currencyCode,
         value: paymentAmount.value,
@@ -78,27 +73,7 @@ function getMethods(basket, customer, countryCode) {
 
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
-    const xapikey = AdyenHelper.getAdyenApiKey();
-    service.addHeader('Content-type', 'application/json');
-    service.addHeader('charset', 'UTF-8');
-    service.addHeader('X-API-key', xapikey);
-
-    const callResult = service.call(JSON.stringify(paymentMethodsRequest));
-    if (!callResult.isOk()) {
-      throw new Error(
-        `/paymentMethods call error code${callResult
-          .getError()
-          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
-      );
-    }
-
-    const resultObject = callResult.object;
-    if (!resultObject || !resultObject.getText()) {
-      throw new Error('No correct response from /paymentMethods call');
-    }
-
-    const {paymentMethods} = JSON.parse(resultObject.getText())
-    return { paymentMethods };
+    return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (e) {
     Logger.getLogger('Adyen').fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

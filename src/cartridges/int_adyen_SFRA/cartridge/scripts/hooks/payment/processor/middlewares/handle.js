@@ -7,6 +7,7 @@ function handle(basket, paymentInformation) {
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];
+
   Transaction.wrap(() => {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
@@ -16,6 +17,11 @@ function handle(basket, paymentInformation) {
       currentBasket.totalGrossPrice,
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+
+    if (paymentInformation.partialPaymentsOrder) {
+      paymentInstrument.custom.adyenPartialPaymentsOrder =
+        session.privacy.partialPaymentData;
+    }
     paymentInstrument.custom.adyenPaymentMethod =
       paymentInformation.adyenPaymentMethod;
 
@@ -27,6 +33,7 @@ function handle(basket, paymentInformation) {
 
       paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
       paymentInstrument.setCreditCardType(sfccCardType);
+
       paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
 
       if (paymentInformation.creditCardToken) {
@@ -47,5 +54,3 @@ function handle(basket, paymentInformation) {
 }
 
 module.exports = handle;
-
-// export default Handle;

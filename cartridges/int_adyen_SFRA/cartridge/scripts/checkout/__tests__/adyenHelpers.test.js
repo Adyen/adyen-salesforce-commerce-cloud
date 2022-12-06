@@ -10,7 +10,6 @@ jest.mock('../utils/index', function () {
   };
 });
 /* eslint-disable global-require */
-
 var handlePayments;
 var order;
 var orderNumber;
@@ -39,12 +38,12 @@ describe('Adyen Helpers', function () {
   describe('Handle Payments', function () {
     it('should return when totalNetPrice is 0.0', function () {
       order.totalNetPrice = 0.0;
-      var handlePaymentsResult = handlePayments(order, orderNumber);
+      var handlePaymentsResult = handlePayments(order);
       expect(handlePaymentsResult).toEqual({});
     });
     it('should return error if there are no paymentInstruments', function () {
       order.paymentInstruments = [];
-      var handlePaymentsResult = handlePayments(order, orderNumber);
+      var handlePaymentsResult = handlePayments(order);
       expect(handlePaymentsResult.error).toBeTruthy();
     });
   });

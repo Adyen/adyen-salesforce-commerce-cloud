@@ -1,20 +1,24 @@
 /* eslint-disable global-require */
 let showConfirmation;
+let adyenConfigs;
 let res;
 let req;
 
 beforeEach(() => {
   const { adyen } = require('../../index');
+  adyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
   showConfirmation = adyen.showConfirmation;
   jest.clearAllMocks();
 
   res = {
     redirect: jest.fn(),
+    render: jest.fn(),
   };
 
   req = {
     querystring: {
-      merchantReference: 'mocked_merchantReference'
+      merchantReference: "0",
+      signature: 'mocked_signature',
     },
     locale: { id: 'nl_NL' },
   };
@@ -22,6 +26,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetModules();
+  jest.clearAllMocks();
 });
 
 describe('Show Confirmation', () => {
@@ -31,24 +36,59 @@ describe('Show Confirmation', () => {
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
+
   it('should have payload', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     req.querystring.payload = 'mocked_payload_result';
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
   });
+
+  it('should return to checkout when signatures mismatch', () => {
+      req.querystring.payload = 'mocked_payload_result';
+      req.querystring.signature = 'mismatching_signature';
+      const URLUtils = require('dw/web/URLUtils');
+      const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+      showConfirmation(req, res, jest.fn());
+      expect(URLUtils.url.mock.calls[0][0]).toEqual('Error-ErrorCode');
+  })
+
+  it('should not continue processing when order is not open or failed', () => {
+    const URLUtils = require('dw/web/URLUtils');
+    req.querystring.merchantReference = 4;
+    showConfirmation(req, res, jest.fn());
+    expect(URLUtils.url.mock.calls[0][0]).toEqual('Cart-Show');
+  })
+
   test.each(['Authorised', 'Pending', 'Received'])(
-    'should handle successful payment: %p',
+    'should handle successful payment: %p for SFRA6',
     (a) => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-      const URLUtils = require('dw/web/URLUtils');
+      adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(true);
       adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
         resultCode: a,
         paymentMethod: [],
         merchantReference: 'mocked_merchantReference',
       }));
+      req.querystring.redirectResult = 'mocked_redirect_result';
       showConfirmation(req, res, jest.fn());
-      expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
+      expect(res.render.mock.calls[0][0]).toBe('orderConfirmForm');
     },
+  );
+  test.each(['Authorised', 'Pending', 'Received'])(
+  'should handle successful payment: %p for SFRA5',
+      (a) => {
+        const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+        adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(false);
+        const URLUtils = require('dw/web/URLUtils');
+        adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
+          resultCode: a,
+          paymentMethod: [],
+          merchantReference: 'mocked_merchantReference',
+        }));
+        req.querystring.redirectResult = 'mocked_redirect_result';
+        showConfirmation(req, res, jest.fn());
+        expect(URLUtils.url.mock.calls[0][0]).toEqual('Order-Confirm');
+      },
   );
 });

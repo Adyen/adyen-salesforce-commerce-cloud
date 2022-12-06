@@ -1,25 +1,19 @@
 const helpers = require('./helpers');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
-
-function getComponentName(data) {
-  return data.paymentMethod.storedPaymentMethodId
-    ? `storedCard${data.paymentMethod.storedPaymentMethodId}`
-    : data.paymentMethod.type;
-}
+const constants = require('../constants');
 
 function getCardConfig() {
   return {
-    enableStoreDetails: showStoreDetails,
+    enableStoreDetails: window.showStoreDetails,
+    showBrandsUnderCardNumber: false,
     onChange(state) {
       store.isValid = state.isValid;
-      const isSelected =
-        getComponentName(state.data) === store.selectedMethod ||
-        store.selectedMethod === 'bcmc';
-      if (isSelected) {
-        store.updateSelectedPayment('isValid', store.isValid);
-        store.updateSelectedPayment('stateData', state.data);
-      }
+      const method = state.data.paymentMethod.storedPaymentMethodId
+        ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
+        : store.selectedMethod;
+      store.updateSelectedPayment(method, 'isValid', store.isValid);
+      store.updateSelectedPayment(method, 'stateData', state.data);
     },
     onFieldValid,
     onBrand,
@@ -31,7 +25,6 @@ function getPaypalConfig() {
   return {
     showPayButton: true,
     environment: window.Configuration.environment,
-    intent: window.paypalIntent,
     onSubmit: (state, component) => {
       helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(
@@ -46,6 +39,7 @@ function getPaypalConfig() {
         {
           cancelTransaction: true,
           merchantReference: document.querySelector('#merchantReference').value,
+          orderToken: document.querySelector('#orderToken').value,
         },
         component,
       );
@@ -83,61 +77,6 @@ function getPaypalConfig() {
   };
 }
 
-function getQRCodeConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      $('#dwfrm_billing').trigger('submit');
-      if (store.formErrorsExist) {
-        return;
-      }
-
-      helpers.assignPaymentMethodValue();
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        store.selectedPayment.stateData,
-      );
-
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: (state /* , component */) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
-  };
-}
-
-function getMbwayConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      $('#dwfrm_billing').trigger('submit');
-      helpers.assignPaymentMethodValue();
-      if (!store.formErrorsExist) {
-        if (document.getElementById('component_mbway')) {
-          document
-            .getElementById('component_mbway')
-            .querySelector('button').disabled = true;
-        }
-        helpers.paymentFromComponent(state.data, component);
-        document.querySelector('#adyenStateData').value = JSON.stringify(
-          store.selectedPayment.stateData,
-        );
-      }
-    },
-    onError: (/* error, component */) => {
-      document.querySelector('#showConfirmationForm').submit();
-    },
-    onAdditionalDetails: (state /* , component */) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
-  };
-}
-
 function getGooglePayConfig() {
   return {
     environment: window.Configuration.environment,
@@ -154,14 +93,235 @@ function getGooglePayConfig() {
   };
 }
 
+function removeGiftCard() {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-CancelPartialPaymentOrder',
+    data: JSON.stringify(store.partialPaymentsOrderObj),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(res) {
+      store.partialPaymentsOrderObj = null;
+      document.querySelector('#adyenPartialPaymentsOrder').value = null;
+      window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
+      if (res.resultCode === constants.RECEIVED) {
+        document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
+        document.querySelector('#giftCardLabel')?.classList.remove('invisible');
+        store.componentsObj?.giftcard?.node.unmount('component_giftcard');
+      }
+    },
+  });
+}
+
+function showGiftCardWarningMessage() {
+  const alertContainer = document.createElement('div');
+  alertContainer.setAttribute('id', 'giftCardWarningMessage');
+  alertContainer.classList.add('alert', 'alert-warning', 'error-message');
+  alertContainer.style.display = 'block';
+  alertContainer.style.margin = '20px 0';
+  alertContainer.setAttribute('role', 'alert');
+
+  const alertContainerP = document.createElement('p');
+  alertContainerP.classList.add('error-message-text');
+  alertContainerP.textContent = window.giftCardWarningMessage;
+
+  alertContainer.appendChild(alertContainerP);
+
+  const orderTotalSummaryEl = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+  orderTotalSummaryEl.appendChild(alertContainer);
+}
+
+function createElementsToShowRemainingGiftCardAmount() {
+  const mainContainer = document.createElement('div');
+  const remainingAmountContainer = document.createElement('div');
+  const remainingAmountStart = document.createElement('div');
+  const remainingAmountEnd = document.createElement('div');
+  const discountedAmountContainer = document.createElement('div');
+  const discountedAmountStart = document.createElement('div');
+  const discountedAmountEnd = document.createElement('div');
+  const cancelGiftCard = document.createElement('a');
+  const remainingAmountStartP = document.createElement('p');
+  const remainingAmountEndP = document.createElement('p');
+  const discountedAmountStartP = document.createElement('p');
+  const discountedAmountEndP = document.createElement('p');
+  const cancelGiftCardP = document.createElement('p');
+  const remainingAmountStartSpan = document.createElement('span');
+  const discountedAmountStartSpan = document.createElement('span');
+  const cancelGiftCardSpan = document.createElement('span');
+  const remainingAmountEndSpan = document.createElement('span');
+  const discountedAmountEndSpan = document.createElement('span');
+
+  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
+  remainingAmountStart.classList.add('col-6', 'start-lines');
+  remainingAmountEnd.classList.add('col-6', 'end-lines');
+  remainingAmountStartP.classList.add('order-receipt-label');
+  discountedAmountContainer.classList.add(
+    'row',
+    'grand-total',
+    'leading-lines',
+  );
+  discountedAmountStart.classList.add('col-6', 'start-lines');
+  discountedAmountEnd.classList.add('col-6', 'end-lines');
+  discountedAmountStartP.classList.add('order-receipt-label');
+  cancelGiftCardP.classList.add('order-receipt-label');
+  remainingAmountEndP.classList.add('text-right');
+  discountedAmountEndP.classList.add('text-right');
+  cancelGiftCard.id = 'cancelGiftCardContainer';
+  cancelGiftCard.role = 'button';
+  discountedAmountContainer.id = 'discountedAmountContainer';
+  remainingAmountContainer.id = 'remainingAmountContainer';
+
+  remainingAmountStartSpan.innerText = window.remainingAmountGiftCardResource;
+  discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
+  cancelGiftCardSpan.innerText = window.cancelGiftCardResource;
+  remainingAmountEndSpan.innerText =
+    store.partialPaymentsOrderObj.remainingAmount;
+  discountedAmountEndSpan.innerText =
+    store.partialPaymentsOrderObj.discountedAmount;
+
+  cancelGiftCard.addEventListener('click', removeGiftCard);
+
+  remainingAmountContainer.appendChild(remainingAmountStart);
+  remainingAmountContainer.appendChild(remainingAmountEnd);
+  remainingAmountContainer.appendChild(cancelGiftCard);
+  remainingAmountStart.appendChild(remainingAmountStartP);
+
+  discountedAmountContainer.appendChild(discountedAmountStart);
+  discountedAmountContainer.appendChild(discountedAmountEnd);
+  discountedAmountStart.appendChild(discountedAmountStartP);
+
+  cancelGiftCard.appendChild(cancelGiftCardP);
+  remainingAmountEnd.appendChild(remainingAmountEndP);
+  remainingAmountStartP.appendChild(remainingAmountStartSpan);
+  discountedAmountEnd.appendChild(discountedAmountEndP);
+  discountedAmountStartP.appendChild(discountedAmountStartSpan);
+  cancelGiftCardP.appendChild(cancelGiftCardSpan);
+  remainingAmountEndP.appendChild(remainingAmountEndSpan);
+  discountedAmountEndP.appendChild(discountedAmountEndSpan);
+
+  const pricingContainer = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+  mainContainer.appendChild(discountedAmountContainer);
+  mainContainer.appendChild(remainingAmountContainer);
+  mainContainer.appendChild(cancelGiftCard);
+  pricingContainer.appendChild(mainContainer);
+}
+
+function showRemainingAmount() {
+  $('#giftcard-modal').modal('hide');
+  document.querySelector('#giftCardLabel').classList.add('invisible');
+  createElementsToShowRemainingGiftCardAmount();
+}
+
+function getGiftCardConfig() {
+  let giftcardBalance;
+  return {
+    showPayButton: true,
+    onBalanceCheck: (resolve, reject, requestData) => {
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-CheckBalance',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: (data) => {
+          giftcardBalance = data.balance;
+          if (data.resultCode === constants.SUCCESS) {
+            resolve(data);
+          } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
+            resolve(data);
+          } else {
+            reject();
+          }
+        },
+        fail: () => {
+          reject();
+        },
+      });
+    },
+    onOrderRequest: (resolve, reject, requestData) => {
+      // Make a POST /orders request
+      // Create an order for the total transaction amount
+      const giftCardData = requestData.paymentMethod;
+      $.ajax({
+        type: 'POST',
+        url: 'Adyen-PartialPaymentsOrder',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
+        async: false,
+        success: (data) => {
+          if (data.resultCode === 'Success') {
+            // make payments call including giftcard data and order data
+            const partialPaymentRequest = {
+              paymentMethod: giftCardData,
+              amount: giftcardBalance,
+              partialPaymentsOrder: {
+                pspReference: data.pspReference,
+                orderData: data.orderData,
+              },
+              giftcardBrand: store.giftcardBrand,
+            };
+            const partialPaymentResponse = helpers.makePartialPayment(
+              partialPaymentRequest,
+              data.expiresAt,
+              data.remainingAmount,
+            );
+            if (partialPaymentResponse?.error) {
+              reject();
+            } else {
+              showRemainingAmount();
+            }
+          }
+        },
+      });
+    },
+    onSubmit(state) {
+        console.log(JSON.stringify(state.data));
+      $('#giftcard-modal').modal('hide');
+      store.selectedMethod = state.data.paymentMethod.type;
+      store.brand = state.data?.paymentMethod?.brand;
+      document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').click();
+    },
+  };
+}
+
 function handleOnChange(state) {
-  const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
-  if (!store.componentsObj[type]) {
-    store.componentsObj[type] = {};
+  if (!store.componentsObj[store.selectedMethod]) {
+    store.componentsObj[store.selectedMethod] = {};
   }
-  store.componentsObj[type].isValid = store.isValid;
-  store.componentsObj[type].stateData = state.data;
+  store.componentsObj[store.selectedMethod].isValid = store.isValid;
+  store.componentsObj[store.selectedMethod].stateData = state.data;
+}
+
+const actionHandler = async (action) => {
+  const checkout = await AdyenCheckout(store.checkoutConfiguration);
+  checkout.createFromAction(action).mount('#action-container');
+  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+};
+
+function handleOnAdditionalDetails(state) {
+  $.ajax({
+    type: 'POST',
+    url: 'Adyen-PaymentsDetails',
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken,
+    }),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+    success(data) {
+      if (!data.isFinal && typeof data.action === 'object') {
+        actionHandler(data.action);
+      } else {
+        window.location.href = data.redirectUrl;
+      }
+    },
+  });
 }
 
 function getAmazonpayConfig() {
@@ -169,24 +329,8 @@ function getAmazonpayConfig() {
     showPayButton: true,
     productType: 'PayAndShip',
     checkoutMode: 'ProcessOrder',
+    locale: window.Configuration.locale,
     returnUrl: window.returnURL,
-    addressDetails: {
-      name: `${document.querySelector('#shippingFirstNamedefault').value} ${
-        document.querySelector('#shippingLastNamedefault').value
-      }`,
-      addressLine1: document.querySelector('#shippingFirstNamedefault').value,
-      city: document.querySelector('#shippingAddressCitydefault').value,
-      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-        .value,
-      postalCode: document.querySelector('#shippingZipCodedefault').value,
-      countryCode: document.querySelector('#shippingCountrydefault').value,
-      phoneNumber: document.querySelector('#shippingPhoneNumberdefault').value,
-    },
-    configuration: {
-      merchantId: window.amazonMerchantID,
-      storeId: window.amazonStoreID,
-      publicKeyId: window.amazonPublicKeyID,
-    },
     onClick: (resolve, reject) => {
       $('#dwfrm_billing').trigger('submit');
       if (store.formErrorsExist) {
@@ -202,76 +346,24 @@ function getAmazonpayConfig() {
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
+  store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),
+    bcmc: getCardConfig(),
     storedCard: getCardConfig(),
     boletobancario: {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off
       showEmailAddress: false, // allow shopper to specify their email address
-
-      // Optionally prefill some fields, here all fields are filled:
-      data: {
-        firstName: document.getElementById('shippingFirstNamedefault').value,
-        lastName: document.getElementById('shippingLastNamedefault').value,
-      },
     },
     paywithgoogle: getGooglePayConfig(),
+    googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
-    mbway: getMbwayConfig(),
-    swish: getQRCodeConfig(),
-    bcmc_mobile: getQRCodeConfig(),
-    wechatpayQR: getQRCodeConfig(),
     amazonpay: getAmazonpayConfig(),
-    pix: getQRCodeConfig(),
-    afterpay_default: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-          shopperEmail: document.querySelector('#email').value,
-        },
-      },
-    },
-    facilypay_3x: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-          telephoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-            .value,
-          shopperEmail: document.querySelector('#email').value,
-        },
-      },
-    },
-    ratepay: {
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-      data: {
-        personalDetails: {
-          firstName: document.querySelector('#shippingFirstNamedefault').value,
-          lastName: document.querySelector('#shippingLastNamedefault').value,
-        },
-      },
-    },
+    giftcard: getGiftCardConfig(),
   };
 }
 
@@ -279,7 +371,10 @@ module.exports = {
   getCardConfig,
   getPaypalConfig,
   getGooglePayConfig,
+  getGiftCardConfig,
   setCheckoutConfiguration,
-  getMbwayConfig,
-  getQRCodeConfig,
+  actionHandler,
+  createElementsToShowRemainingGiftCardAmount,
+  removeGiftCard,
+  showGiftCardWarningMessage,
 };

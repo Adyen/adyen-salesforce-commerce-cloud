@@ -1,25 +1,37 @@
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
 <div>
-    <isif condition="${pdict.AdyenHelper.getAdyenOneClickEnabled()}">
+    <isif condition="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}">
+        <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+        <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/bundle.js');
+            assets.addCss('/css/adyenCss.css');
             assets.addJs('/js/adyenAccount.js');
         </isscript>
         <script type="text/javascript">
             window.Configuration = {
                 locale: '${request.locale}',
-                originKey: '${pdict.adyen.originKey}',
+                clientKey: '${pdict.adyen.clientKey}',
                 environment: '${pdict.adyen.environment}'
             };
+            window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
+            window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
         </script>
         <form
-                action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
-                class="payment-form"
-                method="POST"
-                name="payment-form" ${pdict.paymentForm.attributes}>
-
+            action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
+            class="payment-form"
+            method="POST"
+            id="payment-form" ${pdict.paymentForm.attributes}>
+            <div id="cardError" class="card-error alert alert-danger">
+                <span>${Resource.msg('error.card.information.error', 'creditCard', null)}</span>
+            </div>
+            <script type="text/javascript">
+                if(window.location.href.indexOf("isAuthorised") > -1){
+                    document.getElementById("cardError").style.display = "block";
+                }
+            </script>
             <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
             <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
             <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
@@ -52,5 +64,5 @@
         </iselse>
     </isif>
 </div>
-
-
+<isinclude template="adyenActionModal" />
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>

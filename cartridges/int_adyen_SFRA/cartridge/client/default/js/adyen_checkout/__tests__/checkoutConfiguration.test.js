@@ -1,29 +1,23 @@
 "use strict";
 
 var _require = require('../checkoutConfiguration'),
-    getCardConfig = _require.getCardConfig,
-    getPaypalConfig = _require.getPaypalConfig,
-    getGooglePayConfig = _require.getGooglePayConfig,
-    getMbwayConfig = _require.getMbwayConfig,
-    getQRCodeConfig = _require.getQRCodeConfig;
-
+  getCardConfig = _require.getCardConfig,
+  getPaypalConfig = _require.getPaypalConfig,
+  getGooglePayConfig = _require.getGooglePayConfig,
+  setCheckoutConfiguration = _require.setCheckoutConfiguration;
 var store = require('../../../../../store');
-
 var card;
 var paypal;
 var paywithgoogle;
-var mbway;
-var swish;
 beforeEach(function () {
   window.Configuration = {
     environment: 'TEST'
   };
   store.checkoutConfiguration = {};
+  setCheckoutConfiguration();
   card = getCardConfig();
   paypal = getPaypalConfig();
   paywithgoogle = getGooglePayConfig();
-  mbway = getMbwayConfig();
-  swish = getQRCodeConfig();
 });
 describe('Checkout Configuration', function () {
   describe('Card', function () {
@@ -93,40 +87,6 @@ describe('Checkout Configuration', function () {
       });
       expect(spy).toBeCalledTimes(1);
       expect(submitButton.disabled).toBeFalsy();
-    });
-  });
-  describe('MB Way', function () {
-    it('handles onSubmit', function () {
-      document.body.innerHTML = "\n        <div id=\"lb_mbway\">MB Way</div>\n        <div id=\"adyenPaymentMethodName\"></div>\n        <div id=\"adyenStateData\"></div>\n      ";
-      store.selectedMethod = 'mbway';
-      store.componentsObj = {
-        mbway: {
-          stateData: {
-            foo: 'bar'
-          }
-        }
-      };
-      mbway.onSubmit({
-        data: {}
-      });
-      expect(document.getElementById('adyenStateData').value).toBe(JSON.stringify(store.selectedPayment.stateData));
-    });
-  });
-  describe('QR code (swish)', function () {
-    it('handles onSubmit', function () {
-      document.body.innerHTML = "\n        <div id=\"lb_swish\">swish</div>\n        <div id=\"adyenPaymentMethodName\"></div>\n        <div id=\"adyenStateData\"></div>\n      ";
-      store.selectedMethod = 'swish';
-      store.componentsObj = {
-        swish: {
-          stateData: {
-            foo: 'bar'
-          }
-        }
-      };
-      swish.onSubmit({
-        data: {}
-      });
-      expect(document.getElementById('adyenStateData').value).toBe(JSON.stringify(store.selectedPayment.stateData));
     });
   });
 });

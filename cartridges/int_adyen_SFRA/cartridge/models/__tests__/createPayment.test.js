@@ -1,14 +1,10 @@
 "use strict";
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 var _require = require('../createPayment'),
-    createSelectedPaymentInstruments = _require.createSelectedPaymentInstruments;
-
+  createSelectedPaymentInstruments = _require.createSelectedPaymentInstruments;
 var withCustom = {
   selectedAdyenPM: 'mocked_custom_pm',
   selectedIssuerName: 'mocked_custom_issuer_name',
@@ -25,16 +21,13 @@ var withCC = {
   maskedCreditCardNumber: 'mocked_masked_cc_number',
   expirationMonth: 'mocked_expiration_month'
 };
-
 var expected = _objectSpread({
   paymentMethod: 'GIFT_CERTIFICATE',
   amount: 1,
   giftCertificateCode: 'mocked_gift_cert_code',
   maskedGiftCertificateCode: 'mocked_masked_gift_cert_code'
 }, withCC);
-
 var expectedWithCustom = _objectSpread(_objectSpread({}, withCustom), expected);
-
 var expectedWithoutCC = _objectSpread(_objectSpread({}, expectedWithCustom), {}, {
   lastFour: null,
   owner: null,
@@ -43,7 +36,6 @@ var expectedWithoutCC = _objectSpread(_objectSpread({}, expectedWithCustom), {},
   maskedCreditCardNumber: null,
   expirationMonth: null
 });
-
 var customObj = {
   adyenPaymentMethod: 'mocked_custom_pm',
   adyenIssuerName: 'mocked_custom_issuer_name',
@@ -60,7 +52,6 @@ var creditCardObj = {
   creditCardType: 'mocked_cc_type',
   maskedCreditCardNumber: 'mocked_masked_cc_number'
 };
-
 var getPaymentInstrument = function getPaymentInstrument() {
   var custom = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : customObj;
   var ccObj = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : creditCardObj;
@@ -78,7 +69,6 @@ var getPaymentInstrument = function getPaymentInstrument() {
     maskedGiftCertificateCode: 'mocked_masked_gift_cert_code'
   });
 };
-
 describe('Create Payment', function () {
   it('should get selected payment instrument', function () {
     var result = createSelectedPaymentInstruments(getPaymentInstrument());

@@ -11,6 +11,7 @@ function clearCustomSessionFields() {
   session.privacy.adyenPaymentMethod = null;
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
+  session.privacy.giftCardResponse = null;
 }
 
 /**
@@ -28,12 +29,24 @@ function clearForms() {
 function clearAdyenData(paymentInstrument) {
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentData = null;
+    paymentInstrument.custom.adyenPartialPaymentsOrder = null;
     paymentInstrument.custom.adyenMD = null;
     paymentInstrument.custom.adyenAction = null;
+  });
+}
+
+/**
+ * Clear Adyen transaction data
+ */
+function clearPaymentTransactionData(paymentInstrument) {
+  Transaction.wrap(() => {
+    paymentInstrument.paymentTransaction.custom.Adyen_authResult = null;
+    paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = null;
   });
 }
 
 module.exports = {
   clearForms,
   clearAdyenData,
+  clearPaymentTransactionData,
 };
