@@ -40,7 +40,7 @@ if (
   window.googleMerchantID !== 'null' &&
   window.Configuration.environment === 'live'
 ) {
-  const id = 'merchantIdentifier';
+  const id = 'merchantId';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[
     id
   ] = window.googleMerchantID;
