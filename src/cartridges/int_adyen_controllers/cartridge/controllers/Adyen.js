@@ -13,7 +13,6 @@ const guard = require('app_storefront_controllers/cartridge/scripts/guard');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenSessions = require('*/cartridge/scripts/adyenSessions');
 
-const OrderModel = app.getModel('Order');
 const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
@@ -187,7 +186,6 @@ function showConfirmation() {
         Transaction.wrap(() => {
           AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, detailsResult);
         });
-        OrderModel.submit(order);
         clearForms();
         return app.getController('COSummary').ShowConfirmation(order);
       }
@@ -388,13 +386,13 @@ function showConfirmationPaymentFromComponent() {
     paymentInformation.get('paymentFromComponentStateData').value(),
   );
 
-  let finalResult;
+  let amazonPayResult;
 
   const hasStateData = stateData && stateData.details && stateData.paymentData;
 
   if (!hasStateData) {
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
-      finalResult = JSON.parse(result);
+      amazonPayResult = JSON.parse(result);
     } else {
       // The billing step is fulfilled, but order will be failed
       app.getForm('billing').object.fulfilled.value = true;
@@ -425,17 +423,36 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
+  
+  let finalResult;
 
-  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
-
-  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
+  if (order.status.value === Order.ORDER_STATUS_CREATED) {
+    finalResult = amazonPayResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
+  }
+  if (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(finalResult?.resultCode) > -1
+  ) {
     Transaction.wrap(() => {
       AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
-    OrderModel.submit(order);
     clearForms();
     app.getController('COSummary').ShowConfirmation(order);
     return {};
+  }
+  // handles the refresh
+  else if (
+    [
+      Order.ORDER_STATUS_CREATED, 
+      Order.ORDER_STATUS_NEW,
+      Order.ORDER_STATUS_OPEN,
+    ].indexOf(order.status.value) > -1
+  ) {
+    clearForms();
+    return app.getController('COSummary').ShowConfirmation(order);
   }
   // fail order
   Transaction.wrap(() => {
