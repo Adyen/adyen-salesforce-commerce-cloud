@@ -386,13 +386,13 @@ function showConfirmationPaymentFromComponent() {
     paymentInformation.get('paymentFromComponentStateData').value(),
   );
 
-  let finalResult;
+  let amazonPayResult;
 
   const hasStateData = stateData && stateData.details && stateData.paymentData;
 
   if (!hasStateData) {
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
-      finalResult = JSON.parse(result);
+      amazonPayResult = JSON.parse(result);
     } else {
       // The billing step is fulfilled, but order will be failed
       app.getForm('billing').object.fulfilled.value = true;
@@ -423,9 +423,11 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
+  
+  let finalResult;
 
   if (order.status.value === Order.ORDER_STATUS_CREATED) {
-    finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
+    finalResult = amazonPayResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
   }
   if (
     [
@@ -442,7 +444,13 @@ function showConfirmationPaymentFromComponent() {
     return {};
   }
   // handles the refresh
-  else if (order.status.value === Order.ORDER_STATUS_CREATED || order.status.value === Order.ORDER_STATUS_NEW || order.status.value === Order.ORDER_STATUS_OPEN){
+  else if (
+    [
+      Order.ORDER_STATUS_CREATED, 
+      Order.ORDER_STATUS_NEW,
+      Order.ORDER_STATUS_OPEN,
+    ].indexOf(order.status.value) > -1
+  ) {
     clearForms();
     return app.getController('COSummary').ShowConfirmation(order);
   }
