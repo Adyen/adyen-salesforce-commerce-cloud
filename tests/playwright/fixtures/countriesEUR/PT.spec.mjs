@@ -26,7 +26,6 @@ for (const environment of environments) {
       await presentToShoppers.doMultiBancoPayment();
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
-      await checkoutPage.expectVoucher();
     });
 
     // MBWay redirection is too flaky, skipping until it's fixed.
