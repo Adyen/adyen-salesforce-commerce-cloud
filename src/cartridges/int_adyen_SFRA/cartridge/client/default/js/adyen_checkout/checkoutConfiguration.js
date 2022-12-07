@@ -238,6 +238,7 @@ function getAmazonpayConfig() {
 }
 
 function setCheckoutConfiguration() {
+  console.log('setCheckoutConfiguration');
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;

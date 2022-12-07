@@ -179,6 +179,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  console.log(store.checkout);
   store.partialPaymentsOrderObj = JSON.parse(
     window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED),
   );
