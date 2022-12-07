@@ -111,6 +111,10 @@ function getGiftCardConfig() {
   let giftcardBalance;
   return {
     showPayButton: true,
+    onChange: (state) => {
+      store.updateSelectedPayment(constants.GIFTCARD, 'isValid', state.isValid);
+      store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
+    },
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
         type: 'POST',
