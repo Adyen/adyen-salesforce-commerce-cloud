@@ -140,7 +140,7 @@ export default class CheckoutPageSFRA5 {
         );
       }
     }
-    await this.shippingSubmit.click();
+    await this.submitShipping();
   };
 
   setEmail = async () => {
@@ -153,15 +153,16 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
   submitPayment = async () => {
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.placeOrderButton.click();
   };
 

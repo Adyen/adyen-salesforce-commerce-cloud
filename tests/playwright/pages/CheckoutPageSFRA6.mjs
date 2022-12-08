@@ -54,10 +54,10 @@ export default class CheckoutPageSFRA {
       '#shippingPhoneNumberdefault',
     );
 
-    this.shippingSubmit = page.locator('.submit-shipping');
+    this.shippingSubmit = page.locator("button[value='submit-shipping']");
 
-    this.submitPaymentButton = page.locator('.submit-payment');
-    this.placeOrderButton = page.locator('.place-order');
+    this.submitPaymentButton = page.locator("button[value='submit-payment']");
+    this.placeOrderButton = page.locator("button[value='place-order']");
 
     this.errorMessage = page.locator('.error-message-text');
     this.thankYouMessage = page.locator('.order-thank-you-msg');
@@ -149,7 +149,7 @@ export default class CheckoutPageSFRA {
     }
 
     this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
-    await this.shippingSubmit.click();
+    await this.submitShipping();
   };
 
   setEmail = async () => {
@@ -162,15 +162,16 @@ export default class CheckoutPageSFRA {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.shippingSubmit.click();
   };
 
   submitPayment = async () => {
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.placeOrderButton.click();
   };
 
