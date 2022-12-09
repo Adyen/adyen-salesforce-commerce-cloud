@@ -177,9 +177,9 @@ function getGiftCardConfig() {
         },
       });
     },
-    onSubmit(state) {
+    onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
-      store.brand = state.data?.paymentMethod?.brand;
+      store.brand = component?.displayName;
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
