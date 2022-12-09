@@ -78,7 +78,7 @@ export class ShopperData {
     address: {
       city: 'Oslo',
       country: 'NO',
-      stateOrProvince: '',
+      stateOrProvince: 'OTHER',
       postalCode: '03733',
       street: 'Rådhusplassen',
       houseNumberOrName: '1',
@@ -95,7 +95,7 @@ export class ShopperData {
     address: {
       city: 'København',
       country: 'DK',
-      stateOrProvince: '',
+      stateOrProvince: 'OTHER',
       postalCode: '15505',
       street: 'Rådhuspladsen',
       houseNumberOrName: '1',
