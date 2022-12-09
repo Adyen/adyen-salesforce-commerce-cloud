@@ -87,10 +87,17 @@ export default class CheckoutPageSFRA {
 
     this.qrImg = this.qrLoader.locator('//img[contains(@alt,"QR")]');
 
+    this.paymentModal = page.locator("#action-modal-SG");
     this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
     this.donationButton = page.locator('.adyen-checkout__button--donate');
     this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
   }
+
+  isPaymentModalShown = async (imgAltValue) => {
+    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
+      .toBeVisible({ timeout: 10000 });
+  }
+
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
