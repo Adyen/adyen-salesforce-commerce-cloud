@@ -135,16 +135,9 @@ export default class CheckoutPageSFRA {
       shopperDetails.address.country,
     );
 
-    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+    await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
 
-    if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
-      if (shopperDetails.address.stateOrProvince !== '') {
-        await this.checkoutPageUserStateSelect.selectOption(
-          shopperDetails.address.stateOrProvince,
-        );
-      }
-    }
+    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
 
     await this.checkoutPageUseShippingAddressForBillingCheckBox.click();
     await this.page.waitForLoadState('networkidle', { timeout: 10000 });
