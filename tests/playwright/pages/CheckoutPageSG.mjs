@@ -135,7 +135,14 @@ export default class CheckoutPageSFRA {
       shopperDetails.address.country,
     );
 
-    await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
+    if (await this.checkoutPageUserStateSelect.isVisible()) {
+      try{
+        await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      }
+      catch{
+          await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
+      }
+    }
 
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
 
