@@ -6,7 +6,6 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
 <script type="text/javascript">
-    window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
     window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
     window.locale = "${request.locale}";
     window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
