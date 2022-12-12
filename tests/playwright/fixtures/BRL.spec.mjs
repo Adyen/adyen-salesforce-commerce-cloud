@@ -27,16 +27,14 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.BR);
     });
 
-    // PW-7600
-    test.fixme('Card payment 3DS2 installments success', async () => {
+    test('Card payment 3DS2 installments success', async () => {
       await cards.doCardPaymentInstallments(cardData.threeDs2, 4);
       await checkoutPage.completeCheckout();
       await cards.do3Ds2Verification();
       await checkoutPage.expectSuccess();
     });
 
-    // PW-7600
-    test.fixme('Card payment 3DS2 installments failure', async () => {
+    test('Card payment 3DS2 installments failure', async () => {
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPaymentInstallments(cardDataInvalid, 2);
