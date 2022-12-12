@@ -11,9 +11,9 @@ async function mountApplePayComponent() {
     clientKey: window.clientKey,
     locale: window.locale,
     session: sessionData,
-    // onPaymentCompleted: (result, component) => {
-    //   console.log(result, component);
-    // },
+    onPaymentCompleted: (result, component) => {
+      console.log(result, component);
+    },
     // onError: (error, component) => {
     //   console.log(error.name, error.message, error.stack, component);
     // },
@@ -27,9 +27,9 @@ async function mountApplePayComponent() {
     showPayButton: true,
     configuration: applePayConfig,
     shippingMethods: shippingMethodsData.shippingMethods,
-    // onShippingMethodSelected: (data) => {
-    //   console.log('onShippingMethodSelected', data);
-    // },
+    onShippingMethodSelected: (data) => {
+      console.log('onShippingMethodSelected', data);
+    },
     // onSubmit: (state, component) => {
     //   console.log('onSubmit', state, component);
     //   helpers.paymentFromComponent(state.data, component, 'applepay');
