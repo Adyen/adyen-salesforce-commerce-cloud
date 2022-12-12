@@ -1,8 +1,17 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<script type="text/javascript">
+    window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+    window.locale = "${request.locale}";
+    window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+</script>
 
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');

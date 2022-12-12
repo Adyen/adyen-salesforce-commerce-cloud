@@ -22,6 +22,12 @@ server.post(
 
 server.get('Sessions', server.middleware.https, adyen.callCreateSession);
 
+server.get(
+  'ShippingMethods',
+  server.middleware.https,
+  adyen.callGetShippingMethods,
+);
+
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */

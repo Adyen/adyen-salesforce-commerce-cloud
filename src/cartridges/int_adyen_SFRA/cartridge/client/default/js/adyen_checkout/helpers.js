@@ -3,7 +3,6 @@ const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
-  console.log('adyenPaymentMethod', adyenPaymentMethod);
   // if currently selected paymentMethod contains a brand it will be part of the label ID
   const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
   if (adyenPaymentMethod) {

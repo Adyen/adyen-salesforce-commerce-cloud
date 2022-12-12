@@ -1,46 +1,43 @@
 const helpers = require('./adyen_checkout/helpers');
 
 async function mountApplePayComponent() {
-  const appleConfig = {
-    showPayButton: true,
-    configuration: {
-      merchantId: '000000000206355',
-      merchantName: 'PluginDemo_CommerceCloudAleksandar_TEST',
-    },
-    onSubmit: (state, component) => {
-      console.log('onSubmit', state, component);
-      helpers.assignPaymentMethodValue();
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: (state) => {
-      console.log('onAdditionalDetails', state);
-    },
-    onShippingMethodSelected: (shippingMethod) => {
-      console.log('onShippingMethodSelected', shippingMethod);
-    },
-    onShippingContactSelected: (shippingContact) => {
-      console.log('onShippingContactSelected', shippingContact);
-    },
-  };
-  const checkout = await AdyenCheckout({
-    locale: 'fr-FR',
-    environment: 'test',
-    clientKey: 'test_HAYFONPGBNHXLDS36KA4GNUHLQP5ZGDR',
-    paymentMethodsConfiguration: {
-      applepay: appleConfig,
-    },
-  });
-  console.log(checkout);
+  const session = await fetch(window.sessionsUrl);
+  const sessionData = await session.json();
+  console.log(sessionData);
 
-  const applePayComponent = checkout.create('applepay', appleConfig);
-  applePayComponent
-    .isAvailable()
-    .then(() => {
-      applePayComponent.mount('#applepay-container');
-    })
-    .catch((e) => {
-      console.log('error', e);
-    });
+  const shippingMethods = await fetch(window.shippingMethodsUrl);
+  const shippingMethodsData = await shippingMethods.json();
+  const environment = 'test';
+
+  const checkout = await AdyenCheckout({
+    environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+    session: sessionData,
+  });
+
+  const applePayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
+    (pm) => pm.type === 'applepay',
+  ).configuration;
+
+  const applePayButtonConfig = {
+    showPayButton: true,
+    configuration: applePayConfig,
+    shippingMethods: shippingMethodsData.shippingMethods,
+    onShippingMethodSelected: (data) => {
+      console.log('onShippingMethodSelected', data);
+    },
+    // onSubmit: (state, component) => {
+    //   console.log('onSubmit', state, component);
+    //   helpers.paymentFromComponent(state.data, component, 'applepay');
+    // },
+  };
+
+  const applePayButton = checkout.create('applepay', applePayButtonConfig);
+  const isApplePayButtonAvailable = await applePayButton.isAvailable();
+  if (isApplePayButtonAvailable) {
+    applePayButton.mount('#applepay-container');
+  }
 }
 
 mountApplePayComponent();
