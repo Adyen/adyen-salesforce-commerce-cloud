@@ -154,6 +154,9 @@ function getGiftCardConfig() {
         success: (data) => {
           if (data.resultCode === 'Success') {
             // make payments call including giftcard data and order data
+            const brandSelect = document.getElementById('giftCardSelect');
+            const selectedBrandIndex = brandSelect.selectedIndex;
+            const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
             const partialPaymentRequest = {
               paymentMethod: giftCardData,
               amount: giftcardBalance,
@@ -161,7 +164,7 @@ function getGiftCardConfig() {
                 pspReference: data.pspReference,
                 orderData: data.orderData,
               },
-              giftcardBrand: store.partialPaymentsOrderObj?.giftcard?.brand,
+              giftcardBrand,
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
@@ -177,9 +180,9 @@ function getGiftCardConfig() {
         },
       });
     },
-    onSubmit(state) {
+    onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
-      store.brand = state.data?.paymentMethod?.brand;
+      store.brand = component?.displayName;
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
