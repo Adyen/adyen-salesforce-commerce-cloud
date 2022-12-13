@@ -156,7 +156,8 @@ export default class PaymentMethodsPage {
     Still keeping the old regexp due to potential use for SG*/
     const oneClickLi = this.page.locator(
       `//label[contains(text(),"${oneClickCardInput.oneClickLabel}")]/..`,
-    );
+    ).first();
+
     await oneClickLi.locator('input[name="brandCode"]').click();
     if (oneClickCardInput.cvc !== '') {
       await oneClickLi
@@ -489,6 +490,8 @@ export default class PaymentMethodsPage {
   };
 
   initiateQRCode = async (paymentMethod, envName) => {
+    // Extra static wait due to flaky load times
+    await new Promise(r => setTimeout(r, 2000));
     await this.page.click(`#rb_${paymentMethod}`);
     if (envName === 'SG') {
       await this.page.click(`#component_${paymentMethod} button`);
