@@ -1,0 +1,32 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
+<isset name="BasketMgr" value="${require('dw/order/BasketMgr')}" scope="pdict"/>
+
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<script type="text/javascript">
+    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+    window.locale = "${request.locale}";
+    window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+    window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}",
+    window.amount = {
+        currency: '${pdict.BasketMgr.getCurrentBasket().currencyCode}',
+        value: '${pdict.AdyenHelper.getCurrencyValueForApi(pdict.BasketMgr.getCurrentBasket().getTotalGrossPrice()).value}'
+    };
+</script>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/paypalExpress.js');
+</isscript>
+
+<div class="mb-sm-3">
+    <a href="${URLUtils.https('Checkout-Login')}"
+        class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
+        ${Resource.msg('button.checkout', 'cart', null)}
+    </a>
+    <div id="paypal-container"></div>
+</div>
