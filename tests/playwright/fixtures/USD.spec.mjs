@@ -53,7 +53,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card payment no 3DS with adyen giving donation success', async() => {
+    test('Card payment no 3DS with adyen giving donation success', async () => {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.makeSuccessfulDonation();
@@ -215,7 +215,8 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test('my account add card 3DS1 success', async () => {
+    test.only('my account add card 3DS1 success', async () => {
+      if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs1);
 
       await cards.do3Ds1Verification();
@@ -232,8 +233,10 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test('my account add card 3DS2 success', async () => {
+    test.only('my account add card 3DS2 success', async () => {
+      if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs2);
+
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
       await accountPage.removeCard(cardData.threeDs2);
