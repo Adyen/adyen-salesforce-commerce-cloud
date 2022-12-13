@@ -164,6 +164,10 @@ export default class CheckoutPageSFRA {
   submitShipping = async () => {
     await this.page.waitForLoadState('networkidle', { timeout: 10000 });
     await this.shippingSubmit.click();
+    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 10000 });
+
+    // Ugly wait since the submit button takes time to mount.
+    await new Promise(r => setTimeout(r, 2000));
   };
 
   submitPayment = async () => {
