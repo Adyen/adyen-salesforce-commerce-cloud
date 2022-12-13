@@ -50,7 +50,7 @@ describe('Payment', function () {
       res: res,
       next: next
     });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      Array [\n        Array [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      [\n        [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
   });
   it('should handle payment error when theres not state data', function () {
     var stateData = {};
@@ -59,6 +59,6 @@ describe('Payment', function () {
       res: res,
       next: next
     });
-    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      Array [\n        Array [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
+    expect(URLUtils.url.mock.calls).toMatchInlineSnapshot("\n      [\n        [\n          \"Checkout-Begin\",\n          \"stage\",\n          \"payment\",\n          \"paymentError\",\n          \"mocked_error.payment.not.valid\",\n        ],\n      ]\n    ");
   });
 });

@@ -28,6 +28,7 @@ function paymentFromComponent(req, res, next) {
     return next();
   }
   var currentBasket = BasketMgr.getCurrentBasket();
+  Logger.getLogger('Adyen').error('basket ' + currentBasket);
   var paymentInstrument;
   Transaction.wrap(function () {
     collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
@@ -44,6 +45,7 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   var order = COHelpers.createOrder(currentBasket);
+  Logger.getLogger('Adyen').error('order ' + order);
   var result;
   Transaction.wrap(function () {
     result = adyenCheckout.createPaymentRequest({
@@ -51,6 +53,7 @@ function paymentFromComponent(req, res, next) {
       PaymentInstrument: paymentInstrument
     });
   });
+  Logger.getLogger('Adyen').error('after create payment request');
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     Logger.getLogger('Adyen').error("Payment refused for order ".concat(order.orderNo));
     result.paymentError = true;

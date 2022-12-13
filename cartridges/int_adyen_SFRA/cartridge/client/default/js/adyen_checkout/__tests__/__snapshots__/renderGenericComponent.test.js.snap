@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Render Generic Component should render 1`] = `
-Object {
+{
   "amount": "mocked_amount",
   "countryCode": "mocked_countrycode",
-  "paymentMethodsConfiguration": Object {
-    "amazonpay": Object {
-      "addressDetails": Object {
+  "paymentMethodsConfiguration": {
+    "amazonpay": {
+      "addressDetails": {
         "addressLine1": "test",
         "city": "test",
         "countryCode": "test",
@@ -18,8 +18,8 @@ Object {
       "configuration": undefined,
     },
   },
-  "session": Object {
-    "adyenDescriptions": Object {},
+  "session": {
+    "adyenDescriptions": {},
     "id": "mock_id",
     "imagePath": "example.com",
     "sessionData": "mock_session_data",

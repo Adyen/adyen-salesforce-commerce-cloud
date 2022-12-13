@@ -103,11 +103,11 @@ function createPaymentRequest(args) {
     const paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
-    paymentRequest = AdyenHelper.createAddressObjects(
-      order,
-      paymentMethodType,
-      paymentRequest,
-    );
+//    paymentRequest = AdyenHelper.createAddressObjects(
+//      order,
+//      paymentMethodType,
+//      paymentRequest,
+//    );
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
       order,

@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Express Payment from Component should cancel transaction 1`] = `
+Array [
+  Array [
+    Object {},
+  ],
+]
+`;
+
+exports[`Express Payment from Component should fail without default address 1`] = `
+Array [
+  Array [
+    Object {
+      "error": true,
+    },
+  ],
+]
+`;
+
+exports[`Express Payment from Component should return json response 1`] = `
+Array [
+  Array [
+    Object {
+      "orderNo": "mocked_orderNo",
+      "resultCode": "Authorised",
+    },
+  ],
+]
+`;

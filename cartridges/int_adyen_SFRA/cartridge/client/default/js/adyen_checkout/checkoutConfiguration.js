@@ -247,6 +247,7 @@ function getGiftCardConfig() {
     },
     onSubmit: function onSubmit(state) {
       var _state$data, _state$data$paymentMe;
+      console.log(JSON.stringify(state.data));
       $('#giftcard-modal').modal('hide');
       store.selectedMethod = state.data.paymentMethod.type;
       store.brand = (_state$data = state.data) === null || _state$data === void 0 ? void 0 : (_state$data$paymentMe = _state$data.paymentMethod) === null || _state$data$paymentMe === void 0 ? void 0 : _state$data$paymentMe.brand;

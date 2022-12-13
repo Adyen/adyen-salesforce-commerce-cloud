@@ -1,5 +1,5 @@
 const store = require('../../../store');
-
+console.log('here')
 // creates a hidden form used post to order confirmation
 function createFormField(fieldKey, fieldValue) {
   const formField = document.createElement('input');
@@ -12,140 +12,101 @@ function createFormField(fieldKey, fieldValue) {
 // handles payments API call and processes the response action
 function doPaymentFromComponent(state, component) {
   $.ajax({
-    url: window.configuration.paymentFromComponentURL,
+    url: window.paymentFromComponentURL,
     type: 'post',
     data: {
       data: JSON.stringify(state.data),
       paymentMethod: 'PayPal',
     },
     success(response) {
-      window.configuration.merchantReference = response.orderNo;
+      window.merchantReference = response.orderNo;
       if (response.fullResponse && response.fullResponse.action) {
         component.handleAction(response.fullResponse.action);
       } else {
-        document.getElementById('paymentError').style.display = 'block';
+        console.log('not success')
+//        document.getElementById('paymentError').style.display = 'block';
       }
     },
   }).fail(() => {
-    document.getElementById('paymentError').style.display = 'block';
+          console.log('inside fail')
+//    document.getElementById('paymentError').style.display = 'block';
   });
 }
 
-// updates all checkboxes to the same checked state. Enable/disable the express checkout components
-//function shippingAgreementUpdated() {
-//  // set all input checkboxes to enabled/disabled
-//  const agreementCheckboxes = document.getElementsByClassName('acceptShipping');
-//  for (
-//    let agreementCheckboxesIndex = 0;
-//    agreementCheckboxesIndex < agreementCheckboxes.length;
-//    agreementCheckboxesIndex += 1
-//  ) {
-//    agreementCheckboxes[agreementCheckboxesIndex].checked = this.checked;
-//  }
-//  // set all express components to enabled/disabled
-//  const expressComponents = document.getElementsByClassName('expressComponent');
-//  const disabledOverlayClass = 'disabled';
-//  for (
-//    let expressComponentsIndex = 0;
-//    expressComponentsIndex < expressComponents.length;
-//    expressComponentsIndex += 1
-//  ) {
-//    if (this.checked) {
-//      expressComponents[expressComponentsIndex].classList.remove(
-//        disabledOverlayClass,
-//      );
-//    } else {
-//      expressComponents[expressComponentsIndex].classList.add(
-//        disabledOverlayClass,
-//      );
-//    }
-//  }
-//}
+async function mountPayPalComponent() {
+  const session = await fetch(window.sessionsUrl);
+  const sessionData = await session.json();
+
+  const shippingMethods = await fetch(window.shippingMethodsUrl);
+  const shippingMethodsData = await shippingMethods.json();
+  console.log('shippingMethodsData ' + JSON.stringify(shippingMethodsData));
+  const environment = 'test';
+
+  const paypalConfig = {
+      onAdditionalDetails: (state) => {
+        const onAdditionalDetailsForm = document.createElement('form');
+        onAdditionalDetailsForm.method = 'POST';
+        onAdditionalDetailsForm.action = window.configuration.showConfirmationURL;
+        onAdditionalDetailsForm.appendChild(
+          createFormField('additionalDetailsHidden', JSON.stringify(state.data)),
+        );
+        onAdditionalDetailsForm.appendChild(
+          createFormField(
+            'merchantReference',
+            window.merchantReference,
+          ),
+        );
+        document.body.appendChild(onAdditionalDetailsForm);
+        onAdditionalDetailsForm.submit();
+      },
+      onClick: (data, actions) => {
+          console.log('onclick!');
+
+      },
+      onError: (error, component) => {
+          console.log('inside onerror');
+          console.log(error.toString())
+        if (component) {
+          component.setStatus('ready');
+        }
+      },
+      onSubmit: (state, component) => {
+          console.log('onsubmit');
+        doPaymentFromComponent(state, component);
+      },
+      onCancel: () => {
+        $.ajax({
+          url: window.paymentFromComponentURL,
+          type: 'post',
+          data: {
+            data: JSON.stringify({
+              cancelTransaction: true,
+              merchantReference: window.merchantReference,
+            }),
+          },
+          complete() {
+            document.getElementById('paymentError').style.display = 'block';
+          },
+        });
+      },
+      onShippingChange: function(data, actions) {
+        console.log('inside onshipping change');
+        console.log(data);
+        console.log(actions);
+      },
+    };
 
 
-// initial page setup run when the page has fully loaded
-$(document).ready(() => {
-    console.log('ready!');
+  const checkout = await AdyenCheckout({
+    environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+    session: sessionData,
+    amount: window.amount,
+  });
 
-// store configuration
-store.checkoutConfiguration.amount = window.configuration.amount;
-//store.checkoutConfiguration.environment = window.configuration.environment;
-store.checkoutConfiguration.environment = "TEST";
+  const paypalComponent = checkout.create('paypal', paypalConfig);
+    paypalComponent.mount('#paypal-container');
+}
 
-store.checkoutConfiguration.paymentMethodsConfiguration = {
-  paypal: {
-    onAdditionalDetails: (state) => {
-      const onAdditionalDetailsForm = document.createElement('form');
-      onAdditionalDetailsForm.method = 'POST';
-      onAdditionalDetailsForm.action = window.configuration.showConfirmationURL;
-      onAdditionalDetailsForm.appendChild(
-        createFormField('additionalDetailsHidden', JSON.stringify(state.data)),
-      );
-      onAdditionalDetailsForm.appendChild(
-        createFormField(
-          'merchantReference',
-          window.configuration.merchantReference,
-        ),
-      );
-      document.body.appendChild(onAdditionalDetailsForm);
-      onAdditionalDetailsForm.submit();
-    },
-    onClick: (data, actions) => {
-        console.log('onclick!');
-    },
-    onError: (error, component) => {
-        console.log('inside onerror');
-        console.log(error.toString())
-      if (component) {
-        component.setStatus('ready');
-      }
-    },
-    onSubmit: (state, component) => {
-        console.log('onsubmit');
-      doPaymentFromComponent(state, component);
-    },
-    onCancel: () => {
-      $.ajax({
-        url: window.configuration.paymentFromComponentURL,
-        type: 'post',
-        data: {
-          data: JSON.stringify({
-            cancelTransaction: true,
-            merchantReference: window.configuration.merchantReference,
-          }),
-        },
-        complete() {
-          document.getElementById('paymentError').style.display = 'block';
-        },
-      });
-    },
-  },
-};
-  // address consent checkbox handling
-//  $('.acceptShipping').change(shippingAgreementUpdated);
-
-  // card and checkout component creation
-//  const expressCheckoutNode = document.getElementsByClassName(
-//    'expressComponent',
-//  );
-    setTimeout(async () => {
-       AdyenCheckout(store.checkoutConfiguration)
-        .then( checkout => {
-         const expressCheckoutNode = document.querySelector('#expressComponent');
-         checkout.create('paypal').mount(expressCheckoutNode);
-        })
-        .catch(e => {
-        console.log('inside catch')
-        console.log(e.toString())
-        })
-    }, 1000);
-
-//  for (
-//    let expressCheckoutNodesIndex = 0;
-//    expressCheckoutNodesIndex < expressCheckoutNodes.length;
-//    expressCheckoutNodesIndex += 1
-//  ) {
-//    if (window.configuration.isPayPalExpressEnabled) {
-//    }
-//  }
-});
+mountPayPalComponent();

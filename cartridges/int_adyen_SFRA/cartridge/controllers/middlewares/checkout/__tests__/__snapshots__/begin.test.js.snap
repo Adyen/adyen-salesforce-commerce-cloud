@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Begin should not attempt to restore cart when no order number is cached 1`] = `
-Array [
-  Array [
-    Object {
-      "adyen": Object {
+[
+  [
+    {
+      "adyen": {
         "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
         "cardholderNameBool": true,
@@ -20,10 +20,10 @@ Array [
 `;
 
 exports[`Begin should set view data 1`] = `
-Array [
-  Array [
-    Object {
-      "adyen": Object {
+[
+  [
+    {
+      "adyen": {
         "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
         "cardholderNameBool": true,

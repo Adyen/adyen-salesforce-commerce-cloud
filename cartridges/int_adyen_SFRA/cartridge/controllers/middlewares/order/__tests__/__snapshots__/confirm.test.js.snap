@@ -2,10 +2,10 @@
 
 exports[`Confirm should set view data 1`] = `
 [MockFunction] {
-  "calls": Array [
-    Array [
-      Object {
-        "adyen": Object {
+  "calls": [
+    [
+      {
+        "adyen": {
           "adyenGivingAvailable": true,
           "adyenGivingBackgroundUrl": "mocked_background_url",
           "adyenGivingLogoUrl": "mocked_logo_url",
@@ -13,15 +13,15 @@ exports[`Confirm should set view data 1`] = `
           "charityName": "mocked_charity_name",
           "charityWebsite": "mocked_charity_website",
           "clientKey": "mocked_client_key",
-          "donationAmounts": "{\\"currency\\":\\"EUR\\",\\"values\\":[10,20,30]}",
+          "donationAmounts": "{"currency":"EUR","values":[10,20,30]}",
           "environment": "test",
           "pspReference": undefined,
         },
       },
     ],
   ],
-  "results": Array [
-    Object {
+  "results": [
+    {
       "type": "return",
       "value": undefined,
     },

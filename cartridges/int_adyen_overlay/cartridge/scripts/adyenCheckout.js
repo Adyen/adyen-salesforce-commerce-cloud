@@ -58,15 +58,11 @@ function createPaymentRequest(args) {
 
     // Create request object with payment details
     var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
-    }
-
-    // Get 3DS2 data
-    if (AdyenConfigs.getAdyen3DS2Enabled()) {
-      paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
     // L2/3 Data
@@ -104,7 +100,11 @@ function createPaymentRequest(args) {
     var paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
-    paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
+    //    paymentRequest = AdyenHelper.createAddressObjects(
+    //      order,
+    //      paymentMethodType,
+    //      paymentRequest,
+    //    );
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
       order: order,

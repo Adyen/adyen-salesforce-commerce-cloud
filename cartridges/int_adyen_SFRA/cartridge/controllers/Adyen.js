@@ -16,6 +16,7 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
  *  Confirm payment status after receiving redirectResult from Adyen
  */
 server.post('PaymentsDetails', server.middleware.https, consentTracking.consent, adyen.paymentsDetails);
+server.get('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
 server.get('Sessions', server.middleware.https, adyen.callCreateSession);
 
 /**
@@ -46,6 +47,11 @@ server.post('Donate', server.middleware.https, function (req /* , res, next */) 
  * Make a payment from inside a component (paypal)
  */
 server.post('PaymentFromComponent', server.middleware.https, adyen.paymentFromComponent);
+
+/**
+ * Make a payment from inside an express component (paypal)
+ */
+server.post('ExpressPaymentFromComponent', server.middleware.https, adyen.expressPaymentFromComponent);
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.

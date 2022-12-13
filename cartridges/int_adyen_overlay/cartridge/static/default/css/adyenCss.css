@@ -200,3 +200,13 @@
 #giftCardLabel {
     cursor: pointer;
 }
+
+.expressComponent.disabled {
+  cursor: pointer;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.acceptShippingLabel {
+  display:contents;
+}
