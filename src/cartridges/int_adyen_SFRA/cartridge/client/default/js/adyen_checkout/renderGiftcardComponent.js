@@ -198,8 +198,8 @@ function removeGiftCard() {
   });
 }
 
-function renderAddedGiftCard() {
-  const giftCardData = store.partialPaymentsOrderObj.giftcard;
+function renderAddedGiftCard(card) {
+  const giftCardData = card.giftcard;
   const { imagePath } = store.checkoutConfiguration.session;
 
   const { giftCardsList, giftCardAddButton } = getGiftCardElements();
@@ -224,14 +224,6 @@ function renderAddedGiftCard() {
   const giftCardAction = document.createElement('div');
   giftCardAction.classList.add('gift-card-action');
 
-  const removeAnchor = document.createElement('a');
-  removeAnchor.textContent = window.removeGiftCardButtonText;
-  removeAnchor.addEventListener('click', () => {
-    removeGiftCard();
-  });
-
-  giftCardAction.appendChild(removeAnchor);
-
   const brandAndRemoveActionWrapper = document.createElement('div');
   brandAndRemoveActionWrapper.classList.add('wrapper');
   brandAndRemoveActionWrapper.appendChild(brandContainer);
@@ -242,7 +234,7 @@ function renderAddedGiftCard() {
   const amountLabel = document.createElement('p');
   amountLabel.textContent = window.discountedAmountGiftCardResource;
   const amountValue = document.createElement('strong');
-  amountValue.textContent = store.partialPaymentsOrderObj.discountedAmount;
+  amountValue.textContent = card.discountedAmount;
   giftCardAmountDiv.appendChild(amountLabel);
   giftCardAmountDiv.appendChild(amountValue);
 

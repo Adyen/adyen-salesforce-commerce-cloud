@@ -35,8 +35,26 @@ function setPartialPaymentOrderObject(response) {
     expiresAt: response.expiresAt,
   };
   window.sessionStorage.setItem(
-    constants.GIFTCARD_DATA_ADDED,
+    constants.PARTIAL_PAYMENT_ORDER,
     JSON.stringify(store.partialPaymentsOrderObj),
+  );
+}
+
+function setGiftCardsArray(response) {
+  const { giftcard } = store.partialPaymentsOrderObj;
+  if (!store.addedGiftCards) {
+    store.addedGiftCards = [];
+  }
+  store.addedGiftCards.push({
+    giftcard,
+    remainingAmount: response.remainingAmountFormatted,
+    discountedAmount: response.discountAmountFormatted,
+    orderAmount: response.orderAmount,
+    expiresAt: response.expiresAt,
+  });
+  window.sessionStorage.setItem(
+    constants.GIFTCARDS_DATA_ADDED,
+    JSON.stringify(store.addedGiftCards),
   );
 }
 
@@ -46,7 +64,10 @@ function setPartialPaymentOrderObject(response) {
  */
 function paymentFromComponent(data, component = {}) {
   const requestData = store.partialPaymentsOrderObj
-    ? { ...data, partialPaymentsOrder: store.partialPaymentsOrderObj }
+    ? {
+        ...data,
+        partialPaymentsOrder: store.partialPaymentsOrderObj,
+      }
     : data;
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -78,9 +99,20 @@ function makePartialPayment(requestData, expiresAt, orderAmount) {
     async: false,
     success(response) {
       if (response.error) {
-        error = { error: true };
+        error = {
+          error: true,
+        };
       } else {
-        setPartialPaymentOrderObject({ ...response, expiresAt, orderAmount });
+        setPartialPaymentOrderObject({
+          ...response,
+          expiresAt,
+          orderAmount,
+        });
+        setGiftCardsArray({
+          ...response,
+          expiresAt,
+          orderAmount,
+        });
         setOrderFormData(response);
       }
     },

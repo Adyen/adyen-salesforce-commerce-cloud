@@ -60,7 +60,7 @@ function renderGiftCardLogo(imagePath) {
   }
 }
 
-function applyGiftCard() {
+function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
   const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
@@ -76,7 +76,9 @@ function applyGiftCard() {
     removeGiftCard();
     showGiftCardWarningMessage();
   } else {
-    renderAddedGiftCard();
+    store.addedGiftCards.forEach(card => {
+      renderAddedGiftCard(card);
+    });
     createElementsToShowRemainingGiftCardAmount();
   }
 }
@@ -178,7 +180,10 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   store.partialPaymentsOrderObj = JSON.parse(
-    window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED),
+    window.sessionStorage.getItem(constants.PARTIAL_PAYMENT_ORDER),
+  );
+  store.addedGiftCards = JSON.parse(
+    window.sessionStorage.getItem(constants.GIFTCARDS_DATA_ADDED),
   );
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
@@ -198,8 +203,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.partialPaymentsOrderObj) {
-    applyGiftCard();
+  if (store.partialPaymentsOrderObj && store.addedGiftCards) {
+    applyGiftCards();
   }
 
   attachGiftCardAddButtonListener();

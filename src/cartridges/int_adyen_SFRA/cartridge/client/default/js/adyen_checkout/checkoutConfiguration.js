@@ -99,11 +99,14 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect } = getGiftCardElements();
+  const { giftCardSelectContainer, giftCardSelect, giftCardsList } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
+  giftCardsList.innerHTML = "";
   store.componentsObj.giftcard.node.unmount('component_giftcard');
-  renderAddedGiftCard();
+  store.addedGiftCards.forEach(card => {
+    renderAddedGiftCard(card);
+  });
   createElementsToShowRemainingGiftCardAmount();
 }
 
