@@ -68,7 +68,6 @@
 
     <div class="gift-card-selection">
         <img id="headingImg" class="heading-img" />
-        <div id="giftCardsList" class="gift-cards-container"></div>
         <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
             <span class="adyen-checkout__button__content">
                 <span class="adyen-checkout__button__text">
@@ -83,6 +82,7 @@
             <ul id="giftCardUl" class="list-cards invisible"></ul>
             <div id="giftCardContainer"></div>
         </div>
+        <div id="giftCardsList" class="gift-cards-container"></div>
     </div>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>

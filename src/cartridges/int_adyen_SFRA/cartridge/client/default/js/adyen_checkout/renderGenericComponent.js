@@ -9,7 +9,7 @@ const {
   removeGiftCard,
   renderAddedGiftCard,
   showGiftCardWarningMessage,
-  renderGiftCardSelectForm,
+  attachGiftCardAddButtonListener,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -72,10 +72,8 @@ function applyGiftCard() {
 
   if (isPartialPaymentExpired) {
     removeGiftCard();
-    renderGiftCardSelectForm();
   } else if (isCartModified) {
     removeGiftCard();
-    renderGiftCardSelectForm();
     showGiftCardWarningMessage();
   } else {
     renderAddedGiftCard();
@@ -202,9 +200,9 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   if (store.partialPaymentsOrderObj) {
     applyGiftCard();
-  } else {
-    renderGiftCardSelectForm();
   }
+
+  attachGiftCardAddButtonListener();
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
