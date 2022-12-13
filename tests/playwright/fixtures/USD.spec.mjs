@@ -215,7 +215,7 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test.only('my account add card 3DS1 success', async () => {
+    test('my account add card 3DS1 success', async () => {
       if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs1);
 
@@ -233,7 +233,7 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test.only('my account add card 3DS2 success', async () => {
+    test('my account add card 3DS2 success', async () => {
       if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs2);
 
