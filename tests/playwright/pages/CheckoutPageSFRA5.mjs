@@ -186,18 +186,6 @@ export default class CheckoutPageSFRA5 {
     await this.submitShipping();
   };
 
-  goBackAndReplaceOrderDifferentWindow = async () => {
-    const checkoutLocation = await this.getLocation();
-    await this.placeOrder();
-
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const secondSession = await context.newPage();
-
-    await secondSession.goto(checkoutLocation);
-    return secondSession;
-  };
-
   expectSuccess = async () => {
     await this.page.waitForNavigation({
       url: /Order-Confirm/,

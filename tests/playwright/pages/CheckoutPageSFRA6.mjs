@@ -194,16 +194,6 @@ export default class CheckoutPageSFRA {
     await this.submitShipping();
   };
 
-  goBackAndReplaceOrderDifferentWindow = async () => {
-    const checkoutLocation = await this.getLocation();
-    await this.placeOrder();
-
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const secondSession = await context.newPage();
-
-    await secondSession.goto(checkoutLocation);
-  };
 
   expectSuccess = async () => {
     await this.page.waitForNavigation({
