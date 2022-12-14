@@ -143,11 +143,11 @@ export default class CheckoutPageSFRA {
     );
 
     if (await this.checkoutPageUserStateSelect.isVisible()) {
-      try{
+      try {
         await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
       }
-      catch{
-          await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
+      catch {
+        await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
       }
     }
 
@@ -200,16 +200,11 @@ export default class CheckoutPageSFRA {
     await this.submitShipping();
   };
 
-  goBackAndReplaceOrderDifferentWindow = async () => {
-    const checkoutLocation = await this.getLocation();
-    await this.placeOrder();
-
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const secondSession = await context.newPage();
-
-    await secondSession.goto(checkoutLocation);
+  goBack = async () => {
+    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.navigateBack();
   };
+
 
   expectSuccess = async () => {
     await expect(this.page.locator('.confirmation-message')).toBeVisible({
