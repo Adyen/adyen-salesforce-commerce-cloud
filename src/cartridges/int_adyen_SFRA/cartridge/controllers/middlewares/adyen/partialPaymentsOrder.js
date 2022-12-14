@@ -16,14 +16,15 @@ function createPartialPaymentsOrder(req, res, next) {
     const partialPaymentsOrderData = JSON.parse(
       session.privacy.partialPaymentData,
     );
+    const basketAmount = {
+      currency: currentBasket.currencyCode,
+      value: AdyenHelper.getCurrencyValueForApi(
+        currentBasket.getTotalGrossPrice(),
+      ).value,
+    };
     const amount = partialPaymentsOrderData?.remainingAmount?.value
       ? partialPaymentsOrderData.remainingAmount
-      : {
-          currency: currentBasket.currencyCode,
-          value: AdyenHelper.getCurrencyValueForApi(
-            currentBasket.getTotalGrossPrice(),
-          ).value,
-        };
+      : basketAmount;
 
     const date = addMinutes(constants.GIFTCARD_EXPIRATION_MINUTES);
 
@@ -45,7 +46,7 @@ function createPartialPaymentsOrder(req, res, next) {
         pspReference: response?.pspReference,
       },
       remainingAmount: response?.remainingAmount,
-      amount: response?.amount,
+      amount: basketAmount,
     });
 
     res.json({

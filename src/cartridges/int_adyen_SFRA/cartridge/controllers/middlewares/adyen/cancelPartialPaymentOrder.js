@@ -31,6 +31,7 @@ function cancelPartialPaymentOrder(req, res, next) {
         });
       });
       session.privacy.giftCardResponse = null;
+      session.privacy.partialPaymentData = null;
     } else {
       throw new Error(`received resultCode ${response.resultCode}`);
     }
