@@ -88,11 +88,19 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('Card payment 3DS1 with restored cart failure', async () => {
+    test('Card payment 3DS1 with restored cart failure', async ({ context }) => {
+      if (environment.name === 'SG') test.skip();
+      // Skipping SG due to CSRF token validation
+
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.setEmail();
       await checkoutPage.submitPayment();
-      await checkoutPage.goBackAndReplaceOrderDifferentWindow();
+      const checkoutURL = await checkoutPage.getLocation();
+      await checkoutPage.placeOrder();
+
+      const newPage = await context.newPage();
+      newPage.goto(checkoutURL);
+
       await cards.do3Ds1Verification();
       await checkoutPage.expectRefusal();
     });

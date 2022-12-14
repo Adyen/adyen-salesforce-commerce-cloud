@@ -28,15 +28,12 @@ for (const environment of environments) {
       await checkoutPage.expectNonRedirectSuccess();
     });
 
-    /* Navigating back fails with SG, so skipping this.
-    If it will always fail, is it even worth testing that flow
-    for SG? */
-
-    test.skip('iDeal with restored cart success', async ({ page }) => {
+    test('iDeal with restored cart success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
-      await checkoutPage.goBackAndSubmitShipping();
+      environment.name != 'SG' ? await checkoutPage.goBackAndSubmitShipping()
+        : await checkoutPage.goBack();
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.submitPayment();
       await checkoutPage.placeOrder();
@@ -52,16 +49,20 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    /* Navigating back fails with SG, so skipping this.
-    If it will always fail, also being super edge case,
-    is it even worth testing that flow? */
+    test('iDeal with restored cart Fail', async ({ page, context }) => {
+      if (environment.name === 'SG') test.skip();
+      // Skipping SG due to CSRF token validation
 
-    test.skip('iDeal with restored cart Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.setEmail();
       await checkoutPage.submitPayment();
-      await checkoutPage.goBackAndReplaceOrderDifferentWindow();
+      const checkoutURL = await checkoutPage.getLocation();
+      await checkoutPage.placeOrder()
+
+      const newPage = await context.newPage();
+      newPage.goto(checkoutURL);
+
       await redirectShopper.completeIdealRedirect();
       await checkoutPage.expectRefusal();
     });
