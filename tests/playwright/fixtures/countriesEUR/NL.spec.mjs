@@ -55,7 +55,10 @@ for (const environment of environments) {
 
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
-      await checkoutPage.setEmail();
+      // SFRA 6 email setting flow is different
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      }
       await checkoutPage.submitPayment();
       const checkoutURL = await checkoutPage.getLocation();
       await checkoutPage.placeOrder()
