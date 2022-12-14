@@ -16,14 +16,14 @@ function createPartialPaymentsOrder(req, res, next) {
     const partialPaymentsOrderData = JSON.parse(
       session.privacy.partialPaymentData,
     );
-    const amount = partialPaymentsOrderData
+    const amount = partialPaymentsOrderData?.remainingAmount?.value
       ? partialPaymentsOrderData.remainingAmount
       : {
-        currency: currentBasket.currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(
-          currentBasket.getTotalGrossPrice(),
-        ).value,
-      };
+          currency: currentBasket.currencyCode,
+          value: AdyenHelper.getCurrencyValueForApi(
+            currentBasket.getTotalGrossPrice(),
+          ).value,
+        };
 
     const date = addMinutes(constants.GIFTCARD_EXPIRATION_MINUTES);
 

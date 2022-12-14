@@ -188,7 +188,9 @@ function removeGiftCard() {
       giftCardUl.innerHTML = '';
 
       store.partialPaymentsOrderObj = null;
-      window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
+      store.addedGiftCards = null;
+      window.sessionStorage.removeItem(constants.GIFTCARDS_DATA_ADDED);
+      window.sessionStorage.removeItem(constants.PARTIAL_PAYMENT_ORDER);
 
       if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
