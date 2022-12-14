@@ -201,7 +201,7 @@ function removeGiftCard() {
 }
 
 function renderAddedGiftCard(card) {
-  const giftCardData = card.giftcard;
+  const giftCardData = card.giftCard;
   const { imagePath } = store.checkoutConfiguration.session;
 
   const { giftCardsList, giftCardAddButton } = getGiftCardElements();

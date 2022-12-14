@@ -20,3 +20,13 @@ module.exports.createSession = async function createSession() {
     type: 'get',
   });
 };
+
+/**
+ * Makes an ajax call to the controller function FetchGiftCards
+ */
+module.exports.fetchGiftCards = async function fetchGiftCards() {
+  return $.ajax({
+    url: 'Adyen-fetchGiftCards',
+    type: 'get',
+  });
+};

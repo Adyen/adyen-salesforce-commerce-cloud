@@ -2,7 +2,7 @@ const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
-const { createSession } = require('../commons');
+const { createSession, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
   createElementsToShowRemainingGiftCardAmount,
@@ -76,7 +76,7 @@ function applyGiftCards() {
     removeGiftCard();
     showGiftCardWarningMessage();
   } else {
-    store.addedGiftCards.forEach(card => {
+    store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
     createElementsToShowRemainingGiftCardAmount();
@@ -171,6 +171,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   }
 
   const session = await createSession();
+  const giftCardsData = await fetchGiftCards();
 
   store.checkoutConfiguration.session = {
     id: session.id,
@@ -179,12 +180,11 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-  store.partialPaymentsOrderObj = JSON.parse(
-    window.sessionStorage.getItem(constants.PARTIAL_PAYMENT_ORDER),
-  );
-  store.addedGiftCards = JSON.parse(
-    window.sessionStorage.getItem(constants.GIFTCARDS_DATA_ADDED),
-  );
+  store.addedGiftCards = giftCardsData.giftCards;
+  store.partialPaymentsOrderObj =
+    store.addedGiftCards && store.addedGiftCards.length
+      ? store.addedGiftCards[store.addedGiftCards.length - 1]
+      : null;
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -203,7 +203,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.partialPaymentsOrderObj && store.addedGiftCards) {
+  if (store.addedGiftCards && store.addedGiftCards.length) {
     applyGiftCards();
   }
 

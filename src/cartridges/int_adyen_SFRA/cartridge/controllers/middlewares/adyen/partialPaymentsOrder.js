@@ -13,18 +13,12 @@ function addMinutes(minutes) {
 function createPartialPaymentsOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const partialPaymentsOrderData = JSON.parse(
-      session.privacy.partialPaymentData,
-    );
-    const basketAmount = {
+    const amount = {
       currency: currentBasket.currencyCode,
       value: AdyenHelper.getCurrencyValueForApi(
         currentBasket.getTotalGrossPrice(),
       ).value,
     };
-    const amount = partialPaymentsOrderData?.remainingAmount?.value
-      ? partialPaymentsOrderData.remainingAmount
-      : basketAmount;
 
     const date = addMinutes(constants.GIFTCARD_EXPIRATION_MINUTES);
 
@@ -46,17 +40,20 @@ function createPartialPaymentsOrder(req, res, next) {
         pspReference: response?.pspReference,
       },
       remainingAmount: response?.remainingAmount,
-      amount: basketAmount,
+      amount: response?.amount,
     });
 
-    res.json({
+    const responseData = {
       ...response,
       expiresAt: date.toISOString(),
-    });
+    };
+
+    res.json(responseData);
   } catch (error) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payments order.. ${error.toString()}`,
     );
+    res.json({ error: true });
   }
 
   return next();

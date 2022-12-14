@@ -61,12 +61,39 @@ function makePartialPayment(req, res, next) {
     );
 
     const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
-    response.remainingAmountFormatted = remainingAmount
+    const remainingAmountFormatted = remainingAmount
       .divide(divideBy)
       .toFormattedString();
-    response.discountAmountFormatted = discountAmount
+    response.remainingAmountFormatted = remainingAmountFormatted;
+
+    const discountAmountFormatted = discountAmount
       .divide(divideBy)
       .toFormattedString();
+    response.discountAmountFormatted = discountAmountFormatted;
+
+    const addedGiftCards = currentBasket.custom?.adyenGiftCards
+      ? JSON.parse(currentBasket.custom?.adyenGiftCards)
+      : [];
+
+    addedGiftCards.push({
+      discountedAmount: discountAmountFormatted,
+      expiresAt: response.order.expiresAt,
+      giftCard: {
+        ...response.paymentMethod,
+        amount: response.amount,
+        name: giftcardBrand,
+      },
+      orderAmount: response.order.amount,
+      partialPaymentsOrder: {
+        orderData: response.order.orderData,
+        pspReference: response.order.pspReference,
+      },
+      remainingAmount: remainingAmountFormatted,
+    });
+
+    Transaction.wrap(() => {
+      currentBasket.custom.adyenGiftCards = JSON.stringify(addedGiftCards);
+    });
 
     res.json(response);
   } catch (error) {

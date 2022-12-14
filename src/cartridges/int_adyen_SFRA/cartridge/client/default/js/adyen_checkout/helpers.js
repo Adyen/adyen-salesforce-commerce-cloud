@@ -34,10 +34,6 @@ function setPartialPaymentOrderObject(response) {
     orderAmount: response.orderAmount,
     expiresAt: response.expiresAt,
   };
-  window.sessionStorage.setItem(
-    constants.PARTIAL_PAYMENT_ORDER,
-    JSON.stringify(store.partialPaymentsOrderObj),
-  );
 }
 
 function setGiftCardsArray(response) {
@@ -52,10 +48,6 @@ function setGiftCardsArray(response) {
     orderAmount: response.orderAmount,
     expiresAt: response.expiresAt,
   });
-  window.sessionStorage.setItem(
-    constants.GIFTCARDS_DATA_ADDED,
-    JSON.stringify(store.addedGiftCards),
-  );
 }
 
 /**
