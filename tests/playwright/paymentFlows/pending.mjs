@@ -35,7 +35,7 @@ export class PendingPayments {
 
   waitForThirdPartyPaymentLoader = async () => {
     const checkoutLoader = this.page.locator('.adyen-checkout__await');
-    await checkoutLoader.waitFor({ state: 'attached', timeout: 10000 });
+    await checkoutLoader.waitFor({ state: 'attached', timeout: 15000 });
     await checkoutLoader.waitFor({ state: 'detached', timeout: 20000 });
   };
 }
