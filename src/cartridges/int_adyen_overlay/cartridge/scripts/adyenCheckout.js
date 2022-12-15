@@ -87,6 +87,12 @@ function createPaymentRequest(args) {
     // Add partial payments order if applicable
     if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
       const adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
+      Logger.getLogger('Adyen').error(JSON.stringify(value));
+      Logger.getLogger('Adyen').error(JSON.stringify(currency));
+
+      Logger.getLogger('Adyen').error(JSON.stringify(adyenPartialPaymentsOrder.amount.value));
+      Logger.getLogger('Adyen').error(JSON.stringify(adyenPartialPaymentsOrder.amount.currency));
+
       if(value === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
         paymentRequest.order = adyenPartialPaymentsOrder.order;
         paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;

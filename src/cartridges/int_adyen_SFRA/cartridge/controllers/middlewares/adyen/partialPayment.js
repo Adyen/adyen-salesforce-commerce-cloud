@@ -75,7 +75,7 @@ function makePartialPayment(req, res, next) {
       ? JSON.parse(currentBasket.custom?.adyenGiftCards)
       : [];
 
-    addedGiftCards.push({
+    const dataToStore = {
       discountedAmount: discountAmountFormatted,
       expiresAt: response.order.expiresAt,
       giftCard: {
@@ -83,19 +83,42 @@ function makePartialPayment(req, res, next) {
         amount: response.amount,
         name: giftcardBrand,
       },
-      orderAmount: response.order.amount,
+      orderAmount: {
+        currency: currentBasket.currencyCode,
+        value: AdyenHelper.getCurrencyValueForApi(
+          currentBasket.getTotalGrossPrice(),
+        ).value,
+      },
       partialPaymentsOrder: {
         orderData: response.order.orderData,
         pspReference: response.order.pspReference,
       },
-      remainingAmount: remainingAmountFormatted,
-    });
+      remainingAmount: response.order.remainingAmount,
+      remainingAmountFormatted,
+    };
+
+    addedGiftCards.push(dataToStore);
 
     Transaction.wrap(() => {
       currentBasket.custom.adyenGiftCards = JSON.stringify(addedGiftCards);
     });
 
-    res.json(response);
+    const totalDiscountedAmount = new Money(
+      addedGiftCards.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.giftCard.amount.value,
+        0,
+      ),
+      response.order.remainingAmount.currency,
+    );
+
+    res.json({
+      ...dataToStore,
+      totalDiscountedAmount: totalDiscountedAmount
+        .divide(divideBy)
+        .toFormattedString(),
+      giftCards: addedGiftCards,
+    });
   } catch (error) {
     Logger.getLogger('Adyen').error(
       `Failed to create partial payment.. ${error.toString()}`,

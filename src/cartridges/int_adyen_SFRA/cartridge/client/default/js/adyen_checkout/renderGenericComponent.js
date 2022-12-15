@@ -181,10 +181,12 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   store.addedGiftCards = giftCardsData.giftCards;
-  store.partialPaymentsOrderObj =
-    store.addedGiftCards && store.addedGiftCards.length
-      ? store.addedGiftCards[store.addedGiftCards.length - 1]
-      : null;
+  store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
+    ? {
+        ...giftCardsData.giftCards[store.addedGiftCards.length - 1],
+        totalDiscountedAmount: giftCardsData.totalDiscountedAmount,
+      }
+    : null;
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -203,7 +205,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.addedGiftCards && store.addedGiftCards.length) {
+  if (store.addedGiftCards?.length) {
     applyGiftCards();
   }
 

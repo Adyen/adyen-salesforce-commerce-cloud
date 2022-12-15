@@ -99,12 +99,16 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect, giftCardsList } = getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
-  giftCardsList.innerHTML = "";
+  giftCardsList.innerHTML = '';
   store.componentsObj.giftcard.node.unmount('component_giftcard');
-  store.addedGiftCards.forEach(card => {
+  store.addedGiftCards.forEach((card) => {
     renderAddedGiftCard(card);
   });
   createElementsToShowRemainingGiftCardAmount();
@@ -171,8 +175,6 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
-              data.expiresAt,
-              data.remainingAmount,
             );
             if (partialPaymentResponse?.error) {
               reject();

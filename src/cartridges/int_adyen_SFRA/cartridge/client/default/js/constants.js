@@ -8,6 +8,4 @@ module.exports = {
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
   GIFTCARD: 'giftcard',
-  GIFTCARDS_DATA_ADDED: 'giftcards-data',
-  PARTIAL_PAYMENT_ORDER: 'partial-payment-order',
 };

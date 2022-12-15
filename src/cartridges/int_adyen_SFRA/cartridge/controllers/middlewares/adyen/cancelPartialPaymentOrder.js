@@ -29,6 +29,7 @@ function cancelPartialPaymentOrder(req, res, next) {
             currentBasket.removePaymentInstrument(item);
           }
         });
+        currentBasket.custom.adyenGiftCards = null;
       });
       session.privacy.giftCardResponse = null;
       session.privacy.partialPaymentData = null;

@@ -79,27 +79,23 @@ function attachGiftCardFormListeners() {
         brand: event.target.dataset.brand,
         type: event.target.dataset.type,
       };
-      if (
-        selectedGiftCard.brand !== store.partialPaymentsOrderObj?.giftcard.brand
-      ) {
-        if (store.componentsObj?.giftcard) {
-          store.componentsObj.giftcard.node.unmount('component_giftcard');
-        }
-        if (!store.partialPaymentsOrderObj) {
-          store.partialPaymentsOrderObj = {};
-        }
-        store.partialPaymentsOrderObj.giftcard = selectedGiftCard;
-        giftCardSelect.value = selectedGiftCard.brand;
-        giftCardContainer.innerHTML = '';
-        const giftCardNode = store.checkout
-          .create(constants.GIFTCARD, {
-            ...store.checkoutConfiguration.giftcard,
-            brand: selectedGiftCard.brand,
-            name: selectedGiftCard.name,
-          })
-          .mount(giftCardContainer);
-        store.componentsObj.giftcard = { node: giftCardNode };
+      if (store.componentsObj?.giftcard) {
+        store.componentsObj.giftcard.node.unmount('component_giftcard');
       }
+      if (!store.partialPaymentsOrderObj) {
+        store.partialPaymentsOrderObj = {};
+      }
+      store.partialPaymentsOrderObj.giftcard = selectedGiftCard;
+      giftCardSelect.value = selectedGiftCard.brand;
+      giftCardContainer.innerHTML = '';
+      const giftCardNode = store.checkout
+        .create(constants.GIFTCARD, {
+          ...store.checkoutConfiguration.giftcard,
+          brand: selectedGiftCard.brand,
+          name: selectedGiftCard.name,
+        })
+        .mount(giftCardContainer);
+      store.componentsObj.giftcard = { node: giftCardNode };
     });
   }
 
@@ -189,8 +185,6 @@ function removeGiftCard() {
 
       store.partialPaymentsOrderObj = null;
       store.addedGiftCards = null;
-      window.sessionStorage.removeItem(constants.GIFTCARDS_DATA_ADDED);
-      window.sessionStorage.removeItem(constants.PARTIAL_PAYMENT_ORDER);
 
       if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
@@ -251,6 +245,20 @@ function renderAddedGiftCard(card) {
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
+  const renderedRemainingAmountEndSpan = document.getElementById(
+    'remainingAmountEndSpan',
+  );
+  const renderedDiscountedAmountEndSpan = document.getElementById(
+    'discountedAmountEndSpan',
+  );
+  if (renderedRemainingAmountEndSpan && renderedDiscountedAmountEndSpan) {
+    renderedRemainingAmountEndSpan.innerText =
+      store.partialPaymentsOrderObj.remainingAmountFormatted;
+    renderedDiscountedAmountEndSpan.innerText =
+      store.partialPaymentsOrderObj.totalDiscountedAmount;
+    return;
+  }
+
   const mainContainer = document.createElement('div');
   const remainingAmountContainer = document.createElement('div');
   const remainingAmountStart = document.createElement('div');
@@ -268,7 +276,9 @@ function createElementsToShowRemainingGiftCardAmount() {
   const discountedAmountStartSpan = document.createElement('span');
   const cancelGiftCardSpan = document.createElement('span');
   const remainingAmountEndSpan = document.createElement('span');
+  remainingAmountEndSpan.id = 'remainingAmountEndSpan';
   const discountedAmountEndSpan = document.createElement('span');
+  discountedAmountEndSpan.id = 'discountedAmountEndSpan';
 
   remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
   remainingAmountStart.classList.add('col-6', 'start-lines');
@@ -294,9 +304,9 @@ function createElementsToShowRemainingGiftCardAmount() {
   discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
   cancelGiftCardSpan.innerText = window.cancelGiftCardResource;
   remainingAmountEndSpan.innerText =
-    store.partialPaymentsOrderObj.remainingAmount;
+    store.partialPaymentsOrderObj.remainingAmountFormatted;
   discountedAmountEndSpan.innerText =
-    store.partialPaymentsOrderObj.discountedAmount;
+    store.partialPaymentsOrderObj.totalDiscountedAmount;
 
   cancelGiftCard.addEventListener('click', () => {
     removeGiftCard();

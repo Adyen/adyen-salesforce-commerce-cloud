@@ -21,35 +21,6 @@ function setOrderFormData(response) {
   }
 }
 
-function setPartialPaymentOrderObject(response) {
-  const { giftcard } = store.partialPaymentsOrderObj;
-  store.partialPaymentsOrderObj = {
-    giftcard,
-    partialPaymentsOrder: {
-      pspReference: response.order.pspReference,
-      orderData: response.order.orderData,
-    },
-    remainingAmount: response.remainingAmountFormatted,
-    discountedAmount: response.discountAmountFormatted,
-    orderAmount: response.orderAmount,
-    expiresAt: response.expiresAt,
-  };
-}
-
-function setGiftCardsArray(response) {
-  const { giftcard } = store.partialPaymentsOrderObj;
-  if (!store.addedGiftCards) {
-    store.addedGiftCards = [];
-  }
-  store.addedGiftCards.push({
-    giftcard,
-    remainingAmount: response.remainingAmountFormatted,
-    discountedAmount: response.discountAmountFormatted,
-    orderAmount: response.orderAmount,
-    expiresAt: response.expiresAt,
-  });
-}
-
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
@@ -57,9 +28,9 @@ function setGiftCardsArray(response) {
 function paymentFromComponent(data, component = {}) {
   const requestData = store.partialPaymentsOrderObj
     ? {
-        ...data,
-        partialPaymentsOrder: store.partialPaymentsOrderObj,
-      }
+      ...data,
+      partialPaymentsOrder: store.partialPaymentsOrderObj,
+    }
     : data;
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -81,7 +52,7 @@ function paymentFromComponent(data, component = {}) {
   });
 }
 
-function makePartialPayment(requestData, expiresAt, orderAmount) {
+function makePartialPayment(requestData) {
   let error;
   $.ajax({
     url: 'Adyen-partialPayment',
@@ -95,16 +66,9 @@ function makePartialPayment(requestData, expiresAt, orderAmount) {
           error: true,
         };
       } else {
-        setPartialPaymentOrderObject({
-          ...response,
-          expiresAt,
-          orderAmount,
-        });
-        setGiftCardsArray({
-          ...response,
-          expiresAt,
-          orderAmount,
-        });
+        const { giftCards, ...rest } = response;
+        store.partialPaymentsOrderObj = rest;
+        store.addedGiftCards = giftCards;
         setOrderFormData(response);
       }
     },
