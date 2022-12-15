@@ -14,7 +14,7 @@ let accountPage;
 let cards;
 
 for (const environment of environments) {
-  test.describe(`${environment.name} BRL`, () => {
+  test.describe.parallel(`${environment.name} BRL`, () => {
     if (environment.name === 'SG') test.fixme();
 
     test.beforeEach(async ({ page }) => {
