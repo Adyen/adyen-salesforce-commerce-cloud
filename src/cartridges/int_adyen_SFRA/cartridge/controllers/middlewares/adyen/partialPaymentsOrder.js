@@ -47,7 +47,7 @@ function createPartialPaymentsOrder(req, res, next) {
         pspReference: response?.pspReference,
       },
       remainingAmount: response?.remainingAmount,
-      amount: response?.amount,
+      amount: orderAmount,
     });
 
     const responseData = {
