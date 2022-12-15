@@ -67,6 +67,7 @@ function makePartialPayment(requestData) {
         };
       } else {
         const { giftCards, ...rest } = response;
+        store.checkout.options.amount = rest.remainingAmount;
         store.partialPaymentsOrderObj = rest;
         store.addedGiftCards = giftCards;
         setOrderFormData(response);
