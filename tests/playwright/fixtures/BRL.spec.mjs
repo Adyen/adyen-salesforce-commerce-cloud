@@ -43,7 +43,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    // LPM needs to fix Boleto
+    // Boleto sandbox needs to be fixed
     test.fixme('Boleto Success', async ({ page }) => {
       await new PresentToShoppers(page).doBoletoPayment();
       await checkoutPage.completeCheckout();
