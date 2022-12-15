@@ -174,7 +174,7 @@ export class ShopperData {
       firstName: 'Cristiano',
       lastName: 'Ronaldo',
     },
-    telephone: '+351234567890',
+    telephone: '+351213822199',
     shopperEmail: 'cris@ronaldo.pt',
     address: {
       city: 'Lisbon',
