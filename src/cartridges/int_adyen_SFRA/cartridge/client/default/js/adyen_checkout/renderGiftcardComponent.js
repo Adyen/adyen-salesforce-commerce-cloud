@@ -85,7 +85,6 @@ function attachGiftCardFormListeners() {
       if (!store.partialPaymentsOrderObj) {
         store.partialPaymentsOrderObj = {};
       }
-      store.partialPaymentsOrderObj.giftcard = selectedGiftCard;
       giftCardSelect.value = selectedGiftCard.brand;
       giftCardContainer.innerHTML = '';
       const giftCardNode = store.checkout
