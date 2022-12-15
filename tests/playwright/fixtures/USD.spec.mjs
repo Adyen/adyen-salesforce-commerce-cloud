@@ -151,7 +151,8 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test('Affirm Fail', async ({ page }) => {
+    // Affirm sandbox needs to be fixed
+    test.fixme('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();
