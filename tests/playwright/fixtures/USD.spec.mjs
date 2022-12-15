@@ -89,7 +89,7 @@ for (const environment of environments) {
     });
 
     test('Card payment 3DS1 with restored cart failure', async ({ context }) => {
-      if (environment.name === 'SG') test.skip();
+      if (environment.name === 'SG') test.fixme();
       // Skipping SG due to CSRF token validation
 
       await cards.doCardPayment(cardData.threeDs1);
