@@ -65,7 +65,7 @@ function applyGiftCards() {
   const { amount } = store.checkoutConfiguration;
   const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
 
-  const isPartialPaymentExpired = expiresAt && now > expiresAt;
+  const isPartialPaymentExpired = store.addedGiftCards.some(cart => now > cart.expiresAt)
   const isCartModified =
     amount.currency !== orderAmount.currency ||
     amount.value !== orderAmount.value;
