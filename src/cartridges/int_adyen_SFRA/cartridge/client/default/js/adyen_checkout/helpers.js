@@ -1,13 +1,14 @@
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
   const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
   if (adyenPaymentMethod) {
-    adyenPaymentMethod.value = store.brand ?
-      store.brand :
-      document.querySelector(paymentMethodlabelId) ? .innerHTML;
+    adyenPaymentMethod.value = store.brand
+      ? store.brand
+      : document.querySelector(paymentMethodlabelId)?.innerHTML;
   }
 }
 
@@ -25,12 +26,12 @@ function setOrderFormData(response) {
  * Used by certain payment methods like paypal
  */
 function paymentFromComponent(data, component = {}) {
-  const requestData = store.partialPaymentsOrderObj ?
-    {
+  const requestData = store.partialPaymentsOrderObj
+    ? {
       ...data,
       partialPaymentsOrder: store.partialPaymentsOrderObj,
-    } :
-    data;
+    }
+    : data;
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -41,7 +42,7 @@ function paymentFromComponent(data, component = {}) {
     success(response) {
       setOrderFormData(response);
 
-      if (response.fullResponse ? .action) {
+      if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
       }
       if (response.paymentError || response.error) {
@@ -65,10 +66,7 @@ function makePartialPayment(requestData) {
           error: true,
         };
       } else {
-        const {
-          giftCards,
-          ...rest
-        } = response;
+        const { giftCards, ...rest } = response;
         store.checkout.options.amount = rest.remainingAmount;
         store.partialPaymentsOrderObj = rest;
         store.addedGiftCards = giftCards;
@@ -97,18 +95,19 @@ function resetPaymentMethod() {
  */
 function displaySelectedMethod(type) {
   // If 'type' input field is present use this as type, otherwise default to function input param
-  store.selectedMethod = document.querySelector(`#component_${type} .type`) ?
-    document.querySelector(`#component_${type} .type`).value :
-    type;
+  store.selectedMethod = document.querySelector(`#component_${type} .type`)
+    ? document.querySelector(`#component_${type} .type`).value
+    : type;
   resetPaymentMethod();
 
-  document.querySelector('button[value="submit-payment"]').disabled = ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
+  document.querySelector('button[value="submit-payment"]').disabled =
+    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
 
   document
     .querySelector(`#component_${type}`)
     .setAttribute('style', 'display:block');
   // set brand for giftcards if hidden inputfield is present
-  store.brand = document.querySelector(`#component_${type} .brand`) ? .value;
+  store.brand = document.querySelector(`#component_${type} .brand`)?.value;
 }
 
 function displayValidationErrors() {
@@ -119,15 +118,15 @@ function displayValidationErrors() {
 const selectedMethods = {};
 
 function doCustomValidation() {
-  return store.selectedMethod in selectedMethods ?
-    selectedMethods[store.selectedMethod]() :
-    true;
+  return store.selectedMethod in selectedMethods
+    ? selectedMethods[store.selectedMethod]()
+    : true;
 }
 
 function showValidation() {
-  return store.selectedPaymentIsValid ?
-    doCustomValidation() :
-    displayValidationErrors();
+  return store.selectedPaymentIsValid
+    ? doCustomValidation()
+    : displayValidationErrors();
 }
 
 function getInstallmentValues(maxValue) {
