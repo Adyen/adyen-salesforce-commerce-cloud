@@ -63,9 +63,11 @@ function renderGiftCardLogo(imagePath) {
 function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
-  const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
+  const { orderAmount } = store.partialPaymentsOrderObj;
 
-  const isPartialPaymentExpired = store.addedGiftCards.some(cart => now > cart.expiresAt)
+  const isPartialPaymentExpired = store.addedGiftCards.some(
+    (cart) => now > cart.expiresAt,
+  );
   const isCartModified =
     amount.currency !== orderAmount.currency ||
     amount.value !== orderAmount.value;
