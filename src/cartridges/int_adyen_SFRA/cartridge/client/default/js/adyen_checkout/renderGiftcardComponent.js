@@ -127,7 +127,7 @@ function showGiftCardWarningMessage() {
   const orderTotalSummaryEl = document.querySelector(
     '.card-body.order-total-summary',
   );
-  orderTotalSummaryEl.appendChild(alertContainer);
+  orderTotalSummaryEl?.appendChild(alertContainer);
 }
 
 function attachGiftCardAddButtonListener() {
