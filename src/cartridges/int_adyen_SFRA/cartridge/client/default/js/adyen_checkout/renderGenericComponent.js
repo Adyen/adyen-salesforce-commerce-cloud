@@ -176,8 +176,6 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   const session = await createSession();
   const giftCardsData = await fetchGiftCards();
-  const { totalDiscountedAmount, giftCards } = giftCardsData;
-  const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
 
   store.checkoutConfiguration.session = {
     id: session.id,
@@ -186,10 +184,16 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-  store.addedGiftCards = giftCardsData.giftCards;
-  store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
-    ? { ...lastGiftCard, totalDiscountedAmount }
-    : null;
+
+  const { totalDiscountedAmount, giftCards } = giftCardsData;
+  store.addedGiftCards = giftCards;
+  if (giftCards.length) {
+    const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
+    store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
+      ? { ...lastGiftCard, totalDiscountedAmount }
+      : null;
+  }
+
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
