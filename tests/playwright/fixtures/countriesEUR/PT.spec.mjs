@@ -28,11 +28,16 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    // MBWay redirection is too flaky, skipping until it's fixed.
-    test.skip('MBWay Success', async ({ page }) => {
+    /* - MBWay redirection is too flaky
+     - The country code is added to the beginning of phone number
+      even if it's written */
+    test.fixme('MBWay Success', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
 
-      await checkoutPage.setEmail();
+      // SFRA 6 email setting flow is different
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      }
       await pendingPayments.doMBWayPayment();
       await checkoutPage.completeCheckout();
 
