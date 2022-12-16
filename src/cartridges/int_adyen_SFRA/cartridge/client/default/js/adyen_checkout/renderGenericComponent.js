@@ -176,6 +176,8 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   const session = await createSession();
   const giftCardsData = await fetchGiftCards();
+  const { totalDiscountedAmount, giftCards } = giftCardsData;
+  const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
 
   store.checkoutConfiguration.session = {
     id: session.id,
@@ -186,10 +188,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   store.addedGiftCards = giftCardsData.giftCards;
   store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
-    ? {
-        ...giftCardsData.giftCards[store.addedGiftCards.length - 1],
-        totalDiscountedAmount: giftCardsData.totalDiscountedAmount,
-      }
+    ? { ...lastGiftCard, totalDiscountedAmount }
     : null;
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
