@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -28,9 +27,9 @@ function setOrderFormData(response) {
 function paymentFromComponent(data, component = {}) {
   const requestData = store.partialPaymentsOrderObj
     ? {
-      ...data,
-      partialPaymentsOrder: store.partialPaymentsOrderObj,
-    }
+        ...data,
+        partialPaymentsOrder: store.partialPaymentsOrderObj,
+      }
     : data;
   $.ajax({
     url: window.paymentFromComponentURL,
