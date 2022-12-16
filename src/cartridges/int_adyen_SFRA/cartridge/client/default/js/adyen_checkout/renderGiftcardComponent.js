@@ -87,7 +87,6 @@ function attachGiftCardFormListeners() {
       }
       giftCardSelect.value = selectedGiftCard.brand;
       giftCardContainer.innerHTML = '';
-      console.log(store.checkout);
       const giftCardNode = store.checkout
         .create(constants.GIFTCARD, {
           ...store.checkoutConfiguration.giftcard,
@@ -183,6 +182,7 @@ function removeGiftCard() {
       giftCardSelect.value = null;
       giftCardUl.innerHTML = '';
 
+      store.checkout.options.amount = res.amount;
       store.partialPaymentsOrderObj = null;
       store.addedGiftCards = null;
 

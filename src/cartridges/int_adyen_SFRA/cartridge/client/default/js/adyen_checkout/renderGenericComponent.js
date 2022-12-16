@@ -79,6 +79,8 @@ function applyGiftCards() {
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
+    store.checkout.options.amount =
+      store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     createElementsToShowRemainingGiftCardAmount();
   }
 }
