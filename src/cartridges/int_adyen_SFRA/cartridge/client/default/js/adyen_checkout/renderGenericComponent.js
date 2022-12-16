@@ -6,7 +6,7 @@ const { createSession, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
   createElementsToShowRemainingGiftCardAmount,
-  removeGiftCard,
+  removeGiftCards,
   renderAddedGiftCard,
   showGiftCardWarningMessage,
   attachGiftCardAddButtonListener,
@@ -73,9 +73,9 @@ function applyGiftCards() {
     amount.value !== orderAmount.value;
 
   if (isPartialPaymentExpired) {
-    removeGiftCard();
+    removeGiftCards();
   } else if (isCartModified) {
-    removeGiftCard();
+    removeGiftCards();
     showGiftCardWarningMessage();
   } else {
     store.addedGiftCards.forEach((card) => {

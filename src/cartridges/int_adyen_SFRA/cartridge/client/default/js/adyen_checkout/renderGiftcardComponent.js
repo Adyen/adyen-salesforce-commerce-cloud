@@ -158,7 +158,7 @@ function removeGiftCardFormListeners() {
 }
 
 function removeGiftCards() {
-  store.addedGiftCards.forEach(card => {
+  store.addedGiftCards.forEach((card) => {
     $.ajax({
       type: 'POST',
       url: 'Adyen-CancelPartialPaymentOrder',
@@ -169,31 +169,33 @@ function removeGiftCards() {
         const adyenPartialPaymentsOrder = document.querySelector(
           '#adyenPartialPaymentsOrder',
         );
-  
+
         const {
           giftCardsList,
           giftCardAddButton,
           giftCardSelect,
           giftCardUl,
         } = getGiftCardElements();
-  
+
         adyenPartialPaymentsOrder.value = null;
         giftCardsList.innerHTML = '';
         giftCardAddButton.style.display = 'block';
         giftCardSelect.value = null;
         giftCardUl.innerHTML = '';
-  
+
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
         store.addedGiftCards = null;
-  
+
         if (res.resultCode === constants.RECEIVED) {
-          document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
+          document
+            .querySelector('#cancelGiftCardContainer')
+            ?.parentNode.remove();
           store.componentsObj?.giftcard?.node.unmount('component_giftcard');
         }
       },
     });
-  })
+  });
 }
 
 function renderAddedGiftCard(card) {
