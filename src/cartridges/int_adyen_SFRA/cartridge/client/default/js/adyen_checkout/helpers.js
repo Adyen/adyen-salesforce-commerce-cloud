@@ -27,8 +27,8 @@ function setOrderFormData(response) {
 function paymentFromComponent(data, component = {}) {
   const requestData = store.partialPaymentsOrderObj
     ? {
-        ...data,
-        partialPaymentsOrder: store.partialPaymentsOrderObj,
+      ...data,
+      partialPaymentsOrder: store.partialPaymentsOrderObj,
       }
     : data;
   $.ajax({
