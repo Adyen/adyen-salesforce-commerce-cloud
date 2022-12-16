@@ -163,7 +163,7 @@ export class ShopperData {
       city: 'São Paulo',
       country: 'BR',
       stateOrProvince: 'SP',
-      postalCode: '04386040',
+      postalCode: '16640',
       street: 'Rua Funcionarios',
       houseNumberOrName: '1578',
       ssn: '56861752509',

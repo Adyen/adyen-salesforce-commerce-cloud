@@ -15,7 +15,6 @@ let cards;
 
 for (const environment of environments) {
   test.describe.parallel(`${environment.name} BRL`, () => {
-    if (environment.name === 'SG') test.fixme();
 
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
