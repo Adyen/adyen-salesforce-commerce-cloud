@@ -67,8 +67,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    // Skip GiroPay due to certification issue on their sandbox
-    test.skip('Giropay Success', async ({ page }) => {
+    test('Giropay Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
@@ -76,7 +75,7 @@ for (const environment of environments) {
       await checkoutPage.expectNonRedirectSuccess();
     });
 
-    test.skip('Giropay Fail', async ({ page }) => {
+    test('Giropay Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment(page);
       await checkoutPage.completeCheckout();
