@@ -23,7 +23,6 @@
  */
 
 /* API Includes */
-const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
@@ -244,7 +243,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
           responseObject.action,
         );
       }
-      AdyenLogs.error_log.error('We got the payment');
     } else {
       paymentResponse.decision = 'REFUSED';
       order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);

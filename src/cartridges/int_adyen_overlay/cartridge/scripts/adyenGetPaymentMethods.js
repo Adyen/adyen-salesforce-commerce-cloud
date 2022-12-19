@@ -20,10 +20,10 @@
  */
 
 // script include
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getMethods(basket, customer, countryCode) {
   try {
@@ -75,7 +75,7 @@ function getMethods(basket, customer, countryCode) {
 
     return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (e) {
-    Logger.getLogger('Adyen').fatal(
+    AdyenLog.fatal_log.fatal(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }

@@ -21,7 +21,6 @@ const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
-const Logger = require('dw/system/Logger');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
@@ -29,6 +28,9 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+
+//script includes
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -52,12 +54,12 @@ var adyenHelperObj = {
           return msg;
         },
       });
-      dwsystem.Logger.getLogger('Adyen', 'adyen').debug(
+      AdyenLogs.debug_log.debug(
           'Successfully retrive service with name {0}',
           service,
       );
     } catch (e) {
-      dwsystem.Logger.getLogger('Adyen', 'adyen').error(
+      AdyenLogs.error_log.error(
           "Can't get service instance with name {0}",
           service,
       );
@@ -107,7 +109,7 @@ var adyenHelperObj = {
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if (givingConfigs[config] === null) {
-          Logger.getLogger('Adyen').error(
+          AdyenLogs.error_log.error(
               'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
           );
           return null;
@@ -726,7 +728,7 @@ var adyenHelperObj = {
       };
     }
 
-    dwsystem.Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log.error(
         `Unknown resultCode: ${checkoutresponse.resultCode}.`,
     );
     return {

@@ -20,7 +20,6 @@
  */
 
 /* API Includes */
-const Logger = require('dw/system/Logger');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const Transaction = require('dw/system/Transaction');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -28,6 +27,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function updateSavedCards(args) {
   try {
@@ -35,7 +35,7 @@ function updateSavedCards(args) {
     if (
       !(customer && customer.getProfile() && customer.getProfile().getWallet())
     ) {
-      Logger.getLogger('Adyen').error(
+      AdyenLogs.error_log.error(
         'Error while updating saved cards, could not get customer data',
       );
       return { error: true };
@@ -104,7 +104,7 @@ function updateSavedCards(args) {
     }
       return { error: false };
   } catch (ex) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.custom_error.error(
       `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`,
     );
     return { error: true };

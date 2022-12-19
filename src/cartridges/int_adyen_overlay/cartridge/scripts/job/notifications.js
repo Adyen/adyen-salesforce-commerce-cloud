@@ -23,7 +23,9 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
+
+//script includes
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function execute() {
   processNotifications();
@@ -42,7 +44,7 @@ function processNotifications(/* pdict */) {
     "custom.updateStatus = 'PROCESS'",
     null,
   );
-  logger.info('Process notifications start with count {0}', searchQuery.count);
+  AdyenLogs.info_log.info('Process notifications start with count {0}', searchQuery.count);
 
   let customObj;
   let handlerResult;
@@ -85,14 +87,14 @@ function processNotifications(/* pdict */) {
     if (handlerResult.SubmitOrder) {
       const placeOrderResult = submitOrder(order);
       if (!placeOrderResult.order_created || placeOrderResult.error) {
-        logger.error(
+        AdyenLogs.error_log.error(
           'Failed to place an order: {0}, during notification process.',
           order.orderNo,
         );
       }
     }
   }
-  logger.info(
+  AdyenLogs.info_log.info(
     'Process notifications finished with count {0}',
     searchQuery.count,
   );
@@ -111,7 +113,7 @@ function clearNotifications(/* pdict */) {
     "custom.processedStatus = 'SUCCESS'",
     null,
   );
-  logger.info(
+  AdyenLogs.info_log.info(
     'Removing Processed Custom Objects start with count {0}',
     searchQuery.count,
   );
@@ -123,7 +125,7 @@ function clearNotifications(/* pdict */) {
       deleteCustomObjects.remove(customObj);
     });
   }
-  logger.info(
+  AdyenLogs.info_log.info(
     'Removing Processed Custom Objects finished with count {0}',
     searchQuery.count,
   );
