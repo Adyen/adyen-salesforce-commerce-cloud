@@ -4,9 +4,7 @@ on: [pull_request]
 
 jobs:
   setup-the-cartridge:
-    runs-on:
-      group: larger-runners
-      labels: ubuntu-latest-4-cores
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +51,9 @@ jobs:
         run: npm run build
   end-to-end-testing:
     needs: setup-the-cartridge
-    runs-on: macos-latest
+    runs-on:
+      group: larger-runners
+      labels: ubuntu-latest-4-cores
     strategy:
       fail-fast: false
       matrix:
