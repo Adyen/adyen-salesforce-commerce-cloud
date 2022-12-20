@@ -1,10 +1,10 @@
-const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getSignature(paymentsDetailsResponse, orderToken) {
   const order = OrderMgr.getOrder(
@@ -77,7 +77,7 @@ function paymentsDetails(req, res, next) {
     res.json(response);
     return next();
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
         e.lineNumber
       }`,
