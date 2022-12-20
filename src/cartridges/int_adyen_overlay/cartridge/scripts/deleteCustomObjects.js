@@ -37,7 +37,7 @@ function handle(orderID) {
   );
   if (searchQuery.count > 0) {
     AdyenLogs.info_log(
-	`Removing related Custom Objects with merchantReference ${orderID} with count ${searchQuery.count}`,
+      `Removing related Custom Objects with merchantReference ${orderID} with count ${searchQuery.count}`,
     );
   }
   while (searchQuery.hasNext()) {
@@ -56,9 +56,7 @@ function remove(co) {
     CustomObjectMgr.remove(co);
   } catch (e) {
     AdyenLogs.error_log(
-      'Error occured during delete CO, ID: {0}, erorr message {1}',
-      co.custom.orderId,
-      e.message,
+      `Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}`,
     );
   }
 }

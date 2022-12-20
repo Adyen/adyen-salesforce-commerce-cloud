@@ -244,9 +244,7 @@ function handle(customObj) {
         break;
       default:
         AdyenLogs.info_log(
-          'Order {0} received unhandled status {1}',
-          order.orderNo,
-          customObj.custom.eventCode,
+		`Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
         );
     }
 
