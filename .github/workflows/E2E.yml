@@ -4,7 +4,9 @@ on: [pull_request]
 
 jobs:
   setup-the-cartridge:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: larger-runners
+      labels: ubuntu-latest-4-cores
     strategy:
       fail-fast: false
       matrix:
