@@ -107,7 +107,7 @@ function createSession(basket, customer, countryCode) {
 
     return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
   } catch (e) {
-    AdyenLogs.fatal_log.fatal(
+    AdyenLogs.fatal_log(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }

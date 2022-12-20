@@ -165,7 +165,7 @@ function createPaymentRequest(args) {
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
-    AdyenLogs.error_log.error(
+    AdyenLogs.error_log(
       `error processing payment. Error message: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
@@ -234,7 +234,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
-        AdyenLogs.info_log.info('Payment result: Authorised');
+        AdyenLogs.info_log('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -256,11 +256,11 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         errorMessage += ` (${responseObject.refusalReason})`;
       }
       paymentResponse.adyenErrorMessage = errorMessage;
-      AdyenLogs.info_log.info('Payment result: Refused');
+      AdyenLogs.info_log('Payment result: Refused');
     }
     return paymentResponse;
   } catch (e) {
-    AdyenLogs.fatal_log.fatal(
+    AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return {
@@ -283,7 +283,7 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
       paymentDetailsRequest,
     );
   } catch (ex) {
-    AdyenLogs.error_log.error(`error parsing response object ${ex.message}`);
+    AdyenLogs.error_log(`error parsing response object ${ex.message}`);
     return { error: true };
   }
 }

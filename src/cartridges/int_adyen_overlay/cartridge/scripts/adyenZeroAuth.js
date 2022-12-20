@@ -54,7 +54,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
       zeroAuthRequest,
     );
   } catch (e) {
-    AdyenLogs.error_log.error(
+    AdyenLogs.error_log(
       `error processing zero auth payment. Error message: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

@@ -45,7 +45,7 @@ function donate(donationReference, donationAmount, originalReference) {
     });
     return response;
   } catch (e) {
-    AdyenLogs.error_log.error(
+    AdyenLogs.error_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }

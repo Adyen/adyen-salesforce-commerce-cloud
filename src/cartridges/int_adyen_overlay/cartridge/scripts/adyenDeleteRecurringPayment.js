@@ -55,7 +55,7 @@ function deleteRecurringPayment(args) {
     AdyenHelper.executeCall(constants.SERVICE.RECURRING_DISABLE, requestObject);
     
   } catch (e) {
-    AdyenLogs.fatal_log.fatal(
+    AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }

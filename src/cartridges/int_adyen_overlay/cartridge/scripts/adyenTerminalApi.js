@@ -43,7 +43,7 @@ function getTerminals() {
     requestObject.request = getTerminalRequest;
     return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
-    AdyenLogs.error_log.error(
+    AdyenLogs.error_log(
       `Adyen getTerminals: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
     return { error: true, response: '{}' };

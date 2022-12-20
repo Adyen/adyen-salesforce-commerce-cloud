@@ -1,12 +1,24 @@
 var Logger = require('dw/system/Logger');
-var fatal_log = Logger.getLogger('Adyen_Fatal', 'Adyen');
-var error_log = Logger.getLogger('Adyen_Error', 'Adyen');
-var info_log = Logger.getLogger('Adyen_Info', 'Adyen');
-var debug_log = Logger.getLogger('Adyen_Debug', 'Adyen');
+
+function fatal_log(msg) {
+  return Logger.getLogger('Adyen_Fatal', 'Adyen').fatal(msg);
+}
+
+function error_log(msg) {
+  return Logger.getLogger('Adyen_Error', 'Adyen').error(msg);
+}
+
+function debug_log(msg) {
+  return Logger.getLogger('Adyen_Debug', 'Adyen').debug(msg);
+}
+
+function info_log(msg) {
+  return Logger.getLogger('Adyen_Info', 'Adyen').info(msg);
+}
 
 module.exports = {
   fatal_log,
   error_log,
-  info_log,
   debug_log,
+  info_log,
 };
