@@ -25,6 +25,7 @@ var AdyenHelper = require('int_adyen_overlay/cartridge/scripts/util/adyenHelper'
 var AdyenConfigs = require('int_adyen_overlay/cartridge/scripts/util/adyenConfigs');
 var adyenSessions = require('int_adyen_overlay/cartridge/scripts/adyenSessions');
 var adyenSaveCreditCard = require("*/cartridge/scripts/adyenSaveCreditCard");
+var AdyenLogs = require("int_adyen_overlay/cartridge/scripts/adyenCustomLogs")
 // ### Custom Adyen cartridge end ###
 
 /**
@@ -179,7 +180,7 @@ function create() {
                 });
             });
         } catch (e) {
-            Logger.error('{0}:  {1}', e, e.stack);
+            AdyenLogs.error_log(`${e}: ${e.stack}`);
             return false;
         }
         return true;
