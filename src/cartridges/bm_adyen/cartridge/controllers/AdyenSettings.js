@@ -67,9 +67,7 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
       error: false,
     });
   } catch (error) {
-    AdyenLogs.error_log(
-      `Error while testing API credentials: ${error}`,
-    );
+    AdyenLogs.error_log(`Error while testing API credentials: ${error}`);
     res.json({
       error: true,
       message: 'an unknown error has occurred',

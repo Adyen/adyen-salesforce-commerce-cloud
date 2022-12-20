@@ -35,9 +35,7 @@ function posAuthorize(order, paymentInstrument, paymentProcessor) {
     terminalId,
   );
   if (result.error) {
-    AdyenLogs.error_log(
-      `POS Authorise error, result: ${result.response}`,
-    );
+    AdyenLogs.error_log(`POS Authorise error, result: ${result.response}`);
     const errors = [
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     ];
