@@ -82,7 +82,8 @@ function showConfirmation(req, res, next) {
   try {
     const order = OrderMgr.getOrder(merchantReference, orderToken);
     const adyenPaymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      //    constants.METHOD_ADYEN_COMPONENT,
+          'CREDIT_CARD',
     )[0];
 
     if (isOrderAlreadyProcessed(order)) {

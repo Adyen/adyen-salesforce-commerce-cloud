@@ -26,7 +26,8 @@ function handleAdyenGiving(req, res, order) {
   const adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
 
   const paymentInstrument = order.getPaymentInstruments(
-    constants.METHOD_ADYEN_COMPONENT,
+//    constants.METHOD_ADYEN_COMPONENT,
+    'CREDIT_CARD',
   )[0];
 
   const donationAmounts = {
@@ -56,7 +57,8 @@ function confirm(req, res, next) {
   if (orderId && orderToken) {
     const order = OrderMgr.getOrder(orderId, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      'CREDIT_CARD',
+//      constants.METHOD_ADYEN_COMPONENT,
     )[0];
     const paymentMethod =
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;

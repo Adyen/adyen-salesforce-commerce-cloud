@@ -13,7 +13,8 @@ function handle(basket, paymentInformation) {
       currentBasket.removePaymentInstrument(item);
     });
     const paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
+//      constants.METHOD_ADYEN_COMPONENT,
+      'CREDIT_CARD',
       currentBasket.totalGrossPrice,
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;

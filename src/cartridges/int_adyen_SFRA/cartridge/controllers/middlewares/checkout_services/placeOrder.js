@@ -6,6 +6,7 @@ const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewa
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Money = require('dw/value/Money');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
+const Logger = require('dw/system/Logger');
 
 /* ### Custom Adyen cartridge end ### */
 
@@ -35,6 +36,7 @@ function placeOrder(req, res, next) {
 
     /* ### Custom Adyen cartridge ### */
     if(isNotAdyen(currentBasket)) {
+    Logger.getLogger('Adyen').error(`not Adyen`);
         return next();
     }
     /* ### Custom Adyen cartridge ### */
@@ -104,6 +106,7 @@ function placeOrder(req, res, next) {
 
     // Re-validates existing payment instruments
     var validPayment = COHelpers.validatePayment(req, currentBasket);
+    Logger.getLogger('Adyen').error(`validPayment = ${JSON.stringify(validPayment)}`);
     if (validPayment.error) {
         res.json({
             error: true,
@@ -128,6 +131,7 @@ function placeOrder(req, res, next) {
 
     // Creates a new order.
     var order = COHelpers.createOrder(currentBasket);
+    Logger.getLogger('Adyen').error(`order = ${JSON.stringify(order)}`);
     if (!order) {
         res.json({
             error: true,
@@ -143,7 +147,7 @@ function placeOrder(req, res, next) {
 
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
-
+    Logger.getLogger('Adyen').error(`handlePaymentResult = ${JSON.stringify(handlePaymentResult)}`);
     function createGiftcardPM(parsedGiftCardObj, divideBy) {
         let paymentInstrument;
         const paidGiftcardAmount = {value: parsedGiftCardObj.value, currency: parsedGiftCardObj.currency};
@@ -252,8 +256,10 @@ function placeOrder(req, res, next) {
     }
 
     const mainPaymentInstrument = order.getPaymentInstruments(
-                constants.METHOD_ADYEN_COMPONENT,
+                'CREDIT_CARD',
+//                constants.METHOD_ADYEN_COMPONENT,
     )[0];
+    Logger.getLogger('Adyen').error(`mainPaymentInstrument = ${JSON.stringify(mainPaymentInstrument)}`);
     session.privacy.giftCardResponse = null;
     mainPaymentInstrument && clearForms.clearPaymentTransactionData(mainPaymentInstrument);
     mainPaymentInstrument && clearForms.clearAdyenData(mainPaymentInstrument);
