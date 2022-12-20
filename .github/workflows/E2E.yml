@@ -53,7 +53,7 @@ jobs:
     needs: setup-the-cartridge
     runs-on:
       group: larger-runners
-      labels: ubuntu-latest-4-cores
+      labels: ubuntu-latest-8-cores
     strategy:
       fail-fast: false
       matrix:
