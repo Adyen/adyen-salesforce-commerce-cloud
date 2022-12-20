@@ -49,7 +49,7 @@ function callCreateSession(req, res, next) {
     return next();
   } catch (error) {
     AdyenLogs.error_log('Failed to create Adyen Checkout Session');
-    AdyenLogs.error_log('Adyen').error(error);
+    AdyenLogs.error_log(error);
     return next();
   }
 }

@@ -221,3 +221,7 @@ jest.mock('*/cartridge/scripts/adyenGetOpenInvoiceData', () => {
 jest.mock('*/cartridge/scripts/adyenLevelTwoThreeData', () => {
   return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenLevelTwoThreeData');
 }, {virtual: true});
+
+jest.mock('*/cartridge/scripts/adyenCustomLogs', () => {
+	return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenCustomLogs');
+  }, {virtual: true});

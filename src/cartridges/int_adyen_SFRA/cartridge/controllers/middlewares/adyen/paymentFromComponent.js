@@ -17,7 +17,7 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    AdyenLogs.erorr_log(
+    AdyenLogs.error_log(
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
     );
 
