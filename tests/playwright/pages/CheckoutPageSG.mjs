@@ -114,11 +114,14 @@ export default class CheckoutPageSFRA {
     return `/s/SiteGenesis/checkout?lang=${locale}`;
   }
 
-  addProductToCart = async (locale) => {
+  addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(
-      `/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
-    );
+		`/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
+	  );
+	if (itemCount > 1){
+		await this.selectQuantity.selectOption({index: itemCount });
+	}
     await this.addToCartButton.click();
   };
 

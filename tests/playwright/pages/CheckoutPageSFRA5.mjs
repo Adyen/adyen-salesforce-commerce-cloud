@@ -104,9 +104,12 @@ export default class CheckoutPageSFRA5 {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
   }
 
-  addProductToCart = async (locale) => {
+  addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+	if (itemCount > 1){
+		await this.selectQuantity.selectOption({index: itemCount });
+	}
     await this.addToCartButton.click();
   };
 

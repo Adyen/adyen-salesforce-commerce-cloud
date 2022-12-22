@@ -14,8 +14,8 @@ let accountPage;
 let cards;
 let redirectShopper;
 
-const goToBillingWithFullCartGuestUser = async () => {
-  await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US);
+const goToBillingWithFullCartGuestUser = async (itemCount) => {
+  await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US, itemCount);
   await checkoutPage.setShopperDetails(shopperData.US);
 };
 
@@ -150,9 +150,19 @@ for (const environment of environments) {
       await redirectShopper.doPayPalPayment();
       await checkoutPage.expectSuccess();
     });
+  });
 
-    // Affirm sandbox needs to be fixed
-    test.fixme('Affirm Fail', async ({ page }) => {
+  test.describe.parallel(`${environment.name} USD`, () => {
+    test.beforeEach(async ({ page }) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      accountPage = new environment.AccountPage(page);
+      cards = new Cards(page);
+
+      await page.goto(`${environment.urlExtension}`);
+      await goToBillingWithFullCartGuestUser(5);
+    });
+
+    test('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();
