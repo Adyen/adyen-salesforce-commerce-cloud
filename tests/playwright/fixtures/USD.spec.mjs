@@ -162,7 +162,7 @@ for (const environment of environments) {
       await goToBillingWithFullCartGuestUser(5);
     });
 
-    test('Affirm Fail', async ({ page }) => {
+    test.only('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();

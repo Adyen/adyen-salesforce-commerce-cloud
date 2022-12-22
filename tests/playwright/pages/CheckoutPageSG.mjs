@@ -13,6 +13,7 @@ export default class CheckoutPageSFRA {
     this.addToCartButton = page.locator('#add-to-cart');
     this.goToCart = page.locator('.minicart-icon');
     this.goToCheckout = page.locator('button[name="dwfrm_cart_checkoutCart"]');
+	this.selectQuantity = page.locator('.quantity-select');
     this.checkoutGuest = page.locator(
       'button[name="dwfrm_login_unregistered"]',
     );

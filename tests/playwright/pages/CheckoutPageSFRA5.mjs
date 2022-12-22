@@ -10,6 +10,7 @@ export default class CheckoutPageSFRA5 {
     this.selectSize = page.locator('.select-size');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
+	this.selectQuantity = page.locator('.quantity-select');
     this.checkoutUrl =
       '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
     this.checkoutGuest = page.locator('.checkout-as-guest');
