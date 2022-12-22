@@ -10,7 +10,7 @@ export default class CheckoutPageSFRA5 {
     this.selectSize = page.locator('.select-size');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
-	this.selectQuantity = page.locator('.quantity-select');
+    this.selectQuantity = page.locator('.quantity-select');
     this.checkoutUrl =
       '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
     this.checkoutGuest = page.locator('.checkout-as-guest');
@@ -93,8 +93,8 @@ export default class CheckoutPageSFRA5 {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
-  goToCheckoutPageWithFullCart = async (locale) => {
-    await this.addProductToCart(locale);
+  goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
+    await this.addProductToCart(locale, itemCount);
     await this.successMessage.waitFor({ visible: true, timeout: 15000 });
 
     await this.navigateToCheckout(locale);
@@ -108,9 +108,9 @@ export default class CheckoutPageSFRA5 {
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
-	if (itemCount > 1){
-		await this.selectQuantity.selectOption({index: itemCount });
-	}
+    if (itemCount > 1) {
+      await this.selectQuantity.selectOption({ index: itemCount });
+    }
     await this.addToCartButton.click();
   };
 

@@ -13,7 +13,7 @@ export default class CheckoutPageSFRA {
     this.addToCartButton = page.locator('#add-to-cart');
     this.goToCart = page.locator('.minicart-icon');
     this.goToCheckout = page.locator('button[name="dwfrm_cart_checkoutCart"]');
-	this.selectQuantity = page.locator('.quantity-select');
+    this.selectQuantity = page.locator('#Quantity');
     this.checkoutGuest = page.locator(
       'button[name="dwfrm_login_unregistered"]',
     );
@@ -47,7 +47,7 @@ export default class CheckoutPageSFRA {
 
     this.placeOrderButton = page.locator('button[name="submit"]');
     this.submitPaymentButton = page.locator('button[id="billing-submit"]');
-    this.successMessage = page.locator('.minicart-quantity:has-text("1")');
+    this.successMessage = page.locator('.minicart-quantity');
 
     this.checkoutPageUserFirstNameInput = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_firstName',
@@ -103,9 +103,10 @@ export default class CheckoutPageSFRA {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
-  goToCheckoutPageWithFullCart = async (locale) => {
-    await this.addProductToCart(locale);
+  goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
+    await this.addProductToCart(locale, itemCount);
     await this.successMessage.waitFor({ visible: true, timeout: 15000 });
+    expect(await this.successMessage.textContent()).not.toEqual("0");
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
@@ -118,11 +119,12 @@ export default class CheckoutPageSFRA {
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(
-		`/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
-	  );
-	if (itemCount > 1){
-		await this.selectQuantity.selectOption({index: itemCount });
-	}
+      `/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
+    );
+    if (itemCount > 1) {
+      await this.selectQuantity.fill("");
+      await this.selectQuantity.type(`${itemCount}`);
+    }
     await this.addToCartButton.click();
   };
 
