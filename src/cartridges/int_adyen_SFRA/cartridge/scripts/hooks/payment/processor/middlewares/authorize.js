@@ -59,7 +59,6 @@ function authorize(order, paymentInstrument, paymentProcessor) {
   }
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
-  clearForms.clearForms();
   Transaction.commit();
   return { authorized: true, error: false };
 }
