@@ -3,7 +3,6 @@ const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function errorHandler() {
   const serverErrors = [
@@ -59,7 +58,6 @@ function authorize(order, paymentInstrument, paymentProcessor) {
   }
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);
-  clearForms.clearForms();
   Transaction.commit();
   return { authorized: true, error: false };
 }
