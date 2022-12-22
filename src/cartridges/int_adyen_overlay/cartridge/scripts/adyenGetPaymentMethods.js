@@ -75,7 +75,7 @@ function getMethods(basket, customer, countryCode) {
 
     return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (e) {
-    AdyenLog.fatal(
+    AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }
