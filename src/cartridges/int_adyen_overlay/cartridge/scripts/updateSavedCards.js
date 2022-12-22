@@ -35,7 +35,7 @@ function updateSavedCards(args) {
     if (
       !(customer && customer.getProfile() && customer.getProfile().getWallet())
     ) {
-      AdyenLogs.err_log.error(
+      AdyenLogs.error_log(
         'Error while updating saved cards, could not get customer data',
       );
       return { error: true };
@@ -104,7 +104,7 @@ function updateSavedCards(args) {
     }
       return { error: false };
   } catch (ex) {
-    AdyenLogs.custom_error.error(
+    AdyenLogs.error_log(
       `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`,
     );
     return { error: true };
