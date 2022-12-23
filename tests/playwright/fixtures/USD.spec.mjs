@@ -37,13 +37,13 @@ for (const environment of environments) {
       await goToBillingWithFullCartGuestUser();
     });
 
-    test('Card payment no 3DS success', async () => {
+    test('Card payment no 3DS success @quick', async () => {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
     });
 
-    test('Card payment no 3DS failure', async () => {
+    test('Card payment no 3DS failure @quick', async () => {
       if (environment.name === 'SG') test.fixme();
 
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
@@ -59,7 +59,7 @@ for (const environment of environments) {
       await checkoutPage.makeSuccessfulDonation();
     });
 
-    test('Card payment 3DS1 success', async () => {
+    test('Card payment 3DS1 success @quick', async () => {
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
       await cards.do3Ds1Verification();
@@ -108,7 +108,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card payment 3DS2 success', async () => {
+    test('Card payment 3DS2 success @quick', async () => {
       await cards.doCardPayment(cardData.threeDs2);
       await checkoutPage.completeCheckout();
       await cards.do3Ds2Verification();
@@ -140,7 +140,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('PayPal Success', async ({ page }) => {
+    test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
 
       // SFRA 6 email setting flow is different

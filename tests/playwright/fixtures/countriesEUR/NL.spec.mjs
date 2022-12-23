@@ -20,7 +20,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.NL);
     });
 
-    test('iDeal Success', async ({ page }) => {
+    test('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
@@ -41,7 +41,7 @@ for (const environment of environments) {
       await checkoutPage.expectNonRedirectSuccess();
     });
 
-    test('iDeal Fail', async ({ page }) => {
+    test('iDeal Fail @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(false);
       await checkoutPage.completeCheckout();
@@ -70,7 +70,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('SEPA Success', async ({ page }) => {
+    test('SEPA Success @quick', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
       await pendingPayments.doSEPAPayment();
       await checkoutPage.completeCheckout();
