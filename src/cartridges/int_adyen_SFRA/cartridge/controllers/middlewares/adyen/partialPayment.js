@@ -1,10 +1,10 @@
-const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -120,7 +120,7 @@ function makePartialPayment(req, res, next) {
       giftCards: addedGiftCards,
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Failed to create partial payment.. ${error.toString()}`,
     );
     res.json({ error: true });

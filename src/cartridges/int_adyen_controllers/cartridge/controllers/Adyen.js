@@ -13,9 +13,9 @@ const guard = require('app_storefront_controllers/cartridge/scripts/guard');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenSessions = require('*/cartridge/scripts/adyenSessions');
 
-const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 const EXTERNAL_PLATFORM_VERSION = 'SiteGenesis';
 /**
@@ -107,7 +107,7 @@ function Redirect3DS1Response() {
     }
 
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
         `Error during 3ds1 response verification: ${e.toString()} in ${
             e.fileName
         }:${e.lineNumber}`,
@@ -155,7 +155,7 @@ function showConfirmation() {
         signature
     ) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
-        Logger.getLogger('Adyen').error(
+        AdyenLogs.error_log(
             `Could not call payment/details for failed order ${order.orderNo}`,
         );
         return response.redirect(URLUtils.httpHome());
@@ -193,7 +193,7 @@ function showConfirmation() {
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
-      Logger.getLogger('Adyen').error(
+      AdyenLogs.error_log(
           `Payment failed, result: ${JSON.stringify(detailsResult)}`,
       );
     } else {
@@ -201,7 +201,7 @@ function showConfirmation() {
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
-      Logger.getLogger('Adyen').error(
+      AdyenLogs.error_log(
           `Payment failed, reason: invalid signature`,
       );
     }
@@ -216,7 +216,7 @@ function showConfirmation() {
       PlaceOrderError: errorStatus,
     });
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Could not verify showConfirmation: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
@@ -283,7 +283,7 @@ function paymentsDetails() {
     const responseUtils = require('*/cartridge/scripts/util/Response');
     responseUtils.renderJSON({response});
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
         `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
             e.lineNumber
         }`,
@@ -302,7 +302,7 @@ function paymentFromComponent() {
           .indexOf('cancelTransaction') > -1
   ) {
     const merchantReference = JSON.parse(request.httpParameterMap.getRequestBodyAsString()).merchantReference;
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
         `Shopper cancelled paymentFromComponent transaction for order ${merchantReference}`,
     );
     return;
@@ -532,7 +532,7 @@ function sessions(customer) {
 
       return responseJSON;
     } catch (error) {
-      Logger.getLogger('Adyen').error(`Failed to create Adyen Checkout Session... ${error.toString()}`);
+AdyenLogs.error_log(`Failed to create Adyen Checkout Session... ${error.toString()}`);
     }
 }
 
@@ -546,7 +546,7 @@ function donate() {
   try {
     req = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
   } catch (e) {
-    Logger.getLogger('Adyen').error(e);
+    AdyenLogs.error_log(e);
   }
 
   const { pspReference } = req;

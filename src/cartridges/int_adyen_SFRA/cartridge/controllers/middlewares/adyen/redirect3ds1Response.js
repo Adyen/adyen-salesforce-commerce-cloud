@@ -1,7 +1,7 @@
-const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /*
  * Redirects to list of added cards on success. Otherwise redirects to add payment with error
@@ -27,7 +27,7 @@ function redirect(req, res, next) {
 
     return next();
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Error during 3ds1 response verification: ${e.toString()} in ${
         e.fileName
       }:${e.lineNumber}`,

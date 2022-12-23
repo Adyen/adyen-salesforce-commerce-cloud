@@ -1,9 +1,9 @@
-const Logger = require('dw/system/Logger');
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function callCheckBalance(req, res, next) {
   try {
@@ -38,7 +38,7 @@ function callCheckBalance(req, res, next) {
 
     res.json(response);
   } catch (error) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Failed to check gift card balance ${error.toString()}`,
     );
     res.json({ error: true });

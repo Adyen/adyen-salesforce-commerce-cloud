@@ -1,10 +1,10 @@
 const server = require('server');
 const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
   res.render('adyenSettings/settings');
@@ -23,7 +23,7 @@ server.post('Save', server.middleware.https, (req, res, next) => {
       success: true,
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Error while saving settings in BM configuration: ${error}`,
     );
     res.json({
@@ -67,9 +67,7 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
       error: false,
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error(
-      `Error while testing API credentials: ${error}`,
-    );
+    AdyenLogs.error_log(`Error while testing API credentials: ${error}`);
     res.json({
       error: true,
       message: 'an unknown error has occurred',

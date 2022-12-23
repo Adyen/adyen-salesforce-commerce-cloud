@@ -2,9 +2,9 @@
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
 const constants = require('*/cartridge/adyenConstants/constants');
 /* Script Modules */
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 require('app_storefront_controllers/cartridge/scripts/app');
 
 /**
@@ -54,7 +54,7 @@ function authorize(args) {
   const terminalId = paymentForm.terminalId.value;
 
   if (!terminalId) {
-    Logger.getLogger('Adyen').error('No terminal selected');
+    AdyenLogs.error_log('No terminal selected');
     errors = [];
     errors.push(
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
@@ -74,7 +74,7 @@ function authorize(args) {
     terminalId,
   );
   if (result.error) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `POS Authorise error, result: ${result.response}`,
     );
     errors = [];

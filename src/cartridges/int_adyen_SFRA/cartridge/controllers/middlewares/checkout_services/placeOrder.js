@@ -254,7 +254,7 @@ function placeOrder(req, res, next) {
     const mainPaymentInstrument = order.getPaymentInstruments(
                 constants.METHOD_ADYEN_COMPONENT,
     )[0];
-    session.privacy.giftCardResponse = null;
+    clearForms.clearForms();
     mainPaymentInstrument && clearForms.clearPaymentTransactionData(mainPaymentInstrument);
     mainPaymentInstrument && clearForms.clearAdyenData(mainPaymentInstrument);
     // Reset usingMultiShip after successful Order placement

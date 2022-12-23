@@ -1,12 +1,12 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function cancelPartialPaymentOrder(req, res, next) {
   try {
@@ -50,7 +50,7 @@ function cancelPartialPaymentOrder(req, res, next) {
       amount,
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Could not cancel partial payments order.. ${error.toString()}`,
     );
     res.json({
