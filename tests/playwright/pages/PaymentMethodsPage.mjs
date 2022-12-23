@@ -11,7 +11,7 @@ export default class PaymentMethodsPage {
   }
 
   getLocation = async () => {
-    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.page.waitForNavigation('load', { timeout: 15000 });
     return await this.page.url();
   };
 
@@ -156,7 +156,8 @@ export default class PaymentMethodsPage {
     Still keeping the old regexp due to potential use for SG*/
     const oneClickLi = this.page.locator(
       `//label[contains(text(),"${oneClickCardInput.oneClickLabel}")]/..`,
-    );
+    ).first();
+
     await oneClickLi.locator('input[name="brandCode"]').click();
     if (oneClickCardInput.cvc !== '') {
       await oneClickLi
@@ -218,7 +219,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =
@@ -236,7 +237,7 @@ export default class PaymentMethodsPage {
       timeout: 15000,
       waitUntil: 'networkidle',
     });
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   async continueOnKlarna() {
@@ -251,7 +252,7 @@ export default class PaymentMethodsPage {
 
     await this.klarnaBuyButton.waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.klarnaBuyButton.click();
 
@@ -260,18 +261,18 @@ export default class PaymentMethodsPage {
 
     await this.klarnaPhoneInput.waitFor({
       state: "visible",
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.klarnaPhoneInput.fill(); */
 
     await this.klarnaContinueButton.waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.klarnaContinueButton.click();
     await this.klarnaVerificationCodeInput.waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.klarnaVerificationCodeInput.fill('123456');
   }
@@ -329,10 +330,10 @@ export default class PaymentMethodsPage {
       '#invoice_kp-invoice-payment-method',
     );
 
-    await this.page.waitForNavigation('networkidle', { timeout: 10000 });
-    await this.klarnaPaymentMethodGroup.waitFor('visible', { timeout: 10000 });
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
-    await this.klarnaBuyButton.waitFor('visible', { timeout: 10000 });
+    await this.page.waitForNavigation('networkidle', { timeout: 15000 });
+    await this.klarnaPaymentMethodGroup.waitFor('visible', { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.klarnaBuyButton.waitFor('visible', { timeout: 15000 });
 
     await this.klarnaBuyButton.click();
     await this.klarnaIdNumberField.fill('811228-9874');
@@ -350,11 +351,11 @@ export default class PaymentMethodsPage {
     const giroBank = this.page.locator('#ui-id-1 li a');
     const giroBankDropdown = this.page.locator('#tags');
 
-    await giroBankDropdown.waitFor({ state: 'visible', timeout: 10000 });
+    await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
     await giroBankDropdown.type(giroPayData.bankName, { delay: 50 });
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
-    await giroBank.waitFor({ state: 'visible', timeout: 10000 });
+    await giroBank.waitFor({ state: 'visible', timeout: 15000 });
     await giroBank.click();
     await this.page.click('input[name="continueBtn"]');
     await this.page.click('#yes');
@@ -427,18 +428,18 @@ export default class PaymentMethodsPage {
     await this.page.click("button[data-testid='continue-button']");
     await this.page.locator("div[data-testid='spinner']").waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.page.click("button[data-testid='continue-button']");
     await this.page.locator('input[name="loginid"]').type('idabarese51');
     await this.page.click("button[data-testid='continue-button']");
     await this.page.locator("div[data-testid='spinner']").waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.page.locator("div[data-testid='spinner']").waitFor({
       state: 'detached',
-      timeout: 10000,
+      timeout: 15000,
     });
 
     const oneTimeCodeLocator = await this.page.locator(
@@ -452,7 +453,7 @@ export default class PaymentMethodsPage {
     await this.page.click("button[data-testid='continue-button']");
     await this.page.locator("div[data-testid='spinner']").waitFor({
       state: 'visible',
-      timeout: 10000,
+      timeout: 15000,
     });
     await this.page.click("button[data-testid='continue-button']");
 
@@ -489,6 +490,8 @@ export default class PaymentMethodsPage {
   };
 
   initiateQRCode = async (paymentMethod, envName) => {
+    // Extra static wait due to flaky load times
+    await new Promise(r => setTimeout(r, 2000));
     await this.page.click(`#rb_${paymentMethod}`);
     if (envName === 'SG') {
       await this.page.click(`#component_${paymentMethod} button`);
@@ -506,7 +509,7 @@ export default class PaymentMethodsPage {
   MultiBancoVoucherExists = async () => {
     await expect(
       this.page.locator('.adyen-checkout__voucher-result--multibanco'),
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 15000 });
   };
 
   initiateSEPAPayment = async () => {

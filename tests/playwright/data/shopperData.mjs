@@ -78,7 +78,7 @@ export class ShopperData {
     address: {
       city: 'Oslo',
       country: 'NO',
-      stateOrProvince: '',
+      stateOrProvince: 'OTHER',
       postalCode: '03733',
       street: 'Rådhusplassen',
       houseNumberOrName: '1',
@@ -95,7 +95,7 @@ export class ShopperData {
     address: {
       city: 'København',
       country: 'DK',
-      stateOrProvince: '',
+      stateOrProvince: 'OTHER',
       postalCode: '15505',
       street: 'Rådhuspladsen',
       houseNumberOrName: '1',
@@ -163,7 +163,7 @@ export class ShopperData {
       city: 'São Paulo',
       country: 'BR',
       stateOrProvince: 'SP',
-      postalCode: '04386040',
+      postalCode: '16640',
       street: 'Rua Funcionarios',
       houseNumberOrName: '1578',
       ssn: '56861752509',
@@ -174,7 +174,7 @@ export class ShopperData {
       firstName: 'Cristiano',
       lastName: 'Ronaldo',
     },
-    telephone: '+351234567890',
+    telephone: '+351213822199',
     shopperEmail: 'cris@ronaldo.pt',
     address: {
       city: 'Lisbon',

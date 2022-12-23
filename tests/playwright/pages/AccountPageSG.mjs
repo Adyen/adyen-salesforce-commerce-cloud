@@ -13,7 +13,7 @@ export default class AccountPageSG {
   };
 
   initiateCardPayment = async (cardInput) => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
 
     await this.page
       .locator('.adyen-checkout__card__holderName__input')
@@ -50,7 +50,7 @@ export default class AccountPageSG {
     await this.page.locator('.add-card').click();
 
     await this.initiateCardPayment(cardData);
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
   };
 
   removeCard = async (cardData) => {
@@ -60,27 +60,27 @@ export default class AccountPageSG {
 
     this.page.on('dialog', (dialog) => dialog.accept());
     await deleteButton.click();
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
   };
 
   expectSuccess = async (cardData) => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     await expect(
       await this.page.locator(this.savedCard(cardData)),
     ).toBeVisible();
   };
 
   expectFailure = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     await expect(this.page.locator('.card-error')).toBeVisible();
   };
 
   expectCardRemoval = async (cardData) => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     const cardElement = this.page.locator(this.savedCard(cardData));
     await cardElement.waitFor({
       state: 'detached',
-      timeout: 10000,
+      timeout: 15000,
     });
   };
 

@@ -14,8 +14,8 @@ let accountPage;
 let cards;
 let redirectShopper;
 
-const goToBillingWithFullCartGuestUser = async () => {
-  await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US);
+const goToBillingWithFullCartGuestUser = async (itemCount) => {
+  await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.US, itemCount);
   await checkoutPage.setShopperDetails(shopperData.US);
 };
 
@@ -37,13 +37,13 @@ for (const environment of environments) {
       await goToBillingWithFullCartGuestUser();
     });
 
-    test('Card payment no 3DS success', async () => {
+    test('Card payment no 3DS success @quick', async () => {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
     });
 
-    test('Card payment no 3DS failure', async () => {
+    test('Card payment no 3DS failure @quick', async () => {
       if (environment.name === 'SG') test.fixme();
 
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
@@ -53,13 +53,13 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card payment no 3DS with adyen giving donation success', async() => {
+    test('Card payment no 3DS with adyen giving donation success', async () => {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.makeSuccessfulDonation();
     });
 
-    test('Card payment 3DS1 success', async () => {
+    test('Card payment 3DS1 success @quick', async () => {
       await cards.doCardPayment(cardData.threeDs1);
       await checkoutPage.completeCheckout();
       await cards.do3Ds1Verification();
@@ -88,16 +88,27 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('Card payment 3DS1 with restored cart failure', async () => {
+    test('Card payment 3DS1 with restored cart failure', async ({ context }) => {
+      if (environment.name === 'SG') test.fixme();
+      // Skipping SG due to CSRF token validation
+
       await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.setEmail();
+      // SFRA 6 email setting flow is different
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      }
       await checkoutPage.submitPayment();
-      await checkoutPage.goBackAndReplaceOrderDifferentWindow();
+      const checkoutURL = await checkoutPage.getLocation();
+      await checkoutPage.placeOrder();
+
+      const newPage = await context.newPage();
+      newPage.goto(checkoutURL);
+
       await cards.do3Ds1Verification();
       await checkoutPage.expectRefusal();
     });
 
-    test('Card payment 3DS2 success', async () => {
+    test('Card payment 3DS2 success @quick', async () => {
       await cards.doCardPayment(cardData.threeDs2);
       await checkoutPage.completeCheckout();
       await cards.do3Ds2Verification();
@@ -129,7 +140,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('PayPal Success', async ({ page }) => {
+    test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
 
       // SFRA 6 email setting flow is different
@@ -138,6 +149,17 @@ for (const environment of environments) {
       }
       await redirectShopper.doPayPalPayment();
       await checkoutPage.expectSuccess();
+    });
+  });
+
+  test.describe.parallel(`${environment.name} USD`, () => {
+    test.beforeEach(async ({ page }) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      accountPage = new environment.AccountPage(page);
+      cards = new Cards(page);
+
+      await page.goto(`${environment.urlExtension}`);
+      await goToBillingWithFullCartGuestUser(5);
     });
 
     test('Affirm Fail', async ({ page }) => {
@@ -216,6 +238,7 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS1 success', async () => {
+      if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs1);
 
       await cards.do3Ds1Verification();
@@ -233,7 +256,9 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS2 success', async () => {
+      if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs2);
+
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
       await accountPage.removeCard(cardData.threeDs2);

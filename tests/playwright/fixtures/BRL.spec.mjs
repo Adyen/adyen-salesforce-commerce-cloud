@@ -14,8 +14,7 @@ let accountPage;
 let cards;
 
 for (const environment of environments) {
-  test.describe(`${environment.name} BRL`, () => {
-    if (environment.name === 'SG') test.fixme();
+  test.describe.parallel(`${environment.name} BRL`, () => {
 
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
@@ -43,6 +42,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
+    // Boleto sandbox needs to be fixed
     test.fixme('Boleto Success', async ({ page }) => {
       await new PresentToShoppers(page).doBoletoPayment();
       await checkoutPage.completeCheckout();
