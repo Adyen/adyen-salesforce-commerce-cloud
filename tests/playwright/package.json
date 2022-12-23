@@ -110,6 +110,7 @@
   },
   "scripts": {
     "test": "npx playwright test",
-    "test:ci": "npx playwright test --project=chromium --config=sfcc.config.js"
+    "test:ci": "npx playwright test --project=chromium --config=sfcc.config.js",
+    "test:ci:quick": "npx playwright test --project=chromium --config=sfcc.config.js -g @quick"
   }
 }
