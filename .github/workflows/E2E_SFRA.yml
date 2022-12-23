@@ -85,7 +85,7 @@ jobs:
         run: npx playwright install --with-deps
       - name: run e2e tests full coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        if: github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop'
+        if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.base.ref == 'develop'
         run: npm run test:ci
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
