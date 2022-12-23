@@ -36,7 +36,7 @@ function handle(orderID) {
     null,
   );
   if (searchQuery.count > 0) {
-    AdyenLogs.info_log(
+    AdyenLogs.debug_log(
       `Removing related Custom Objects with merchantReference ${orderID} with count ${searchQuery.count}`,
     );
   }

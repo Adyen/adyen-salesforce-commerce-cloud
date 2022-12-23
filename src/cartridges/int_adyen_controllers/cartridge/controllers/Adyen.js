@@ -302,7 +302,7 @@ function paymentFromComponent() {
           .indexOf('cancelTransaction') > -1
   ) {
     const merchantReference = JSON.parse(request.httpParameterMap.getRequestBodyAsString()).merchantReference;
-    AdyenLogs.error_log(
+    AdyenLogs.info_log(
         `Shopper cancelled paymentFromComponent transaction for order ${merchantReference}`,
     );
     return;
@@ -532,7 +532,7 @@ function sessions(customer) {
 
       return responseJSON;
     } catch (error) {
-AdyenLogs.error_log(`Failed to create Adyen Checkout Session... ${error.toString()}`);
+		AdyenLogs.fatal_error(`Failed to create Adyen Checkout Session... ${error.toString()}`);
     }
 }
 
