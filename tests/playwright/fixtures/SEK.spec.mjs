@@ -12,7 +12,7 @@ let pendingPaymentsPage;
 let redirectPaymentsPage;
 
 for (const environment of environments) {
-  test.describe(`${environment.name} SEK`, () => {
+  test.describe.parallel(`${environment.name} SEK`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
 
