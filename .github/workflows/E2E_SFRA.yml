@@ -97,7 +97,7 @@ jobs:
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: event.pull_request.base.ref not in ['master', 'release']
-        run: npm run test:ci
+        run: npm run test:ci:quick
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
