@@ -1,6 +1,9 @@
 name: E2E For SiteGenesis
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - "int_adyen_SFRA/**"
 
 jobs:
   setup-the-cartridge:
