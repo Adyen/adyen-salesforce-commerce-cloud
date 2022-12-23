@@ -21,6 +21,9 @@
 
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
+//script include
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+
 function execute(args) {
   return handle(args.orderID);
 }
@@ -33,10 +36,8 @@ function handle(orderID) {
     null,
   );
   if (searchQuery.count > 0) {
-    dw.system.Logger.getLogger('Adyen', 'adyen').info(
-      'Removing related Custom Objects with merchantReference {0} with count {1}',
-      orderID,
-      searchQuery.count,
+    AdyenLogs.info_log(
+      `Removing related Custom Objects with merchantReference ${orderID} with count ${searchQuery.count}`,
     );
   }
   while (searchQuery.hasNext()) {
@@ -48,18 +49,14 @@ function handle(orderID) {
 }
 
 function remove(co) {
-  dw.system.Logger.getLogger('Adyen', 'adyen').info(
-    'Remove CO object with merchantReference {0} and pspReferenceNumber  {1}',
-    co.custom.merchantReference,
-    co.custom.pspReference,
+  AdyenLogs.info_log(
+    `Remove CO object with merchantReference ${co.custom.merchantReference} and pspReferenceNumber ${co.custom.pspReference}`,
   );
   try {
     CustomObjectMgr.remove(co);
   } catch (e) {
-    dw.system.Logger.getLogger('Adyen', 'adyen').error(
-      'Error occured during delete CO, ID: {0}, erorr message {1}',
-      co.custom.orderId,
-      e.message,
+    AdyenLogs.error_log(
+      `Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}`,
     );
   }
 }

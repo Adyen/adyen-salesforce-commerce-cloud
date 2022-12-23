@@ -15,7 +15,7 @@
  * Copyright (c) 2021 Adyen B.V.
  * This file is open source and available under the MIT license.
  * See the LICENSE file for more info.
- * 
+ *
  * Script to run Adyen notification related jobs
  */
 
@@ -23,7 +23,9 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
+
+//script includes
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function execute() {
   processNotifications();
@@ -42,7 +44,9 @@ function processNotifications(/* pdict */) {
     "custom.updateStatus = 'PROCESS'",
     null,
   );
-  logger.info('Process notifications start with count {0}', searchQuery.count);
+  AdyenLogs.info_log(
+    `Process notifications start with count ${searchQuery.count}`,
+  );
 
   let customObj;
   let handlerResult;
@@ -85,16 +89,14 @@ function processNotifications(/* pdict */) {
     if (handlerResult.SubmitOrder) {
       const placeOrderResult = submitOrder(order);
       if (!placeOrderResult.order_created || placeOrderResult.error) {
-        logger.error(
-          'Failed to place an order: {0}, during notification process.',
-          order.orderNo,
+        AdyenLogs.error_log(
+          `Failed to place an order: ${order.orderNo}, during notification process.`,
         );
       }
     }
   }
-  logger.info(
-    'Process notifications finished with count {0}',
-    searchQuery.count,
+  AdyenLogs.info_log(
+    `Process notifications finished with count ${searchQuery.count}`,
   );
   searchQuery.close();
 
@@ -111,9 +113,8 @@ function clearNotifications(/* pdict */) {
     "custom.processedStatus = 'SUCCESS'",
     null,
   );
-  logger.info(
-    'Removing Processed Custom Objects start with count {0}',
-    searchQuery.count,
+  AdyenLogs.info_log(
+    `Removing Processed Custom Objects start with count ${searchQuery.count}`,
   );
 
   let customObj;
@@ -123,9 +124,8 @@ function clearNotifications(/* pdict */) {
       deleteCustomObjects.remove(customObj);
     });
   }
-  logger.info(
-    'Removing Processed Custom Objects finished with count {0}',
-    searchQuery.count,
+  AdyenLogs.info_log(
+    `Removing Processed Custom Objects finished with count ${searchQuery.count}`,
   );
   searchQuery.close();
 

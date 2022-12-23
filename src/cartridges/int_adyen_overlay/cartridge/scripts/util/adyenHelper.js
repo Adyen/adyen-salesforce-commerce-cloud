@@ -21,7 +21,6 @@ const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
-const Logger = require('dw/system/Logger');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
@@ -29,6 +28,9 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+
+//script includes
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -52,15 +54,9 @@ var adyenHelperObj = {
           return msg;
         },
       });
-      dwsystem.Logger.getLogger('Adyen', 'adyen').debug(
-          'Successfully retrive service with name {0}',
-          service,
-      );
+      AdyenLogs.debug_log(`Successfully retrive service with name ${service}`);
     } catch (e) {
-      dwsystem.Logger.getLogger('Adyen', 'adyen').error(
-          "Can't get service instance with name {0}",
-          service,
-      );
+      AdyenLogs.error_log(`Can't get service instance with name ${service}`);
       // e.message
     }
     return adyenService;
@@ -71,7 +67,7 @@ var adyenHelperObj = {
   getCustomer(currentCustomer) {
     if (currentCustomer.profile) {
       return CustomerMgr.getCustomerByCustomerNumber(
-          currentCustomer.profile.customerNo,
+        currentCustomer.profile.customerNo,
       );
     }
     return null;
@@ -81,10 +77,11 @@ var adyenHelperObj = {
     const paymentInstrument = order.getPaymentInstruments(
       constants.METHOD_ADYEN_COMPONENT,
     )[0];
-    const paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
+    const paymentMethod =
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
     if (
-        !AdyenConfigs.getAdyenGivingEnabled() ||
-        !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
+      !AdyenConfigs.getAdyenGivingEnabled() ||
+      !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
     ) {
       return null;
     }
@@ -102,13 +99,14 @@ var adyenHelperObj = {
       currency: session.currency.currencyCode,
       values: configuredAmounts,
     });
-    givingConfigs.pspReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
+    givingConfigs.pspReference =
+      paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
 
     for (const config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if (givingConfigs[config] === null) {
-          Logger.getLogger('Adyen').error(
-              'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
+          AdyenLogs.error_log(
+            'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
           );
           return null;
         }
@@ -138,15 +136,15 @@ var adyenHelperObj = {
         break;
       case constants.MODE.LIVE:
         const frontEndRegion = AdyenConfigs.getAdyenFrontendRegion();
-        if(frontEndRegion === constants.FRONTEND_REGIONS.US ) {
+        if (frontEndRegion === constants.FRONTEND_REGIONS.US) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_US;
           break;
         }
-        if(frontEndRegion === constants.FRONTEND_REGIONS.AU ) {
+        if (frontEndRegion === constants.FRONTEND_REGIONS.AU) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_AU;
           break;
         }
-        if(frontEndRegion === constants.FRONTEND_REGIONS.IN ) {
+        if (frontEndRegion === constants.FRONTEND_REGIONS.IN) {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
           break;
         }
@@ -166,7 +164,7 @@ var adyenHelperObj = {
     const data = value + salt;
     const digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
     const signature = Encoding.toHex(
-        digestSHA512.digestBytes(new Bytes(data, 'UTF-8')),
+      digestSHA512.digestBytes(new Bytes(data, 'UTF-8')),
     );
 
     return signature;
@@ -220,22 +218,23 @@ var adyenHelperObj = {
       returnValue.ratePayID = ratePayMerchantID;
     }
 
-      var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
-      returnValue.sessionID = Encoding.toHex(digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')));
-      session.privacy.ratePayFingerprint = returnValue.sessionID;
+    var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
+    returnValue.sessionID = Encoding.toHex(
+      digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')),
+    );
+    session.privacy.ratePayFingerprint = returnValue.sessionID;
     return returnValue;
   },
 
   isOpenInvoiceMethod(paymentMethod) {
     if (
-        paymentMethod.indexOf('afterpay') 
-        -1 ||
-        paymentMethod.indexOf('klarna') > -1 ||
-        paymentMethod.indexOf('ratepay') > -1 ||
-        paymentMethod.indexOf('facilypay') > -1 ||
-        paymentMethod === 'zip' ||
-        paymentMethod === 'affirm' ||
-        paymentMethod === 'clearpay'
+      paymentMethod.indexOf('afterpay') - 1 ||
+      paymentMethod.indexOf('klarna') > -1 ||
+      paymentMethod.indexOf('ratepay') > -1 ||
+      paymentMethod.indexOf('facilypay') > -1 ||
+      paymentMethod === 'zip' ||
+      paymentMethod === 'affirm' ||
+      paymentMethod === 'clearpay'
     ) {
       return true;
     }
@@ -262,8 +261,8 @@ var adyenHelperObj = {
         creditCardInstrument = instrumentsIter.next();
         // find token ID exists for matching payment card
         if (
-            creditCardInstrument.UUID.equals(cardUUID) &&
-            creditCardInstrument.getCreditCardToken()
+          creditCardInstrument.UUID.equals(cardUUID) &&
+          creditCardInstrument.getCreditCardToken()
         ) {
           token = creditCardInstrument.getCreditCardToken();
           break;
@@ -277,24 +276,24 @@ var adyenHelperObj = {
   createShopperObject(args) {
     let gender = 'UNKNOWN';
     if (
-        args.paymentRequest.shopperName &&
-        args.paymentRequest.shopperName.gender
+      args.paymentRequest.shopperName &&
+      args.paymentRequest.shopperName.gender
     ) {
       gender = args.paymentRequest.shopperName.gender;
     }
 
     if (args.order?.getDefaultShipment()?.getShippingAddress()?.getPhone()) {
       args.paymentRequest.telephoneNumber = args.order
-          .getDefaultShipment()
-          .getShippingAddress()
-          .getPhone();
+        .getDefaultShipment()
+        .getShippingAddress()
+        .getPhone();
     }
 
     const customer = args.order.getCustomer();
     const profile =
-        customer && customer.registered && customer.getProfile()
-            ? customer.getProfile()
-            : null;
+      customer && customer.registered && customer.getProfile()
+        ? customer.getProfile()
+        : null;
 
     if (args.order.customerEmail) {
       args.paymentRequest.shopperEmail = args.order.customerEmail;
@@ -303,7 +302,9 @@ var adyenHelperObj = {
       args.paymentRequest.shopperEmail = profile.getEmail();
     }
 
-    const address = args.order.getBillingAddress() || args.order.getDefaultShipment().getShippingAddress();
+    const address =
+      args.order.getBillingAddress() ||
+      args.order.getDefaultShipment().getShippingAddress();
     const shopperDetails = {
       firstName: address?.firstName,
       gender,
@@ -319,8 +320,8 @@ var adyenHelperObj = {
     }
 
     const shopperIP = request.getHttpRemoteAddress()
-        ? request.getHttpRemoteAddress()
-        : null;
+      ? request.getHttpRemoteAddress()
+      : null;
     if (shopperIP) {
       args.paymentRequest.shopperIP = shopperIP;
     }
@@ -356,13 +357,13 @@ var adyenHelperObj = {
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
-          ? shippingAddress.countryCode.value.toUpperCase()
-          : 'ZZ',
+        ? shippingAddress.countryCode.value.toUpperCase()
+        : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
-          ? shippingAddress.stateCode
-          : 'N/A',
+        ? shippingAddress.stateCode
+        : 'N/A',
       street: shippingStreet,
     };
 
@@ -386,13 +387,13 @@ var adyenHelperObj = {
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
-          ? billingAddress.countryCode.value.toUpperCase()
-          : 'ZZ',
+        ? billingAddress.countryCode.value.toUpperCase()
+        : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
       stateOrProvince: billingAddress.stateCode
-          ? billingAddress.stateCode
-          : 'N/A',
+        ? billingAddress.stateCode
+        : 'N/A',
       street: billingStreet,
     };
 
@@ -416,10 +417,14 @@ var adyenHelperObj = {
     let signature = '';
     //Create signature to verify returnUrl if there is an order
     if (order && order.getUUID()) {
-      signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
+      signature = adyenHelperObj.createSignature(
+        paymentInstrument,
+        order.getUUID(),
+        reference,
+      );
     }
 
-    if(stateData.paymentMethod?.storedPaymentMethodId) {
+    if (stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = 'CardOnFile';
       stateData.shopperInteraction = 'ContAuth';
     } else {
@@ -429,13 +434,13 @@ var adyenHelperObj = {
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
     stateData.reference = reference;
     stateData.returnUrl = URLUtils.https(
-        'Adyen-ShowConfirmation',
-        'merchantReference',
-        reference,
-        'signature',
-        signature,
-        'orderToken',
-        orderToken,
+      'Adyen-ShowConfirmation',
+      'merchantReference',
+      reference,
+      'signature',
+      signature,
+      'orderToken',
+      orderToken,
     ).toString();
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
@@ -443,11 +448,11 @@ var adyenHelperObj = {
     return stateData;
   },
 
-  createSignature(paymentInstrument, value, salt){
+  createSignature(paymentInstrument, value, salt) {
     const newSignature = adyenHelperObj.getAdyenHash(value, salt);
-    Transaction.wrap(function(){
+    Transaction.wrap(function () {
       paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
-    })
+    });
     return newSignature;
   },
 
@@ -455,9 +460,9 @@ var adyenHelperObj = {
   add3DS2Data(jsonObject) {
     jsonObject.authenticationData = {
       threeDSRequestData: {
-        nativeThreeDS: "preferred",
+        nativeThreeDS: 'preferred',
       },
-    }
+    };
     jsonObject.channel = 'web';
 
     const origin = `${request.getHttpProtocol()}://${request.getHttpHost()}`;
@@ -508,7 +513,7 @@ var adyenHelperObj = {
       }
     } else {
       throw new Error(
-          'cardType argument is not passed to getAdyenCardType function',
+        'cardType argument is not passed to getAdyenCardType function',
       );
     }
 
@@ -557,27 +562,36 @@ var adyenHelperObj = {
       return cardType;
     }
     throw new Error(
-        'cardType argument is not passed to getSFCCCardType function',
+      'cardType argument is not passed to getSFCCCardType function',
     );
   },
 
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails(paymentInstrument, order, result) {
-    paymentInstrument.paymentTransaction.transactionID = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference : result.pspReference;
-    paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
+    paymentInstrument.paymentTransaction.transactionID = session.privacy
+      .giftCardResponse
+      ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference
+      : result.pspReference;
+    paymentInstrument.paymentTransaction.custom.Adyen_pspReference =
+      result.pspReference;
 
     if (result.additionalData?.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
+        result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
+        result.paymentMethod,
+      );
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
-        ? result.resultCode
-        : '';
+      ? result.resultCode
+      : '';
     order.custom.Adyen_value = '0';
     // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log =  JSON.stringify(result);
+    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
+      result,
+    );
     return true;
   },
 
@@ -585,7 +599,7 @@ var adyenHelperObj = {
   getCurrencyValueForApi(amount) {
     const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
     const digitsNumber = adyenHelperObj.getFractionDigits(
-        currencyCode.toString(),
+      currencyCode.toString(),
     );
     const value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
     return new dw.value.Money(value, currencyCode);
@@ -694,25 +708,29 @@ var adyenHelperObj = {
 
   createAdyenCheckoutResponse(checkoutresponse) {
     if (
-        [constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.REFUSED, constants.RESULTCODES.ERROR, constants.RESULTCODES.CANCELLED].indexOf(
-            checkoutresponse.resultCode,
-        ) !== -1
+      [
+        constants.RESULTCODES.AUTHORISED,
+        constants.RESULTCODES.REFUSED,
+        constants.RESULTCODES.ERROR,
+        constants.RESULTCODES.CANCELLED,
+      ].indexOf(checkoutresponse.resultCode) !== -1
     ) {
       return {
         isFinal: true,
-        isSuccessful: checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
+        isSuccessful:
+          checkoutresponse.resultCode === constants.RESULTCODES.AUTHORISED,
         merchantReference: checkoutresponse.merchantReference,
-      }
+      };
     }
 
     if (
-        [
-          constants.RESULTCODES.REDIRECTSHOPPER,
-          constants.RESULTCODES.IDENTIFYSHOPPER,
-          constants.RESULTCODES.CHALLENGESHOPPER,
-          constants.RESULTCODES.PRESENTTOSHOPPER,
-          constants.RESULTCODES.PENDING,
-        ].indexOf(checkoutresponse.resultCode) !== -1
+      [
+        constants.RESULTCODES.REDIRECTSHOPPER,
+        constants.RESULTCODES.IDENTIFYSHOPPER,
+        constants.RESULTCODES.CHALLENGESHOPPER,
+        constants.RESULTCODES.PRESENTTOSHOPPER,
+        constants.RESULTCODES.PENDING,
+      ].indexOf(checkoutresponse.resultCode) !== -1
     ) {
       return {
         isFinal: false,
@@ -726,9 +744,7 @@ var adyenHelperObj = {
       };
     }
 
-    dwsystem.Logger.getLogger('Adyen').error(
-        `Unknown resultCode: ${checkoutresponse.resultCode}.`,
-    );
+    AdyenLogs.error_log(`Unknown resultCode: ${checkoutresponse.resultCode}.`);
     return {
       isFinal: true,
       isSuccessful: false,
@@ -750,15 +766,19 @@ var adyenHelperObj = {
 
     let callResult;
     // retry the call until we reach max retries OR the callresult is OK
-    for(let nrRetries=0; nrRetries < maxRetries && !callResult?.isOk(); nrRetries++) {
+    for (
+      let nrRetries = 0;
+      nrRetries < maxRetries && !callResult?.isOk();
+      nrRetries++
+    ) {
       callResult = service.call(JSON.stringify(requestObject));
     }
 
     if (!callResult.isOk()) {
       throw new Error(
-          `${serviceType} service call error code${callResult
-              .getError()
-              .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+        `${serviceType} service call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
     }
 
@@ -768,7 +788,7 @@ var adyenHelperObj = {
     }
 
     return JSON.parse(resultObject.getText());
-  }
+  },
 };
 
 module.exports = adyenHelperObj;

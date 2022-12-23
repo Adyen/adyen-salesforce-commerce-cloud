@@ -25,10 +25,10 @@
  * v4 130422 : Merged adyen_notify and update_order into single script
  *
  */
-const Logger = require('dw/system/Logger');
 const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);
@@ -36,14 +36,14 @@ function execute(args) {
 
 function notifyHttpParameterMap(hpm) {
   if (hpm === null) {
-    Logger.getLogger('Adyen', 'adyen').fatal(
+    AdyenLogs.fatal_log(
       'Handling of Adyen notification has failed. No input parameters were provided.',
     );
     return PIPELET_NEXT;
   }
 
   const notificationData = {};
-  for (const parameterName of  hpm.getParameterNames().toArray()) {
+  for (const parameterName of hpm.getParameterNames().toArray()) {
     notificationData[parameterName] = hpm[parameterName].stringValue;
   }
 
@@ -52,7 +52,7 @@ function notifyHttpParameterMap(hpm) {
 function notify(notificationData) {
   // Check the input parameters
   if (notificationData === null) {
-    Logger.getLogger('Adyen', 'adyen').fatal(
+    AdyenLogs.fatal_log(
       'Handling of Adyen notification has failed. No input parameters were provided.',
     );
     return PIPELET_NEXT;
@@ -60,9 +60,11 @@ function notify(notificationData) {
 
   try {
     const msg = createLogMessage(notificationData);
-    Logger.getLogger('Adyen').debug(msg);
+    AdyenLogs.debug_log(msg);
     const calObj = new Calendar();
-    const keyValue = `${notificationData.merchantReference}-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
+    const keyValue = `${
+      notificationData.merchantReference
+    }-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
     const customObj = CustomObjectMgr.createCustomObject(
       'adyenNotification',
       keyValue,
@@ -90,25 +92,21 @@ function notify(notificationData) {
       case 'PENDING':
       case 'CAPTURE':
         customObj.custom.updateStatus = 'PROCESS';
-        Logger.getLogger('Adyen').info(
-          "Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PROCESS' status.",
-          notificationData.merchantReference,
-          notificationData.eventCode,
+        AdyenLogs.info_log(
+          `Received notification for merchantReference ${notificationData.merchantReference} with status ${notificationData.eventCode}. Custom Object set up to 'PROCESS' status.`,
         );
         break;
       default:
         customObj.custom.updateStatus = 'PENDING';
-        Logger.getLogger('Adyen').info(
-          "Received notification for merchantReference {0} with status {1}. Custom Object set up to 'PENDING' status.",
-          notificationData.merchantReference,
-          notificationData.eventCode,
+        AdyenLogs.info_log(
+          `Received notification for merchantReference ${notificationData.merchantReference} with status ${notificationData.eventCode}. Custom Object set up to 'PENDING' status.`,
         );
     }
     return {
       success: true,
     };
   } catch (e) {
-    Logger.getLogger('Adyen', 'adyen').error(
+    AdyenLogs.error_log(
       `Notification failed: ${JSON.stringify(notificationData)}\n` +
         `Error message: ${e.message}`,
     );
