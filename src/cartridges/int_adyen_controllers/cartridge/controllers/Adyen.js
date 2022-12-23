@@ -532,7 +532,7 @@ function sessions(customer) {
 
       return responseJSON;
     } catch (error) {
-		AdyenLogs.fatal_error(`Failed to create Adyen Checkout Session... ${error.toString()}`);
+		AdyenLogs.fatal_log(`Failed to create Adyen Checkout Session... ${error.toString()}`);
     }
 }
 
