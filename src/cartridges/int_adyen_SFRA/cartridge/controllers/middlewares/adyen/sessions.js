@@ -1,4 +1,3 @@
-const Logger = require('dw/system/Logger');
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
@@ -7,6 +6,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const constants = require('*/cartridge/adyenConstants/constants');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;
@@ -48,8 +48,8 @@ function callCreateSession(req, res, next) {
     });
     return next();
   } catch (error) {
-    Logger.getLogger('Adyen').error('Failed to create Adyen Checkout Session');
-    Logger.getLogger('Adyen').error(error);
+    AdyenLogs.error_log('Failed to create Adyen Checkout Session');
+    AdyenLogs.error_log(JSON.stringify(error));
     return next();
   }
 }

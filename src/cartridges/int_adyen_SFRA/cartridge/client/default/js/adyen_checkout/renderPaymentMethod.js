@@ -109,11 +109,7 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
 }
 
 function setValid({ isStored, paymentMethodID }) {
-  if (
-    isStored &&
-    ['bcmc', 'scheme']
-      .indexOf(paymentMethodID) > -1
-  ) {
+  if (isStored && ['bcmc', 'scheme'].indexOf(paymentMethodID) > -1) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }

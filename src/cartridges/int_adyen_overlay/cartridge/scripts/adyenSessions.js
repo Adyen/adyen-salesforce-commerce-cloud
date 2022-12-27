@@ -20,7 +20,6 @@
  */
 
 // script include
-const Logger = require('dw/system/Logger');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const URLUtils = require('dw/web/URLUtils');
@@ -28,7 +27,8 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoice
 const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyenConstants/constants');
-const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json'); 
+const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function createSession(basket, customer, countryCode) {
   try {
@@ -107,7 +107,7 @@ function createSession(basket, customer, countryCode) {
 
     return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
   } catch (e) {
-    Logger.getLogger('Adyen').fatal(
+    AdyenLogs.fatal_log(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }

@@ -20,12 +20,12 @@
  */
 
 // script include
-const Logger = require('dw/system/Logger');
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function donate(donationReference, donationAmount, originalReference) {
   try {
@@ -45,7 +45,7 @@ function donate(donationReference, donationAmount, originalReference) {
     });
     return response;
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
   }
