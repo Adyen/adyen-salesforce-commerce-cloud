@@ -167,7 +167,7 @@ function placeOrder(req, res, next) {
         })
     }
     // Check if gift cards were used
-    const giftCardsAdded = currentBasket.custom.adyenGiftCards
+    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom.adyenGiftCards)
       : null;
     if (giftCardsAdded) {
