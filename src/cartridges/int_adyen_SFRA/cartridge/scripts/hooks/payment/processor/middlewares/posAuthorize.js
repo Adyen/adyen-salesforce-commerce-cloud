@@ -17,7 +17,7 @@ function posAuthorize(order, paymentInstrument, paymentProcessor) {
   const terminalId = adyenPaymentForm.terminalId.value;
 
   if (!terminalId) {
-    AdyenLogs.error_log('No terminal selected');
+    AdyenLogs.fatal_log('No terminal selected');
     const errors = [
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     ];
@@ -35,7 +35,7 @@ function posAuthorize(order, paymentInstrument, paymentProcessor) {
     terminalId,
   );
   if (result.error) {
-    AdyenLogs.error_log(`POS Authorise error, result: ${result.response}`);
+    AdyenLogs.fatal_log(`POS Authorise error, result: ${result.response}`);
     const errors = [
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     ];

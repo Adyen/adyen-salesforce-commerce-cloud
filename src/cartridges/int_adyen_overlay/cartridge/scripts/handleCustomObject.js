@@ -81,7 +81,7 @@ function handle(customObj) {
       result.SkipOrder = true;
       setProcessedCOInfo(customObj);
     } else {
-      AdyenLogs.fatal_log(
+      AdyenLogs.error_log(
         `Notification for not existing order ${customObj.custom.orderId} received.`,
       );
     }

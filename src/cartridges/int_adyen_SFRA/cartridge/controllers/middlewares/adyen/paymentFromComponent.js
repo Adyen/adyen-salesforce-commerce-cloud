@@ -17,7 +17,7 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    AdyenLogs.error_log(
+    AdyenLogs.info_log(
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
     );
 
@@ -65,7 +65,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
-    AdyenLogs.erorr_log(`Payment refused for order ${order.orderNo}`);
+    AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
     result.paymentError = true;
 
     // Decline flow for Amazon pay is handled different from other Component PMs

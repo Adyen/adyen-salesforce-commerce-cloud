@@ -86,7 +86,7 @@ function showConfirmation(req, res, next) {
     )[0];
 
     if (isOrderAlreadyProcessed(order)) {
-      AdyenLogs.debug_log(
+      AdyenLogs.info_log(
         'ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation',
       );
       res.redirect(URLUtils.url('Cart-Show'));

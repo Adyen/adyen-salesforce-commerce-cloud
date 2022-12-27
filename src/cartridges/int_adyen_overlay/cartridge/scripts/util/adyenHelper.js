@@ -54,7 +54,7 @@ var adyenHelperObj = {
           return msg;
         },
       });
-      AdyenLogs.debug_log(`Successfully retrive service with name ${service}`);
+      AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
     } catch (e) {
       AdyenLogs.error_log(`Can't get service instance with name ${service}`);
       // e.message

@@ -35,7 +35,7 @@ describe('POS Authorize', () => {
       paymentProcessor,
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.error.mock.calls).toMatchSnapshot();
+    expect(Logger.fatal.mock.calls).toMatchSnapshot();
   });
 
   it('should return error if createTerminalPayment fails', () => {
@@ -53,7 +53,7 @@ describe('POS Authorize', () => {
       paymentProcessor,
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.error.mock.calls).toMatchSnapshot();
+    expect(Logger.fatal.mock.calls).toMatchSnapshot();
   });
 
   it('should return success response when createTerminalPayment passes', () => {
