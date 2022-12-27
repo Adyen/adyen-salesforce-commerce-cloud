@@ -150,6 +150,13 @@ for (const environment of environments) {
       await redirectShopper.doPayPalPayment();
       await checkoutPage.expectSuccess();
     });
+
+	test('GiftCard Success', async () => {
+        await cards.doGiftCardPayment(cardData.giftCard);
+		await checkoutPage.placeOrder();
+		await checkoutPage.expectSuccess();
+      });
+
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
