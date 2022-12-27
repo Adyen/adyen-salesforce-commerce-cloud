@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render gift card should renderAddedGiftCard 1`] = `
+<ul
+  id="giftCardsList"
+>
+  <div
+    class="gift-card"
+  >
+    <div
+      class="wrapper"
+    >
+      <div
+        class="brand-container"
+      >
+        <img
+          class="gift-card-logo"
+          src="test_image_pathbrand.png"
+        />
+        <p />
+      </div>
+      <div
+        class="gift-card-action"
+      >
+        <a />
+      </div>
+    </div>
+    <div
+      class="wrapper"
+    >
+      <p />
+      <strong />
+    </div>
+  </div>
+</ul>
+`;
+
+exports[`Render gift card should showGiftCardWarningMessage 1`] = `
+<div
+  class="card-body order-total-summary"
+>
+  <div
+    class="alert alert-warning error-message gift-card-warning-msg"
+    id="giftCardWarningMessage"
+    role="alert"
+  >
+    <p
+      class="error-message-text"
+    />
+  </div>
+</div>
+`;
