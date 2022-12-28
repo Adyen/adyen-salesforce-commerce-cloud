@@ -35,6 +35,52 @@ exports[`Render gift card should renderAddedGiftCard 1`] = `
 </ul>
 `;
 
+exports[`Render gift card should renderGiftCardSelectForm 1`] = `
+<select
+  id="giftCardSelect"
+>
+  <option
+    style="visibility: hidden;"
+    value="mocked_brand1"
+  />
+  <option
+    style="visibility: hidden;"
+    value="mocked_brand2"
+  />
+</select>
+`;
+
+exports[`Render gift card should renderGiftCardSelectForm 2`] = `
+<ul
+  id="giftCardUl"
+>
+  <li
+    data-brand="mocked_brand1"
+    data-name="undefined"
+    data-type="giftcard"
+  >
+    <span />
+    <img
+      height="26"
+      src="test_image_pathmocked_brand1.png"
+      width="40"
+    />
+  </li>
+  <li
+    data-brand="mocked_brand2"
+    data-name="undefined"
+    data-type="giftcard"
+  >
+    <span />
+    <img
+      height="26"
+      src="test_image_pathmocked_brand2.png"
+      width="40"
+    />
+  </li>
+</ul>
+`;
+
 exports[`Render gift card should showGiftCardWarningMessage 1`] = `
 <div
   class="card-body order-total-summary"
