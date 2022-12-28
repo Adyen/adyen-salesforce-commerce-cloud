@@ -151,7 +151,6 @@ export default class PaymentMethodsPage {
   initiateGiftCardPayment = async (giftCardInput) => {
 	const ccComponentWrapper = this.page.locator(".gift-card-selection");
     await this.page.locator('#giftCardAddButton').click();
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.page.locator('#giftCardSelect').click()
 	const giftCardBrand = this.page.locator(`li[data-brand=${giftCardInput.brand}]`)
 	await this.page.locator("#giftCardUl").waitFor({
