@@ -167,9 +167,18 @@ for (const environment of environments) {
 		await checkoutPage.expectSuccess();
       });
 
-	test.only('GiftCard & Card Success', async () => {
+	test('GiftCard & Card Success', async () => {
 		await goToBillingWithFullCartGuestUser(3);
         await cards.doGiftCardPayment(cardData.giftCard);
+		await cards.doCardPayment(cardData.noThreeDs);
+		await checkoutPage.completeCheckout();
+		await checkoutPage.expectSuccess();
+    });
+
+	test('Remove Gift Card', async ({ page }) => {
+		await goToBillingWithFullCartGuestUser(3);
+        await cards.doGiftCardPayment(cardData.giftCard);
+		await page.locator('.gift-card-action').click();
 		await cards.doCardPayment(cardData.noThreeDs);
 		await checkoutPage.completeCheckout();
 		await checkoutPage.expectSuccess();
