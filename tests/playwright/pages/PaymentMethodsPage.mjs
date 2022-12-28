@@ -149,7 +149,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateGiftCardPayment = async (giftCardInput) => {
-	const ccComponentWrapper = this.page.locator(".gift-card-selection");
+	const giftCardComponentWrapper = this.page.locator(".gift-card-selection");
     await this.page.locator('#giftCardAddButton').click();
     await this.page.locator('#giftCardSelect').click()
 	const giftCardBrand = this.page.locator(`li[data-brand=${giftCardInput.brand}]`)
@@ -160,19 +160,19 @@ export default class PaymentMethodsPage {
     await giftCardBrand.click();
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
-    const giftCardNumberInputField = ccComponentWrapper
+    const giftCardNumberInputField = giftCardComponentWrapper
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
       .locator('.input-field');
 
-	const giftCardPin = ccComponentWrapper
+	const giftCardPinField = giftCardComponentWrapper
       .frameLocator('.adyen-checkout__card__cvc__input iframe')
       .locator('.input-field');
 
     await giftCardNumberInputField.click();
 	await giftCardNumberInputField.fill(giftCardInput.cardNumber);
 
-	await giftCardPin.click();
-	await giftCardPin.fill(giftCardInput.pin);
+	await giftCardPinField.click();
+	await giftCardPinField.fill(giftCardInput.pin);
 
 	await this.page.locator(".adyen-checkout__button--pay").click();
 
