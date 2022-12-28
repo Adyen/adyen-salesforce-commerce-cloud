@@ -150,13 +150,30 @@ for (const environment of environments) {
       await redirectShopper.doPayPalPayment();
       await checkoutPage.expectSuccess();
     });
+  });
 
-	test('GiftCard Success', async () => {
+  test.describe.parallel(`${environment.name} USD`, () => {
+    test.beforeEach(async ({ page }) => {
+		checkoutPage = new environment.CheckoutPage(page);
+		accountPage = new environment.AccountPage(page);
+		cards = new Cards(page);
+		await page.goto(`${environment.urlExtension}`);
+	  });
+
+	test('GiftCard Only Success', async () => {
+		await goToBillingWithFullCartGuestUser();
         await cards.doGiftCardPayment(cardData.giftCard);
 		await checkoutPage.placeOrder();
 		await checkoutPage.expectSuccess();
       });
 
+	test.only('GiftCard & Card Success', async () => {
+		await goToBillingWithFullCartGuestUser(3);
+        await cards.doGiftCardPayment(cardData.giftCard);
+		await cards.doCardPayment(cardData.noThreeDs);
+		await checkoutPage.completeCheckout();
+		await checkoutPage.expectSuccess();
+    });
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
