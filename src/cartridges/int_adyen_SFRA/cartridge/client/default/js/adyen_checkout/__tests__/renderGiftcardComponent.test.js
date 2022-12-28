@@ -7,7 +7,6 @@ const {
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
 } = require('../renderGiftcardComponent');
-const { createSession } = require('../../commons');
 const store = require('../../../../../store');
 
 jest.mock('../../commons');
@@ -43,13 +42,6 @@ beforeEach(() => {
   store.checkout = {
     options: {},
   };
-  createSession.mockReturnValue({
-    adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-    id: 'mock_id',
-    sessionData: 'mock_session_data',
-    imagePath: 'example.com',
-    adyenDescriptions: {},
-  });
 });
 describe.only('Render gift card', () => {
   it('should remove entire giftcard container when removeGiftCard is successful', async () => {
