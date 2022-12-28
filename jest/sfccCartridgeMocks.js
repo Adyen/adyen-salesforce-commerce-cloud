@@ -20,7 +20,11 @@ jest.mock('*/cartridge/scripts/adyenCheckout', () => {
     }),
     createPaymentRequest: jest.fn(() => ({
       resultCode: 'Authorised',
-    }))
+    })),
+    doCreatePartialPaymentOrderCall: jest.fn(() => {
+       return {remainingAmount: 'mocked_amount', orderData: 'mocked_data'};
+
+     }),
   };
 }, {virtual: true});
 

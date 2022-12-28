@@ -47,6 +47,7 @@ export const getCurrentBasket = jest.fn(() => ({
   getTotalGrossPrice,
   getPaymentInstruments,
   removePaymentInstrument: jest.fn(),
+  getUUID: jest.fn(),
   createPaymentInstrument: jest.fn(() => toArray()[0]),
   defaultShipment: getDefaultShipment(),
   billingAddress: getBillingAddress(),
