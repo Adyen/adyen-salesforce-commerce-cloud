@@ -155,46 +155,48 @@ for (const environment of environments) {
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-    test.beforeEach(async ({ page }) => {
-      checkoutPage = new environment.CheckoutPage(page);
-      accountPage = new environment.AccountPage(page);
-      cards = new Cards(page);
-      await page.goto(`${environment.urlExtension}`);
-    });
-
-    test('GiftCard Only Success', async () => {
-      await goToBillingWithFullCartGuestUser();
-      await cards.doGiftCardPayment(cardData.giftCard);
-      await checkoutPage.placeOrder();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('GiftCard & Card Success', async () => {
-      await goToBillingWithFullCartGuestUser(3);
-      await cards.doGiftCardPayment(cardData.giftCard);
-      await cards.doCardPayment(cardData.noThreeDs);
-      await checkoutPage.completeCheckout();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Remove Gift Card', async ({ page }) => {
-      await goToBillingWithFullCartGuestUser(3);
-      await cards.doGiftCardPayment(cardData.giftCard);
-      await page.locator('.gift-card-action').click();
-      await cards.doCardPayment(cardData.noThreeDs);
-      await checkoutPage.completeCheckout();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Gift Card Fail', async ({ page, locale }) => {
-      await goToBillingWithFullCartGuestUser(3);
-      await cards.doGiftCardPayment(cardData.giftCard);
-      await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
-      await page.locator('.add-to-cart').click();
-      await checkoutPage.navigateToCheckout(regionsEnum.US);
-      await checkoutPage.submitShipping();
-      await checkoutPage.expectGiftCardWarning();
-    });
+	if (environment.name != 'SG'){
+	 	test.beforeEach(async ({ page }) => {
+			checkoutPage = new environment.CheckoutPage(page);
+			accountPage = new environment.AccountPage(page);
+			cards = new Cards(page);
+			await page.goto(`${environment.urlExtension}`);
+		});
+	  
+		test('GiftCard Only Success', async () => {
+			await goToBillingWithFullCartGuestUser();
+			await cards.doGiftCardPayment(cardData.giftCard);
+			await checkoutPage.placeOrder();
+			await checkoutPage.expectSuccess();
+		});
+	  
+		test('GiftCard & Card Success', async () => {
+			await goToBillingWithFullCartGuestUser(3);
+			await cards.doGiftCardPayment(cardData.giftCard);
+			await cards.doCardPayment(cardData.noThreeDs);
+			await checkoutPage.completeCheckout();
+			await checkoutPage.expectSuccess();
+		});
+	  
+		test('Remove Gift Card', async ({ page }) => {
+			await goToBillingWithFullCartGuestUser(3);
+			await cards.doGiftCardPayment(cardData.giftCard);
+			await page.locator('.gift-card-action').click();
+			await cards.doCardPayment(cardData.noThreeDs);
+			await checkoutPage.completeCheckout();
+			await checkoutPage.expectSuccess();
+		});
+	  
+		test('Gift Card Fail', async ({ page, locale }) => {
+			await goToBillingWithFullCartGuestUser(3);
+			await cards.doGiftCardPayment(cardData.giftCard);
+			await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+			await page.locator('.add-to-cart').click();
+			await checkoutPage.navigateToCheckout(regionsEnum.US);
+			await checkoutPage.submitShipping();
+			await checkoutPage.expectGiftCardWarning();
+		});
+	  }
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
