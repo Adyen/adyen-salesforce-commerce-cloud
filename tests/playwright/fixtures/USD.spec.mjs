@@ -193,6 +193,9 @@ for (const environment of environments) {
 			await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
 			await page.locator('.add-to-cart').click();
 			await checkoutPage.navigateToCheckout(regionsEnum.US);
+			if (environment.name.indexOf('v6') === -1){
+				await checkoutPage.checkoutGuest.click();
+			}
 			await checkoutPage.submitShipping();
 			await checkoutPage.expectGiftCardWarning();
 		});
