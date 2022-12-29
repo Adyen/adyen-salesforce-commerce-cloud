@@ -59,7 +59,7 @@ export default class CheckoutPageSFRA5 {
     this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
-	this.giftCardWarning = page.locator('#giftCardWarningMessage')
+    this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
 
     this.voucherCode = page.locator('#voucherResult');
