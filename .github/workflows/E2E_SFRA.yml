@@ -60,6 +60,9 @@ jobs:
         id: uploadStep
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run uploadCartridge
+      - name: Check build result
+        if: contains(${{ steps.uploadStep.outputs.stdout }}, 'Error')
+        run: echo "Uploading cartridge failed, see step above!" && exit 1
   end-to-end-testing:
     needs: setup-the-cartridge
     runs-on:
@@ -76,9 +79,6 @@ jobs:
             sfcc-hostname-secret: "SFCC_STOREFRONT_URL_SFRA6"
             code-version-secret: "SFCC_CODE_VERSION_SFRA6"
     steps:
-      - name: Check build result
-        if: contains(${{ steps.uploadCartridge.outputs.stdout }}, 'Error')
-        run: exit 1
       - name: setup Node
         uses: actions/setup-node@v2
         with:
