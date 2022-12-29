@@ -165,6 +165,9 @@ for (const environment of environments) {
 	  
 		test('GiftCard Only Success', async () => {
 			await goToBillingWithFullCartGuestUser();
+			if (environment.name.indexOf('v6') === -1) {
+				await checkoutPage.setEmail();
+			}
 			await cards.doGiftCardPayment(cardData.giftCard);
 			await checkoutPage.placeOrder();
 			await checkoutPage.expectSuccess();
