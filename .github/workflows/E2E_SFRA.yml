@@ -50,9 +50,16 @@ jobs:
             "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
             "code-version": "${{ secrets[matrix.code-version-secret] }}"
           }' >> dw.json
-      - name: push cartridge code
+      - name: transpile
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run build
+        run: npm run transpile
+      - name: compile
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run compile:js
+      - name: upload cartridge
+        id: uploadStep
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run uploadCartridge
   end-to-end-testing:
     needs: setup-the-cartridge
     runs-on:
@@ -69,6 +76,9 @@ jobs:
             sfcc-hostname-secret: "SFCC_STOREFRONT_URL_SFRA6"
             code-version-secret: "SFCC_CODE_VERSION_SFRA6"
     steps:
+      - name: Check build result
+        if: contains(${{ steps.uploadCartridge.outputs.stdout }}, 'Error')
+        run: exit 1
       - name: setup Node
         uses: actions/setup-node@v2
         with:
