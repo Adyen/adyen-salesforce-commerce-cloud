@@ -24,9 +24,8 @@ const URLUtils = require('dw/web/URLUtils');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const Logger = require('dw/system/Logger');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
@@ -36,9 +35,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
       paymentInstrument,
     );
 
-    if (AdyenConfigs.getAdyen3DS2Enabled()) {
-      zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
-    }
+    zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
 
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
@@ -57,7 +54,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
       zeroAuthRequest,
     );
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `error processing zero auth payment. Error message: ${
         e.message
       } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

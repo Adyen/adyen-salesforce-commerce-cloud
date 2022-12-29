@@ -23,7 +23,6 @@ for (const environment of environments) {
       await pendingPayments.doKonbiniPayment();
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
-      await checkoutPage.expectVoucher();
     });
   });
 }

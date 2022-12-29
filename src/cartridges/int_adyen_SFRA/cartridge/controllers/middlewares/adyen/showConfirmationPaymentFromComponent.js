@@ -1,7 +1,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
-const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const handlePayment = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent/payment');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /*
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
@@ -17,7 +17,7 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     );
     return handlePayment(stateData, order, options);
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
         e.lineNumber
       }`,

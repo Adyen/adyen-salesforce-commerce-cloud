@@ -1,8 +1,8 @@
 const Resource = require('dw/web/Resource');
-const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function errorHandler() {
   const serverErrors = [
@@ -18,9 +18,7 @@ function errorHandler() {
 }
 
 function paymentErrorHandler(result) {
-  Logger.getLogger('Adyen').error(
-    `Payment failed, result: ${JSON.stringify(result)}`,
-  );
+  AdyenLogs.error_log(`Payment failed, result: ${JSON.stringify(result)}`);
   Transaction.rollback();
   return { error: true };
 }

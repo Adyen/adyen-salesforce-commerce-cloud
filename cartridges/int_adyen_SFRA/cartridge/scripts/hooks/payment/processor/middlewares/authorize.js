@@ -1,10 +1,10 @@
 "use strict";
 
 var Resource = require('dw/web/Resource');
-var Logger = require('dw/system/Logger');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function errorHandler() {
   var serverErrors = [Resource.msg('error.payment.processor.not.supported', 'checkout', null)];
   return {
@@ -15,7 +15,7 @@ function errorHandler() {
   };
 }
 function paymentErrorHandler(result) {
-  Logger.getLogger('Adyen').error("Payment failed, result: ".concat(JSON.stringify(result)));
+  AdyenLogs.error_log("Payment failed, result: ".concat(JSON.stringify(result)));
   Transaction.rollback();
   return {
     error: true

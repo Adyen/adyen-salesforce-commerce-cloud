@@ -21,6 +21,12 @@ export class CardData {
     holderName: 'John Doe',
     cardNumber: '6703444444444449',
     expirationDate: '0330',
-    cvc: '737',
+    cvc: '',
   };
+
+  giftCard = {
+    cardNumber : '6036280000000000000',
+    pin : '123',
+    brand : 'givex'
+  }
 }

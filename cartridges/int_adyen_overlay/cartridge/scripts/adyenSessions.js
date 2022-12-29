@@ -25,7 +25,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 // script include
-var Logger = require('dw/system/Logger');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var URLUtils = require('dw/web/URLUtils');
@@ -34,6 +33,7 @@ var RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 var adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 var constants = require('*/cartridge/adyenConstants/constants');
 var blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function createSession(basket, customer, countryCode) {
   try {
     var sessionsRequest = {};
@@ -104,7 +104,7 @@ function createSession(basket, customer, countryCode) {
     sessionsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
     return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest);
   } catch (e) {
-    Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.fatal_log("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
 }
 module.exports = {

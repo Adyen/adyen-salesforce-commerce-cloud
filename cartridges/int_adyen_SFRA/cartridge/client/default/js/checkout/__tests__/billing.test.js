@@ -1,5 +1,8 @@
 "use strict";
 
+/**
+ * @jest-environment jsdom
+ */
 var _require = require('../billing'),
   methods = _require.methods;
 describe('Billing', function () {

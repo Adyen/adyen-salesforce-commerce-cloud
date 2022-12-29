@@ -14,6 +14,7 @@ function clearCustomSessionFields() {
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
   session.privacy.giftCardResponse = null;
+  session.privacy.partialPaymentData = null;
 }
 
 /**

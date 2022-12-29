@@ -1,9 +1,9 @@
 "use strict";
 
-var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /*
  * Redirects to list of added cards on success. Otherwise redirects to add payment with error
@@ -24,7 +24,7 @@ function redirect(req, res, next) {
     }
     return next();
   } catch (e) {
-    Logger.getLogger('Adyen').error("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

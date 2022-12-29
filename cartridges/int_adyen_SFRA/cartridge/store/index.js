@@ -28,7 +28,7 @@ var Store = (_class = /*#__PURE__*/function () {
     _initializerDefineProperty(this, "componentState", _descriptor9, this);
     _initializerDefineProperty(this, "brand", _descriptor10, this);
     _initializerDefineProperty(this, "partialPaymentsOrderObj", _descriptor11, this);
-    _initializerDefineProperty(this, "giftcardBrand", _descriptor12, this);
+    _initializerDefineProperty(this, "giftCardComponentListenersAdded", _descriptor12, this);
   }
   _createClass(Store, [{
     key: "maskedCardNumber",
@@ -130,7 +130,7 @@ var Store = (_class = /*#__PURE__*/function () {
   enumerable: true,
   writable: true,
   initializer: null
-}), _descriptor12 = _applyDecoratedDescriptor(_class.prototype, "giftcardBrand", [observable], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class.prototype, "giftCardComponentListenersAdded", [observable], {
   configurable: true,
   enumerable: true,
   writable: true,

@@ -10,6 +10,7 @@ export default class CheckoutPageSFRA5 {
     this.selectSize = page.locator('.select-size');
     this.addToCartButton = page.locator('.add-to-cart');
     this.successMessage = page.locator('.add-to-cart-messages');
+    this.selectQuantity = page.locator('.quantity-select');
     this.checkoutUrl =
       '/on/demandware.store/Sites-RefArch-Site/fr_FR/Checkout-Login';
     this.checkoutGuest = page.locator('.checkout-as-guest');
@@ -58,6 +59,7 @@ export default class CheckoutPageSFRA5 {
     this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
+    this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
 
     this.voucherCode = page.locator('#voucherResult');
@@ -77,20 +79,24 @@ export default class CheckoutPageSFRA5 {
     this.loginButton = page.locator('.login button[type="submit"]');
 
     this.paymentModal = page.locator("#action-modal #adyenModalDialog");
+
+    this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
+    this.donationButton = page.locator('.adyen-checkout__button--donate');
+    this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
   }
 
   isPaymentModalShown = async (imgAltValue) => {
     await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible({ timeout: 10000 });
+      .toBeVisible({ timeout: 15000 });
   }
 
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
-  goToCheckoutPageWithFullCart = async (locale) => {
-    await this.addProductToCart(locale);
-    await this.successMessage.waitFor({ visible: true, timeout: 10000 });
+  goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
+    await this.addProductToCart(locale, itemCount);
+    await this.successMessage.waitFor({ visible: true, timeout: 15000 });
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
@@ -100,9 +106,12 @@ export default class CheckoutPageSFRA5 {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
   }
 
-  addProductToCart = async (locale) => {
+  addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+    if (itemCount > 1) {
+      await this.selectQuantity.selectOption({ index: itemCount });
+    }
     await this.addToCartButton.click();
   };
 
@@ -136,7 +145,7 @@ export default class CheckoutPageSFRA5 {
         );
       }
     }
-    await this.shippingSubmit.click();
+    await this.submitShipping();
   };
 
   setEmail = async () => {
@@ -149,15 +158,20 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.shippingSubmit.click();
+    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 15000 });
+
+    // Ugly wait since the submit button takes time to mount.
+    await new Promise(r => setTimeout(r, 2000));
   };
 
   submitPayment = async () => {
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.placeOrderButton.click();
   };
 
@@ -172,21 +186,9 @@ export default class CheckoutPageSFRA5 {
   };
 
   goBackAndSubmitShipping = async () => {
-    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.page.waitForNavigation('load', { timeout: 15000 });
     await this.navigateBack();
     await this.submitShipping();
-  };
-
-  goBackAndReplaceOrderDifferentWindow = async () => {
-    const checkoutLocation = await this.getLocation();
-    await this.placeOrder();
-
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const secondSession = await context.newPage();
-
-    await secondSession.goto(checkoutLocation);
-    return secondSession;
   };
 
   expectSuccess = async () => {
@@ -194,11 +196,11 @@ export default class CheckoutPageSFRA5 {
       url: /Order-Confirm/,
       timeout: 15000,
     });
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 15000 });
   };
 
   expectNonRedirectSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 10000 });
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 15000 });
   };
 
   expectRefusal = async () => {
@@ -206,24 +208,28 @@ export default class CheckoutPageSFRA5 {
   };
 
   expectVoucher = async () => {
-    await expect(this.voucherCode).toBeVisible({ timeout: 10000 });
+    await expect(this.voucherCode).toBeVisible({ timeout: 15000 });
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached', timeout: 10000 });
-    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 10000 });
-    await expect(this.qrImg).toBeVisible({ timeout: 10000 });
+    await this.qrLoader.waitFor({ state: 'attached', timeout: 15000 });
+    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 15000 });
+    await expect(this.qrImg).toBeVisible({ timeout: 15000 });
+  };
+
+  expectGiftCardWarning = async () => {
+    await expect(this.giftCardWarning).not.toBeEmpty();
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   loginUser = async (credentials) => {
@@ -232,5 +238,13 @@ export default class CheckoutPageSFRA5 {
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();
     await this.page.waitForNavigation({ waitUntil: 'load' });
+  };
+
+  makeSuccessfulDonation = async () => {
+    await this.donationAmountButton.click();
+    await this.donationButton.click();
+    await expect(this.givingThankyouMessage).toContainText(
+      'Thanks for your support',
+    );
   };
 }

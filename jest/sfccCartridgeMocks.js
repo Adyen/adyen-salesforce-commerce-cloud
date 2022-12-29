@@ -20,7 +20,11 @@ jest.mock('*/cartridge/scripts/adyenCheckout', () => {
     }),
     createPaymentRequest: jest.fn(() => ({
       resultCode: 'Authorised',
-    }))
+    })),
+    doCreatePartialPaymentOrderCall: jest.fn(() => {
+       return {remainingAmount: 'mocked_amount', orderData: 'mocked_data'};
+
+     }),
   };
 }, {virtual: true});
 
@@ -219,6 +223,9 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     executeCall: jest.fn(() => ({
       resultCode: "Authorised"
     })),
+    add3DS2Data: jest.fn((request) => {
+      return request
+    })
   }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {

@@ -1,4 +1,3 @@
-const Logger = require('dw/system/Logger');
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
@@ -7,6 +6,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getPaymentDetailsPayload(querystring) {
   const details = querystring.redirectResult
@@ -86,7 +86,7 @@ function showConfirmation(req, res, next) {
     )[0];
 
     if (isOrderAlreadyProcessed(order)) {
-      Logger.getLogger('Adyen').debug(
+      AdyenLogs.info_log(
         'ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation',
       );
       res.redirect(URLUtils.url('Cart-Show'));
@@ -98,7 +98,7 @@ function showConfirmation(req, res, next) {
       signature
     ) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
-        Logger.getLogger('Adyen').error(
+        AdyenLogs.error_log(
           `Could not call payment/details for failed order ${order.orderNo}`,
         );
         return payment.handlePaymentError(order, 'placeOrder', options);
@@ -121,7 +121,7 @@ function showConfirmation(req, res, next) {
     }
     throw new Error(`Incorrect signature for order ${merchantReference}`);
   } catch (e) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.error_log(
       `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
         e.lineNumber
       }`,

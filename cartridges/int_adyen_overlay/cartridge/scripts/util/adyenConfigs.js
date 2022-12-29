@@ -40,9 +40,6 @@ var adyenConfigsObj = {
   getAdyenNotificationPassword: function getAdyenNotificationPassword() {
     return getCustomPreference('Adyen_notification_password');
   },
-  getAdyen3DS2Enabled: function getAdyen3DS2Enabled() {
-    return getCustomPreference('Adyen3DS2Enabled');
-  },
   getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');
   },

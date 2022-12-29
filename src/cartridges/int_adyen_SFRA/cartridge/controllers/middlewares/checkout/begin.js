@@ -1,12 +1,12 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const OrderMgr = require('dw/order/OrderMgr');
-const Logger = require('dw/system/Logger');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
@@ -34,7 +34,7 @@ function restoreBasket(cachedOrderNumber, cachedOrderToken) {
       return true;
     }
   } catch (error) {
-    Logger.getLogger('Adyen').error(`Failed to restore cart. error: ${error}`);
+    AdyenLogs.error_log(`Failed to restore cart. error: ${error}`);
   }
   return false;
 }

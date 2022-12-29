@@ -1,6 +1,5 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
-const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
@@ -10,6 +9,7 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
@@ -17,7 +17,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    Logger.getLogger('Adyen').error(
+    AdyenLogs.info_log(
       `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
     );
 
@@ -65,9 +65,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
-    Logger.getLogger('Adyen').error(
-      `Payment refused for order ${order.orderNo}`,
-    );
+    AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
     result.paymentError = true;
 
     // Decline flow for Amazon pay is handled different from other Component PMs

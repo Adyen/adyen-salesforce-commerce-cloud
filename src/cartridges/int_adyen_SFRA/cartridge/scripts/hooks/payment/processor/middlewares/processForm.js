@@ -1,7 +1,7 @@
-const Logger = require('dw/system/Logger');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const array = require('*/cartridge/scripts/util/array');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {
   if (!req.form.storedPaymentUUID && isCreditCard) {
@@ -90,7 +90,7 @@ function getPaymentMethodFromForm(paymentForm) {
     return JSON.parse(paymentForm.adyenPaymentFields?.adyenStateData?.value)
       .paymentMethod;
   } catch (error) {
-    Logger.getLogger('Adyen').error('Failed to parse payment form stateData');
+    AdyenLogs.error_log('Failed to parse payment form stateData');
     return {};
   }
 }
