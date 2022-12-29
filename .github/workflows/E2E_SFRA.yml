@@ -61,8 +61,8 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run uploadCartridge
       - name: Check build result
-        if: contains(steps.uploadStep.outputs.stdout, 'Error')
-        run: echo steps.uploadStep.outputs.stdout && exit 1
+        if: contains(${{ steps.uploadStep.outputs.stdout }}, 'Error')
+        run: echo ${{ steps.uploadStep.outputs }} && exit 1
   end-to-end-testing:
     needs: setup-the-cartridge
     runs-on:
