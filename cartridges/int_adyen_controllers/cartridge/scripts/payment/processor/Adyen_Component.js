@@ -10,7 +10,8 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var app = require(Resource.msg('scripts.app.js', 'require', null));
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
-var Logger = require('dw/system/Logger');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+
 /**
  * Creates a Adyen payment instrument for the given basket
  */
@@ -44,7 +45,7 @@ function Authorize(args) {
   var orderCustomer = order.getCustomer();
   var sessionCustomer = session.getCustomer();
   if (orderCustomer.authenticated && orderCustomer.ID !== sessionCustomer.ID) {
-    Logger.getLogger('Adyen').error('orderCustomer is not the same as the sessionCustomer');
+    AdyenLogs.debug_log('orderCustomer is not the same as the sessionCustomer');
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });

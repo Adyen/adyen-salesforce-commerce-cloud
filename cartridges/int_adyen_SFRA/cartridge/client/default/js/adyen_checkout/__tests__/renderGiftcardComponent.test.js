@@ -7,76 +7,165 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /**
  * @jest-environment jsdom
  */
-var _require = require('../helpers'),
-  paymentFromComponent = _require.paymentFromComponent;
-var component;
+var _require = require('../renderGiftcardComponent'),
+  removeGiftCard = _require.removeGiftCard,
+  renderAddedGiftCard = _require.renderAddedGiftCard,
+  renderGiftCardSelectForm = _require.renderGiftCardSelectForm,
+  showGiftCardWarningMessage = _require.showGiftCardWarningMessage;
+var store = require('../../../../../store');
+jest.mock('../../commons');
+jest.mock('../../../../../store');
 beforeEach(function () {
-  component = {
-    handleAction: jest.fn(),
-    setStatus: jest.fn(),
-    reject: jest.fn()
-  };
-});
-describe('Helpers', function () {
-  it('should make payment ajax call with fullResponse', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var data;
+  document.body.innerHTML = "\n        <select id=\"giftCardSelect\"></select>\n        <ul id=\"giftCardUl\"></ul>\n        <ul id=\"giftCardsList\"></ul>\n        <div id=\"giftCardContainer\"></div>\n        <div id=\"giftCardSelectContainer\"></div>\n        <button id=\"giftCardAddButton\"></button>\n        <div id=\"adyenPartialPaymentsOrder\"></div>\n      ";
+  window.AdyenCheckout = jest.fn( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            document.body.innerHTML = "\n        <div id=\"adyenPaymentMethodName\"></div>\n        <form id=\"showConfirmationForm\"></form>\n      ";
-            data = {
-              fullResponse: {
-                action: 'mocked_action'
+            return _context.abrupt("return", {
+              create: jest.fn(),
+              paymentMethodsResponse: {
+                storedPaymentMethods: [{
+                  supportedShopperInteractions: ['Ecommerce']
+                }],
+                paymentMethods: [{
+                  type: 'amazonpay'
+                }]
               },
-              paymentMethod: 'mocked_paymentMethod'
-            };
-            $.ajax = jest.fn(function (_ref2) {
-              var success = _ref2.success;
-              success(data);
-              return {
-                fail: jest.fn()
-              };
+              options: {
+                amount: 'mocked_amount',
+                countryCode: 'mocked_countrycode'
+              }
             });
-            _context.next = 5;
-            return paymentFromComponent(data, component);
-          case 5:
-            expect(component.handleAction).toBeCalledWith(data.fullResponse.action);
-          case 6:
+          case 1:
           case "end":
             return _context.stop();
         }
       }
     }, _callee);
   })));
-  it('  should make payment ajax call that fails', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  window.Configuration = {
+    amount: 0
+  };
+  store.checkoutConfiguration = {
+    session: {
+      imagePath: 'test_image_path'
+    }
+  };
+  store.checkout = {
+    options: {}
+  };
+});
+describe.only('Render gift card', function () {
+  it('should remove entire giftcard container when removeGiftCard is successful', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
     var data;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            document.body.innerHTML = "\n        <div id=\"adyenPaymentMethodName\"></div>\n        <form id=\"showConfirmationForm\"></form>\n      ";
-            window.HTMLFormElement.prototype.submit = jest.fn();
-            data = {
-              data: {},
-              paymentMethod: 'mocked_paymentMethod'
+            document.body.innerHTML += "\n        <div id=\"biggerContainer\">\n          <div id=\"cancelGiftCardContainer\"></div>\n        </div>\n      ";
+            store.checkout.paymentMethodsResponse = {
+              paymentMethods: {
+                filter: jest.fn(function () {
+                  return [{
+                    type: 'giftcard',
+                    brand: 'brand1'
+                  }, {
+                    type: 'giftcard',
+                    brand: 'brand2'
+                  }];
+                })
+              }
             };
-            $.ajax = jest.fn(function (_ref4) {
-              var success = _ref4.success;
-              success({});
+            data = {
+              resultCode: 'Received'
+            };
+            $.ajax = jest.fn(function (_ref3) {
+              var success = _ref3.success;
+              success(data);
               return {
                 fail: jest.fn()
               };
             });
-            _context2.next = 6;
-            return paymentFromComponent(data, component);
-          case 6:
-            expect(data).toMatchSnapshot();
+            expect(document.querySelector('#biggerContainer').innerHTML).toContain('cancelGiftCardContainer');
+            removeGiftCard();
+            expect(document.querySelector('#biggerContainer')).toBeNull;
           case 7:
           case "end":
             return _context2.stop();
         }
       }
     }, _callee2);
+  })));
+  it('should show a warning message if more items are added to cart later', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var orderTotalSummaryEl;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            document.body.innerHTML = "\n      <div class=\"card-body order-total-summary\"></div>\n    ";
+            showGiftCardWarningMessage();
+            orderTotalSummaryEl = document.querySelector('.card-body.order-total-summary');
+            expect(orderTotalSummaryEl).toMatchSnapshot();
+            expect(document.querySelector('#giftCardWarningMessage')).toBeTruthy();
+          case 5:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  })));
+  it('should render applied gift cards', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+    var giftCardsList;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            store.partialPaymentsOrderObj = {
+              giftcard: {
+                brand: 'brand'
+              }
+            };
+            renderAddedGiftCard();
+            giftCardsList = document.querySelector('#giftCardsList');
+            expect(giftCardsList).toMatchSnapshot();
+            expect(document.querySelector('#giftCardAddButton').style.display).toBe('none');
+          case 5:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  })));
+  it('should render a select form', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+    var giftCardsSelect, giftCardUl;
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            store.checkout.paymentMethodsResponse = {
+              paymentMethods: {
+                filter: jest.fn(function () {
+                  return [{
+                    type: 'giftcard',
+                    brand: 'mocked_brand1'
+                  }, {
+                    type: 'giftcard',
+                    brand: 'mocked_brand2'
+                  }];
+                })
+              }
+            };
+            renderGiftCardSelectForm();
+            giftCardsSelect = document.querySelector('#giftCardSelect');
+            giftCardUl = document.querySelector('#giftCardUl');
+            expect(giftCardsSelect).toMatchSnapshot();
+            expect(giftCardUl).toMatchSnapshot();
+          case 6:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
   })));
 });

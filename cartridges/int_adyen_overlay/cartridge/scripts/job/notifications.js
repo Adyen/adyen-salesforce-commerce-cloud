@@ -17,7 +17,7 @@
  * Copyright (c) 2021 Adyen B.V.
  * This file is open source and available under the MIT license.
  * See the LICENSE file for more info.
- * 
+ *
  * Script to run Adyen notification related jobs
  */
 
@@ -25,7 +25,9 @@
 var OrderMgr = require('dw/order/OrderMgr');
 var Transaction = require('dw/system/Transaction');
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
-var logger = require('dw/system/Logger').getLogger('Adyen', 'adyen');
+
+//script includes
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function execute() {
   processNotifications();
   clearNotifications();
@@ -40,7 +42,7 @@ function processNotifications( /* pdict */
 ) {
   var objectsHandler = require('*/cartridge/scripts/handleCustomObject');
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.updateStatus = 'PROCESS'", null);
-  logger.info('Process notifications start with count {0}', searchQuery.count);
+  AdyenLogs.info_log("Process notifications start with count ".concat(searchQuery.count));
   var customObj;
   var handlerResult;
   var order;
@@ -77,11 +79,11 @@ function processNotifications( /* pdict */
     if (handlerResult.SubmitOrder) {
       var placeOrderResult = submitOrder(order);
       if (!placeOrderResult.order_created || placeOrderResult.error) {
-        logger.error('Failed to place an order: {0}, during notification process.', order.orderNo);
+        AdyenLogs.error_log("Failed to place an order: ".concat(order.orderNo, ", during notification process."));
       }
     }
   }
-  logger.info('Process notifications finished with count {0}', searchQuery.count);
+  AdyenLogs.info_log("Process notifications finished with count ".concat(searchQuery.count));
   searchQuery.close();
   return PIPELET_NEXT;
 }
@@ -93,7 +95,7 @@ function clearNotifications( /* pdict */
 ) {
   var deleteCustomObjects = require('*/cartridge/scripts/deleteCustomObjects');
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.processedStatus = 'SUCCESS'", null);
-  logger.info('Removing Processed Custom Objects start with count {0}', searchQuery.count);
+  AdyenLogs.info_log("Removing Processed Custom Objects start with count ".concat(searchQuery.count));
   var customObj;
   while (searchQuery.hasNext()) {
     customObj = searchQuery.next();
@@ -101,7 +103,7 @@ function clearNotifications( /* pdict */
       deleteCustomObjects.remove(customObj);
     });
   }
-  logger.info('Removing Processed Custom Objects finished with count {0}', searchQuery.count);
+  AdyenLogs.info_log("Removing Processed Custom Objects finished with count ".concat(searchQuery.count));
   searchQuery.close();
   return PIPELET_NEXT;
 }

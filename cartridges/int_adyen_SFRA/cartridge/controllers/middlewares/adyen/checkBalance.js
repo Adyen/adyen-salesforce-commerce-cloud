@@ -1,11 +1,11 @@
 "use strict";
 
-var Logger = require('dw/system/Logger');
 var BasketMgr = require('dw/order/BasketMgr');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function callCheckBalance(req, res, next) {
   try {
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -23,7 +23,7 @@ function callCheckBalance(req, res, next) {
     var response = adyenCheckout.doCheckBalanceCall(checkBalanceRequest);
     res.json(response);
   } catch (error) {
-    Logger.getLogger('Adyen').error("Failed to check gift card balance ".concat(error.toString()));
+    AdyenLogs.error_log("Failed to check gift card balance ".concat(error.toString()));
     res.json({
       error: true
     });

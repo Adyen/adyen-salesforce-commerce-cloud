@@ -23,7 +23,6 @@ var dwsystem = require('dw/system');
 var dwutil = require('dw/util');
 var URLUtils = require('dw/web/URLUtils');
 var Bytes = require('dw/util/Bytes');
-var Logger = require('dw/system/Logger');
 var MessageDigest = require('dw/crypto/MessageDigest');
 var Encoding = require('dw/crypto/Encoding');
 var CustomerMgr = require('dw/customer/CustomerMgr');
@@ -31,6 +30,9 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var Transaction = require('dw/system/Transaction');
 var UUIDUtils = require('dw/util/UUIDUtils');
+
+//script includes
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -53,9 +55,9 @@ var adyenHelperObj = {
           return msg;
         }
       });
-      dwsystem.Logger.getLogger('Adyen', 'adyen').debug('Successfully retrive service with name {0}', service);
+      AdyenLogs.info_log("Successfully retrieve service with name ".concat(service));
     } catch (e) {
-      dwsystem.Logger.getLogger('Adyen', 'adyen').error("Can't get service instance with name {0}", service);
+      AdyenLogs.error_log("Can't get service instance with name ".concat(service));
       // e.message
     }
 
@@ -92,7 +94,7 @@ var adyenHelperObj = {
     for (var config in givingConfigs) {
       if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
         if (givingConfigs[config] === null) {
-          Logger.getLogger('Adyen').error('Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly');
+          AdyenLogs.error_log('Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly');
           return null;
         }
       }
@@ -341,7 +343,11 @@ var adyenHelperObj = {
   },
   // adds 3DS2 fields to an Adyen Checkout payments Request
   add3DS2Data: function add3DS2Data(jsonObject) {
-    jsonObject.additionalData.allow3DS2 = true;
+    jsonObject.authenticationData = {
+      threeDSRequestData: {
+        nativeThreeDS: 'preferred'
+      }
+    };
     jsonObject.channel = 'web';
     var origin = "".concat(request.getHttpProtocol(), "://").concat(request.getHttpHost());
     jsonObject.origin = origin;
@@ -559,7 +565,7 @@ var adyenHelperObj = {
         isFinal: false
       };
     }
-    dwsystem.Logger.getLogger('Adyen').error("Unknown resultCode: ".concat(checkoutresponse.resultCode, "."));
+    AdyenLogs.error_log("Unknown resultCode: ".concat(checkoutresponse.resultCode, "."));
     return {
       isFinal: true,
       isSuccessful: false

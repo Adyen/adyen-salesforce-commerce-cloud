@@ -14,10 +14,9 @@ var app = require('app_storefront_controllers/cartridge/scripts/app');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenSessions = require('*/cartridge/scripts/adyenSessions');
-var OrderModel = app.getModel('Order');
-var Logger = require('dw/system/Logger');
 var constants = require('*/cartridge/adyenConstants/constants');
 var paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 var EXTERNAL_PLATFORM_VERSION = 'SiteGenesis';
 /**
  * Controller for all storefront processes.
@@ -93,7 +92,7 @@ function Redirect3DS1Response() {
       return response.redirect(URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'));
     }
   } catch (e) {
-    Logger.getLogger('Adyen').error("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return response.redirect(URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed'));
   }
 }
@@ -128,7 +127,7 @@ function showConfirmation() {
     var adyenPaymentInstrument = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
     if (adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig === signature) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
-        Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
+        AdyenLogs.error_log("Could not call payment/details for failed order ".concat(order.orderNo));
         return response.redirect(URLUtils.httpHome());
       }
       var details = redirectResult ? {
@@ -150,7 +149,6 @@ function showConfirmation() {
         Transaction.wrap(function () {
           AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, detailsResult);
         });
-        OrderModel.submit(order);
         clearForms();
         return app.getController('COSummary').ShowConfirmation(order);
       }
@@ -158,13 +156,13 @@ function showConfirmation() {
       Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
       });
-      Logger.getLogger('Adyen').error("Payment failed, result: ".concat(JSON.stringify(detailsResult)));
+      AdyenLogs.error_log("Payment failed, result: ".concat(JSON.stringify(detailsResult)));
     } else {
       // fail order
       Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
       });
-      Logger.getLogger('Adyen').error("Payment failed, reason: invalid signature");
+      AdyenLogs.error_log("Payment failed, reason: invalid signature");
     }
 
     // should be assingned by previous calls or not
@@ -173,7 +171,7 @@ function showConfirmation() {
       PlaceOrderError: errorStatus
     });
   } catch (e) {
-    Logger.getLogger('Adyen').error("Could not verify showConfirmation: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Could not verify showConfirmation: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
   return {};
 }
@@ -213,7 +211,7 @@ function paymentsDetails() {
       response: _response
     });
   } catch (e) {
-    Logger.getLogger('Adyen').error("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return response.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
   }
 }
@@ -224,7 +222,7 @@ function paymentsDetails() {
 function paymentFromComponent() {
   if (request.httpParameterMap.getRequestBodyAsString().indexOf('cancelTransaction') > -1) {
     var merchantReference = JSON.parse(request.httpParameterMap.getRequestBodyAsString()).merchantReference;
-    Logger.getLogger('Adyen').error("Shopper cancelled paymentFromComponent transaction for order ".concat(merchantReference));
+    AdyenLogs.info_log("Shopper cancelled paymentFromComponent transaction for order ".concat(merchantReference));
     return;
   } else {
     var adyenRemovePreviousPI = require('*/cartridge/scripts/adyenRemovePreviousPI');
@@ -276,6 +274,7 @@ function paymentFromComponent() {
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
  */
 function showConfirmationPaymentFromComponent() {
+  var _finalResult;
   var paymentInformation = app.getForm('adyPaydata');
   var orderNumber = paymentInformation.get('merchantReference').value();
   var orderToken = paymentInformation.get('orderToken').value();
@@ -288,11 +287,11 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument = instrumentsIter.next();
   }
   var stateData = JSON.parse(paymentInformation.get('paymentFromComponentStateData').value());
-  var finalResult;
+  var amazonPayResult;
   var hasStateData = stateData && stateData.details && stateData.paymentData;
   if (!hasStateData) {
     if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
-      finalResult = JSON.parse(result);
+      amazonPayResult = JSON.parse(result);
     } else {
       // The billing step is fulfilled, but order will be failed
       app.getForm('billing').object.fulfilled.value = true;
@@ -318,15 +317,22 @@ function showConfirmationPaymentFromComponent() {
     adyenPaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  finalResult = finalResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
-  if (['Authorised', 'Pending', 'Received'].indexOf(finalResult.resultCode) > -1) {
+  var finalResult;
+  if (order.status.value === Order.ORDER_STATUS_CREATED) {
+    finalResult = amazonPayResult || adyenCheckout.doPaymentsDetailsCall(requestObject);
+  }
+  if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf((_finalResult = finalResult) === null || _finalResult === void 0 ? void 0 : _finalResult.resultCode) > -1) {
     Transaction.wrap(function () {
       AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, finalResult);
     });
-    OrderModel.submit(order);
     clearForms();
     app.getController('COSummary').ShowConfirmation(order);
     return {};
+  }
+  // handles the refresh
+  else if ([Order.ORDER_STATUS_CREATED, Order.ORDER_STATUS_NEW, Order.ORDER_STATUS_OPEN].indexOf(order.status.value) > -1) {
+    clearForms();
+    return app.getController('COSummary').ShowConfirmation(order);
   }
   // fail order
   Transaction.wrap(function () {
@@ -394,7 +400,7 @@ function sessions(customer) {
     };
     return responseJSON;
   } catch (error) {
-    Logger.getLogger('Adyen').error("Failed to create Adyen Checkout Session... ".concat(error.toString()));
+    AdyenLogs.fatal_log("Failed to create Adyen Checkout Session... ".concat(error.toString()));
   }
 }
 
@@ -408,7 +414,7 @@ function donate() {
   try {
     req = JSON.parse(request.httpParameterMap.getRequestBodyAsString());
   } catch (e) {
-    Logger.getLogger('Adyen').error(e);
+    AdyenLogs.error_log(e);
   }
   var _req = req,
     pspReference = _req.pspReference;
