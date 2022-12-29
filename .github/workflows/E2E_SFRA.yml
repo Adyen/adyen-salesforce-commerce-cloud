@@ -62,7 +62,7 @@ jobs:
         run: npm run uploadCartridge
       - name: Check build result
         if: contains(${{ steps.uploadStep.outputs.stdout }}, 'Error')
-        run: echo "Uploading cartridge failed, see step above!" && exit 1
+        run: echo ${{ steps.uploadStep.outputs.stdout }} && exit 1
   end-to-end-testing:
     needs: setup-the-cartridge
     runs-on:
