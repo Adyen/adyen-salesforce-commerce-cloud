@@ -20,7 +20,8 @@
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
-    "test:coverage": "jest ./src --coverage"
+    "test:coverage": "jest ./src --coverage",
+    "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'"
   },
   "engines": {
     "node": ">=14.0"

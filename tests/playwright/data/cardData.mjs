@@ -23,4 +23,10 @@ export class CardData {
     expirationDate: '0330',
     cvc: '',
   };
+
+  giftCard = {
+    cardNumber : '6036280000000000000',
+    pin : '123',
+    brand : 'givex'
+  }
 }
