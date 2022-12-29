@@ -149,14 +149,14 @@ export default class PaymentMethodsPage {
   };
 
   initiateGiftCardPayment = async (giftCardInput) => {
-	const giftCardComponentWrapper = this.page.locator(".gift-card-selection");
+    const giftCardComponentWrapper = this.page.locator(".gift-card-selection");
     await this.page.locator('#giftCardAddButton').click();
     await this.page.locator('#giftCardSelect').click()
-	const giftCardBrand = this.page.locator(`li[data-brand=${giftCardInput.brand}]`)
-	await this.page.locator("#giftCardUl").waitFor({
+    const giftCardBrand = this.page.locator(`li[data-brand=${giftCardInput.brand}]`)
+    await this.page.locator("#giftCardUl").waitFor({
 		state: 'visible',
 		timeout: 15000,
-	  });
+    });
     await giftCardBrand.click();
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
@@ -169,16 +169,16 @@ export default class PaymentMethodsPage {
       .locator('.input-field');
 
     await giftCardNumberInputField.click();
-	await giftCardNumberInputField.fill(giftCardInput.cardNumber);
+    await giftCardNumberInputField.fill(giftCardInput.cardNumber);
 
-	await giftCardPinField.click();
-	await giftCardPinField.fill(giftCardInput.pin);
+    await giftCardPinField.click();
+    await giftCardPinField.fill(giftCardInput.pin);
 
+    await this.page.locator(".adyen-checkout__button--pay").click();
+
+    if (await this.page.locator(".adyen-checkout__button--pay").isVisible()){
 	await this.page.locator(".adyen-checkout__button--pay").click();
-
-	if (await this.page.locator(".adyen-checkout__button--pay").isVisible()){
-		await this.page.locator(".adyen-checkout__button--pay").click();
-	}
+    }
   }
 
   initiateOneClickPayment = async (oneClickCardInput) => {
