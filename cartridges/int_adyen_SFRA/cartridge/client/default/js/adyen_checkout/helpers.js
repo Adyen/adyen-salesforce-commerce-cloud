@@ -23,7 +23,9 @@ function setOrderFormData(response) {
   }
 }
 function setPartialPaymentOrderObject(response) {
+  var giftcard = store.partialPaymentsOrderObj.giftcard;
   store.partialPaymentsOrderObj = {
+    giftcard: giftcard,
     partialPaymentsOrder: {
       pspReference: response.order.pspReference,
       orderData: response.order.orderData

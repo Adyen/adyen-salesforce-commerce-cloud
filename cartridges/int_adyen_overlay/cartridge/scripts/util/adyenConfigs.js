@@ -4,7 +4,7 @@ var dwsystem = require('dw/system');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 function getCustomPreference(field) {
   var customPreference = null;
-  if (adyenCurrentSite) {
+  if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
     customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
   }
   return customPreference;
@@ -39,9 +39,6 @@ var adyenConfigsObj = {
   },
   getAdyenNotificationPassword: function getAdyenNotificationPassword() {
     return getCustomPreference('Adyen_notification_password');
-  },
-  getAdyen3DS2Enabled: function getAdyen3DS2Enabled() {
-    return getCustomPreference('Adyen3DS2Enabled');
   },
   getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');

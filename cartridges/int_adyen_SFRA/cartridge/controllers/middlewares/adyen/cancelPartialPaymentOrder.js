@@ -2,12 +2,12 @@
 
 var BasketMgr = require('dw/order/BasketMgr');
 var Transaction = require('dw/system/Transaction');
-var Logger = require('dw/system/Logger');
 var Resource = require('dw/web/Resource');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var collections = require('*/cartridge/scripts/util/collections');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     var request = JSON.parse(req.body);
@@ -32,7 +32,7 @@ function cancelPartialPaymentOrder(req, res, next) {
     }
     res.json(response);
   } catch (error) {
-    Logger.getLogger('Adyen').error("Could not cancel partial payments order.. ".concat(error.toString()));
+    AdyenLogs.error_log("Could not cancel partial payments order.. ".concat(error.toString()));
     res.json({
       error: true,
       errorMessage: Resource.msg('error.technical', 'checkout', null)

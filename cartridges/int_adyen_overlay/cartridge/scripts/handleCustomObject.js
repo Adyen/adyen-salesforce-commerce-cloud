@@ -39,11 +39,13 @@
  *
  */
 
-var Logger = require('dw/system/Logger');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Order = require('dw/order/Order');
+
+//script includes
 var constants = require('*/cartridge/adyenConstants/constants');
 var adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function execute(args) {
   var result = handle(args.CustomObj);
   args.EventCode = result.EventCode;
@@ -76,7 +78,7 @@ function handle(customObj) {
       result.SkipOrder = true;
       setProcessedCOInfo(customObj);
     } else {
-      Logger.getLogger('Adyen', 'adyen').fatal('Notification for not existing order {0} received.', customObj.custom.orderId);
+      AdyenLogs.error_log("Notification for not existing order ".concat(customObj.custom.orderId, " received."));
     }
     return result;
   }
@@ -85,7 +87,7 @@ function handle(customObj) {
   var orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
   var currentDate = new Date();
   var reasonCode = 'reason' in customObj.custom && !empty(customObj.custom.reason) ? customObj.custom.reason.toUpperCase() : null;
-  Logger.getLogger('Adyen', 'adyen').debug('Order date {0} , orderCreateDateDelay {1} , currentDate {2}', orderCreateDate, orderCreateDateDelay, currentDate);
+  AdyenLogs.debug_log("Order date ".concat(orderCreateDate, " , orderCreateDateDelay ").concat(orderCreateDateDelay, " , currentDate ").concat(currentDate));
   if (orderCreateDateDelay < currentDate) {
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
@@ -103,20 +105,20 @@ function handle(customObj) {
           var amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
           var totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
           if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
-            Logger.getLogger('Adyen', 'adyen').info('Duplicate callback received for order {0}.', order.orderNo);
+            AdyenLogs.info_log("Duplicate callback received for order ".concat(order.orderNo, "."));
           } else if (amountPaid < totalAmount) {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
-            Logger.getLogger('Adyen', 'adyen').info('Partial amount {0} received for order number {1} with total amount {2}', customObj.custom.value, order.orderNo, totalAmount);
+            AdyenLogs.info_log("Partial amount ".concat(customObj.custom.value, " received for order number ").concat(order.orderNo, " with total amount ").concat(totalAmount));
           } else {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(Order.EXPORT_STATUS_READY);
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-            Logger.getLogger('Adyen', 'adyen').info('Order {0} updated to status PAID.', order.orderNo);
+            AdyenLogs.info_log("Order ".concat(order.orderNo, " updated to status PAID."));
             result.SubmitOrder = true;
           }
           order.custom.Adyen_value = amountPaid.toString();
         } else {
-          Logger.getLogger('Adyen', 'adyen').info('Authorization for order {0} was not successful - no update.', order.orderNo);
+          AdyenLogs.info_log("Authorization for order ".concat(order.orderNo, " was not successful - no update."));
           // Determine if payment was refused and was used Adyen payment method
           if (!empty(reasonCode) && (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) && isAdyen) {
             refusedHpp = true;
@@ -130,17 +132,17 @@ function handle(customObj) {
       case 'CANCELLATION':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('CANCELLATION notification received');
-        Logger.getLogger('Adyen', 'adyen').info('Order {0} was cancelled.', order.orderNo);
+        AdyenLogs.info_log("Order ".concat(order.orderNo, " was cancelled."));
         break;
       case 'CANCEL_OR_REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('CANCEL_OR_REFUND notification received');
-        Logger.getLogger('Adyen', 'adyen').info('Order {0} was cancelled or refunded.', order.orderNo);
+        AdyenLogs.info_log("Order ".concat(order.orderNo, " was cancelled or refunded."));
         break;
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('REFUND notification received');
-        Logger.getLogger('Adyen', 'adyen').info('Order {0} was refunded.', order.orderNo);
+        AdyenLogs.info_log("Order ".concat(order.orderNo, " was refunded."));
         break;
       // CustomAdyen
       case 'CAPTURE_FAILED':
@@ -149,17 +151,17 @@ function handle(customObj) {
           order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
-        Logger.getLogger('Adyen', 'adyen').info('Capture Failed for order {0}', order.orderNo);
+        AdyenLogs.info_log("Capture Failed for order ".concat(order.orderNo));
         break;
       case 'ORDER_OPENED':
         if (customObj.custom.success === 'true') {
-          Logger.getLogger('Adyen', 'adyen').info('Order {0} opened for partial payments', order.orderNo);
+          AdyenLogs.info_log("Order ".concat(order.orderNo, " opened for partial payments"));
         }
         break;
       case 'ORDER_CLOSED':
         if (customObj.custom.success === 'true') {
           order.setExportStatus(Order.EXPORT_STATUS_READY);
-          Logger.getLogger('Adyen', 'adyen').info('Order {0} closed', order.orderNo);
+          AdyenLogs.info_log("Order ".concat(order.orderNo, " closed"));
         }
         break;
       case 'OFFER_CLOSED':
@@ -168,11 +170,11 @@ function handle(customObj) {
         Transaction.wrap(function () {
           OrderMgr.failOrder(order, false);
         });
-        Logger.getLogger('Adyen', 'adyen').info('Offer closed for order {0} and updated to status NOT PAID.', order.orderNo);
+        AdyenLogs.info_log("Offer closed for order ".concat(order.orderNo, " and updated to status NOT PAID."));
         break;
       case 'PENDING':
         pending = true;
-        Logger.getLogger('Adyen', 'adyen').info('Order {0} was in pending status.', order.orderNo);
+        AdyenLogs.info_log("Order ".concat(order.orderNo, " was in pending status."));
         break;
       case 'CAPTURE':
         if (customObj.custom.success === 'true' && order.status.value === Order.ORDER_STATUS_CANCELLED) {
@@ -180,11 +182,11 @@ function handle(customObj) {
           order.setExportStatus(Order.EXPORT_STATUS_READY);
           order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
           OrderMgr.undoCancelOrder(order);
-          Logger.getLogger('Adyen', 'adyen').info('Undo failed capture, Order {0} updated to status PAID.', order.orderNo);
+          AdyenLogs.info_log("Undo failed capture, Order ".concat(order.orderNo, " updated to status PAID."));
         }
         break;
       default:
-        Logger.getLogger('Adyen', 'adyen').info('Order {0} received unhandled status {1}', order.orderNo, customObj.custom.eventCode);
+        AdyenLogs.info_log("Order ".concat(order.orderNo, " received unhandled status ").concat(customObj.custom.eventCode));
     }
 
     // If payment was refused and was used Adyen payment method, the fields
@@ -207,7 +209,7 @@ function handle(customObj) {
     }
     setProcessedCOInfo(customObj);
   } else {
-    Logger.getLogger('Adyen', 'adyen').debug('Order date > current Date.');
+    AdyenLogs.debug_log('Order date > current Date.');
     result.SkipOrder = true;
     result.status = PIPELET_NEXT;
     return result;
