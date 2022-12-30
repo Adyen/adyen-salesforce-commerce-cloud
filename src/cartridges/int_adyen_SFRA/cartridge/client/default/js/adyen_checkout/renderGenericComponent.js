@@ -187,7 +187,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   store.addedGiftCards = giftCards;
-  if (giftCards.length) {
+  if (giftCards?.length) {
     const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
     store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
       ? { ...lastGiftCard, totalDiscountedAmount }

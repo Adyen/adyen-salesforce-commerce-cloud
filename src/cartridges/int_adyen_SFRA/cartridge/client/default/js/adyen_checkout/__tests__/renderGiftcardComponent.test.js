@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 const {
-  removeGiftCard,
+  removeGiftCards,
   renderAddedGiftCard,
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
@@ -44,7 +44,7 @@ beforeEach(() => {
   };
 });
 describe.only('Render gift card', () => {
-  it('should remove entire giftcard container when removeGiftCard is successful', async () => {
+  it('should remove entire giftcard container when removeGiftCards is successful', async () => {
     document.body.innerHTML += `
         <div id="biggerContainer">
           <div id="cancelGiftCardContainer"></div>
@@ -70,7 +70,7 @@ describe.only('Render gift card', () => {
     expect(document.querySelector('#biggerContainer').innerHTML).toContain(
       'cancelGiftCardContainer',
     );
-    removeGiftCard();
+    removeGiftCards();
     expect(document.querySelector('#biggerContainer')).toBeNull;
   });
 
@@ -88,14 +88,12 @@ describe.only('Render gift card', () => {
   });
 
   it('should render applied gift cards', async () => {
-    store.partialPaymentsOrderObj = { giftcard: { brand: 'brand' } };
-    renderAddedGiftCard();
+    const giftCardData = { giftCard: { brand: 'brand', name: 'Name' } };
+    store.partialPaymentsOrderObj = giftCardData;
+    renderAddedGiftCard(giftCardData);
 
     const giftCardsList = document.querySelector('#giftCardsList');
     expect(giftCardsList).toMatchSnapshot();
-    expect(document.querySelector('#giftCardAddButton').style.display).toBe(
-      'none',
-    );
   });
 
   it('should render a select form', async () => {

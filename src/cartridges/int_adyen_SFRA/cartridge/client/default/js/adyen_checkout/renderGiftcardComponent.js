@@ -158,7 +158,7 @@ function removeGiftCardFormListeners() {
 }
 
 function removeGiftCards() {
-  store.addedGiftCards.forEach((card) => {
+  store.addedGiftCards?.forEach((card) => {
     $.ajax({
       type: 'POST',
       url: 'Adyen-CancelPartialPaymentOrder',
@@ -350,4 +350,5 @@ module.exports = {
   getGiftCardElements,
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
+  renderGiftCardSelectForm,
 };

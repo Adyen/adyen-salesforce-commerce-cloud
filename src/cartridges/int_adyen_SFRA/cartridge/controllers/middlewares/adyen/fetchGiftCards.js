@@ -1,12 +1,12 @@
-const Logger = require('dw/system/Logger');
 const BasketMgr = require('dw/order/BasketMgr');
 const Money = require('dw/value/Money');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function fetchGiftCards(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const addedGiftCards = currentBasket.custom.adyenGiftCards
+    const addedGiftCards = currentBasket.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom.adyenGiftCards)
       : [];
     let totalDiscountedAmount = null;
@@ -25,15 +25,14 @@ function fetchGiftCards(req, res, next) {
         .divide(divideBy)
         .toFormattedString();
     }
-
     res.json({
       giftCards: addedGiftCards,
       totalDiscountedAmount,
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error(
-      `Failed to create partial payments order.. ${error.toString()}`,
-    );
+    AdyenLogs.error_log(`Failed to fetch gift cards ${error.toString()}`);
+    const currentBasket = BasketMgr.getCurrentBasket();
+    currentBasket.custom.adyenGiftCards = null;
     res.json({ error: true });
   }
 

@@ -13,7 +13,7 @@ function addMinutes(minutes) {
 function createPartialPaymentsOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const giftCardsAdded = currentBasket.custom.adyenGiftCards
+    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom.adyenGiftCards)
       : null;
 
