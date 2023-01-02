@@ -594,7 +594,7 @@
             <attribute-definition attribute-id="adyenGiftCards">
                 <display-name xml:lang="x-default">adyenGiftCards</display-name>
                 <description xml:lang="x-default">Adyen Gift Cards</description>
-                <type>string</type>
+                <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
