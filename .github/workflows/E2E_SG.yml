@@ -24,7 +24,7 @@ jobs:
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "14"
       - name: Checkout
@@ -63,7 +63,7 @@ jobs:
             code-version-secret: "SFCC_CODE_VERSION_SFRA5"
     steps:
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
       - name: Checkout
