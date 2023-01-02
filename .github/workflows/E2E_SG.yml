@@ -17,18 +17,18 @@ jobs:
             code-version-secret: "SFCC_CODE_VERSION_SFRA5"
     steps:
       - name: Checkout SFRA code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
           ref: ${{ matrix.sfra-version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "14"
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
       - name: npm install storefront-reference-architecture
@@ -63,11 +63,11 @@ jobs:
             code-version-secret: "SFCC_CODE_VERSION_SFRA5"
     steps:
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
       - name: install e2e test dependencies
