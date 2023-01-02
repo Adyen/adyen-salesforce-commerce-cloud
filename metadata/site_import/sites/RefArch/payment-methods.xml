@@ -12,4 +12,10 @@
         <enabled-flag>true</enabled-flag>
         <processor-id>Adyen_Component</processor-id>
     </payment-method>
+    <payment-method method-id="CREDIT_CARD">
+        <name xml:lang="x-default">Credit Card</name>
+        <description xml:lang="x-default">Adyen Credit Card</description>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>Adyen_Component</processor-id>
+    </payment-method>
 </payment-settings>

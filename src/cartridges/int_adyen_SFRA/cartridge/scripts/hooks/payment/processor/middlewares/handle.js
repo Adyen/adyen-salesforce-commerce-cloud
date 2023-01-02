@@ -2,8 +2,10 @@ const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function handle(basket, paymentInformation) {
+  AdyenLogs.debug_log(JSON.stringify(paymentInformation));
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];
