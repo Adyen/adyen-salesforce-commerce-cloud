@@ -115,6 +115,14 @@ var adyenHelperObj = {
     return givingConfigs;
   },
 
+  // get the URL of the current page, which is the last entry in the clickstream
+  getCurrentPageUrl() {
+    const clickstream = session.getClickStream();
+    const currentUrl = clickstream.getLast();
+      AdyenLogs.error_log('current URL ' + currentUrl);
+    return currentUrl;
+  },
+
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();

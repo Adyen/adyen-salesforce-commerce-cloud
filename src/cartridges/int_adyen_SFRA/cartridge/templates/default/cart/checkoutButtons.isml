@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    console.log('hello from template express')
+</script>
+
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
+<isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
+
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<script type="text/javascript">
+    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+    window.locale = "${request.locale}";
+    window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+//    window.returnUrl = "${pdict.AdyenHelper.getCurrentPageUrl()}";
+    window.returnUrl = "${URLUtils.https('Cart-Show')}";
+</script>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/amazonpayExpress.js');
+</isscript>
+
+<div class="mb-sm-3">
+    <a href="${URLUtils.https('Checkout-Login')}"
+        class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
+        ${Resource.msg('button.checkout', 'cart', null)}
+    </a>
+    <div id="amazonpay-container"></div>
+</div>
+
+
+<isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/amazon.js');
+        assets.addCss('/css/adyenCss.css');
+    </isscript>
+
+    <script>
+        var queryString = '${request.getHttpQueryString()}'.split("=");
+        var amazonCheckoutSessionId = queryString[queryString.length - 1];
+        window.amazonCheckoutSessionId = amazonCheckoutSessionId;
+        window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
+    </script>
+    <isinclude template="adyenActionModal" />
+</isif>

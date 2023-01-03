@@ -1,0 +1,50 @@
+console.log('hello from express');
+
+async function mountAmazonPayComponent() {
+  const session = await fetch(window.sessionsUrl);
+  const sessionData = await session.json();
+
+  const shippingMethods = await fetch(window.shippingMethodsUrl);
+  const shippingMethodsData = await shippingMethods.json();
+  const environment = 'test';
+
+  const checkout = await AdyenCheckout({
+    environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+    session: sessionData,
+    onPaymentCompleted: (result, component) => {
+      console.log(result, component);
+    },
+    // onError: (error, component) => {
+    //   console.log(error.name, error.message, error.stack, component);
+    // },
+  });
+
+  const amazonPayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
+    (pm) => pm.type === 'amazonpay',
+  ).configuration;
+
+  const amazonPayButtonConfig = {
+    showPayButton: true,
+    productType: 'PayAndShip',
+//    checkoutMode: 'ProcessOrder',
+    configuration: amazonPayConfig,
+    returnUrl: window.returnUrl,
+    shippingMethods: shippingMethodsData.shippingMethods,
+    onShippingMethodSelected: (data) => {
+      console.log('onShippingMethodSelected', data);
+    },
+    // onSubmit: (state, component) => {
+    //   console.log('onSubmit', state, component);
+    //   helpers.paymentFromComponent(state.data, component, 'amazonpay');
+    // },
+  };
+
+  console.log('amazonPayButtonConfig ' + JSON.stringify(amazonPayButtonConfig));
+
+  const amazonPayButton = checkout.create('amazonpay', amazonPayButtonConfig);
+  amazonPayButton.mount('#amazonpay-container');
+}
+
+mountAmazonPayComponent();

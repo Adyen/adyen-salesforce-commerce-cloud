@@ -51,24 +51,45 @@ function paymentFromComponent(data, component) {
 
 async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
-  const checkout = await AdyenCheckout(window.Configuration);
 
+  const environment = 'test';
+  const session = await fetch(window.sessionsUrl);
+  const sessionData = await session.json();
+//  const checkout = await AdyenCheckout(window.Configuration);
+  const checkout = await AdyenCheckout({
+    environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+    session: sessionData,
+    onPaymentCompleted: (result, component) => {
+      console.log(result, component);
+    },
+    // onError: (error, component) => {
+    //   console.log(error.name, error.message, error.stack, component);
+    // },
+  });
+
+  const builtInConfig = checkout.paymentMethodsResponse.paymentMethods.find(
+    (pm) => pm.type === 'amazonpay',
+  ).configuration;
+
+
+// add the amazon pay configs ??
   const amazonConfig = {
     showOrderButton: false,
     returnUrl: window.returnURL,
-    configuration: {
-      merchantId: window.amazonMerchantID,
-      storeId: window.amazonStoreID,
-      publicKeyId: window.amazonPublicKeyID,
-    },
+    configuration: builtInConfig,
+//    clientKey: window.clientKey,
+//    productType: 'PayAndShip',
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
     onSubmit: (state, component) => {
-      document.querySelector('#adyenStateData').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
+//      document.querySelector('#adyenStateData').value = JSON.stringify(
+//        state.data,
+//      );
+//      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+//        state.data,
+//      );
+      console.log('inside on submit')
       paymentFromComponent(state.data, component);
     },
     onAdditionalDetails: (state) => {
@@ -99,27 +120,33 @@ async function mountAmazonPayComponent() {
     .create('amazonpay', amazonConfig)
     .mount(amazonPayNode);
 
+    console.log(amazonPayComponent.submit)
+
+    const shopperDetails = await amazonPayComponent.getShopperDetails();
+    console.log('shopper details ' + JSON.stringify(shopperDetails));
+
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );
 
-  $('#dwfrm_billing').submit(function apiRequest(e) {
-    e.preventDefault();
-
-    const form = $(this);
-    const url = form.attr('action');
-
-    $.ajax({
-      type: 'POST',
-      url,
-      data: form.serialize(),
-      async: false,
-      success(data) {
-        store.formErrorsExist = 'fieldErrors' in data;
-      },
-    });
-  });
-  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+//  $('#dwfrm_billing').submit(function apiRequest(e) {
+//    e.preventDefault();
+//
+//    const form = $(this);
+//    const url = form.attr('action');
+//
+//    $.ajax({
+//      type: 'POST',
+//      url,
+//      data: form.serialize(),
+//      async: false,
+//      success(data) {
+//        store.formErrorsExist = 'fieldErrors' in data;
+//      },
+//    });
+//  });
+//  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+  console.log('ABOUT to submit amazon pay');
   amazonPayComponent.submit();
 }
 
