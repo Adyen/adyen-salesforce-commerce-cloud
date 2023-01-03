@@ -6,7 +6,6 @@ var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
 var Locale = require('dw/util/Locale');
 var Resource = require('dw/web/Resource');
-var Logger = require('dw/system/Logger');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var OrderModel = require('*/cartridge/models/order');
@@ -15,6 +14,7 @@ var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
 var _require = require('*/cartridge/controllers/utils/index'),
   clearForms = _require.clearForms;
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function handlePaymentError(order, _ref) {
   var res = _ref.res,
     next = _ref.next;
@@ -95,7 +95,7 @@ function handlePayment(stateData, order, options) {
     }
   }
   if (order.status.value === Order.ORDER_STATUS_FAILED) {
-    Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
+    AdyenLogs.error_log("Could not call payment/details for failed order ".concat(order.orderNo));
     return handlePaymentError(order, options);
   }
   var detailsCall = handlePaymentsDetailsCall(stateData, adyenPaymentInstrument);

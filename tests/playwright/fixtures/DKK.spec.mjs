@@ -10,7 +10,7 @@ let checkoutPage;
 let redirectShopper;
 
 for (const environment of environments) {
-  test.describe(`${environment.name} DKK`, () => {
+  test.describe.parallel(`${environment.name} DKK`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
 

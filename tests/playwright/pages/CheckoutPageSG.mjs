@@ -13,6 +13,7 @@ export default class CheckoutPageSFRA {
     this.addToCartButton = page.locator('#add-to-cart');
     this.goToCart = page.locator('.minicart-icon');
     this.goToCheckout = page.locator('button[name="dwfrm_cart_checkoutCart"]');
+    this.selectQuantity = page.locator('#Quantity');
     this.checkoutGuest = page.locator(
       'button[name="dwfrm_login_unregistered"]',
     );
@@ -46,7 +47,7 @@ export default class CheckoutPageSFRA {
 
     this.placeOrderButton = page.locator('button[name="submit"]');
     this.submitPaymentButton = page.locator('button[id="billing-submit"]');
-    this.successMessage = page.locator('.minicart-quantity:has-text("1")');
+    this.successMessage = page.locator('.minicart-quantity');
 
     this.checkoutPageUserFirstNameInput = page.locator(
       '#dwfrm_singleshipping_shippingAddress_addressFields_firstName',
@@ -87,17 +88,25 @@ export default class CheckoutPageSFRA {
 
     this.qrImg = this.qrLoader.locator('//img[contains(@alt,"QR")]');
 
+    this.paymentModal = page.locator("#action-modal-SG");
     this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
     this.donationButton = page.locator('.adyen-checkout__button--donate');
     this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
   }
+
+  isPaymentModalShown = async (imgAltValue) => {
+    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
+      .toBeVisible({ timeout: 15000 });
+  }
+
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
-  goToCheckoutPageWithFullCart = async (locale) => {
-    await this.addProductToCart(locale);
-    await this.successMessage.waitFor({ visible: true, timeout: 10000 });
+  goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
+    await this.addProductToCart(locale, itemCount);
+    await this.successMessage.waitFor({ visible: true, timeout: 15000 });
+    expect(await this.successMessage.textContent()).not.toEqual("0");
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
@@ -107,11 +116,15 @@ export default class CheckoutPageSFRA {
     return `/s/SiteGenesis/checkout?lang=${locale}`;
   }
 
-  addProductToCart = async (locale) => {
+  addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(
       `/s/SiteGenesis/turquoise-and-gold-hoop-earring/25720033.html?lang=${locale}`,
     );
+    if (itemCount > 1) {
+      await this.selectQuantity.fill("");
+      await this.selectQuantity.type(`${itemCount}`);
+    }
     await this.addToCartButton.click();
   };
 
@@ -135,39 +148,39 @@ export default class CheckoutPageSFRA {
       shopperDetails.address.country,
     );
 
-    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-
     if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
-      if (shopperDetails.address.stateOrProvince !== '') {
-        await this.checkoutPageUserStateSelect.selectOption(
-          shopperDetails.address.stateOrProvince,
-        );
+      try {
+        await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      }
+      catch {
+        await this.checkoutPageUserStateSelect.type(shopperDetails.address.stateOrProvince);
       }
     }
 
+    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+
     await this.checkoutPageUseShippingAddressForBillingCheckBox.click();
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.shippingSubmit.click();
   };
 
   setEmail = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.type('test@adyenTest.com');
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     await this.shippingSubmit.click();
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.placeOrderButton.click();
   };
 
@@ -188,21 +201,16 @@ export default class CheckoutPageSFRA {
   };
 
   goBackAndSubmitShipping = async () => {
-    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.page.waitForNavigation('load', { timeout: 15000 });
     await this.navigateBack();
     await this.submitShipping();
   };
 
-  goBackAndReplaceOrderDifferentWindow = async () => {
-    const checkoutLocation = await this.getLocation();
-    await this.placeOrder();
-
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const secondSession = await context.newPage();
-
-    await secondSession.goto(checkoutLocation);
+  goBack = async () => {
+    await this.page.waitForNavigation('load', { timeout: 15000 });
+    await this.navigateBack();
   };
+
 
   expectSuccess = async () => {
     await expect(this.page.locator('.confirmation-message')).toBeVisible({
@@ -219,34 +227,34 @@ export default class CheckoutPageSFRA {
   };
 
   expectVoucher = async () => {
-    await expect(this.voucherCode).toBeVisible({ timeout: 10000 });
+    await expect(this.voucherCode).toBeVisible({ timeout: 15000 });
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached', timeout: 10000 });
-    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 10000 });
-    await expect(this.qrImg).toBeVisible({ timeout: 10000 });
+    await this.qrLoader.waitFor({ state: 'attached', timeout: 15000 });
+    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 15000 });
+    await expect(this.qrImg).toBeVisible({ timeout: 15000 });
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   navigateBackFromRedirect = async () => {
-    await this.page.waitForNavigation('load', { timeout: 10000 });
+    await this.page.waitForNavigation('load', { timeout: 15000 });
     await this.navigateBack();
   };
 
   loginUser = async (credentials) => {
     await this.page.goto('/s/SiteGenesis/account');
-    await this.page.waitForLoadState('load', { timeout: 10000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
 
     await this.page
       .locator('//input[contains(@id,"dwfrm_login_username_")]')

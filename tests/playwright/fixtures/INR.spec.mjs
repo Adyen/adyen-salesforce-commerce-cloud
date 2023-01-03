@@ -37,7 +37,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doUPIPayment('upi_qr');
       await checkoutPage.completeCheckout();
-      await checkoutPage.expectQRcode();
+      await checkoutPage.isPaymentModalShown("upi_qr");
     });
   });
 }

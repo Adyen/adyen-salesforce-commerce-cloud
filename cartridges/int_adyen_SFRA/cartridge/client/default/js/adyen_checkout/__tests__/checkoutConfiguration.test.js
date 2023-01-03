@@ -1,5 +1,8 @@
 "use strict";
 
+/**
+ * @jest-environment jsdom
+ */
 var _require = require('../checkoutConfiguration'),
   getCardConfig = _require.getCardConfig,
   getPaypalConfig = _require.getPaypalConfig,

@@ -56,7 +56,7 @@ function Authorize(args) {
   const orderCustomer = order.getCustomer();
   const sessionCustomer = session.getCustomer();
   if (orderCustomer.authenticated && orderCustomer.ID !== sessionCustomer.ID) {
-    AdyenLogs.error_log('orderCustomer is not the same as the sessionCustomer');
+    AdyenLogs.debug_log('orderCustomer is not the same as the sessionCustomer');
     Transaction.wrap(function () {
       OrderMgr.failOrder(order, true);
     });

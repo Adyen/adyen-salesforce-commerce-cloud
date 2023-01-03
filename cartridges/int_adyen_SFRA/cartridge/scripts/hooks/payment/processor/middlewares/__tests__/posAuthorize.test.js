@@ -33,7 +33,7 @@ describe('POS Authorize', function () {
     });
     var authorizeResult = posAuthorize(orderNumber, paymentInstrument, paymentProcessor);
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.error.mock.calls).toMatchSnapshot();
+    expect(Logger.fatal.mock.calls).toMatchSnapshot();
   });
   it('should return error if createTerminalPayment fails', function () {
     var _require = require('*/cartridge/scripts/adyenTerminalApi'),
@@ -46,7 +46,7 @@ describe('POS Authorize', function () {
     });
     var authorizeResult = posAuthorize(orderNumber, paymentInstrument, paymentProcessor);
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.error.mock.calls).toMatchSnapshot();
+    expect(Logger.fatal.mock.calls).toMatchSnapshot();
   });
   it('should return success response when createTerminalPayment passes', function () {
     var authorizeResult = posAuthorize(orderNumber, paymentInstrument, paymentProcessor);

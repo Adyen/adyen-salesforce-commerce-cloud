@@ -1,6 +1,10 @@
-name: E2E
+name: E2E For SFRA
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - "int_adyen_controllers/**"
+      - "adyen_controllers_changes/**"
 
 jobs:
   setup-the-cartridge:
@@ -17,18 +21,18 @@ jobs:
             code-version-secret: "SFCC_CODE_VERSION_SFRA6"
     steps:
       - name: Checkout SFRA code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
           ref: ${{ matrix.sfra-version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "14"
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
       - name: npm install storefront-reference-architecture
@@ -51,7 +55,9 @@ jobs:
         run: npm run build
   end-to-end-testing:
     needs: setup-the-cartridge
-    runs-on: macos-latest
+    runs-on:
+      group: larger-runners
+      labels: ubuntu-latest-8-cores
     strategy:
       fail-fast: false
       matrix:
@@ -64,11 +70,11 @@ jobs:
             code-version-secret: "SFCC_CODE_VERSION_SFRA6"
     steps:
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
       - name: install e2e test dependencies
@@ -77,9 +83,21 @@ jobs:
       - name: setup playwright dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npx playwright install --with-deps
-      - name: run e2e tests
+      - name: run e2e tests full coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        if: github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop'
         run: npm run test:ci
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+          PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          SFRA_VERSION: ${{ matrix.sfra-version }}
+          SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+      - name: run e2e tests quick coverage
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        if: github.event.pull_request.base.ref != 'main' && github.event.pull_request.base.ref != 'develop'
+        run: npm run test:ci:quick
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}

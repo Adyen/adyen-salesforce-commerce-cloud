@@ -2,11 +2,11 @@
 
 var server = require('server');
 var Transaction = require('dw/system/Transaction');
-var Logger = require('dw/system/Logger');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 server.get('Start', csrfProtection.generateToken, function (_req, res, next) {
   res.render('adyenSettings/settings');
   return next();
@@ -23,7 +23,7 @@ server.post('Save', server.middleware.https, function (req, res, next) {
       success: true
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error("Error while saving settings in BM configuration: ".concat(error));
+    AdyenLogs.error_log("Error while saving settings in BM configuration: ".concat(error));
     res.json({
       success: false
     });
@@ -60,7 +60,7 @@ server.post('TestConnection', server.middleware.https, function (req, res, next)
       error: false
     });
   } catch (error) {
-    Logger.getLogger('Adyen').error("Error while testing API credentials: ".concat(error));
+    AdyenLogs.error_log("Error while testing API credentials: ".concat(error));
     res.json({
       error: true,
       message: 'an unknown error has occurred',

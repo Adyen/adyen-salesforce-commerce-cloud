@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "22.2.1",
+  "version": "22.2.2",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
@@ -20,7 +20,8 @@
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
-    "test:coverage": "jest ./src --coverage"
+    "test:coverage": "jest ./src --coverage",
+    "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'"
   },
   "engines": {
     "node": ">=14.0"
@@ -38,8 +39,8 @@
     "@babel/plugin-proposal-optional-chaining": "^7.10.3",
     "@babel/plugin-transform-runtime": "^7.10.4",
     "@babel/preset-env": "^7.8.6",
-    "@types/jest": "^26.0.4",
-    "babel-loader": "^8.1.0",
+    "@types/jest": "^29.0.0",
+    "babel-loader": "^9.0.0",
     "chai": "^3.5.0",
     "css-loader": "^6.7.1",
     "eslint": "^7.32.0",
@@ -55,9 +56,9 @@
     "jquery": "^3.4.1",
     "mocha": "^10.1.0",
     "postcss-loader": "^3.0.0",
-    "prettier": "2.0.5",
+    "prettier": "2.8.1",
     "prettier-eslint-cli": "^5.0.0",
-    "proxyquire": "1.7.4",
+    "proxyquire": "1.8.0",
     "regenerator-runtime": "^0.13.5",
     "resolve-url-loader": "^3.0.0",
     "sgmf-scripts": "^2.4.2",
@@ -68,12 +69,12 @@
     "webpack": "^5.74.0"
   },
   "resolutions": {
-    "minimist": "1.2.6",
-    "minimatch": "3.0.5",
-    "node-notifier": "8.0.1",
+    "minimist": "1.2.7",
+    "minimatch": "3.1.2",
+    "node-notifier": "8.0.2",
     "glob-parent": "5.1.2",
     "yargs-parser": "5.0.1",
-    "braces": "2.3.1"
+    "braces": "3.0.2"
   },
   "husky": {
     "hooks": {

@@ -12,13 +12,7 @@ if (process.env.SFRA_VERSION === 'v5.3.0') {
       CheckoutPage: CheckoutPageSFRA5,
       urlExtension: '/s/RefArch/home',
       AccountPage: AccountPageSFRA,
-    },
-    {
-      name: 'SG',
-      CheckoutPage: CheckoutPageSG,
-      urlExtension: '/on/demandware.store/Sites-SiteGenesis-Site',
-      AccountPage: AccountPageSG,
-    },
+    }
   );
 }
 
@@ -30,3 +24,13 @@ if (process.env.SFRA_VERSION === 'v6.1.0') {
     AccountPage: AccountPageSFRA,
   });
 }
+
+if (!process.env.SFRA_VERSION) {
+  environments.push({
+    name: 'SG',
+    CheckoutPage: CheckoutPageSG,
+    urlExtension: '/on/demandware.store/Sites-SiteGenesis-Site',
+    AccountPage: AccountPageSG,
+  },);
+}
+
