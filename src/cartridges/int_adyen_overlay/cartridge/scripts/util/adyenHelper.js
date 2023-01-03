@@ -28,6 +28,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+const collections = require('*/cartridge/scripts/util/collections');
 
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
@@ -518,6 +519,16 @@ var adyenHelperObj = {
     }
 
     return cardType;
+  },
+
+  getOrderMainPaymentInstrumentType(order) {
+    let type = null;
+    collections.forEach(order.getPaymentInstruments(), (item) => {
+      if (item.custom.adyenMainPaymentInstrument) {
+        type = item.custom.adyenMainPaymentInstrument;
+      }
+    });
+    return type;
   },
 
   // gets the Adyen card type name based on the SFCC card type name

@@ -1,11 +1,11 @@
 const Transaction = require('dw/system/Transaction');
+const PaymentInstrument = require('dw/order/PaymentInstrument');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function handle(basket, paymentInformation) {
-  AdyenLogs.debug_log(JSON.stringify(paymentInformation));
   const currentBasket = basket;
   const cardErrors = {};
   const serverErrors = [];
@@ -14,11 +14,16 @@ function handle(basket, paymentInformation) {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
       currentBasket.removePaymentInstrument(item);
     });
+    AdyenLogs.debug_log(JSON.stringify(PaymentInstrument.METHOD_CREDIT_CARD));
+    const paymentInstrumentType = paymentInformation.isCreditCard
+      ? PaymentInstrument.METHOD_CREDIT_CARD
+      : constants.METHOD_ADYEN_COMPONENT;
     const paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
+      paymentInstrumentType,
       currentBasket.totalGrossPrice,
     );
     paymentInstrument.custom.adyenPaymentData = paymentInformation.stateData;
+    paymentInstrument.custom.adyenMainPaymentInstrument = paymentInstrumentType;
 
     if (paymentInformation.partialPaymentsOrder) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
