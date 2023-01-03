@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -19,25 +18,6 @@ function setOrderFormData(response) {
   if (response.orderToken) {
     document.querySelector('#orderToken').value = response.orderToken;
   }
-}
-
-function setPartialPaymentOrderObject(response) {
-  const { giftcard } = store.partialPaymentsOrderObj;
-  store.partialPaymentsOrderObj = {
-    giftcard,
-    partialPaymentsOrder: {
-      pspReference: response.order.pspReference,
-      orderData: response.order.orderData,
-    },
-    remainingAmount: response.remainingAmountFormatted,
-    discountedAmount: response.discountAmountFormatted,
-    orderAmount: response.orderAmount,
-    expiresAt: response.expiresAt,
-  };
-  window.sessionStorage.setItem(
-    constants.GIFTCARD_DATA_ADDED,
-    JSON.stringify(store.partialPaymentsOrderObj),
-  );
 }
 
 /**
@@ -68,7 +48,7 @@ function paymentFromComponent(data, component = {}) {
   });
 }
 
-function makePartialPayment(requestData, expiresAt, orderAmount) {
+function makePartialPayment(requestData) {
   let error;
   $.ajax({
     url: 'Adyen-partialPayment',
@@ -78,9 +58,14 @@ function makePartialPayment(requestData, expiresAt, orderAmount) {
     async: false,
     success(response) {
       if (response.error) {
-        error = { error: true };
+        error = {
+          error: true,
+        };
       } else {
-        setPartialPaymentOrderObject({ ...response, expiresAt, orderAmount });
+        const { giftCards, ...rest } = response;
+        store.checkout.options.amount = rest.remainingAmount;
+        store.partialPaymentsOrderObj = rest;
+        store.addedGiftCards = giftCards;
         setOrderFormData(response);
       }
     },

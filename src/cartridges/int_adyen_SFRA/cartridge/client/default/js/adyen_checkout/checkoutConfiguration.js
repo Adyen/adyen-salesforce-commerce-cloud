@@ -99,21 +99,33 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect } = getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
+  giftCardsList.innerHTML = '';
   store.componentsObj.giftcard.node.unmount('component_giftcard');
-  renderAddedGiftCard();
+  store.addedGiftCards.forEach((card) => {
+    renderAddedGiftCard(card);
+  });
   createElementsToShowRemainingGiftCardAmount();
 }
 
 function getGiftCardConfig() {
   let giftcardBalance;
+  let brandArray = [];
   return {
     showPayButton: true,
     onChange: (state) => {
       store.updateSelectedPayment(constants.GIFTCARD, 'isValid', state.isValid);
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
+      const brandSelect = document.getElementById('giftCardSelect');
+      const selectedBrandIndex = brandSelect.selectedIndex;
+      const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+      brandArray.push(giftcardBrand);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
@@ -168,8 +180,6 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
-              data.expiresAt,
-              data.remainingAmount,
             );
             if (partialPaymentResponse?.error) {
               reject();
@@ -180,9 +190,10 @@ function getGiftCardConfig() {
         },
       });
     },
-    onSubmit(state, component) {
+    onSubmit(state) {
       store.selectedMethod = state.data.paymentMethod.type;
-      store.brand = component?.displayName;
+      store.brand = brandArray?.filter((item, i, ar) => ar.indexOf(item) === i)
+      .join(', ')      
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
