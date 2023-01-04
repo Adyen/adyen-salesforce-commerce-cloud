@@ -162,14 +162,14 @@ function placeOrder(req, res, next) {
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 
             paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
-            paymentInstrument.paymentTransaction.custom.Adyen_log = parsedGiftCardObj;
+            paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
             paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
         })
     }
 
     const mainPaymentInstrument = order.getPaymentInstruments(
       AdyenHelper.getOrderMainPaymentInstrumentType(order)
-    );
+    )[0];
 
     // Check if gift cards were used
     const giftCardsAdded = currentBasket.custom?.adyenGiftCards
@@ -258,14 +258,14 @@ function placeOrder(req, res, next) {
         });
     }
 
-    // if (order.getCustomerEmail()) {
-    //     COHelpers.sendConfirmationEmail(order, req.locale.id);
-    // }
+    if (order.getCustomerEmail()) {
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+    }
 
     clearForms.clearForms();
     if (mainPaymentInstrument) {
-        clearForms.clearPaymentTransactionData(mainPaymentInstrument[0]);
-        clearForms.clearAdyenData(mainPaymentInstrument[0]);
+        clearForms.clearPaymentTransactionData(mainPaymentInstrument);
+        clearForms.clearAdyenData(mainPaymentInstrument);
     }
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);

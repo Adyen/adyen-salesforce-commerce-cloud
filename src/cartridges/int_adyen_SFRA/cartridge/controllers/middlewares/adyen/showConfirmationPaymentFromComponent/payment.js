@@ -92,7 +92,7 @@ function handleAuthorisedPayment(
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
-    constants.METHOD_ADYEN_COMPONENT,
+    AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );
   const result = options.req.form?.result;
   const adyenPaymentInstrument = paymentInstruments[0];

@@ -76,7 +76,7 @@ var adyenHelperObj = {
 
   getAdyenGivingConfig(order) {
     const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
     const paymentMethod =
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;

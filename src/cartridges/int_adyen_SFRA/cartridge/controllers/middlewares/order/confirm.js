@@ -1,8 +1,6 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const constants = require('*/cartridge/adyenConstants/constants');
-const collections = require('*/cartridge/scripts/util/collections');
 
 // order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
 // This was a GET call with a querystring containing ID & token in earlier versions.
@@ -26,15 +24,8 @@ function handleAdyenGiving(req, res, order) {
   const adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
   const adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
 
-  let adyenMainPaymentInstrument = null;
-  collections.forEach(order.getPaymentInstruments(), (item) => {
-    if (item.custom.adyenMainPaymentInstrument) {
-      adyenMainPaymentInstrument = item.custom.adyenMainPaymentInstrument;
-    }
-  });
-
   const paymentInstrument = order.getPaymentInstruments(
-    adyenMainPaymentInstrument,
+    AdyenHelper.getOrderMainPaymentInstrumentType(order),
   )[0];
 
   const donationAmounts = {
@@ -64,7 +55,7 @@ function confirm(req, res, next) {
   if (orderId && orderToken) {
     const order = OrderMgr.getOrder(orderId, orderToken);
     const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
     )[0];
     const paymentMethod =
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
