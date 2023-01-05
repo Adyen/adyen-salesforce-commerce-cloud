@@ -10,7 +10,6 @@
     window.locale = "${request.locale}";
     window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
     window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
-    window.calculateAmountUrl = "${URLUtils.https('Adyen-CalculateAmount')}";
 </script>
 
 <isscript>
@@ -19,7 +18,7 @@
 </isscript>
 
 <div class="mb-sm-3">
-    <a href="${URLUtils.https('Checkout-Login')}"
+    <a href="${URLUtils.https('Checkout-Begin')}"
         class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
         ${Resource.msg('button.checkout', 'cart', null)}
     </a>
