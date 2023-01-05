@@ -113,16 +113,11 @@ function handlePartialPaymentSuccess() {
 
 function getGiftCardConfig() {
   let giftcardBalance;
-  const brandArray = [];
   return {
     showPayButton: true,
     onChange: (state) => {
       store.updateSelectedPayment(constants.GIFTCARD, 'isValid', state.isValid);
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
-      const brandSelect = document.getElementById('giftCardSelect');
-      const selectedBrandIndex = brandSelect.selectedIndex;
-      const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
-      brandArray.push(giftcardBrand);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
@@ -187,12 +182,9 @@ function getGiftCardConfig() {
         },
       });
     },
-    onSubmit(state) {
+    onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
-      const deDuplicatedGiftCardBrands = brandArray.filter(
-        (item, i, ar) => ar.indexOf(item) === i,
-      );
-      store.brand = deDuplicatedGiftCardBrands.join(', ');
+      store.brand = component?.displayName;
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
