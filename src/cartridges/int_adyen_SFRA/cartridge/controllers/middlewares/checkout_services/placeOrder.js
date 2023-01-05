@@ -160,7 +160,6 @@ function placeOrder(req, res, next) {
                 paymentInstrument.paymentMethod,
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-
             paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
             paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
             paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;

@@ -70,11 +70,11 @@
   },
   "resolutions": {
     "minimist": "1.2.7",
-    "minimatch": "3.0.5",
+    "minimatch": "3.1.2",
     "node-notifier": "8.0.2",
     "glob-parent": "5.1.2",
     "yargs-parser": "5.0.1",
-    "braces": "2.3.2"
+    "braces": "3.0.2"
   },
   "husky": {
     "hooks": {

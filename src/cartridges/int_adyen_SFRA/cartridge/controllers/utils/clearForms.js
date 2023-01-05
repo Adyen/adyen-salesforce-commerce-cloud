@@ -37,6 +37,15 @@ function clearAdyenData(paymentInstrument) {
 }
 
 /**
+ * Clear Adyen basket data
+ */
+function clearAdyenBasketData(basket) {
+  Transaction.wrap(() => {
+    basket.custom.adyenGiftCards = null;
+  });
+}
+
+/**
  * Clear Adyen transaction data
  */
 function clearPaymentTransactionData(paymentInstrument) {
@@ -50,4 +59,5 @@ module.exports = {
   clearForms,
   clearAdyenData,
   clearPaymentTransactionData,
+  clearAdyenBasketData,
 };
