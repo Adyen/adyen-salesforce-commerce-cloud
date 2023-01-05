@@ -1,6 +1,8 @@
 const ShippingMgr = require('dw/order/ShippingMgr');
 const BasketMgr = require('dw/order/BasketMgr');
 const Logger = require('dw/system/Logger');
+const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
+const collections = require('*/cartridge/scripts/util/collections');
 
 /**
  * Make a request to Adyen to get shipping methods
@@ -8,16 +10,11 @@ const Logger = require('dw/system/Logger');
 function callGetShippingMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const currentShippingMethods = ShippingMgr.getAllShippingMethods();
+    const currentShippingMethodsModels = getApplicableShippingMethods(
+      currentBasket.getDefaultShipment(),
+    );
     res.json({
-      shippingMethods: currentShippingMethods?.toArray().map((sm) => ({
-        label: sm.displayName,
-        detail: sm.description,
-        identifier: sm.ID,
-        amount: `${
-          ShippingMgr.getShippingCost(sm, currentBasket.totalGrossPrice)?.value
-        }`,
-      })),
+      shippingMethods: currentShippingMethodsModels,
     });
     return next();
   } catch (error) {
@@ -25,6 +22,45 @@ function callGetShippingMethods(req, res, next) {
     Logger.getLogger('Adyen').error(error);
     return next();
   }
+}
+
+function getShippingCost(shippingMethod, shipment) {
+  var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+  var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod);
+  return shippingCost.amount.value;
+}
+
+function getApplicableShippingMethods(shipment, address) {
+  if (!shipment) return null;
+
+  var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+
+  var shippingMethods;
+  if (address) {
+    shippingMethods = shipmentShippingModel.getApplicableShippingMethods(
+      address,
+    );
+  } else {
+    shippingMethods = shipmentShippingModel.getApplicableShippingMethods();
+  }
+
+  // Filter out whatever the method associated with in store pickup
+  var filteredMethods = [];
+  collections.forEach(shippingMethods, function (shippingMethod) {
+    if (!shippingMethod.custom.storePickupEnabled) {
+      const shippingMethodModel = new ShippingMethodModel(
+        shippingMethod,
+        shipment,
+      );
+      const shippingCost = getShippingCost(shippingMethod, shipment);
+      filteredMethods.push({
+        ...shippingMethodModel,
+        shippingCost,
+      });
+    }
+  });
+
+  return filteredMethods;
 }
 
 module.exports = callGetShippingMethods;

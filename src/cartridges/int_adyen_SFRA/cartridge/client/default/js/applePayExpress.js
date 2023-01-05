@@ -26,9 +26,25 @@ async function mountApplePayComponent() {
   const applePayButtonConfig = {
     showPayButton: true,
     configuration: applePayConfig,
-    shippingMethods: shippingMethodsData.shippingMethods,
-    onShippingMethodSelected: (data) => {
-      console.log('onShippingMethodSelected', data);
+    shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
+      label: sm.displayName,
+      detail: sm.description,
+      identifier: sm.ID,
+      amount: `${sm.shippingCost}`,
+    })),
+    onShippingMethodSelected: (resolve, reject, event) => {
+      const { shippingMethod } = event;
+      let appleShippingMethodUpdate = {
+        newShippingMethods: shippingMethodsData,
+        newTotal: {
+          amount: shippingMethod.amount,
+        },
+        newLineItems: [],
+      };
+
+      console.log('onShippingMethodSelected', JSON.stringify(event.action));
+      console.log('session', JSON.stringify(sessionData));
+      resolve(appleShippingMethodUpdate);
     },
     // onSubmit: (state, component) => {
     //   console.log('onSubmit', state, component);
