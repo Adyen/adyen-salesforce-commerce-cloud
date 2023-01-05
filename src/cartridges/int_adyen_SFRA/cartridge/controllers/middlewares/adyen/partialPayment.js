@@ -61,14 +61,65 @@ function makePartialPayment(req, res, next) {
     );
 
     const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
-    response.remainingAmountFormatted = remainingAmount
+    const remainingAmountFormatted = remainingAmount
       .divide(divideBy)
       .toFormattedString();
-    response.discountAmountFormatted = discountAmount
-      .divide(divideBy)
-      .toFormattedString();
+    response.remainingAmountFormatted = remainingAmountFormatted;
 
-    res.json(response);
+    const discountAmountFormatted = discountAmount
+      .divide(divideBy)
+      .toFormattedString();
+    response.discountAmountFormatted = discountAmountFormatted;
+
+    const addedGiftCards = currentBasket.custom?.adyenGiftCards
+      ? JSON.parse(currentBasket.custom?.adyenGiftCards)
+      : [];
+
+    const dataToStore = {
+      discountedAmount: discountAmountFormatted,
+      expiresAt: response.order.expiresAt,
+      giftCard: {
+        ...response.paymentMethod,
+        amount: response.amount,
+        name: giftcardBrand,
+        pspReference: response.pspReference,
+      },
+      orderAmount: {
+        currency: currentBasket.currencyCode,
+        value: AdyenHelper.getCurrencyValueForApi(
+          currentBasket.getTotalGrossPrice(),
+        ).value,
+      },
+      partialPaymentsOrder: {
+        orderData: response.order.orderData,
+        pspReference: response.order.pspReference,
+      },
+      remainingAmount: response.order.remainingAmount,
+      remainingAmountFormatted,
+    };
+
+    addedGiftCards.push(dataToStore);
+
+    Transaction.wrap(() => {
+      currentBasket.custom.adyenGiftCards = JSON.stringify(addedGiftCards);
+    });
+
+    const totalDiscountedAmount = new Money(
+      addedGiftCards.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.giftCard.amount.value,
+        0,
+      ),
+      response.order.remainingAmount.currency,
+    );
+
+    res.json({
+      ...dataToStore,
+      totalDiscountedAmount: totalDiscountedAmount
+        .divide(divideBy)
+        .toFormattedString(),
+      giftCards: addedGiftCards,
+    });
   } catch (error) {
     AdyenLogs.error_log(
       `Failed to create partial payment.. ${error.toString()}`,

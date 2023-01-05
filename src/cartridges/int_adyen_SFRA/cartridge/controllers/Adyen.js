@@ -101,6 +101,11 @@ server.post(
  */
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
+/**
+ * Called by Adyen to fetch applied giftcards
+ */
+server.get('fetchGiftCards', server.middleware.https, adyen.fetchGiftCards);
+
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }

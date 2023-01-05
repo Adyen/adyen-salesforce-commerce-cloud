@@ -54,7 +54,6 @@ module.exports = {
 
   MAX_API_RETRIES: 3,
 
-  GIFTCARD_DATA_ADDED: 'giftcard-data',
   GIFTCARD_EXPIRATION_MINUTES: 30,
 
   CHECKOUT_ENVIRONMENT_TEST: 'test',
