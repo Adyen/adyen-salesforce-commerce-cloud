@@ -99,11 +99,8 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const {
-    giftCardSelectContainer,
-    giftCardSelect,
-    giftCardsList,
-  } = getGiftCardElements();
+  const { giftCardSelectContainer, giftCardSelect, giftCardsList } =
+    getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
@@ -116,7 +113,7 @@ function handlePartialPaymentSuccess() {
 
 function getGiftCardConfig() {
   let giftcardBalance;
-  let brandArray = [];
+  const brandArray = [];
   return {
     showPayButton: true,
     onChange: (state) => {
@@ -192,8 +189,10 @@ function getGiftCardConfig() {
     },
     onSubmit(state) {
       store.selectedMethod = state.data.paymentMethod.type;
-      store.brand = brandArray?.filter((item, i, ar) => ar.indexOf(item) === i)
-      .join(', ')      
+      const deDuplicatedGiftCardBrands = brandArray.filter(
+        (item, i, ar) => ar.indexOf(item) === i,
+      );
+      store.brand = deDuplicatedGiftCardBrands.join(', ');
       document.querySelector('input[name="brandCode"]').checked = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
