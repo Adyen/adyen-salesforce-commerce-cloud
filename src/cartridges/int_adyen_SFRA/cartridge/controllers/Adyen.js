@@ -28,6 +28,12 @@ server.get(
   adyen.callGetShippingMethods,
 );
 
+server.get(
+  'CalculateAmount',
+  server.middleware.https,
+  adyen.callCalculateAmount,
+);
+
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */

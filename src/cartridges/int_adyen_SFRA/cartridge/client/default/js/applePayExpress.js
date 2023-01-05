@@ -30,14 +30,18 @@ async function mountApplePayComponent() {
       label: sm.displayName,
       detail: sm.description,
       identifier: sm.ID,
-      amount: `${sm.shippingCost}`,
+      amount: `${sm.shippingCost.value}`,
     })),
-    onShippingMethodSelected: (resolve, reject, event) => {
+    onShippingMethodSelected: async (resolve, reject, event) => {
       const { shippingMethod } = event;
-      let appleShippingMethodUpdate = {
+      const response = await fetch(
+        `${window.calculateAmountUrl}?shippingMethodId=${shippingMethod.identifier}`,
+      );
+      const calculatedAmount = await response.json();
+      const appleShippingMethodUpdate = {
         newShippingMethods: shippingMethodsData,
         newTotal: {
-          amount: shippingMethod.amount,
+          amount: calculatedAmount.value,
         },
         newLineItems: [],
       };
