@@ -225,7 +225,8 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     })),
     add3DS2Data: jest.fn((request) => {
       return request
-    })
+    }),
+    getOrderMainPaymentInstrumentType: jest.fn(() => {}),
   }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
