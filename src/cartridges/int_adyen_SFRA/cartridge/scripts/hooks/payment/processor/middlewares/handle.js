@@ -1,8 +1,6 @@
 const Transaction = require('dw/system/Transaction');
-const PaymentInstrument = require('dw/order/PaymentInstrument');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
-const constants = require('*/cartridge/adyenConstants/constants');
 
 function removeAllPaymentInstruments(currentBasket) {
   collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
@@ -39,9 +37,9 @@ function handle(basket, paymentInformation) {
   Transaction.wrap(() => {
     removeAllPaymentInstruments(currentBasket);
 
-    const paymentInstrumentType = paymentInformation.isCreditCard
-      ? PaymentInstrument.METHOD_CREDIT_CARD
-      : constants.METHOD_ADYEN_COMPONENT;
+    const paymentInstrumentType = AdyenHelper.getPaymentInstrumentType(
+      paymentInformation.isCreditCard,
+    );
     const paymentInstrument = currentBasket.createPaymentInstrument(
       paymentInstrumentType,
       currentBasket.totalGrossPrice,
