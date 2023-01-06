@@ -522,13 +522,12 @@ var adyenHelperObj = {
   },
 
   getOrderMainPaymentInstrumentType(order) {
-    let type = null;
     collections.forEach(order.getPaymentInstruments(), (item) => {
       if (item.custom.adyenMainPaymentInstrument) {
-        type = item.custom.adyenMainPaymentInstrument;
+        return item.custom.adyenMainPaymentInstrument;
       }
     });
-    return type;
+    return constants.METHOD_ADYEN_COMPONENT;
   },
 
   // gets the Adyen card type name based on the SFCC card type name
