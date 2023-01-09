@@ -13,7 +13,7 @@ export class CardData {
   };
   threeDs2 = {
     holderName: 'John Doe',
-    cardNumber: '5454545454545454',
+    cardNumber: '4917 6100 0000 0000',
     expirationDate: '0330',
     cvc: '737',
   };
