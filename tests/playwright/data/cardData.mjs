@@ -19,9 +19,9 @@ export class CardData {
   };
   coBrandedBCMC = {
     holderName: 'John Doe',
-    cardNumber: '6703444444444449',
+    cardNumber: '4871049999999910',
     expirationDate: '0330',
-    cvc: '',
+    cvc: '737',
   };
 
   giftCard = {
