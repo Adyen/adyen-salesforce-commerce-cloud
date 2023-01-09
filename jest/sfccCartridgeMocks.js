@@ -227,6 +227,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
       return request
     }),
     getOrderMainPaymentInstrumentType: jest.fn(() => {}),
+    getPaymentInstrumentType: jest.fn((isCreditCard) => isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),
   }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
