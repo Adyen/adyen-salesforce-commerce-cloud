@@ -34,17 +34,17 @@ async function mountApplePayComponent() {
     })),
     onShippingMethodSelected: async (resolve, reject, event) => {
       const { shippingMethod } = event;
-      const appleShippingMethodUpdate = {
+      //console.log('shipingmethods', shippingMethod);
+      const applePayShippingMethodUpdate = {
         newShippingMethods: shippingMethodsData,
         newTotal: {
-          amount: calculatedAmount.value,
+          amount: shippingMethod.amount,
         },
         newLineItems: [],
       };
-
-      console.log('onShippingMethodSelected', JSON.stringify(event.action));
+      console.log('onShippingMethodSelected', JSON.stringify(applePayShippingMethodUpdate));
       console.log('session', JSON.stringify(sessionData));
-      resolve(appleShippingMethodUpdate);
+      resolve(applePayShippingMethodUpdate);
     },
     // onSubmit: (state, component) => {
     //   console.log('onSubmit', state, component);

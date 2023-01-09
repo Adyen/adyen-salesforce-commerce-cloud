@@ -29,6 +29,11 @@ function getShippingMethods(shipment, address) {
   return shippingMethods;
 }
 
+function getShipmentUUID(shipment) {
+  if (!shipment) return null;
+  return shipment.UUID;
+}
+
 function getApplicableShippingMethods(shipment, address) {
   const shippingMethods = getShippingMethods(shipment, address);
   if (!shippingMethods) {
@@ -44,9 +49,11 @@ function getApplicableShippingMethods(shipment, address) {
         shipment,
       );
       const shippingCost = getShippingCost(shippingMethod, shipment);
+      const shipmentUUID = getShipmentUUID(shipment);
       filteredMethods.push({
         ...shippingMethodModel,
         shippingCost,
+        shipmentUUID,
       });
     }
   });
