@@ -39,6 +39,8 @@ function getApplicableShippingMethods(shipment, address) {
   if (!shippingMethods) {
     return null;
   }
+  AdyenLogs.error_log('shipment');
+  AdyenLogs.error_log(shipment);
 
   // Filter out whatever the method associated with in store pickup
   const filteredMethods = [];

@@ -10,6 +10,7 @@
     window.locale = "${request.locale}";
     window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
     window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+    window.calculateAmountUrl = "${URLUtils.https('Cart-SelectShippingMethod')}"
 </script>
 
 <isscript>
