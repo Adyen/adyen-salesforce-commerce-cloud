@@ -55,7 +55,8 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
   const order = COHelpers.createOrder(currentBasket);
-
+  AdyenLogs.error_log('order created');
+  AdyenLogs.error_log(JSON.stringify(order));
   let result;
   Transaction.wrap(() => {
     result = adyenCheckout.createPaymentRequest({

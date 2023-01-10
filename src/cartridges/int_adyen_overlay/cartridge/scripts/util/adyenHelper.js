@@ -336,6 +336,7 @@ var adyenHelperObj = {
   // populates the paymentRequest with address information using the order and payment method and returns it
   createAddressObjects(order, paymentMethod, paymentRequest) {
     const { shippingAddress } = order.defaultShipment;
+    AdyenLogs.info_log(JSON.stringify(shippingAddress.countryCode.value));
     paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
 
     let shippingStreet = '';
