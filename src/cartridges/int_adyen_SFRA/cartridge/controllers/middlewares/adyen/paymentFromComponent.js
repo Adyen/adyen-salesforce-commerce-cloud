@@ -15,6 +15,7 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
+    Logger.getLogger('Adyen').error('inside paymentFromComponent')
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     AdyenLogs.info_log(

@@ -8,22 +8,27 @@ async function mountAmazonPayComponent() {
   const shippingMethodsData = await shippingMethods.json();
   const environment = 'test';
 
-  const checkout = await AdyenCheckout({
-    environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    session: sessionData,
-    onPaymentCompleted: (result, component) => {
-      console.log(result, component);
-    },
-    // onError: (error, component) => {
-    //   console.log(error.name, error.message, error.stack, component);
-    // },
-  });
+    const x = {
+                  environment,
+                  clientKey: window.clientKey,
+                  locale: window.locale,
+                  session: sessionData,
+                  onPaymentCompleted: (result, component) => {
+                    console.log(result, component);
+                  },
+                  // onError: (error, component) => {
+                  //   console.log(error.name, error.message, error.stack, component);
+                  // },
+                };
+                console.log(JSON.stringify(x));
+
+  const checkout = await AdyenCheckout(x);
 
   const amazonPayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
     (pm) => pm.type === 'amazonpay',
   ).configuration;
+
+    console.log('amazonPayConfig ' + JSON.stringify(amazonPayConfig));
 
   const amazonPayButtonConfig = {
     showPayButton: true,

@@ -56,29 +56,37 @@ async function mountAmazonPayComponent() {
   const session = await fetch(window.sessionsUrl);
   const sessionData = await session.json();
 //  const checkout = await AdyenCheckout(window.Configuration);
-  const checkout = await AdyenCheckout({
-    environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    session: sessionData,
-    onPaymentCompleted: (result, component) => {
-      console.log(result, component);
-    },
-    // onError: (error, component) => {
-    //   console.log(error.name, error.message, error.stack, component);
-    // },
-  });
 
-  const builtInConfig = checkout.paymentMethodsResponse.paymentMethods.find(
-    (pm) => pm.type === 'amazonpay',
-  ).configuration;
+console.log('sessionData ' + JSON.stringify(sessionData.sessionData));
 
+    const configs = {
+                        environment,
+                        clientKey: window.clientKey,
+                        locale: window.locale,
+                      };
+//                      console.log(JSON.stringify(configs));
+//
+  const checkout = await AdyenCheckout(configs);
 
-// add the amazon pay configs ??
+//  console.log(window.clientKey)
+
+//  const builtInConfig = checkout.paymentMethodsResponse.paymentMethods.find(
+//    (pm) => pm.type === 'amazonpay',
+//  ).configuration;
+
   const amazonConfig = {
-    showOrderButton: false,
+    showOrderButton: true,
     returnUrl: window.returnURL,
-    configuration: builtInConfig,
+//    configuration: {
+//                   	"merchantId": "AAUL9GPRGTX1U",
+//                   	"storeId": "amzn1.application-oa2-client.3e5db0a580f7468da2d9903dda981fce",
+//                   	"region": "UK",
+//                   	"publicKeyId": "AGDRUNN37LQHSOCHN24AEYYB"
+//                   },
+    amount: {
+              value: 1000,
+              currency: 'EUR',
+            },
 //    clientKey: window.clientKey,
 //    productType: 'PayAndShip',
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
@@ -86,9 +94,9 @@ async function mountAmazonPayComponent() {
 //      document.querySelector('#adyenStateData').value = JSON.stringify(
 //        state.data,
 //      );
-//      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-//        state.data,
-//      );
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
       console.log('inside on submit')
       paymentFromComponent(state.data, component);
     },
@@ -120,8 +128,6 @@ async function mountAmazonPayComponent() {
     .create('amazonpay', amazonConfig)
     .mount(amazonPayNode);
 
-    console.log(amazonPayComponent.submit)
-
     const shopperDetails = await amazonPayComponent.getShopperDetails();
     console.log('shopper details ' + JSON.stringify(shopperDetails));
 
@@ -129,24 +135,25 @@ async function mountAmazonPayComponent() {
     window.ShowConfirmationPaymentFromComponent,
   );
 
-//  $('#dwfrm_billing').submit(function apiRequest(e) {
-//    e.preventDefault();
-//
-//    const form = $(this);
-//    const url = form.attr('action');
-//
-//    $.ajax({
-//      type: 'POST',
-//      url,
-//      data: form.serialize(),
-//      async: false,
-//      success(data) {
-//        store.formErrorsExist = 'fieldErrors' in data;
-//      },
-//    });
-//  });
+  $('#dwfrm_billing').submit(function apiRequest(e) {
+    e.preventDefault();
+
+    const form = $(this);
+    const url = form.attr('action');
+
+    $.ajax({
+      type: 'POST',
+      url,
+      data: form.serialize(),
+      async: false,
+      success(data) {
+        store.formErrorsExist = 'fieldErrors' in data;
+      },
+    });
+  });
 //  $('#action-modal').modal({ backdrop: 'static', keyboard: false });
   console.log('ABOUT to submit amazon pay');
+  console.log(amazonPayComponent.submit)
   amazonPayComponent.submit();
 }
 
