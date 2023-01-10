@@ -44,7 +44,7 @@
     "chai": "^3.5.0",
     "css-loader": "^6.7.1",
     "eslint": "^8.0.0",
-    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-formatter-pretty": "^4.1.0",
     "eslint-formatter-summary": "^1.0.2",
