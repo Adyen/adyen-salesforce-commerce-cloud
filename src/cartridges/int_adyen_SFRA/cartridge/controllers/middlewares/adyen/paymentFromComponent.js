@@ -10,11 +10,13 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const Logger = require('dw/system/Logger');
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
+    Logger.getLogger('Adyen').error('inside paymentFromComponent');
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     AdyenLogs.info_log(
