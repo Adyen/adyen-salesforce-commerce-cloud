@@ -358,7 +358,7 @@ var adyenHelperObj = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
         ? shippingAddress.countryCode.value.toUpperCase()
-        : 'US',
+        : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
