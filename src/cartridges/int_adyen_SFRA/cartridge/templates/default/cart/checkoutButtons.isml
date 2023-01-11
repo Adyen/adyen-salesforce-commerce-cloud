@@ -9,9 +9,9 @@
     window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
     window.locale = "${request.locale}";
     window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+    window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
     window.calculateAmountUrl = "${URLUtils.https('Cart-SelectShippingMethod')}";
     window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
-    window.customerPaymentDataUrl = "${URLUtils.https('Adyen-CustomerPaymentData')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
 </script>
 

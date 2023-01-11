@@ -1,6 +1,8 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
+const OrderModel = require('*/cartridge/models/order');
 const Transaction = require('dw/system/Transaction');
+const Locale = require('dw/util/Locale');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
@@ -53,6 +55,13 @@ function paymentFromComponent(req, res, next) {
         session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
+  });
+  let billingAddress = currentBasket.billingAddress;
+  Transaction.wrap(function () {
+  if (!billingAddress) {
+    billingAddress = currentBasket.createBillingAddress();
+  }
+  billingAddress.setFirstName('test');
   });
   const order = COHelpers.createOrder(currentBasket);
   AdyenLogs.error_log('order created');

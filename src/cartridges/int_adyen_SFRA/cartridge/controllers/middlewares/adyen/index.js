@@ -10,7 +10,6 @@ const cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/a
 const partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
 const partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
 const callGetShippingMethods = require('*/cartridge/controllers/middlewares/adyen/shippingMethods');
-const callGetCustomerPaymentData = require('*/cartridge/controllers/middlewares/adyen/customerPaymentData');
 
 module.exports = {
   showConfirmation,
@@ -25,5 +24,4 @@ module.exports = {
   partialPaymentsOrder,
   partialPayment,
   callGetShippingMethods,
-  callGetCustomerPaymentData,
 };

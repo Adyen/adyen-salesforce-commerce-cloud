@@ -28,12 +28,6 @@ server.get(
   adyen.callGetShippingMethods,
 );
 
-server.get(
-  'CustomerPaymentData',
-  server.middleware.https,
-  adyen.callGetCustomerPaymentData,
-);
-
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */
