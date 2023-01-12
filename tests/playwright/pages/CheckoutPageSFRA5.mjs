@@ -108,7 +108,7 @@ export default class CheckoutPageSFRA5 {
 
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
-    await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+    await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
     if (itemCount > 1) {
       await this.selectQuantity.selectOption({ index: itemCount });
     }
