@@ -357,8 +357,8 @@ var adyenHelperObj = {
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
-        ? shippingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? shippingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
@@ -387,8 +387,8 @@ var adyenHelperObj = {
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
-        ? billingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? billingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
       stateOrProvince: billingAddress.stateCode

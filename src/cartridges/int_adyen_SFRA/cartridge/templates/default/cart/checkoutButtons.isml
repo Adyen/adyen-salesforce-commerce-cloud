@@ -1,6 +1,7 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
 <isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
+<isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
@@ -13,6 +14,8 @@
     window.calculateAmountUrl = "${URLUtils.https('Cart-SelectShippingMethod')}";
     window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+    window.showConfirmationUrl = "${URLUtils.https('Adyen-ShowConfirmation')}";
+    window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
 </script>
 
 <isscript>

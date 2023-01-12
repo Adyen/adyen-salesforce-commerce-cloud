@@ -1,7 +1,41 @@
 const helpers = require('./adyen_checkout/helpers');
 
-function paymentFromComponent(data, component) {
-  $.ajax({
+function handleAuthorised(response, resolveApplePay) {
+  document.querySelector('#result').value = JSON.stringify({
+    pspReference: response.fullResponse?.pspReference,
+    resultCode: response.fullResponse?.resultCode,
+    paymentMethod: response.fullResponse?.paymentMethod
+      ? response.fullResponse.paymentMethod
+      : response.fullResponse?.additionalData?.paymentMethod,
+  });
+  const finalPriceUpdate = {
+    newTotal: {
+      type: 'final',
+      label: 'new total',
+      amount: `${applePayButtonConfig.amount.value / 100}`,
+    },
+  };
+  resolveApplePay(finalPriceUpdate);
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleError() {
+  document.querySelector('#result').value = JSON.stringify({
+    error: true,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleApplePayResponse(response, resolve) {
+  if (response.resultCode === 'Authorised') {
+    handleAuthorised(response, resolve);
+  } else {
+    handleError();
+  }
+}
+
+function paymentFromComponent(data, resolve) {
+  return $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
@@ -9,8 +43,11 @@ function paymentFromComponent(data, component) {
       paymentMethod: 'applepay',
     },
     success(response) {
-//      helpers.setOrderFormData(response);
-      console.log(response);
+      helpers.createShowConfirmationForm(
+        window.ShowConfirmationPaymentFromComponent,
+      );
+      helpers.setOrderFormData(response);
+      //handleApplePayResponse(response, resolve);
     },
   });
 }
@@ -54,15 +91,16 @@ async function mountApplePayComponent() {
     onError: (error, component) => {
       console.log(error.name, error.message, error.stack, component);
     },
-    onAuthorized: (resolve, reject, event) => {
+    onAuthorized: async (resolve, reject, event) => {
       try{
+        console.log('event', event);
         const customerData = event.payment.shippingContact;
         currentCustomer = {
           addressBook: {
             addresses: {},
             preferredAddress: {
               address1: customerData.addressLines[0],
-              address2: null,
+              address2: customerData.addressLines.length > 1 ? customerData.addressLines[1] : null,
               city: customerData.locality,
               countryCode: {
                 displayValue: customerData.country,
@@ -82,26 +120,19 @@ async function mountApplePayComponent() {
             email: customerData.emailAddress,
           },
         };
-        const applePayShippingMethodUpdate = {
-          newTotal: {
-            type: 'final',
-            label: 'new total',
-            amount: `${applePayButtonConfig.amount.value / 100}`,
-          },
-        };
 
         const stateData = {
           'paymentMethod' : {
             'type' : 'applepay',
             'applePayToken' : event.payment.token.paymentData,
-          }
+          },
+          'paymentType' : 'express',
         };
-        paymentFromComponent({...stateData, customer: currentCustomer});
-        // TODO : Await for the response before resolving
-        resolve(applePayShippingMethodUpdate);
+        await paymentFromComponent({...stateData, customer: currentCustomer}, resolve);
       }
       catch(error){
         console.log(error);
+        reject(error);
       }
     },
     onShippingMethodSelected: async (resolve, reject, event) => {
@@ -134,15 +165,6 @@ async function mountApplePayComponent() {
         },
       };
       resolve(applePayShippingMethodUpdate);
-    },
-    onSubmit: (state, component) => {
-      console.log('onSubmit', state, component);
-      try{
-        //paymentFromComponent({...state.data, customer: currentCustomer}, component);
-      }
-      catch(error){
-        console.log(error)
-      }
     },
   };
 

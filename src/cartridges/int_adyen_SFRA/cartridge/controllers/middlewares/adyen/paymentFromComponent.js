@@ -56,16 +56,39 @@ function paymentFromComponent(req, res, next) {
     }
     paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
   });
-  let billingAddress = currentBasket.billingAddress;
-  Transaction.wrap(function () {
-  if (!billingAddress) {
-    billingAddress = currentBasket.createBillingAddress();
+
+  if (reqDataObj.paymentType === 'express') {
+    const shopperDetails = reqDataObj.customer;
+
+    let billingAddress = currentBasket.billingAddress;
+    Transaction.wrap(function () {
+      if (!billingAddress) {
+        billingAddress = currentBasket.createBillingAddress();
+      }
+      billingAddress.setFirstName(shopperDetails.profile.firstName);
+      billingAddress.setLastName(shopperDetails.profile.lastName);
+      billingAddress.setCountryCode(
+        shopperDetails.addressBook.preferredAddress.countryCode.value,
+      );
+    });
+
+    let shippingAddress = currentBasket.getDefaultShipment().shippingAddress;
+    Transaction.wrap(function () {
+      currentBasket.setCustomerEmail(shopperDetails.profile.email);
+      if (!shippingAddress) {
+        shippingAddress = currentBasket
+          .getDefaultShipment()
+          .createShippingAddress();
+      }
+      shippingAddress.setFirstName(shopperDetails.profile.firstName);
+      shippingAddress.setLastName(shopperDetails.profile.lastName);
+      shippingAddress.setCountryCode(
+        shopperDetails.addressBook.preferredAddress.countryCode.value,
+      );
+    });
   }
-  billingAddress.setFirstName('test');
-  });
+
   const order = COHelpers.createOrder(currentBasket);
-  AdyenLogs.error_log('order created');
-  AdyenLogs.error_log(JSON.stringify(order));
   let result;
   Transaction.wrap(() => {
     result = adyenCheckout.createPaymentRequest({
@@ -80,13 +103,12 @@ function paymentFromComponent(req, res, next) {
 
     // Decline flow for Amazon pay is handled different from other Component PMs
     // Order needs to be failed here to handle Amazon decline flow.
-    if (reqDataObj.paymentMethod === 'amazonpay') {
+    if (reqDataObj.paymentMethod === 'amazonpay' || reqDataObj.paymentMethod === 'applepay') {
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });
     }
   }
-
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
     const divideBy = AdyenHelper.getDivisorForCurrency(
