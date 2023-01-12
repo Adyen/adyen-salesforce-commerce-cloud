@@ -10,7 +10,7 @@ function removeAllPaymentInstruments(currentBasket) {
 
 function convertToSfccCardType(paymentInformation, paymentInstrument) {
   const sfccCardType = !paymentInformation.creditCardToken
-    ? AdyenHelper.getSFCCCardType(paymentInformation.cardType)
+    ? AdyenHelper.getSfccCardType(paymentInformation.cardType)
     : paymentInformation.cardType;
 
   paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);

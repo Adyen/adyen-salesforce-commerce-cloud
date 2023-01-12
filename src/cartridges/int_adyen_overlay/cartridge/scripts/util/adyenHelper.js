@@ -539,7 +539,7 @@ var adyenHelperObj = {
   },
 
   // gets the Adyen card type name based on the SFCC card type name
-  getSFCCCardType(cardType) {
+  getSfccCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case 'visa':
@@ -580,7 +580,7 @@ var adyenHelperObj = {
       return cardType;
     }
     throw new Error(
-      'cardType argument is not passed to getSFCCCardType function',
+      'cardType argument is not passed to getSfccCardType function',
     );
   },
 
