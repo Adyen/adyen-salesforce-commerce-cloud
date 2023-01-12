@@ -92,7 +92,7 @@ function paymentFromComponent(req, res, next) {
       remainingAmount.currency,
     ).divide(divideBy);
     const mainPaymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
     )[0];
     // update amount from order total to PM total
     Transaction.wrap(() => {

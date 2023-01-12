@@ -102,20 +102,6 @@ function placeOrder(req, res, next) {
         basketCalculationHelpers.calculateTotals(currentBasket);
     });
 
-    // Re-validates existing payment instruments
-    var validPayment = COHelpers.validatePayment(req, currentBasket);
-    if (validPayment.error) {
-        res.json({
-            error: true,
-            errorStage: {
-                stage: 'payment',
-                step: 'paymentInstrument'
-            },
-            errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
-        });
-        return next();
-    }
-
     // Re-calculate the payments.
     var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
     if (calculatedPaymentTransactionTotal.error) {
@@ -160,21 +146,22 @@ function placeOrder(req, res, next) {
                 paymentInstrument.paymentMethod,
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-
             paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
-            paymentInstrument.paymentTransaction.custom.Adyen_log = parsedGiftCardObj;
+            paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
             paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
         })
     }
+
+    const mainPaymentInstrument = order.getPaymentInstruments(
+      AdyenHelper.getOrderMainPaymentInstrumentType(order)
+    )[0];
+
     // Check if gift cards were used
     const giftCardsAdded = currentBasket.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom.adyenGiftCards)
       : null;
     if (giftCardsAdded) {
         giftCardsAdded.forEach((giftCard) => {
-            const mainPaymentInstrument = order.getPaymentInstruments(
-              constants.METHOD_ADYEN_COMPONENT,
-            )[0];
             const divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
             const amount = {
                 value: giftCard.remainingAmount.value,
@@ -260,12 +247,11 @@ function placeOrder(req, res, next) {
         COHelpers.sendConfirmationEmail(order, req.locale.id);
     }
 
-    const mainPaymentInstrument = order.getPaymentInstruments(
-                constants.METHOD_ADYEN_COMPONENT,
-    )[0];
     clearForms.clearForms();
-    mainPaymentInstrument && clearForms.clearPaymentTransactionData(mainPaymentInstrument);
-    mainPaymentInstrument && clearForms.clearAdyenData(mainPaymentInstrument);
+    if (mainPaymentInstrument) {
+        clearForms.clearPaymentTransactionData(mainPaymentInstrument);
+        clearForms.clearAdyenData(mainPaymentInstrument);
+    }
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 

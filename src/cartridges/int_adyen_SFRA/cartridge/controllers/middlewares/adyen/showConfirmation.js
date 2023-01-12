@@ -7,6 +7,7 @@ const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmat
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getPaymentDetailsPayload(querystring) {
   const details = querystring.redirectResult
@@ -72,17 +73,12 @@ function isOrderAlreadyProcessed(order) {
  */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
-  const {
-    redirectResult,
-    payload,
-    signature,
-    merchantReference,
-    orderToken,
-  } = req.querystring;
+  const { redirectResult, payload, signature, merchantReference, orderToken } =
+    req.querystring;
   try {
     const order = OrderMgr.getOrder(merchantReference, orderToken);
     const adyenPaymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
     )[0];
 
     if (isOrderAlreadyProcessed(order)) {
