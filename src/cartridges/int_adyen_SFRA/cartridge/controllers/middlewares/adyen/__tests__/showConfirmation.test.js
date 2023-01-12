@@ -32,6 +32,8 @@ afterEach(() => {
 describe('Show Confirmation', () => {
   it('should have redirectResult', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     req.querystring.redirectResult = 'mocked_redirect_result';
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
@@ -39,6 +41,8 @@ describe('Show Confirmation', () => {
 
   it('should have payload', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+    const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     req.querystring.payload = 'mocked_payload_result';
     showConfirmation(req, res, jest.fn());
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls).toMatchSnapshot();
@@ -48,7 +52,8 @@ describe('Show Confirmation', () => {
       req.querystring.payload = 'mocked_payload_result';
       req.querystring.signature = 'mismatching_signature';
       const URLUtils = require('dw/web/URLUtils');
-      const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+      const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+      adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
       showConfirmation(req, res, jest.fn());
       expect(URLUtils.url.mock.calls[0][0]).toEqual('Error-ErrorCode');
   })
@@ -56,6 +61,8 @@ describe('Show Confirmation', () => {
   it('should not continue processing when order is not open or failed', () => {
     const URLUtils = require('dw/web/URLUtils');
     req.querystring.merchantReference = 4;
+    const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     showConfirmation(req, res, jest.fn());
     expect(URLUtils.url.mock.calls[0][0]).toEqual('Cart-Show');
   })
@@ -64,6 +71,8 @@ describe('Show Confirmation', () => {
     'should handle successful payment: %p for SFRA6',
     (a) => {
       const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+      const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+      adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
       adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(true);
       adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
         resultCode: a,
@@ -79,6 +88,8 @@ describe('Show Confirmation', () => {
   'should handle successful payment: %p for SFRA5',
       (a) => {
         const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
+        const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+        adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
         adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(false);
         const URLUtils = require('dw/web/URLUtils');
         adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({

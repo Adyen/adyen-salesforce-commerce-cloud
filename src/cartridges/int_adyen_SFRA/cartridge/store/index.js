@@ -27,6 +27,8 @@ class Store {
 
   @observable giftCardComponentListenersAdded;
 
+  @observable addedGiftCards;
+
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }

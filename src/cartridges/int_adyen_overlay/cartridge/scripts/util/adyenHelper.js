@@ -28,6 +28,8 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+const collections = require('*/cartridge/scripts/util/collections');
+const PaymentInstrument = require('dw/order/PaymentInstrument');
 
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
@@ -75,7 +77,7 @@ var adyenHelperObj = {
 
   getAdyenGivingConfig(order) {
     const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
     const paymentMethod =
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
@@ -520,8 +522,24 @@ var adyenHelperObj = {
     return cardType;
   },
 
+  getOrderMainPaymentInstrumentType(order) {
+    let type = constants.METHOD_ADYEN_COMPONENT;
+    collections.forEach(order.getPaymentInstruments(), (item) => {
+      if (item.custom.adyenMainPaymentInstrument?.value) {
+        type = item.custom.adyenMainPaymentInstrument?.value;
+      }
+    });
+    return type;
+  },
+
+  getPaymentInstrumentType(isCreditCard) {
+    return isCreditCard
+      ? PaymentInstrument.METHOD_CREDIT_CARD
+      : constants.METHOD_ADYEN_COMPONENT;
+  },
+
   // gets the Adyen card type name based on the SFCC card type name
-  getSFCCCardType(cardType) {
+  getSfccCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case 'visa':
@@ -562,7 +580,7 @@ var adyenHelperObj = {
       return cardType;
     }
     throw new Error(
-      'cardType argument is not passed to getSFCCCardType function',
+      'cardType argument is not passed to getSfccCardType function',
     );
   },
 

@@ -184,7 +184,7 @@ for (const environment of environments) {
 		test('Remove Gift Card', async ({ page }) => {
 			await goToBillingWithFullCartGuestUser(3);
 			await cards.doGiftCardPayment(cardData.giftCard);
-			await page.locator('.gift-card-action').click();
+			await page.locator('#cancelGiftCardContainer').click();
 			await cards.doCardPayment(cardData.noThreeDs);
 			await checkoutPage.completeCheckout();
 			await checkoutPage.expectSuccess();
