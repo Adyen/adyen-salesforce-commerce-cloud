@@ -1,6 +1,37 @@
 const helpers = require('./adyen_checkout/helpers');
 
+function getCustomerObject(customerData) {
+  return {
+    addressBook: {
+      addresses: {},
+      preferredAddress: {
+        address1: customerData.addressLines[0],
+        address2:
+          customerData.addressLines.length > 1
+            ? customerData.addressLines[1]
+            : null,
+        city: customerData.locality,
+        countryCode: {
+          displayValue: customerData.country,
+          value: customerData.countryCode,
+        },
+        firstName: customerData.givenName,
+        lastName: customerData.familyName,
+        ID: customerData.emailAddress,
+        postalCode: customerData.postalCode,
+        stateCode: customerData.administrativeArea,
+      },
+    },
+    customer: {},
+    profile: {
+      firstName: customerData.givenName,
+      lastName: customerData.familyName,
+      email: customerData.emailAddress,
+    },
+  };
+}
 function handleAuthorised(response, resolveApplePay) {
+  resolveApplePay();
   document.querySelector('#result').value = JSON.stringify({
     pspReference: response.fullResponse?.pspReference,
     resultCode: response.fullResponse?.resultCode,
@@ -8,33 +39,26 @@ function handleAuthorised(response, resolveApplePay) {
       ? response.fullResponse.paymentMethod
       : response.fullResponse?.additionalData?.paymentMethod,
   });
-  const finalPriceUpdate = {
-    newTotal: {
-      type: 'final',
-      label: 'new total',
-      amount: `${applePayButtonConfig.amount.value / 100}`,
-    },
-  };
-  resolveApplePay(finalPriceUpdate);
   document.querySelector('#showConfirmationForm').submit();
 }
 
-function handleError() {
+function handleError(rejectApplePay) {
+  rejectApplePay();
   document.querySelector('#result').value = JSON.stringify({
     error: true,
   });
   document.querySelector('#showConfirmationForm').submit();
 }
 
-function handleApplePayResponse(response, resolve) {
+function handleApplePayResponse(response, resolveApplePay, rejectApplePay) {
   if (response.resultCode === 'Authorised') {
-    handleAuthorised(response, resolve);
+    handleAuthorised(response, resolveApplePay);
   } else {
-    handleError();
+    handleError(rejectApplePay);
   }
 }
 
-function paymentFromComponent(data, resolve) {
+function paymentFromComponent(data, resolveApplePay, rejectApplePay) {
   return $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -47,8 +71,10 @@ function paymentFromComponent(data, resolve) {
         window.ShowConfirmationPaymentFromComponent,
       );
       helpers.setOrderFormData(response);
-      //handleApplePayResponse(response, resolve);
+      handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
+  }).fail(() => {
+    rejectApplePay();
   });
 }
 
@@ -67,11 +93,7 @@ async function mountApplePayComponent() {
     clientKey: window.clientKey,
     locale: window.locale,
     session: sessionData,
-    onError: (error, component) => {
-      console.log(error.name, error.message, error.stack, component);
-    },
   });
-  console.log(checkout.options.amount);
 
   const applePayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
     (pm) => pm.type === 'applepay',
@@ -92,46 +114,35 @@ async function mountApplePayComponent() {
       console.log(error.name, error.message, error.stack, component);
     },
     onAuthorized: async (resolve, reject, event) => {
-      try{
-        console.log('event', event);
+      try {
         const customerData = event.payment.shippingContact;
-        currentCustomer = {
-          addressBook: {
-            addresses: {},
-            preferredAddress: {
-              address1: customerData.addressLines[0],
-              address2: customerData.addressLines.length > 1 ? customerData.addressLines[1] : null,
-              city: customerData.locality,
-              countryCode: {
-                displayValue: customerData.country,
-                value: customerData.countryCode,
-              },
-              firstName: customerData.givenName,
-              lastName: customerData.familyName,
-              ID: customerData.emailAddress,
-              postalCode: customerData.postalCode,
-              stateCode: customerData.administrativeArea,
-            },
-          },
-          customer: {},
-          profile: {
-            firstName: customerData.givenName,
-            lastName: customerData.familyName,
-            email: customerData.emailAddress,
-          },
-        };
+        currentCustomer = getCustomerObject(customerData);
 
         const stateData = {
-          'paymentMethod' : {
-            'type' : 'applepay',
-            'applePayToken' : event.payment.token.paymentData,
+          paymentMethod: {
+            type: 'applepay',
+            applePayToken: event.payment.token.paymentData,
           },
-          'paymentType' : 'express',
+          paymentType: 'express',
         };
-        await paymentFromComponent({...stateData, customer: currentCustomer}, resolve);
-      }
-      catch(error){
-        console.log(error);
+
+        const resolveApplePay = () => {
+          const finalPriceUpdate = {
+            newTotal: {
+              type: 'final',
+              label: 'new total',
+              amount: `${applePayButtonConfig.amount.value / 100}`,
+            },
+          };
+          resolve(finalPriceUpdate);
+        };
+
+        await paymentFromComponent(
+          { ...stateData, customer: currentCustomer },
+          resolveApplePay,
+          reject,
+        );
+      } catch (error) {
         reject(error);
       }
     },
