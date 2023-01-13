@@ -21,9 +21,19 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     }
     billingAddress.setFirstName(shopperDetails.profile.firstName);
     billingAddress.setLastName(shopperDetails.profile.lastName);
+    billingAddress.setPhone(shopperDetails.profile.phone);
+    billingAddress.setAddress1(
+      shopperDetails.addressBook.preferredAddress.address1,
+    );
+    billingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
     billingAddress.setCountryCode(
       shopperDetails.addressBook.preferredAddress.countryCode.value,
     );
+    if (shopperDetails.addressBook.preferredAddress.address2) {
+      billingAddress.setAddress2(
+        shopperDetails.addressBook.preferredAddress.address2,
+      );
+    }
   });
 
   let { shippingAddress } = currentBasket.getDefaultShipment();
@@ -36,9 +46,19 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     }
     shippingAddress.setFirstName(shopperDetails.profile.firstName);
     shippingAddress.setLastName(shopperDetails.profile.lastName);
+    shippingAddress.setPhone(shopperDetails.profile.phone);
+    shippingAddress.setAddress1(
+      shopperDetails.addressBook.preferredAddress.address1,
+    );
+    shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
     shippingAddress.setCountryCode(
       shopperDetails.addressBook.preferredAddress.countryCode.value,
     );
+    if (shopperDetails.addressBook.preferredAddress.address2) {
+      shippingAddress.setAddress2(
+        shopperDetails.addressBook.preferredAddress.address2,
+      );
+    }
   });
 }
 

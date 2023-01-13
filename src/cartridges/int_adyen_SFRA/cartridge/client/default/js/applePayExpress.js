@@ -27,6 +27,7 @@ function getCustomerObject(customerData) {
       firstName: customerData.givenName,
       lastName: customerData.familyName,
       email: customerData.emailAddress,
+      phone: customerData.phoneNumber,
     },
   };
 }
