@@ -71,6 +71,8 @@ function paymentFromComponent(data, resolveApplePay, rejectApplePay) {
         window.ShowConfirmationPaymentFromComponent,
       );
       helpers.setOrderFormData(response);
+      document.querySelector('#additionalDetailsHidden').value =
+        JSON.stringify(data);
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {

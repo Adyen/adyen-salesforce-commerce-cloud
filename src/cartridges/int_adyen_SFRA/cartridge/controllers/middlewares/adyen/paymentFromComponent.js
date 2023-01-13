@@ -1,8 +1,6 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
-const OrderModel = require('*/cartridge/models/order');
 const Transaction = require('dw/system/Transaction');
-const Locale = require('dw/util/Locale');
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
@@ -12,6 +10,43 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+
+function setBillingAndShippingAddress(reqDataObj, currentBasket) {
+  const shopperDetails = reqDataObj.customer;
+
+  let { billingAddress } = currentBasket;
+  Transaction.wrap(() => {
+    if (!billingAddress) {
+      billingAddress = currentBasket.createBillingAddress();
+    }
+    billingAddress.setFirstName(shopperDetails.profile.firstName);
+    billingAddress.setLastName(shopperDetails.profile.lastName);
+    billingAddress.setCountryCode(
+      shopperDetails.addressBook.preferredAddress.countryCode.value,
+    );
+  });
+
+  let { shippingAddress } = currentBasket.getDefaultShipment();
+  Transaction.wrap(() => {
+    currentBasket.setCustomerEmail(shopperDetails.profile.email);
+    if (!shippingAddress) {
+      shippingAddress = currentBasket
+        .getDefaultShipment()
+        .createShippingAddress();
+    }
+    shippingAddress.setFirstName(shopperDetails.profile.firstName);
+    shippingAddress.setLastName(shopperDetails.profile.lastName);
+    shippingAddress.setCountryCode(
+      shopperDetails.addressBook.preferredAddress.countryCode.value,
+    );
+  });
+}
+
+function failOrder(order) {
+  Transaction.wrap(() => {
+    OrderMgr.failOrder(order, true);
+  });
+}
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
@@ -27,9 +62,7 @@ function paymentFromComponent(req, res, next) {
       reqDataObj.merchantReference,
       reqDataObj.orderToken,
     );
-    Transaction.wrap(() => {
-      OrderMgr.failOrder(order, true);
-    });
+    failOrder(order);
     res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
     return next();
   }
@@ -58,34 +91,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (reqDataObj.paymentType === 'express') {
-    const shopperDetails = reqDataObj.customer;
-
-    let billingAddress = currentBasket.billingAddress;
-    Transaction.wrap(function () {
-      if (!billingAddress) {
-        billingAddress = currentBasket.createBillingAddress();
-      }
-      billingAddress.setFirstName(shopperDetails.profile.firstName);
-      billingAddress.setLastName(shopperDetails.profile.lastName);
-      billingAddress.setCountryCode(
-        shopperDetails.addressBook.preferredAddress.countryCode.value,
-      );
-    });
-
-    let shippingAddress = currentBasket.getDefaultShipment().shippingAddress;
-    Transaction.wrap(function () {
-      currentBasket.setCustomerEmail(shopperDetails.profile.email);
-      if (!shippingAddress) {
-        shippingAddress = currentBasket
-          .getDefaultShipment()
-          .createShippingAddress();
-      }
-      shippingAddress.setFirstName(shopperDetails.profile.firstName);
-      shippingAddress.setLastName(shopperDetails.profile.lastName);
-      shippingAddress.setCountryCode(
-        shopperDetails.addressBook.preferredAddress.countryCode.value,
-      );
-    });
+    setBillingAndShippingAddress(reqDataObj, currentBasket);
   }
 
   const order = COHelpers.createOrder(currentBasket);
@@ -101,12 +107,13 @@ function paymentFromComponent(req, res, next) {
     AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
     result.paymentError = true;
 
-    // Decline flow for Amazon pay is handled different from other Component PMs
-    // Order needs to be failed here to handle Amazon decline flow.
-    if (reqDataObj.paymentMethod === 'amazonpay' || reqDataObj.paymentMethod === 'applepay') {
-      Transaction.wrap(() => {
-        OrderMgr.failOrder(order, true);
-      });
+    // Decline flow for Amazonpay or Applepay is handled different from other Component PMs
+    // Order needs to be failed here to handle decline flow.
+    if (
+      reqDataObj.paymentMethod === 'amazonpay' ||
+      reqDataObj.paymentMethod === 'applepay'
+    ) {
+      failOrder(order);
     }
   }
   // Check if gift card was used
