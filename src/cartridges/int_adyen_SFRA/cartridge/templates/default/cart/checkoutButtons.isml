@@ -1,7 +1,5 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
-<isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
-<isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
@@ -14,12 +12,12 @@
     window.calculateAmountUrl = "${URLUtils.https('Cart-SelectShippingMethod')}";
     window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
-    window.showConfirmationUrl = "${URLUtils.https('Adyen-ShowConfirmation')}";
-    window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
+    window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
 </script>
 
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/adyenCss.css');
     assets.addJs('/js/applePayExpress.js');
 </isscript>
 
@@ -28,5 +26,5 @@
         class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
         ${Resource.msg('button.checkout', 'cart', null)}
     </a>
-    <div id="applepay-container"></div>
+    <div id="apple-pay-container"></div>
 </div>

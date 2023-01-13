@@ -411,3 +411,13 @@ input:checked + .slider:before {
     cursor: pointer;
     font-size: 13px;
 }
+
+#apple-pay-container {
+    padding: 0;
+}
+
+#apple-pay-container button {
+    width: 100%;
+    padding: 10px 0;
+    margin: 10px 0;
+}

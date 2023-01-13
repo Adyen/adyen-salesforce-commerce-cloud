@@ -31,6 +31,7 @@ function getCustomerObject(customerData) {
     },
   };
 }
+
 function handleAuthorised(response, resolveApplePay) {
   resolveApplePay();
   document.querySelector('#result').value = JSON.stringify({
@@ -59,7 +60,7 @@ function handleApplePayResponse(response, resolveApplePay, rejectApplePay) {
   }
 }
 
-function paymentFromComponent(data, resolveApplePay, rejectApplePay) {
+function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   return $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -68,9 +69,7 @@ function paymentFromComponent(data, resolveApplePay, rejectApplePay) {
       paymentMethod: 'applepay',
     },
     success(response) {
-      helpers.createShowConfirmationForm(
-        window.ShowConfirmationPaymentFromComponent,
-      );
+      helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
       document.querySelector('#additionalDetailsHidden').value =
         JSON.stringify(data);
@@ -113,9 +112,6 @@ async function mountApplePayComponent() {
       identifier: sm.ID,
       amount: `${sm.shippingCost.value}`,
     })),
-    onError: (error, component) => {
-      console.log(error.name, error.message, error.stack, component);
-    },
     onAuthorized: async (resolve, reject, event) => {
       try {
         const customerData = event.payment.shippingContact;
@@ -140,7 +136,7 @@ async function mountApplePayComponent() {
           resolve(finalPriceUpdate);
         };
 
-        await paymentFromComponent(
+        await callPaymentFromComponent(
           { ...stateData, customer: currentCustomer },
           resolveApplePay,
           reject,
@@ -184,8 +180,9 @@ async function mountApplePayComponent() {
 
   const applePayButton = checkout.create('applepay', applePayButtonConfig);
   const isApplePayButtonAvailable = await applePayButton.isAvailable();
+
   if (isApplePayButtonAvailable) {
-    applePayButton.mount('#applepay-container');
+    applePayButton.mount('#apple-pay-container');
   }
 }
 
