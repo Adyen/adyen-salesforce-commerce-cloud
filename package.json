@@ -70,7 +70,7 @@
   },
   "resolutions": {
     "minimist": "1.2.7",
-    "minimatch": "3.1.2",
+    "minimatch": "5.1.4",
     "node-notifier": "8.0.2",
     "glob-parent": "5.1.2",
     "yargs-parser": "5.0.1",
