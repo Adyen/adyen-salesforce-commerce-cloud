@@ -13,6 +13,7 @@
     window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
     window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+    window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
 </script>
 
 <isscript>
