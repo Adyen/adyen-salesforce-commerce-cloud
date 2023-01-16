@@ -15,7 +15,7 @@
        window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
        window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
        window.returnUrl = "${URLUtils.https('Cart-Show')}";
-
+       //window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
 
        var queryString = '${request.getHttpQueryString()}'.split("=");
        var amazonCheckoutSessionId = queryString[queryString.length - 1];
@@ -23,11 +23,10 @@
 
      window.Configuration = {
          locale: '${request.locale}',
-         clientKey: '${pdict.adyen.clientKey}',
-         environment: '${pdict.adyen.environment}',
+         clientKey: "${AdyenConfigs.getAdyenClientKey()}",
+         environment: 'test',
      };
-     window.returnUrl = "${URLUtils.https('Cart-Show')}";
-     window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
+     window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
      window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
      window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
      window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
@@ -36,7 +35,7 @@
 
    <isscript>
        var assets = require('*/cartridge/scripts/assets.js');
-       assets.addJs('/js/amazon.js');
+       assets.addJs('/js/amazonCopy.js');
    </isscript>
 
    <div class="mb-sm-3">
@@ -65,6 +64,7 @@
        window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
        window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
        window.returnUrl = "${URLUtils.https('Cart-Show')}";
+       //window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
    </script>
 
    <isscript>

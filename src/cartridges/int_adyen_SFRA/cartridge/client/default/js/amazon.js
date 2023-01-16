@@ -123,5 +123,4 @@ async function mountAmazonPayComponent() {
   amazonPayComponent.submit();
 }
 
-console.log('inside amazon.js')
-    mountAmazonPayComponent();
+mountAmazonPayComponent();

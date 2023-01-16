@@ -28,6 +28,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+let  Logger = require('dw/system/Logger');
 
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
@@ -354,6 +355,9 @@ var adyenHelperObj = {
       shippingStreet = 'N/A';
     }
 
+    shippingStreet = "Straat";
+    shippingHouseNumberOrName = "21";
+
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
@@ -384,6 +388,9 @@ var adyenHelperObj = {
       billingStreet = 'N/A';
     }
 
+    billingStreet = "Straat";
+    billingHouseNumberOrName = "21";
+
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
@@ -404,8 +411,12 @@ var adyenHelperObj = {
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
+    Logger.getLogger('Adyen').error('ibside  createAdyenRequestObject');
+
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
+
+    Logger.getLogger('Adyen').error('state data ' + JSON.stringify(stateData));
 
     let reference = 'recurringPayment-account';
     let orderToken = 'recurringPayment-token';

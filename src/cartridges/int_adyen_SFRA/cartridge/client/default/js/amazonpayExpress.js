@@ -31,6 +31,7 @@ async function mountAmazonPayComponent() {
   const amazonPayButtonConfig = {
     showPayButton: true,
     productType: 'PayAndShip',
+//    productType: 'PayOnly',
 //    checkoutMode: 'ProcessOrder',
     configuration: amazonPayConfig,
     returnUrl: window.returnUrl,
