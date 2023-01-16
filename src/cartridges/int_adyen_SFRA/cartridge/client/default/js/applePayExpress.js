@@ -126,7 +126,7 @@ async function createApplePayButton() {
           const finalPriceUpdate = {
             newTotal: {
               type: 'final',
-              label: 'new total',
+              label: applePayConfig.merchantName,
               amount: `${applePayButtonConfig.amount.value / 100}`,
             },
           };
@@ -165,7 +165,7 @@ async function createApplePayButton() {
         const applePayShippingMethodUpdate = {
           newTotal: {
             type: 'final',
-            label: 'new total',
+            label: applePayConfig.merchantName,
             amount: newCalculation.grandTotalAmount.value,
           },
         };
