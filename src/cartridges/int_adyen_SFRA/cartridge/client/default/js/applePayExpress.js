@@ -147,7 +147,7 @@ async function createApplePayButton() {
       const matchingShippingMethod = shippingMethodsData.shippingMethods.find(
         (sm) => sm.ID === shippingMethod.identifier,
       );
-      const response = await fetch(
+      const calculationResponse = await fetch(
         `${window.calculateAmountUrl}?${new URLSearchParams({
           shipmentUUID: matchingShippingMethod.shipmentUUID,
           methodID: matchingShippingMethod.ID,
@@ -156,22 +156,23 @@ async function createApplePayButton() {
           method: 'POST',
         },
       );
-      const newAmountResponse = await response.json();
-      const amountWithoutCurrencyCode =
-        newAmountResponse.totals.grandTotal.slice(1);
-      const amountValue = parseFloat(amountWithoutCurrencyCode) * 100;
-      applePayButtonConfig.amount = {
-        value: amountValue,
-        currency: checkout.options.amount.currency,
-      };
-      const applePayShippingMethodUpdate = {
-        newTotal: {
-          type: 'final',
-          label: 'new total',
-          amount: amountWithoutCurrencyCode,
-        },
-      };
-      resolve(applePayShippingMethodUpdate);
+      if (calculationResponse.ok) {
+        const newCalculation = await calculationResponse.json();
+        applePayButtonConfig.amount = {
+          value: newCalculation.grandTotalAmount.value,
+          currency: newCalculation.grandTotalAmount.currency,
+        };
+        const applePayShippingMethodUpdate = {
+          newTotal: {
+            type: 'final',
+            label: 'new total',
+            amount: newCalculation.grandTotalAmount.value,
+          },
+        };
+        resolve(applePayShippingMethodUpdate);
+      } else {
+        reject();
+      }
     },
   };
 

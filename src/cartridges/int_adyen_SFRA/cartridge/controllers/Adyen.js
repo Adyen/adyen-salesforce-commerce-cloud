@@ -28,6 +28,12 @@ server.get(
   adyen.callGetShippingMethods,
 );
 
+server.post(
+  'SelectShippingMethod',
+  server.middleware.https,
+  adyen.callSelectShippingMethod,
+);
+
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */

@@ -9,7 +9,7 @@
     window.locale = "${request.locale}";
     window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
     window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
-    window.calculateAmountUrl = "${URLUtils.https('Cart-SelectShippingMethod')}";
+    window.calculateAmountUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
     window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
     window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
     window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
