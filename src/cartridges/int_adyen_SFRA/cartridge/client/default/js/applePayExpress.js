@@ -181,7 +181,7 @@ async function createApplePayButton() {
 createApplePayButton().then((applePayButton) => {
   const isApplePayButtonAvailable = applePayButton.isAvailable();
   if (isApplePayButtonAvailable) {
-    const cartContainer = document.querySelector('#apple-pay-cart-container');
+    const cartContainer = document.querySelector('#apple-pay-container');
     if (cartContainer) {
       applePayButton.mount(cartContainer);
     }

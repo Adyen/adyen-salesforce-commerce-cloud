@@ -473,53 +473,19 @@ var adyenHelperObj = {
     return jsonObject;
   },
 
-  // gets the SFCC card type name based on the Adyen card type name
-  getAdyenCardType(cardType) {
-    if (!empty(cardType)) {
-      switch (cardType) {
-        case 'Visa':
-          cardType = 'visa';
-          break;
-        case 'Master':
-        case 'MasterCard':
-        case 'Mastercard':
-          cardType = 'mc';
-          break;
-        case 'Amex':
-          cardType = 'amex';
-          break;
-        case 'Discover':
-          cardType = 'discover';
-          break;
-        case 'Maestro':
-          cardType = 'maestro';
-          break;
-        case 'Diners':
-          cardType = 'diners';
-          break;
-        case 'Bancontact':
-          cardType = 'bcmc';
-          break;
-        case 'JCB':
-          cardType = 'jcb';
-          break;
-        case 'CUP':
-          cardType = 'cup';
-          break;
-        case 'Carte Bancaire':
-          cardType = 'cartebancaire';
-          break;
-        default:
-          cardType = cardType.toLowerCase();
-          break;
-      }
-    } else {
-      throw new Error(
-        'cardType argument is not passed to getAdyenCardType function',
-      );
+  getAdyenComponentType(paymentMethod) {
+    let methodName;
+    switch (paymentMethod) {
+      case 'applepay':
+        methodName = 'Apple Pay';
+        break;
+      case 'amazonpay':
+        methodName = 'Amazon Pay';
+        break;
+      default:
+        methodName = paymentMethod;
     }
-
-    return cardType;
+    return methodName;
   },
 
   getOrderMainPaymentInstrumentType(order) {

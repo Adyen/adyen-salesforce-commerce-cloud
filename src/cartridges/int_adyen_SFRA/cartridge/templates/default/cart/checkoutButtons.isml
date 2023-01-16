@@ -27,5 +27,5 @@
         class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
         ${Resource.msg('button.checkout', 'cart', null)}
     </a>
-    <div name="apple-pay-container" class="apple-pay-container"></div>
+    <div id="apple-pay-container" class="apple-pay-container"></div>
 </div>

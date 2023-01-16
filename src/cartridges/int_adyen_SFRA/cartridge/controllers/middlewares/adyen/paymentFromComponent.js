@@ -107,7 +107,8 @@ function paymentFromComponent(req, res, next) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
         session.privacy.partialPaymentData;
     }
-    paymentInstrument.custom.adyenPaymentMethod = req.form.paymentMethod;
+    paymentInstrument.custom.adyenPaymentMethod =
+      AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
   });
 
   if (reqDataObj.paymentType === 'express') {
