@@ -88,8 +88,7 @@ async function mountApplePayComponent() {
   const shippingMethods = await fetch(window.shippingMethodsUrl);
   const shippingMethodsData = await shippingMethods.json();
 
-  const environment = window.environment;
-  //console.log(window.sessionData);
+  const { environment } = window;
 
   const checkout = await AdyenCheckout({
     environment,
@@ -97,7 +96,6 @@ async function mountApplePayComponent() {
     locale: window.locale,
     session: sessionData,
   });
-  console.log(session);
 
   const applePayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
     (pm) => pm.type === 'applepay',
