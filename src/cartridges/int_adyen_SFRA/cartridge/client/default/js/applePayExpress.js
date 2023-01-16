@@ -80,18 +80,15 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
-async function mountApplePayComponent() {
-  let currentCustomer = null;
+async function createApplePayButton() {
   const session = await fetch(window.sessionsUrl);
   const sessionData = await session.json();
 
   const shippingMethods = await fetch(window.shippingMethodsUrl);
   const shippingMethodsData = await shippingMethods.json();
 
-  const { environment } = window;
-
   const checkout = await AdyenCheckout({
-    environment,
+    environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
     session: sessionData,
@@ -115,7 +112,7 @@ async function mountApplePayComponent() {
     onAuthorized: async (resolve, reject, event) => {
       try {
         const customerData = event.payment.shippingContact;
-        currentCustomer = getCustomerObject(customerData);
+        const customer = getCustomerObject(customerData);
 
         const stateData = {
           paymentMethod: {
@@ -137,7 +134,7 @@ async function mountApplePayComponent() {
         };
 
         await callPaymentFromComponent(
-          { ...stateData, customer: currentCustomer },
+          { ...stateData, customer },
           resolveApplePay,
           reject,
         );
@@ -178,12 +175,15 @@ async function mountApplePayComponent() {
     },
   };
 
-  const applePayButton = checkout.create('applepay', applePayButtonConfig);
-  const isApplePayButtonAvailable = await applePayButton.isAvailable();
-
-  if (isApplePayButtonAvailable) {
-    applePayButton.mount('#apple-pay-container');
-  }
+  return checkout.create('applepay', applePayButtonConfig);
 }
 
-mountApplePayComponent();
+createApplePayButton().then((applePayButton) => {
+  const isApplePayButtonAvailable = applePayButton.isAvailable();
+  if (isApplePayButtonAvailable) {
+    const cartContainer = document.querySelector('#apple-pay-cart-container');
+    if (cartContainer) {
+      applePayButton.mount(cartContainer);
+    }
+  }
+});
