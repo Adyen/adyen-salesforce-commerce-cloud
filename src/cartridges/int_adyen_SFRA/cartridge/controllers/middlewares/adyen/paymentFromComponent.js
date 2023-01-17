@@ -11,6 +11,8 @@ const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
+const expressMethods = ['applepay', 'amazonpay'];
+
 function setBillingAndShippingAddress(reqDataObj, currentBasket) {
   const shopperDetails = reqDataObj.customer;
 
@@ -68,8 +70,7 @@ function failOrder(order) {
   });
 }
 
-function handleGiftCardPayment() {
-  const currentBasket = BasketMgr.getCurrentBasket();
+function handleGiftCardPayment(currentBasket) {
   // Check if gift card was used
   const divideBy = AdyenHelper.getDivisorForCurrency(
     currentBasket.totalGrossPrice,
@@ -116,23 +117,38 @@ function handleGiftCardPayment() {
   });
 }
 
+function handleCancellation(res, next, reqDataObj) {
+  AdyenLogs.info_log(
+    `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
+  );
+
+  const order = OrderMgr.getOrder(
+    reqDataObj.merchantReference,
+    reqDataObj.orderToken,
+  );
+  failOrder(order);
+  res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
+  return next();
+}
+
+function handleRefusedResultCode(result, reqDataObj, order) {
+  AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
+  result.paymentError = true;
+
+  // Decline flow for Amazonpay or Applepay is handled different from other Component PMs
+  // Order needs to be failed here to handle decline flow.
+  if (expressMethods.indexOf(reqDataObj.paymentMethod) > -1) {
+    failOrder(order);
+  }
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    AdyenLogs.info_log(
-      `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
-    );
-
-    const order = OrderMgr.getOrder(
-      reqDataObj.merchantReference,
-      reqDataObj.orderToken,
-    );
-    failOrder(order);
-    res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
-    return next();
+    handleCancellation(reqDataObj);
   }
   const currentBasket = BasketMgr.getCurrentBasket();
   let paymentInstrument;
@@ -173,20 +189,10 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
-    AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
-    result.paymentError = true;
-
-    // Decline flow for Amazonpay or Applepay is handled different from other Component PMs
-    // Order needs to be failed here to handle decline flow.
-    if (
-      reqDataObj.paymentMethod === 'amazonpay' ||
-      reqDataObj.paymentMethod === 'applepay'
-    ) {
-      failOrder(order);
-    }
+    handleRefusedResultCode(result, order);
   }
   if (session.privacy.giftCardResponse) {
-    handleGiftCardPayment();
+    handleGiftCardPayment(currentBasket);
   }
 
   result.orderNo = order.orderNo;
