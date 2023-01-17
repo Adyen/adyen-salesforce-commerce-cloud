@@ -9,6 +9,7 @@ const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalc
 /**
  * Make a request to Adyen to select shipping methods
  */
+// eslint-disable-next-line complexity
 function callSelectShippingMethod(req, res, next) {
   const currentBasket = BasketMgr.getCurrentBasket();
 

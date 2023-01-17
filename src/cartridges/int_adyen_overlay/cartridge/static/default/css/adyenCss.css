@@ -412,14 +412,7 @@ input:checked + .slider:before {
     font-size: 13px;
 }
 
-.apple-pay-container {
+.expressComponent {
     padding: 0 !important;
-}
-
-.apple-pay-container button {
     width: 100%;
-    padding: 10px 0;
-    margin: 10px 0;
-    border-radius: .1875rem;
-    height: 42px;
 }
