@@ -35,7 +35,7 @@ async function mountAmazonPayComponent() {
 //    checkoutMode: 'ProcessOrder',
     configuration: amazonPayConfig,
     returnUrl: window.returnUrl,
-    shippingMethods: shippingMethodsData.shippingMethods,
+//    shippingMethods: shippingMethodsData.shippingMethods,
     // onSubmit: (state, component) => {
     //   console.log('onSubmit', state, component);
     //   helpers.paymentFromComponent(state.data, component, 'amazonpay');

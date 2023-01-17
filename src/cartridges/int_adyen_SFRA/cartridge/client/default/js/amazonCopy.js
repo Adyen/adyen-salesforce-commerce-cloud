@@ -56,17 +56,18 @@ async function mountAmazonPayComponent() {
 console.log('returnUrl is ' + window.returnUrl);
   const amazonConfig = {
     showOrderButton: true,
-    returnUrl: window.returnURL,
-//    configuration: {
-//      merchantId: window.amazonMerchantID,
-//      storeId: window.amazonStoreID,
-//      publicKeyId: window.amazonPublicKeyID,
-//    },
+//    returnUrl: 'https://10.211.55.3:3000/secondRedirect',
+    returnUrl: window.returnUrl,
       amount: {
-          currency: 'EUR',
+          currency: 'GBP',
           value: 1000
       },
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
+    //    configuration: {
+    //      merchantId: window.amazonMerchantID,
+    //      storeId: window.amazonStoreID,
+    //      publicKeyId: window.amazonPublicKeyID,
+    //    },
 //    onSubmit: async (state, component) => {
 //      document.querySelector('#adyenStateData').value = JSON.stringify(
 //        state.data,
@@ -106,6 +107,16 @@ console.log('returnUrl is ' + window.returnUrl);
 //    },
   };
 
+//  const amazonConfig = {
+//             showOrderButton: true,
+//             amount: {
+//                      currency: 'GBP',
+//                      value: 1000
+//                  },
+//               amazonCheckoutSessionId: window.amazonCheckoutSessionId,
+//               returnUrl: 'https://10.211.55.3:3000/secondRedirect',
+//  }
+
    window.amazonPayComponent = checkout
     .create('amazonpay', amazonConfig)
     .mount(amazonPayNode);
@@ -115,7 +126,7 @@ console.log('returnUrl is ' + window.returnUrl);
     );
 
     $('#action-modal').modal({ backdrop: 'static', keyboard: false });
-    amazonPayComponent.submit();
+//    amazonPayComponent.submit();
 
     const shopperDetails = await window.amazonPayComponent.getShopperDetails();
     console.log('shopper details ' + JSON.stringify(shopperDetails));

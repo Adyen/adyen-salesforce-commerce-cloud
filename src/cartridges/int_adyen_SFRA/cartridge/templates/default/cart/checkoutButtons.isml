@@ -14,8 +14,8 @@
        window.locale = "${request.locale}";
        window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
        window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
-       window.returnUrl = "${URLUtils.https('Cart-Show')}";
-       //window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+       //window.returnUrl = "${URLUtils.https('Cart-Show')}";
+       window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
 
        var queryString = '${request.getHttpQueryString()}'.split("=");
        var amazonCheckoutSessionId = queryString[queryString.length - 1];
@@ -50,7 +50,6 @@
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
     <isinclude template="adyenActionModal" />
 <iselse>
-
    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
    <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
    <isset name="ShippingMgr" value="${require('dw/order/ShippingMgr')}" scope="pdict"/>
