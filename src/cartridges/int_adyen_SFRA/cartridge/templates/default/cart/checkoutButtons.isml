@@ -3,6 +3,7 @@
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
 
 <script type="text/javascript">
     window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
@@ -16,16 +17,16 @@
     window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
 </script>
 
-<isscript>
-    var assets = require('*/cartridge/scripts/assets.js');
-    assets.addCss('/css/adyenCss.css');
-    assets.addJs('/js/applePayExpress.js');
-</isscript>
-
 <div class="mb-sm-3">
     <a href="${URLUtils.https('Checkout-Begin')}"
         class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
         ${Resource.msg('button.checkout', 'cart', null)}
     </a>
-    <div id="apple-pay-container" class="apple-pay-container"></div>
+</div>
+
+ <div class="card">
+            <div class="card-body">
+                <div class="expressComponent"></div>
+          </div>
+        </div>
 </div>
