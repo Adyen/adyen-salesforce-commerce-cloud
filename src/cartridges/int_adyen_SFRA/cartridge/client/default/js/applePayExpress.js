@@ -180,7 +180,7 @@ initializeCheckout().then(()=> {
     });
   }
   
-  function createApplePayButton() {
+  async function createApplePayButton() {
     return checkout.create('applepay', applePayButtonConfig);
   }
   const cartContainer = document.getElementsByClassName('expressComponent');
