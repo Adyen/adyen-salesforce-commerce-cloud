@@ -163,6 +163,7 @@ initializeCheckout().then(() => {
         reject(error);
       }
     },
+    onSubmit: () => {},
     onShippingMethodSelected: async (resolve, reject, event) => {
       const { shippingMethod } = event;
       const matchingShippingMethod = shippingMethodsData.shippingMethods.find(
