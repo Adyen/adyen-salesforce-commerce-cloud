@@ -18,7 +18,7 @@ async function initializeCheckout() {
   });
 }
 
-function getCustomerObject(customerData) {
+function getCustomerObject(customerData, billingData) {
   return {
     addressBook: {
       addresses: {},
@@ -39,6 +39,21 @@ function getCustomerObject(customerData) {
         postalCode: customerData.postalCode,
         stateCode: customerData.administrativeArea,
       },
+    },
+    billingAddressDetails: {
+      address1: billingData.addressLines[0],
+      address2:
+        billingData.addressLines.length > 1
+          ? billingData.addressLines[1]
+          : null,
+      city: billingData.locality,
+      countryCode: {
+        displayValue: billingData.country,
+        value: billingData.countryCode,
+      },
+      firstName: billingData.givenName,
+      lastName: billingData.familyName,
+      postalCode: billingData.postalCode,
     },
     customer: {},
     profile: {
@@ -108,6 +123,7 @@ initializeCheckout().then(() => {
     configuration: applePayConfig,
     amount: checkout.options.amount,
     requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
+    requiredBillingContactFields: ['postalAddress', 'phone'],
     shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
       label: sm.displayName,
       detail: sm.description,
@@ -117,8 +133,8 @@ initializeCheckout().then(() => {
     onAuthorized: async (resolve, reject, event) => {
       try {
         const customerData = event.payment.shippingContact;
-        const customer = getCustomerObject(customerData);
-
+        const billingData = event.payment.billingContact;
+        const customer = getCustomerObject(customerData, billingData);
         const stateData = {
           paymentMethod: {
             type: 'applepay',

@@ -21,20 +21,16 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     if (!billingAddress) {
       billingAddress = currentBasket.createBillingAddress();
     }
-    billingAddress.setFirstName(shopperDetails.profile.firstName);
-    billingAddress.setLastName(shopperDetails.profile.lastName);
+    billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
+    billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
     billingAddress.setPhone(shopperDetails.profile.phone);
-    billingAddress.setAddress1(
-      shopperDetails.addressBook.preferredAddress.address1,
-    );
-    billingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
+    billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
+    billingAddress.setCity(shopperDetails.billingAddressDetails.city);
     billingAddress.setCountryCode(
-      shopperDetails.addressBook.preferredAddress.countryCode.value,
+      shopperDetails.billingAddressDetails.countryCode.value,
     );
-    if (shopperDetails.addressBook.preferredAddress.address2) {
-      billingAddress.setAddress2(
-        shopperDetails.addressBook.preferredAddress.address2,
-      );
+    if (shopperDetails.billingAddressDetails.address2) {
+      billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
     }
   });
 
