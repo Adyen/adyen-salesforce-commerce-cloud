@@ -82,8 +82,8 @@
             <ul id="giftCardUl" class="list-cards invisible"></ul>
             <div id="giftCardContainer"></div>
         </div>
-        <div id="giftCardsList" class="gift-cards-container"></div>
     </div>
+    <div id="giftCardsList" class="gift-cards-container"></div>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
 
