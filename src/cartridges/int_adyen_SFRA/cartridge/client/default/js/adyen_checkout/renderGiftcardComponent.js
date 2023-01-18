@@ -225,9 +225,9 @@ function renderAddedGiftCard(card) {
   const giftCardAmountDiv = document.createElement('div');
   giftCardAmountDiv.classList.add('wrapper');
   const amountLabel = document.createElement('p');
-  amountLabel.textContent = window.discountedAmountGiftCardResource;
+  amountLabel.textContent = window.deductedBalanceGiftCardResource;
   const amountValue = document.createElement('strong');
-  amountValue.textContent = card.discountedAmount;
+  amountValue.textContent = `-${card.discountedAmount}`;
   giftCardAmountDiv.appendChild(amountLabel);
   giftCardAmountDiv.appendChild(amountValue);
 
