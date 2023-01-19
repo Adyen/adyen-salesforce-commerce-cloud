@@ -66,7 +66,7 @@ function failOrder(order) {
   });
 }
 
-function handleGiftCardPayment(currentBasket) {
+function handleGiftCardPayment(currentBasket, order) {
   // Check if gift card was used
   const divideBy = AdyenHelper.getDivisorForCurrency(
     currentBasket.totalGrossPrice,
@@ -185,10 +185,11 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
-    handleRefusedResultCode(result, order);
+    handleRefusedResultCode(result, reqDataObj, order);
   }
+
   if (session.privacy.giftCardResponse) {
-    handleGiftCardPayment(currentBasket);
+    handleGiftCardPayment(currentBasket, order);
   }
 
   result.orderNo = order.orderNo;
