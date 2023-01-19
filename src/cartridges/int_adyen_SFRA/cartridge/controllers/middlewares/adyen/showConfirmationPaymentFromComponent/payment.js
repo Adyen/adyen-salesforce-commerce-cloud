@@ -117,15 +117,17 @@ function handlePayment(stateData, order, options) {
     return handlePaymentError(order, options);
   }
 
-  const detailsCall = handlePaymentsDetailsCall(
-    stateData,
-    adyenPaymentInstrument,
-  );
+  const detailsCall = hasStateData
+    ? handlePaymentsDetailsCall(
+        stateData,
+        adyenPaymentInstrument,
+      )
+    : null;
 
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  finalResult = finalResult || detailsCall.result;
+  finalResult = finalResult || detailsCall?.result;
 
   // Authorised: The payment authorisation was successfully completed.
   if (
