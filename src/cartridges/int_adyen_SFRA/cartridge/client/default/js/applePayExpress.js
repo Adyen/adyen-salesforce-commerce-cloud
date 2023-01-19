@@ -21,7 +21,7 @@ async function initializeCheckout() {
   });
 }
 
-function createApplePayButton() {
+async function createApplePayButton(applePayButtonConfig) {
   return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
 
@@ -215,7 +215,7 @@ if (isSafari) {
       expressCheckoutNodesIndex < cartContainer.length;
       expressCheckoutNodesIndex += 1
     ) {
-      createApplePayButton().then((applePayButton) => {
+      createApplePayButton(applePayButtonConfig).then((applePayButton) => {
         const isApplePayButtonAvailable = applePayButton.isAvailable();
         if (isApplePayButtonAvailable) {
           applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
