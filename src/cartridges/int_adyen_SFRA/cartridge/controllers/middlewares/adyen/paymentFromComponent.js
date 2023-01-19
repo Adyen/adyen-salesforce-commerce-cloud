@@ -144,7 +144,7 @@ function handleRefusedResultCode(result, reqDataObj, order) {
 function paymentFromComponent(req, res, next) {
   const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
-    handleCancellation(res, next, reqDataObj);
+    return handleCancellation(res, next, reqDataObj);
   }
   const currentBasket = BasketMgr.getCurrentBasket();
   let paymentInstrument;
