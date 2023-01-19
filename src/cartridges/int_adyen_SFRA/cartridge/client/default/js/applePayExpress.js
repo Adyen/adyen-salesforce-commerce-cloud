@@ -172,7 +172,7 @@ if (isSafari) {
         }
       },
       onSubmit: () => {
-        // This handler is empty to prevent sending a second payment request that comes from sessions
+        // This handler is empty to prevent sending a second payment request
         // We already do the payment in paymentFromComponent
       },
       onShippingMethodSelected: async (resolve, reject, event) => {
