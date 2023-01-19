@@ -15,8 +15,6 @@ function showConfirmationPaymentFromComponent(req, res, next) {
       req.form.merchantReference,
       req.form.orderToken,
     );
-    AdyenLogs.error_log('order');
-    AdyenLogs.error_log(req.form.orderToken);
     return handlePayment(stateData, order, options);
   } catch (e) {
     AdyenLogs.error_log(
