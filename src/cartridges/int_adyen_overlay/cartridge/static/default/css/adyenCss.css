@@ -413,11 +413,10 @@ input:checked + .slider:before {
 }
 
 .expressComponent {
-    padding: 0;
+    padding: 0 !important;
 }
 
 .expressComponent button {
     width: 100% !important;
     padding: 10px 0;
-    margin: 10px 0;
 }

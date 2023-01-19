@@ -1,8 +1,10 @@
 const helpers = require('./adyen_checkout/helpers');
 
+const APPLE_PAY = 'applepay';
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 let checkout;
 let shippingMethodsData;
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 async function initializeCheckout() {
   const session = await fetch(window.sessionsUrl);
@@ -17,6 +19,10 @@ async function initializeCheckout() {
     locale: window.locale,
     session: sessionData,
   });
+}
+
+function createApplePayButton() {
+  return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
 
 function getCustomerObject(customerData, billingData) {
@@ -100,7 +106,7 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     type: 'post',
     data: {
       data: JSON.stringify(data),
-      paymentMethod: 'applepay',
+      paymentMethod: APPLE_PAY,
     },
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
@@ -117,7 +123,7 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 if (isSafari) {
   initializeCheckout().then(() => {
     const applePayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === 'applepay',
+      (pm) => pm.type === APPLE_PAY,
     ).configuration;
 
     const applePayButtonConfig = {
@@ -139,7 +145,7 @@ if (isSafari) {
           const customer = getCustomerObject(customerData, billingData);
           const stateData = {
             paymentMethod: {
-              type: 'applepay',
+              type: APPLE_PAY,
               applePayToken: event.payment.token.paymentData,
             },
             paymentType: 'express',
@@ -165,7 +171,10 @@ if (isSafari) {
           reject(error);
         }
       },
-      onSubmit: () => {},
+      onSubmit: () => {
+        // This handler is empty to prevent sending a second payment request that comes from sessions
+        // We already do the payment in paymentFromComponent
+      },
       onShippingMethodSelected: async (resolve, reject, event) => {
         const { shippingMethod } = event;
         const matchingShippingMethod = shippingMethodsData.shippingMethods.find(
@@ -200,9 +209,6 @@ if (isSafari) {
       },
     };
 
-    async function createApplePayButton() {
-      return checkout.create('applepay', applePayButtonConfig);
-    }
     const cartContainer = document.getElementsByClassName('expressComponent');
     for (
       let expressCheckoutNodesIndex = 0;
