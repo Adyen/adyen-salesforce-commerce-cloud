@@ -122,9 +122,15 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 if (isSafari) {
   initializeCheckout().then(() => {
-    const applePayConfig = checkout.paymentMethodsResponse.paymentMethods.find(
+    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
       (pm) => pm.type === APPLE_PAY,
-    ).configuration;
+    );
+
+    if (!applePayPaymentMethod) {
+      return;
+    }
+
+    const applePayConfig = applePayPaymentMethod.configuration;
 
     const applePayButtonConfig = {
       showPayButton: true,
