@@ -49,6 +49,49 @@ function paymentFromComponent(data, component) {
   });
 }
 
+//function paymentFromComponent(data, component) {
+//    console.log('inside PFC .. save shopper url is ')
+//    console.log(window.saveShopperDetailsURL);
+//    console.log(data);
+//  $.ajax({
+////    url: window.paymentFromComponentURL,
+//    url: window.saveShopperDetailsURL,
+//    type: 'post',
+//    data: {
+//      data: JSON.stringify(data),
+//      paymentMethod: 'amazonpay',
+//    },
+//    success(response) {
+//      helpers.setOrderFormData(response);
+//      handleAmazonResponse(response, component);
+//    },
+//    fail: (e) => {
+//      console.log('inside fail');
+//      console.log(e.toString());
+//    },
+//  });
+//}
+
+function saveShopperDetails(data) {
+    console.log('save shopper details');
+    console.log(window.saveShopperDetailsURL)
+  $.ajax({
+    url: window.saveShopperDetailsURL,
+    type: 'post',
+    data: {
+      shopperDetails: JSON.stringify(data),
+      paymentMethod: 'amazonpay',
+    },
+    success(response) {
+        console.log('response ' + JSON.stringify(response));
+    },
+      fail: (e) => {
+        console.log('inside fail');
+        console.log(e.toString());
+      },
+  });
+}
+
 async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
   const checkout = await AdyenCheckout(window.Configuration);
@@ -130,6 +173,8 @@ console.log('returnUrl is ' + window.returnUrl);
 
     const shopperDetails = await window.amazonPayComponent.getShopperDetails();
     console.log('shopper details ' + JSON.stringify(shopperDetails));
+    saveShopperDetails(shopperDetails);
+
 }
 
 console.log('inside amazon Copyy.js')

@@ -62,7 +62,10 @@ async function mountAmazonPayComponent() {
       publicKeyId: window.amazonPublicKeyID,
     },
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
-    onSubmit: (state, component) => {
+    onSubmit: async (state, component) => {
+      const shopperDetails = await window.amazonPayComponent.getShopperDetails();
+      console.log('shopper details ' + JSON.stringify(shopperDetails));
+      state.data.shopperDetails = shopperDetails;
       document.querySelector('#adyenStateData').value = JSON.stringify(
         state.data,
       );
@@ -95,7 +98,8 @@ async function mountAmazonPayComponent() {
     },
   };
 
-  const amazonPayComponent = checkout
+//  const amazonPayComponent = checkout
+    window.amazonPayComponent = checkout
     .create('amazonpay', amazonConfig)
     .mount(amazonPayNode);
 

@@ -2,6 +2,10 @@ const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const adyenGiving = require('*/cartridge/scripts/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
+const Logger = require('dw/system/Logger');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const URLUtils = require('dw/web/URLUtils');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
@@ -73,6 +77,64 @@ server.post(
   server.middleware.https,
   adyen.paymentFromComponent,
 );
+
+/**
+ *  Save shopper details that came from an Express component in the SFCC session
+ */
+server.post(
+  'SaveExpressShopperDetails',
+  server.middleware.https,
+//  adyen.saveExpressShopperDetails
+  function (req, res, next) {
+      try {
+       session.privacy.expressShopperDetails = req.form.shopperDetails;
+       Logger.getLogger('Adyen').error(' session.privacy.expressShopperDetails ' + JSON.stringify(session.privacy.expressShopperDetails));
+       res.json({success: true});
+        return next();
+      } catch (e) {
+        Logger.getLogger('Adyen').error(`Could not save express method shopper details`);
+        Logger.getLogger('Adyen').error(JSON.stringify(e));
+        res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+        return next();
+      }
+  }
+);
+
+server.get('GetPaymentMethods', server.middleware.https, function (req, res, next) {
+       Logger.getLogger('Adyen').error(' inside  GetPaymentMethods');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Resource = require('dw/web/Resource');
+    var getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+    var Locale = require('dw/util/Locale');
+    var countryCode = Locale.getLocale(req.locale.id).country;
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress) {
+        countryCode = currentBasket.getShipments()[0].shippingAddress.getCountryCode();
+    }
+    var paymentMethods;
+    var descriptions = [];
+    try {
+        paymentMethods = getPaymentMethods.getMethods(BasketMgr.getCurrentBasket(), countryCode.value?.toString() || countryCode.value ).paymentMethods;
+        descriptions = paymentMethods.map(function (method) {
+            return {
+                brandCode: method.type,
+                description: Resource.msg('hpp.description.' + method.type, 'hpp', "")
+            };
+        })
+    } catch (err) {
+              Logger.getLogger('Adyen').error(' inside  catch ' + JSON.stringify(err));
+        paymentMethods = [];
+    }
+
+    var adyenURL = AdyenHelper.getLoadingContext() + "images/logos/medium/";
+
+    res.json({
+        AdyenPaymentMethods: paymentMethods,
+        ImagePath: adyenURL,
+        AdyenDescriptions: descriptions
+    });
+    return next();
+});
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.

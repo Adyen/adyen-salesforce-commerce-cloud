@@ -13,7 +13,9 @@
        window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
        window.locale = "${request.locale}";
        window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
        window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+       window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
        //window.returnUrl = "${URLUtils.https('Cart-Show')}";
        window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
 
@@ -61,6 +63,7 @@
        window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
        window.locale = "${request.locale}";
        window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
        window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
        window.returnUrl = "${URLUtils.https('Cart-Show')}";
        //window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";

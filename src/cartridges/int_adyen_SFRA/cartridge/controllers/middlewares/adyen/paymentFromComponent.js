@@ -20,7 +20,8 @@ function paymentFromComponent(req, res, next) {
     try {
       Logger.getLogger('Adyen').error('inside paymentFromComponent');
       const reqDataObj = JSON.parse(req.form.data);
-      const shopperDetails = reqDataObj.shopperDetails;
+//      const shopperDetails = reqDataObj.shopperDetails;
+//      Logger.getLogger('Adyen').error(' shopperDetails ' + JSON.stringify(shopperDetails));
       if (reqDataObj.cancelTransaction) {
         AdyenLogs.info_log(
           `Shopper cancelled paymentFromComponent transaction for order ${reqDataObj.merchantReference}`,
@@ -73,7 +74,8 @@ function paymentFromComponent(req, res, next) {
       Logger.getLogger('Adyen').error('customer ' + JSON.stringify(customer));
 //      Logger.getLogger('Adyen').error('profile ' + profile);
 
-        if(shopperDetails) {
+        if(session.privacy.expressShopperDetails) {
+            const shopperDetails = JSON.parse(session.privacy.expressShopperDetails)
         //      billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1 || '');
               Transaction.wrap(function () {
               if (!shippingAddress) {
