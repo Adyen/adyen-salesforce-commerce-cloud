@@ -1,0 +1,68 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<div id="epmSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Express payment methods settings <small class="text-secondary">(optional)</small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Choose which express payment methods you want to be used in your web store.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="adyenGivingButton">Enable Express</label>
+            <div class="row">
+               <div class="col-sm-9">
+                  <small id="expressPaymentsButtonHelp" class="form-text mb-1">&#8198;You can also enable payment methods separately.</small>
+               </div>
+               <div class="switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="ExpressPayments_enabled" id="expressPaymentsEnabledChecked" data-bs-toggle="collapse" data-bs-target=".express-settings" ${AdyenConfigs.getExpressPaymentsEnabled() ? 'checked': 'unchecked'}>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="express-settings collapse ${AdyenConfigs.getExpressPaymentsEnabled() ? 'show': ''}">
+            <div class="form-group">
+               <label class="form-title mb-0" for="oneClick">Apple Pay</label>
+               <div class="radio-buttons">
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="ApplePayExpressEnabled" id="applePayExpressYes" value=true ${AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="applePayExpressYes">Enable</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="ApplePayExpressEnabled" id="applePayExpressNo" value=false ${!AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="applePayExpressNo">Disable</label>
+                  </div>
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="oneClick">Amazon Pay</label>
+               <div class="radio-buttons">
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="AmazonPayExpressEnabled" id="amazonPayExpressYes" value=true ${AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="amazonPayExpressYes">Enable</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="AmazonPayExpressEnabled" id="amazonPayExpressNo" value=false ${!AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="amazonPayExpressNo">Disable</label>
+                  </div>
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="oneClick">PayPal</label>
+               <div class="radio-buttons">
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="PayPalExpressEnabled" id="payPalExpressYes" value=true ${AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="payPalExpressYes">Enable</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                     <input class="form-check-input" type="radio" name="PayPalExpressEnabled" id="payPalExpressNo" value=false ${!AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                     <label class="form-check-label" for="payPalExpressNo">Disable</label>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

@@ -111,6 +111,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenGiving_enabled');
   },
 
+  getExpressPaymentsEnabled() {
+    return getCustomPreference('ExpressPayments_enabled');
+  },
+
   getAdyenGivingDonationAmounts() {
     return getCustomPreference('AdyenGiving_donationAmounts');
   },
