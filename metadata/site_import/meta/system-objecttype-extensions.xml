@@ -120,6 +120,21 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenMainPaymentInstrument">
+                <display-name xml:lang="x-default">adyenMainPaymentInstrument</display-name>
+                <description xml:lang="x-default">This setting is used to determine which payment method is used during checkout</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>AdyenComponent</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>CREDIT_CARD</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenMD">
                 <display-name xml:lang="x-default">adyenMD</display-name>
                 <description xml:lang="x-default">Adyen MD for 3D Secure</description>

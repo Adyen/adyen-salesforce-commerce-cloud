@@ -28,8 +28,9 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
+const collections = require('*/cartridge/scripts/util/collections');
+const PaymentInstrument = require('dw/order/PaymentInstrument');
 let  Logger = require('dw/system/Logger');
-
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
@@ -76,7 +77,7 @@ var adyenHelperObj = {
 
   getAdyenGivingConfig(order) {
     const paymentInstrument = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
     const paymentMethod =
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
@@ -370,14 +371,15 @@ var adyenHelperObj = {
       shippingStreet = 'N/A';
     }
 
+//todo replace shippingstreet and house number, would amazon payment still work?
     shippingStreet = "Straat";
     shippingHouseNumberOrName = "21";
 
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
-        ? shippingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? shippingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
@@ -402,15 +404,15 @@ var adyenHelperObj = {
     } else {
       billingStreet = 'N/A';
     }
-
+    //todo replace
     billingStreet = "Straat";
     billingHouseNumberOrName = "21";
 
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
-        ? billingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? billingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
       stateOrProvince: billingAddress.stateCode
@@ -497,57 +499,39 @@ var adyenHelperObj = {
     return jsonObject;
   },
 
-  // gets the SFCC card type name based on the Adyen card type name
-  getAdyenCardType(cardType) {
-    if (!empty(cardType)) {
-      switch (cardType) {
-        case 'Visa':
-          cardType = 'visa';
-          break;
-        case 'Master':
-        case 'MasterCard':
-        case 'Mastercard':
-          cardType = 'mc';
-          break;
-        case 'Amex':
-          cardType = 'amex';
-          break;
-        case 'Discover':
-          cardType = 'discover';
-          break;
-        case 'Maestro':
-          cardType = 'maestro';
-          break;
-        case 'Diners':
-          cardType = 'diners';
-          break;
-        case 'Bancontact':
-          cardType = 'bcmc';
-          break;
-        case 'JCB':
-          cardType = 'jcb';
-          break;
-        case 'CUP':
-          cardType = 'cup';
-          break;
-        case 'Carte Bancaire':
-          cardType = 'cartebancaire';
-          break;
-        default:
-          cardType = cardType.toLowerCase();
-          break;
-      }
-    } else {
-      throw new Error(
-        'cardType argument is not passed to getAdyenCardType function',
-      );
+  getAdyenComponentType(paymentMethod) {
+    let methodName;
+    switch (paymentMethod) {
+      case 'applepay':
+        methodName = 'Apple Pay';
+        break;
+      case 'amazonpay':
+        methodName = 'Amazon Pay';
+        break;
+      default:
+        methodName = paymentMethod;
     }
+    return methodName;
+  },
 
-    return cardType;
+  getOrderMainPaymentInstrumentType(order) {
+    let type = constants.METHOD_ADYEN_COMPONENT;
+    collections.forEach(order.getPaymentInstruments(), (item) => {
+      if (item.custom.adyenMainPaymentInstrument?.value) {
+        type = item.custom.adyenMainPaymentInstrument?.value;
+      }
+    });
+    return type;
+  },
+
+  getPaymentInstrumentType(isCreditCard) {
+    return isCreditCard
+      ? PaymentInstrument.METHOD_CREDIT_CARD
+      : constants.METHOD_ADYEN_COMPONENT;
   },
 
   // gets the Adyen card type name based on the SFCC card type name
-  getSFCCCardType(cardType) {
+  getSfccCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case 'visa':
@@ -588,7 +572,7 @@ var adyenHelperObj = {
       return cardType;
     }
     throw new Error(
-      'cardType argument is not passed to getSFCCCardType function',
+      'cardType argument is not passed to getSfccCardType function',
     );
   },
 

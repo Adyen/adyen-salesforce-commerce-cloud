@@ -76,7 +76,7 @@ function updateSavedCards(args) {
           const number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
           const token = payment.id;
           const cardType = payment.brand
-            ? AdyenHelper.getSFCCCardType(payment.brand)
+            ? AdyenHelper.getSfccCardType(payment.brand)
             : '';
 
           // if we have everything we need, create a new payment instrument

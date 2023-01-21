@@ -92,15 +92,18 @@ function handleAuthorisedPayment(
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
-    constants.METHOD_ADYEN_COMPONENT,
+    AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );
   const result = options.req.form?.result;
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
-
   let finalResult;
   if (!hasStateData) {
-    if (result && JSON.stringify(result).indexOf('amazonpay') > -1) {
+    if (
+      result &&
+      (JSON.stringify(result).indexOf('amazonpay') > -1 ||
+        JSON.stringify(result).indexOf('applepay') > -1)
+    ) {
       finalResult = JSON.parse(result);
     } else {
       return handlePaymentError(order, options);
@@ -114,15 +117,17 @@ function handlePayment(stateData, order, options) {
     return handlePaymentError(order, options);
   }
 
-  const detailsCall = handlePaymentsDetailsCall(
-    stateData,
-    adyenPaymentInstrument,
-  );
+  const detailsCall = hasStateData
+    ? handlePaymentsDetailsCall(
+        stateData,
+        adyenPaymentInstrument,
+      )
+    : null;
 
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
-  finalResult = finalResult || detailsCall.result;
+  finalResult = finalResult || detailsCall?.result;
 
   // Authorised: The payment authorisation was successfully completed.
   if (

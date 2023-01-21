@@ -59,13 +59,14 @@ $('button[value="submit-payment"]').on('click', () => {
     store.paypalTerminatedEarly = false;
   }
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
-    document.querySelector('#terminalId').value = document.querySelector(
-      '#terminalList',
-    ).value;
+    document.querySelector('#terminalId').value =
+      document.querySelector('#terminalList').value;
   }
 
   if (
-    document.querySelector('#selectedPaymentOption').value === 'AdyenComponent'
+    document.querySelector('#selectedPaymentOption').value ===
+      'AdyenComponent' ||
+    document.querySelector('#selectedPaymentOption').value === 'CREDIT_CARD'
   ) {
     assignPaymentMethodValue();
     validateComponents();
