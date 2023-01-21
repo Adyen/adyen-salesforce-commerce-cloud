@@ -93,8 +93,11 @@ server.post(
 //  adyen.saveExpressShopperDetails
   function (req, res, next) {
       try {
-       session.privacy.amazonExpressShopperDetails = req.form.shopperDetails;
-       Logger.getLogger('Adyen').error(' session.privacy.amazonExpressShopperDetails ' + JSON.stringify(session.privacy.amazonExpressShopperDetails));
+      const Transaction = require('dw/system/Transaction');
+      const currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
+       Transaction.wrap(() => {
+              currentBasket.custom.amazonExpressShopperDetails = req.form.shopperDetails;
+       });
        res.json({success: true});
         return next();
       } catch (e) {

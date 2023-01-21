@@ -17,7 +17,6 @@ const expressMethods = ['applepay', 'amazonpay'];
 
 function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     Logger.getLogger('Adyen').error('inside setBillingAndShippingAddress');
-
       let billingAddress = currentBasket.billingAddress;
       let shippingAddress = currentBasket.getDefaultShipment().shippingAddress;
       Transaction.wrap(function () {
@@ -29,10 +28,10 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
         }
          });
 
-    if(session.privacy.amazonExpressShopperDetails) { //amazon express payment
-        const shopperDetails = JSON.parse(session.privacy.expressShopperDetails);
+    if(currentBasket.custom.amazonExpressShopperDetails) { //amazon express payment
+        const shopperDetails = JSON.parse(currentBasket.custom.amazonExpressShopperDetails);
 
-      Transaction.wrap(function () {
+        Transaction.wrap(function () {
           billingAddress.setFirstName(shopperDetails.billingAddress.name.split(' ')[0]);
           billingAddress.setLastName(shopperDetails.billingAddress.name.split(' ')[1]);
           billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1 || '');
@@ -174,10 +173,7 @@ function handleRefusedResultCode(result, reqDataObj, order) {
  */
 function paymentFromComponent(req, res, next) {
     try {
-      Logger.getLogger('Adyen').error('inside paymentFromComponent');
       const reqDataObj = JSON.parse(req.form.data);
-//      const shopperDetails = reqDataObj.shopperDetails;
-//      Logger.getLogger('Adyen').error(' shopperDetails ' + JSON.stringify(shopperDetails));
       if (reqDataObj.cancelTransaction) {
         return handleCancellation(res, next, reqDataObj);
       }
@@ -206,8 +202,8 @@ function paymentFromComponent(req, res, next) {
           AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
       });
 
-    Logger.getLogger('Adyen').error('session.privacy.expressShopperDetails ' + JSON.stringify(session.privacy.expressShopperDetails));
-      if (reqDataObj.paymentType === 'express' || session.privacy.expressShopperDetails) {
+    Logger.getLogger('Adyen').error('currentBasket.custom.amazonExpressShopperDetails ' + JSON.stringify(currentBasket.custom.amazonExpressShopperDetails));
+      if (reqDataObj.paymentType === 'express' || currentBasket.custom.amazonExpressShopperDetails) {
         setBillingAndShippingAddress(reqDataObj, currentBasket);
       }
 
@@ -226,7 +222,7 @@ function paymentFromComponent(req, res, next) {
       });
 
       Logger.getLogger('Adyen').error('result ' + JSON.stringify(result));
-      session.privacy.expressShopperDetails = null;
+      currentBasket.custom.amazonExpressShopperDetails = null;
 
       if (result.resultCode === constants.RESULTCODES.REFUSED) {
         handleRefusedResultCode(result, reqDataObj, order);
