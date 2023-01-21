@@ -28,6 +28,7 @@
          clientKey: "${AdyenConfigs.getAdyenClientKey()}",
          environment: 'test',
      };
+     window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
      window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
      window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
      window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';

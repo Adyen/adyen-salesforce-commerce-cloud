@@ -96,15 +96,11 @@ async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
   const checkout = await AdyenCheckout(window.Configuration);
 
-console.log('returnUrl is ' + window.returnUrl);
   const amazonConfig = {
     showOrderButton: true,
 //    returnUrl: 'https://10.211.55.3:3000/secondRedirect',
     returnUrl: window.returnUrl,
-      amount: {
-          currency: 'GBP',
-          value: 1000
-      },
+      amount: JSON.parse(window.basketAmount),
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
     //    configuration: {
     //      merchantId: window.amazonMerchantID,

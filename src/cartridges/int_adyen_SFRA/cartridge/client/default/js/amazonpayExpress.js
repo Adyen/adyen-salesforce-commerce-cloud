@@ -40,7 +40,9 @@ function getPaymentMethods(paymentMethods) {
 
        const amazonPayConfig = paymentMethodsResponse.find(
          (pm) => pm.type === 'amazonpay',
-       ).configuration;
+       )?.configuration;
+       if(!amazonPayConfig) return;
+
 
          console.log('amazonPayConfig ' + JSON.stringify(amazonPayConfig));
 
