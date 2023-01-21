@@ -41,17 +41,8 @@
        assets.addJs('/js/amazonCopy.js');
    </isscript>
 
-   <div class="mb-sm-3">
-       <a href="${URLUtils.https('Checkout-Begin')}"
-           class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}" role="button">
-           ${Resource.msg('button.checkout', 'cart', null)}
-       </a>
-       <div id="amazonpay-container"></div>
-   </div>
-
-
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
-    <isinclude template="adyenActionModal" />
+     <div id="amazon-container"></div>
 <iselse>
    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
    <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />

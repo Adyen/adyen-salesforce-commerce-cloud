@@ -27,7 +27,8 @@ async function mountAmazonPayComponent() {
   const amazonConfig = {
     showOrderButton: true,
     returnUrl: window.returnUrl,
-      amount: JSON.parse(window.basketAmount),
+    showChangePaymentDetailsButton: true,
+    amount: JSON.parse(window.basketAmount),
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
   };
 
