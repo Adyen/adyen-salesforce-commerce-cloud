@@ -16,50 +16,79 @@ const Logger = require('dw/system/Logger');
 const expressMethods = ['applepay', 'amazonpay'];
 
 function setBillingAndShippingAddress(reqDataObj, currentBasket) {
-  const shopperDetails = reqDataObj.customer;
+    Logger.getLogger('Adyen').error('inside setBillingAndShippingAddress');
 
-  let { billingAddress } = currentBasket;
-  Transaction.wrap(() => {
-    if (!billingAddress) {
-      billingAddress = currentBasket.createBillingAddress();
-    }
-    billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
-    billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
-    billingAddress.setPhone(shopperDetails.profile.phone);
-    billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
-    billingAddress.setCity(shopperDetails.billingAddressDetails.city);
-    billingAddress.setCountryCode(
-      shopperDetails.billingAddressDetails.countryCode.value,
-    );
-    if (shopperDetails.billingAddressDetails.address2) {
-      billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
-    }
-  });
+      let billingAddress = currentBasket.billingAddress;
+      let shippingAddress = currentBasket.getDefaultShipment().shippingAddress;
+      Transaction.wrap(function () {
+        if (!shippingAddress) {
+          shippingAddress = currentBasket.getDefaultShipment().createShippingAddress();
+        }
+        if (!billingAddress) {
+        billingAddress = currentBasket.createBillingAddress();
+        }
+         });
 
-  let { shippingAddress } = currentBasket.getDefaultShipment();
-  Transaction.wrap(() => {
-    currentBasket.setCustomerEmail(shopperDetails.profile.email);
-    if (!shippingAddress) {
-      shippingAddress = currentBasket
-        .getDefaultShipment()
-        .createShippingAddress();
+    if(session.privacy.amazonExpressShopperDetails) { //amazon express payment
+        const shopperDetails = JSON.parse(session.privacy.expressShopperDetails);
+
+      Transaction.wrap(function () {
+          billingAddress.setFirstName(shopperDetails.billingAddress.name.split(' ')[0]);
+          billingAddress.setLastName(shopperDetails.billingAddress.name.split(' ')[1]);
+          billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1 || '');
+          billingAddress.setAddress2(shopperDetails.billingAddress.addressLine2 || '');
+          billingAddress.setCity(shopperDetails.billingAddress.city || '');
+          billingAddress.setPhone(shopperDetails.billingAddress.phoneNumber || '');
+          billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode || '');
+          billingAddress.setStateCode(shopperDetails.billingAddress.stateOrRegion);
+          billingAddress.setCountryCode(shopperDetails.billingAddress.countryCode);
+
+            shippingAddress.setFirstName(shopperDetails.shippingAddress.name.split(' ')[0]);
+            shippingAddress.setLastName(shopperDetails.shippingAddress.name.split(' ')[1]);
+            shippingAddress.setAddress1(shopperDetails.shippingAddress.addressLine1 || '');
+            shippingAddress.setAddress2(shopperDetails.shippingAddress.addressLine2 || '');
+            shippingAddress.setCity(shopperDetails.shippingAddress.city || '');
+            shippingAddress.setPhone(shopperDetails.shippingAddress.phoneNumber || '');
+            shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode || '');
+            shippingAddress.setStateCode(shopperDetails.shippingAddress.stateOrRegion);
+            shippingAddress.setCountryCode(shopperDetails.shippingAddress.countryCode);
+
+          currentBasket.setCustomerEmail(shopperDetails.buyer.email);
+      });
+    } else { // apple pay payment
+      const shopperDetails = reqDataObj.customer;
+
+      Transaction.wrap(() => {
+        billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
+        billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
+        billingAddress.setPhone(shopperDetails.profile.phone);
+        billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
+        billingAddress.setCity(shopperDetails.billingAddressDetails.city);
+        billingAddress.setCountryCode(
+          shopperDetails.billingAddressDetails.countryCode.value,
+        );
+        if (shopperDetails.billingAddressDetails.address2) {
+          billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
+        }
+
+        currentBasket.setCustomerEmail(shopperDetails.profile.email);
+        shippingAddress.setFirstName(shopperDetails.profile.firstName);
+        shippingAddress.setLastName(shopperDetails.profile.lastName);
+        shippingAddress.setPhone(shopperDetails.profile.phone);
+        shippingAddress.setAddress1(
+          shopperDetails.addressBook.preferredAddress.address1,
+        );
+        shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
+        shippingAddress.setCountryCode(
+          shopperDetails.addressBook.preferredAddress.countryCode.value,
+        );
+        if (shopperDetails.addressBook.preferredAddress.address2) {
+          shippingAddress.setAddress2(
+            shopperDetails.addressBook.preferredAddress.address2,
+          );
+        }
+      });
     }
-    shippingAddress.setFirstName(shopperDetails.profile.firstName);
-    shippingAddress.setLastName(shopperDetails.profile.lastName);
-    shippingAddress.setPhone(shopperDetails.profile.phone);
-    shippingAddress.setAddress1(
-      shopperDetails.addressBook.preferredAddress.address1,
-    );
-    shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
-    shippingAddress.setCountryCode(
-      shopperDetails.addressBook.preferredAddress.countryCode.value,
-    );
-    if (shopperDetails.addressBook.preferredAddress.address2) {
-      shippingAddress.setAddress2(
-        shopperDetails.addressBook.preferredAddress.address2,
-      );
-    }
-  });
 }
 
 function failOrder(order) {
@@ -177,64 +206,10 @@ function paymentFromComponent(req, res, next) {
           AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
       });
 
-      if (reqDataObj.paymentType === 'express') {
+    Logger.getLogger('Adyen').error('session.privacy.expressShopperDetails ' + JSON.stringify(session.privacy.expressShopperDetails));
+      if (reqDataObj.paymentType === 'express' || session.privacy.expressShopperDetails) {
         setBillingAndShippingAddress(reqDataObj, currentBasket);
       }
-
-      let billingAddress = currentBasket.billingAddress;
-      let shippingAddress = currentBasket.getDefaultShipment().shippingAddress;
-
-//      var customer = CustomerMgr.getCustomerByCustomerNumber(
-//          req.currentCustomer.profile.customerNo
-//      );
-//      var profile = customer.getProfile();
-      var customer = req.currentCustomer;
-//      var profile = customer.getProfile();
-
-      Logger.getLogger('Adyen').error('customer ' + JSON.stringify(customer));
-//      Logger.getLogger('Adyen').error('profile ' + profile);
-
-        if(session.privacy.expressShopperDetails) {
-            const shopperDetails = JSON.parse(session.privacy.expressShopperDetails)
-        //      billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1 || '');
-              Transaction.wrap(function () {
-              if (!shippingAddress) {
-                shippingAddress = currentBasket.getDefaultShipment().createShippingAddress();
-              }
-              if (!billingAddress) {
-              billingAddress = currentBasket.createBillingAddress();
-              }
-              billingAddress.setFirstName('Zaid');
-              billingAddress.setFirstName(shopperDetails.billingAddress.name.split(' ')[0]);
-              billingAddress.setLastName(shopperDetails.billingAddress.name.split(' ')[1] || shopperDetails.billingAddress.name.split(' ')[0]);
-              billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1 || '');
-              billingAddress.setAddress2(shopperDetails.billingAddress.addressLine2 || '');
-              billingAddress.setCity("Paris" || '');
-              billingAddress.setPhone(shopperDetails.billingAddress.phoneNumber || '');
-              billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode || '');
-              billingAddress.setStateCode(shopperDetails.billingAddress.stateOrRegion);
-              billingAddress.setCountryCode("FR");
-
-                shippingAddress.setFirstName(shopperDetails.shippingAddress.name.split(' ')[0]);
-                shippingAddress.setLastName(shopperDetails.shippingAddress.name.split(' ')[1] || shopperDetails.billingAddress.name.split(' ')[0]);
-                shippingAddress.setAddress1(shopperDetails.shippingAddress.addressLine1 || '');
-                shippingAddress.setAddress2(shopperDetails.shippingAddress.addressLine2 || '');
-                shippingAddress.setCity(shopperDetails.shippingAddress.city || '');
-                shippingAddress.setPhone(shopperDetails.shippingAddress.phoneNumber || '');
-                shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode || '');
-                shippingAddress.setStateCode(shopperDetails.shippingAddress.stateOrRegion);
-                shippingAddress.setCountryCode(shopperDetails.shippingAddress.countryCode);
-
-              currentBasket.setCustomerEmail(shopperDetails.buyer.email);
-              });
-        } else {
-                      Transaction.wrap(function () {
-                      if (!billingAddress) {
-                      billingAddress = currentBasket.createBillingAddress();
-                      }
-                      billingAddress.setFirstName('Zaid');
-                      });
-        }
 
           Logger.getLogger('Adyen').error('about to create order');
 
@@ -251,6 +226,7 @@ function paymentFromComponent(req, res, next) {
       });
 
       Logger.getLogger('Adyen').error('result ' + JSON.stringify(result));
+      session.privacy.expressShopperDetails = null;
 
       if (result.resultCode === constants.RESULTCODES.REFUSED) {
         handleRefusedResultCode(result, reqDataObj, order);

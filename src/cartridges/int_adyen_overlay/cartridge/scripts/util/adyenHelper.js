@@ -371,10 +371,6 @@ var adyenHelperObj = {
       shippingStreet = 'N/A';
     }
 
-//todo replace shippingstreet and house number, would amazon payment still work?
-    shippingStreet = "Straat";
-    shippingHouseNumberOrName = "21";
-
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
@@ -404,9 +400,6 @@ var adyenHelperObj = {
     } else {
       billingStreet = 'N/A';
     }
-    //todo replace
-    billingStreet = "Straat";
-    billingHouseNumberOrName = "21";
 
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',

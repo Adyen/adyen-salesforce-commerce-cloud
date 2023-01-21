@@ -93,8 +93,8 @@ server.post(
 //  adyen.saveExpressShopperDetails
   function (req, res, next) {
       try {
-       session.privacy.expressShopperDetails = req.form.shopperDetails;
-       Logger.getLogger('Adyen').error(' session.privacy.expressShopperDetails ' + JSON.stringify(session.privacy.expressShopperDetails));
+       session.privacy.amazonExpressShopperDetails = req.form.shopperDetails;
+       Logger.getLogger('Adyen').error(' session.privacy.amazonExpressShopperDetails ' + JSON.stringify(session.privacy.amazonExpressShopperDetails));
        res.json({success: true});
         return next();
       } catch (e) {

@@ -12,7 +12,6 @@ const partialPayment = require('*/cartridge/controllers/middlewares/adyen/partia
 const callGetShippingMethods = require('*/cartridge/controllers/middlewares/adyen/shippingMethods');
 const callSelectShippingMethod = require('*/cartridge/controllers/middlewares/adyen/selectShippingMethods');
 const fetchGiftCards = require('*/cartridge/controllers/middlewares/adyen/fetchGiftCards');
-const callGetShippingMethods = require('*/cartridge/controllers/middlewares/adyen/shippingMethods');
 const saveExpressShopperDetails = require('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails');
 
 module.exports = {
@@ -30,6 +29,5 @@ module.exports = {
   callGetShippingMethods,
   callSelectShippingMethod,
   fetchGiftCards,
-  callGetShippingMethods,
   saveExpressShopperDetails,
 };

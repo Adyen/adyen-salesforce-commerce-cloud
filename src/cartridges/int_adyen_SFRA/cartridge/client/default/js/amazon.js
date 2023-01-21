@@ -65,7 +65,9 @@ async function mountAmazonPayComponent() {
     onSubmit: async (state, component) => {
       const shopperDetails = await window.amazonPayComponent.getShopperDetails();
       console.log('shopper details ' + JSON.stringify(shopperDetails));
-      state.data.shopperDetails = shopperDetails;
+      if(shopperDetails) { //express payment
+        state.data.shopperDetails = shopperDetails;
+      }
       document.querySelector('#adyenStateData').value = JSON.stringify(
         state.data,
       );
