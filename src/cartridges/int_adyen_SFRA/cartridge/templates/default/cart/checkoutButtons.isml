@@ -38,7 +38,7 @@
 
    <isscript>
        var assets = require('*/cartridge/scripts/assets.js');
-       assets.addJs('/js/amazonCopy.js');
+       assets.addJs('/js/amazonPayExpressPart2.js');
    </isscript>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
@@ -67,7 +67,7 @@
    </script>
 
       <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
-      <script src="${URLUtils.httpsStatic('/js/amazonpayExpress.js')}" type="text/javascript"></script>
+      <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
       <script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
 
    <div class="mb-sm-3">

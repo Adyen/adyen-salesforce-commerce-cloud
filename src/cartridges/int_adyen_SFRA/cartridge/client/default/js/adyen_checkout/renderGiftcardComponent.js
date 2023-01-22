@@ -65,8 +65,11 @@ function attachGiftCardFormListeners() {
     return;
   }
 
-  const { giftCardUl, giftCardSelect, giftCardContainer } =
-    getGiftCardElements();
+  const {
+    giftCardUl,
+    giftCardSelect,
+    giftCardContainer,
+  } = getGiftCardElements();
 
   if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
@@ -167,8 +170,12 @@ function removeGiftCards() {
           '#adyenPartialPaymentsOrder',
         );
 
-        const { giftCardsList, giftCardAddButton, giftCardSelect, giftCardUl } =
-          getGiftCardElements();
+        const {
+          giftCardsList,
+          giftCardAddButton,
+          giftCardSelect,
+          giftCardUl,
+        } = getGiftCardElements();
 
         adyenPartialPaymentsOrder.value = null;
         giftCardsList.innerHTML = '';
