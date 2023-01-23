@@ -10,7 +10,7 @@
       </h7>
       <div class="mt-2">
          <div class="form-group">
-            <label class="form-title mb-0" for="adyenGivingButton">Enable Express</label>
+            <label class="form-title mb-0" for="expressPaymentsButton">Enable Express</label>
             <div class="row">
                <div class="col-sm-9">
                   <small id="expressPaymentsButtonHelp" class="form-text mb-1">&#8198;You can also enable payment methods separately.</small>
