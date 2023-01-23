@@ -476,6 +476,27 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="ApplePayExpress_Enabled">
+                <display-name xml:lang="x-default">Apple Pay</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="AmazonPayExpress_Enabled">
+                <display-name xml:lang="x-default">Amazon Pay</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="PayPalExpress_Enabled">
+                <display-name xml:lang="x-default">PayPal</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenGiving_enabled">
                 <display-name xml:lang="x-default">Enable Adyen Giving</display-name>
                 <type>boolean</type>
@@ -609,6 +630,9 @@
                 <attribute attribute-id="AdyenGiving_logoUrl"/>
 
                 <attribute attribute-id="ExpressPayments_enabled"/>
+                <attribute attribute-id="ApplePayExpress_Enabled"/>
+                <attribute attribute-id="AmazonPayExpress_Enabled"/>
+                <attribute attribute-id="PayPalExpress_Enabled"/>
             </attribute-group>
         </group-definitions>
 </type-extension>

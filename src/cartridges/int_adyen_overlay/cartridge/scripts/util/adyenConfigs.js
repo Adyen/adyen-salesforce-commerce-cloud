@@ -115,6 +115,18 @@ const adyenConfigsObj = {
     return getCustomPreference('ExpressPayments_enabled');
   },
 
+  getApplePayExpressEnabled() {
+    return getCustomPreference('ApplePayExpress_Enabled');
+  },
+
+  getAmazonPayExpressEnabled() {
+    return getCustomPreference('AmazonPayExpress_Enabled');
+  },
+
+  getPayPalExpressEnabled() {
+    return getCustomPreference('PayPalExpress_Enabled');
+  },
+
   getAdyenGivingDonationAmounts() {
     return getCustomPreference('AdyenGiving_donationAmounts');
   },
