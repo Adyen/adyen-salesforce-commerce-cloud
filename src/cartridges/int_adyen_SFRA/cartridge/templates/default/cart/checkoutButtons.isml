@@ -27,5 +27,5 @@
     </a>
 </div>
 <div>
-    <div class="expressComponent"></div>
+    <div class="expressComponent" style="padding:0"></div>
 </div>

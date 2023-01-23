@@ -13,8 +13,7 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 const expressMethods = ['applepay', 'amazonpay'];
 
-function setBillingAndShippingAddress(reqDataObj, currentBasket) {
-  const shopperDetails = reqDataObj.customer;
+function setBillingAndShippingAddress(shopperDetails, currentBasket) {
 
   let { billingAddress } = currentBasket;
   Transaction.wrap(() => {
@@ -31,6 +30,9 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     );
     if (shopperDetails.billingAddressDetails.address2) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
+    }
+    if (shopperDetails.billingAddressDetails.stateCode) {
+      billingAddress.setStateCode(shopperDetails.billingAddressDetails.stateCode);
     }
   });
 
@@ -56,6 +58,9 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
       shippingAddress.setAddress2(
         shopperDetails.addressBook.preferredAddress.address2,
       );
+    }
+    if (shopperDetails.addressBook.preferredAddress.stateCode) {
+      shippingAddress.setStateCode(shopperDetails.addressBook.preferredAddress.stateCode);
     }
   });
 }
@@ -172,7 +177,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   if (reqDataObj.paymentType === 'express') {
-    setBillingAndShippingAddress(reqDataObj, currentBasket);
+    setBillingAndShippingAddress(reqDataObj.customer, currentBasket);
   }
 
   const order = COHelpers.createOrder(currentBasket);

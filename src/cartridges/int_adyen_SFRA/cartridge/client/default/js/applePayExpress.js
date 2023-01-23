@@ -61,6 +61,7 @@ function getCustomerObject(customerData, billingData) {
       firstName: billingData.givenName,
       lastName: billingData.familyName,
       postalCode: billingData.postalCode,
+      stateCode: billingData.administrativeArea,
     },
     customer: {},
     profile: {
