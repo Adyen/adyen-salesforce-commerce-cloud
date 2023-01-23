@@ -1,7 +1,7 @@
 const helpers = require('./adyen_checkout/helpers');
 
 const APPLE_PAY = 'applepay';
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
 
 let checkout;
 let shippingMethodsData;
