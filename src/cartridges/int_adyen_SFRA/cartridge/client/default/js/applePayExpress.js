@@ -1,7 +1,7 @@
 const helpers = require('./adyen_checkout/helpers');
 
 const APPLE_PAY = 'applepay';
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
 
 let checkout;
 let shippingMethodsData;
@@ -61,6 +61,7 @@ function getCustomerObject(customerData, billingData) {
       firstName: billingData.givenName,
       lastName: billingData.familyName,
       postalCode: billingData.postalCode,
+      stateCode: billingData.administrativeArea,
     },
     customer: {},
     profile: {
@@ -111,9 +112,8 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        data,
-      );
+      document.querySelector('#additionalDetailsHidden').value =
+        JSON.stringify(data);
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
