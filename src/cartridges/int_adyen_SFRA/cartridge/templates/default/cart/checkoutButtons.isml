@@ -16,7 +16,6 @@
     window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
     window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
 </script>
-<script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
 
 <div class="mb-sm-3">
     <a
@@ -26,6 +25,12 @@
         ${Resource.msg('button.checkout', 'cart', null)}
     </a>
 </div>
-<div>
-    <div class="expressComponent" style="padding:0"></div>
-</div>
+
+<isif condition="${AdyenConfigs.areExpressPaymentsEnabled()}">
+    <div>
+        <div class="expressComponent" style="padding:0"></div>
+    </div>
+    <isif condition="${AdyenConfigs.isApplePayExpressEnabled()}">
+        <script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
+    </isif>
+</isif>
