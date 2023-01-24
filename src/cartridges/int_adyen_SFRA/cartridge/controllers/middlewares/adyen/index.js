@@ -9,6 +9,8 @@ const checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBal
 const cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
 const partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
 const partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
+const callGetShippingMethods = require('*/cartridge/controllers/middlewares/adyen/shippingMethods');
+const callSelectShippingMethod = require('*/cartridge/controllers/middlewares/adyen/selectShippingMethods');
 const fetchGiftCards = require('*/cartridge/controllers/middlewares/adyen/fetchGiftCards');
 
 module.exports = {
@@ -23,5 +25,7 @@ module.exports = {
   cancelPartialPaymentOrder,
   partialPaymentsOrder,
   partialPayment,
+  callGetShippingMethods,
+  callSelectShippingMethod,
   fetchGiftCards,
 };
