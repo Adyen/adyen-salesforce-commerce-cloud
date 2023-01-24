@@ -20,6 +20,7 @@ describe('Payment from Component', () => {
     const URLUtils = require('dw/web/URLUtils');
 
     req.form.data.cancelTransaction = true;
+    req.form.data.merchantReference = 'mocked_merchantReference';
     req.form.data = JSON.stringify(req.form.data);
     paymentFromComponent(req, res, jest.fn());
 

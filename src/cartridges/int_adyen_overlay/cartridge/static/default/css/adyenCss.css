@@ -411,3 +411,12 @@ input:checked + .slider:before {
     cursor: pointer;
     font-size: 13px;
 }
+
+.expressComponent {
+    margin: 10px 0;
+}
+
+.expressComponent button {
+    width: 100%;
+    padding: 10px 0;
+}
