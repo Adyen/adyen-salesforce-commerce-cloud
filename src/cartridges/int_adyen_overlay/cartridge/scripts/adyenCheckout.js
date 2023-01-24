@@ -27,8 +27,6 @@ const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const StringUtils = require('dw/util/StringUtils');
-let  Logger = require('dw/system/Logger');
-
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
@@ -162,8 +160,6 @@ function createPaymentRequest(args) {
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
-    Logger.getLogger('Adyen').error('inside catch ');
-    Logger.getLogger('Adyen').error('inside catch ' + e.toString());
     AdyenLogs.error_log(
       `error processing payment. Error message: ${
         e.message
@@ -259,8 +255,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     }
     return paymentResponse;
   } catch (e) {
-  Logger.getLogger('Adyen').error('inside catch 2 ');
-  Logger.getLogger('Adyen').error(e.toString());
     AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );

@@ -62,7 +62,7 @@ async function mountAmazonPayComponent() {
       publicKeyId: window.amazonPublicKeyID,
     },
     amazonCheckoutSessionId: window.amazonCheckoutSessionId,
-    onSubmit: async (state, component) => {
+    onSubmit: (state, component) => {
       document.querySelector('#adyenStateData').value = JSON.stringify(
         state.data,
       );
