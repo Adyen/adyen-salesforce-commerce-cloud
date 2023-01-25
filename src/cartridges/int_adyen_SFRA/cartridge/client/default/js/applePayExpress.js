@@ -112,8 +112,9 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value =
-        JSON.stringify(data);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        data,
+      );
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
