@@ -1,0 +1,70 @@
+:root {
+    --border-color: #ced4da;
+    --background-color: #c3c7ca;
+    --text-color: #34444f;
+}
+
+.draggable-list {
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0;
+    list-style-type: none;
+    margin-left: 48px;
+    margin-right: 48px;
+}
+
+.draggable-list li {
+    background-color: #fff;
+    display: flex;
+    flex: 1;
+}
+
+.draggable-list li:not(:last-of-type) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.draggable-list li.over .draggable {
+    background-color: #eaeaea;
+}
+
+.draggable-list .item-name {
+    margin: 0 20px 0 0;
+}
+
+.draggable-list li.right .item-name {
+    color: #3ae374;
+}
+
+.draggable-list li.wrong .item-name {
+    color: #ff3838;
+}
+
+.draggable {
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    flex: 1;
+    position: relative;
+}
+
+.draggable .switch-button {
+    position: initial;
+    left: 95.5%;
+}
+
+.draggable .title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.draggable .title p {
+    margin: 0 10px;
+}
+
+.draggable .title .logo {
+    margin-left: 10px;
+}
