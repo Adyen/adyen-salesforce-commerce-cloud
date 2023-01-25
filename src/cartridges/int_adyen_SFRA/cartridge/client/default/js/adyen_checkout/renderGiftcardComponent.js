@@ -10,6 +10,7 @@ function getGiftCardElements() {
     '#giftCardSelectContainer',
   );
   const giftCardsList = document.querySelector('#giftCardsList');
+  const giftCardsInfoMessage = document.querySelector('#giftCardsInfoMessage');
 
   return {
     giftCardSelect,
@@ -18,6 +19,7 @@ function getGiftCardElements() {
     giftCardAddButton,
     giftCardSelectContainer,
     giftCardsList,
+    giftCardsInfoMessage
   };
 }
 
@@ -336,6 +338,30 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
+function showGiftCardInfoMessage() {
+  const messageText = store.partialPaymentsOrderObj.message;
+  const giftCardsInfoMessageContainer = document.querySelector('#giftCardsInfoMessage');
+  giftCardsInfoMessageContainer.innerHTML = '';
+  giftCardsInfoMessageContainer.classList.remove(
+    'gift-cards-info-message-container'
+  );
+  if (!messageText) return;
+  const giftCardsInfoMessage = document.createElement('div');
+  giftCardsInfoMessage.classList.add(
+    'adyen-checkout__alert-message',
+    'adyen-checkout__alert-message--warning'
+  );
+  giftCardsInfoMessage.setAttribute('role', 'alert');
+
+  const infoMessage = document.createElement('span');
+  infoMessage.textContent = store.partialPaymentsOrderObj.message;
+  giftCardsInfoMessage.appendChild(infoMessage);
+  giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
+  giftCardsInfoMessageContainer.classList.add(
+    'gift-cards-info-message-container'
+  );
+}
+
 module.exports = {
   removeGiftCards,
   renderAddedGiftCard,
@@ -344,4 +370,5 @@ module.exports = {
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
+  showGiftCardInfoMessage
 };

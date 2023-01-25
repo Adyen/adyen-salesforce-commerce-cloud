@@ -85,6 +85,7 @@
         </div>
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>
+    <div id="giftCardsInfoMessage"></div>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
 

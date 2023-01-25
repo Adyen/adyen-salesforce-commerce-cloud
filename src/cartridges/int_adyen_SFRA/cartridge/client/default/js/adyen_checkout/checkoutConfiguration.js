@@ -6,6 +6,7 @@ const {
   createElementsToShowRemainingGiftCardAmount,
   renderAddedGiftCard,
   getGiftCardElements,
+  showGiftCardInfoMessage
 } = require('./renderGiftcardComponent');
 
 function getCardConfig() {
@@ -108,6 +109,7 @@ function handlePartialPaymentSuccess() {
   store.addedGiftCards.forEach((card) => {
     renderAddedGiftCard(card);
   });
+  store.addedGiftCards?.length && showGiftCardInfoMessage();
   createElementsToShowRemainingGiftCardAmount();
 }
 
