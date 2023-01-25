@@ -30,7 +30,6 @@ const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
 const collections = require('*/cartridge/scripts/util/collections');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
-let  Logger = require('dw/system/Logger');
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
@@ -421,12 +420,8 @@ var adyenHelperObj = {
   createAdyenRequestObject(order, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
-    Logger.getLogger('Adyen').error('ibside  createAdyenRequestObject');
-
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
-
-    Logger.getLogger('Adyen').error('state data ' + JSON.stringify(stateData));
 
     let reference = 'recurringPayment-account';
     let orderToken = 'recurringPayment-token';
