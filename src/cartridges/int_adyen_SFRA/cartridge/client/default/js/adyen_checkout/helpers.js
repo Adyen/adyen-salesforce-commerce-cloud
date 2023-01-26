@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');

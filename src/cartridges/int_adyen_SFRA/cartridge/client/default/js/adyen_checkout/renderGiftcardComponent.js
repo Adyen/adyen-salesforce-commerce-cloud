@@ -10,7 +10,7 @@ function getGiftCardElements() {
     '#giftCardSelectContainer',
   );
   const giftCardsList = document.querySelector('#giftCardsList');
-  const giftCardsInfoMessage = document.querySelector('#giftCardsInfoMessage');
+  const giftCardsInfoMessageContainer = document.querySelector('#giftCardsInfoMessage');
 
   return {
     giftCardSelect,
@@ -19,7 +19,7 @@ function getGiftCardElements() {
     giftCardAddButton,
     giftCardSelectContainer,
     giftCardsList,
-    giftCardsInfoMessage
+    giftCardsInfoMessageContainer
   };
 }
 
@@ -169,8 +169,13 @@ function removeGiftCards() {
           '#adyenPartialPaymentsOrder',
         );
 
-        const { giftCardsList, giftCardAddButton, giftCardSelect, giftCardUl } =
-          getGiftCardElements();
+        const {
+          giftCardsList,
+          giftCardAddButton,
+          giftCardSelect,
+          giftCardUl,
+          giftCardsInfoMessageContainer
+        } = getGiftCardElements();
 
         adyenPartialPaymentsOrder.value = null;
         giftCardsList.innerHTML = '';
@@ -181,6 +186,11 @@ function removeGiftCards() {
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
         store.addedGiftCards = null;
+
+        giftCardsInfoMessageContainer.innerHTML = '';
+        giftCardsInfoMessageContainer.classList.remove(
+          'gift-cards-info-message-container'
+        );
 
         if (res.resultCode === constants.RECEIVED) {
           document
@@ -229,7 +239,7 @@ function renderAddedGiftCard(card) {
   const amountLabel = document.createElement('p');
   amountLabel.textContent = window.deductedBalanceGiftCardResource;
   const amountValue = document.createElement('strong');
-  amountValue.textContent = `-${card.discountedAmount}`;
+  amountValue.textContent = card.discountedAmount ? `-${card.discountedAmount}` : '';
   giftCardAmountDiv.appendChild(amountLabel);
   giftCardAmountDiv.appendChild(amountValue);
 
@@ -340,7 +350,7 @@ function createElementsToShowRemainingGiftCardAmount() {
 
 function showGiftCardInfoMessage() {
   const messageText = store.partialPaymentsOrderObj.message;
-  const giftCardsInfoMessageContainer = document.querySelector('#giftCardsInfoMessage');
+  const { giftCardsInfoMessageContainer } = getGiftCardElements();
   giftCardsInfoMessageContainer.innerHTML = '';
   giftCardsInfoMessageContainer.classList.remove(
     'gift-cards-info-message-container'
