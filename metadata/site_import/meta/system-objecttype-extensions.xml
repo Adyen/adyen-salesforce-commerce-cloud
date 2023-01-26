@@ -474,7 +474,13 @@
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="ExpressPayments_order">
+                <display-name xml:lang="x-default">Express payments order</display-name>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="ApplePayExpress_Enabled">
                 <display-name xml:lang="x-default">Apple Pay</display-name>
@@ -485,13 +491,6 @@
             </attribute-definition>
             <attribute-definition attribute-id="AmazonPayExpress_Enabled">
                 <display-name xml:lang="x-default">Amazon Pay</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="PayPalExpress_Enabled">
-                <display-name xml:lang="x-default">PayPal</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -630,9 +629,9 @@
                 <attribute attribute-id="AdyenGiving_logoUrl"/>
 
                 <attribute attribute-id="ExpressPayments_enabled"/>
+                <attribute attribute-id="ExpressPayments_order"/>
                 <attribute attribute-id="ApplePayExpress_Enabled"/>
                 <attribute attribute-id="AmazonPayExpress_Enabled"/>
-                <attribute attribute-id="PayPalExpress_Enabled"/>
             </attribute-group>
         </group-definitions>
 </type-extension>
