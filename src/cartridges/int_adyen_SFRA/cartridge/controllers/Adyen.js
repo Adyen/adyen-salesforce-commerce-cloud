@@ -81,6 +81,21 @@ server.post(
 );
 
 /**
+ *  Save shopper details that came from an Express component in the SFCC session
+ */
+server.post(
+  'SaveExpressShopperDetails',
+  server.middleware.https,
+  adyen.saveExpressShopperDetails,
+);
+
+server.get(
+  'GetPaymentMethods',
+  server.middleware.https,
+  adyen.getCheckoutPaymentMethods,
+);
+
+/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);

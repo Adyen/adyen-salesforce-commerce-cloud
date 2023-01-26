@@ -112,8 +112,9 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value =
-        JSON.stringify(data);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        data,
+      );
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
@@ -217,7 +218,7 @@ if (isSafari) {
       },
     };
 
-    const cartContainer = document.getElementsByClassName('expressComponent');
+    const cartContainer = document.getElementsByClassName('applepay');
     for (
       let expressCheckoutNodesIndex = 0;
       expressCheckoutNodesIndex < cartContainer.length;

@@ -11,8 +11,12 @@ function makePartialPayment(req, res, next) {
     const request = JSON.parse(req.body);
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const { paymentMethod, partialPaymentsOrder, amount, giftcardBrand } =
-      request;
+    const {
+      paymentMethod,
+      partialPaymentsOrder,
+      amount,
+      giftcardBrand,
+    } = request;
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount,
