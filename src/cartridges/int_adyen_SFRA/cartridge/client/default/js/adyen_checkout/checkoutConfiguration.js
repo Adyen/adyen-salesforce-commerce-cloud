@@ -109,7 +109,7 @@ function handlePartialPaymentSuccess() {
   store.addedGiftCards.forEach((card) => {
     renderAddedGiftCard(card);
   });
-  store.addedGiftCards?.length && showGiftCardInfoMessage();
+  if (store.addedGiftCards?.length) showGiftCardInfoMessage();
   createElementsToShowRemainingGiftCardAmount();
 }
 
