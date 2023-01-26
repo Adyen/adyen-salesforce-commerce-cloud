@@ -123,9 +123,10 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 if (isSafari) {
   initializeCheckout().then(() => {
-    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === APPLE_PAY,
-    );
+    const applePayPaymentMethod =
+      checkout.paymentMethodsResponse.paymentMethods.find(
+        (pm) => pm.type === APPLE_PAY,
+      );
 
     if (!applePayPaymentMethod) {
       return;
