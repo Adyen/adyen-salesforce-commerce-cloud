@@ -53,7 +53,7 @@
        </a>
    </div>
    <div>
-       <div class="expressComponent" style="padding:0"></div>
+       <div class="expressComponent applepay" style="padding:0"></div>
        <div class="expressComponent" id="amazonpay-container"></div>
    </div>
   <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
