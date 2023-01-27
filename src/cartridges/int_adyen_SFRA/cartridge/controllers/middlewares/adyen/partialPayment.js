@@ -71,7 +71,7 @@ function makePartialPayment(req, res, next) {
       .toFormattedString();
     response.discountAmountFormatted = discountAmountFormatted;
 
-    const addedGiftCards = currentBasket.custom?.adyenGiftCards
+    const addedGiftCards = currentBasket?.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom?.adyenGiftCards)
       : [];
 
