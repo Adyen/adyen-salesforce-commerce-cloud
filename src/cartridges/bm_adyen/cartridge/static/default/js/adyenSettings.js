@@ -15,8 +15,6 @@ const expressPaymentMethods = [
   },
 ];
 
-const expressPaymentMethodsOrder = window.expressMethodsOrder;
-
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
@@ -80,10 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       expressPaymentsOrder.push(p.dataset.id);
     });
 
-    settingChanged(
-      'ExpressPayments_order',
-      JSON.stringify(expressPaymentsOrder),
-    );
+    settingChanged('ExpressPayments_order', expressPaymentsOrder.join(','));
   }
 
   function dragStart() {
@@ -125,6 +120,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createExpressPaymentsComponent() {
+    const { expressMethodsOrder } = window;
+    if (expressMethodsOrder) {
+      const sortOrder = expressMethodsOrder.split(',');
+      expressPaymentMethods.sort(
+        (a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id),
+      );
+    }
     expressPaymentMethods.forEach((item, index) => {
       const listItem = document.createElement('li');
       listItem.setAttribute('data-index', index.toString());

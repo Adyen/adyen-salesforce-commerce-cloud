@@ -7,7 +7,7 @@
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
-    window.expressMethodsOrder = ${AdyenConfigs.getExpressPaymentsOrder()};
+    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
 </script>
 <div id="epmSettings" class="card bg-white mt-4">
    <div class="card-body">
