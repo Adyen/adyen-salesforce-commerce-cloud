@@ -466,7 +466,7 @@
                 <field-length>0</field-length>
             </attribute-definition>
             <attribute-definition attribute-id="ExpressPayments_enabled">
-                <display-name xml:lang="x-default">Enable express payments</display-name>
+                <display-name xml:lang="x-default">Enable express checkout</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -474,7 +474,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="ExpressPayments_order">
                 <display-name xml:lang="x-default">Change the order of the express payment buttons</display-name>
-                <type>text</type>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
