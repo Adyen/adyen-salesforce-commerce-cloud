@@ -473,21 +473,21 @@
                 <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="ExpressPayments_order">
-                <display-name xml:lang="x-default">Express payments order</display-name>
+                <display-name xml:lang="x-default">Change the order of the express payment buttons</display-name>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="ApplePayExpress_Enabled">
-                <display-name xml:lang="x-default">Apple Pay</display-name>
+                <display-name xml:lang="x-default">Enable Apple Pay express checkout</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AmazonPayExpress_Enabled">
-                <display-name xml:lang="x-default">Amazon Pay</display-name>
+                <display-name xml:lang="x-default">Enable Amazon Pay express checkout</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
