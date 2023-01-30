@@ -123,9 +123,10 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 if (isSafari) {
   initializeCheckout().then(() => {
-    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === APPLE_PAY,
-    );
+    const applePayPaymentMethod =
+      checkout.paymentMethodsResponse.paymentMethods.find(
+        (pm) => pm.type === APPLE_PAY,
+      );
 
     if (!applePayPaymentMethod) {
       return;
@@ -210,6 +211,58 @@ if (isSafari) {
             },
           };
           resolve(applePayShippingMethodUpdate);
+        } else {
+          reject();
+        }
+      },
+      onShippingContactSelected: async (resolve, reject, event) => {
+        const { shippingContact } = event;
+        const shippingMethods = await fetch(
+          `${window.shippingMethodsUrl}?${new URLSearchParams({
+            city: shippingContact.locality,
+            country: shippingContact.country,
+            countryCode: shippingContact.countryCode,
+            stateCode: shippingContact.administrativeArea,
+          })}`,
+        );
+        if (shippingMethods.ok) {
+          shippingMethodsData = await shippingMethods.json();
+          if (shippingMethodsData.shippingMethods?.length) {
+            const selectedShippingMethod =
+              shippingMethodsData.shippingMethods[0];
+            const calculationResponse = await fetch(
+              `${window.calculateAmountUrl}?${new URLSearchParams({
+                shipmentUUID: selectedShippingMethod.shipmentUUID,
+                methodID: selectedShippingMethod.ID,
+              })}`,
+              {
+                method: 'POST',
+              },
+            );
+            if (calculationResponse.ok) {
+              const shippingMethodsStructured =
+                shippingMethodsData.shippingMethods.map((sm) => ({
+                  label: sm.displayName,
+                  detail: sm.description,
+                  identifier: sm.ID,
+                  amount: `${sm.shippingCost.value}`,
+                }));
+              const newCalculation = await calculationResponse.json();
+              const applePayShippingContactUpdate = {
+                newShippingMethods: shippingMethodsStructured,
+                newTotal: {
+                  type: 'final',
+                  label: applePayConfig.merchantName,
+                  amount: newCalculation.grandTotalAmount.value,
+                },
+              };
+              resolve(applePayShippingContactUpdate);
+            } else {
+              reject();
+            }
+          } else {
+            reject();
+          }
         } else {
           reject();
         }
