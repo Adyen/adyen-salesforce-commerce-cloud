@@ -14,7 +14,6 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 const expressMethods = ['applepay', 'amazonpay'];
 
 function setBillingAndShippingAddress(shopperDetails, currentBasket) {
-
   let { billingAddress } = currentBasket;
   Transaction.wrap(() => {
     if (!billingAddress) {
@@ -32,7 +31,9 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
     }
     if (shopperDetails.billingAddressDetails.stateCode) {
-      billingAddress.setStateCode(shopperDetails.billingAddressDetails.stateCode);
+      billingAddress.setStateCode(
+        shopperDetails.billingAddressDetails.stateCode,
+      );
     }
   });
 
@@ -60,7 +61,9 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
       );
     }
     if (shopperDetails.addressBook.preferredAddress.stateCode) {
-      shippingAddress.setStateCode(shopperDetails.addressBook.preferredAddress.stateCode);
+      shippingAddress.setStateCode(
+        shopperDetails.addressBook.preferredAddress.stateCode,
+      );
     }
   });
 }

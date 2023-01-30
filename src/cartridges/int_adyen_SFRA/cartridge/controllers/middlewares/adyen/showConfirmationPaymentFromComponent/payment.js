@@ -118,10 +118,7 @@ function handlePayment(stateData, order, options) {
   }
 
   const detailsCall = hasStateData
-    ? handlePaymentsDetailsCall(
-        stateData,
-        adyenPaymentInstrument,
-      )
+    ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument)
     : null;
 
   Transaction.wrap(() => {
