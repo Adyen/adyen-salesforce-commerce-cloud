@@ -55,6 +55,7 @@ module.exports = {
   MAX_API_RETRIES: 3,
 
   GIFTCARD_EXPIRATION_MINUTES: 30,
+  OMS_NAMESPACE: 'adyen_payment',
 
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
