@@ -473,7 +473,8 @@
                 <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="ExpressPayments_order">
-                <display-name xml:lang="x-default">Change the order of the express payment buttons</display-name>
+                <display-name xml:lang="x-default">Order of the express payment buttons</display-name>
+                <description xml:lang="x-default">If you want to change the order go to the new config page (Adyen Settings)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
