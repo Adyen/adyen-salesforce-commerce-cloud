@@ -25,7 +25,7 @@ async function createApplePayButton(applePayButtonConfig) {
   return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
 
-function getCustomerObject(customerData, billingData) {
+function formatCustomerObject(customerData, billingData) {
   return {
     addressBook: {
       addresses: {},
@@ -150,7 +150,7 @@ if (isSafari) {
         try {
           const customerData = event.payment.shippingContact;
           const billingData = event.payment.billingContact;
-          const customer = getCustomerObject(customerData, billingData);
+          const customer = formatCustomerObject(customerData, billingData);
           const stateData = {
             paymentMethod: {
               type: APPLE_PAY,
