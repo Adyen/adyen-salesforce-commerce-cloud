@@ -27,86 +27,40 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     }
   });
 
-  if (currentBasket.custom.amazonExpressShopperDetails) {
-    // amazon express payment
-    const shopperDetails = JSON.parse(
-      currentBasket.custom.amazonExpressShopperDetails,
+  const shopperDetails =
+    reqDataObj.customer ||
+    JSON.parse(currentBasket.custom.amazonExpressShopperDetails); // apple pay or amazon pay
+
+  Transaction.wrap(() => {
+    billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
+    billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
+    billingAddress.setPhone(shopperDetails.profile.phone);
+    billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
+    billingAddress.setCity(shopperDetails.billingAddressDetails.city);
+    billingAddress.setCountryCode(
+      shopperDetails.billingAddressDetails.countryCode.value,
     );
+    if (shopperDetails.billingAddressDetails.address2) {
+      billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
+    }
 
-    Transaction.wrap(() => {
-      billingAddress.setFirstName(
-        shopperDetails.billingAddress.name.split(' ')[0],
+    currentBasket.setCustomerEmail(shopperDetails.profile.email);
+    shippingAddress.setFirstName(shopperDetails.profile.firstName);
+    shippingAddress.setLastName(shopperDetails.profile.lastName);
+    shippingAddress.setPhone(shopperDetails.profile.phone);
+    shippingAddress.setAddress1(
+      shopperDetails.addressBook.preferredAddress.address1,
+    );
+    shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
+    shippingAddress.setCountryCode(
+      shopperDetails.addressBook.preferredAddress.countryCode.value,
+    );
+    if (shopperDetails.addressBook.preferredAddress.address2) {
+      shippingAddress.setAddress2(
+        shopperDetails.addressBook.preferredAddress.address2,
       );
-      billingAddress.setLastName(
-        shopperDetails.billingAddress.name.split(' ')[1],
-      );
-      billingAddress.setAddress1(shopperDetails.billingAddress.addressLine1);
-      billingAddress.setAddress2(shopperDetails.billingAddress.addressLine2);
-      billingAddress.setCity(shopperDetails.billingAddress.city);
-      billingAddress.setPhone(shopperDetails.billingAddress.phoneNumber);
-      billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode);
-      billingAddress.setStateCode(shopperDetails.billingAddress.stateOrRegion);
-      billingAddress.setCountryCode(shopperDetails.billingAddress.countryCode);
-
-      shippingAddress.setFirstName(
-        shopperDetails.shippingAddress.name.split(' ')[0],
-      );
-      shippingAddress.setLastName(
-        shopperDetails.shippingAddress.name.split(' ')[1],
-      );
-      shippingAddress.setAddress1(shopperDetails.shippingAddress.addressLine1);
-      shippingAddress.setAddress2(shopperDetails.shippingAddress.addressLine2);
-      shippingAddress.setCity(shopperDetails.shippingAddress.city);
-      shippingAddress.setPhone(shopperDetails.shippingAddress.phoneNumber);
-      shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
-      shippingAddress.setStateCode(
-        shopperDetails.shippingAddress.stateOrRegion,
-      );
-      shippingAddress.setCountryCode(
-        shopperDetails.shippingAddress.countryCode,
-      );
-
-      currentBasket.setCustomerEmail(shopperDetails.buyer.email);
-    });
-  } else {
-    // apple pay payment
-    const shopperDetails = reqDataObj.customer;
-
-    Transaction.wrap(() => {
-      billingAddress.setFirstName(
-        shopperDetails.billingAddressDetails.firstName,
-      );
-      billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
-      billingAddress.setPhone(shopperDetails.profile.phone);
-      billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
-      billingAddress.setCity(shopperDetails.billingAddressDetails.city);
-      billingAddress.setCountryCode(
-        shopperDetails.billingAddressDetails.countryCode.value,
-      );
-      if (shopperDetails.billingAddressDetails.address2) {
-        billingAddress.setAddress2(
-          shopperDetails.billingAddressDetails.address2,
-        );
-      }
-
-      currentBasket.setCustomerEmail(shopperDetails.profile.email);
-      shippingAddress.setFirstName(shopperDetails.profile.firstName);
-      shippingAddress.setLastName(shopperDetails.profile.lastName);
-      shippingAddress.setPhone(shopperDetails.profile.phone);
-      shippingAddress.setAddress1(
-        shopperDetails.addressBook.preferredAddress.address1,
-      );
-      shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
-      shippingAddress.setCountryCode(
-        shopperDetails.addressBook.preferredAddress.countryCode.value,
-      );
-      if (shopperDetails.addressBook.preferredAddress.address2) {
-        shippingAddress.setAddress2(
-          shopperDetails.addressBook.preferredAddress.address2,
-        );
-      }
-    });
-  }
+    }
+  });
 }
 
 function failOrder(order) {

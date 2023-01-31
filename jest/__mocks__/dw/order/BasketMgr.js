@@ -72,6 +72,50 @@ export const getDefaultShipment = jest.fn(() => ({
   },
 }));
 export const getBillingAddress = jest.fn(() => 'mocked_billing_address');
+
+
+function formatCustomerObject(shopperDetails) {
+  return {
+    addressBook: {
+      addresses: {},
+      preferredAddress: {
+        // for shipping address
+        address1: shopperDetails.shippingAddress.addressLine1,
+        address2: shopperDetails.shippingAddress.addressLine2,
+        city: shopperDetails.shippingAddress.city,
+        countryCode: {
+          value: shopperDetails.shippingAddress.countryCode,
+        },
+        phone: shopperDetails.shippingAddress.phoneNumber,
+        firstName: shopperDetails.shippingAddress.name.split(' ')[0],
+        lastName: shopperDetails.shippingAddress.name.split(' ')[1],
+        postalCode: shopperDetails.shippingAddress.postalCode,
+        stateCode: shopperDetails.shippingAddress.stateOrRegion,
+      },
+    },
+    billingAddressDetails: {
+      address1: shopperDetails.billingAddress.addressLine1,
+      address2: shopperDetails.billingAddress.addressLine2,
+      city: shopperDetails.billingAddress.city,
+      countryCode: {
+        value: shopperDetails.billingAddress.countryCode,
+      },
+      phone: shopperDetails.billingAddress.phoneNumber,
+      firstName: shopperDetails.billingAddress.name.split(' ')[0],
+      lastName: shopperDetails.billingAddress.name.split(' ')[1],
+      postalCode: shopperDetails.billingAddress.postalCode,
+      stateCode: shopperDetails.billingAddress.stateOrRegion,
+    },
+    customer: {},
+    profile: {
+      firstName: shopperDetails.buyer.name,
+      lastName: shopperDetails.buyer.name,
+      email: shopperDetails.buyer.email,
+      phone: shopperDetails.buyer.phoneNumber,
+    },
+  };
+}
+
 export const getCurrentBasket = jest.fn(() => ({
   getShipments,
   setCustomerEmail: jest.fn(),
@@ -81,28 +125,35 @@ export const getCurrentBasket = jest.fn(() => ({
   removePaymentInstrument: jest.fn(),
   custom: {
     amazonExpressShopperDetails: JSON.stringify({
-      billingAddress: {
-        addressLine1: 'address1',
-        addressLine2: 'mocked address2',
+      billingAddressDetails: {
+        address1: 'address1',
+        address2: 'mocked address2',
         phone: 'mocked phone',
         postalCode: 'mocked postalCode',
         countryCode: 'mocked CC',
         city: 'mocked city',
-        name: 'mocked name',
-        state: 'mocked state',
+        lastName: 'mocked name',
+        firstName: 'mocked name',
+        stateCode: 'mocked state',
       },
-      shippingAddress: {
-        addressLine1: 'address1',
-        addressLine2: 'mocked address2',
-        phone: 'mocked phone',
-        postalCode: 'mocked postalCode',
-        countryCode: 'mocked CC',
-        city: 'mocked city',
-        name: 'mocked name',
-        state: 'mocked state',
+      addressBook: {
+        preferredAddress: {
+            address1: 'address1',
+            address2: 'mocked address2',
+            phone: 'mocked phone',
+            postalCode: 'mocked postalCode',
+            countryCode: 'mocked CC',
+            city: 'mocked city',
+            lastName: 'mocked name',
+            firstName: 'mocked name',
+            stateCode: 'mocked state',
+        },
       },
-      buyer: {
+      profile: {
         email: 'mockedEmail',
+        phone: 'mockedphone',
+        firstName: 'mocked name',
+        lastName: 'mocked name',
       },
     }),
   },
