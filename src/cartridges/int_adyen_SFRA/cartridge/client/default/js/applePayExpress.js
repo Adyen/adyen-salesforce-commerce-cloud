@@ -25,7 +25,7 @@ async function createApplePayButton(applePayButtonConfig) {
   return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
 
-function getCustomerObject(customerData, billingData) {
+function formatCustomerObject(customerData, billingData) {
   return {
     addressBook: {
       addresses: {},
@@ -112,8 +112,9 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value =
-        JSON.stringify(data);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        data,
+      );
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
@@ -123,9 +124,10 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 if (isSafari) {
   initializeCheckout().then(() => {
-    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === APPLE_PAY,
-    );
+    const applePayPaymentMethod =
+      checkout.paymentMethodsResponse.paymentMethods.find(
+        (pm) => pm.type === APPLE_PAY,
+      );
 
     if (!applePayPaymentMethod) {
       return;
@@ -149,7 +151,7 @@ if (isSafari) {
         try {
           const customerData = event.payment.shippingContact;
           const billingData = event.payment.billingContact;
-          const customer = getCustomerObject(customerData, billingData);
+          const customer = formatCustomerObject(customerData, billingData);
           const stateData = {
             paymentMethod: {
               type: APPLE_PAY,
@@ -214,9 +216,61 @@ if (isSafari) {
           reject();
         }
       },
+      onShippingContactSelected: async (resolve, reject, event) => {
+        const { shippingContact } = event;
+        const shippingMethods = await fetch(
+          `${window.shippingMethodsUrl}?${new URLSearchParams({
+            city: shippingContact.locality,
+            country: shippingContact.country,
+            countryCode: shippingContact.countryCode,
+            stateCode: shippingContact.administrativeArea,
+          })}`,
+        );
+        if (shippingMethods.ok) {
+          shippingMethodsData = await shippingMethods.json();
+          if (shippingMethodsData.shippingMethods?.length) {
+            const selectedShippingMethod =
+              shippingMethodsData.shippingMethods[0];
+            const calculationResponse = await fetch(
+              `${window.calculateAmountUrl}?${new URLSearchParams({
+                shipmentUUID: selectedShippingMethod.shipmentUUID,
+                methodID: selectedShippingMethod.ID,
+              })}`,
+              {
+                method: 'POST',
+              },
+            );
+            if (calculationResponse.ok) {
+              const shippingMethodsStructured =
+                shippingMethodsData.shippingMethods.map((sm) => ({
+                  label: sm.displayName,
+                  detail: sm.description,
+                  identifier: sm.ID,
+                  amount: `${sm.shippingCost.value}`,
+                }));
+              const newCalculation = await calculationResponse.json();
+              const applePayShippingContactUpdate = {
+                newShippingMethods: shippingMethodsStructured,
+                newTotal: {
+                  type: 'final',
+                  label: applePayConfig.merchantName,
+                  amount: newCalculation.grandTotalAmount.value,
+                },
+              };
+              resolve(applePayShippingContactUpdate);
+            } else {
+              reject();
+            }
+          } else {
+            reject();
+          }
+        } else {
+          reject();
+        }
+      },
     };
 
-    const cartContainer = document.getElementsByClassName('expressComponent');
+    const cartContainer = document.getElementsByClassName('applepay');
     for (
       let expressCheckoutNodesIndex = 0;
       expressCheckoutNodesIndex < cartContainer.length;

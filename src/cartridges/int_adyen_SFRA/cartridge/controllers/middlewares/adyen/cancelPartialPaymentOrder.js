@@ -20,8 +20,9 @@ function cancelPartialPaymentOrder(req, res, next) {
       order: partialPaymentsOrder,
     };
 
-    const response =
-      adyenCheckout.doCancelPartialPaymentOrderCall(cancelOrderRequest);
+    const response = adyenCheckout.doCancelPartialPaymentOrderCall(
+      cancelOrderRequest,
+    );
 
     if (response.resultCode === constants.RESULTCODES.RECEIVED) {
       Transaction.wrap(() => {

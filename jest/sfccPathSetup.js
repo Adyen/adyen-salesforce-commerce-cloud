@@ -65,6 +65,14 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/fetchGiftCards', () => {
 	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/fetchGiftCards');
   }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails');
+  }, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods');
+  }, {virtual: true});
+
 // middlewares/adyen/showConfirmationPaymentFromComponent subclasses
 jest.mock('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent');
