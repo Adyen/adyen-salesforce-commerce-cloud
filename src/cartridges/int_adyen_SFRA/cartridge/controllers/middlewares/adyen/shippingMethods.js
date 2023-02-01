@@ -20,8 +20,9 @@ function getShippingMethods(shipment, address) {
 
   let shippingMethods;
   if (address) {
-    shippingMethods =
-      shipmentShippingModel.getApplicableShippingMethods(address);
+    shippingMethods = shipmentShippingModel.getApplicableShippingMethods(
+      address,
+    );
   } else {
     shippingMethods = shipmentShippingModel.getApplicableShippingMethods();
   }

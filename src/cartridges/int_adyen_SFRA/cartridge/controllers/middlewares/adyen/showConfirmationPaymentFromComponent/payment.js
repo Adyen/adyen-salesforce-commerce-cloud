@@ -97,6 +97,7 @@ function handlePayment(stateData, order, options) {
   const result = options.req.form?.result;
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
+
   let finalResult;
   if (!hasStateData) {
     if (
