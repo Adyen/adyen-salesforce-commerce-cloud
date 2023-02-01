@@ -57,6 +57,10 @@ function handle(basket, paymentInformation) {
         session.privacy.partialPaymentData;
     }
 
+    paymentInstrument.custom.Adyen_Payment_Method_Variant =
+      paymentInformation.stateData
+        ? JSON.parse(paymentInformation.stateData)?.paymentMethod?.type
+        : null;
     paymentInstrument.custom[
       `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
     ] = paymentInformation.stateData

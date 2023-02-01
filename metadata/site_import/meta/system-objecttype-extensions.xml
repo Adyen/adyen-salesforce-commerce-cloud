@@ -102,6 +102,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Payment_Method_Variant">
+                <display-name xml:lang="x-default">Adyen_Payment_Method_Variant</display-name>
+                <description xml:lang="x-default">payment variant used by shopper  (used to sync with OMS)</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="adyenPartialPaymentsOrder">
                 <display-name xml:lang="x-default">adyenPartialPaymentsOrder</display-name>
                 <description xml:lang="x-default">partial payments order data</description>

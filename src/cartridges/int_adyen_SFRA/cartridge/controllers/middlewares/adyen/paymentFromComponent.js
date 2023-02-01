@@ -14,7 +14,6 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 const expressMethods = ['applepay', 'amazonpay'];
 
 function setBillingAndShippingAddress(shopperDetails, currentBasket) {
-
   let { billingAddress } = currentBasket;
   Transaction.wrap(() => {
     if (!billingAddress) {
@@ -32,7 +31,9 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
     }
     if (shopperDetails.billingAddressDetails.stateCode) {
-      billingAddress.setStateCode(shopperDetails.billingAddressDetails.stateCode);
+      billingAddress.setStateCode(
+        shopperDetails.billingAddressDetails.stateCode,
+      );
     }
   });
 
@@ -60,7 +61,9 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
       );
     }
     if (shopperDetails.addressBook.preferredAddress.stateCode) {
-      shippingAddress.setStateCode(shopperDetails.addressBook.preferredAddress.stateCode);
+      shippingAddress.setStateCode(
+        shopperDetails.addressBook.preferredAddress.stateCode,
+      );
     }
   });
 }
@@ -111,6 +114,13 @@ function handleGiftCardPayment(currentBasket, order) {
     );
     giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
     giftcardPM.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
+    giftcardPM.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] =
+      parsedGiftCardObj.brand;
+    giftcardPM.custom.Adyen_Payment_Method_Variant =
+      parsedGiftCardObj.paymentMethod.brand;
+    giftcardPM.custom[
+      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+    ] = parsedGiftCardObj.paymentMethod.brand;
     giftcardPM.paymentTransaction.custom.Adyen_log =
       session.privacy.giftCardResponse;
     giftcardPM.paymentTransaction.custom.Adyen_pspReference =
@@ -174,6 +184,13 @@ function paymentFromComponent(req, res, next) {
     }
     paymentInstrument.custom.adyenPaymentMethod =
       AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] =
+      AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom.Adyen_Payment_Method_Variant =
+      req.form.paymentMethod.toLowerCase();
+    paymentInstrument.custom[
+      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+    ] = req.form.paymentMethod.toLowerCase();
   });
 
   if (reqDataObj.paymentType === 'express') {
