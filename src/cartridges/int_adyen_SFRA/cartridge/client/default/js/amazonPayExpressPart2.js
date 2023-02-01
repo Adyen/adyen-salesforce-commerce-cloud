@@ -9,6 +9,29 @@ function saveShopperDetails(data) {
   });
 }
 
+function updateShippingMethodsList(data) {
+    $.ajax({
+        url: window.updateShippingMethodsListURL,
+        type: 'post',
+//        dataType: 'json',
+        data: data,
+        success: function (data) {
+            console.log('inside success');
+            if (data.error) {
+                window.location.href = data.redirectUrl;
+            } else {
+                $('body').trigger('checkout:updateCheckoutView',
+                    {
+                        order: data.order,
+                        customer: data.customer,
+                        options: { keepOpen: true }
+                    });
+//                $shippingMethodList.spinner().stop();
+            }
+        }
+    });
+}
+
 async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
   const checkout = await AdyenCheckout(window.Configuration);
@@ -27,6 +50,22 @@ async function mountAmazonPayComponent() {
 
   const shopperDetails = await amazonPayComponent.getShopperDetails();
   saveShopperDetails(shopperDetails);
+
+    console.log(window.shipmentUUID.replace('\"', ''));
+    console.log(window.shipmentUUID[0])
+  const data = {
+    firstName: shopperDetails.shippingAddress.name.split(' ')[0],
+    lastName: shopperDetails.shippingAddress.name.split(' ')[1],
+    address1: shopperDetails.shippingAddress.addressLine1,
+    address2: shopperDetails.shippingAddress.addressLine2,
+    city: shopperDetails.shippingAddress.city,
+    postalCode: shopperDetails.shippingAddress.postalCode,
+    stateCode: shopperDetails.shippingAddress.stateOrRegion,
+    countryCode: shopperDetails.shippingAddress.countryCode,
+    phone: shopperDetails.shippingAddress.phoneNumber,
+    shipmentUUID: window.shipmentUUID,
+  };
+  updateShippingMethodsList(data);
 }
 
 mountAmazonPayComponent();

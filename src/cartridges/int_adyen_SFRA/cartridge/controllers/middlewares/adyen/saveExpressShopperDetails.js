@@ -2,7 +2,7 @@ const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
-
+const Logger = require('dw/system/Logger');
 function formatCustomerObject(shopperDetails) {
   return {
     addressBook: {
@@ -45,6 +45,64 @@ function formatCustomerObject(shopperDetails) {
   };
 }
 
+function setBillingAndShippingAddress(currentBasket) {
+  let { billingAddress } = currentBasket;
+  let { shippingAddress } = currentBasket.getDefaultShipment();
+  Transaction.wrap(() => {
+    if (!shippingAddress) {
+      shippingAddress = currentBasket
+        .getDefaultShipment()
+        .createShippingAddress();
+    }
+    if (!billingAddress) {
+      billingAddress = currentBasket.createBillingAddress();
+    }
+  });
+
+  const shopperDetails =
+    JSON.parse(currentBasket.custom.amazonExpressShopperDetails); // apple pay or amazon pay
+
+  Transaction.wrap(() => {
+    billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
+    billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
+    billingAddress.setPhone(shopperDetails.billingAddressDetails.phone);
+    billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
+    billingAddress.setCity(shopperDetails.billingAddressDetails.city);
+    billingAddress.setPostalCode(shopperDetails.billingAddressDetails.postalCode);
+    billingAddress.setStateCode(shopperDetails.billingAddressDetails.stateCode);
+    billingAddress.setCountryCode(
+      shopperDetails.billingAddressDetails.countryCode.value,
+    );
+    if (shopperDetails.billingAddressDetails.address2) {
+      billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
+    }
+
+    currentBasket.setCustomerEmail(shopperDetails.profile.email);
+
+    shippingAddress.setFirstName(shopperDetails.addressBook.preferredAddress.firstName);
+    shippingAddress.setLastName(shopperDetails.addressBook.preferredAddress.lastName);
+    shippingAddress.setPhone(shopperDetails.addressBook.preferredAddress.phone);
+    shippingAddress.setAddress1(
+      shopperDetails.addressBook.preferredAddress.address1,
+    );
+    shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
+    shippingAddress.setPostalCode(shopperDetails.addressBook.preferredAddress.postalCode);
+    shippingAddress.setStateCode(shopperDetails.addressBook.preferredAddress.stateCode);
+    shippingAddress.setCountryCode(
+      shopperDetails.addressBook.preferredAddress.countryCode.value,
+    );
+    if (shopperDetails.addressBook.preferredAddress.address2) {
+      shippingAddress.setAddress2(
+        shopperDetails.addressBook.preferredAddress.address2,
+      );
+    }
+  });
+
+  Logger.getLogger('Adyen').error('shippingAddress.setAddress1 ' + shippingAddress.getAddress1());
+  Logger.getLogger('Adyen').error('billingAddress.setAddress1 ' + billingAddress.getCity());
+}
+
+
 function saveExpressShopperDetails(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
@@ -56,7 +114,11 @@ function saveExpressShopperDetails(req, res, next) {
         shopperDetails,
       );
     });
-    res.json({ success: true });
+    setBillingAndShippingAddress(currentBasket);
+    Logger.getLogger('Adyen').error(' after setBillingAndShippingAddress');
+
+    res.redirect(URLUtils.url('Cart-Show'));
+//    res.json({ success: true });
     return next();
   } catch (e) {
     AdyenLogs.error_log('Could not save amazon express shopper details');

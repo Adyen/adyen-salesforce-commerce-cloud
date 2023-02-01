@@ -186,6 +186,12 @@ var adyenHelperObj = {
       return JSON.stringify(amount);
   },
 
+  getBasketShipment() {
+    const BasketMgr = require('dw/order/BasketMgr');
+    const currentBasket = BasketMgr.getCurrentBasket();
+    return JSON.stringify(currentBasket.getDefaultShipment().getUUID());
+  },
+
   // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
   getDonationAmounts() {
     let returnValue = [];

@@ -1,0 +1,35 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
+   <script type="text/javascript">
+       window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+       window.locale = "${request.locale}";
+       window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
+       window.updateShippingMethodsURL = "${URLUtils.https('Adyen-UpdateShippingMethods')}";
+       window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+
+       var queryString = '${request.getHttpQueryString()}'.split("=");
+       var amazonCheckoutSessionId = queryString[queryString.length - 1];
+       window.amazonCheckoutSessionId = amazonCheckoutSessionId;
+
+     window.Configuration = {
+         locale: '${request.locale}',
+         clientKey: "${AdyenConfigs.getAdyenClientKey()}",
+         environment: "${AdyenConfigs.getAdyenEnvironment()}",
+     };
+     window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+     window.shipmentUUID = "${pdict.AdyenHelper.getBasketShipment()}".replace(/&quot;/g, '');
+     window.updateShippingMethodsListURL = "${URLUtils.https('CheckoutShippingServices-UpdateShippingMethodsList')}"
+     console.log('window.shipmentUUID ' + window.shipmentUUID);
+     window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
+   </script>
+
+   <isscript>
+       var assets = require('*/cartridge/scripts/assets.js');
+       assets.addJs('/js/amazonPayTest.js');
+   </isscript>
+</isif>

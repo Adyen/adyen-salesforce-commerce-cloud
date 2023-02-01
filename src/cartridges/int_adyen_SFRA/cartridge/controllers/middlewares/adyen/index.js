@@ -14,6 +14,7 @@ const callSelectShippingMethod = require('*/cartridge/controllers/middlewares/ad
 const fetchGiftCards = require('*/cartridge/controllers/middlewares/adyen/fetchGiftCards');
 const saveExpressShopperDetails = require('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails');
 const getCheckoutPaymentMethods = require('*/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods');
+const updateShippingMethods = require('*/cartridge/controllers/middlewares/adyen/updateShippingMethods');
 
 module.exports = {
   showConfirmation,
@@ -32,4 +33,5 @@ module.exports = {
   fetchGiftCards,
   saveExpressShopperDetails,
   getCheckoutPaymentMethods,
+  updateShippingMethods,
 };

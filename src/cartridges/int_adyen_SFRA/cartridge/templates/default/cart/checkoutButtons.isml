@@ -5,31 +5,6 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
-   <script type="text/javascript">
-       window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
-       window.locale = "${request.locale}";
-       window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
-       window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
-
-       var queryString = '${request.getHttpQueryString()}'.split("=");
-       var amazonCheckoutSessionId = queryString[queryString.length - 1];
-       window.amazonCheckoutSessionId = amazonCheckoutSessionId;
-
-     window.Configuration = {
-         locale: '${request.locale}',
-         clientKey: "${AdyenConfigs.getAdyenClientKey()}",
-         environment: "${AdyenConfigs.getAdyenEnvironment()}",
-     };
-     window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
-     window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
-   </script>
-
-   <isscript>
-       var assets = require('*/cartridge/scripts/assets.js');
-       assets.addJs('/js/amazonPayExpressPart2.js');
-   </isscript>
-
-     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
      <div id="amazon-container"></div>
 <iselse>
    <script type="text/javascript">

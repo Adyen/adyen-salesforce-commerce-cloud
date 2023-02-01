@@ -141,10 +141,10 @@ function handleRefusedResultCode(result, reqDataObj, order) {
   }
 }
 
-function isExpressPayment(reqDataObj, currentBasket) {
+function isExpressPayment(reqDataObj, currentBasket, pm) {
   return (
     reqDataObj.paymentType === 'express' || // applepay
-    currentBasket.custom.amazonExpressShopperDetails // amazon
+    (currentBasket.custom.amazonExpressShopperDetails && pm === "amazonpay")// amazon
   );
 }
 
@@ -152,7 +152,9 @@ function isExpressPayment(reqDataObj, currentBasket) {
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
+    const Logger = require('dw/system/Logger');
   const reqDataObj = JSON.parse(req.form.data);
+  Logger.getLogger('Adyen').error('req.form.paymentMethod ' + req.form.paymentMethod);
   if (reqDataObj.cancelTransaction) {
     return handleCancellation(res, next, reqDataObj);
   }
@@ -182,7 +184,7 @@ function paymentFromComponent(req, res, next) {
     );
   });
 
-  if (isExpressPayment(reqDataObj, currentBasket)) {
+  if (isExpressPayment(reqDataObj, currentBasket, req.form.paymentMethod)) {
     setBillingAndShippingAddress(reqDataObj, currentBasket);
   }
 
