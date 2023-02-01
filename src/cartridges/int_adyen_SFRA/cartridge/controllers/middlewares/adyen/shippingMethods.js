@@ -67,9 +67,18 @@ function getApplicableShippingMethods(shipment, address) {
  */
 function callGetShippingMethods(req, res, next) {
   try {
+    let address = null;
+    if (req.querystring) {
+      address = {
+        city: req.querystring.city,
+        countryCode: req.querystring.countryCode,
+        stateCode: req.querystring.stateCode,
+      };
+    }
     const currentBasket = BasketMgr.getCurrentBasket();
     const currentShippingMethodsModels = getApplicableShippingMethods(
       currentBasket.getDefaultShipment(),
+      address,
     );
     res.json({
       shippingMethods: currentShippingMethodsModels,

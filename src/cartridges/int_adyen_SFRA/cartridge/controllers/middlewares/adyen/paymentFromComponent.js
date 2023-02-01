@@ -27,9 +27,7 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     }
   });
 
-  const shopperDetails =
-    reqDataObj.customer ||
-    JSON.parse(currentBasket.custom.amazonExpressShopperDetails); // apple pay or amazon pay
+  const shopperDetails = reqDataObj.customer;
 
   Transaction.wrap(() => {
     billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
@@ -42,6 +40,11 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     );
     if (shopperDetails.billingAddressDetails.address2) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
+    }
+    if (shopperDetails.billingAddressDetails.stateCode) {
+      billingAddress.setStateCode(
+        shopperDetails.billingAddressDetails.stateCode,
+      );
     }
 
     currentBasket.setCustomerEmail(shopperDetails.profile.email);
@@ -58,6 +61,11 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     if (shopperDetails.addressBook.preferredAddress.address2) {
       shippingAddress.setAddress2(
         shopperDetails.addressBook.preferredAddress.address2,
+      );
+    }
+    if (shopperDetails.addressBook.preferredAddress.stateCode) {
+      shippingAddress.setStateCode(
+        shopperDetails.addressBook.preferredAddress.stateCode,
       );
     }
   });
@@ -174,9 +182,8 @@ function paymentFromComponent(req, res, next) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
         session.privacy.partialPaymentData;
     }
-    paymentInstrument.custom.adyenPaymentMethod = AdyenHelper.getAdyenComponentType(
-      req.form.paymentMethod,
-    );
+    paymentInstrument.custom.adyenPaymentMethod =
+      AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
   });
 
   if (isExpressPayment(reqDataObj)) {
