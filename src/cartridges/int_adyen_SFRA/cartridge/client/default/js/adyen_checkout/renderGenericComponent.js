@@ -10,6 +10,7 @@ const {
   renderAddedGiftCard,
   showGiftCardWarningMessage,
   attachGiftCardAddButtonListener,
+  showGiftCardInfoMessage,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -81,6 +82,9 @@ function applyGiftCards() {
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
+    if (store.addedGiftCards?.length) {
+      showGiftCardInfoMessage();
+    }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     createElementsToShowRemainingGiftCardAmount();
