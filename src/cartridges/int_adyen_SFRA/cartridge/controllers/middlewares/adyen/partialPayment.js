@@ -1,11 +1,11 @@
 const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const BasketMgr = require('dw/order/BasketMgr');
+const Resource = require('dw/web/Resource');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
-const Resource = require('dw/web/Resource');
 
 function makePartialPayment(req, res, next) {
   try {
@@ -124,8 +124,8 @@ function makePartialPayment(req, res, next) {
         'infoMessage.giftCard',
         'adyen',
         null,
-        remainingAmountFormatted
-      )
+        remainingAmountFormatted,
+      ),
     });
   } catch (error) {
     AdyenLogs.error_log(

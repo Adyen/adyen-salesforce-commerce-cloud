@@ -10,7 +10,7 @@ const {
   renderAddedGiftCard,
   showGiftCardWarningMessage,
   attachGiftCardAddButtonListener,
-  showGiftCardInfoMessage
+  showGiftCardInfoMessage,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {

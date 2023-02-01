@@ -141,10 +141,8 @@ function handleRefusedResultCode(result, reqDataObj, order) {
   }
 }
 
-function isExpressPayment(reqDataObj, currentBasket) {
-  return (
-    reqDataObj.paymentType === 'express'
-  );
+function isExpressPayment(reqDataObj) {
+  return reqDataObj.paymentType === 'express'; // applepay
 }
 
 /**
@@ -181,7 +179,7 @@ function paymentFromComponent(req, res, next) {
     );
   });
 
-  if (isExpressPayment(reqDataObj, currentBasket)) {
+  if (isExpressPayment(reqDataObj)) {
     setBillingAndShippingAddress(reqDataObj, currentBasket);
   }
 
