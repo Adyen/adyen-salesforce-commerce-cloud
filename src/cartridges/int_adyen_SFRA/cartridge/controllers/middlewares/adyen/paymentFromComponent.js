@@ -143,8 +143,7 @@ function handleRefusedResultCode(result, reqDataObj, order) {
 
 function isExpressPayment(reqDataObj, currentBasket) {
   return (
-    reqDataObj.paymentType === 'express' || // applepay
-    currentBasket.custom.amazonExpressShopperDetails // amazon
+    reqDataObj.paymentType === 'express'
   );
 }
 
