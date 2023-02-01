@@ -6,7 +6,7 @@ const {
   createElementsToShowRemainingGiftCardAmount,
   renderAddedGiftCard,
   getGiftCardElements,
-  showGiftCardInfoMessage
+  showGiftCardInfoMessage,
 } = require('./renderGiftcardComponent');
 
 function getCardConfig() {
@@ -100,8 +100,11 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect, giftCardsList } =
-    getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
@@ -132,16 +135,23 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector('button[value="submit-payment"]').disabled = false;
+          document.querySelector(
+            'button[value="submit-payment"]',
+          ).disabled = false;
           if (data.resultCode === constants.SUCCESS) {
-            const { giftCardsInfoMessageContainer, giftCardSelect } = getGiftCardElements();
+            const {
+              giftCardsInfoMessageContainer,
+              giftCardSelect,
+            } = getGiftCardElements();
             if (giftCardSelect) {
               giftCardSelect.classList.add('invisible');
             }
-            document.querySelector('button[value="submit-payment"]').disabled = true;
+            document.querySelector(
+              'button[value="submit-payment"]',
+            ).disabled = true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
-              'gift-cards-info-message-container'
+              'gift-cards-info-message-container',
             );
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {

@@ -13,13 +13,25 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 const expressMethods = ['applepay', 'amazonpay'];
 
-function setBillingAndShippingAddress(shopperDetails, currentBasket) {
-
+function setBillingAndShippingAddress(reqDataObj, currentBasket) {
   let { billingAddress } = currentBasket;
+  let { shippingAddress } = currentBasket.getDefaultShipment();
   Transaction.wrap(() => {
+    if (!shippingAddress) {
+      shippingAddress = currentBasket
+        .getDefaultShipment()
+        .createShippingAddress();
+    }
     if (!billingAddress) {
       billingAddress = currentBasket.createBillingAddress();
     }
+  });
+
+  const shopperDetails =
+    reqDataObj.customer ||
+    JSON.parse(currentBasket.custom.amazonExpressShopperDetails); // apple pay or amazon pay
+
+  Transaction.wrap(() => {
     billingAddress.setFirstName(shopperDetails.billingAddressDetails.firstName);
     billingAddress.setLastName(shopperDetails.billingAddressDetails.lastName);
     billingAddress.setPhone(shopperDetails.profile.phone);
@@ -31,19 +43,8 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
     if (shopperDetails.billingAddressDetails.address2) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
     }
-    if (shopperDetails.billingAddressDetails.stateCode) {
-      billingAddress.setStateCode(shopperDetails.billingAddressDetails.stateCode);
-    }
-  });
 
-  let { shippingAddress } = currentBasket.getDefaultShipment();
-  Transaction.wrap(() => {
     currentBasket.setCustomerEmail(shopperDetails.profile.email);
-    if (!shippingAddress) {
-      shippingAddress = currentBasket
-        .getDefaultShipment()
-        .createShippingAddress();
-    }
     shippingAddress.setFirstName(shopperDetails.profile.firstName);
     shippingAddress.setLastName(shopperDetails.profile.lastName);
     shippingAddress.setPhone(shopperDetails.profile.phone);
@@ -58,9 +59,6 @@ function setBillingAndShippingAddress(shopperDetails, currentBasket) {
       shippingAddress.setAddress2(
         shopperDetails.addressBook.preferredAddress.address2,
       );
-    }
-    if (shopperDetails.addressBook.preferredAddress.stateCode) {
-      shippingAddress.setStateCode(shopperDetails.addressBook.preferredAddress.stateCode);
     }
   });
 }
@@ -143,6 +141,10 @@ function handleRefusedResultCode(result, reqDataObj, order) {
   }
 }
 
+function isExpressPayment(reqDataObj) {
+  return reqDataObj.paymentType === 'express'; // applepay
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -172,15 +174,17 @@ function paymentFromComponent(req, res, next) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
         session.privacy.partialPaymentData;
     }
-    paymentInstrument.custom.adyenPaymentMethod =
-      AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom.adyenPaymentMethod = AdyenHelper.getAdyenComponentType(
+      req.form.paymentMethod,
+    );
   });
 
-  if (reqDataObj.paymentType === 'express') {
-    setBillingAndShippingAddress(reqDataObj.customer, currentBasket);
+  if (isExpressPayment(reqDataObj)) {
+    setBillingAndShippingAddress(reqDataObj, currentBasket);
   }
 
   const order = COHelpers.createOrder(currentBasket);
+
   let result;
   Transaction.wrap(() => {
     result = adyenCheckout.createPaymentRequest({
@@ -189,10 +193,13 @@ function paymentFromComponent(req, res, next) {
     });
   });
 
+  currentBasket.custom.amazonExpressShopperDetails = null;
+
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
 
+  // Check if gift card was used
   if (session.privacy.giftCardResponse) {
     handleGiftCardPayment(currentBasket, order);
   }

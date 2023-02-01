@@ -10,7 +10,9 @@ function getGiftCardElements() {
     '#giftCardSelectContainer',
   );
   const giftCardsList = document.querySelector('#giftCardsList');
-  const giftCardsInfoMessageContainer = document.querySelector('#giftCardsInfoMessage');
+  const giftCardsInfoMessageContainer = document.querySelector(
+    '#giftCardsInfoMessage',
+  );
 
   return {
     giftCardSelect,
@@ -19,7 +21,7 @@ function getGiftCardElements() {
     giftCardAddButton,
     giftCardSelectContainer,
     giftCardsList,
-    giftCardsInfoMessageContainer
+    giftCardsInfoMessageContainer,
   };
 }
 
@@ -67,8 +69,11 @@ function attachGiftCardFormListeners() {
     return;
   }
 
-  const { giftCardUl, giftCardSelect, giftCardContainer } =
-    getGiftCardElements();
+  const {
+    giftCardUl,
+    giftCardSelect,
+    giftCardContainer,
+  } = getGiftCardElements();
 
   if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
@@ -174,7 +179,7 @@ function removeGiftCards() {
           giftCardAddButton,
           giftCardSelect,
           giftCardUl,
-          giftCardsInfoMessageContainer
+          giftCardsInfoMessageContainer,
         } = getGiftCardElements();
 
         adyenPartialPaymentsOrder.value = null;
@@ -189,9 +194,11 @@ function removeGiftCards() {
 
         giftCardsInfoMessageContainer.innerHTML = '';
         giftCardsInfoMessageContainer.classList.remove(
-          'gift-cards-info-message-container'
+          'gift-cards-info-message-container',
         );
-        document.querySelector('button[value="submit-payment"]').disabled = false;
+        document.querySelector(
+          'button[value="submit-payment"]',
+        ).disabled = false;
 
         if (res.resultCode === constants.RECEIVED) {
           document
@@ -240,7 +247,9 @@ function renderAddedGiftCard(card) {
   const amountLabel = document.createElement('p');
   amountLabel.textContent = window.deductedBalanceGiftCardResource;
   const amountValue = document.createElement('strong');
-  amountValue.textContent = card.discountedAmount ? `-${card.discountedAmount}` : '';
+  amountValue.textContent = card.discountedAmount
+    ? `-${card.discountedAmount}`
+    : '';
   giftCardAmountDiv.appendChild(amountLabel);
   giftCardAmountDiv.appendChild(amountValue);
 
@@ -354,13 +363,13 @@ function showGiftCardInfoMessage() {
   const { giftCardsInfoMessageContainer } = getGiftCardElements();
   giftCardsInfoMessageContainer.innerHTML = '';
   giftCardsInfoMessageContainer.classList.remove(
-    'gift-cards-info-message-container'
+    'gift-cards-info-message-container',
   );
   if (!messageText) return;
   const giftCardsInfoMessage = document.createElement('div');
   giftCardsInfoMessage.classList.add(
     'adyen-checkout__alert-message',
-    'adyen-checkout__alert-message--warning'
+    'adyen-checkout__alert-message--warning',
   );
   giftCardsInfoMessage.setAttribute('role', 'alert');
 
@@ -369,7 +378,7 @@ function showGiftCardInfoMessage() {
   giftCardsInfoMessage.appendChild(infoMessage);
   giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
   giftCardsInfoMessageContainer.classList.add(
-    'gift-cards-info-message-container'
+    'gift-cards-info-message-container',
   );
 }
 
@@ -381,5 +390,5 @@ module.exports = {
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
-  showGiftCardInfoMessage
+  showGiftCardInfoMessage,
 };
