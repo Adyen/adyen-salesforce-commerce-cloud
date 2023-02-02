@@ -3,17 +3,14 @@ async function handleExpressPaymentsVisibility() {
   if (expressMethodsOrder) {
     const sortOrder = expressMethodsOrder.split(',');
     const container = document.getElementById('express-container');
-    let toSort = container.children;
-    toSort = Array.prototype.slice.call(toSort, 0);
+    const toSort = Array.prototype.slice.call(container.children, 0);
     toSort.sort(
       (a, b) =>
         sortOrder.indexOf(a.dataset.method) -
         sortOrder.indexOf(b.dataset.method),
     );
     container.innerHTML = '';
-    for (let i = 0; i < toSort.length; i += 1) {
-      container.appendChild(toSort[i]);
-    }
+    [...toSort].map((node) => container.appendChild(node));
   }
 }
 
