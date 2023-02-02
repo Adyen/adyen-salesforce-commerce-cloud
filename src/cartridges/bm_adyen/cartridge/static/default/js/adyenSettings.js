@@ -1,3 +1,20 @@
+const expressPaymentMethods = [
+  {
+    id: 'applepay',
+    name: 'ApplePayExpress_Enabled',
+    text: 'Apple Pay',
+    icon: window.applePayIcon,
+    checked: window.isApplePayEnabled,
+  },
+  {
+    id: 'amazonpay',
+    name: 'AmazonPayExpress_Enabled',
+    text: 'Amazon Pay',
+    icon: window.amazonPayIcon,
+    checked: window.isAmazonPayEnabled,
+  },
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
@@ -20,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
   const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
+  const draggableList = document.getElementById('draggable-list');
+
+  const listItems = [];
+  let dragStartIndex;
+
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
       (setting) => setting.key === key,
@@ -36,6 +58,110 @@ document.addEventListener('DOMContentLoaded', () => {
         value,
       });
     }
+  }
+
+  function swapItems(fromIndex, toIndex) {
+    const itemOne = listItems[fromIndex].querySelector('.draggable');
+    const itemTwo = listItems[toIndex].querySelector('.draggable');
+
+    listItems[fromIndex].appendChild(itemTwo);
+    listItems[toIndex].appendChild(itemOne);
+
+    formButtons.forEach((button) => {
+      button.classList.remove('disabled');
+      button.classList.add('enabled');
+    });
+
+    const expressPaymentsOrder = [];
+    const liItemsP = draggableList.querySelectorAll('p.item');
+    liItemsP.forEach((p) => {
+      expressPaymentsOrder.push(p.dataset.id);
+    });
+
+    settingChanged('ExpressPayments_order', expressPaymentsOrder.join(','));
+  }
+
+  function dragStart() {
+    dragStartIndex = +this.closest('li').getAttribute('data-index');
+  }
+
+  function dragDrop() {
+    const dragEndIndex = +this.getAttribute('data-index');
+    swapItems(dragStartIndex, dragEndIndex);
+    this.classList.remove('over');
+  }
+
+  function dragEnter() {
+    this.classList.add('over');
+  }
+
+  function dragLeave() {
+    this.classList.remove('over');
+  }
+
+  function dragOver(e) {
+    e.preventDefault();
+  }
+
+  function addExpressEventListeners() {
+    const draggables = document.querySelectorAll('.draggable');
+    const dragListItems = document.querySelectorAll('.draggable-list li');
+
+    draggables.forEach((draggable) => {
+      draggable.addEventListener('dragstart', dragStart);
+    });
+
+    dragListItems.forEach((item) => {
+      item.addEventListener('dragover', dragOver);
+      item.addEventListener('drop', dragDrop);
+      item.addEventListener('dragenter', dragEnter);
+      item.addEventListener('dragleave', dragLeave);
+    });
+  }
+
+  function createExpressPaymentsComponent() {
+    const { expressMethodsOrder } = window;
+    if (expressMethodsOrder) {
+      const sortOrder = expressMethodsOrder.split(',');
+      expressPaymentMethods.sort(
+        (a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id),
+      );
+    }
+    expressPaymentMethods.forEach((item, index) => {
+      const listItem = document.createElement('li');
+      listItem.setAttribute('data-index', index.toString());
+
+      listItem.innerHTML = `
+        <div class="draggable" draggable="true">
+          <div class="title">
+            <img src="${window.dragIcon}" width="20" height="15" alt="" />
+            <img class="logo" 
+                src="${item.icon}" 
+                width="40" 
+                height="26" 
+                alt="" 
+            />
+            <p class="item" data-id="${item.id}">${item.text}</p>
+          </div>
+          <div class="switch-button">
+              <div class="form-check form-switch">
+                 <input class="form-check-input" 
+                        type="checkbox" 
+                        name="${item.name}" 
+                        id="${item.id}"
+                        ${item.checked ? 'checked' : 'unchecked'}
+                 >
+              </div>
+           </div>
+        </div>
+      `;
+
+      listItems.push(listItem);
+
+      draggableList.appendChild(listItem);
+    });
+
+    addExpressEventListeners();
   }
 
   // redirect to classic page
@@ -260,4 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
   cancelButton.addEventListener('click', async () => {
     window.location.reload();
   });
+
+  createExpressPaymentsComponent();
 });

@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<script>
+    window.dragIcon = "${URLUtils.staticURL('icons/drag.svg')}";
+    window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
+    window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
+
+    window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
+    window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
+    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
+</script>
+<div id="epmSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Express checkout <small class="text-secondary">(optional)</small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">To activate the Express Checkout Module, make sure you have enabled the payment methods in Adyen Customer Area.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="expressPaymentsButton">Express Checkout</label>
+            <div class="row">
+               <div class="col-sm-9">
+                  <small id="expressPaymentsButtonHelp" class="form-text mb-1">&#8198;Express Checkout is available for Apple Pay and Amazon Pay.</small>
+               </div>
+               <div class="switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="ExpressPayments_enabled" id="expressPaymentsEnabledChecked" data-bs-toggle="collapse" data-bs-target=".express-settings" ${AdyenConfigs.areExpressPaymentsEnabled() ? 'checked': 'unchecked'}>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="express-settings collapse ${AdyenConfigs.areExpressPaymentsEnabled() ? 'show': ''}">
+            <div class="form-group">
+                <ul class="draggable-list" id="draggable-list"></ul>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
