@@ -2,8 +2,7 @@
 <isinclude url="${URLUtils.url('SiteNavigationBar-IncludeFrameTop','SelectedMenuItem',pdict.SelectedMenuItem,'CurrentMenuItemId',pdict.CurrentMenuItemId)}">
 <html lang="en">
    <head>
-      <script type="text/javascript" src="${URLUtils.staticURL('adyenSettings.js')}"></script>
-      <link type="text/css" rel="stylesheet" href="${URLUtils.staticURL('css/configurationSettings.css')}"/>
+      <link type="text/css" rel="stylesheet" href="${URLUtils.httpsStatic('/css/configurationSettings.css?v=' + Math.random())}"/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"/>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
@@ -56,6 +55,7 @@
                   <isinclude template="adyenSettings/settingCards/webhookSettings"/>
                   <isinclude template="adyenSettings/settingCards/cardSettings"/>
                   <isinclude template="adyenSettings/settingCards/lpmSettings"/>
+                  <isinclude template="adyenSettings/settingCards/epmSettings"/>
                   <isinclude template="adyenSettings/settingCards/posSettings"/>
                   <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
                   <isinclude template="adyenSettings/settingCards/optionalSettings"/>
@@ -69,5 +69,6 @@
             <button type="submit" id="settingsFormSubmitButton" class="btn btn-primary border disabled formButton">Save Changes</button>
          </div>
       </footer>
+      <script type="text/javascript" src="${URLUtils.httpsStatic('/js/adyenSettings.js?v=' + Math.random())}"></script>
    </body>
 </html>
