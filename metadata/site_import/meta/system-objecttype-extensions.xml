@@ -76,7 +76,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="adyenPaymentMethod">
                 <display-name xml:lang="x-default">adyenPaymentMethod</display-name>
-                <description xml:lang="x-default">paymentMethod used by shopper</description>
+                <description xml:lang="x-default">paymentMethod used by shopper (used to sync with OMS Test)</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -85,7 +85,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="adyen_payment_adyenPaymentMethod">
                 <display-name xml:lang="x-default">adyen_payment_adyenPaymentMethod</display-name>
-                <description xml:lang="x-default">paymentMethod used by shopper (used to sync with OMS)</description>
+                <description xml:lang="x-default">paymentMethod used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -94,7 +94,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="adyen_payment_Adyen_Payment_Method_Variant">
                 <display-name xml:lang="x-default">adyen_payment_Adyen_Payment_Method_Variant</display-name>
-                <description xml:lang="x-default">payment variant used by shopper  (used to sync with OMS)</description>
+                <description xml:lang="x-default">payment variant used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -103,7 +103,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_Payment_Method_Variant">
                 <display-name xml:lang="x-default">Adyen_Payment_Method_Variant</display-name>
-                <description xml:lang="x-default">payment variant used by shopper  (used to sync with OMS)</description>
+                <description xml:lang="x-default">payment variant used by shopper (used to sync with OMS Test)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
