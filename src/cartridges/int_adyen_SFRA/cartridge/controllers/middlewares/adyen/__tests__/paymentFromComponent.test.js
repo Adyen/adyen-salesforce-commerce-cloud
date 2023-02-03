@@ -7,7 +7,16 @@ beforeEach(() => {
   const { adyen } = require('../../index');
   paymentFromComponent = adyen.paymentFromComponent;
   jest.clearAllMocks();
-  req = { form: { data: { paymentMethod: { type: 'mocked_type' } } } };
+  req = {
+    form: {
+      paymentMethod: 'method',
+      data: {
+        paymentMethod: {
+          type: 'mocked_type'
+        }
+      }
+    }
+  };
   res = { redirect: jest.fn(), json: jest.fn() };
 });
 

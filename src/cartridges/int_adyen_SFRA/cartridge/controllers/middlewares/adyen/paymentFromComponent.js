@@ -117,6 +117,13 @@ function handleGiftCardPayment(currentBasket, order) {
     );
     giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
     giftcardPM.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
+    giftcardPM.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] =
+      parsedGiftCardObj.brand;
+    giftcardPM.custom.Adyen_Payment_Method_Variant =
+      parsedGiftCardObj.paymentMethod.brand;
+    giftcardPM.custom[
+      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+    ] = parsedGiftCardObj.paymentMethod.brand;
     giftcardPM.paymentTransaction.custom.Adyen_log =
       session.privacy.giftCardResponse;
     giftcardPM.paymentTransaction.custom.Adyen_pspReference =
@@ -184,6 +191,13 @@ function paymentFromComponent(req, res, next) {
     }
     paymentInstrument.custom.adyenPaymentMethod =
       AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] =
+      AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom.Adyen_Payment_Method_Variant =
+      req.form.paymentMethod.toLowerCase();
+    paymentInstrument.custom[
+      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+    ] = req.form.paymentMethod.toLowerCase();
   });
 
   if (isExpressPayment(reqDataObj)) {
