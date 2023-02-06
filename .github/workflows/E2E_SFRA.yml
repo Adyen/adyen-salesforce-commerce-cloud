@@ -112,4 +112,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: html-report
-          path: adyen-salesforce-commerce-cloud/tests/playwright/test-report
+          path: adyen-salesforce-commerce-cloud/tests/playwright/playwright-report
