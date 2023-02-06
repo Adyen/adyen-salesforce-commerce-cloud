@@ -1,7 +1,6 @@
 import { expect } from '@playwright/test';
 import { ShopperData } from '../data/shopperData.mjs';
 import { PaymentData } from '../data/paymentData.mjs';
-import { async } from 'regenerator-runtime';
 
 const shopperData = new ShopperData();
 const paymentData = new PaymentData();
@@ -344,7 +343,6 @@ export default class PaymentMethodsPage {
 
     /* Commenting out this section since the phone number comes
     prefilled nowadays
-
     await this.klarnaPhoneInput.waitFor({
       state: "visible",
       timeout: 15000,
