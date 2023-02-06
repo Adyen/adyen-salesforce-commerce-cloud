@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { ShopperData } from '../data/shopperData.mjs';
 import { PaymentData } from '../data/paymentData.mjs';
+import { async } from 'regenerator-runtime';
 
 const shopperData = new ShopperData();
 const paymentData = new PaymentData();
@@ -71,6 +72,58 @@ export default class PaymentMethodsPage {
     await this.agreeAndPayNowButton.click();
   };
 
+  initiateAmazonPayment = async (
+    normalFlow = true,
+    success = true,
+    selectedCard
+  ) => {
+    if (normalFlow) {
+      await this.page.click("#rb_amazonpay");
+    }
+    await this.page.click(".adyen-checkout__amazonpay__button");
+  
+    // Amazon Sandbox selectors
+    this.emailInput = this.page.locator("#ap_email");
+    this.passwordInput = this.page.locator("#ap_password");
+    this.loginButton = this.page.locator("#signInSubmit");
+    this.changePaymentButton = this.page.locator("#change-payment-button");
+    this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
+
+    await this.emailInput.fill(paymentData.AmazonPay.username);
+    await this.passwordInput.fill(paymentData.AmazonPay.password);
+    await this.loginButton.click();
+  
+    // Handles the saved 3DS2 Masstercard saved in Amazon Sandbox
+    if (selectedCard == "3ds2_card") {
+      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+      await this.changePaymentButton.click();
+      await this.page.click(".MASTERCARD");
+      await this.confirmPaymentChangeButton.click();
+    }
+  
+    if (!success) {
+      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+      await this.changePaymentButton.click();
+      this.rejectionCard = this.page.locator(
+        'label[for="wallet_auth_decline_processing_failure"]'
+      );
+      await this.rejectionCard.click();
+      await this.confirmPaymentChangeButton.click();
+    }
+    this.submitButton = this.page.locator(
+      'span[data-action="continue-checkout"]'
+    );
+    await this.submitButton.click();
+  };
+  
+  continueAmazonExpressFlow = async () => {
+    this.confirmExpressPaymentButton = this.page.locator(
+      ".adyen-checkout__button--pay"
+    );
+    await this.confirmExpressPaymentButton.click();
+  };
+  
+
   initiateBillDeskPayment = async (paymentMethod) => {
     await this.page.locator(`#rb_${paymentMethod}`).click();
     if (paymentMethod === 'billdesk_upi') {
@@ -80,7 +133,7 @@ export default class PaymentMethodsPage {
     const dropDown = this.page.locator(
       `#component_${paymentMethod} .adyen-checkout__dropdown__button`,
     );
-    const issuer = this.page
+    const issuer = this.page 
       .locator(`#component_${paymentMethod} .adyen-checkout__dropdown__list li`)
       .first();
     await input.click();

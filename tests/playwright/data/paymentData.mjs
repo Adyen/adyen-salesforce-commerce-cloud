@@ -15,4 +15,8 @@ export class PaymentData {
     username: process.env.PAYPAL_USERNAME,
     password: process.env.PAYPAL_PASSWORD,
   };
+  AmazonPay = {
+    username : process.env.AMAZONPAY_USERNAME,
+    password: process.env.AMAZONPAY_PASSWORD,
+  }
 }
