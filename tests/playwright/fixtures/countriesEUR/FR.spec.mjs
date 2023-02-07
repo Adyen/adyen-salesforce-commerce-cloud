@@ -50,6 +50,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
    test('No 3DS Amazon Pay', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
+    if (environment.name.indexOf('v6') === -1) {
+      await checkoutPage.setEmail();
+    }
     redirectShopper = new RedirectShopper(page);
     await redirectShopper.doAmazonPayment();
     await checkoutPage.expectSuccess();
@@ -58,6 +61,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
   test('3DS2 Amazon Pay', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
+    if (environment.name.indexOf('v6') === -1) {
+      await checkoutPage.setEmail();
+    }
     redirectShopper = new RedirectShopper(page);
     await redirectShopper.doAmazonPayment(true, true, '3ds2_card');
     await cards.do3Ds2Verification();
@@ -76,6 +82,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
   test('Amazon Pay Failure', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
+    if (environment.name.indexOf('v6') === -1) {
+      await checkoutPage.setEmail();
+    }
     redirectShopper = new RedirectShopper(page);
     await redirectShopper.doAmazonPayment(true, false);
     await checkoutPage.expectRefusal();
