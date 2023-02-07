@@ -109,6 +109,7 @@ export default class PaymentMethodsPage {
       await this.rejectionCard.click();
       await this.confirmPaymentChangeButton.click();
     }
+    await this.page.waitForLoadState("networkidle", { timeout: 15000 });
     this.submitButton = this.page.locator(
       'span[data-action="continue-checkout"]'
     );
