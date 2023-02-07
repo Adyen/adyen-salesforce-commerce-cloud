@@ -108,7 +108,11 @@ export default class CheckoutPageSFRA5 {
 
   getCheckoutUrl(locale) {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
-  }
+  };
+
+  getCartUrl(locale) {
+    return `/s/RefArch/cart?lang=${locale}`;
+  };
 
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();

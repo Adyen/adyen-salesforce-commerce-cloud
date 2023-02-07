@@ -113,6 +113,10 @@ export default class CheckoutPageSFRA {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Begin`;
   }
 
+  getCartUrl(locale) {
+    return `/s/RefArch/cart?lang=${locale}`;
+  };
+
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
     await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
