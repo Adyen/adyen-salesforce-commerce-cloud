@@ -6,6 +6,20 @@ function saveShopperDetails(data) {
       shopperDetails: JSON.stringify(data),
       paymentMethod: 'amazonpay',
     },
+    success(data) {
+      console.log('inside success');
+      console.log(JSON.stringify(data));
+      const select = document.querySelector('#shippingMethods');
+      select.innerHTML = "";
+      data.shippingMethods.forEach(shippingMethod => {
+        const option = document.createElement('option');
+        option.setAttribute('data-shipping-id', shippingMethod.ID);
+        option.innerText = `${shippingMethod.displayName} (${shippingMethod.estimatedArrivalTime})`;
+        select.appendChild(option);
+      });
+      select.options[0].selected = true;
+      select.dispatchEvent(new Event('change'));
+    },
   });
 }
 
