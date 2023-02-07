@@ -95,6 +95,8 @@ jobs:
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
           PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+          AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
       - name: run e2e tests quick coverage
