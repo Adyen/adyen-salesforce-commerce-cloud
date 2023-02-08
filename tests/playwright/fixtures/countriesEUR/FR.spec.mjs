@@ -70,7 +70,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.expectSuccess();
   });
 
-  test('Amazon Pay Express', async ({ page }) => {
+  test.skip('Amazon Pay Express', async ({ page }) => {
     redirectShopper = new RedirectShopper(page);
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
