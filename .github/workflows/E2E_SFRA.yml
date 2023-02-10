@@ -3,8 +3,8 @@ name: E2E For SFRA
 on:
   pull_request:
     paths-ignore:
-      - "int_adyen_controllers/**"
-      - "adyen_controllers_changes/**"
+      - 'int_adyen_controllers/**'
+      - 'adyen_controllers_changes/**'
 
 jobs:
   setup-the-cartridge:
@@ -14,12 +14,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - sfra-version: "v5.3.0"
-            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA5"
-            code-version-secret: "SFCC_CODE_VERSION_SFRA5"
-          - sfra-version: "v6.1.0"
-            sfcc-hostname-secret: "SFCC_HOSTNAME_SFRA6"
-            code-version-secret: "SFCC_CODE_VERSION_SFRA6"
+          - sfra-version: 'v5.3.0'
+            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA5'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
+          - sfra-version: 'v6.1.0'
+            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
       - name: Checkout SFRA code
         uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: '14'
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -65,17 +65,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - sfra-version: "v5.3.0"
-            sfcc-hostname-secret: "SFCC_STOREFRONT_URL_SFRA5"
-            code-version-secret: "SFCC_CODE_VERSION_SFRA5"
-          - sfra-version: "v6.1.0"
-            sfcc-hostname-secret: "SFCC_STOREFRONT_URL_SFRA6"
-            code-version-secret: "SFCC_CODE_VERSION_SFRA6"
+          - sfra-version: 'v5.3.0'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA5'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
+          - sfra-version: 'v6.1.0'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA6'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: '16'
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -95,6 +95,8 @@ jobs:
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
           PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+          AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
       - name: run e2e tests quick coverage
@@ -106,10 +108,12 @@ jobs:
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
           PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+          AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
       - name: Archive test result artifacts
         uses: actions/upload-artifact@v3
         with:
           name: html-report
-          path: adyen-salesforce-commerce-cloud/tests/playwright/test-report
+          path: adyen-salesforce-commerce-cloud/tests/playwright/playwright-report
