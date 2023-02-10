@@ -2,6 +2,7 @@ const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function setBillingAndShippingAddress(currentBasket) {
   let { billingAddress } = currentBasket;
@@ -64,7 +65,10 @@ function saveExpressShopperDetails(req, res, next) {
       );
     });
     setBillingAndShippingAddress(currentBasket);
-    res.json({ success: true });
+    const shippingMethods = AdyenHelper.callGetShippingMethods(
+      shopperDetails.shippingAddress,
+    );
+    res.json({ shippingMethods });
     return next();
   } catch (e) {
     AdyenLogs.error_log('Could not save amazon express shopper details');
