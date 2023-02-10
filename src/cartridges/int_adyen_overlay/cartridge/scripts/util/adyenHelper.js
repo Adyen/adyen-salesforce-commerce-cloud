@@ -34,7 +34,6 @@ const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod'
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
-const Logger = require('dw/system/Logger');
 const BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
@@ -147,16 +146,13 @@ var adyenHelperObj = {
           countryCode: shippingAddress.countryCode,
           stateCode: shippingAddress.stateOrRegion,
         };
-      Logger.getLogger('Adyen').error('address ' + JSON.stringify(address));
       const currentBasket = BasketMgr.getCurrentBasket();
       const currentShippingMethodsModels = this.getApplicableShippingMethods(
         currentBasket.getDefaultShipment(),
         address,
       );
-      Logger.getLogger('Adyen').error('currentShippingMethodsModels ' + JSON.stringify(currentShippingMethodsModels));
       return currentShippingMethodsModels;
     } catch (error) {
-      Logger.getLogger('Adyen').error('inside catch ' + JSON.stringify(error));
       AdyenLogs.error_log('Failed to fetch shipping methods');
       AdyenLogs.error_log(error);
     }
