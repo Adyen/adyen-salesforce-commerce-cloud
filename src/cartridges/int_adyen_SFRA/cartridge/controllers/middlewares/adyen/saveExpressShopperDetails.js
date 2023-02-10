@@ -65,7 +65,6 @@ function saveExpressShopperDetails(req, res, next) {
       );
     });
     setBillingAndShippingAddress(currentBasket);
-    //    const shippingMethods = URLUtils.https('Adyen-ShippingMethods');
     const shippingMethods = AdyenHelper.callGetShippingMethods(
       shopperDetails.shippingAddress,
     );

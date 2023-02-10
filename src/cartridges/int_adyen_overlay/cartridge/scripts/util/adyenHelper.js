@@ -135,9 +135,6 @@ var adyenHelperObj = {
     return filteredMethods;
   },
 
-  /**
-   * Make a request to Adyen to get shipping methods
-   */
   callGetShippingMethods(shippingAddress) {
     let address;
     try {
