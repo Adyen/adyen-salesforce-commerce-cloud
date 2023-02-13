@@ -30,6 +30,8 @@
    </isscript>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+          <pre id="paymentStr"></pre>
+          <pre id="address"></pre>
      <div id="amazon-container"></div>
 <iselse>
    <script type="text/javascript">

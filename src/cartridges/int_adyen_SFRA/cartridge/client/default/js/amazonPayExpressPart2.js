@@ -39,6 +39,15 @@ async function mountAmazonPayComponent() {
 
   const shopperDetails = await amazonPayComponent.getShopperDetails();
   saveShopperDetails(shopperDetails);
+  console.log(JSON.stringify(shopperDetails))
+  let addressStr = "Billing Address:";
+  Object.values(shopperDetails.billingAddress).forEach(item => {
+    if(item) {
+         addressStr += ` ${item} `;
+    }
+  })
+  document.querySelector('#address').innerText = addressStr;
+  document.querySelector('#paymentStr').innerText = shopperDetails.paymentDescriptor;
 }
 
 mountAmazonPayComponent();
