@@ -13,6 +13,7 @@ function clearCustomSessionFields() {
   session.privacy.ratePayFingerprint = null;
   session.privacy.giftCardResponse = null;
   session.privacy.partialPaymentData = null;
+  session.privacy.amazonExpressShopperDetail = null;
 }
 
 /**
@@ -40,9 +41,11 @@ function clearAdyenData(paymentInstrument) {
  * Clear Adyen basket data
  */
 function clearAdyenBasketData(basket) {
-  Transaction.wrap(() => {
-    basket.custom.adyenGiftCards = null;
-  });
+  if (basket) {
+    Transaction.wrap(() => {
+      basket.custom.adyenGiftCards = null;
+    });
+  }
 }
 
 /**

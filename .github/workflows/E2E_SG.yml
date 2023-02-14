@@ -7,6 +7,7 @@ on:
 
 jobs:
   setup-the-cartridge:
+    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -50,10 +51,12 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run build
   end-to-end-testing:
+    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge
     runs-on:
       group: larger-runners
       labels: ubuntu-latest-8-cores
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:

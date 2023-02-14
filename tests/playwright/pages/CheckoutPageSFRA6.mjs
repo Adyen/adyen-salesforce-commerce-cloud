@@ -96,6 +96,10 @@ export default class CheckoutPageSFRA {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
+  navigateToCart = async (locale) => {
+    await this.page.goto(this.getCartUrl(locale));
+  }
+
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
     await this.addProductToCart(locale, itemCount);
     await this.successMessage.waitFor({ visible: true, timeout: 15000 });
@@ -108,6 +112,10 @@ export default class CheckoutPageSFRA {
   getCheckoutUrl(locale) {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Begin`;
   }
+
+  getCartUrl(locale) {
+    return `/s/RefArch/cart?lang=${locale}`;
+  };
 
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();

@@ -7,7 +7,7 @@ const { clearForms } = require('*/cartridge/controllers/utils/index');
 function fetchGiftCards(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const addedGiftCards = currentBasket.custom?.adyenGiftCards
+    const addedGiftCards = currentBasket?.custom?.adyenGiftCards
       ? JSON.parse(currentBasket.custom.adyenGiftCards)
       : [];
     let totalDiscountedAmount = null;

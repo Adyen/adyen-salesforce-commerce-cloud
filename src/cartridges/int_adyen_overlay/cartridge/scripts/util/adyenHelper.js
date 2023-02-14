@@ -29,10 +29,12 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
 const collections = require('*/cartridge/scripts/util/collections');
+const ShippingMgr = require('dw/order/ShippingMgr');
+const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
-
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -73,6 +75,84 @@ var adyenHelperObj = {
       );
     }
     return null;
+  },
+
+  getShippingCost(shippingMethod, shipment) {
+    const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+    const shippingCost = shipmentShippingModel.getShippingCost(shippingMethod);
+    return {
+      value: shippingCost.amount.value,
+      currencyCode: shippingCost.amount.currencyCode,
+    };
+  },
+
+  getShippingMethods(shipment, address) {
+    if (!shipment) return null;
+
+    const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+
+    let shippingMethods;
+    if (address) {
+      shippingMethods = shipmentShippingModel.getApplicableShippingMethods(
+        address,
+      );
+    } else {
+      shippingMethods = shipmentShippingModel.getApplicableShippingMethods();
+    }
+
+    return shippingMethods;
+  },
+
+  getShipmentUUID(shipment) {
+    if (!shipment) return null;
+    return shipment.UUID;
+  },
+
+  getApplicableShippingMethods(shipment, address) {
+    const shippingMethods = this.getShippingMethods(shipment, address);
+    if (!shippingMethods) {
+      return null;
+    }
+
+    // Filter out whatever the method associated with in store pickup
+    const filteredMethods = [];
+    collections.forEach(shippingMethods, (shippingMethod) => {
+      if (!shippingMethod.custom.storePickupEnabled) {
+        const shippingMethodModel = new ShippingMethodModel(
+          shippingMethod,
+          shipment,
+        );
+        const shippingCost = this.getShippingCost(shippingMethod, shipment);
+        const shipmentUUID = this.getShipmentUUID(shipment);
+        filteredMethods.push({
+          ...shippingMethodModel,
+          shippingCost,
+          shipmentUUID,
+        });
+      }
+    });
+
+    return filteredMethods;
+  },
+
+  callGetShippingMethods(shippingAddress) {
+    let address;
+    try {
+        address = {
+          city: shippingAddress.city,
+          countryCode: shippingAddress.countryCode,
+          stateCode: shippingAddress.stateOrRegion,
+        };
+      const currentBasket = BasketMgr.getCurrentBasket();
+      const currentShippingMethodsModels = this.getApplicableShippingMethods(
+        currentBasket.getDefaultShipment(),
+        address,
+      );
+      return currentShippingMethodsModels;
+    } catch (error) {
+      AdyenLogs.error_log('Failed to fetch shipping methods');
+      AdyenLogs.error_log(error);
+    }
   },
 
   getAdyenGivingConfig(order) {
@@ -170,6 +250,21 @@ var adyenHelperObj = {
     );
 
     return signature;
+  },
+
+  getBasketAmount() {
+      const BasketMgr = require('dw/order/BasketMgr');
+      const currentBasket = BasketMgr.getCurrentBasket();
+      if(!currentBasket) {
+        return;
+      }
+       const amount =  {
+         currency: currentBasket.currencyCode,
+         value: this.getCurrencyValueForApi(
+           currentBasket.getTotalGrossPrice(),
+         ).value,
+       };
+      return JSON.stringify(amount);
   },
 
   // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
@@ -359,8 +454,8 @@ var adyenHelperObj = {
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
-        ? shippingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? shippingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
@@ -389,8 +484,8 @@ var adyenHelperObj = {
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
-        ? billingAddress.countryCode.value.toUpperCase()
-        : 'ZZ',
+       ? billingAddress.countryCode.value.toUpperCase()
+       : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
       stateOrProvince: billingAddress.stateCode
@@ -473,53 +568,19 @@ var adyenHelperObj = {
     return jsonObject;
   },
 
-  // gets the SFCC card type name based on the Adyen card type name
-  getAdyenCardType(cardType) {
-    if (!empty(cardType)) {
-      switch (cardType) {
-        case 'Visa':
-          cardType = 'visa';
-          break;
-        case 'Master':
-        case 'MasterCard':
-        case 'Mastercard':
-          cardType = 'mc';
-          break;
-        case 'Amex':
-          cardType = 'amex';
-          break;
-        case 'Discover':
-          cardType = 'discover';
-          break;
-        case 'Maestro':
-          cardType = 'maestro';
-          break;
-        case 'Diners':
-          cardType = 'diners';
-          break;
-        case 'Bancontact':
-          cardType = 'bcmc';
-          break;
-        case 'JCB':
-          cardType = 'jcb';
-          break;
-        case 'CUP':
-          cardType = 'cup';
-          break;
-        case 'Carte Bancaire':
-          cardType = 'cartebancaire';
-          break;
-        default:
-          cardType = cardType.toLowerCase();
-          break;
-      }
-    } else {
-      throw new Error(
-        'cardType argument is not passed to getAdyenCardType function',
-      );
+  getAdyenComponentType(paymentMethod) {
+    let methodName;
+    switch (paymentMethod) {
+      case 'applepay':
+        methodName = 'Apple Pay';
+        break;
+      case 'amazonpay':
+        methodName = 'Amazon Pay';
+        break;
+      default:
+        methodName = paymentMethod;
     }
-
-    return cardType;
+    return methodName;
   },
 
   getOrderMainPaymentInstrumentType(order) {

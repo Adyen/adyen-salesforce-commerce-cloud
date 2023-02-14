@@ -5,6 +5,17 @@ jest.mock('*/cartridge/models/order', () => {
   return jest.fn();
 }, {virtual: true});
 
+jest.mock('*/cartridge/models/cart', () => {
+  return jest.fn();
+}, {virtual: true});
+
+jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
+  return jest.fn();
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/selectShippingMethods', () => {
+  return jest.fn();
+}, {virtual: true});
 
 // cartridge/scripts mocks
 jest.mock('*/cartridge/scripts/adyenCheckout', () => {
@@ -226,6 +237,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     add3DS2Data: jest.fn((request) => {
       return request
     }),
+    getAdyenComponentType : jest.fn(() => {}),
     getOrderMainPaymentInstrumentType: jest.fn(() => {}),
     getPaymentInstrumentType: jest.fn((isCreditCard) => isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),
   }), {virtual: true});

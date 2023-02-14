@@ -41,6 +41,10 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder',
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
 }, {virtual: true});
 
+jest.mock('*/cartridge/models/cart', () => {
+  return require('../cartridge/models/cart');
+}, {virtual: true});
+
 jest.mock('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
 }, {virtual: true});
@@ -49,8 +53,24 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/partialPayment', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/partialPayment');
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/shippingMethods', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/shippingMethods');
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/shippingMethods', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/selectShippingMethods');
+}, {virtual: true});
+
 jest.mock('*/cartridge/controllers/middlewares/adyen/fetchGiftCards', () => {
 	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/fetchGiftCards');
+  }, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails');
+  }, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods');
   }, {virtual: true});
 
 // middlewares/adyen/showConfirmationPaymentFromComponent subclasses
@@ -194,6 +214,10 @@ jest.mock('*/cartridge/scripts/checkout/utils/getPayments', () => {
 
 jest.mock('*/cartridge/scripts/checkout/utils/validatePaymentMethod', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/utils/validatePaymentMethod');
+}, {virtual: true});
+
+jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/shippingHelpers');
 }, {virtual: true});
 
 // scripts/hooks/payment/processor/middlewares/authorize subclasses

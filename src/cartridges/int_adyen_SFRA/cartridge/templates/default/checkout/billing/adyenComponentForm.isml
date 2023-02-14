@@ -23,6 +23,7 @@
 
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
+      window.deductedBalanceGiftCardResource = "${Resource.msg('deductedBalance.giftCard', 'adyen', null)}";
       window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 
       window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
@@ -32,7 +33,7 @@
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/amazon.js');
+        assets.addJs('/js/amazonPayCheckout.js');
         assets.addCss('/css/adyenCss.css');
     </isscript>
 
@@ -82,8 +83,9 @@
             <ul id="giftCardUl" class="list-cards invisible"></ul>
             <div id="giftCardContainer"></div>
         </div>
-        <div id="giftCardsList" class="gift-cards-container"></div>
     </div>
+    <div id="giftCardsList" class="gift-cards-container"></div>
+    <div id="giftCardsInfoMessage"></div>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
 

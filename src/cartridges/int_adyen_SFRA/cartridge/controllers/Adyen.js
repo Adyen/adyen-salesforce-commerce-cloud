@@ -22,6 +22,18 @@ server.post(
 
 server.get('Sessions', server.middleware.https, adyen.callCreateSession);
 
+server.get(
+  'ShippingMethods',
+  server.middleware.https,
+  adyen.callGetShippingMethods,
+);
+
+server.post(
+  'SelectShippingMethod',
+  server.middleware.https,
+  adyen.callSelectShippingMethod,
+);
+
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
  */
@@ -66,6 +78,21 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   adyen.paymentFromComponent,
+);
+
+/**
+ *  Save shopper details that came from an Express component in the SFCC session
+ */
+server.post(
+  'SaveExpressShopperDetails',
+  server.middleware.https,
+  adyen.saveExpressShopperDetails,
+);
+
+server.get(
+  'GetPaymentMethods',
+  server.middleware.https,
+  adyen.getCheckoutPaymentMethods,
 );
 
 /**
