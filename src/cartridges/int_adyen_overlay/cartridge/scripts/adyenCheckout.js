@@ -155,6 +155,10 @@ function createPaymentRequest(args) {
       }
     }
 
+    //Set Apple Pay tokenisation
+    if (AdyenConfigs.getAdyenApplePayTokenisationEnabled() && AdyenHelper.isApplePay(paymentRequest.paymentMethod.type)) {
+          paymentRequest.storePaymentMethod = true;
+    }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 
     // make API call

@@ -13,6 +13,7 @@ function handleAuthorised(response) {
 }
 
 function handleError() {
+    console.log('inside handle error');
   document.querySelector('#result').value = JSON.stringify({
     error: true,
   });

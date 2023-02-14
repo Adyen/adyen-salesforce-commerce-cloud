@@ -71,6 +71,26 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
   });
 }
 
+// used for apple pay via Checkout form
+function setApplePayData(result, order) {
+  const applePayResult = {};
+  if (result.fullResponse) {
+    const adyenPaymentInstrument = order.getPaymentInstruments(
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
+    )[0];
+    Transaction.wrap(() => {
+      adyenPaymentInstrument.custom.adyenAction = JSON.stringify(
+        result.fullResponse,
+      );
+    });
+    applePayResult.fullResponse = AdyenHelper.createAdyenCheckoutResponse(
+      result.fullResponse,
+    );
+    applePayResult.isApplePay = true;
+  }
+  return applePayResult;
+}
+
 function failOrder(order) {
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
@@ -224,6 +244,9 @@ function paymentFromComponent(req, res, next) {
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
     handleGiftCardPayment(currentBasket, order);
+  }
+  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
+    result = setApplePayData(result, order);
   }
 
   result.orderNo = order.orderNo;

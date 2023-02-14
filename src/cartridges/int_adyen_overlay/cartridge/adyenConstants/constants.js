@@ -24,6 +24,11 @@ module.exports = {
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
 
+    PAYMENTMETHODS: {
+      APPLEPAY: 'applepay',
+      AMAZONPAY: 'amazonpay',
+    },
+
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
