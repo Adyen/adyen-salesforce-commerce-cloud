@@ -5,6 +5,7 @@ const {
   getCardConfig,
   getPaypalConfig,
   getGooglePayConfig,
+  getAmazonpayConfig,
   setCheckoutConfiguration,
 } = require('../checkoutConfiguration');
 const store = require('../../../../../store');
@@ -12,6 +13,8 @@ const store = require('../../../../../store');
 let card;
 let paypal;
 let paywithgoogle;
+let amazonpay;
+
 beforeEach(() => {
   window.Configuration = { environment: 'TEST' };
   store.checkoutConfiguration = {};
@@ -19,6 +22,7 @@ beforeEach(() => {
   card = getCardConfig();
   paypal = getPaypalConfig();
   paywithgoogle = getGooglePayConfig();
+  amazonpay = getAmazonpayConfig();
 });
 
 describe('Checkout Configuration', () => {
@@ -80,6 +84,41 @@ describe('Checkout Configuration', () => {
       paywithgoogle.onSubmit({ data: {} });
       expect(spy).toBeCalledTimes(1);
       expect(submitButton.disabled).toBeFalsy();
+    });
+  });
+  describe('AmazonPay Success', () => {
+    it('handles onClick', () => {
+      document.body.innerHTML = `
+        <div id="lb_amazonpay">AmazonPay</div>
+        <div id="adyenPaymentMethodName"></div>
+        <div id="adyenStateData"></div>
+      `;
+      store.selectedMethod = 'amazonpay';
+      store.formErrorsExist = false;
+      store.componentsObj = { amazonpay: { stateData: { foo: 'bar' } } };
+      const resolve = jest.fn();
+      const reject = jest.fn();
+      amazonpay.onClick(resolve, reject);
+      expect(resolve).toBeCalledTimes(1);
+      expect(reject).toBeCalledTimes(0);
+    });
+  });
+
+  describe('AmazonPay Fail', () => {
+    it('handles onClick', () => {
+      document.body.innerHTML = `
+        <div id="lb_amazonpay">AmazonPay</div>
+        <div id="adyenPaymentMethodName"></div>
+        <div id="adyenStateData"></div>
+      `;
+      store.selectedMethod = 'amazonpay';
+      store.formErrorsExist = true;
+      store.componentsObj = { amazonpay: { stateData: { foo: 'bar' } } };
+      const resolve = jest.fn();
+      const reject = jest.fn();
+      amazonpay.onClick(resolve, reject);
+      expect(resolve).toBeCalledTimes(0);
+      expect(reject).toBeCalledTimes(1);
     });
   });
 });

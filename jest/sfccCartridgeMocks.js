@@ -17,6 +17,10 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/selectShippingMethods', () 
   return jest.fn();
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails', () => {
+  return jest.fn();
+}, {virtual: true});
+
 // cartridge/scripts mocks
 jest.mock('*/cartridge/scripts/adyenCheckout', () => {
   return {
