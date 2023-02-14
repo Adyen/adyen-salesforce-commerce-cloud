@@ -70,8 +70,8 @@
   },
   "resolutions": {
     "minimist": "1.2.7",
+    "node-notifier": "10.0.1",
     "minimatch": "6.2.0",
-    "node-notifier": "8.0.2",
     "glob-parent": "5.1.2",
     "yargs-parser": "5.0.1",
     "braces": "3.0.2"
