@@ -262,7 +262,7 @@ export default class PaymentMethodsPage {
   do3Ds2Verification = async () => {
     const verificationIframe = this.page.frameLocator(
       '.adyen-checkout__threeds2__challenge iframe',
-    );
+    ).frameLocator('iframe');
     await verificationIframe.locator('input[name="answer"]').fill('password');
     await verificationIframe.locator('button[type="submit"]').click();
   };
