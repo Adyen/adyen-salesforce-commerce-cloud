@@ -1,3 +1,5 @@
+
+/* eslint-disable no-unsafe-optional-chaining */
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');

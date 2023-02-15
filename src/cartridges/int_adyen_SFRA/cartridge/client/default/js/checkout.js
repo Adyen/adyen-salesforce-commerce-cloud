@@ -1,3 +1,4 @@
+/* eslint-disable prefer-regex-literals */
 const processInclude = require('base/util');
 const baseCheckout = require('base/checkout/checkout');
 const adyenCheckout = require('./adyenCheckout');
