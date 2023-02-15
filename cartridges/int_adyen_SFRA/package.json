@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "codeceptjs": "^3.0.0",
-    "testcafe": "^1.3.3",
+    "testcafe": "^2.0.0",
     "yarn": "^1.17.3"
   }
 }
