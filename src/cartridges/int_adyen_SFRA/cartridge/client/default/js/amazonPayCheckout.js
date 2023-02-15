@@ -9,6 +9,7 @@ function handleAuthorised(response) {
       ? response.fullResponse.paymentMethod
       : response.fullResponse?.additionalData?.paymentMethod,
   });
+  console.log('about to submit showConfirmationForm')
   document.querySelector('#showConfirmationForm').submit();
 }
 
@@ -21,9 +22,12 @@ function handleError() {
 }
 
 function handleAmazonResponse(response, component) {
+    console.log('inside handleAmazonResponse');
+    console.log('response ' + JSON.stringify(response));
   if (response.fullResponse?.action) {
     component.handleAction(response.fullResponse.action);
   } else if (response.resultCode === window.resultCodeAuthorised) {
+    console.log('about to handle authorised');
     handleAuthorised(response);
   } else {
     // first try the amazon decline flow
@@ -45,6 +49,7 @@ function paymentFromComponent(data, component) {
     },
     success(response) {
       helpers.setOrderFormData(response);
+
       handleAmazonResponse(response, component);
     },
   });
