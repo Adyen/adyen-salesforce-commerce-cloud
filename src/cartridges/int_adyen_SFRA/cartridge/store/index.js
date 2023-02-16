@@ -29,6 +29,8 @@ class Store {
 
   @observable addedGiftCards;
 
+  @observable expressPaymentComponents = {};
+
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }
@@ -55,6 +57,18 @@ class Store {
   updateSelectedPayment(method, key, val) {
     this.componentsObj[method][key] = val;
   }
+
+  getExpressPaymentComponents(method) {
+    return this.expressPaymentComponents[method];
+  }
+
+  setExpressPaymentComponents(method, key, val) {
+    if (!this.expressPaymentComponents[method]) {
+      this.expressPaymentComponents[method] = {};
+    }
+    this.expressPaymentComponents[method][key] = val;
+  }
+
 }
 
 module.exports = new Store();
