@@ -78,6 +78,6 @@ function saveExpressShopperDetails(req, res, next) {
 }
 
 module.exports = {
-  saveExpressShopperDetails,
   setBillingAndShippingAddress,
+  saveExpressShopperDetails
 }

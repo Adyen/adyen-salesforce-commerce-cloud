@@ -3,7 +3,6 @@
  */
 /* eslint-disable global-require */
 let saveExpressShopperDetails;
-let callGetShippingMethods;
 let res;
 let req;
 let shipment;
@@ -16,22 +15,11 @@ const {
 beforeEach(() => {
   const { adyen } = require('../../index');
   saveExpressShopperDetails = adyen.saveExpressShopperDetails;
-  callGetShippingMethods = adyen.callGetShippingMethods;
   shipment = 'mocked_shipment';
   currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
   jest.clearAllMocks();
   req = {
-    querystring: {
-      shipmentUUID: 'mocked_uuid',
-    },
     form: {
-      paymentMethod: 'method',
-      shipmentUUID: 'mocked_uuid',
-      data: {
-        paymentMethod: {
-          type: 'mocked_type',
-        },
-      },
       shopperDetails: {
         billingAddress: {
           name: 'Amber Kelly',
@@ -53,7 +41,9 @@ beforeEach(() => {
       },
     },
   };
-  res = { redirect: jest.fn(), json: jest.fn() };
+
+  res = { redirect: jest.fn(), json: jest.fn(
+  ) };
 });
 
 afterEach(() => {
@@ -61,18 +51,11 @@ afterEach(() => {
 });
 
 describe('Save express shopper details and retrieve shipping methods', () => {
-  it('Should set shopper details', () => {
-    setBillingAndShippingAddress(currentBasket);
-    //expect(callGetShippingMethods).toBeCalledTimes(1);
+  
+  it('Should fail setting shopper details', () => {
+    //const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
+    req = JSON.stringify(req);
+    saveExpressShopperDetails(req, res, jest.fn());
   });
 
-  it('Should save shopper details', () => {
-    const {
-      getShipmentByUUID,
-    } = require('*/cartridge/scripts/checkout/shippingHelpers');
-    req.form.shopperDetails = JSON.stringify(req.form.shopperDetails);
-    req.querystring = JSON.stringify(req.querystring);
-    saveExpressShopperDetails(req, res, jest.fn());
-    //expect(callGetShippingMethods).toBeCalledTimes(1);
-  });
 });

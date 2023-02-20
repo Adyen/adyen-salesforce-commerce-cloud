@@ -31,4 +31,6 @@ function callGetShippingMethods(req, res, next) {
   }
 }
 
-module.exports = callGetShippingMethods;
+module.exports = {
+  callGetShippingMethods
+};

@@ -2,38 +2,34 @@
  * @jest-environment jsdom
  */
 
-
 /*
+
+const AdyenCheckout = jest.fn();
+const mount = jest.fn();
+
 let amazonPayExpress;
-let shopperDetails;
-let checkout;
-let amazonConfig;
 const { async } = require('regenerator-runtime');
+
 const {
     mountAmazonPayComponent,
     saveShopperDetails,
   } = require('../../amazonPayExpressPart2');
 
-  beforeEach(async () => {
-    document.body.innerHTML = `
-        <div id="amazon-container"></div>
-      `;
-    window.Configuration = { environment: 'TEST' };
+  beforeEach(() => {
     window.AdyenCheckout = jest.fn(async () => ({
-        create: jest.fn(),
-        paymentMethodsResponse: {
-          storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
-          paymentMethods: [{ type: 'amazonpay' }],
-        },
-        options: {
-          amount: jest.fn(),
-          countryCode: 'mocked_countrycode',
-        },
-      }));
-
-    window.basketAmount = '{currency: ${EUR}, value: 12595}';
-    amazonPayExpress = await mountAmazonPayComponent();
-    console.log('amazonPayExpress', amazonPayExpress);
+      create: jest.fn(),
+      paymentMethodsResponse: {
+        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+        paymentMethods: [{ type: 'amazonpay' }],
+      },
+      options: {
+        amount: 'mocked_amount',
+        countryCode: 'mocked_countrycode',
+      },
+    }));
+    window.Configuration = { amount: 0 };
+    window.Configuration = { environment: 'TEST' };
+    window.basketAmount = JSON.stringify({currency: `EUR`, value: 12595});
   });
 
 
@@ -41,9 +37,10 @@ describe('AmazonPay Express Configuration', () => {
   describe('AmazonPay Express Success', () => {
     it('Mounting the button', async () => {
       document.body.innerHTML = `
-        <div id="express-container">AmazonPay</div>
-      `;
-    var el = document.getElementById('express-container');
+      <div id="amazon-container"></div>
+    `;
+      await mountAmazonPayComponent();
+      console.log('amazonPayExpress', amazonPayExpress);
     //expect(el.innerText).toEqual('AmazonPay');
     });
   });

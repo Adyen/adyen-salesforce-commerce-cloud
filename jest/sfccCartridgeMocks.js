@@ -233,6 +233,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
         type: "scheme"
       }
     })),
+    getApplicableShippingMethods : jest.fn(() => ['mocked_shippingMethods']),
     createAddressObjects: jest.fn((_foo, _bar, input) => input),
     createShopperObject: jest.fn((input) => input.paymentRequest),
     executeCall: jest.fn(() => ({
