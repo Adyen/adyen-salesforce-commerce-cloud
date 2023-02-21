@@ -40,4 +40,10 @@ describe('Payment from Component', () => {
     paymentFromComponent(req, res, jest.fn());
     expect(res.json.mock.calls).toMatchSnapshot();
   });
+  it('should authorize express payment', () => {
+    req.form.data.paymentMethod.paymentType = 'express';
+    req.form.data = JSON.stringify(req.form.data);
+    paymentFromComponent(req, res, jest.fn());
+    expect(res.json.mock.calls).toMatchSnapshot();
+  });
 });

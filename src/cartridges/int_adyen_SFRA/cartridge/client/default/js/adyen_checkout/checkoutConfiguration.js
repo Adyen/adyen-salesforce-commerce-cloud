@@ -294,6 +294,7 @@ module.exports = {
   getCardConfig,
   getPaypalConfig,
   getGooglePayConfig,
+  getAmazonpayConfig,
   setCheckoutConfiguration,
   actionHandler,
 };
