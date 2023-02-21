@@ -18,3 +18,11 @@ global.session = {
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
 
 global.customer = { profile: { customerNo: 'mocked_customerNo' } };
+
+global.AdyenCheckout = () => {
+  return Promise.resolve({
+    create: () => {
+      return { mock: jest.fn() };
+    }
+  });
+};

@@ -25,20 +25,24 @@ async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
   const checkout = await AdyenCheckout(window.Configuration);
 
-  const amazonConfig = {
-    showOrderButton: true,
-    returnUrl: window.returnUrl,
-    showChangePaymentDetailsButton: true,
-    amount: JSON.parse(window.basketAmount),
-    amazonCheckoutSessionId: window.amazonCheckoutSessionId,
-  };
+  try {
+    const amazonConfig = {
+      showOrderButton: true,
+      returnUrl: window.returnUrl,
+      showChangePaymentDetailsButton: true,
+      amount: JSON.parse(window.basketAmount),
+      amazonCheckoutSessionId: window.amazonCheckoutSessionId,
+    };
 
-  const amazonPayComponent = checkout
-    .create('amazonpay', amazonConfig)
-    .mount(amazonPayNode);
+    const amazonPayComponent = checkout
+      .create('amazonpay', amazonConfig)
+      .mount(amazonPayNode);
 
-  const shopperDetails = await amazonPayComponent.getShopperDetails();
-  saveShopperDetails(shopperDetails);
+    const shopperDetails = await amazonPayComponent.getShopperDetails();
+    saveShopperDetails(shopperDetails);
+  } catch (e) {
+    //
+  }
 }
 
 mountAmazonPayComponent();
