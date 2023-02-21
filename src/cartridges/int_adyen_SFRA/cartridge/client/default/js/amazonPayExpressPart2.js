@@ -42,5 +42,3 @@ async function mountAmazonPayComponent() {
 }
 
 mountAmazonPayComponent();
-
-module.exports = mountAmazonPayComponent
