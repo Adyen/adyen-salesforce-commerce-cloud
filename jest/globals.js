@@ -22,7 +22,7 @@ global.customer = { profile: { customerNo: 'mocked_customerNo' } };
 global.AdyenCheckout = () => {
   return Promise.resolve({
     create: () => {
-      return { mock: jest.fn() };
+      return { mount: jest.fn() };
     }
   });
 };
