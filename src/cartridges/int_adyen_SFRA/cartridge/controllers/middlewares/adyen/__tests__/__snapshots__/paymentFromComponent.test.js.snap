@@ -14,6 +14,7 @@ exports[`Payment from Component should return json response 1`] = `
 [
   [
     {
+      "isApplePay": true,
       "orderNo": "mocked_orderNo",
       "orderToken": "mocked_orderToken",
       "resultCode": "Authorised",

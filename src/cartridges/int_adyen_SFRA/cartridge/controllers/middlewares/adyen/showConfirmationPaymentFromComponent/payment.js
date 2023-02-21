@@ -47,9 +47,8 @@ function handleAuthorisedPayment(
   order,
   result,
   adyenPaymentInstrument,
-  { req, res, next }
-  )
-  {
+  { req, res, next },
+) {
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
 
@@ -92,20 +91,6 @@ function handleAuthorisedPayment(
   return next();
 }
 
-// Check result for Apple Pay, does not require /payments/details
-function checkApplePayResponse(adyenPaymentInstrument, result) {
-  const paymentMethodVariant =
-    adyenPaymentInstrument.custom.adyenAction?.additionalData
-      ?.paymentMethodVariant;
-  if (
-    AdyenHelper.isApplePay(paymentMethodVariant) &&
-    result?.fullResponse?.isFinal
-  ) {
-    return JSON.parse(adyenPaymentInstrument.custom.adyenAction);
-  }
-  return false;
-}
-
 function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   // Authorised: The payment authorisation was successfully completed.
   if (
@@ -132,65 +117,37 @@ function handlePayment(stateData, order, options) {
   );
   const result = options.req.form?.result;
 
-    AdyenLogs.error_log(`result ` + JSON.stringify(result));
-
-//  const result = JSON.parse(options.req.form?.result); //todo: test with other PMs, can we parse it okay?
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
 
-  AdyenLogs.error_log(`before result.error`);
-
-    if (result?.error || order.status.value === Order.ORDER_STATUS_FAILED) {
-      AdyenLogs.error_log(
-        `Could not call payment/details for order ${order.orderNo}`,
-      );
-      return handlePaymentError(order, adyenPaymentInstrument, options);
-    }
-  AdyenLogs.error_log(`after result.error`);
+  if (result?.error || order.status.value === Order.ORDER_STATUS_FAILED) {
+    AdyenLogs.error_log(
+      `Could not call payment/details for order ${order.orderNo}`,
+    );
+    return handlePaymentError(order, adyenPaymentInstrument, options);
+  }
 
   let finalResult;
   if (!hasStateData) {
-    AdyenLogs.error_log(`inside no state data`);
-      const applePayResponse = checkApplePayResponse(
-        adyenPaymentInstrument,
-        result,
-      );
-    AdyenLogs.error_log(`result ` + JSON.stringify(result));
-
     if (
       result &&
       (JSON.stringify(result).indexOf('amazonpay') > -1 ||
-        JSON.stringify(result).indexOf('applepay') > -1) //express
+        JSON.stringify(result).indexOf('applepay') > -1)
     ) {
-      AdyenLogs.error_log(`inside first if in no state data`);
       finalResult = JSON.parse(result);
-    }else if (applePayResponse) {
-       AdyenLogs.error_log(`inside else apple pay response`);
-       return handlePaymentResult(
-         applePayResponse,
-         order,
-         adyenPaymentInstrument,
-         options,
-       );
-     } else {
-      AdyenLogs.error_log(`inside last else if no state data`);
+    } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }
   }
-    AdyenLogs.error_log(`after if not has data`);
 
   const detailsCall = hasStateData
     ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument)
     : null;
 
-  AdyenLogs.error_log(`detailsCall`);
-
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
   });
   finalResult = finalResult || detailsCall?.result;
-
- AdyenLogs.error_log(`before return `);
 
   return handlePaymentResult(
     finalResult,

@@ -8,6 +8,12 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 const constants = require('*/cartridge/adyenConstants/constants');
 
+function responseContainsErrors(response) {
+  return (
+    response.error || response.resultCode !== constants.RESULTCODES.AUTHORISED
+  );
+}
+
 function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.body);
@@ -33,10 +39,7 @@ function makePartialPayment(req, res, next) {
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
-    if (
-      response.error ||
-      response.resultCode !== constants.RESULTCODES.AUTHORISED
-    ) {
+    if (responseContainsErrors) {
       let errorMsg = 'partial payment request did not go through';
       errorMsg += response.resultCode
         ? `.. resultCode: ${response.resultCode}`
