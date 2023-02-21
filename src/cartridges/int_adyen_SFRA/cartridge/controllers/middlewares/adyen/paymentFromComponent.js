@@ -245,8 +245,9 @@ function paymentFromComponent(req, res, next) {
   if (session.privacy.giftCardResponse) {
     handleGiftCardPayment(currentBasket, order);
   }
-  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
-    result = setApplePayData(result, order);
+  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type) && !isExpressPayment(reqDataObj)) {
+//    result = setApplePayData(result, order);
+    result.isApplePay = true;
   }
 
   result.orderNo = order.orderNo;
