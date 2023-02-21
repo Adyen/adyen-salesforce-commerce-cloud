@@ -2,48 +2,42 @@
  * @jest-environment jsdom
  */
 
-/*
+let select;
+let data;
+const { saveShopperDetails } = require('../../amazonPayExpressPart2');
 
-const AdyenCheckout = jest.fn();
-const mount = jest.fn();
-
-let amazonPayExpress;
-const { async } = require('regenerator-runtime');
-
-const {
-    mountAmazonPayComponent,
-    saveShopperDetails,
-  } = require('../../amazonPayExpressPart2');
-
-  beforeEach(() => {
-    window.AdyenCheckout = jest.fn(async () => ({
-      create: jest.fn(),
-      paymentMethodsResponse: {
-        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
-        paymentMethods: [{ type: 'amazonpay' }],
+beforeEach(async () => {
+  document.body.innerHTML = `
+        <select id="shippingMethods">
+          <option> Child #1 </option> 
+          <option> Child #2 </option>  
+        </select>
+      `;
+  data = {
+    shippingMethods: [
+      {
+        ID: 'EUR001',
       },
-      options: {
-        amount: 'mocked_amount',
-        countryCode: 'mocked_countrycode',
+      {
+        ID: 'EUR002',
       },
-    }));
-    window.Configuration = { amount: 0 };
-    window.Configuration = { environment: 'TEST' };
-    window.basketAmount = JSON.stringify({currency: `EUR`, value: 12595});
-  });
+    ],
+  };
+});
 
-
-describe('AmazonPay Express Configuration', () => {
-  describe('AmazonPay Express Success', () => {
+describe('AmazonPay Express', () => {
+  describe('AmazonPay Express shipping methods change', () => {
     it('Mounting the button', async () => {
-      document.body.innerHTML = `
-      <div id="amazon-container"></div>
-    `;
-      await mountAmazonPayComponent();
-      console.log('amazonPayExpress', amazonPayExpress);
-    //expect(el.innerText).toEqual('AmazonPay');
+      select = document.getElementById('shippingMethods');
+      $.ajax = jest.fn(({ success }) => {
+        success(data);
+        return { fail: jest.fn() };
+      });
+      saveShopperDetails(data);
+      expect(
+        select.innerHTML.includes('EUR001') &&
+          select.innerHTML.includes('EUR002'),
+      );
     });
   });
 });
-
-*/
