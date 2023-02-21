@@ -43,7 +43,4 @@ async function mountAmazonPayComponent() {
 
 mountAmazonPayComponent();
 
-module.exports = {
-  saveShopperDetails,
-  mountAmazonPayComponent,
-};
+module.exports = mountAmazonPayComponent

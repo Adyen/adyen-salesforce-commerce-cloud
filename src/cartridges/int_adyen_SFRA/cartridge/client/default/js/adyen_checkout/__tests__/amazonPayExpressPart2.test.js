@@ -4,7 +4,7 @@
 
 let select;
 let data;
-const { saveShopperDetails } = require('../../amazonPayExpressPart2');
+const saveShopperDetails  = require('../../amazonPayExpressPart2');
 
 beforeEach(async () => {
   document.body.innerHTML = `
