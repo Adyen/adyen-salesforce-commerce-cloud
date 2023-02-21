@@ -4,7 +4,7 @@
 
 let select;
 let data;
-const { saveShopperDetails } = require('../../amazonPayExpressPart2');
+const saveShopperDetails = require('../../amazonPayExpressPart2');
 
 beforeEach(async () => {
   document.body.innerHTML = `
@@ -25,7 +25,7 @@ beforeEach(async () => {
   };
 });
 
-describe.skip('AmazonPay Express', () => {
+describe('AmazonPay Express', () => {
   describe('AmazonPay Express Shipping methods change', () => {
     it('Mounting the button', async () => {
       select = document.getElementById('shippingMethods');
