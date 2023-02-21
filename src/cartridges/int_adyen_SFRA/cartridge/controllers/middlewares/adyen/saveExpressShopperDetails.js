@@ -77,7 +77,4 @@ function saveExpressShopperDetails(req, res, next) {
   }
 }
 
-module.exports = {
-  setBillingAndShippingAddress,
-  saveExpressShopperDetails
-}
+module.exports = saveExpressShopperDetails

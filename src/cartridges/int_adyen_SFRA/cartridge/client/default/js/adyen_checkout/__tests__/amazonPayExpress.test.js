@@ -26,7 +26,7 @@ beforeEach(async () => {
 });
 
 describe('AmazonPay Express', () => {
-  describe('AmazonPay Express shipping methods change', () => {
+  describe('AmazonPay Express Shipping methods change', () => {
     it('Mounting the button', async () => {
       select = document.getElementById('shippingMethods');
       $.ajax = jest.fn(({ success }) => {
