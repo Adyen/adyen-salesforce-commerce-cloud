@@ -13,7 +13,8 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
-function handlePaymentError(order, { res, next }) {
+function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
+  clearForms.clearAdyenData(adyenPaymentInstrument);
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
@@ -54,7 +55,7 @@ function handleAuthorisedPayment(
   // Places the order
   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
   if (placeOrderResult.error) {
-    return handlePaymentError(order, { res, next });
+    return handlePaymentError(order, adyenPaymentInstrument, { res, next });
   }
 
   const currentLocale = Locale.getLocale(req.locale.id);
@@ -68,6 +69,7 @@ function handleAuthorisedPayment(
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
+  clearForms.clearAdyenData(adyenPaymentInstrument);
   clearForms.clearForms();
   // determines SFRA version for backwards compatibility
   if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
@@ -89,14 +91,41 @@ function handleAuthorisedPayment(
   return next();
 }
 
+function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
+  // Authorised: The payment authorisation was successfully completed.
+  if (
+    [
+      constants.RESULTCODES.AUTHORISED,
+      constants.RESULTCODES.PENDING,
+      constants.RESULTCODES.RECEIVED,
+    ].indexOf(result.resultCode) > -1
+  ) {
+    return handleAuthorisedPayment(
+      order,
+      result,
+      adyenPaymentInstrument,
+      options,
+    );
+  }
+  return handlePaymentError(order, adyenPaymentInstrument, options);
+}
+
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );
   const result = options.req.form?.result;
+
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
+
+  if (result?.error || order.status.value === Order.ORDER_STATUS_FAILED) {
+    AdyenLogs.error_log(
+      `Could not call payment/details for order ${order.orderNo}`,
+    );
+    return handlePaymentError(order, adyenPaymentInstrument, options);
+  }
 
   let finalResult;
   if (!hasStateData) {
@@ -107,15 +136,8 @@ function handlePayment(stateData, order, options) {
     ) {
       finalResult = JSON.parse(result);
     } else {
-      return handlePaymentError(order, options);
+      return handlePaymentError(order, adyenPaymentInstrument, options);
     }
-  }
-
-  if (order.status.value === Order.ORDER_STATUS_FAILED) {
-    AdyenLogs.error_log(
-      `Could not call payment/details for failed order ${order.orderNo}`,
-    );
-    return handlePaymentError(order, options);
   }
 
   const detailsCall = hasStateData
@@ -127,22 +149,12 @@ function handlePayment(stateData, order, options) {
   });
   finalResult = finalResult || detailsCall?.result;
 
-  // Authorised: The payment authorisation was successfully completed.
-  if (
-    [
-      constants.RESULTCODES.AUTHORISED,
-      constants.RESULTCODES.PENDING,
-      constants.RESULTCODES.RECEIVED,
-    ].indexOf(finalResult.resultCode) > -1
-  ) {
-    return handleAuthorisedPayment(
-      order,
-      finalResult,
-      adyenPaymentInstrument,
-      options,
-    );
-  }
-  return handlePaymentError(order, options);
+  return handlePaymentResult(
+    finalResult,
+    order,
+    adyenPaymentInstrument,
+    options,
+  );
 }
 
 module.exports = handlePayment;

@@ -267,6 +267,16 @@ function getAmazonpayConfig() {
   };
 }
 
+function getApplePayConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -287,6 +297,7 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
+    applepay: getApplePayConfig(),
   };
 }
 

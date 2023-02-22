@@ -219,6 +219,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
       getValueOrNull: jest.fn(() => 1000),
     })),
     isAdyenGivingAvailable: jest.fn(() => true),
+    isApplePay: jest.fn(() => true),
     getAdyenGivingConfig: jest.fn(() => true),
     isOpenInvoiceMethod: jest.fn(() => false),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
@@ -251,6 +252,7 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getCreditCardInstallments: jest.fn(() => true),
+    getAdyenApplePayTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),

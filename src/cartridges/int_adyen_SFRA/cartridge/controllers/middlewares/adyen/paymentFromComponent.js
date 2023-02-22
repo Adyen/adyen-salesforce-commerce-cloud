@@ -157,7 +157,13 @@ function handleRefusedResultCode(result, reqDataObj, order) {
 }
 
 function isExpressPayment(reqDataObj) {
-  return reqDataObj.paymentType === 'express'; // applepay
+  return reqDataObj.paymentType === 'express';
+}
+
+function handleExpressPayment(reqDataObj, currentBasket) {
+  if (isExpressPayment(reqDataObj)) {
+    setBillingAndShippingAddress(reqDataObj, currentBasket);
+  }
 }
 
 /**
@@ -201,9 +207,7 @@ function paymentFromComponent(req, res, next) {
     ] = req.form.paymentMethod.toLowerCase();
   });
 
-  if (isExpressPayment(reqDataObj)) {
-    setBillingAndShippingAddress(reqDataObj, currentBasket);
-  }
+  handleExpressPayment(reqDataObj, currentBasket);
 
   const order = COHelpers.createOrder(currentBasket);
 
@@ -224,6 +228,9 @@ function paymentFromComponent(req, res, next) {
   // Check if gift card was used
   if (session.privacy.giftCardResponse) {
     handleGiftCardPayment(currentBasket, order);
+  }
+  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
+    result.isApplePay = true;
   }
 
   result.orderNo = order.orderNo;
