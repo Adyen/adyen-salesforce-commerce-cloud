@@ -43,6 +43,10 @@ jest.mock('*/cartridge/scripts/adyenDeleteRecurringPayment', () => {
   return { deleteRecurringPayment: jest.fn(() => true) };
 }, {virtual: true});
 
+jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails', () => {
+  return jest.fn();
+}, {virtual: true});
+
 jest.mock('*/cartridge/scripts/adyenSessions', () => {
   return {
     createSession: jest.fn( () => ({
@@ -230,6 +234,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
       }
     })),
     createAddressObjects: jest.fn((_foo, _bar, input) => input),
+    getApplicableShippingMethods : jest.fn(() => ['mocked_shippingMethods']),
     createShopperObject: jest.fn((input) => input.paymentRequest),
     executeCall: jest.fn(() => ({
       resultCode: "Authorised"

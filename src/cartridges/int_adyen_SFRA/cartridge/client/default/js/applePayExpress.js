@@ -285,3 +285,13 @@ if (isSafari) {
     }
   });
 }
+
+module.exports = {
+  initializeCheckout,
+  createApplePayButton,
+  formatCustomerObject,
+  handleAuthorised,
+  handleError,
+  handleApplePayResponse,
+  callPaymentFromComponent,
+}
