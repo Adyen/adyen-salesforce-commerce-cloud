@@ -1,4 +1,4 @@
-const debounce = require('lodash/debounce');
+const { debounce } = require('../../../scripts/JSUtils/index');
 const helpers = require('./adyen_checkout/helpers');
 const store = require('../../../store');
 
@@ -263,7 +263,6 @@ async function createApplePayButton() {
     applePayButton.mount('#applepay-container');
   }
 }
-
 if (isSafari) {
   $(document).ready(() => {
     $('body').on(
