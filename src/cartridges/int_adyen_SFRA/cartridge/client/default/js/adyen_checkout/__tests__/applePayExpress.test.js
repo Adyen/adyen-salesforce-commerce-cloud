@@ -22,11 +22,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    jest.resetModules();
-  });
+  jest.resetModules();
+});
 
 describe('Apple Pay Express', () => {
-  it('Apple Pay handleError', () => {
+  it('Should handle Apple Pay errors', () => {
     document.body.innerHTML = `
         <div id="result">Apple Pay Result</div>
         <form id="showConfirmationForm"> Confirmation form</form>
@@ -37,7 +37,7 @@ describe('Apple Pay Express', () => {
     expect(rejectApplePay).toBeCalledTimes(1);
   });
 
-  it('Apple Pay handleAuthorize should resolve', () => {
+  it('Should authorise apple pay payment when response resultCode is Authorised', () => {
     const res = {
       resultCode: 'Authorised',
     };
@@ -48,7 +48,7 @@ describe('Apple Pay Express', () => {
     expect(rejectApplePay).toBeCalledTimes(0);
   });
 
-  it('Apple Pay handleAuthorize should reject', () => {
+  it('Should refuse apple pay payment when response resultCode is Refused', () => {
     const res = {
       resultCode: 'Refused',
     };
@@ -59,7 +59,7 @@ describe('Apple Pay Express', () => {
     expect(rejectApplePay).toBeCalledTimes(1);
   });
 
-  it('Apple Pay callPaymentFromComponent', async () => {
+  it('Should make payment from component call', async () => {
     document.body.innerHTML = `
         <div id="result"></div>
         <form id="showConfirmationForm">
@@ -84,7 +84,7 @@ describe('Apple Pay Express', () => {
     );
   });
 
-  it('Apple Pay handleAuthorized', async () => {
+  it('Should populate result to be sent to backend', async () => {
     document.body.innerHTML = `
         <div id="result"></div>
         <form id="showConfirmationForm">

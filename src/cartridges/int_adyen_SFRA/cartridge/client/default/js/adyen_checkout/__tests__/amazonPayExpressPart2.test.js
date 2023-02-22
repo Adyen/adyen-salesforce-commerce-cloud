@@ -26,18 +26,16 @@ beforeEach(async () => {
 });
 
 describe('AmazonPay Express', () => {
-  describe('AmazonPay Express Shipping methods change', () => {
-    it('Mounting the button', async () => {
-      select = document.getElementById('shippingMethods');
-      $.ajax = jest.fn(({ success }) => {
-        success(data);
-        return { fail: jest.fn() };
-      });
-      saveShopperDetails(data);
-      expect(
-        select.innerHTML.includes('EUR001') &&
-          select.innerHTML.includes('EUR002'),
-      );
+  it('Should show the updated shipping methods', async () => {
+    select = document.getElementById('shippingMethods');
+    $.ajax = jest.fn(({ success }) => {
+      success(data);
+      return { fail: jest.fn() };
     });
+    saveShopperDetails(data);
+    expect(
+      select.innerHTML.includes('EUR001') &&
+        select.innerHTML.includes('EUR002'),
+    );
   });
 });

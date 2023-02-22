@@ -86,8 +86,8 @@ describe('Checkout Configuration', () => {
     });
   });
 
-  describe('AmazonPay Success', () => {
-    it('handles onClick', () => {
+  describe('AmazonPay', () => {
+    it('handles onClick success', () => {
       document.body.innerHTML = `
         <div id="lb_amazonpay">AmazonPay</div>
         <div id="adyenPaymentMethodName"></div>
@@ -105,7 +105,7 @@ describe('Checkout Configuration', () => {
   });
 
   describe('AmazonPay Fail', () => {
-    it('handles onClick', () => {
+    it('handles onClick fail', () => {
       document.body.innerHTML = `
         <div id="lb_amazonpay">AmazonPay</div>
         <div id="adyenPaymentMethodName"></div>
