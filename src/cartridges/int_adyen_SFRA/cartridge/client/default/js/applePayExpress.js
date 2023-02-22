@@ -1,29 +1,9 @@
+const { debounce } = require('../../../scripts/JSUtils/index');
 const helpers = require('./adyen_checkout/helpers');
+const store = require('../../../store');
 
 const APPLE_PAY = 'applepay';
 const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
-
-let checkout;
-let shippingMethodsData;
-
-async function initializeCheckout() {
-  const session = await fetch(window.sessionsUrl);
-  const sessionData = await session.json();
-
-  const shippingMethods = await fetch(window.shippingMethodsUrl);
-  shippingMethodsData = await shippingMethods.json();
-
-  checkout = await AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    session: sessionData,
-  });
-}
-
-async function createApplePayButton(applePayButtonConfig) {
-  return checkout.create(APPLE_PAY, applePayButtonConfig);
-}
 
 function formatCustomerObject(customerData, billingData) {
   return {
@@ -112,9 +92,8 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        data,
-      );
+      document.querySelector('#additionalDetailsHidden').value =
+        JSON.stringify(data);
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
@@ -122,16 +101,13 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
-if (isSafari) {
-  initializeCheckout().then(() => {
-    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
+function getApplePayConfig(checkout, shippingMethodsData) {
+  const applePayPaymentMethod =
+    checkout.paymentMethodsResponse.paymentMethods.find(
       (pm) => pm.type === APPLE_PAY,
     );
 
-    if (!applePayPaymentMethod) {
-      return;
-    }
-
+  if (applePayPaymentMethod) {
     const applePayConfig = applePayPaymentMethod.configuration;
 
     const applePayButtonConfig = {
@@ -226,10 +202,10 @@ if (isSafari) {
           })}`,
         );
         if (shippingMethods.ok) {
-          shippingMethodsData = await shippingMethods.json();
-          if (shippingMethodsData.shippingMethods?.length) {
+          const updatedShippingMethodsData = await shippingMethods.json();
+          if (updatedShippingMethodsData.shippingMethods?.length) {
             const selectedShippingMethod =
-              shippingMethodsData.shippingMethods[0];
+              updatedShippingMethodsData.shippingMethods[0];
             const calculationResponse = await fetch(
               `${window.calculateAmountUrl}?${new URLSearchParams({
                 shipmentUUID: selectedShippingMethod.shipmentUUID,
@@ -240,14 +216,13 @@ if (isSafari) {
               },
             );
             if (calculationResponse.ok) {
-              const shippingMethodsStructured = shippingMethodsData.shippingMethods.map(
-                (sm) => ({
+              const shippingMethodsStructured =
+                updatedShippingMethodsData.shippingMethods.map((sm) => ({
                   label: sm.displayName,
                   detail: sm.description,
                   identifier: sm.ID,
                   amount: `${sm.shippingCost.value}`,
-                }),
-              );
+                }));
               const newCalculation = await calculationResponse.json();
               const applePayShippingContactUpdate = {
                 newShippingMethods: shippingMethodsStructured,
@@ -270,19 +245,35 @@ if (isSafari) {
       },
     };
 
-    const cartContainer = document.getElementsByClassName('applepay');
-    for (
-      let expressCheckoutNodesIndex = 0;
-      expressCheckoutNodesIndex < cartContainer.length;
-      expressCheckoutNodesIndex += 1
-    ) {
-      createApplePayButton(applePayButtonConfig).then((applePayButton) => {
-        const isApplePayButtonAvailable = applePayButton.isAvailable();
-        if (isApplePayButtonAvailable) {
-          applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
-        }
-      });
-    }
+    return applePayButtonConfig;
+  }
+  return null;
+}
+
+async function createApplePayButton() {
+  const { checkout, shippingMethodsData } =
+    await helpers.initializeExpressCheckout();
+  const applePayConfig = getApplePayConfig(checkout, shippingMethodsData);
+
+  const applePayButton = await checkout.create(APPLE_PAY, applePayConfig);
+
+  const isApplePayButtonAvailable = applePayButton.isAvailable();
+  if (isApplePayButtonAvailable) {
+    store.setExpressPaymentComponents(APPLE_PAY, 'node', applePayButton);
+    applePayButton.mount('#applepay-container');
+  }
+}
+if (isSafari) {
+  $(document).ready(() => {
+    $('body').on(
+      'cart:update cart:shippingMethodSelected promotion:success',
+      debounce(async () => {
+        await helpers.unmountExpressPaymentButton(APPLE_PAY);
+        createApplePayButton();
+      }, 100),
+    );
+
+    createApplePayButton();
   });
 }
 

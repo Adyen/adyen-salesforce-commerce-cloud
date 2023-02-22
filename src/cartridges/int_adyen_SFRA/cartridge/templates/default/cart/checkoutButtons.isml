@@ -57,10 +57,11 @@
    </div>
    <isif condition="${AdyenConfigs.areExpressPaymentsEnabled()}">
        <div id="express-container">
-           <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
+           <div data-method="applepay" class="expressComponent applepay" id="applepay-container" style="padding:0"></div>
            <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
        </div>
        <script src="${URLUtils.httpsStatic('/js/expressPaymentMethodsVisibility.js')}" type="text/javascript"></script>
+        
    </isif>
     <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
             <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
