@@ -85,6 +85,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
+    getAdyenApplePayTokenisationEnabled: function () {
+      return getCustomPreference('AdyenApplePayTokenisationEnabled');
+    },
+
   getAdyenApplePayTokenisationEnabled: function () {
     return getCustomPreference('AdyenApplePayTokenisationEnabled');
   },

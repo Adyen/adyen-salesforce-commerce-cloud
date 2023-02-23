@@ -147,7 +147,7 @@ function placeOrder(req, res, next) {
             );
             paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
             paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
-            paymentInstrument.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] = parsedGiftCardObj.giftCard.name;
+            paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
             paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
             paymentInstrument.custom[
               `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
