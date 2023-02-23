@@ -19,7 +19,7 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
 
   paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
   paymentInstrument.custom[
-    `${constants.OMS_NAMESPACE}_adyenPaymentMethod`
+    `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
   ] = sfccCardType;
 
   if (paymentInformation.creditCardToken) {
@@ -71,7 +71,7 @@ function handle(basket, paymentInformation) {
       convertToSfccCardType(paymentInformation, paymentInstrument);
     } else {
       paymentInstrument.custom[
-        `${constants.OMS_NAMESPACE}_adyenPaymentMethod`
+        `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
       ] = paymentInformation.adyenPaymentMethod;
     }
   });
