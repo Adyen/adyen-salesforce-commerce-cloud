@@ -152,28 +152,6 @@ function createShowConfirmationForm(action) {
   document.querySelector('body').appendChild(template.content);
 }
 
-async function initializeExpressCheckout() {
-  const session = await fetch(window.sessionsUrl);
-  const sessionData = await session.json();
-
-  const shippingMethods = await fetch(window.shippingMethodsUrl);
-  const shippingMethodsData = await shippingMethods.json();
-
-  const checkout = await AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    session: sessionData,
-  });
-
-  return { checkout, shippingMethodsData };
-}
-
-async function unmountExpressPaymentButton(method) {
-  const node = store.getExpressPaymentComponents(method)?.node;
-  node?.unmount();
-}
-
 module.exports = {
   setOrderFormData,
   assignPaymentMethodValue,
@@ -184,6 +162,4 @@ module.exports = {
   createShowConfirmationForm,
   getInstallmentValues,
   makePartialPayment,
-  unmountExpressPaymentButton,
-  initializeExpressCheckout,
 };
