@@ -117,7 +117,7 @@ function handleGiftCardPayment(currentBasket, order) {
     );
     giftcardPM.paymentTransaction.paymentProcessor = paymentProcessor;
     giftcardPM.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
-    giftcardPM.custom[`${constants.OMS_NAMESPACE}_adyenPaymentMethod`] =
+    giftcardPM.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] =
       parsedGiftCardObj.brand;
     giftcardPM.custom.Adyen_Payment_Method_Variant =
       parsedGiftCardObj.paymentMethod.brand;
@@ -199,7 +199,7 @@ function paymentFromComponent(req, res, next) {
       req.form.paymentMethod,
     );
     paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}_adyenPaymentMethod`
+      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
     ] = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom.Adyen_Payment_Method_Variant = req.form.paymentMethod.toLowerCase();
     paymentInstrument.custom[
