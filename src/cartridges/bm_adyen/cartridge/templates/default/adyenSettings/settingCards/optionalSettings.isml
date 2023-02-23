@@ -52,7 +52,7 @@
          </div>
          <div class="form-group border-top mt-4">
             <label class="form-title mt-4" for="applePayTokenisation">Apple Pay Tokenisation</label>
-            <small id="basketFieldsHelp" class="form-text mb-1">
+            <small id="applePayHelp" class="form-text mb-1">
             To tokenize payment details for Apple Pay, make sure you have enabled Apple Pay in Adyen Customer Area.
             </small>
             <div class="radio-buttons">
