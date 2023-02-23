@@ -97,6 +97,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
+  getAdyenApplePayTokenisationEnabled: function () {
+    return getCustomPreference('AdyenApplePayTokenisationEnabled');
+  },
+
   getAdyenCardholderNameEnabled: function () {
     return getCustomPreference('AdyenCardHolderName_enabled');
   },

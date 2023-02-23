@@ -278,7 +278,6 @@ if (isSafari) {
 }
 
 module.exports = {
-  initializeCheckout,
   createApplePayButton,
   formatCustomerObject,
   handleAuthorised,
