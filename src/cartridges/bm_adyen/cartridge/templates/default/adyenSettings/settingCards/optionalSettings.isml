@@ -50,6 +50,22 @@
                </div>
             </div>
          </div>
+         <div class="form-group border-top mt-4">
+             <label class="form-title mt-4" for="applePayTokenisation">Apple Pay Tokenisation</label>
+             <small id="applePayHelp" class="form-text mb-1">
+             To tokenize payment details for Apple Pay, make sure you have enabled Apple Pay in Adyen Customer Area.
+             </small>
+             <div class="radio-buttons">
+                <div class="form-check form-check-inline">
+                   <input class="form-check-input" type="radio" name="AdyenApplePayTokenisationEnabled" id="ApplePayTokenisationYes" value=true ${AdyenConfigs.getAdyenApplePayTokenisationEnabled() ? 'checked': ''}>
+                   <label class="form-check-label" for="ApplePayTokenisationYes">Enable</label>
+                </div>
+                <div class="form-check form-check-inline">
+                   <input class="form-check-input" type="radio" name="AdyenApplePayTokenisationEnabled" id="ApplePayTokenisationNo" value=false ${!AdyenConfigs.getAdyenApplePayTokenisationEnabled() ? 'checked': ''}>
+                   <label class="form-check-label" for="ApplePayTokenisationNo">Disable</label>
+                </div>
+             </div>
+          </div>
          <div class="form-group">
             <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
             <small id="systemIntegratorHelp" class="form-text mb-1">Let us know the name of the company that built your integration with Adyen to get custom support.</small>
