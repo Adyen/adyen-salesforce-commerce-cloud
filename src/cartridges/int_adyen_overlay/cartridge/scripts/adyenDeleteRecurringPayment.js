@@ -49,6 +49,7 @@ function deleteRecurringPayment(args) {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       shopperReference: customerID,
       recurringDetailReference,
+      contract : 'ONECLICK', 
     };
 
     AdyenHelper.executeCall(constants.SERVICE.RECURRING_DISABLE, requestObject);
