@@ -39,7 +39,7 @@ function makePartialPayment(req, res, next) {
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
-    if (responseContainsErrors) {
+    if (responseContainsErrors(response)) {
       let errorMsg = 'partial payment request did not go through';
       errorMsg += response.resultCode
         ? `.. resultCode: ${response.resultCode}`
