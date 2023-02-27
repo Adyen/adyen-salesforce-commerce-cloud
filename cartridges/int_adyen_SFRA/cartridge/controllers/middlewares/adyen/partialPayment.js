@@ -13,7 +13,7 @@ var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 var constants = require('*/cartridge/adyenConstants/constants');
 function responseContainsErrors(response) {
-  return response.error || response.resultCode !== constants.RESULTCODES.AUTHORISED;
+  return (response === null || response === void 0 ? void 0 : response.error) || (response === null || response === void 0 ? void 0 : response.resultCode) !== constants.RESULTCODES.AUTHORISED;
 }
 function makePartialPayment(req, res, next) {
   try {
@@ -33,9 +33,8 @@ function makePartialPayment(req, res, next) {
     };
     var response = adyenCheckout.doPaymentsCall(null, null, partialPaymentRequest); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
-    if (responseContainsErrors) {
-      var errorMsg = 'partial payment request did not go through';
-      errorMsg += response.resultCode ? ".. resultCode: ".concat(response.resultCode) : '';
+    if (responseContainsErrors(response)) {
+      var errorMsg = "partial payment request did not go through .. resultCode: ".concat(response === null || response === void 0 ? void 0 : response.resultCode);
       throw new Error(errorMsg);
     }
     Transaction.wrap(function () {
