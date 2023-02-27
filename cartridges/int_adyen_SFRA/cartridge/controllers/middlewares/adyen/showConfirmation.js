@@ -10,6 +10,7 @@ var _require = require('*/cartridge/controllers/utils/index'),
   clearForms = _require.clearForms;
 var handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 function getPaymentDetailsPayload(querystring) {
   var details = querystring.redirectResult ? {
     redirectResult: querystring.redirectResult
@@ -59,7 +60,7 @@ function showConfirmation(req, res, next) {
     orderToken = _req$querystring.orderToken;
   try {
     var order = OrderMgr.getOrder(merchantReference, orderToken);
-    var adyenPaymentInstrument = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
+    var adyenPaymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
     if (isOrderAlreadyProcessed(order)) {
       AdyenLogs.info_log('ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation');
       res.redirect(URLUtils.url('Cart-Show'));

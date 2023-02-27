@@ -1,7 +1,4 @@
 <isinclude template="checkout/billing/adyenGivingComponent" />
-<script type="text/javascript">
-    window.sessionStorage.removeItem('giftcard-data');
-</script>
 <div class="card confirm-details">
     <div class="card-header">
         <h2 class="card-header-custom">${Resource.msg('title.receipt', 'confirmation', null)}</h2>

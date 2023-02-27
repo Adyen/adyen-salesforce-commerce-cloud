@@ -89,7 +89,7 @@ function createPaymentRequest(args) {
         paymentRequest.order = adyenPartialPaymentsOrder.order;
         paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
       } else {
-        throw new Error('Cart has been edited after applying a gift card');
+        throw new Error("Cart has been edited after applying a gift card");
       }
     } else {
       paymentRequest.amount = {
@@ -134,6 +134,11 @@ function createPaymentRequest(args) {
       if (paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 && session.privacy.ratePayFingerprint) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
+    }
+
+    //Set Apple Pay tokenisation
+    if (AdyenConfigs.getAdyenApplePayTokenisationEnabled() && AdyenHelper.isApplePay(paymentRequest.paymentMethod.type)) {
+      paymentRequest.storePaymentMethod = true;
     }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 

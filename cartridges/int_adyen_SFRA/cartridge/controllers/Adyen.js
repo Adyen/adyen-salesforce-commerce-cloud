@@ -17,6 +17,8 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
  */
 server.post('PaymentsDetails', server.middleware.https, consentTracking.consent, adyen.paymentsDetails);
 server.get('Sessions', server.middleware.https, adyen.callCreateSession);
+server.get('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
+server.post('SelectShippingMethod', server.middleware.https, adyen.callSelectShippingMethod);
 
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
@@ -48,6 +50,12 @@ server.post('Donate', server.middleware.https, function (req /* , res, next */) 
 server.post('PaymentFromComponent', server.middleware.https, adyen.paymentFromComponent);
 
 /**
+ *  Save shopper details that came from an Express component in the SFCC session
+ */
+server.post('SaveExpressShopperDetails', server.middleware.https, adyen.saveExpressShopperDetails);
+server.get('GetPaymentMethods', server.middleware.https, adyen.getCheckoutPaymentMethods);
+
+/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);
@@ -71,6 +79,11 @@ server.post('PartialPaymentsOrder', server.middleware.https, adyen.partialPaymen
  * Called by Adyen to apply a giftcard
  */
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
+
+/**
+ * Called by Adyen to fetch applied giftcards
+ */
+server.get('fetchGiftCards', server.middleware.https, adyen.fetchGiftCards);
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }

@@ -13,6 +13,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/* eslint-disable no-unsafe-optional-chaining */
 var store = require('../../../../store');
 var _require = require('./renderPaymentMethod'),
   renderPaymentMethod = _require.renderPaymentMethod;
@@ -20,14 +21,16 @@ var helpers = require('./helpers');
 var _require2 = require('./localesUsingInstallments'),
   installmentLocales = _require2.installmentLocales;
 var _require3 = require('../commons'),
-  createSession = _require3.createSession;
+  createSession = _require3.createSession,
+  fetchGiftCards = _require3.fetchGiftCards;
 var constants = require('../constants');
 var _require4 = require('./renderGiftcardComponent'),
   createElementsToShowRemainingGiftCardAmount = _require4.createElementsToShowRemainingGiftCardAmount,
-  removeGiftCard = _require4.removeGiftCard,
+  removeGiftCards = _require4.removeGiftCards,
   renderAddedGiftCard = _require4.renderAddedGiftCard,
   showGiftCardWarningMessage = _require4.showGiftCardWarningMessage,
-  renderGiftCardSelectForm = _require4.renderGiftCardSelectForm;
+  attachGiftCardAddButtonListener = _require4.attachGiftCardAddButtonListener,
+  showGiftCardInfoMessage = _require4.showGiftCardInfoMessage;
 function addPosTerminals(terminals) {
   var ddTerminals = document.createElement('select');
   ddTerminals.id = 'terminalList';
@@ -73,23 +76,28 @@ function renderGiftCardLogo(imagePath) {
     headingImg.src = "".concat(imagePath, "genericgiftcard.png");
   }
 }
-function applyGiftCard() {
+function applyGiftCards() {
   var now = new Date().toISOString();
   var amount = store.checkoutConfiguration.amount;
-  var _store$partialPayment = store.partialPaymentsOrderObj,
-    orderAmount = _store$partialPayment.orderAmount,
-    expiresAt = _store$partialPayment.expiresAt;
-  var isPartialPaymentExpired = expiresAt && now > expiresAt;
+  var orderAmount = store.partialPaymentsOrderObj.orderAmount;
+  var isPartialPaymentExpired = store.addedGiftCards.some(function (cart) {
+    return now > cart.expiresAt;
+  });
   var isCartModified = amount.currency !== orderAmount.currency || amount.value !== orderAmount.value;
   if (isPartialPaymentExpired) {
-    removeGiftCard();
-    renderGiftCardSelectForm();
+    removeGiftCards();
   } else if (isCartModified) {
-    removeGiftCard();
-    renderGiftCardSelectForm();
+    removeGiftCards();
     showGiftCardWarningMessage();
   } else {
-    renderAddedGiftCard();
+    var _store$addedGiftCards;
+    store.addedGiftCards.forEach(function (card) {
+      renderAddedGiftCard(card);
+    });
+    if ((_store$addedGiftCards = store.addedGiftCards) !== null && _store$addedGiftCards !== void 0 && _store$addedGiftCards.length) {
+      showGiftCardInfoMessage();
+    }
+    store.checkout.options.amount = store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     createElementsToShowRemainingGiftCardAmount();
   }
 }
@@ -169,7 +177,8 @@ function setInstallments(amount) {
  */
 module.exports.renderGenericComponent = /*#__PURE__*/function () {
   var _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var session, firstPaymentMethod;
+    var _store$addedGiftCards2;
+    var session, giftCardsData, totalDiscountedAmount, giftCards, _giftCardsData$giftCa, lastGiftCard, firstPaymentMethod;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -185,17 +194,28 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             return createSession();
           case 5:
             session = _context.sent;
+            _context.next = 8;
+            return fetchGiftCards();
+          case 8:
+            giftCardsData = _context.sent;
             store.checkoutConfiguration.session = {
               id: session.id,
               sessionData: session.sessionData,
               imagePath: session.imagePath,
               adyenDescriptions: session.adyenDescriptions
             };
-            _context.next = 9;
+            _context.next = 12;
             return AdyenCheckout(store.checkoutConfiguration);
-          case 9:
+          case 12:
             store.checkout = _context.sent;
-            store.partialPaymentsOrderObj = JSON.parse(window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED));
+            totalDiscountedAmount = giftCardsData.totalDiscountedAmount, giftCards = giftCardsData.giftCards;
+            store.addedGiftCards = giftCards;
+            if (giftCards !== null && giftCards !== void 0 && giftCards.length) {
+              lastGiftCard = giftCards[store.addedGiftCards.length - 1];
+              store.partialPaymentsOrderObj = (_giftCardsData$giftCa = giftCardsData.giftCards) !== null && _giftCardsData$giftCa !== void 0 && _giftCardsData$giftCa.length ? _objectSpread(_objectSpread({}, lastGiftCard), {}, {
+                totalDiscountedAmount: totalDiscountedAmount
+              }) : null;
+            }
             setCheckoutConfiguration(store.checkout.options);
             setInstallments(store.checkout.options.amount);
             setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -204,16 +224,15 @@ module.exports.renderGenericComponent = /*#__PURE__*/function () {
             renderPaymentMethods(store.checkout.paymentMethodsResponse, session.imagePath, session.adyenDescriptions);
             renderPosTerminals(session.adyenConnectedTerminals);
             renderGiftCardLogo(session.imagePath);
-            if (store.partialPaymentsOrderObj) {
-              applyGiftCard();
-            } else {
-              renderGiftCardSelectForm();
+            if ((_store$addedGiftCards2 = store.addedGiftCards) !== null && _store$addedGiftCards2 !== void 0 && _store$addedGiftCards2.length) {
+              applyGiftCards();
             }
+            attachGiftCardAddButtonListener();
             firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
             firstPaymentMethod.checked = true;
             helpers.displaySelectedMethod(firstPaymentMethod.value);
             helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
-          case 24:
+          case 30:
           case "end":
             return _context.stop();
         }

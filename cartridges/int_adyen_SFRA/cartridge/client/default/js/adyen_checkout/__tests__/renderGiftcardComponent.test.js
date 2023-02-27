@@ -8,7 +8,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @jest-environment jsdom
  */
 var _require = require('../renderGiftcardComponent'),
-  removeGiftCard = _require.removeGiftCard,
+  removeGiftCards = _require.removeGiftCards,
   renderAddedGiftCard = _require.renderAddedGiftCard,
   renderGiftCardSelectForm = _require.renderGiftCardSelectForm,
   showGiftCardWarningMessage = _require.showGiftCardWarningMessage;
@@ -57,7 +57,7 @@ beforeEach(function () {
   };
 });
 describe.only('Render gift card', function () {
-  it('should remove entire giftcard container when removeGiftCard is successful', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  it('should remove entire giftcard container when removeGiftCards is successful', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
     var data;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
@@ -88,7 +88,7 @@ describe.only('Render gift card', function () {
               };
             });
             expect(document.querySelector('#biggerContainer').innerHTML).toContain('cancelGiftCardContainer');
-            removeGiftCard();
+            removeGiftCards();
             expect(document.querySelector('#biggerContainer')).toBeNull;
           case 7:
           case "end":
@@ -116,20 +116,21 @@ describe.only('Render gift card', function () {
     }, _callee3);
   })));
   it('should render applied gift cards', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-    var giftCardsList;
+    var giftCardData, giftCardsList;
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            store.partialPaymentsOrderObj = {
-              giftcard: {
-                brand: 'brand'
+            giftCardData = {
+              giftCard: {
+                brand: 'brand',
+                name: 'Name'
               }
             };
-            renderAddedGiftCard();
+            store.partialPaymentsOrderObj = giftCardData;
+            renderAddedGiftCard(giftCardData);
             giftCardsList = document.querySelector('#giftCardsList');
             expect(giftCardsList).toMatchSnapshot();
-            expect(document.querySelector('#giftCardAddButton').style.display).toBe('none');
           case 5:
           case "end":
             return _context4.stop();
