@@ -49,7 +49,7 @@ $('button[value="submit-payment"]').on('click', function () {
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
     document.querySelector('#terminalId').value = document.querySelector('#terminalList').value;
   }
-  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent') {
+  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent' || document.querySelector('#selectedPaymentOption').value === 'CREDIT_CARD') {
     assignPaymentMethodValue();
     validateComponents();
     return showValidation();

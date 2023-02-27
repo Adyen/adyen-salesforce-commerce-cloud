@@ -66,7 +66,7 @@ function updateSavedCards(args) {
           var lastFour = payment.lastFour ? payment.lastFour : '';
           var number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
           var token = payment.id;
-          var cardType = payment.brand ? AdyenHelper.getSFCCCardType(payment.brand) : '';
+          var cardType = payment.brand ? AdyenHelper.getSfccCardType(payment.brand) : '';
 
           // if we have everything we need, create a new payment instrument
           if (expiryMonth && expiryYear && number && token && cardType && holderName) {

@@ -1,10 +1,12 @@
 "use strict";
 
+var _excluded = ["giftCards"];
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var store = require('../../../../store');
-var constants = require('../constants');
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
@@ -21,21 +23,6 @@ function setOrderFormData(response) {
   if (response.orderToken) {
     document.querySelector('#orderToken').value = response.orderToken;
   }
-}
-function setPartialPaymentOrderObject(response) {
-  var giftcard = store.partialPaymentsOrderObj.giftcard;
-  store.partialPaymentsOrderObj = {
-    giftcard: giftcard,
-    partialPaymentsOrder: {
-      pspReference: response.order.pspReference,
-      orderData: response.order.orderData
-    },
-    remainingAmount: response.remainingAmountFormatted,
-    discountedAmount: response.discountAmountFormatted,
-    orderAmount: response.orderAmount,
-    expiresAt: response.expiresAt
-  };
-  window.sessionStorage.setItem(constants.GIFTCARD_DATA_ADDED, JSON.stringify(store.partialPaymentsOrderObj));
 }
 
 /**
@@ -59,14 +46,16 @@ function paymentFromComponent(data) {
       setOrderFormData(response);
       if ((_response$fullRespons = response.fullResponse) !== null && _response$fullRespons !== void 0 && _response$fullRespons.action) {
         component.handleAction(response.fullResponse.action);
-      }
-      if (response.paymentError || response.error) {
+      } else if (response.isApplePay) {
+        document.querySelector('#result').value = JSON.stringify(response);
+        document.querySelector('#showConfirmationForm').submit();
+      } else if (response.paymentError || response.error) {
         component.handleError();
       }
     }
   });
 }
-function makePartialPayment(requestData, expiresAt, orderAmount) {
+function makePartialPayment(requestData) {
   var error;
   $.ajax({
     url: 'Adyen-partialPayment',
@@ -80,10 +69,11 @@ function makePartialPayment(requestData, expiresAt, orderAmount) {
           error: true
         };
       } else {
-        setPartialPaymentOrderObject(_objectSpread(_objectSpread({}, response), {}, {
-          expiresAt: expiresAt,
-          orderAmount: orderAmount
-        }));
+        var giftCards = response.giftCards,
+          rest = _objectWithoutProperties(response, _excluded);
+        store.checkout.options.amount = rest.remainingAmount;
+        store.partialPaymentsOrderObj = rest;
+        store.addedGiftCards = giftCards;
         setOrderFormData(response);
       }
     }
@@ -111,7 +101,7 @@ function displaySelectedMethod(type) {
   // If 'type' input field is present use this as type, otherwise default to function input param
   store.selectedMethod = document.querySelector("#component_".concat(type, " .type")) ? document.querySelector("#component_".concat(type, " .type")).value : type;
   resetPaymentMethod();
-  document.querySelector('button[value="submit-payment"]').disabled = ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
+  document.querySelector('button[value="submit-payment"]').disabled = ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay'].indexOf(type) > -1;
   document.querySelector("#component_".concat(type)).setAttribute('style', 'display:block');
   // set brand for giftcards if hidden inputfield is present
   store.brand = (_document$querySelect2 = document.querySelector("#component_".concat(type, " .brand"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.value;
