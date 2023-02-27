@@ -10,7 +10,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 function responseContainsErrors(response) {
   return (
-    response.error || response.resultCode !== constants.RESULTCODES.AUTHORISED
+    response?.error || response?.resultCode !== constants.RESULTCODES.AUTHORISED
   );
 }
 
