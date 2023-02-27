@@ -93,17 +93,12 @@ function createPaymentRequest(args) {
     const currency = paymentInstrument.paymentTransaction.amount.currencyCode;
     // Add partial payments order if applicable
     if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
-      const adyenPartialPaymentsOrder = JSON.parse(
-        paymentInstrument.custom.adyenPartialPaymentsOrder,
-      );
-      if (
-        value === adyenPartialPaymentsOrder.amount.value &&
-        currency === adyenPartialPaymentsOrder.amount.currency
-      ) {
+      const adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
+      if (value === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
         paymentRequest.order = adyenPartialPaymentsOrder.order;
         paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
       } else {
-        throw new Error('Cart has been edited after applying a gift card');
+        throw new Error("Cart has been edited after applying a gift card");
       }
     } else {
       paymentRequest.amount = {
@@ -160,6 +155,10 @@ function createPaymentRequest(args) {
       }
     }
 
+    //Set Apple Pay tokenisation
+    if (AdyenConfigs.getAdyenApplePayTokenisationEnabled() && AdyenHelper.isApplePay(paymentRequest.paymentMethod.type)) {
+          paymentRequest.storePaymentMethod = true;
+    }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 
     // make API call

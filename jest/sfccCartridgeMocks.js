@@ -5,6 +5,17 @@ jest.mock('*/cartridge/models/order', () => {
   return jest.fn();
 }, {virtual: true});
 
+jest.mock('*/cartridge/models/cart', () => {
+  return jest.fn();
+}, {virtual: true});
+
+jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
+  return jest.fn();
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/selectShippingMethods', () => {
+  return jest.fn();
+}, {virtual: true});
 
 // cartridge/scripts mocks
 jest.mock('*/cartridge/scripts/adyenCheckout', () => {
@@ -30,6 +41,10 @@ jest.mock('*/cartridge/scripts/adyenCheckout', () => {
 
 jest.mock('*/cartridge/scripts/adyenDeleteRecurringPayment', () => {
   return { deleteRecurringPayment: jest.fn(() => true) };
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails', () => {
+  return jest.fn();
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/adyenSessions', () => {
@@ -204,6 +219,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
       getValueOrNull: jest.fn(() => 1000),
     })),
     isAdyenGivingAvailable: jest.fn(() => true),
+    isApplePay: jest.fn(() => true),
     getAdyenGivingConfig: jest.fn(() => true),
     isOpenInvoiceMethod: jest.fn(() => false),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
@@ -219,19 +235,24 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
       }
     })),
     createAddressObjects: jest.fn((_foo, _bar, input) => input),
+    getApplicableShippingMethods : jest.fn(() => ['mocked_shippingMethods']),
     createShopperObject: jest.fn((input) => input.paymentRequest),
     executeCall: jest.fn(() => ({
       resultCode: "Authorised"
     })),
     add3DS2Data: jest.fn((request) => {
       return request
-    })
+    }),
+    getAdyenComponentType : jest.fn(() => {}),
+    getOrderMainPaymentInstrumentType: jest.fn(() => {}),
+    getPaymentInstrumentType: jest.fn((isCreditCard) => isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),
   }), {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getCreditCardInstallments: jest.fn(() => true),
+    getAdyenApplePayTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),

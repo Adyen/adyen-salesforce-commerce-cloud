@@ -28,6 +28,7 @@ afterEach(function () {
 describe('Confirm', function () {
   it('should do nothing if giving is not enabled', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     AdyenHelper.getAdyenGivingConfig.mockImplementation(function () {
       return null;
     });
@@ -36,6 +37,7 @@ describe('Confirm', function () {
   });
   it('should do nothing if giving is not available', function () {
     var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     AdyenHelper.isAdyenGivingAvailable.mockImplementation(function () {
       return false;
     });

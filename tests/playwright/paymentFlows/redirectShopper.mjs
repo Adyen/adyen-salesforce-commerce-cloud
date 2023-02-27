@@ -33,6 +33,14 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiatePayPalPayment();
   };
 
+  doAmazonPayment = async (normalFlow, selectedCard, success) => {
+    await this.paymentMethodsPage.initiateAmazonPayment(normalFlow, selectedCard, success);
+  }
+
+  doAmazonExpressPayment = async () => {
+    await this.paymentMethodsPage.continueAmazonExpressFlow();
+  };
+
   completeOneyRedirect = async (shopper) => {
     await this.paymentMethodsPage.confirmOneyPayment();
   };

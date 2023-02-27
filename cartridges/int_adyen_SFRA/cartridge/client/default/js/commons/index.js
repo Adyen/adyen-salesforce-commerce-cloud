@@ -40,3 +40,29 @@ module.exports.createSession = /*#__PURE__*/function () {
   }
   return createSession;
 }();
+
+/**
+ * Makes an ajax call to the controller function FetchGiftCards
+ */
+module.exports.fetchGiftCards = /*#__PURE__*/function () {
+  var _fetchGiftCards = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            return _context2.abrupt("return", $.ajax({
+              url: 'Adyen-fetchGiftCards',
+              type: 'get'
+            }));
+          case 1:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+  function fetchGiftCards() {
+    return _fetchGiftCards.apply(this, arguments);
+  }
+  return fetchGiftCards;
+}();

@@ -102,20 +102,6 @@ function placeOrder(req, res, next) {
         basketCalculationHelpers.calculateTotals(currentBasket);
     });
 
-    // Re-validates existing payment instruments
-    var validPayment = COHelpers.validatePayment(req, currentBasket);
-    if (validPayment.error) {
-        res.json({
-            error: true,
-            errorStage: {
-                stage: 'payment',
-                step: 'paymentInstrument'
-            },
-            errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
-        });
-        return next();
-    }
-
     // Re-calculate the payments.
     var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
     if (calculatedPaymentTransactionTotal.error) {
@@ -144,39 +130,54 @@ function placeOrder(req, res, next) {
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
 
-    function createGiftcardPM(parsedGiftCardObj, divideBy) {
+    function createGiftCardPM(parsedGiftCardObj, divideBy) {
         let paymentInstrument;
-        const paidGiftcardAmount = {value: parsedGiftCardObj.value, currency: parsedGiftCardObj.currency};
-        const paidGiftcardAmountFormatted = new Money(paidGiftcardAmount.value, paidGiftcardAmount.currency).divide(divideBy);
+        const paidGiftCardAmount = {
+            value: parsedGiftCardObj.giftCard.amount.value,
+            currency: parsedGiftCardObj.giftCard.amount.currency
+        };
+        const paidGiftCardAmountFormatted = new Money(paidGiftCardAmount.value, paidGiftCardAmount.currency).divide(divideBy);
         Transaction.wrap(() => {
             paymentInstrument = order.createPaymentInstrument(
                 constants.METHOD_ADYEN_COMPONENT,
-                paidGiftcardAmountFormatted,
+              paidGiftCardAmountFormatted,
             );
             const { paymentProcessor } = PaymentMgr.getPaymentMethod(
                 paymentInstrument.paymentMethod,
             );
-          paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-
-          paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.brand;
-          paymentInstrument.paymentTransaction.custom.Adyen_log = session.privacy.giftCardResponse;
-          paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCardpspReference;
+            paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+            paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
+            paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
+            paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
+            paymentInstrument.custom[
+              `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+              ] = parsedGiftCardObj.giftCard.brand;
+            paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
+            paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
         })
     }
-    //Check if gift card was used
-    if(session.privacy.giftCardResponse) {
-        const mainPaymentInstrument = order.getPaymentInstruments(
-            constants.METHOD_ADYEN_COMPONENT,
-        )[0];
-        const divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
-        const parsedGiftCardObj = JSON.parse(session.privacy.giftCardResponse);
-        const amount = {value: parsedGiftCardObj.remainingAmount.value, currency: parsedGiftCardObj.remainingAmount.currency};
-        const formattedAmount = new Money(amount.value, amount.currency).divide(divideBy);
-        Transaction.wrap(() => {
-            mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
-        });
 
-        createGiftcardPM(parsedGiftCardObj, divideBy);
+    const mainPaymentInstrument = order.getPaymentInstruments(
+      AdyenHelper.getOrderMainPaymentInstrumentType(order)
+    )[0];
+
+    // Check if gift cards were used
+    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
+      ? JSON.parse(currentBasket.custom.adyenGiftCards)
+      : null;
+    if (giftCardsAdded) {
+        giftCardsAdded.forEach((giftCard) => {
+            const divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
+            const amount = {
+                value: giftCard.remainingAmount.value,
+                currency: giftCard.remainingAmount.currency
+            };
+            const formattedAmount = new Money(amount.value, amount.currency).divide(divideBy);
+            Transaction.wrap(() => {
+                mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
+            });
+            createGiftCardPM(giftCard, divideBy);
+        });
     }
     /* ### Custom Adyen cartridge end ### */
 
@@ -251,12 +252,11 @@ function placeOrder(req, res, next) {
         COHelpers.sendConfirmationEmail(order, req.locale.id);
     }
 
-    const mainPaymentInstrument = order.getPaymentInstruments(
-                constants.METHOD_ADYEN_COMPONENT,
-    )[0];
     clearForms.clearForms();
-    mainPaymentInstrument && clearForms.clearPaymentTransactionData(mainPaymentInstrument);
-    mainPaymentInstrument && clearForms.clearAdyenData(mainPaymentInstrument);
+    if (mainPaymentInstrument) {
+        clearForms.clearPaymentTransactionData(mainPaymentInstrument);
+        clearForms.clearAdyenData(mainPaymentInstrument);
+    }
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 

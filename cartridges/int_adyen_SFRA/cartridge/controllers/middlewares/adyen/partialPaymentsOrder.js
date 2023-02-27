@@ -15,14 +15,18 @@ function addMinutes(minutes) {
 }
 function createPartialPaymentsOrder(req, res, next) {
   try {
+    var _currentBasket$custom;
     var currentBasket = BasketMgr.getCurrentBasket();
+    var giftCardsAdded = (_currentBasket$custom = currentBasket.custom) !== null && _currentBasket$custom !== void 0 && _currentBasket$custom.adyenGiftCards ? JSON.parse(currentBasket.custom.adyenGiftCards) : null;
+    var orderAmount = {
+      currency: currentBasket.currencyCode,
+      value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
+    };
+    var amount = giftCardsAdded ? giftCardsAdded[giftCardsAdded.length - 1].remainingAmount : orderAmount;
     var date = addMinutes(constants.GIFTCARD_EXPIRATION_MINUTES);
     var partialPaymentsRequest = {
+      amount: amount,
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      amount: {
-        currency: currentBasket.currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
-      },
       reference: currentBasket.getUUID(),
       expiresAt: date.toISOString()
     };
@@ -35,13 +39,17 @@ function createPartialPaymentsOrder(req, res, next) {
         pspReference: response === null || response === void 0 ? void 0 : response.pspReference
       },
       remainingAmount: response === null || response === void 0 ? void 0 : response.remainingAmount,
-      amount: response === null || response === void 0 ? void 0 : response.amount
+      amount: orderAmount
     });
-    res.json(_objectSpread(_objectSpread({}, response), {}, {
+    var responseData = _objectSpread(_objectSpread({}, response), {}, {
       expiresAt: date.toISOString()
-    }));
+    });
+    res.json(responseData);
   } catch (error) {
     AdyenLogs.error_log("Failed to create partial payments order.. ".concat(error.toString()));
+    res.json({
+      error: true
+    });
   }
   return next();
 }

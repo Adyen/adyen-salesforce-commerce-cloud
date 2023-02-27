@@ -1,5 +1,8 @@
 "use strict";
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 /**
  *                       ######
  *                       ######
@@ -30,9 +33,13 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var Transaction = require('dw/system/Transaction');
 var UUIDUtils = require('dw/util/UUIDUtils');
-
+var collections = require('*/cartridge/scripts/util/collections');
+var ShippingMgr = require('dw/order/ShippingMgr');
+var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
+var PaymentInstrument = require('dw/order/PaymentInstrument');
 //script includes
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -71,8 +78,69 @@ var adyenHelperObj = {
     }
     return null;
   },
+  getShippingCost: function getShippingCost(shippingMethod, shipment) {
+    var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+    var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod);
+    return {
+      value: shippingCost.amount.value,
+      currencyCode: shippingCost.amount.currencyCode
+    };
+  },
+  getShippingMethods: function getShippingMethods(shipment, address) {
+    if (!shipment) return null;
+    var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+    var shippingMethods;
+    if (address) {
+      shippingMethods = shipmentShippingModel.getApplicableShippingMethods(address);
+    } else {
+      shippingMethods = shipmentShippingModel.getApplicableShippingMethods();
+    }
+    return shippingMethods;
+  },
+  getShipmentUUID: function getShipmentUUID(shipment) {
+    if (!shipment) return null;
+    return shipment.UUID;
+  },
+  getApplicableShippingMethods: function getApplicableShippingMethods(shipment, address) {
+    var _this = this;
+    var shippingMethods = this.getShippingMethods(shipment, address);
+    if (!shippingMethods) {
+      return null;
+    }
+
+    // Filter out whatever the method associated with in store pickup
+    var filteredMethods = [];
+    collections.forEach(shippingMethods, function (shippingMethod) {
+      if (!shippingMethod.custom.storePickupEnabled) {
+        var shippingMethodModel = new ShippingMethodModel(shippingMethod, shipment);
+        var shippingCost = _this.getShippingCost(shippingMethod, shipment);
+        var shipmentUUID = _this.getShipmentUUID(shipment);
+        filteredMethods.push(_objectSpread(_objectSpread({}, shippingMethodModel), {}, {
+          shippingCost: shippingCost,
+          shipmentUUID: shipmentUUID
+        }));
+      }
+    });
+    return filteredMethods;
+  },
+  callGetShippingMethods: function callGetShippingMethods(shippingAddress) {
+    var address;
+    try {
+      address = {
+        city: shippingAddress.city,
+        countryCode: shippingAddress.countryCode,
+        stateCode: shippingAddress.stateOrRegion
+      };
+      var currentBasket = BasketMgr.getCurrentBasket();
+      var currentShippingMethodsModels = this.getApplicableShippingMethods(currentBasket.getDefaultShipment(), address);
+      return currentShippingMethodsModels;
+    } catch (error) {
+      AdyenLogs.error_log('Failed to fetch shipping methods');
+      AdyenLogs.error_log(error);
+    }
+  },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
-    var paymentInstrument = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
+    var paymentInstrument = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order))[0];
     var paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
     if (!AdyenConfigs.getAdyenGivingEnabled() || !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)) {
       return null;
@@ -147,6 +215,18 @@ var adyenHelperObj = {
     var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
     var signature = Encoding.toHex(digestSHA512.digestBytes(new Bytes(data, 'UTF-8')));
     return signature;
+  },
+  getBasketAmount: function getBasketAmount() {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (!currentBasket) {
+      return;
+    }
+    var amount = {
+      currency: currentBasket.currencyCode,
+      value: this.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
+    };
+    return JSON.stringify(amount);
   },
   // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
   getDonationAmounts: function getDonationAmounts() {
@@ -353,84 +433,75 @@ var adyenHelperObj = {
     jsonObject.origin = origin;
     return jsonObject;
   },
-  // gets the SFCC card type name based on the Adyen card type name
-  getAdyenCardType: function getAdyenCardType(cardType) {
-    if (!empty(cardType)) {
-      switch (cardType) {
-        case 'Visa':
-          cardType = 'visa';
-          break;
-        case 'Master':
-        case 'MasterCard':
-        case 'Mastercard':
-          cardType = 'mc';
-          break;
-        case 'Amex':
-          cardType = 'amex';
-          break;
-        case 'Discover':
-          cardType = 'discover';
-          break;
-        case 'Maestro':
-          cardType = 'maestro';
-          break;
-        case 'Diners':
-          cardType = 'diners';
-          break;
-        case 'Bancontact':
-          cardType = 'bcmc';
-          break;
-        case 'JCB':
-          cardType = 'jcb';
-          break;
-        case 'CUP':
-          cardType = 'cup';
-          break;
-        case 'Carte Bancaire':
-          cardType = 'cartebancaire';
-          break;
-        default:
-          cardType = cardType.toLowerCase();
-          break;
-      }
-    } else {
-      throw new Error('cardType argument is not passed to getAdyenCardType function');
+  getAdyenComponentType: function getAdyenComponentType(paymentMethod) {
+    var methodName;
+    switch (paymentMethod) {
+      case 'applepay':
+        methodName = 'Apple Pay';
+        break;
+      case 'amazonpay':
+        methodName = 'Amazon Pay';
+        break;
+      default:
+        methodName = paymentMethod;
     }
-    return cardType;
+    return methodName;
+  },
+  getOrderMainPaymentInstrumentType: function getOrderMainPaymentInstrumentType(order) {
+    var type = constants.METHOD_ADYEN_COMPONENT;
+    collections.forEach(order.getPaymentInstruments(), function (item) {
+      var _item$custom$adyenMai;
+      if ((_item$custom$adyenMai = item.custom.adyenMainPaymentInstrument) !== null && _item$custom$adyenMai !== void 0 && _item$custom$adyenMai.value) {
+        var _item$custom$adyenMai2;
+        type = (_item$custom$adyenMai2 = item.custom.adyenMainPaymentInstrument) === null || _item$custom$adyenMai2 === void 0 ? void 0 : _item$custom$adyenMai2.value;
+      }
+    });
+    return type;
+  },
+  getPaymentInstrumentType: function getPaymentInstrumentType(isCreditCard) {
+    return isCreditCard ? PaymentInstrument.METHOD_CREDIT_CARD : constants.METHOD_ADYEN_COMPONENT;
   },
   // gets the Adyen card type name based on the SFCC card type name
-  getSFCCCardType: function getSFCCCardType(cardType) {
+  getSfccCardType: function getSfccCardType(cardType) {
     if (!empty(cardType)) {
       switch (cardType) {
         case 'visa':
+        case 'visa_applepay':
           cardType = 'Visa';
           break;
         case 'mc':
+        case 'mc_applepay':
           cardType = 'Mastercard';
           break;
         case 'amex':
+        case 'amex_applepay':
           cardType = 'Amex';
           break;
         case 'discover':
+        case 'discover_applepay':
           cardType = 'Discover';
           break;
         case 'maestro':
         case 'maestrouk':
+        case 'maestro_applepay':
           cardType = 'Maestro';
           break;
         case 'diners':
+        case 'diners_applepay':
           cardType = 'Diners';
           break;
         case 'bcmc':
           cardType = 'Bancontact';
           break;
         case 'jcb':
+        case 'jcb_applepay':
           cardType = 'JCB';
           break;
         case 'cup':
           cardType = 'CUP';
           break;
         case 'cartebancaire':
+        case 'cartebancaire_applepay':
           cardType = 'Carte Bancaire';
           break;
         default:
@@ -439,7 +510,7 @@ var adyenHelperObj = {
       }
       return cardType;
     }
-    throw new Error('cardType argument is not passed to getSFCCCardType function');
+    throw new Error('cardType argument is not passed to getSfccCardType function');
   },
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
@@ -525,6 +596,9 @@ var adyenHelperObj = {
       integrator: AdyenConfigs.getSystemIntegratorName()
     };
     return applicationInfo;
+  },
+  isApplePay: function isApplePay(paymentMethod) {
+    return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
   },
   // validates all fields in a state data object. Filters out all invalid fields
   validateStateData: function validateStateData(stateData) {

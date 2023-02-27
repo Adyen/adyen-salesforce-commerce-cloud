@@ -9,6 +9,5 @@ module.exports = {
   RECEIVED: 'Received',
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
-  GIFTCARD: 'giftcard',
-  GIFTCARD_DATA_ADDED: 'giftcard-data'
+  GIFTCARD: 'giftcard'
 };

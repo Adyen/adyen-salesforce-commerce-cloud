@@ -11,6 +11,8 @@ var _require = require('../renderGenericComponent'),
   renderGenericComponent = _require.renderGenericComponent;
 var _require2 = require('../../commons'),
   createSession = _require2.createSession;
+var _require3 = require('../../commons'),
+  fetchGiftCards = _require3.fetchGiftCards;
 var store = require('../../../../../store');
 jest.mock('../../commons');
 jest.mock('../../../../../store');
@@ -57,6 +59,14 @@ beforeEach(function () {
     sessionData: 'mock_session_data',
     imagePath: 'example.com',
     adyenDescriptions: {}
+  });
+  fetchGiftCards.mockReturnValue({
+    giftCards: [{
+      orderAmount: {
+        currency: '',
+        value: ''
+      }
+    }]
   });
 });
 describe('Render Generic Component', function () {

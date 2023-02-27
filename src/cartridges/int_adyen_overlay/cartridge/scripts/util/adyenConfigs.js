@@ -85,8 +85,20 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
+  getAdyenApplePayTokenisationEnabled: function () {
+    return getCustomPreference('AdyenApplePayTokenisationEnabled');
+  },
+
+  getAdyenSalePaymentMethods: function () {
+    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
+  },
+
   getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+
+  getAdyenApplePayTokenisationEnabled: function () {
+    return getCustomPreference('AdyenApplePayTokenisationEnabled');
   },
 
   getAdyenCardholderNameEnabled: function () {
@@ -109,6 +121,22 @@ const adyenConfigsObj = {
 
   getAdyenGivingEnabled() {
     return getCustomPreference('AdyenGiving_enabled');
+  },
+
+  areExpressPaymentsEnabled() {
+    return getCustomPreference('ExpressPayments_enabled');
+  },
+
+  isApplePayExpressEnabled() {
+    return getCustomPreference('ApplePayExpress_Enabled');
+  },
+
+  isAmazonPayExpressEnabled() {
+    return getCustomPreference('AmazonPayExpress_Enabled');
+  },
+
+  getExpressPaymentsOrder() {
+    return getCustomPreference('ExpressPayments_order');
   },
 
   getAdyenGivingDonationAmounts() {
