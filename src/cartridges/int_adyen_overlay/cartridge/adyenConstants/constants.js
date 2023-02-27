@@ -24,10 +24,10 @@ module.exports = {
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
 
-    PAYMENTMETHODS: {
-      APPLEPAY: 'applepay',
-      AMAZONPAY: 'amazonpay',
-    },
+  PAYMENTMETHODS: {
+    APPLEPAY: 'applepay',
+    AMAZONPAY: 'amazonpay',
+  },
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
@@ -41,6 +41,9 @@ module.exports = {
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
+  },
+  CONTRACT: {
+    ONECLICK: 'ONECLICK',
   },
   MODE: {
     TEST: 'TEST',
