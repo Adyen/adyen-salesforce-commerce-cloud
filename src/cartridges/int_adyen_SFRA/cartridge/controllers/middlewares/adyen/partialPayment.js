@@ -10,7 +10,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 function responseContainsErrors(response) {
   return (
-    response.error || response.resultCode !== constants.RESULTCODES.AUTHORISED
+    response?.error || response?.resultCode !== constants.RESULTCODES.AUTHORISED
   );
 }
 
@@ -39,11 +39,8 @@ function makePartialPayment(req, res, next) {
       partialPaymentRequest,
     ); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
-    if (responseContainsErrors) {
-      let errorMsg = 'partial payment request did not go through';
-      errorMsg += response.resultCode
-        ? `.. resultCode: ${response.resultCode}`
-        : '';
+    if (responseContainsErrors(response)) {
+      const errorMsg = `partial payment request did not go through .. resultCode: ${response?.resultCode}`;
       throw new Error(errorMsg);
     }
 
