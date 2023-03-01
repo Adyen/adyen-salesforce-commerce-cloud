@@ -1,3 +1,5 @@
+const { checkIfExpressMethodsAreReady } = require('./commons');
+
 async function handleExpressPaymentsVisibility() {
   const { expressMethodsOrder } = window;
   if (expressMethodsOrder) {
@@ -15,3 +17,4 @@ async function handleExpressPaymentsVisibility() {
 }
 
 handleExpressPaymentsVisibility();
+checkIfExpressMethodsAreReady();

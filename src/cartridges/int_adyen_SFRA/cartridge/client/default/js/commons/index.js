@@ -46,7 +46,10 @@ module.exports.checkIfExpressMethodsAreReady =
       })
       .filter((entry) => entry)
       .sort();
-    const loadedExpressMethods = window.loadedExpressMethods.sort();
+    const loadedExpressMethods =
+      window.loadedExpressMethods && window.loadedExpressMethods.length
+        ? window.loadedExpressMethods.sort()
+        : [];
     const areAllMethodsReady =
       JSON.stringify(enabledExpressMethods) ===
       JSON.stringify(loadedExpressMethods);

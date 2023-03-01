@@ -1,6 +1,6 @@
 const helpers = require('./adyen_checkout/helpers');
 const { checkIfExpressMethodsAreReady } = require('./commons/index');
-const {updateLoadedExpressMethods} = require("./commons");
+const { updateLoadedExpressMethods } = require('./commons');
 
 const APPLE_PAY = 'applepay';
 const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
