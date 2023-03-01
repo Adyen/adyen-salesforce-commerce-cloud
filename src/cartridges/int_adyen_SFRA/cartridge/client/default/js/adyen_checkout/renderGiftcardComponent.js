@@ -13,6 +13,7 @@ function getGiftCardElements() {
   const giftCardsInfoMessageContainer = document.querySelector(
     '#giftCardsInfoMessage',
   );
+  const giftCardCancelButton = document.querySelector('#cancelGiftCardButton');
 
   return {
     giftCardSelect,
@@ -22,12 +23,14 @@ function getGiftCardElements() {
     giftCardSelectContainer,
     giftCardsList,
     giftCardsInfoMessageContainer,
+    giftCardCancelButton,
   };
 }
 
 function renderGiftCardSelectForm() {
   const { giftCardSelect, giftCardUl } = getGiftCardElements();
   if (giftCardUl?.innerHTML) {
+    giftCardSelect.classList.remove('invisible');
     return;
   }
 
