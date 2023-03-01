@@ -56,8 +56,8 @@ module.exports.checkIfExpressMethodsAreReady =
     if (!enabledExpressMethods.length || areAllMethodsReady) {
       document
         .getElementById('express-loader-container')
-        .classList.add('hidden');
-      document.getElementById('express-container').classList.remove('hidden');
+        ?.classList.add('hidden');
+      document.getElementById('express-container')?.classList.remove('hidden');
     }
   };
 
