@@ -34,18 +34,16 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
 module.exports.checkIfExpressMethodsAreReady =
   function checkIfExpressMethodsAreReady() {
     const expressMethodsConfig = {
-      applepay: window.isApplePayExpressEnabled,
-      amazonpay: window.isAmazonPayExpressEnabled,
+      applepay: window.isApplePayExpressEnabled === 'true',
+      amazonpay: window.isAmazonPayExpressEnabled === 'true',
     };
-    const enabledExpressMethods = Object.entries(expressMethodsConfig)
-      .map((entry) => {
-        if (entry[1] === 'true') {
-          return entry[0];
-        }
-        return null;
-      })
-      .filter((entry) => entry)
-      .sort();
+    let enabledExpressMethods = [];
+    Object.keys(expressMethodsConfig).forEach((key) => {
+      if (expressMethodsConfig[key]) {
+        enabledExpressMethods.push(key);
+      }
+    });
+    enabledExpressMethods = enabledExpressMethods.sort();
     const loadedExpressMethods =
       window.loadedExpressMethods && window.loadedExpressMethods.length
         ? window.loadedExpressMethods.sort()
