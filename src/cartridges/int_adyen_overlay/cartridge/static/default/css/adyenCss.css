@@ -445,7 +445,7 @@ input:checked + .slider:before {
 }
 
 .adyen-checkout__amazonpay__button {
-    width: 100% !important;
+    min-width: 100%;
 }
 
 @keyframes rotation {
