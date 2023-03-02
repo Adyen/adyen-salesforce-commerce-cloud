@@ -22,7 +22,8 @@
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh"
   },
   "engines": {
     "node": ">=14.0"
