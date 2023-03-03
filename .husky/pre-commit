@@ -3,5 +3,5 @@
 
 npm run check-branch-name
 npm run lint:fix
-npm run test
 git add src
+npm run test
