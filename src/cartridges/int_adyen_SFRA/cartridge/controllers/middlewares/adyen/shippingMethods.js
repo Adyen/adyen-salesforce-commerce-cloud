@@ -16,10 +16,11 @@ function callGetShippingMethods(req, res, next) {
       };
     }
     const currentBasket = BasketMgr.getCurrentBasket();
-    const currentShippingMethodsModels = AdyenHelper.getApplicableShippingMethods(
-      currentBasket.getDefaultShipment(),
-      address,
-    );
+    const currentShippingMethodsModels =
+      AdyenHelper.getApplicableShippingMethods(
+        currentBasket.getDefaultShipment(),
+        address,
+      );
     res.json({
       shippingMethods: currentShippingMethodsModels,
     });

@@ -112,9 +112,8 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        data,
-      );
+      document.querySelector('#additionalDetailsHidden').value =
+        JSON.stringify(data);
       handleApplePayResponse(response, resolveApplePay, rejectApplePay);
     },
   }).fail(() => {
@@ -124,9 +123,10 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 if (isSafari) {
   initializeCheckout().then(() => {
-    const applePayPaymentMethod = checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === APPLE_PAY,
-    );
+    const applePayPaymentMethod =
+      checkout.paymentMethodsResponse.paymentMethods.find(
+        (pm) => pm.type === APPLE_PAY,
+      );
 
     if (!applePayPaymentMethod) {
       return;
@@ -240,14 +240,13 @@ if (isSafari) {
               },
             );
             if (calculationResponse.ok) {
-              const shippingMethodsStructured = shippingMethodsData.shippingMethods.map(
-                (sm) => ({
+              const shippingMethodsStructured =
+                shippingMethodsData.shippingMethods.map((sm) => ({
                   label: sm.displayName,
                   detail: sm.description,
                   identifier: sm.ID,
                   amount: `${sm.shippingCost.value}`,
-                }),
-              );
+                }));
               const newCalculation = await calculationResponse.json();
               const applePayShippingContactUpdate = {
                 newShippingMethods: shippingMethodsStructured,
@@ -293,4 +292,4 @@ module.exports = {
   handleError,
   handleApplePayResponse,
   callPaymentFromComponent,
-}
+};

@@ -22,9 +22,8 @@ function getSignature(paymentsDetailsResponse, orderToken) {
     );
 
     Transaction.wrap(() => {
-      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(
-        paymentsDetailsResponse,
-      );
+      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult =
+        JSON.stringify(paymentsDetailsResponse);
     });
     return signature;
   }
