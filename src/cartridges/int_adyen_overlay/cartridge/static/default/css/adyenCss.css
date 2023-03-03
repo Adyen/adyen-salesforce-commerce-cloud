@@ -420,6 +420,43 @@ input:checked + .slider:before {
     width: 100%;
     padding: 10px 0;
 }
+
+.express-loader-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.express-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #00a1e0;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.hidden {
+    visibility: hidden;
+    height: 0;
+}
+
+.adyen-checkout__amazonpay__button {
+    min-width: 100%;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .gift-cards-info-message-container {
     margin-top: 10px;
 }
