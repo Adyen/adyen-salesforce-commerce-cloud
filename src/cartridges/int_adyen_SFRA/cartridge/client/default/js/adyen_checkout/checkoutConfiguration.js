@@ -6,6 +6,7 @@ const {
   createElementsToShowRemainingGiftCardAmount,
   renderAddedGiftCard,
   getGiftCardElements,
+  showGiftCardInfoMessage,
 } = require('./renderGiftcardComponent');
 
 function getCardConfig() {
@@ -99,11 +100,21 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect } = getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
+  giftCardsList.innerHTML = '';
   store.componentsObj.giftcard.node.unmount('component_giftcard');
-  renderAddedGiftCard();
+  store.addedGiftCards.forEach((card) => {
+    renderAddedGiftCard(card);
+  });
+  if (store.addedGiftCards?.length) {
+    showGiftCardInfoMessage();
+  }
   createElementsToShowRemainingGiftCardAmount();
 }
 
@@ -124,11 +135,24 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
+          document.querySelector(
+            'button[value="submit-payment"]',
+          ).disabled = false;
           if (data.resultCode === constants.SUCCESS) {
-            const giftCardSelect = document.querySelector('#giftCardSelect');
+            const {
+              giftCardsInfoMessageContainer,
+              giftCardSelect,
+            } = getGiftCardElements();
             if (giftCardSelect) {
               giftCardSelect.classList.add('invisible');
             }
+            document.querySelector(
+              'button[value="submit-payment"]',
+            ).disabled = true;
+            giftCardsInfoMessageContainer.innerHTML = '';
+            giftCardsInfoMessageContainer.classList.remove(
+              'gift-cards-info-message-container',
+            );
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
@@ -168,8 +192,6 @@ function getGiftCardConfig() {
             };
             const partialPaymentResponse = helpers.makePartialPayment(
               partialPaymentRequest,
-              data.expiresAt,
-              data.remainingAmount,
             );
             if (partialPaymentResponse?.error) {
               reject();
@@ -184,6 +206,7 @@ function getGiftCardConfig() {
       store.selectedMethod = state.data.paymentMethod.type;
       store.brand = component?.displayName;
       document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').disabled = false;
       document.querySelector('button[value="submit-payment"]').click();
     },
   };
@@ -244,6 +267,16 @@ function getAmazonpayConfig() {
   };
 }
 
+function getApplePayConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -264,6 +297,7 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
+    applepay: getApplePayConfig(),
   };
 }
 
@@ -271,6 +305,7 @@ module.exports = {
   getCardConfig,
   getPaypalConfig,
   getGooglePayConfig,
+  getAmazonpayConfig,
   setCheckoutConfiguration,
   actionHandler,
 };

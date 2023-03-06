@@ -23,13 +23,13 @@
  */
 
 // script include
-var Logger = require('dw/system/Logger');
 var StringUtils = require('dw/util/StringUtils');
 var Transaction = require('dw/system/Transaction');
 var Order = require('dw/order/Order');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function getTerminals() {
   try {
     var requestObject = {};
@@ -43,7 +43,7 @@ function getTerminals() {
     requestObject.request = getTerminalRequest;
     return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
   } catch (e) {
-    Logger.getLogger('Adyen').error("Adyen getTerminals: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.fatal_log("Adyen getTerminals: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return {
       error: true,
       response: '{}'

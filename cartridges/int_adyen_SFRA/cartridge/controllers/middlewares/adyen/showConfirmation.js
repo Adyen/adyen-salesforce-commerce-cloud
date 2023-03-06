@@ -1,6 +1,5 @@
 "use strict";
 
-var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
@@ -10,6 +9,8 @@ var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmatio
 var _require = require('*/cartridge/controllers/utils/index'),
   clearForms = _require.clearForms;
 var handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 function getPaymentDetailsPayload(querystring) {
   var details = querystring.redirectResult ? {
     redirectResult: querystring.redirectResult
@@ -59,15 +60,15 @@ function showConfirmation(req, res, next) {
     orderToken = _req$querystring.orderToken;
   try {
     var order = OrderMgr.getOrder(merchantReference, orderToken);
-    var adyenPaymentInstrument = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT)[0];
+    var adyenPaymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
     if (isOrderAlreadyProcessed(order)) {
-      Logger.getLogger('Adyen').debug('ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation');
+      AdyenLogs.info_log('ShowConfirmation called for an order which has already been processed. This is likely to be caused by shoppers using the back button after order confirmation');
       res.redirect(URLUtils.url('Cart-Show'));
       return next();
     }
     if (adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig === signature) {
       if (order.status.value === Order.ORDER_STATUS_FAILED) {
-        Logger.getLogger('Adyen').error("Could not call payment/details for failed order ".concat(order.orderNo));
+        AdyenLogs.error_log("Could not call payment/details for failed order ".concat(order.orderNo));
         return payment.handlePaymentError(order, 'placeOrder', options);
       }
       clearForms.clearAdyenData(adyenPaymentInstrument);
@@ -76,7 +77,7 @@ function showConfirmation(req, res, next) {
     }
     throw new Error("Incorrect signature for order ".concat(merchantReference));
   } catch (e) {
-    Logger.getLogger('Adyen').error("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

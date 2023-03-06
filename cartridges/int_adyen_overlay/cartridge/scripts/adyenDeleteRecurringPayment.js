@@ -21,13 +21,11 @@
  * Deletes recurring payment instrument from Adyen
  */
 
-/* API Includes */
-var Logger = require('dw/system/Logger');
-
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function deleteRecurringPayment(args) {
   try {
     var customer = args.Customer ? args.Customer : null;
@@ -44,11 +42,11 @@ function deleteRecurringPayment(args) {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       shopperReference: customerID,
       recurringDetailReference: recurringDetailReference,
-      contract: 'ONECLICK'
+      contract: constants.CONTRACT.ONECLICK
     };
     AdyenHelper.executeCall(constants.SERVICE.RECURRING_DISABLE, requestObject);
   } catch (e) {
-    Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.fatal_log("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
 }
 module.exports = {

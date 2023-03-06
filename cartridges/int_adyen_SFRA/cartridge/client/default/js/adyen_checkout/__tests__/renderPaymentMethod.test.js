@@ -1,5 +1,8 @@
 "use strict";
 
+/**
+ * @jest-environment jsdom
+ */
 var _require = require('../renderPaymentMethod'),
   renderPaymentMethod = _require.renderPaymentMethod;
 var store = require('../../../../../store');

@@ -59,6 +59,7 @@ export default class CheckoutPageSFRA5 {
     this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
+    this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
 
     this.voucherCode = page.locator('#voucherResult');
@@ -93,6 +94,10 @@ export default class CheckoutPageSFRA5 {
     await this.page.goto(this.getCheckoutUrl(locale));
   };
 
+  navigateToCart = async (locale) => {
+    await this.page.goto(this.getCartUrl(locale));
+  }
+
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
     await this.addProductToCart(locale, itemCount);
     await this.successMessage.waitFor({ visible: true, timeout: 15000 });
@@ -103,11 +108,15 @@ export default class CheckoutPageSFRA5 {
 
   getCheckoutUrl(locale) {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
-  }
+  };
+
+  getCartUrl(locale) {
+    return `/s/RefArch/cart?lang=${locale}`;
+  };
 
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
-    await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+    await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
     if (itemCount > 1) {
       await this.selectQuantity.selectOption({ index: itemCount });
     }
@@ -214,6 +223,10 @@ export default class CheckoutPageSFRA5 {
     await this.qrLoader.waitFor({ state: 'attached', timeout: 15000 });
     await expect(this.qrLoaderAmount).toBeVisible({ timeout: 15000 });
     await expect(this.qrImg).toBeVisible({ timeout: 15000 });
+  };
+
+  expectGiftCardWarning = async () => {
+    await expect(this.giftCardWarning).not.toBeEmpty();
   };
 
   getLocation = async () => {

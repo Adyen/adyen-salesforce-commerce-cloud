@@ -8,6 +8,20 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function callCheckBalance(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
+    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
+      ? JSON.parse(currentBasket.custom.adyenGiftCards)
+      : null;
+
+    const orderAmount = {
+      currency: currentBasket.currencyCode,
+      value: AdyenHelper.getCurrencyValueForApi(
+        currentBasket.getTotalGrossPrice(),
+      ).value,
+    };
+    const amount = giftCardsAdded
+      ? giftCardsAdded[giftCardsAdded.length - 1].remainingAmount
+      : orderAmount;
+
     const request = JSON.parse(req.body);
     const paymentMethod = request.paymentMethod
       ? request.paymentMethod
@@ -15,12 +29,7 @@ function callCheckBalance(req, res, next) {
 
     const checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      amount: {
-        currency: currentBasket.currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(
-          currentBasket.getTotalGrossPrice(),
-        ).value,
-      },
+      amount,
       reference: currentBasket.getUUID(),
       paymentMethod,
     };

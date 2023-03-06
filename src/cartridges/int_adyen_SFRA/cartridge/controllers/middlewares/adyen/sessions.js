@@ -48,7 +48,9 @@ function callCreateSession(req, res, next) {
     });
     return next();
   } catch (error) {
-    AdyenLogs.fatal_log(`Failed to create Adyen Checkout Session ${JSON.stringify(error)}`);
+    AdyenLogs.fatal_log(
+      `Failed to create Adyen Checkout Session ${JSON.stringify(error)}`,
+    );
     return next();
   }
 }

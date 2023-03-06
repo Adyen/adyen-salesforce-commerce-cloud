@@ -5,10 +5,13 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function cancelPartialPaymentOrder(req, res, next) {
   try {
+    const currentBasket = BasketMgr.getCurrentBasket();
     const request = JSON.parse(req.body);
     const { partialPaymentsOrder } = request;
 
@@ -22,20 +25,31 @@ function cancelPartialPaymentOrder(req, res, next) {
     );
 
     if (response.resultCode === constants.RESULTCODES.RECEIVED) {
-      const currentBasket = BasketMgr.getCurrentBasket();
       Transaction.wrap(() => {
         collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
           if (item.custom.adyenPartialPaymentsOrder) {
             currentBasket.removePaymentInstrument(item);
           }
         });
+        clearForms.clearAdyenBasketData(currentBasket);
       });
       session.privacy.giftCardResponse = null;
+      session.privacy.partialPaymentData = null;
     } else {
       throw new Error(`received resultCode ${response.resultCode}`);
     }
 
-    res.json(response);
+    const amount = {
+      currency: currentBasket.currencyCode,
+      value: AdyenHelper.getCurrencyValueForApi(
+        currentBasket.getTotalGrossPrice(),
+      ).value,
+    };
+
+    res.json({
+      ...response,
+      amount,
+    });
   } catch (error) {
     AdyenLogs.error_log(
       `Could not cancel partial payments order.. ${error.toString()}`,

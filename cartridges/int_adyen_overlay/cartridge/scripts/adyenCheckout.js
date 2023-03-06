@@ -28,7 +28,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
 var Resource = require('dw/web/Resource');
 var Order = require('dw/order/Order');
 var Transaction = require('dw/system/Transaction');
@@ -41,6 +40,7 @@ var RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
 var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 var adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 //SALE payment methods require payment transaction type to be Capture
 function setPaymentTransactionType(paymentInstrument, paymentMethod) {
@@ -58,15 +58,11 @@ function createPaymentRequest(args) {
 
     // Create request object with payment details
     var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
-    }
-
-    // Get 3DS2 data
-    if (AdyenConfigs.getAdyen3DS2Enabled()) {
-      paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     }
 
     // L2/3 Data
@@ -139,12 +135,17 @@ function createPaymentRequest(args) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
     }
+
+    //Set Apple Pay tokenisation
+    if (AdyenConfigs.getAdyenApplePayTokenisationEnabled() && AdyenHelper.isApplePay(paymentRequest.paymentMethod.type)) {
+      paymentRequest.storePaymentMethod = true;
+    }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
-    Logger.getLogger('Adyen').error("error processing payment. Error message: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("error processing payment. Error message: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return {
       error: true
     };
@@ -183,7 +184,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       if (resultCode === constants.RESULTCODES.AUTHORISED) {
         order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
         order.setExportStatus(Order.EXPORT_STATUS_READY);
-        Logger.getLogger('Adyen').info('Payment result: Authorised');
+        AdyenLogs.info_log('Payment result: Authorised');
       }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
@@ -199,11 +200,11 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         errorMessage += " (".concat(responseObject.refusalReason, ")");
       }
       paymentResponse.adyenErrorMessage = errorMessage;
-      Logger.getLogger('Adyen').info('Payment result: Refused');
+      AdyenLogs.info_log('Payment result: Refused');
     }
     return paymentResponse;
   } catch (e) {
-    Logger.getLogger('Adyen').fatal("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.fatal_log("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     return {
       error: true,
       args: {
@@ -216,7 +217,7 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
   try {
     return AdyenHelper.executeCall(constants.SERVICE.PAYMENTDETAILS, paymentDetailsRequest);
   } catch (ex) {
-    Logger.getLogger('Adyen').error("error parsing response object ".concat(ex.message));
+    AdyenLogs.error_log("error parsing response object ".concat(ex.message));
     return {
       error: true
     };

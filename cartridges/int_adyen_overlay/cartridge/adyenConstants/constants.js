@@ -25,6 +25,10 @@ module.exports = {
     GIFTCARD: 'giftcard'
   },
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
+  PAYMENTMETHODS: {
+    APPLEPAY: 'applepay',
+    AMAZONPAY: 'amazonpay'
+  },
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
@@ -37,6 +41,9 @@ module.exports = {
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder'
+  },
+  CONTRACT: {
+    ONECLICK: 'ONECLICK'
   },
   MODE: {
     TEST: 'TEST',
@@ -51,13 +58,13 @@ module.exports = {
     IN: 'IN'
   },
   MAX_API_RETRIES: 3,
-  GIFTCARD_DATA_ADDED: 'giftcard-data',
   GIFTCARD_EXPIRATION_MINUTES: 30,
+  OMS_NAMESPACE: 'adyen_payment',
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
   CHECKOUT_COMPONENT_VERSION: '5.28.0',
-  VERSION: '22.2.1'
+  VERSION: '23.1.0'
 };

@@ -22,7 +22,6 @@
  */
 
 /* API Includes */
-var Logger = require('dw/system/Logger');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Transaction = require('dw/system/Transaction');
 var constants = require('*/cartridge/adyenConstants/constants');
@@ -30,11 +29,12 @@ var constants = require('*/cartridge/adyenConstants/constants');
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function updateSavedCards(args) {
   try {
     var customer = args.CurrentCustomer;
     if (!(customer && customer.getProfile() && customer.getProfile().getWallet())) {
-      Logger.getLogger('Adyen').error('Error while updating saved cards, could not get customer data');
+      AdyenLogs.error_log('Error while updating saved cards, could not get customer data');
       return {
         error: true
       };
@@ -66,7 +66,7 @@ function updateSavedCards(args) {
           var lastFour = payment.lastFour ? payment.lastFour : '';
           var number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
           var token = payment.id;
-          var cardType = payment.brand ? AdyenHelper.getSFCCCardType(payment.brand) : '';
+          var cardType = payment.brand ? AdyenHelper.getSfccCardType(payment.brand) : '';
 
           // if we have everything we need, create a new payment instrument
           if (expiryMonth && expiryYear && number && token && cardType && holderName) {
@@ -85,7 +85,7 @@ function updateSavedCards(args) {
       error: false
     };
   } catch (ex) {
-    Logger.getLogger('Adyen').error("".concat(ex.toString(), " in ").concat(ex.fileName, ":").concat(ex.lineNumber));
+    AdyenLogs.error_log("".concat(ex.toString(), " in ").concat(ex.fileName, ":").concat(ex.lineNumber));
     return {
       error: true
     };

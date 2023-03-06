@@ -13,14 +13,20 @@ export class CardData {
   };
   threeDs2 = {
     holderName: 'John Doe',
-    cardNumber: '5454545454545454',
+    cardNumber: '4212345678910006',
     expirationDate: '0330',
     cvc: '737',
   };
   coBrandedBCMC = {
     holderName: 'John Doe',
-    cardNumber: '6703444444444449',
+    cardNumber: '4871049999999910',
     expirationDate: '0330',
-    cvc: '',
+    cvc: '737',
   };
+
+  giftCard = {
+    cardNumber : '6036280000000000000',
+    pin : '123',
+    brand : 'givex'
+  }
 }

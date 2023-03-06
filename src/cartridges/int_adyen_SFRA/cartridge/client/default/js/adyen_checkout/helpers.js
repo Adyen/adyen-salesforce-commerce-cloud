@@ -1,5 +1,4 @@
 const store = require('../../../../store');
-const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -21,25 +20,6 @@ function setOrderFormData(response) {
   }
 }
 
-function setPartialPaymentOrderObject(response) {
-  const { giftcard } = store.partialPaymentsOrderObj;
-  store.partialPaymentsOrderObj = {
-    giftcard,
-    partialPaymentsOrder: {
-      pspReference: response.order.pspReference,
-      orderData: response.order.orderData,
-    },
-    remainingAmount: response.remainingAmountFormatted,
-    discountedAmount: response.discountAmountFormatted,
-    orderAmount: response.orderAmount,
-    expiresAt: response.expiresAt,
-  };
-  window.sessionStorage.setItem(
-    constants.GIFTCARD_DATA_ADDED,
-    JSON.stringify(store.partialPaymentsOrderObj),
-  );
-}
-
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
@@ -57,18 +37,19 @@ function paymentFromComponent(data, component = {}) {
     },
     success(response) {
       setOrderFormData(response);
-
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
-      }
-      if (response.paymentError || response.error) {
+      } else if (response.isApplePay) {
+        document.querySelector('#result').value = JSON.stringify(response);
+        document.querySelector('#showConfirmationForm').submit();
+      } else if (response.paymentError || response.error) {
         component.handleError();
       }
     },
   });
 }
 
-function makePartialPayment(requestData, expiresAt, orderAmount) {
+function makePartialPayment(requestData) {
   let error;
   $.ajax({
     url: 'Adyen-partialPayment',
@@ -78,9 +59,14 @@ function makePartialPayment(requestData, expiresAt, orderAmount) {
     async: false,
     success(response) {
       if (response.error) {
-        error = { error: true };
+        error = {
+          error: true,
+        };
       } else {
-        setPartialPaymentOrderObject({ ...response, expiresAt, orderAmount });
+        const { giftCards, ...rest } = response;
+        store.checkout.options.amount = rest.remainingAmount;
+        store.partialPaymentsOrderObj = rest;
+        store.addedGiftCards = giftCards;
         setOrderFormData(response);
       }
     },
@@ -112,7 +98,9 @@ function displaySelectedMethod(type) {
   resetPaymentMethod();
 
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay'].indexOf(type) > -1;
+    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay'].indexOf(
+      type,
+    ) > -1;
 
   document
     .querySelector(`#component_${type}`)

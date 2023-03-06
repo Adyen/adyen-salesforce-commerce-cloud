@@ -1,14 +1,19 @@
 "use strict";
 
+/**
+ * @jest-environment jsdom
+ */
 var _require = require('../checkoutConfiguration'),
   getCardConfig = _require.getCardConfig,
   getPaypalConfig = _require.getPaypalConfig,
   getGooglePayConfig = _require.getGooglePayConfig,
+  getAmazonpayConfig = _require.getAmazonpayConfig,
   setCheckoutConfiguration = _require.setCheckoutConfiguration;
 var store = require('../../../../../store');
 var card;
 var paypal;
 var paywithgoogle;
+var amazonpay;
 beforeEach(function () {
   window.Configuration = {
     environment: 'TEST'
@@ -18,6 +23,7 @@ beforeEach(function () {
   card = getCardConfig();
   paypal = getPaypalConfig();
   paywithgoogle = getGooglePayConfig();
+  amazonpay = getAmazonpayConfig();
 });
 describe('Checkout Configuration', function () {
   describe('Card', function () {
@@ -87,6 +93,44 @@ describe('Checkout Configuration', function () {
       });
       expect(spy).toBeCalledTimes(1);
       expect(submitButton.disabled).toBeFalsy();
+    });
+  });
+  describe('AmazonPay', function () {
+    it('handles onClick success', function () {
+      document.body.innerHTML = "\n        <div id=\"lb_amazonpay\">AmazonPay</div>\n        <div id=\"adyenPaymentMethodName\"></div>\n        <div id=\"adyenStateData\"></div>\n      ";
+      store.selectedMethod = 'amazonpay';
+      store.formErrorsExist = false;
+      store.componentsObj = {
+        amazonpay: {
+          stateData: {
+            foo: 'bar'
+          }
+        }
+      };
+      var resolve = jest.fn();
+      var reject = jest.fn();
+      amazonpay.onClick(resolve, reject);
+      expect(resolve).toBeCalledTimes(1);
+      expect(reject).toBeCalledTimes(0);
+    });
+  });
+  describe('AmazonPay Fail', function () {
+    it('handles onClick fail', function () {
+      document.body.innerHTML = "\n        <div id=\"lb_amazonpay\">AmazonPay</div>\n        <div id=\"adyenPaymentMethodName\"></div>\n        <div id=\"adyenStateData\"></div>\n      ";
+      store.selectedMethod = 'amazonpay';
+      store.formErrorsExist = true;
+      store.componentsObj = {
+        amazonpay: {
+          stateData: {
+            foo: 'bar'
+          }
+        }
+      };
+      var resolve = jest.fn();
+      var reject = jest.fn();
+      amazonpay.onClick(resolve, reject);
+      expect(resolve).toBeCalledTimes(0);
+      expect(reject).toBeCalledTimes(1);
     });
   });
 });

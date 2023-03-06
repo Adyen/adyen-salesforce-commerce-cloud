@@ -1,16 +1,15 @@
 "use strict";
 
-var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var OrderMgr = require('dw/order/OrderMgr');
 var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function getSignature(paymentsDetailsResponse, orderToken) {
   var order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference, orderToken);
   if (order) {
-    var paymentInstruments = order.getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
+    var paymentInstruments = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order));
     var signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
     Transaction.wrap(function () {
       paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
@@ -49,7 +48,7 @@ function paymentsDetails(req, res, next) {
     res.json(response);
     return next();
   } catch (e) {
-    Logger.getLogger('Adyen').error("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+    AdyenLogs.error_log("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

@@ -44,6 +44,7 @@ function paymentFromComponent(data, component) {
     },
     success(response) {
       helpers.setOrderFormData(response);
+
       handleAmazonResponse(response, component);
     },
   });

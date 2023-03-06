@@ -5,6 +5,7 @@ var _require = require('../../index'),
   begin = _require.checkout.begin;
 var OrderMgr = require('dw/order/OrderMgr');
 var BasketMgr = require('dw/order/BasketMgr');
+var ShippingMgr = require('dw/order/ShippingMgr');
 var Logger = require('dw/system/Logger');
 var Transaction = require('dw/system/Transaction');
 var res;

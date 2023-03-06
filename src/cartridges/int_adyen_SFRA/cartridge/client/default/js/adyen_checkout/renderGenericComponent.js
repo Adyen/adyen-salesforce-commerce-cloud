@@ -1,15 +1,18 @@
+
+/* eslint-disable no-unsafe-optional-chaining */
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
-const { createSession } = require('../commons');
+const { createSession, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
   createElementsToShowRemainingGiftCardAmount,
-  removeGiftCard,
+  removeGiftCards,
   renderAddedGiftCard,
   showGiftCardWarningMessage,
-  renderGiftCardSelectForm,
+  attachGiftCardAddButtonListener,
+  showGiftCardInfoMessage,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -60,25 +63,32 @@ function renderGiftCardLogo(imagePath) {
   }
 }
 
-function applyGiftCard() {
+function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
-  const { orderAmount, expiresAt } = store.partialPaymentsOrderObj;
+  const { orderAmount } = store.partialPaymentsOrderObj;
 
-  const isPartialPaymentExpired = expiresAt && now > expiresAt;
+  const isPartialPaymentExpired = store.addedGiftCards.some(
+    (cart) => now > cart.expiresAt,
+  );
   const isCartModified =
     amount.currency !== orderAmount.currency ||
     amount.value !== orderAmount.value;
 
   if (isPartialPaymentExpired) {
-    removeGiftCard();
-    renderGiftCardSelectForm();
+    removeGiftCards();
   } else if (isCartModified) {
-    removeGiftCard();
-    renderGiftCardSelectForm();
+    removeGiftCards();
     showGiftCardWarningMessage();
   } else {
-    renderAddedGiftCard();
+    store.addedGiftCards.forEach((card) => {
+      renderAddedGiftCard(card);
+    });
+    if (store.addedGiftCards?.length) {
+      showGiftCardInfoMessage();
+    }
+    store.checkout.options.amount =
+      store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     createElementsToShowRemainingGiftCardAmount();
   }
 }
@@ -171,6 +181,7 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
   }
 
   const session = await createSession();
+  const giftCardsData = await fetchGiftCards();
 
   store.checkoutConfiguration.session = {
     id: session.id,
@@ -179,9 +190,16 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-  store.partialPaymentsOrderObj = JSON.parse(
-    window.sessionStorage.getItem(constants.GIFTCARD_DATA_ADDED),
-  );
+
+  const { totalDiscountedAmount, giftCards } = giftCardsData;
+  store.addedGiftCards = giftCards;
+  if (giftCards?.length) {
+    const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
+    store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
+      ? { ...lastGiftCard, totalDiscountedAmount }
+      : null;
+  }
+
   setCheckoutConfiguration(store.checkout.options);
   setInstallments(store.checkout.options.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -200,11 +218,11 @@ module.exports.renderGenericComponent = async function renderGenericComponent() 
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.partialPaymentsOrderObj) {
-    applyGiftCard();
-  } else {
-    renderGiftCardSelectForm();
+  if (store.addedGiftCards?.length) {
+    applyGiftCards();
   }
+
+  attachGiftCardAddButtonListener();
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',

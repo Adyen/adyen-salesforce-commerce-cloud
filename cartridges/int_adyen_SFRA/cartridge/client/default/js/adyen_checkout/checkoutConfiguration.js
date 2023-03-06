@@ -10,6 +10,11 @@ var _require = require('../commons'),
   onFieldValid = _require.onFieldValid;
 var store = require('../../../../store');
 var constants = require('../constants');
+var _require2 = require('./renderGiftcardComponent'),
+  createElementsToShowRemainingGiftCardAmount = _require2.createElementsToShowRemainingGiftCardAmount,
+  renderAddedGiftCard = _require2.renderAddedGiftCard,
+  getGiftCardElements = _require2.getGiftCardElements,
+  showGiftCardInfoMessage = _require2.showGiftCardInfoMessage;
 function getCardConfig() {
   return {
     enableStoreDetails: window.showStoreDetails,
@@ -87,110 +92,32 @@ function getGooglePayConfig() {
     buttonColor: 'white'
   };
 }
-function removeGiftCard() {
-  $.ajax({
-    type: 'POST',
-    url: 'Adyen-CancelPartialPaymentOrder',
-    data: JSON.stringify(store.partialPaymentsOrderObj),
-    contentType: 'application/json; charset=utf-8',
-    async: false,
-    success: function success(res) {
-      store.partialPaymentsOrderObj = null;
-      document.querySelector('#adyenPartialPaymentsOrder').value = null;
-      window.sessionStorage.removeItem(constants.GIFTCARD_DATA_ADDED);
-      if (res.resultCode === constants.RECEIVED) {
-        var _document$querySelect, _document$querySelect2, _store$componentsObj, _store$componentsObj$;
-        (_document$querySelect = document.querySelector('#cancelGiftCardContainer')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.parentNode.remove();
-        (_document$querySelect2 = document.querySelector('#giftCardLabel')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.remove('invisible');
-        (_store$componentsObj = store.componentsObj) === null || _store$componentsObj === void 0 ? void 0 : (_store$componentsObj$ = _store$componentsObj.giftcard) === null || _store$componentsObj$ === void 0 ? void 0 : _store$componentsObj$.node.unmount('component_giftcard');
-      }
-    }
+function handlePartialPaymentSuccess() {
+  var _store$addedGiftCards;
+  var _getGiftCardElements = getGiftCardElements(),
+    giftCardSelectContainer = _getGiftCardElements.giftCardSelectContainer,
+    giftCardSelect = _getGiftCardElements.giftCardSelect,
+    giftCardsList = _getGiftCardElements.giftCardsList;
+  giftCardSelectContainer.classList.add('invisible');
+  giftCardSelect.value = null;
+  giftCardsList.innerHTML = '';
+  store.componentsObj.giftcard.node.unmount('component_giftcard');
+  store.addedGiftCards.forEach(function (card) {
+    renderAddedGiftCard(card);
   });
-}
-function showGiftCardWarningMessage() {
-  var alertContainer = document.createElement('div');
-  alertContainer.setAttribute('id', 'giftCardWarningMessage');
-  alertContainer.classList.add('alert', 'alert-warning', 'error-message');
-  alertContainer.style.display = 'block';
-  alertContainer.style.margin = '20px 0';
-  alertContainer.setAttribute('role', 'alert');
-  var alertContainerP = document.createElement('p');
-  alertContainerP.classList.add('error-message-text');
-  alertContainerP.textContent = window.giftCardWarningMessage;
-  alertContainer.appendChild(alertContainerP);
-  var orderTotalSummaryEl = document.querySelector('.card-body.order-total-summary');
-  orderTotalSummaryEl.appendChild(alertContainer);
-}
-function createElementsToShowRemainingGiftCardAmount() {
-  var mainContainer = document.createElement('div');
-  var remainingAmountContainer = document.createElement('div');
-  var remainingAmountStart = document.createElement('div');
-  var remainingAmountEnd = document.createElement('div');
-  var discountedAmountContainer = document.createElement('div');
-  var discountedAmountStart = document.createElement('div');
-  var discountedAmountEnd = document.createElement('div');
-  var cancelGiftCard = document.createElement('a');
-  var remainingAmountStartP = document.createElement('p');
-  var remainingAmountEndP = document.createElement('p');
-  var discountedAmountStartP = document.createElement('p');
-  var discountedAmountEndP = document.createElement('p');
-  var cancelGiftCardP = document.createElement('p');
-  var remainingAmountStartSpan = document.createElement('span');
-  var discountedAmountStartSpan = document.createElement('span');
-  var cancelGiftCardSpan = document.createElement('span');
-  var remainingAmountEndSpan = document.createElement('span');
-  var discountedAmountEndSpan = document.createElement('span');
-  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
-  remainingAmountStart.classList.add('col-6', 'start-lines');
-  remainingAmountEnd.classList.add('col-6', 'end-lines');
-  remainingAmountStartP.classList.add('order-receipt-label');
-  discountedAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
-  discountedAmountStart.classList.add('col-6', 'start-lines');
-  discountedAmountEnd.classList.add('col-6', 'end-lines');
-  discountedAmountStartP.classList.add('order-receipt-label');
-  cancelGiftCardP.classList.add('order-receipt-label');
-  remainingAmountEndP.classList.add('text-right');
-  discountedAmountEndP.classList.add('text-right');
-  cancelGiftCard.id = 'cancelGiftCardContainer';
-  cancelGiftCard.role = 'button';
-  discountedAmountContainer.id = 'discountedAmountContainer';
-  remainingAmountContainer.id = 'remainingAmountContainer';
-  remainingAmountStartSpan.innerText = window.remainingAmountGiftCardResource;
-  discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
-  cancelGiftCardSpan.innerText = window.cancelGiftCardResource;
-  remainingAmountEndSpan.innerText = store.partialPaymentsOrderObj.remainingAmount;
-  discountedAmountEndSpan.innerText = store.partialPaymentsOrderObj.discountedAmount;
-  cancelGiftCard.addEventListener('click', removeGiftCard);
-  remainingAmountContainer.appendChild(remainingAmountStart);
-  remainingAmountContainer.appendChild(remainingAmountEnd);
-  remainingAmountContainer.appendChild(cancelGiftCard);
-  remainingAmountStart.appendChild(remainingAmountStartP);
-  discountedAmountContainer.appendChild(discountedAmountStart);
-  discountedAmountContainer.appendChild(discountedAmountEnd);
-  discountedAmountStart.appendChild(discountedAmountStartP);
-  cancelGiftCard.appendChild(cancelGiftCardP);
-  remainingAmountEnd.appendChild(remainingAmountEndP);
-  remainingAmountStartP.appendChild(remainingAmountStartSpan);
-  discountedAmountEnd.appendChild(discountedAmountEndP);
-  discountedAmountStartP.appendChild(discountedAmountStartSpan);
-  cancelGiftCardP.appendChild(cancelGiftCardSpan);
-  remainingAmountEndP.appendChild(remainingAmountEndSpan);
-  discountedAmountEndP.appendChild(discountedAmountEndSpan);
-  var pricingContainer = document.querySelector('.card-body.order-total-summary');
-  mainContainer.appendChild(discountedAmountContainer);
-  mainContainer.appendChild(remainingAmountContainer);
-  mainContainer.appendChild(cancelGiftCard);
-  pricingContainer.appendChild(mainContainer);
-}
-function showRemainingAmount() {
-  $('#giftcard-modal').modal('hide');
-  document.querySelector('#giftCardLabel').classList.add('invisible');
+  if ((_store$addedGiftCards = store.addedGiftCards) !== null && _store$addedGiftCards !== void 0 && _store$addedGiftCards.length) {
+    showGiftCardInfoMessage();
+  }
   createElementsToShowRemainingGiftCardAmount();
 }
 function getGiftCardConfig() {
   var giftcardBalance;
   return {
     showPayButton: true,
+    onChange: function onChange(state) {
+      store.updateSelectedPayment(constants.GIFTCARD, 'isValid', state.isValid);
+      store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
+    },
     onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
       $.ajax({
         type: 'POST',
@@ -200,7 +127,17 @@ function getGiftCardConfig() {
         async: false,
         success: function success(data) {
           giftcardBalance = data.balance;
+          document.querySelector('button[value="submit-payment"]').disabled = false;
           if (data.resultCode === constants.SUCCESS) {
+            var _getGiftCardElements2 = getGiftCardElements(),
+              giftCardsInfoMessageContainer = _getGiftCardElements2.giftCardsInfoMessageContainer,
+              giftCardSelect = _getGiftCardElements2.giftCardSelect;
+            if (giftCardSelect) {
+              giftCardSelect.classList.add('invisible');
+            }
+            document.querySelector('button[value="submit-payment"]').disabled = true;
+            giftCardsInfoMessageContainer.innerHTML = '';
+            giftCardsInfoMessageContainer.classList.remove('gift-cards-info-message-container');
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
@@ -226,6 +163,9 @@ function getGiftCardConfig() {
         success: function success(data) {
           if (data.resultCode === 'Success') {
             // make payments call including giftcard data and order data
+            var brandSelect = document.getElementById('giftCardSelect');
+            var selectedBrandIndex = brandSelect.selectedIndex;
+            var giftcardBrand = brandSelect.options[selectedBrandIndex].text;
             var partialPaymentRequest = {
               paymentMethod: giftCardData,
               amount: giftcardBalance,
@@ -233,24 +173,23 @@ function getGiftCardConfig() {
                 pspReference: data.pspReference,
                 orderData: data.orderData
               },
-              giftcardBrand: store.giftcardBrand
+              giftcardBrand: giftcardBrand
             };
-            var partialPaymentResponse = helpers.makePartialPayment(partialPaymentRequest, data.expiresAt, data.remainingAmount);
+            var partialPaymentResponse = helpers.makePartialPayment(partialPaymentRequest);
             if (partialPaymentResponse !== null && partialPaymentResponse !== void 0 && partialPaymentResponse.error) {
               reject();
             } else {
-              showRemainingAmount();
+              handlePartialPaymentSuccess();
             }
           }
         }
       });
     },
-    onSubmit: function onSubmit(state) {
-      var _state$data, _state$data$paymentMe;
-      $('#giftcard-modal').modal('hide');
+    onSubmit: function onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
-      store.brand = (_state$data = state.data) === null || _state$data === void 0 ? void 0 : (_state$data$paymentMe = _state$data.paymentMethod) === null || _state$data$paymentMe === void 0 ? void 0 : _state$data$paymentMe.brand;
+      store.brand = component === null || component === void 0 ? void 0 : component.displayName;
       document.querySelector('input[name="brandCode"]').checked = false;
+      document.querySelector('button[value="submit-payment"]').disabled = false;
       document.querySelector('button[value="submit-payment"]').click();
     }
   };
@@ -328,6 +267,15 @@ function getAmazonpayConfig() {
     onError: function onError() {}
   };
 }
+function getApplePayConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: function onSubmit(state, component) {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    }
+  };
+}
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -349,17 +297,15 @@ function setCheckoutConfiguration() {
     googlepay: getGooglePayConfig(),
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
-    giftcard: getGiftCardConfig()
+    giftcard: getGiftCardConfig(),
+    applepay: getApplePayConfig()
   };
 }
 module.exports = {
   getCardConfig: getCardConfig,
   getPaypalConfig: getPaypalConfig,
   getGooglePayConfig: getGooglePayConfig,
-  getGiftCardConfig: getGiftCardConfig,
+  getAmazonpayConfig: getAmazonpayConfig,
   setCheckoutConfiguration: setCheckoutConfiguration,
-  actionHandler: actionHandler,
-  createElementsToShowRemainingGiftCardAmount: createElementsToShowRemainingGiftCardAmount,
-  removeGiftCard: removeGiftCard,
-  showGiftCardWarningMessage: showGiftCardWarningMessage
+  actionHandler: actionHandler
 };

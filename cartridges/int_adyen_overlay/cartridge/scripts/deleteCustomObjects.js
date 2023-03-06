@@ -22,6 +22,9 @@
  */
 
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
+
+//script include
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function execute(args) {
   return handle(args.orderID);
 }
@@ -29,7 +32,7 @@ function handle(orderID) {
   var queryString = "custom.orderId LIKE '".concat(orderID, "*'");
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', queryString, null);
   if (searchQuery.count > 0) {
-    dw.system.Logger.getLogger('Adyen', 'adyen').info('Removing related Custom Objects with merchantReference {0} with count {1}', orderID, searchQuery.count);
+    AdyenLogs.debug_log("Removing related Custom Objects with merchantReference ".concat(orderID, " with count ").concat(searchQuery.count));
   }
   while (searchQuery.hasNext()) {
     var co = searchQuery.next();
@@ -39,11 +42,11 @@ function handle(orderID) {
   return PIPELET_NEXT;
 }
 function remove(co) {
-  dw.system.Logger.getLogger('Adyen', 'adyen').info('Remove CO object with merchantReference {0} and pspReferenceNumber  {1}', co.custom.merchantReference, co.custom.pspReference);
+  AdyenLogs.info_log("Remove CO object with merchantReference ".concat(co.custom.merchantReference, " and pspReferenceNumber ").concat(co.custom.pspReference));
   try {
     CustomObjectMgr.remove(co);
   } catch (e) {
-    dw.system.Logger.getLogger('Adyen', 'adyen').error('Error occured during delete CO, ID: {0}, erorr message {1}', co.custom.orderId, e.message);
+    AdyenLogs.error_log("Error occured during delete CO, ID: ".concat(co.custom.orderId, ", erorr message ").concat(e.message));
   }
 }
 module.exports = {

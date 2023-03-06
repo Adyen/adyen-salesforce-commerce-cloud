@@ -3,7 +3,6 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getSignature(paymentsDetailsResponse, orderToken) {
@@ -13,7 +12,7 @@ function getSignature(paymentsDetailsResponse, orderToken) {
   );
   if (order) {
     const paymentInstruments = order.getPaymentInstruments(
-      constants.METHOD_ADYEN_COMPONENT,
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
     );
 
     const signature = AdyenHelper.createSignature(

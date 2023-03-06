@@ -32,7 +32,7 @@ if (window.cardholderNameBool !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
 if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
-  var id = 'merchantIdentifier';
+  var id = 'merchantId';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
   store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[id] = window.googleMerchantID;
 }
@@ -49,7 +49,7 @@ $('button[value="submit-payment"]').on('click', function () {
   if (document.querySelector('#selectedPaymentOption').value === 'AdyenPOS') {
     document.querySelector('#terminalId').value = document.querySelector('#terminalList').value;
   }
-  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent') {
+  if (document.querySelector('#selectedPaymentOption').value === 'AdyenComponent' || document.querySelector('#selectedPaymentOption').value === 'CREDIT_CARD') {
     assignPaymentMethodValue();
     validateComponents();
     return showValidation();

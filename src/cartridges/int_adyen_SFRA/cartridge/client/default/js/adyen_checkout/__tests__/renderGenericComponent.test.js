@@ -3,6 +3,7 @@
  */
 const { renderGenericComponent } = require('../renderGenericComponent');
 const { createSession } = require('../../commons');
+const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');
 
 jest.mock('../../commons');
@@ -18,7 +19,7 @@ beforeEach(() => {
     options: {
       amount: 'mocked_amount',
       countryCode: 'mocked_countrycode',
-    }
+    },
   }));
   window.Configuration = { amount: 0 };
   store.checkoutConfiguration = {
@@ -33,6 +34,17 @@ beforeEach(() => {
     sessionData: 'mock_session_data',
     imagePath: 'example.com',
     adyenDescriptions: {},
+  });
+
+  fetchGiftCards.mockReturnValue({
+    giftCards: [
+      {
+        orderAmount: {
+          currency: '',
+          value: '',
+        },
+      },
+    ],
   });
 });
 describe('Render Generic Component', () => {
@@ -58,7 +70,7 @@ describe('Render Generic Component', () => {
     `;
 
     store.componentsObj = { foo: 'bar', bar: 'baz' };
-    store.checkoutConfiguration.paymentMethodsConfiguration = {amazonpay: {}};
+    store.checkoutConfiguration.paymentMethodsConfiguration = { amazonpay: {} };
     await renderGenericComponent();
     expect(createSession).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();

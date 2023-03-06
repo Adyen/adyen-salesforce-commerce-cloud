@@ -11,6 +11,11 @@ var checkBalance = require('*/cartridge/controllers/middlewares/adyen/checkBalan
 var cancelPartialPaymentOrder = require('*/cartridge/controllers/middlewares/adyen/cancelPartialPaymentOrder');
 var partialPaymentsOrder = require('*/cartridge/controllers/middlewares/adyen/partialPaymentsOrder');
 var partialPayment = require('*/cartridge/controllers/middlewares/adyen/partialPayment');
+var callGetShippingMethods = require('*/cartridge/controllers/middlewares/adyen/shippingMethods');
+var callSelectShippingMethod = require('*/cartridge/controllers/middlewares/adyen/selectShippingMethods');
+var fetchGiftCards = require('*/cartridge/controllers/middlewares/adyen/fetchGiftCards');
+var saveExpressShopperDetails = require('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails');
+var getCheckoutPaymentMethods = require('*/cartridge/controllers/middlewares/adyen/getCheckoutPaymentMethods');
 module.exports = {
   showConfirmation: showConfirmation,
   paymentFromComponent: paymentFromComponent,
@@ -22,5 +27,10 @@ module.exports = {
   checkBalance: checkBalance,
   cancelPartialPaymentOrder: cancelPartialPaymentOrder,
   partialPaymentsOrder: partialPaymentsOrder,
-  partialPayment: partialPayment
+  partialPayment: partialPayment,
+  callGetShippingMethods: callGetShippingMethods,
+  callSelectShippingMethod: callSelectShippingMethod,
+  fetchGiftCards: fetchGiftCards,
+  saveExpressShopperDetails: saveExpressShopperDetails,
+  getCheckoutPaymentMethods: getCheckoutPaymentMethods
 };
