@@ -24,21 +24,21 @@ jobs:
           ref: ${{ matrix.sfra-version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
-      - name: setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "14"
-      - name: Checkout
+      - name: Checkout Adyen SFCC code
         uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
-      - name: npm install storefront-reference-architecture
+      - name: Install SFRA
         working-directory: storefront-reference-architecture
         run: npm install
-      - name: npm install adyen-salesforce-commerce-cloud
+      - name: Install Adyen SFCC
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
-      - name: create dw.json file
+      - name: Create dw.json file
         working-directory: adyen-salesforce-commerce-cloud
         run: |
           echo '{
@@ -47,9 +47,12 @@ jobs:
             "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
             "code-version": "${{ secrets[matrix.code-version-secret] }}"
           }' >> dw.json
-      - name: push cartridge code
+      - name: Build the cartridge
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run build
+        run: npm run build > output-sg.txt
+      - name: Check build result
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run check-build:sg
   end-to-end-testing:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge

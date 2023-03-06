@@ -22,7 +22,8 @@
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
-    "check-build": "chmod 755 ./check-build.sh && sh ./check-build.sh"
+    "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
+    "check-build:sg": "chmod 755 ./check-build.sh && sh ./check-build.sh SG"
   },
   "engines": {
     "node": ">=14.0"
