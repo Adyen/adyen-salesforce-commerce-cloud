@@ -60,7 +60,7 @@ jobs:
       - name: upload cartridge
         id: uploadStep
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run uploadCartridge
+        run: npm run uploadCartridge > output.txt
       - name: Check build result
         if: contains(${{ steps.uploadStep.outputs.stdout }}, 'Error')
         run: echo ${{ steps.uploadStep.outputs }} && exit 1
