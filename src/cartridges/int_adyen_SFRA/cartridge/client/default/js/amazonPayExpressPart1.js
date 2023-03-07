@@ -1,3 +1,10 @@
+const {
+  checkIfExpressMethodsAreReady,
+  updateLoadedExpressMethods,
+} = require('./commons');
+
+const AMAZON_PAY = 'amazonpay';
+
 async function mountAmazonPayComponent() {
   /**
    * Makes an ajax call to the controller function GetPaymentMethods
@@ -9,8 +16,13 @@ async function mountAmazonPayComponent() {
       success(data) {
         paymentMethods(data);
       },
+      error() {
+        updateLoadedExpressMethods(AMAZON_PAY);
+        checkIfExpressMethodsAreReady();
+      },
     });
   }
+
   getPaymentMethods(async (data) => {
     const paymentMethodsResponse = data.AdyenPaymentMethods;
 
@@ -21,7 +33,7 @@ async function mountAmazonPayComponent() {
     });
 
     const amazonPayConfig = paymentMethodsResponse.find(
-      (pm) => pm.type === 'amazonpay',
+      (pm) => pm.type === AMAZON_PAY,
     )?.configuration;
     if (!amazonPayConfig) return;
 
@@ -32,8 +44,10 @@ async function mountAmazonPayComponent() {
       returnUrl: window.returnUrl,
     };
 
-    const amazonPayButton = checkout.create('amazonpay', amazonPayButtonConfig);
+    const amazonPayButton = checkout.create(AMAZON_PAY, amazonPayButtonConfig);
     amazonPayButton.mount('#amazonpay-container');
+    updateLoadedExpressMethods(AMAZON_PAY);
+    checkIfExpressMethodsAreReady();
   });
 }
 
