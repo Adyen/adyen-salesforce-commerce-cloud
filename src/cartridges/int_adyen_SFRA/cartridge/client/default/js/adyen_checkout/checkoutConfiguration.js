@@ -100,11 +100,8 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const {
-    giftCardSelectContainer,
-    giftCardSelect,
-    giftCardsList,
-  } = getGiftCardElements();
+  const { giftCardSelectContainer, giftCardSelect, giftCardsList } =
+    getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
@@ -149,11 +146,11 @@ function getGiftCardConfig() {
               giftCardSelect.classList.add('invisible');
             }
             giftCardCancelButton.classList.remove('invisible');
-            giftCardCancelButton.addEventListener('click',() => {
+            giftCardCancelButton.addEventListener('click', () => {
               store.componentsObj.giftcard.node.unmount('component_giftcard');
               giftCardCancelButton.classList.add('invisible');
               giftCardAddButton.style.display = 'block';
-              giftCardSelect.value = "null";
+              giftCardSelect.value = 'null';
             });
             document.querySelector(
               'button[value="submit-payment"]',

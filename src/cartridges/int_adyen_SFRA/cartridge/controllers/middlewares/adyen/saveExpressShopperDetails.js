@@ -60,9 +60,8 @@ function saveExpressShopperDetails(req, res, next) {
     const currentBasket = BasketMgr.getCurrentBasket();
     const shopperDetails = JSON.parse(req.form.shopperDetails);
     Transaction.wrap(() => {
-      currentBasket.custom.amazonExpressShopperDetails = JSON.stringify(
-        shopperDetails,
-      );
+      currentBasket.custom.amazonExpressShopperDetails =
+        JSON.stringify(shopperDetails);
     });
     setBillingAndShippingAddress(currentBasket);
     const shippingMethods = AdyenHelper.callGetShippingMethods(

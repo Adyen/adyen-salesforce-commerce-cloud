@@ -73,13 +73,8 @@ function isOrderAlreadyProcessed(order) {
  */
 function showConfirmation(req, res, next) {
   const options = { req, res, next };
-  const {
-    redirectResult,
-    payload,
-    signature,
-    merchantReference,
-    orderToken,
-  } = req.querystring;
+  const { redirectResult, payload, signature, merchantReference, orderToken } =
+    req.querystring;
   try {
     const order = OrderMgr.getOrder(merchantReference, orderToken);
     const adyenPaymentInstrument = order.getPaymentInstruments(

@@ -72,11 +72,8 @@ function attachGiftCardFormListeners() {
     return;
   }
 
-  const {
-    giftCardUl,
-    giftCardSelect,
-    giftCardContainer,
-  } = getGiftCardElements();
+  const { giftCardUl, giftCardSelect, giftCardContainer } =
+    getGiftCardElements();
 
   if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
