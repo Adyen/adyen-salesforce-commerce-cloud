@@ -65,7 +65,7 @@
     "prettier-eslint-cli": "^5.0.0",
     "proxyquire": "1.8.0",
     "regenerator-runtime": "^0.13.5",
-    "resolve-url-loader": "^3.0.0",
+    "resolve-url-loader": "^5.0.0",
     "sgmf-scripts": "^2.4.2",
     "sinon": "^1.17.4",
     "style-loader": "^0.23.1",
