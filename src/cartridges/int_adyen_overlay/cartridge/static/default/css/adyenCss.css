@@ -412,6 +412,12 @@ input:checked + .slider:before {
     font-size: 13px;
 }
 
+#cancelGiftCardButton {
+    position: absolute;
+    top : 0;
+    right : 0;
+}
+
 .expressComponent {
     margin: 10px 0;
 }
