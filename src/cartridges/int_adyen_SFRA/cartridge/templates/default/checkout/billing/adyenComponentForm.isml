@@ -6,7 +6,6 @@
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-
 <script>
       window.Configuration = {
           locale: '${request.locale}',
@@ -82,6 +81,9 @@
             </select>
             <ul id="giftCardUl" class="list-cards invisible"></ul>
             <div id="giftCardContainer"></div>
+        </div>
+        <div id="cancelGiftCardButton" class="invisible">
+            <input type="image" src="${URLUtils.staticURL('images/cancel.svg')}"/>  
         </div>
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>
