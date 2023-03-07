@@ -8,8 +8,8 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
  */
 function redirect(req, res, next) {
   try {
-    const redirectResult = req.httpParameterMap.get('redirectResult')
-      .stringValue;
+    const redirectResult =
+      req.httpParameterMap.get('redirectResult').stringValue;
     const jsonRequest = {
       details: {
         redirectResult,

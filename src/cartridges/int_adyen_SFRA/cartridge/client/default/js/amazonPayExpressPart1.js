@@ -1,4 +1,7 @@
-const { checkIfExpressMethodsAreReady, updateLoadedExpressMethods } = require('./commons');
+const {
+  checkIfExpressMethodsAreReady,
+  updateLoadedExpressMethods,
+} = require('./commons');
 
 const AMAZON_PAY = 'amazonpay';
 
