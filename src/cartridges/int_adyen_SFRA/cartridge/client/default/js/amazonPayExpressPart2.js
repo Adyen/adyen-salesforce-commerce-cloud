@@ -21,6 +21,56 @@ function saveShopperDetails(details) {
   });
 }
 
+function constructAddress(shopperDetails) {
+  const addressKeys = Object.keys(shopperDetails.shippingAddress);
+  const addressValues = Object.values(shopperDetails.shippingAddress);
+  let addressStr = `${shopperDetails.shippingAddress.name}\n`;
+  for (let i = 0; i < addressKeys.length; i += 1) {
+    if (addressValues[i] && addressKeys[i] !== 'name') {
+      addressStr += `${addressValues[i]} `;
+    }
+  }
+  return addressStr;
+}
+
+function positionElementBefore(elm) {
+  const addressDetails = document.querySelector('#amazonPayAddressDetails');
+  const containerNode = addressDetails.parentNode.parentNode.parentNode;
+  containerNode.insertBefore(addressDetails, document.querySelector(elm));
+}
+
+function wrapChangeAddressButton() {
+  // hide component button and use custom "Edit" buttons instead
+  const changeDetailsBtn = document.getElementsByClassName(
+    'adyen-checkout__button adyen-checkout__button--ghost adyen-checkout__amazonpay__button--changeAddress',
+  )[0];
+  changeDetailsBtn.classList.add('invisible');
+  const editAddressBtns = document.querySelectorAll('.editAddressBtn');
+  editAddressBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      changeDetailsBtn.click();
+    });
+  });
+}
+
+function showAddressDetails(shopperDetails) {
+  const addressText = constructAddress(shopperDetails);
+
+  const addressElement = document.querySelector('#address');
+  const paymentDiscriptorElement = document.querySelector('#paymentStr');
+  addressElement.innerText = addressText;
+  paymentDiscriptorElement.innerText = shopperDetails.paymentDescriptor;
+
+  positionElementBefore('.coupons-and-promos');
+
+  wrapChangeAddressButton();
+
+  const payBtn = document.getElementsByClassName(
+    'adyen-checkout__button adyen-checkout__button--standalone adyen-checkout__button--pay',
+  )[0];
+  payBtn.style.background = '#00a1e0';
+}
+
 async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
   const checkout = await AdyenCheckout(window.Configuration);
@@ -40,6 +90,8 @@ async function mountAmazonPayComponent() {
 
     const shopperDetails = await amazonPayComponent.getShopperDetails();
     saveShopperDetails(shopperDetails);
+
+    showAddressDetails(shopperDetails);
   } catch (e) {
     //
   }
