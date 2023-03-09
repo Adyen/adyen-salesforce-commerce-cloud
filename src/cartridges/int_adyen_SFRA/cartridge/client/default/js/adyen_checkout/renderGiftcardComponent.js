@@ -40,7 +40,7 @@ function giftCardBrands() {
 }
 
 function renderGiftCardSelectForm() {
-  const { giftCardUl } = getGiftCardElements();
+  const { giftCardUl, giftCardSelect } = getGiftCardElements();
   if (giftCardUl?.innerHTML) {
     giftCardSelect.classList.remove('invisible');
     return;
