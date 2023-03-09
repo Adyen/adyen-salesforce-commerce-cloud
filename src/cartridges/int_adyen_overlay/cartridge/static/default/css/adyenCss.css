@@ -281,19 +281,37 @@ input:checked + .slider:before {
 }
 
 .gift-card-selection select {
+    width: 95%;
+    border: 0px;
+    outline: none;
+    appearance: none;
+}
+
+.gift-card-select-wrapper {
     width: 100%;
     margin: 10px 0 25px 0;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #b9c4c9;
-    outline: none;
 }
 
-.gift-card-selection select:hover {
+.gift-card-select-wrapper::after {
+    content: "\2304";
+    vertical-align: top;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.gift-card-select-wrapper:hover {
     border-color: #99a3ad;
     cursor: pointer;
 }
-.gift-card-selection select:focus {
+
+.gift-card-selection select:hover {
+    cursor: pointer;
+}
+
+.gift-card-select-wrapper:focus-within {
     border-color: #0075FF;
     box-shadow: 0 0 0 2px #99c2ff;
 }
@@ -309,7 +327,7 @@ input:checked + .slider:before {
     box-shadow: 0 2px 7px rgb(0 15 45 / 30%);
     max-height: 375px;
     z-index: 1;
-    top: 54px;
+    top: 10px;
     padding: 0;
 }
 
@@ -319,6 +337,10 @@ input:checked + .slider:before {
     justify-content: space-between;
     padding: 10px;
     cursor: pointer;
+}
+
+.gift-card-selection ul li > * {
+    pointer-events: none;
 }
 
 .gift-card-selection ul li:hover {
