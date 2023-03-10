@@ -27,6 +27,19 @@
         assets.addJs('/js/amazonPayExpressPart2.js');
     </isscript>
     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+    <div id="amazonPayAddressDetails">
+        <div class="addressHeaders">
+            <label>${Resource.msg('amazonpay.paymentMethod', 'adyen', null)}</label>
+            <button class="editAddressBtn">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+        </div>
+        <address id="paymentStr"></address>
+        <div class="addressHeaders">
+            <label>${Resource.msg('amazonpay.shippingAddress', 'adyen', null)}</label>
+            <button class="editAddressBtn">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+        </div>
+        <address id="address"></address>
+    </div>
+
     <div id="amazon-container"></div>
     <iselse>
         <script type="text/javascript">
