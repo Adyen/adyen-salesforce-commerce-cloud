@@ -22,8 +22,10 @@
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
-    "prepare": "husky install",
-    "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh"
+    "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
+    "check-build:sg": "chmod 755 ./check-build.sh && sh ./check-build.sh SG",
+    "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=14.0"
