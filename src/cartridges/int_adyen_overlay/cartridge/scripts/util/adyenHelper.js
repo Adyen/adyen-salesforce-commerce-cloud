@@ -325,7 +325,7 @@ var adyenHelperObj = {
 
   isOpenInvoiceMethod(paymentMethod) {
     if (
-      paymentMethod.indexOf('afterpay') - 1 ||
+      paymentMethod.indexOf('afterpay') > - 1 ||
       paymentMethod.indexOf('klarna') > -1 ||
       paymentMethod.indexOf('ratepay') > -1 ||
       paymentMethod.indexOf('facilypay') > -1 ||
