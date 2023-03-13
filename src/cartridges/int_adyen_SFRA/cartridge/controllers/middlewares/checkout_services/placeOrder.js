@@ -130,33 +130,6 @@ function placeOrder(req, res, next) {
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
 
-    function createGiftCardPM(parsedGiftCardObj, divideBy) {
-        let paymentInstrument;
-        const paidGiftCardAmount = {
-            value: parsedGiftCardObj.giftCard.amount.value,
-            currency: parsedGiftCardObj.giftCard.amount.currency
-        };
-        const paidGiftCardAmountFormatted = new Money(paidGiftCardAmount.value, paidGiftCardAmount.currency).divide(divideBy);
-        Transaction.wrap(() => {
-            paymentInstrument = order.createPaymentInstrument(
-                constants.METHOD_ADYEN_COMPONENT,
-              paidGiftCardAmountFormatted,
-            );
-            const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-                paymentInstrument.paymentMethod,
-            );
-            paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-            paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
-            paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
-            paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
-            paymentInstrument.custom[
-              `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
-              ] = parsedGiftCardObj.giftCard.brand;
-            paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
-            paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
-        })
-    }
-
     const mainPaymentInstrument = order.getPaymentInstruments(
       AdyenHelper.getOrderMainPaymentInstrumentType(order)
     )[0];
@@ -176,7 +149,7 @@ function placeOrder(req, res, next) {
             Transaction.wrap(() => {
                 mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
             });
-            createGiftCardPM(giftCard, divideBy);
+            AdyenHelper.createGiftCardPM(giftCard, divideBy, order);
         });
     }
     /* ### Custom Adyen cartridge end ### */
