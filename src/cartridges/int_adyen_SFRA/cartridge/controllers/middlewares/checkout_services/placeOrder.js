@@ -3,7 +3,6 @@ const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
-const PaymentMgr = require('dw/order/PaymentMgr');
 const Money = require('dw/value/Money');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 

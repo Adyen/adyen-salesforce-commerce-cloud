@@ -184,6 +184,11 @@ function paymentFromComponent(req, res, next) {
 
   const order = COHelpers.createOrder(currentBasket);
 
+  // Check if gift card was used
+  if (currentBasket.custom?.adyenGiftCards) {
+    handleGiftCardPayment(currentBasket, order);
+  }
+
   let result;
   Transaction.wrap(() => {
     result = adyenCheckout.createPaymentRequest({
@@ -198,10 +203,6 @@ function paymentFromComponent(req, res, next) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
 
-  // Check if gift card was used
-  if (currentBasket.custom?.adyenGiftCards) {
-    handleGiftCardPayment(currentBasket, order);
-  }
   if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
     result.isApplePay = true;
   }
