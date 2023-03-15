@@ -25,7 +25,8 @@
     "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
     "check-build:sg": "chmod 755 ./check-build.sh && sh ./check-build.sh SG",
     "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "preinstall": "npx npm-force-resolutions"
   },
   "engines": {
     "node": ">=14.0"
@@ -62,6 +63,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "jquery": "^3.6.3",
     "mocha": "^10.1.0",
+    "npm-force-resolutions": "0.0.10",
     "postcss-loader": "^7.0.0",
     "prettier": "2.8.4",
     "prettier-eslint-cli": "^7.0.0",
@@ -81,7 +83,10 @@
     "minimatch": "7.4.2",
     "glob-parent": "6.0.2",
     "yargs-parser": "21.1.1",
-    "braces": "3.0.2"
+    "braces": "3.0.2",
+    "jszip": "3.8.0",
+    "merge": "2.1.1",
+    "got": "12.6.0"
   },
   "jest": {
     "setupFilesAfterEnv": [
