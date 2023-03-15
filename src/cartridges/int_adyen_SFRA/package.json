@@ -1,11 +1,3 @@
 {
-  "hooks": "./cartridge/scripts/hooks.json",
-  "scripts": {
-    "test": "codeceptjs run --steps"
-  },
-  "devDependencies": {
-    "codeceptjs": "^3.0.0",
-    "testcafe": "^2.0.0",
-    "yarn": "^1.17.3"
-  }
+  "hooks": "./cartridge/scripts/hooks.json"
 }
