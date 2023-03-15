@@ -1,6 +1,6 @@
 "use strict";
 
-var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12;
+var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13;
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -29,6 +29,7 @@ var Store = (_class = /*#__PURE__*/function () {
     _initializerDefineProperty(this, "brand", _descriptor10, this);
     _initializerDefineProperty(this, "partialPaymentsOrderObj", _descriptor11, this);
     _initializerDefineProperty(this, "giftCardComponentListenersAdded", _descriptor12, this);
+    _initializerDefineProperty(this, "addedGiftCards", _descriptor13, this);
   }
   _createClass(Store, [{
     key: "maskedCardNumber",
@@ -131,6 +132,11 @@ var Store = (_class = /*#__PURE__*/function () {
   writable: true,
   initializer: null
 }), _descriptor12 = _applyDecoratedDescriptor(_class.prototype, "giftCardComponentListenersAdded", [observable], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: null
+}), _descriptor13 = _applyDecoratedDescriptor(_class.prototype, "addedGiftCards", [observable], {
   configurable: true,
   enumerable: true,
   writable: true,

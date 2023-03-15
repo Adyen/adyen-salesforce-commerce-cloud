@@ -1,5 +1,6 @@
 "use strict";
 
+/* eslint-disable prefer-regex-literals */
 var processInclude = require('base/util');
 var baseCheckout = require('base/checkout/checkout');
 var adyenCheckout = require('./adyenCheckout');

@@ -18,9 +18,8 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
   paymentInstrument.setCreditCardType(sfccCardType);
 
   paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-  paymentInstrument.custom[
-    `${constants.OMS_NAMESPACE}_adyenPaymentMethod`
-  ] = sfccCardType;
+  paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] =
+    sfccCardType;
 
   if (paymentInformation.creditCardToken) {
     paymentInstrument.setCreditCardExpirationMonth(
@@ -58,9 +57,10 @@ function handle(basket, paymentInformation) {
         session.privacy.partialPaymentData;
     }
 
-    paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentInformation.stateData
-      ? JSON.parse(paymentInformation.stateData)?.paymentMethod?.type
-      : null;
+    paymentInstrument.custom.Adyen_Payment_Method_Variant =
+      paymentInformation.stateData
+        ? JSON.parse(paymentInformation.stateData)?.paymentMethod?.type
+        : null;
     paymentInstrument.custom[
       `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
     ] = paymentInformation.stateData
@@ -71,7 +71,7 @@ function handle(basket, paymentInformation) {
       convertToSfccCardType(paymentInformation, paymentInstrument);
     } else {
       paymentInstrument.custom[
-        `${constants.OMS_NAMESPACE}_adyenPaymentMethod`
+        `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
       ] = paymentInformation.adyenPaymentMethod;
     }
   });

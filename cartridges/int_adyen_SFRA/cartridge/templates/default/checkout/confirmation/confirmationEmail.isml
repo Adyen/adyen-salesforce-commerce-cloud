@@ -92,7 +92,7 @@
         <br/>
         <div>
             <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
-                <isif condition="${payment.paymentMethod === 'AdyenComponent'}">
+                <isif condition="${payment.paymentMethod === 'AdyenComponent' || payment.paymentMethod === 'CREDIT_CARD'}">
                      <isinclude template="checkout/confirmation/adyenConfirmationDetails"/>
                 </isif>
             </isloop>

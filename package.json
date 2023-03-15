@@ -1,6 +1,6 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "22.2.2",
+  "version": "23.1.0",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
@@ -9,7 +9,7 @@
   "scripts": {
     "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
     "lint": "eslint --ext js src",
-    "lint:fix": "eslint --fix src",
+    "lint:fix": "eslint --ext js --fix src",
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers && sgmf-scripts --uploadCartridge bm_adyen",
@@ -21,7 +21,11 @@
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
-    "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'"
+    "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
+    "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
+    "check-build:sg": "chmod 755 ./check-build.sh && sh ./check-build.sh SG",
+    "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=14.0"
@@ -39,6 +43,8 @@
     "@babel/plugin-proposal-optional-chaining": "^7.10.3",
     "@babel/plugin-transform-runtime": "^7.10.4",
     "@babel/preset-env": "^7.8.6",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
     "@types/jest": "^29.0.0",
     "babel-loader": "^9.0.0",
     "chai": "^4.0.0",
@@ -50,10 +56,11 @@
     "eslint-formatter-summary": "^1.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.3",
     "istanbul": "^0.4.4",
     "jest": "^29.2.2",
     "jest-environment-jsdom": "^29.3.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.6.3",
     "mocha": "^10.1.0",
     "postcss-loader": "^7.0.0",
     "prettier": "2.8.4",
@@ -65,27 +72,16 @@
     "sinon": "^1.17.4",
     "style-loader": "^0.23.1",
     "stylelint": "^15.0.0",
-    "stylelint-scss": "^3.17.2",
-    "webpack": "^5.74.0"
+    "stylelint-scss": "^4.0.0",
+    "webpack": "^5.76.1"
   },
   "resolutions": {
-    "minimist": "1.2.7",
+    "minimist": "1.2.8",
     "node-notifier": "10.0.1",
     "minimatch": "6.2.0",
-    "glob-parent": "5.1.2",
+    "glob-parent": "6.0.2",
     "yargs-parser": "5.0.1",
     "braces": "3.0.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --ext js --fix src",
-      "git add"
-    ]
   },
   "jest": {
     "setupFilesAfterEnv": [
