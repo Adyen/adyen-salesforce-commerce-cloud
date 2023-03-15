@@ -70,7 +70,7 @@
     "resolve-url-loader": "^3.0.0",
     "sgmf-scripts": "^2.4.2",
     "sinon": "^1.17.4",
-    "style-loader": "^0.23.1",
+    "style-loader": "^3.0.0",
     "stylelint": "^15.0.0",
     "stylelint-scss": "^4.0.0",
     "webpack": "^5.76.1"
