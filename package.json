@@ -80,7 +80,7 @@
     "node-notifier": "10.0.1",
     "minimatch": "6.2.0",
     "glob-parent": "5.1.2",
-    "yargs-parser": "5.0.1",
+    "yargs-parser": "21.1.1",
     "braces": "3.0.2"
   },
   "jest": {
