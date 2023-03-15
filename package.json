@@ -81,7 +81,7 @@
     "minimatch": "6.2.0",
     "glob-parent": "5.1.2",
     "yargs-parser": "5.0.1",
-    "braces": "3.0.2"
+    "braces": "2.3.2"
   },
   "jest": {
     "setupFilesAfterEnv": [
