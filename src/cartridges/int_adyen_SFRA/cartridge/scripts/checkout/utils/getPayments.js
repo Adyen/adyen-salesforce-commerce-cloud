@@ -2,6 +2,7 @@ const Transaction = require('dw/system/Transaction');
 const HookMgr = require('dw/system/HookMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const OrderMgr = require('dw/order/OrderMgr');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 const getAuthorizationResult = (pProcessor, order, pInstrument) => {
   const hookName = `app.payment.processor.${pProcessor.ID.toLowerCase()}`;
@@ -31,6 +32,7 @@ const getPayments = (order) =>
           Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });
+          AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
         }
 
         return authorizationResult;

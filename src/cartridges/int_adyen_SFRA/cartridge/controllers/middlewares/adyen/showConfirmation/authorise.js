@@ -3,6 +3,7 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const OrderModel = require('*/cartridge/models/order');
 const handleOrderConfirm = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/order');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function handleAuthorised(
   adyenPaymentInstrument,
@@ -25,6 +26,7 @@ function handleAuthorised(
     countryCode: currentLocale.country,
   });
 
+  AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
   // Save orderModel to custom object during session
   return handleOrderConfirm(
     adyenPaymentInstrument,

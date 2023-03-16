@@ -141,6 +141,7 @@ function handleCancellation(res, next, reqDataObj) {
     reqDataObj.orderToken,
   );
   failOrder(order);
+  AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
   res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
   return next();
 }
@@ -210,6 +211,8 @@ function paymentFromComponent(req, res, next) {
   handleExpressPayment(reqDataObj, currentBasket);
 
   const order = COHelpers.createOrder(currentBasket);
+  AdyenLogs.info_log('Order created successfully');
+  AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
 
   let result;
   Transaction.wrap(() => {
