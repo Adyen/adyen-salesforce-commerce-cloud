@@ -117,7 +117,6 @@ function attachGiftCardFormListeners() {
 
   if (giftCardSelect) {
     giftCardSelectWrapper.addEventListener('mousedown', () => {
-      giftCardSelect.innerHTML = '';
       giftCardUl.classList.toggle('invisible');
     });
   }
@@ -149,8 +148,12 @@ function showGiftCardWarningMessage() {
 }
 
 function attachGiftCardAddButtonListener() {
-  const { giftCardAddButton, giftCardSelectContainer, giftCardSelectWrapper } =
-    getGiftCardElements();
+  const {
+    giftCardAddButton,
+    giftCardSelectContainer,
+    giftCardSelectWrapper,
+    giftCardSelect,
+  } = getGiftCardElements();
   if (giftCardAddButton) {
     giftCardAddButton.addEventListener('click', () => {
       renderGiftCardSelectForm();
@@ -161,6 +164,7 @@ function attachGiftCardAddButtonListener() {
       if (giftCardWarningMessageEl) {
         giftCardWarningMessageEl.style.display = 'none';
       }
+      giftCardSelect.value = 'null';
       giftCardAddButton.style.display = 'none';
       giftCardSelectContainer.classList.remove('invisible');
       giftCardSelectWrapper.classList.remove('invisible');
