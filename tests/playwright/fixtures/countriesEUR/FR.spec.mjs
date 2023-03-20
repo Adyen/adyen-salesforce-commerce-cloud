@@ -20,7 +20,7 @@ for (const environment of environments) {
     });
     test('Oney Success', async ({ page }) => {
       // Skipping the test for SFRA5
-      if (environment.name.indexOf('v5') === -1) test.skip();
+      if (environment.name.indexOf('v6') === -1) test.skip();
 
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 4);
       await checkoutPage.setShopperDetails(shopperData.FR);
