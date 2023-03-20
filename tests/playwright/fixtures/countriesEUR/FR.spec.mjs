@@ -12,7 +12,6 @@ let redirectShopper;
 let cards;
 
 for (const environment of environments) {
-  // Skipping this one since Oney Redirection is broken on sandboxes
   test.describe(`${environment.name} EUR FR`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
@@ -20,6 +19,9 @@ for (const environment of environments) {
       cards = new Cards(page);
     });
     test('Oney Success', async ({ page }) => {
+      // Skipping the test for SFRA5
+      if (environment.name.indexOf('v5') === -1) test.skip();
+
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 4);
       await checkoutPage.setShopperDetails(shopperData.FR);
 
