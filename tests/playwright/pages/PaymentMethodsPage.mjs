@@ -306,9 +306,7 @@ export default class PaymentMethodsPage {
     await this.page.waitForNavigation({
       url: /.*staging.e-payments.oney/,
       timeout: 15000,
-      waitUntil: 'networkidle',
     });
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
