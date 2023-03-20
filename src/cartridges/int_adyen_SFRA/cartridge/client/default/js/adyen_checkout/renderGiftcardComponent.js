@@ -149,7 +149,8 @@ function showGiftCardWarningMessage() {
 }
 
 function attachGiftCardAddButtonListener() {
-  const { giftCardAddButton, giftCardSelectContainer } = getGiftCardElements();
+  const { giftCardAddButton, giftCardSelectContainer, giftCardSelectWrapper } =
+    getGiftCardElements();
   if (giftCardAddButton) {
     giftCardAddButton.addEventListener('click', () => {
       renderGiftCardSelectForm();
@@ -162,6 +163,7 @@ function attachGiftCardAddButtonListener() {
       }
       giftCardAddButton.style.display = 'none';
       giftCardSelectContainer.classList.remove('invisible');
+      giftCardSelectWrapper.classList.remove('invisible');
     });
   }
 }

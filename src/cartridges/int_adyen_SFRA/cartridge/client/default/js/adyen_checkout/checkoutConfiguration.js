@@ -141,16 +141,23 @@ function getGiftCardConfig() {
               giftCardSelect,
               giftCardCancelButton,
               giftCardAddButton,
+              giftCardSelectWrapper,
             } = getGiftCardElements();
-            if (giftCardSelect) {
-              giftCardSelect.classList.add('invisible');
+            if (giftCardSelectWrapper) {
+              giftCardSelectWrapper.classList.add('invisible');
             }
+            const initialPartialObject = { ...store.partialPaymentsOrderObj };
             giftCardCancelButton.classList.remove('invisible');
             giftCardCancelButton.addEventListener('click', () => {
               store.componentsObj.giftcard.node.unmount('component_giftcard');
               giftCardCancelButton.classList.add('invisible');
               giftCardAddButton.style.display = 'block';
               giftCardSelect.value = 'null';
+              store.partialPaymentsOrderObj.remainingAmountFormatted =
+                initialPartialObject.remainingAmountFormatted;
+              store.partialPaymentsOrderObj.totalDiscountedAmount =
+                initialPartialObject.totalDiscountedAmount;
+              createElementsToShowRemainingGiftCardAmount();
             });
             document.querySelector(
               'button[value="submit-payment"]',
@@ -159,6 +166,11 @@ function getGiftCardConfig() {
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
             );
+            store.partialPaymentsOrderObj.remainingAmountFormatted =
+              data.remainingAmountFormatted;
+            store.partialPaymentsOrderObj.totalDiscountedAmount =
+              data.totalAmountFormatted;
+            createElementsToShowRemainingGiftCardAmount();
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
