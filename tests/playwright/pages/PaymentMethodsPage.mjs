@@ -297,11 +297,16 @@ export default class PaymentMethodsPage {
     await oneyGender.click();
     await oneyDateOfBirth.click();
     await oneyDateOfBirth.type(shopper.dateOfBirth);
+    await oneyEmail.fill('');
     await oneyEmail.type(shopper.shopperEmail);
   };
 
-  confirmOneyPayment = async () => {
-    //Simulation on the Oney page
+  waitForOneyLoad = async () => {
+    //Simulation of the redirect to the Oney page
+    await this.page.waitForNavigation({
+      url: /.*staging.e-payments.oney/,
+      timeout: 15000,
+    });
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
