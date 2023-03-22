@@ -115,7 +115,7 @@ function placeOrder(req, res, next) {
 
     // Creates a new order.
     var order = COHelpers.createOrder(currentBasket);
-    AdyenLogs.info_log('Order created successfully');
+    AdyenLogs.info_log(`Order number ${order.orderNo} created successfully`);
 
     if (!order) {
         res.json({
@@ -125,7 +125,7 @@ function placeOrder(req, res, next) {
         return next();
     }
 
-    AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
+    AdyenLogs.info_log(`Order number ${order.orderNo} status set to: ${order.getStatus().getDisplayValue()}`,);
     /* ### Custom Adyen cartridge start ### */
     // Cache order number in order to be able to restore cart later
     req.session.privacyCache.set('currentOrderNumber', order.orderNo);
@@ -232,8 +232,8 @@ function placeOrder(req, res, next) {
 
     // Places the order
     var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    AdyenLogs.info_log('Order placed successfully');
-    AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
+    AdyenLogs.info_log(`Order number ${order.orderNo} placed successfully`);
+    AdyenLogs.info_log(`Order number ${order.orderNo} status set to: ${order.getStatus().getDisplayValue()}`,);
     if (placeOrderResult.error) {
         res.json({
             error: true,

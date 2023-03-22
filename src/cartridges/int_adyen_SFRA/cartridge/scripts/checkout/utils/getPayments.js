@@ -32,7 +32,7 @@ const getPayments = (order) =>
           Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });
-          AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
+          AdyenLogs.info_log(`Order number ${order.orderNo} status set to: ${order.getStatus().getDisplayValue()}`,);
         }
 
         return authorizationResult;

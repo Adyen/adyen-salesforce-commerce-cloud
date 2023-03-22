@@ -26,7 +26,7 @@ function handleAuthorised(
     countryCode: currentLocale.country,
   });
 
-  AdyenLogs.info_log(`Order status: ${order.getStatus().getDisplayValue()}`,);
+  AdyenLogs.info_log(`Order number ${order.orderNo} status set to: ${order.getStatus().getDisplayValue()}`,);
   // Save orderModel to custom object during session
   return handleOrderConfirm(
     adyenPaymentInstrument,
