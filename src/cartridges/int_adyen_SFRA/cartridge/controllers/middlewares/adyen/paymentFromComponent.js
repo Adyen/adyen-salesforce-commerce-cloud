@@ -10,6 +10,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const GiftCardsHelper = require('*/cartridge/scripts/util/giftCardsHelper');
 
 const expressMethods = ['applepay', 'amazonpay'];
 
@@ -99,7 +100,11 @@ function handleGiftCardPayment(currentBasket, order) {
       Transaction.wrap(() => {
         mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount);
       });
-      AdyenHelper.createGiftCardPM(giftCard, divideBy, order);
+      GiftCardsHelper.createGiftCardPaymentInstrument(
+        giftCard,
+        divideBy,
+        order,
+      );
     });
   }
 }

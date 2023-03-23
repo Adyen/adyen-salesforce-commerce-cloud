@@ -1,6 +1,7 @@
 /* ### Custom Adyen cartridge start ### */
 const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const GiftCardsHelper = require('*/cartridge/scripts/util/giftCardsHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
 const Money = require('dw/value/Money');
@@ -148,7 +149,7 @@ function placeOrder(req, res, next) {
             Transaction.wrap(() => {
                 mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
             });
-            AdyenHelper.createGiftCardPM(giftCard, divideBy, order);
+            GiftCardsHelper.createGiftCardPaymentInstrument(giftCard, divideBy, order);
         });
     }
     /* ### Custom Adyen cartridge end ### */
