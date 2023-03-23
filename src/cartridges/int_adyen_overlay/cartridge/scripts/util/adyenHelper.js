@@ -35,8 +35,6 @@ const PaymentInstrument = require('dw/order/PaymentInstrument');
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 const BasketMgr = require('dw/order/BasketMgr');
-const PaymentMgr = require('dw/order/PaymentMgr');
-const Money = require('dw/value/Money');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
