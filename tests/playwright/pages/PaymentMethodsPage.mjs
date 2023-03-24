@@ -88,8 +88,10 @@ export default class PaymentMethodsPage {
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
 
-    await this.emailInput.fill(paymentData.AmazonPay.username);
-    await this.passwordInput.fill(paymentData.AmazonPay.password);
+    await this.emailInput.click();
+    await this.emailInput.type(paymentData.AmazonPay.username);
+    await this.passwordInput.click();
+    await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
   
     // Handles the saved 3DS2 Masstercard saved in Amazon Sandbox
