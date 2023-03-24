@@ -326,13 +326,13 @@ export default class PaymentMethodsPage {
     await this.page.waitForNavigation({
       url: /.*playground.klarna/,
       timeout: 15000,
-      waitUntil: 'networkidle',
+      waitUntil: 'load',
     });
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   async continueOnKlarna() {
     await this.waitForKlarnaLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-hpp-instance-fullscreen',
     );
