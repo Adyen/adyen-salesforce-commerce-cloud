@@ -47,12 +47,26 @@
                </div>
             </div>
          </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="frontendRegion">Front-end resources region</label>
+            <small id="frontendRegionHelp" class="form-text mb-1">
+            Enter the closest regions to your shoppers. This setup influences the speed of the Adyen Checkout Component during checkout.
+            <a class="text-primary" href="https://docs.adyen.com/online-payments/android/components#testing-your-integration" target="_blank">Check the list of regions</a></small>
+            <div class='input-fields' id="dropdown-options">
+               <select name="Adyen_Frontend_Region" class="form-select" required>
+                  <option class="dropdown-option" value="US" id="regionUS" ${AdyenConfigs.getAdyenFrontendRegion() === 'US' ? 'selected': ''}>US - United States</option>
+                  <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenFrontendRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
+                  <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenFrontendRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
+                  <option class="dropdown-option" value="IN" id="regionIN" ${AdyenConfigs.getAdyenFrontendRegion() === 'IN' ? 'selected': ''}>IN - India</option>
+               </select>
+            </div>
+         </div>
          <div class="line-divider">
             <hr class="divider">
          </div>
          <div class="form-group">
             <label class="form-title mb-0" for="merchantAccount">Merchant Account</label>
-            <small id="merchantAccountHelp" class="form-text mb-1">This is your Adyen merchant account. You can only select one merchant account for each storefront.</small>
+            <small id="merchantAccountHelp" class="form-text mb-1">Please note that you can enter only one merchant account per storefront.</small>
             <div class="input-fields">
                <input type="text" class="form-control required" name="Adyen_merchantCode" id="merchantAccount" onchange="testConnectionButton.disabled=false;" aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
                <div class="valid-feedback"></div>

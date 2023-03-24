@@ -175,7 +175,7 @@
 
 .switch-button{
     position: absolute;
-    left: 90%;
+    left: 80%;
     right: auto;
     top: auto;
     bottom: auto;
@@ -459,4 +459,13 @@ ul{
 
 .draggable .title .logo {
     margin-left: 10px;
+}
+
+.form-select {
+    font-family: 'Fakt';
+    font-style: normal;
+    font-weight: 250;
+    font-size: 14px;
+    line-height: 24px;
+    color: #69778C;
 }
