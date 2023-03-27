@@ -12,6 +12,7 @@ const {
   showGiftCardWarningMessage,
   attachGiftCardAddButtonListener,
   showGiftCardInfoMessage,
+  giftCardBrands,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -194,6 +195,11 @@ module.exports.renderGenericComponent =
     };
     store.checkout = await AdyenCheckout(store.checkoutConfiguration);
 
+    const availableGiftCards = giftCardBrands();
+    if (availableGiftCards.length == 0){
+      const giftCardContainer = document.querySelector('.gift-card-selection');
+      giftCardContainer.style.display = 'none';
+    };
     const { totalDiscountedAmount, giftCards } = giftCardsData;
     store.addedGiftCards = giftCards;
     if (giftCards?.length) {
