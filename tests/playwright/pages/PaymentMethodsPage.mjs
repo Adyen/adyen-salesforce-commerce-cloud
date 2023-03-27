@@ -87,23 +87,28 @@ export default class PaymentMethodsPage {
     this.loginButton = this.page.locator("#signInSubmit");
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
+    this.amazonCaptcha = this.page.locator("#auth-captcha-image");
 
     await this.emailInput.click();
     await this.emailInput.type(paymentData.AmazonPay.username);
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
-  
+    await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+
+    if (await this.amazonCaptcha.isVisible()){
+      return false;
+    }
+
     // Handles the saved 3DS2 Masstercard saved in Amazon Sandbox
     if (selectedCard == "3ds2_card") {
-      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+      
       await this.changePaymentButton.click();
       await this.page.click(".MASTERCARD");
       await this.confirmPaymentChangeButton.click();
     }
   
     if (!success) {
-      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
       await this.changePaymentButton.click();
       this.rejectionCard = this.page.locator(
         'label[for="wallet_auth_decline_processing_failure"]'
