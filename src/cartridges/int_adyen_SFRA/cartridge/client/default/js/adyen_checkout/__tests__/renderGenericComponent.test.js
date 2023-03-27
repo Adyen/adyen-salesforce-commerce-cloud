@@ -54,6 +54,7 @@ describe('Render Generic Component', () => {
       <input type="radio" name="brandCode" value="card" />
       <button value="submit-payment">Submit</button>
       <div id="component_card"></div>
+      <div class="gift-card-selection"></div>
       <div id="adyenPosTerminals">
         <span>Child #1</span>
       </div>

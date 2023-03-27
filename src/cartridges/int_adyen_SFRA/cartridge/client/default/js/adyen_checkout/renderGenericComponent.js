@@ -175,6 +175,14 @@ function setInstallments(amount) {
   } catch (e) {} // eslint-disable-line no-empty
 }
 
+function setGiftCardContainerVisibility() {
+  const availableGiftCards = giftCardBrands();
+  if (availableGiftCards.length === 0) {
+    const giftCardContainer = document.querySelector('.gift-card-selection');
+    giftCardContainer.style.display = 'none';
+  }
+}
+
 /**
  * Calls createSession and then renders the retrieved payment methods (including card component)
  */
@@ -195,11 +203,7 @@ module.exports.renderGenericComponent =
     };
     store.checkout = await AdyenCheckout(store.checkoutConfiguration);
 
-    const availableGiftCards = giftCardBrands();
-    if (availableGiftCards.length == 0){
-      const giftCardContainer = document.querySelector('.gift-card-selection');
-      giftCardContainer.style.display = 'none';
-    };
+    setGiftCardContainerVisibility();
     const { totalDiscountedAmount, giftCards } = giftCardsData;
     store.addedGiftCards = giftCards;
     if (giftCards?.length) {
