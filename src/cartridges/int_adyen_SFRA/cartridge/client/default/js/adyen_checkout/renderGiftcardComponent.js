@@ -417,4 +417,5 @@ module.exports = {
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
   showGiftCardInfoMessage,
+  giftCardBrands,
 };
