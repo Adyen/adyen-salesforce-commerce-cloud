@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checkout Services should not process payment and return json response at end of file when there is no action 1`] = `
+[
+  [
+    {
+      "continueUrl": "["Order-Confirm"]",
+      "error": false,
+      "orderID": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+    },
+  ],
+]
+`;

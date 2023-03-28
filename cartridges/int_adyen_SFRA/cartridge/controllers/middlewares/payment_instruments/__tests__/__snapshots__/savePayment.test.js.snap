@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Save Payment should fail if resultCode is not Authorised 1`] = `
+[
+  [
+    {
+      "error": [
+        "mocked_error.card.information.error",
+      ],
+      "success": false,
+    },
+  ],
+]
+`;
+
+exports[`Save Payment should fail if zeroAuth has error 1`] = `
+[
+  [
+    {
+      "error": [
+        "mocked_error.card.information.error",
+      ],
+      "success": false,
+    },
+  ],
+]
+`;
+
+exports[`Save Payment should return redirectAction and succeed 1`] = `
+[
+  [
+    {
+      "redirectAction": {
+        "data": {
+          "MD": "mockMD",
+          "PaReq": "mockPaReq",
+          "TermUrl": "https://checkoutshopper-test.adyen.com/checkoutshopMock",
+        },
+        "method": "POST",
+        "paymentMethodType": "scheme",
+        "type": "redirect",
+        "url": "https://checkoutshopper-test.adyen.com/checkoutshopper/threeDS2.shtml",
+      },
+      "redirectUrl": "["PaymentInstruments-List"]",
+      "success": true,
+    },
+  ],
+]
+`;
+
+exports[`Save Payment should succeed 1`] = `
+[
+  [
+    {
+      "redirectUrl": "["PaymentInstruments-List"]",
+      "success": true,
+    },
+  ],
+]
+`;

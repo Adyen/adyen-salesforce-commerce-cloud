@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Helpers   should make payment ajax call that fails 1`] = `
+{
+  "data": {},
+  "paymentMethod": "mocked_paymentMethod",
+}
+`;

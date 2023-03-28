@@ -1,0 +1,34 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<isset name="Order" value="${pdict.order}" scope="page"/>
+<isif condition="${AdyenHelper.getAdyenGivingConfig(Order)}">
+    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+    <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+    <script>
+        window.Configuration = {
+            locale: "${request.locale}",
+            clientKey: "${AdyenConfigs.getAdyenClientKey}",
+            environment: "${AdyenHelper.getCheckoutEnvironment()}"
+        };
+        window.adyenGivingAvailable = "${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingAvailable}"
+        window.orderNo = '${pdict.Order.orderNo}';
+        window.donationAmounts = '${AdyenHelper.getAdyenGivingConfig(Order).donationAmounts}'.replace(/&quot;/g, '\"');;
+        window.pspReference = '${AdyenHelper.getAdyenGivingConfig(Order).pspReference}';
+        window.charityName = '${AdyenHelper.getAdyenGivingConfig(Order).charityName}';
+        window.charityWebsite = '${AdyenHelper.getAdyenGivingConfig(Order).charityWebsite}';
+        window.charityDescription = '${AdyenHelper.getAdyenGivingConfig(Order).charityDescription}';
+        window.adyenGivingBackgroundUrl = '${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingBackgroundUrl}';
+        window.adyenGivingLogoUrl = '${AdyenHelper.getAdyenGivingConfig(Order).adyenGivingLogoUrl}';
+        window.donateURL = "${URLUtils.https('Adyen-Donate')}";
+    </script>
+    <div id="adyenGiving" class="card confirm-details">
+        <div class="card-header">
+            <h2 class="card-header-custom">${Resource.msg('title.adyenGiving', 'adyen', null)}</h2>
+        </div>
+        <div class="card-body">
+            <div id="donate-container"></div>
+        </div>
+    </div>
+</isif>

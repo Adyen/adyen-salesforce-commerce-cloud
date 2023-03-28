@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processForm should return error when credit card validation fails 1`] = `
+{
+  "error": true,
+  "fieldErrors": {
+    "creditCardErrors": "mockedCreditCardErrors",
+  },
+}
+`;
+
+exports[`processForm should return viewData 1`] = `
+{
+  "error": false,
+  "viewData": {
+    "paymentInformation": {
+      "adyenIssuerName": "mocked_issuer_name",
+      "adyenPaymentMethod": "mockedPaymentMethod",
+      "cardNumber": "mockedCardNumber",
+      "cardType": "mockedCardType",
+      "isCreditCard": true,
+      "partialPaymentsOrder": "mockedOrder",
+      "stateData": "mockedStateData",
+    },
+    "paymentMethod": {
+      "htmlName": "mockedPaymentMethod",
+      "value": "mockedPaymentMethod",
+    },
+    "saveCard": true,
+  },
+}
+`;
+
+exports[`processForm should return viewData when authenticated and registered 1`] = `
+{
+  "error": false,
+  "viewData": {
+    "paymentInformation": {
+      "adyenIssuerName": "mocked_issuer_name",
+      "adyenPaymentMethod": "mockedPaymentMethod",
+      "cardNumber": "mocked_cc_number",
+      "cardType": "mocked_cc_type",
+      "creditCardToken": "mocked_raw_cc_token ",
+      "expirationMonth": "mocked_cc_exp_month",
+      "expirationYear": "mocked_cc_exp_year",
+      "isCreditCard": false,
+      "partialPaymentsOrder": "mockedOrder",
+      "securityCode": "mocked_security_code",
+      "stateData": "{"paymentMethod":{"storedPaymentMethodId":"mocked_id"}}",
+    },
+    "paymentMethod": {
+      "htmlName": "mockedPaymentMethod",
+      "value": "mockedPaymentMethod",
+    },
+    "saveCard": true,
+  },
+}
+`;

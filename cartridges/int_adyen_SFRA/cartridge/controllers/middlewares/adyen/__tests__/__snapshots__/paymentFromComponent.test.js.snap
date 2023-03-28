@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment from Component should authorize express payment 1`] = `
+[
+  [
+    {
+      "isApplePay": true,
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "resultCode": "Authorised",
+    },
+  ],
+]
+`;
+
+exports[`Payment from Component should cancel transaction 1`] = `
+[
+  [
+    "Checkout-Begin",
+    "stage",
+    "placeOrder",
+  ],
+]
+`;
+
+exports[`Payment from Component should return json response 1`] = `
+[
+  [
+    {
+      "isApplePay": true,
+      "orderNo": "mocked_orderNo",
+      "orderToken": "mocked_orderToken",
+      "resultCode": "Authorised",
+    },
+  ],
+]
+`;

@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment should handle payment instruments with payload 1`] = `
+{
+  "adyenPaymentInstrument": {
+    "custom": {
+      "adyenAction": "mocked_adyen_action",
+      "adyenMD": "mocked_adyen_MD",
+      "adyenPaymentData": "{ "paymentMethod": { "type": "mocked_type" } }",
+      "adyenRedirectURL": "https://some_mocked_url/signature",
+    },
+    "paymentTransaction": {
+      "custom": {
+        "Adyen_authResult": "{ "data": "mock"}",
+        "Adyen_merchantSig": "mocked_signature",
+      },
+    },
+  },
+  "details": {
+    "payload": "mocked_payload",
+  },
+  "paymentData": "{ "paymentMethod": { "type": "mocked_type" } }",
+}
+`;
+
+exports[`Payment should handle payment instruments with redirect result 1`] = `
+{
+  "adyenPaymentInstrument": {
+    "custom": {
+      "adyenAction": "mocked_adyen_action",
+      "adyenMD": "mocked_adyen_MD",
+      "adyenPaymentData": "{ "paymentMethod": { "type": "mocked_type" } }",
+      "adyenRedirectURL": "https://some_mocked_url/signature",
+    },
+    "paymentTransaction": {
+      "custom": {
+        "Adyen_authResult": "{ "data": "mock"}",
+        "Adyen_merchantSig": "mocked_signature",
+      },
+    },
+  },
+  "details": {
+    "redirectResult": "mocked_redirect_result",
+  },
+  "paymentData": "{ "paymentMethod": { "type": "mocked_type" } }",
+}
+`;

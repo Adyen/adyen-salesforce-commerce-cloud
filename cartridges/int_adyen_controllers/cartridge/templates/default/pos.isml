@@ -1,0 +1,22 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="brandCode" value="AdyenPOS" scope="session"/>
+<isset name="connectedTerminals" value="${pdict.AdyenSessionsResponse.adyenConnectedTerminals}" scope="page"/>
+
+<isinputfield type="hidden" formfield="${pdict.CurrentForms.adyPaydata.terminalId}" />
+<div class="form-row form-indent">
+<isif condition="${connectedTerminals.uniqueTerminalIds && connectedTerminals.uniqueTerminalIds.length > 0}">
+	<div class="field-wrapper">
+		<h4>${Resource.msg('terminal.selectTerminal','adyen',null)}</h4>
+		<select class="connectedTerminals" id="terminalList">
+			<isloop items="${connectedTerminals.uniqueTerminalIds}" var="uniqueTerminal">
+				<option label="${uniqueTerminal}" value="${uniqueTerminal}"/>
+			</isloop>
+		</select>
+	</div>
+	<iselse>
+		<h4>${Resource.msg('terminal.noTerminals','adyen',null)}</h4>
+	</iselse>
+</isif>
+</div>

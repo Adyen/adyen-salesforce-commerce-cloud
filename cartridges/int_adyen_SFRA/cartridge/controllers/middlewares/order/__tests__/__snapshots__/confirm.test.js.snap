@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Confirm should set view data 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      {
+        "adyen": {
+          "adyenGivingAvailable": true,
+          "adyenGivingBackgroundUrl": "mocked_background_url",
+          "adyenGivingLogoUrl": "mocked_logo_url",
+          "charityDescription": "mocked_charity_description",
+          "charityName": "mocked_charity_name",
+          "charityWebsite": "mocked_charity_website",
+          "clientKey": "mocked_client_key",
+          "donationAmounts": "{"currency":"EUR","values":[10,20,30]}",
+          "environment": "test",
+          "pspReference": undefined,
+        },
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;

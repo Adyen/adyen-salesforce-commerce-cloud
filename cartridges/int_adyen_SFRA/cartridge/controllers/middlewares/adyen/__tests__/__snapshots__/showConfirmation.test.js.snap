@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Show Confirmation should have payload 1`] = `
+[
+  [
+    {
+      "details": {
+        "payload": "mocked_payload_result",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Show Confirmation should have redirectResult 1`] = `
+[
+  [
+    {
+      "details": {
+        "redirectResult": "mocked_redirect_result",
+      },
+    },
+  ],
+]
+`;

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render Generic Component should render 1`] = `
+{
+  "amount": "mocked_amount",
+  "countryCode": "mocked_countrycode",
+  "paymentMethodsConfiguration": {
+    "amazonpay": {
+      "addressDetails": {
+        "addressLine1": "test",
+        "city": "test",
+        "countryCode": "test",
+        "name": "test test",
+        "phoneNumber": "test",
+        "postalCode": "test",
+        "stateOrRegion": "test",
+      },
+      "configuration": undefined,
+    },
+  },
+  "session": {
+    "adyenDescriptions": {},
+    "id": "mock_id",
+    "imagePath": "example.com",
+    "sessionData": "mock_session_data",
+  },
+}
+`;

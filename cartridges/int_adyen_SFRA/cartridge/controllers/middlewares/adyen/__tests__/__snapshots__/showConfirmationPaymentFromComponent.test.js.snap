@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Show Confirmation Payment From Component should redirect on placeOrder error 1`] = `
+[
+  [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    "mocked_error.payment.not.valid",
+  ],
+]
+`;
+
+exports[`Show Confirmation Payment From Component should redirect on unsuccessful payment 1`] = `
+[
+  [
+    "Checkout-Begin",
+    "stage",
+    "payment",
+    "paymentError",
+    "mocked_error.payment.not.valid",
+  ],
+]
+`;

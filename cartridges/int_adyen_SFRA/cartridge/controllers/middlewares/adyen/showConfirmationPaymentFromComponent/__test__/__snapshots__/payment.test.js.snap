@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Payment should successfully handle payment 1`] = `
+[
+  [
+    "["Order-Confirm","ID","mocked_orderNo","token","mocked_orderToken"]",
+  ],
+]
+`;

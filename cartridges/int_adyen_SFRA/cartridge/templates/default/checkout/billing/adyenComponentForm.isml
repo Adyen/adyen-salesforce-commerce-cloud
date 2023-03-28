@@ -1,0 +1,115 @@
+<iscontent type="text/html"/>
+<isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
+<isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
+<script src="https://pay.google.com/gp/p/js/pay.js"></script>
+<isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
+
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script>
+      window.Configuration = {
+          locale: '${request.locale}',
+          clientKey: '${pdict.adyen.clientKey}',
+          environment: '${pdict.adyen.environment}',
+      };
+      window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
+      window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+      window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+      window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
+      window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+      window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
+      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+
+      window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
+      window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
+      window.deductedBalanceGiftCardResource = "${Resource.msg('deductedBalance.giftCard', 'adyen', null)}";
+      window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
+
+      window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
+      window.removeGiftCardButtonText = "${Resource.msg('remove.giftCard', 'adyen', null)}";
+</script>
+
+<isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/amazonPayCheckout.js');
+        assets.addCss('/css/adyenCss.css');
+    </isscript>
+
+    <script>
+        var queryString = '${request.getHttpQueryString()}'.split("=");
+        var amazonCheckoutSessionId = queryString[queryString.length - 1];
+        window.amazonCheckoutSessionId = amazonCheckoutSessionId;
+    </script>
+     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+
+    <isinclude template="adyenActionModal" />
+
+<iselse>
+    <script>
+         window.installments = '${pdict.adyen.installments}';
+         window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
+         window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
+         window.merchantAccount = '${pdict.adyen.merchantAccount}';
+         var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
+    </script>
+
+     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+     <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
+
+     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+     <input id="adyenPartialPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenPartialPaymentsOrder.htmlName}"/>
+     <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
+     <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
+
+     <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
+     <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
+     <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
+
+    <div class="gift-card-selection">
+        <img id="headingImg" class="heading-img" />
+        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
+            <span class="adyen-checkout__button__content">
+                <span class="adyen-checkout__button__text">
+                    ${Resource.msg('add.giftCard', 'adyen', null)}
+                </span>
+            </span>
+        </button>
+        <div id="giftCardSelectContainer" class="invisible">
+            <label  id="giftCardSelectWrapper" class="gift-card-select-wrapper">
+                <select id="giftCardSelect">
+                    <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
+                </select>
+            </label>
+            <ul id="giftCardUl" class="list-cards invisible"></ul>
+            <div id="giftCardContainer"></div>
+        </div>
+        <div id="cancelGiftCardButton" class="invisible">
+            <input type="image" src="${URLUtils.staticURL('images/cancel.svg')}"/>  
+        </div>
+    </div>
+    <div id="giftCardsList" class="gift-cards-container"></div>
+    <div id="giftCardsInfoMessage"></div>
+
+    <ul id="paymentMethodsList" class="payment-methods-container"></ul>
+
+     <iscomment>
+         Adyen RatePay Device Fingerprint Code
+     </iscomment>
+     <isif condition="${!empty(ratePayValues.ratePayID)}">
+         <script language="JavaScript">
+             var di = {t:'${ratePayValues.sessionID}',v:'${ratePayValues.ratePayID}',l:'Checkout'}
+         </script>
+         <script type="text/javascript" src="https://d.ratepay.com/${ratePayValues.ratePayID}/di.js"></script>
+    </isif>
+     <iscomment>
+         Adyen Generic Device Fingerprint Code
+     </iscomment>
+     <script type="text/javascript" src="https://live.adyen.com/hpp/js/df.js?v=${session.sessionID}"></script>
+     <input id="adyenFingerprint" type="hidden" name="${adyenPaymentFields.adyenFingerprint.htmlName}"/>
+     <script type="text/javascript">
+         dfDo('adyenFingerprint');
+     </script>
+
+</iselse>
+</isif>

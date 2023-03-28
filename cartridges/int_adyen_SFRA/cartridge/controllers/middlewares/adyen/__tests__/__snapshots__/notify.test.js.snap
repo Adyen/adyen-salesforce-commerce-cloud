@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Notify should render notifyError when notification result is not successful 1`] = `
+[
+  [
+    "/notifyError",
+    {
+      "errorMessage": "mocked_error_message",
+    },
+  ],
+]
+`;

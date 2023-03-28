@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render gift card should render a select form 1`] = `
+<select
+  id="giftCardSelect"
+/>
+`;
+
+exports[`Render gift card should render a select form 2`] = `
+<ul
+  id="giftCardUl"
+>
+  <li
+    data-brand="mocked_brand1"
+    data-name="undefined"
+    data-type="giftcard"
+  >
+    <span />
+    <img
+      height="26"
+      src="test_image_pathmocked_brand1.png"
+      width="40"
+    />
+  </li>
+  <li
+    data-brand="mocked_brand2"
+    data-name="undefined"
+    data-type="giftcard"
+  >
+    <span />
+    <img
+      height="26"
+      src="test_image_pathmocked_brand2.png"
+      width="40"
+    />
+  </li>
+</ul>
+`;
+
+exports[`Render gift card should render applied gift cards 1`] = `
+<ul
+  id="giftCardsList"
+>
+  <div
+    class="gift-card"
+  >
+    <div
+      class="wrapper"
+    >
+      <div
+        class="brand-container"
+      >
+        <img
+          class="gift-card-logo"
+          src="test_image_pathbrand.png"
+        />
+        <p>
+          Name
+        </p>
+      </div>
+      <div
+        class="gift-card-action"
+      />
+    </div>
+    <div
+      class="wrapper"
+    >
+      <p />
+      <strong />
+    </div>
+  </div>
+</ul>
+`;
+
+exports[`Render gift card should show a warning message if more items are added to cart later 1`] = `
+<div
+  class="card-body order-total-summary"
+>
+  <div
+    class="alert alert-warning error-message gift-card-warning-msg"
+    id="giftCardWarningMessage"
+    role="alert"
+  >
+    <p
+      class="error-message-text"
+    />
+  </div>
+</div>
+`;

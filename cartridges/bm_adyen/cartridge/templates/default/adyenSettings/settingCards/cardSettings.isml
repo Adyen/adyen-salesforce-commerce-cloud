@@ -1,0 +1,37 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<div id="cardSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Card settings
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Choose additional payment features you want to offer to your shoppers.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="cardHolderNameEnabled">Cardholder’s name</label>
+            <small id="cardHolderNameEnabledHelp" class="form-text mb-1">This allows you to show the input field for the cardholder’s name. </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenCardHolderName_enabled" id="cardHolderYes" value=true ${AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="cardHolderYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenCardHolderName_enabled" id="cardHolderNo" value=false ${!AdyenConfigs.getAdyenCardholderNameEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="cardHolderNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="installments">Credit card installments <small class="text-secondary">(optional)</small></label>
+            <small id="installmentsHelp" class="form-text mb-1">
+            If you’re offering an installments option to your shoppers, go to <a class="text-primary" href="https://adyen.github.io/adyen-salesforce-commerce-cloud/" target="_blank">our GitHub</a> to create the required configuration value and paste it here.
+            </small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="AdyenCreditCardInstallments" id="installments" aria-describedby="installmentsHelp" value="${AdyenConfigs.getCreditCardInstallments() || ''}">    
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

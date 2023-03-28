@@ -1,0 +1,36 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
+
+<script>
+    var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
+    var loadingContext = "${AdyenHelper.getLoadingContext()}";
+    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
+    var locale = "${request.locale}";
+    window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.sessionData = JSON.parse('${pdict.SessionData}'.replace(/&quot;/g, '\"'));
+    window.zeroAuthURL = "${URLUtils.https('Adyen-ZeroAuth')}";
+    window.paymentsDetails = "${URLUtils.https('Adyen-PaymentsDetails')}";
+    window.paymentInstrumentsList = "${URLUtils.https('PaymentInstruments-List')}";
+    window.paymentInstrumentsListError = "${URLUtils.https('PaymentInstruments-List', 'error', 'AuthorisationFailed')}";
+</script>
+
+<div>
+    <input type="hidden" id="adyenStateData" name="${pdict.CurrentForms.adyPaydata.adyenStateData.htmlName}">
+    <input type="hidden" id="paymentFromComponentStateData" name="${pdict.CurrentForms.adyPaydata.paymentFromComponentStateData.htmlName}">
+    <input type="hidden" id="merchantReference" name="${pdict.CurrentForms.adyPaydata.merchantReference.htmlName}">
+    <input type="hidden" id="orderToken" name="${pdict.CurrentForms.adyPaydata.orderToken.htmlName}">
+
+    <div id="newCard"></div>
+
+    <div id="buttonsContainer" class="form-row form-row-button">
+        <button id="applyBtn" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+            ${Resource.msg('global.apply', 'locale', null)}
+        </button>
+        <button class="cancel cancel-button simple" type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.cancel.htmlName}" value="${Resource.msg('global.cancel','locale',null)}">
+            ${Resource.msg('global.cancel', 'locale', null)}
+        </button>
+    </div>
+</div>

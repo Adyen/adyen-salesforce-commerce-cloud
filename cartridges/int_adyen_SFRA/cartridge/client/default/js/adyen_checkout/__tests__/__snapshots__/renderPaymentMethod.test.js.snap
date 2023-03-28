@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render Payment Method should render payment method with shopper information fields 1`] = `
+<ul
+  id="paymentMethodsList"
+>
+  <li
+    class="paymentMethod"
+  >
+    
+    
+    <input
+      id="rb_scheme"
+      name="brandCode"
+      type="radio"
+      value="scheme"
+    />
+    
+    
+    <img
+      class="paymentMethod_img"
+      src="/mocked_path/card.png"
+    />
+    
+    
+    <label
+      for="rb_scheme"
+      id="lb_scheme"
+    >
+      mocked_name
+    </label>
+    
+  
+    <p>
+      mocked_description
+    </p>
+    <div
+      class="additionalFields"
+      id="component_scheme"
+      style="display:none"
+    />
+  </li>
+</ul>
+`;
+
+exports[`Render Payment Method should render payment method with shopper information fields 2`] = `
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
+        "foo": "bar",
+      },
+    },
+  },
+  "scheme": {
+    "isValid": undefined,
+    "node": {
+      "mount": [MockFunction] {
+        "calls": [
+          [
+            <div
+              class="additionalFields"
+              id="component_scheme"
+              style="display:none"
+            />,
+          ],
+        ],
+        "results": [
+          {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 1`] = `
+<ul
+  id="paymentMethodsList"
+>
+  <li
+    class="paymentMethod"
+  >
+    
+    
+    <input
+      id="rb_storedCardmocked_id"
+      name="brandCode"
+      type="radio"
+      value="storedCardmocked_id"
+    />
+    
+    
+    <img
+      class="paymentMethod_img"
+      src="/mocked_path/mocked_brand.png"
+    />
+    
+    
+    <label
+      for="rb_storedCardmocked_id"
+      id="lb_storedCardmocked_id"
+    >
+      mocked_name ************1234
+    </label>
+    
+  
+    <p>
+      mocked_description
+    </p>
+    <div
+      class="additionalFields"
+      id="component_storedCardmocked_id"
+      style="display:none"
+    />
+  </li>
+</ul>
+`;
+
+exports[`Render Payment Method should render stored payment method with missing shopper information fields 2`] = `
+{
+  "mocked_id": {
+    "node": {
+      "mocked_node": {
+        "foo": "bar",
+      },
+    },
+  },
+  "storedCardmocked_id": {
+    "isValid": undefined,
+    "node": {
+      "mount": [MockFunction] {
+        "calls": [
+          [
+            <div
+              class="additionalFields"
+              id="component_storedCardmocked_id"
+              style="display:none"
+            />,
+          ],
+        ],
+        "results": [
+          {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      },
+    },
+  },
+}
+`;
