@@ -77,5 +77,5 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: '5.28.0',
-  VERSION: '23.1.0',
+  VERSION: '23.1.1',
 };
