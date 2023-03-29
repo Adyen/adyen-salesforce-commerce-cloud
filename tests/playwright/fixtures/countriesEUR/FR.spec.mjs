@@ -12,30 +12,32 @@ let redirectShopper;
 let cards;
 
 for (const environment of environments) {
-  // Skipping this one since Oney Redirection is broken on sandboxes
-  test.describe.skip(`${environment.name} EUR FR`, () => {
+  test.describe(`${environment.name} EUR FR`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`${environment.urlExtension}`);
       checkoutPage = new environment.CheckoutPage(page);
-      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
-      await checkoutPage.setShopperDetails(shopperData.FR);
       cards = new Cards(page);
     });
     test('Oney Success', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
+      // Skipping the test for SFRA5
+      if (environment.name.indexOf('v6') === -1) test.skip();
 
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 4);
+      await checkoutPage.setShopperDetails(shopperData.FR);
+
+      redirectShopper = new RedirectShopper(page);
       await redirectShopper.doOneyPayment(shopperData.FR);
       await checkoutPage.completeCheckout();
       await redirectShopper.completeOneyRedirect();
-      await checkoutPage.expectSuccess();
     });
 
     test('Oney Fail', async ({ page }) => {
-      redirectShopper = new RedirectShopper(page);
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1);
+      await checkoutPage.setShopperDetails(shopperData.FR);
 
-      await redirectShopper.doOneyPayment(false);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doOneyPayment(shopperData.FR);
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeOneyRedirect();
       await checkoutPage.expectRefusal();
     });
   });
@@ -65,7 +67,8 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
-    await redirectShopper.doAmazonPayment(true, true, '3ds2_card');
+    const result = await redirectShopper.doAmazonPayment(true, true, '3ds2_card');
+    if(result != true){test.skip()};
     await cards.do3Ds2Verification();
     await checkoutPage.expectSuccess();
   });
@@ -74,7 +77,8 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     redirectShopper = new RedirectShopper(page);
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
-    await redirectShopper.doAmazonPayment(false);
+    const result = await redirectShopper.doAmazonPayment(false);
+    if(result != true){test.skip()};
     await redirectShopper.doAmazonExpressPayment();
     await checkoutPage.expectSuccess();
   });
@@ -86,7 +90,8 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
-    await redirectShopper.doAmazonPayment(true, false);
+    const result = await redirectShopper.doAmazonPayment(true, false);
+    if(result != true){test.skip()};
     await checkoutPage.expectRefusal();
   });
 

@@ -31,7 +31,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethods">
-        <url>https://checkout-test.adyen.com/v68/paymentMethods</url>
+        <url>https://checkout-test.adyen.com/v69/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>

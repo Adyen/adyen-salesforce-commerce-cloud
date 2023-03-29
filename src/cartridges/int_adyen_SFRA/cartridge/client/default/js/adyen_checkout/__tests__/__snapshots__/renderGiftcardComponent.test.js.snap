@@ -3,16 +3,7 @@
 exports[`Render gift card should render a select form 1`] = `
 <select
   id="giftCardSelect"
->
-  <option
-    style="visibility: hidden;"
-    value="mocked_brand1"
-  />
-  <option
-    style="visibility: hidden;"
-    value="mocked_brand2"
-  />
-</select>
+/>
 `;
 
 exports[`Render gift card should render a select form 2`] = `

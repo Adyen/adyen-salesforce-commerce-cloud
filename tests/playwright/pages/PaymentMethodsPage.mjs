@@ -87,21 +87,28 @@ export default class PaymentMethodsPage {
     this.loginButton = this.page.locator("#signInSubmit");
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
+    this.amazonCaptcha = this.page.locator("#auth-captcha-image");
 
-    await this.emailInput.fill(paymentData.AmazonPay.username);
-    await this.passwordInput.fill(paymentData.AmazonPay.password);
+    await this.emailInput.click();
+    await this.emailInput.type(paymentData.AmazonPay.username);
+    await this.passwordInput.click();
+    await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
-  
+    await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+
+    if (await this.amazonCaptcha.isVisible()){
+      return false;
+    }
+
     // Handles the saved 3DS2 Masstercard saved in Amazon Sandbox
     if (selectedCard == "3ds2_card") {
-      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
+      
       await this.changePaymentButton.click();
       await this.page.click(".MASTERCARD");
       await this.confirmPaymentChangeButton.click();
     }
   
     if (!success) {
-      await this.page.waitForLoadState("networkidle", { timeout: 15000 });
       await this.changePaymentButton.click();
       this.rejectionCard = this.page.locator(
         'label[for="wallet_auth_decline_processing_failure"]'
@@ -261,8 +268,8 @@ export default class PaymentMethodsPage {
 
   do3Ds2Verification = async () => {
     const verificationIframe = this.page.frameLocator(
-      '.adyen-checkout__threeds2__challenge iframe',
-    ).frameLocator('iframe');
+      "iframe[name='threeDSIframe']",
+    );
     await verificationIframe.locator('input[name="answer"]').fill('password');
     await verificationIframe.locator('button[type="submit"]').click();
   };
@@ -297,11 +304,16 @@ export default class PaymentMethodsPage {
     await oneyGender.click();
     await oneyDateOfBirth.click();
     await oneyDateOfBirth.type(shopper.dateOfBirth);
+    await oneyEmail.fill('');
     await oneyEmail.type(shopper.shopperEmail);
   };
 
-  confirmOneyPayment = async () => {
-    //Simulation on the Oney page
+  waitForOneyLoad = async () => {
+    //Simulation of the redirect to the Oney page
+    await this.page.waitForNavigation({
+      url: /.*staging.e-payments.oney/,
+      timeout: 15000,
+    });
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
@@ -321,13 +333,13 @@ export default class PaymentMethodsPage {
     await this.page.waitForNavigation({
       url: /.*playground.klarna/,
       timeout: 15000,
-      waitUntil: 'networkidle',
+      waitUntil: 'load',
     });
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
   };
 
   async continueOnKlarna() {
     await this.waitForKlarnaLoad();
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-hpp-instance-fullscreen',
     );

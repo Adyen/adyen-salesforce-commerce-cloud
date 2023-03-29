@@ -102,27 +102,34 @@ function handle(customObj) {
   if (orderCreateDateDelay < currentDate) {
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
+        // Check if one of the adyen payment methods was used during payment
+        // Or if the payment method belongs to adyen payment processors
         const paymentInstruments = order.getPaymentInstruments();
         let adyenPaymentInstrument = null;
-        // Move adyen log request to order payment transaction
         for (const pi in paymentInstruments) {
           if (
             [
               constants.METHOD_ADYEN,
               constants.METHOD_ADYEN_POS,
               constants.METHOD_ADYEN_COMPONENT,
+              constants.METHOD_CREDIT_CARD,
             ].indexOf(paymentInstruments[pi].paymentMethod) !== -1 ||
-            PaymentMgr.getPaymentMethod(
+            [
+              constants.PAYMENT_INSTRUMENT_ADYEN_CREDIT,
+              constants.PAYMENT_INSTRUMENT_ADYEN_POS,
+              constants.PAYMENT_INSTRUMENT_ADYEN_COMPONENT,
+            ].indexOf(PaymentMgr.getPaymentMethod(
               paymentInstruments[pi].getPaymentMethod(),
-            ).getPaymentProcessor().ID === 'ADYEN_CREDIT'
+            ).getPaymentProcessor().ID) !== -1
           ) {
             isAdyen = true;
+            // Move adyen log request to order payment transaction
             paymentInstruments[pi].paymentTransaction.custom.Adyen_log =
               customObj.custom.Adyen_log;
             adyenPaymentInstrument = paymentInstruments[pi];
           }
         }
-        if (customObj.custom.success === 'true') {
+        if (customObj.custom.success === 'true' && adyenPaymentInstrument) {
           const amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
           const totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
           if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
@@ -287,8 +294,7 @@ function handle(customObj) {
 }
 
 function setProcessedCOInfo(customObj) {
-  const now = new Date();
-  customObj.custom.processedDate = now;
+  customObj.custom.processedDate = new Date();
   customObj.custom.updateStatus = 'SUCCESS';
   customObj.custom.processedStatus = 'SUCCESS';
 }

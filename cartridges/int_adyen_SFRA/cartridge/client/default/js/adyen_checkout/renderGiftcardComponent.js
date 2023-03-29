@@ -1,8 +1,11 @@
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var store = require('../../../../store');
 var constants = require('../constants');
 function getGiftCardElements() {
@@ -11,8 +14,10 @@ function getGiftCardElements() {
   var giftCardContainer = document.querySelector('#giftCardContainer');
   var giftCardAddButton = document.querySelector('#giftCardAddButton');
   var giftCardSelectContainer = document.querySelector('#giftCardSelectContainer');
+  var giftCardSelectWrapper = document.querySelector('#giftCardSelectWrapper');
   var giftCardsList = document.querySelector('#giftCardsList');
   var giftCardsInfoMessageContainer = document.querySelector('#giftCardsInfoMessage');
+  var giftCardCancelButton = document.querySelector('#cancelGiftCardButton');
   return {
     giftCardSelect: giftCardSelect,
     giftCardUl: giftCardUl,
@@ -20,22 +25,27 @@ function getGiftCardElements() {
     giftCardAddButton: giftCardAddButton,
     giftCardSelectContainer: giftCardSelectContainer,
     giftCardsList: giftCardsList,
-    giftCardsInfoMessageContainer: giftCardsInfoMessageContainer
+    giftCardsInfoMessageContainer: giftCardsInfoMessageContainer,
+    giftCardCancelButton: giftCardCancelButton,
+    giftCardSelectWrapper: giftCardSelectWrapper
   };
+}
+function giftCardBrands() {
+  var paymentMethodsResponse = store.checkout.paymentMethodsResponse;
+  return paymentMethodsResponse.paymentMethods.filter(function (pm) {
+    return pm.type === constants.GIFTCARD;
+  });
 }
 function renderGiftCardSelectForm() {
   var _getGiftCardElements = getGiftCardElements(),
-    giftCardSelect = _getGiftCardElements.giftCardSelect,
-    giftCardUl = _getGiftCardElements.giftCardUl;
+    giftCardUl = _getGiftCardElements.giftCardUl,
+    giftCardSelect = _getGiftCardElements.giftCardSelect;
   if (giftCardUl !== null && giftCardUl !== void 0 && giftCardUl.innerHTML) {
+    giftCardSelect.classList.remove('invisible');
     return;
   }
-  var paymentMethodsResponse = store.checkout.paymentMethodsResponse;
   var imagePath = store.checkoutConfiguration.session.imagePath;
-  var giftCardBrands = paymentMethodsResponse.paymentMethods.filter(function (pm) {
-    return pm.type === constants.GIFTCARD;
-  });
-  giftCardBrands.forEach(function (giftCard) {
+  giftCardBrands().forEach(function (giftCard) {
     var newListItem = document.createElement('li');
     newListItem.setAttribute('data-brand', giftCard.brand);
     newListItem.setAttribute('data-name', giftCard.name);
@@ -49,11 +59,6 @@ function renderGiftCardSelectForm() {
     newListItem.appendChild(span);
     newListItem.appendChild(img);
     giftCardUl.appendChild(newListItem);
-    var newOption = document.createElement('option');
-    newOption.textContent = giftCard.name;
-    newOption.value = giftCard.brand;
-    newOption.style.visibility = 'hidden';
-    giftCardSelect.appendChild(newOption);
   });
 }
 function attachGiftCardFormListeners() {
@@ -63,7 +68,8 @@ function attachGiftCardFormListeners() {
   var _getGiftCardElements2 = getGiftCardElements(),
     giftCardUl = _getGiftCardElements2.giftCardUl,
     giftCardSelect = _getGiftCardElements2.giftCardSelect,
-    giftCardContainer = _getGiftCardElements2.giftCardContainer;
+    giftCardContainer = _getGiftCardElements2.giftCardContainer,
+    giftCardSelectWrapper = _getGiftCardElements2.giftCardSelectWrapper;
   if (giftCardUl) {
     giftCardUl.addEventListener('click', function (event) {
       var _store$componentsObj;
@@ -79,6 +85,11 @@ function attachGiftCardFormListeners() {
       if (!store.partialPaymentsOrderObj) {
         store.partialPaymentsOrderObj = {};
       }
+      var newOption = document.createElement('option');
+      newOption.textContent = selectedGiftCard.name;
+      newOption.value = selectedGiftCard.brand;
+      newOption.style.visibility = 'hidden';
+      giftCardSelect.appendChild(newOption);
       giftCardSelect.value = selectedGiftCard.brand;
       giftCardContainer.innerHTML = '';
       var giftCardNode = store.checkout.create(constants.GIFTCARD, _objectSpread(_objectSpread({}, store.checkoutConfiguration.giftcard), {}, {
@@ -91,7 +102,7 @@ function attachGiftCardFormListeners() {
     });
   }
   if (giftCardSelect) {
-    giftCardSelect.addEventListener('click', function () {
+    giftCardSelectWrapper.addEventListener('mousedown', function () {
       giftCardUl.classList.toggle('invisible');
     });
   }
@@ -112,7 +123,9 @@ function showGiftCardWarningMessage() {
 function attachGiftCardAddButtonListener() {
   var _getGiftCardElements3 = getGiftCardElements(),
     giftCardAddButton = _getGiftCardElements3.giftCardAddButton,
-    giftCardSelectContainer = _getGiftCardElements3.giftCardSelectContainer;
+    giftCardSelectContainer = _getGiftCardElements3.giftCardSelectContainer,
+    giftCardSelectWrapper = _getGiftCardElements3.giftCardSelectWrapper,
+    giftCardSelect = _getGiftCardElements3.giftCardSelect;
   if (giftCardAddButton) {
     giftCardAddButton.addEventListener('click', function () {
       renderGiftCardSelectForm();
@@ -121,8 +134,10 @@ function attachGiftCardAddButtonListener() {
       if (giftCardWarningMessageEl) {
         giftCardWarningMessageEl.style.display = 'none';
       }
+      giftCardSelect.value = 'null';
       giftCardAddButton.style.display = 'none';
       giftCardSelectContainer.classList.remove('invisible');
+      giftCardSelectWrapper.classList.remove('invisible');
     });
   }
 }
@@ -150,11 +165,14 @@ function removeGiftCards() {
           giftCardAddButton = _getGiftCardElements5.giftCardAddButton,
           giftCardSelect = _getGiftCardElements5.giftCardSelect,
           giftCardUl = _getGiftCardElements5.giftCardUl,
-          giftCardsInfoMessageContainer = _getGiftCardElements5.giftCardsInfoMessageContainer;
+          giftCardsInfoMessageContainer = _getGiftCardElements5.giftCardsInfoMessageContainer,
+          giftCardSelectContainer = _getGiftCardElements5.giftCardSelectContainer;
         adyenPartialPaymentsOrder.value = null;
         giftCardsList.innerHTML = '';
         giftCardAddButton.style.display = 'block';
         giftCardSelect.value = null;
+        giftCardSelectContainer.classList.add('invisible');
+        giftCardSelect.classList.remove('invisible');
         giftCardUl.innerHTML = '';
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
@@ -210,6 +228,9 @@ function renderAddedGiftCard(card) {
   removeGiftCardFormListeners();
 }
 function createElementsToShowRemainingGiftCardAmount() {
+  var _getGiftCardElements7 = getGiftCardElements(),
+    giftCardCancelButton = _getGiftCardElements7.giftCardCancelButton,
+    giftCardAddButton = _getGiftCardElements7.giftCardAddButton;
   var renderedRemainingAmountEndSpan = document.getElementById('remainingAmountEndSpan');
   var renderedDiscountedAmountEndSpan = document.getElementById('discountedAmountEndSpan');
   if (renderedRemainingAmountEndSpan && renderedDiscountedAmountEndSpan) {
@@ -259,6 +280,8 @@ function createElementsToShowRemainingGiftCardAmount() {
   discountedAmountEndSpan.innerText = store.partialPaymentsOrderObj.totalDiscountedAmount;
   cancelGiftCard.addEventListener('click', function () {
     removeGiftCards();
+    giftCardCancelButton.classList.add('invisible');
+    giftCardAddButton.style.display = 'block';
   });
   remainingAmountContainer.appendChild(remainingAmountStart);
   remainingAmountContainer.appendChild(remainingAmountEnd);
@@ -283,8 +306,8 @@ function createElementsToShowRemainingGiftCardAmount() {
 }
 function showGiftCardInfoMessage() {
   var messageText = store.partialPaymentsOrderObj.message;
-  var _getGiftCardElements7 = getGiftCardElements(),
-    giftCardsInfoMessageContainer = _getGiftCardElements7.giftCardsInfoMessageContainer;
+  var _getGiftCardElements8 = getGiftCardElements(),
+    giftCardsInfoMessageContainer = _getGiftCardElements8.giftCardsInfoMessageContainer;
   giftCardsInfoMessageContainer.innerHTML = '';
   giftCardsInfoMessageContainer.classList.remove('gift-cards-info-message-container');
   if (!messageText) return;
@@ -305,5 +328,6 @@ module.exports = {
   showGiftCardWarningMessage: showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount: createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm: renderGiftCardSelectForm,
-  showGiftCardInfoMessage: showGiftCardInfoMessage
+  showGiftCardInfoMessage: showGiftCardInfoMessage,
+  giftCardBrands: giftCardBrands
 };

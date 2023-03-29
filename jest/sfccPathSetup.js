@@ -253,3 +253,7 @@ jest.mock('*/cartridge/scripts/adyenLevelTwoThreeData', () => {
 jest.mock('*/cartridge/scripts/adyenCustomLogs', () => {
 	return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenCustomLogs');
   }, {virtual: true});
+
+jest.mock('*/cartridge/scripts/util/giftCardsHelper', () => {
+  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/util/giftCardsHelper');
+}, {virtual: true});

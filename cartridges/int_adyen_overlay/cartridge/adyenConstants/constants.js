@@ -7,6 +7,9 @@ module.exports = {
   METHOD_ADYEN_POS: 'AdyenPOS',
   METHOD_ADYEN_COMPONENT: 'AdyenComponent',
   METHOD_CREDIT_CARD: 'CREDIT_CARD',
+  PAYMENT_INSTRUMENT_ADYEN_CREDIT: 'ADYEN_CREDIT',
+  PAYMENT_INSTRUMENT_ADYEN_POS: 'Adyen_POS',
+  PAYMENT_INSTRUMENT_ADYEN_COMPONENT: 'Adyen_Component',
   // Possible checkout result codes
   RESULTCODES: {
     AUTHORISED: 'Authorised',
@@ -66,5 +69,5 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
   CHECKOUT_COMPONENT_VERSION: '5.28.0',
-  VERSION: '23.1.0'
+  VERSION: '23.1.1'
 };

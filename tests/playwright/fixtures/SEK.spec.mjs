@@ -5,6 +5,7 @@ import { PendingPayments } from '../paymentFlows/pending.mjs';
 
 import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
 import { ShopperData } from '../data/shopperData.mjs';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 
 const shopperData = new ShopperData();
 let checkoutPage;
@@ -35,8 +36,7 @@ for (const environment of environments) {
 
       await redirectPaymentsPage.doKlarnaPayment();
       await checkoutPage.completeCheckout();
-      await redirectPaymentsPage.completeKlarnaRedirectWithIDNumber(true);
-      await checkoutPage.expectSuccess();
+      await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
   });
 }

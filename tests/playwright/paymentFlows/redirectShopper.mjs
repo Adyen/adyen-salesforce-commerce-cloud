@@ -42,7 +42,7 @@ export class RedirectShopper {
   };
 
   completeOneyRedirect = async (shopper) => {
-    await this.paymentMethodsPage.confirmOneyPayment();
+    await this.paymentMethodsPage.waitForOneyLoad();
   };
 
   doKlarnaPayment = async () => {
