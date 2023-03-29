@@ -33,14 +33,11 @@ function handleAmazonResponse(response, component) {
 }
 
 function paymentFromComponent(data, component) {
-  let partialPaymentsOrder = sessionStorage.getItem('partialPaymentsObj');
-  try {
-    partialPaymentsOrder = JSON.parse(partialPaymentsOrder);
-  } catch (e) {} // eslint-disable-line no-empty
-
+  const partialPaymentsOrder = sessionStorage.getItem('partialPaymentsObj');
   const requestData = partialPaymentsOrder
-    ? { ...data, partialPaymentsOrder }
+    ? { ...data, partialPaymentsOrder: JSON.parse(partialPaymentsOrder) }
     : data;
+
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
