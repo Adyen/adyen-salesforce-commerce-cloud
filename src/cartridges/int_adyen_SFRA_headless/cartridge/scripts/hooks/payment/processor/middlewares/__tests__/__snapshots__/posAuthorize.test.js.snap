@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`POS Authorize should return error if createTerminalPayment fails 1`] = `
+{
+  "authorized": false,
+  "error": true,
+  "fieldErrors": [],
+  "serverErrors": [
+    "mocked_error.payment.processor.not.supported",
+  ],
+}
+`;
+
+exports[`POS Authorize should return error if createTerminalPayment fails 2`] = `
+[
+  [
+    "POS Authorise error, result: mockedResponse",
+  ],
+]
+`;
+
+exports[`POS Authorize should return error if there is no terminal ID 1`] = `
+{
+  "authorized": false,
+  "error": true,
+  "fieldErrors": [],
+  "serverErrors": [
+    "mocked_error.payment.processor.not.supported",
+  ],
+}
+`;
+
+exports[`POS Authorize should return error if there is no terminal ID 2`] = `
+[
+  [
+    "No terminal selected",
+  ],
+]
+`;
+
+exports[`POS Authorize should return success response when createTerminalPayment passes 1`] = `
+{
+  "response": "mockedSuccessResponse",
+}
+`;

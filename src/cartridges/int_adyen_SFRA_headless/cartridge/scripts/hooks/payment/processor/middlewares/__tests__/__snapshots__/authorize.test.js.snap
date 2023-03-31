@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Authorize should authorize 3DS payments 1`] = `
+{
+  "error": true,
+}
+`;
+
+exports[`Authorize should authorize 3DS2 payments 1`] = `
+{
+  "error": true,
+}
+`;
+
+exports[`Authorize should authorize redirectShopper payments 1`] = `
+{
+  "error": true,
+}
+`;
+
+exports[`Authorize should handle create payment request decisions other than accept 1`] = `
+{
+  "error": true,
+}
+`;
+
+exports[`Authorize should handle the create payment request decision accept 1`] = `
+{
+  "error": true,
+}
+`;
+
+exports[`Authorize should return when create payment request fails 1`] = `
+{
+  "authorized": false,
+  "error": true,
+  "fieldErrors": [],
+  "serverErrors": [
+    "mocked_error.payment.processor.not.supported",
+  ],
+}
+`;
