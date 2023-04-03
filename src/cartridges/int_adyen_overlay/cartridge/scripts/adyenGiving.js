@@ -51,7 +51,7 @@ function donate(donationReference, donationAmount, originalReference) {
       paymentMethod: {
         type: paymentMethodVariant
       },
-      shopperInteraction: "ContAuth",
+      shopperInteraction: constants.SHOPPER_INTERCATIONS.CONT_AUTH,
     };
 
     const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
