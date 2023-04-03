@@ -283,6 +283,7 @@ var adyenHelperObj = {
     return returnValue;
   },
 
+  // determines whether Adyen Giving is available based on the donation token 
   isAdyenGivingAvailable(paymentInstrument) {
     // Adyen giving is only available for BCMC in POS
     return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc' ? true : false;
