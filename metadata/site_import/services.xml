@@ -5,7 +5,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentSG">
+        <url>https://checkout-test.adyen.com/checkout/v69/payments</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments</url>
         <user-id></user-id>
         <password/>
@@ -15,7 +25,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetailsSG">
+        <url>https://checkout-test.adyen.com/checkout/v69/payments/details</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenSessions">
+        <url>https://checkout-test.adyen.com/checkout/v69/sessions</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenSessionsSG">
         <url>https://checkout-test.adyen.com/checkout/v69/sessions</url>
         <user-id></user-id>
         <password/>
@@ -25,7 +45,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenSessionsLiveSG">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/sessions</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments/details</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetailsLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments/details</url>
         <user-id></user-id>
         <password/>
@@ -35,7 +65,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenCheckoutPaymentMethodsSG">
+        <url>https://checkout-test.adyen.com/v69/paymentMethods</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/paymentMethods</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/paymentMethods</url>
         <user-id></user-id>
         <password/>

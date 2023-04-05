@@ -75,7 +75,9 @@ function getMethods(basket, customer, countryCode) {
 
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
 
-    return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
+    const platformVersion = adyenHelper.getApplicationInfo().externalPlatform.version;
+    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.CHECKOUTPAYMENTMETHODS}${constants.PLATFORMS.SG}` : constants.SERVICE.CHECKOUTPAYMENTMETHODS;
+    return AdyenHelper.executeCall(service, paymentMethodsRequest);
   } catch (e) {
     AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

@@ -177,8 +177,12 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
+    const platformVersion = adyenHelper.getApplicationInfo().externalPlatform.version;
+    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.PAYMENT}${constants.PLATFORMS.SG}` : constants.SERVICE.PAYMENT;
+        AdyenLogs.error_log('platformVersion ' + JSON.stringify(platformVersion));
+        AdyenLogs.error_log('service ' + JSON.stringify(service));
     const responseObject = AdyenHelper.executeCall(
-      constants.SERVICE.PAYMENT,
+      service,
       paymentRequest,
     );
     // There is no order for zero auth transactions.
@@ -277,8 +281,10 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   try {
+      const platformVersion = adyenHelper.getApplicationInfo().externalPlatform.version;
+      const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.PAYMENTDETAILS}${constants.PLATFORMS.SG}` : constants.SERVICE.PAYMENTDETAILS;
     return AdyenHelper.executeCall(
-      constants.SERVICE.PAYMENTDETAILS,
+      service,
       paymentDetailsRequest,
     );
   } catch (ex) {

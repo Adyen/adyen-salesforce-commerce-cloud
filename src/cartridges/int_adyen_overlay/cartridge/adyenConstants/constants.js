@@ -34,6 +34,11 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
   },
 
+  PLATFORMS: {
+    SFRA: 'SFRA',
+    SG: 'SG'
+  },
+
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
