@@ -51,14 +51,11 @@ function donate(donationReference, donationAmount, originalReference) {
       paymentMethod: {
         type: paymentMethodVariant
       },
-      shopperInteraction: constants.SHOPPER_INTERCATIONS.CONT_AUTH,
+      shopperInteraction: constants.SHOPPER_INTERACTIONS.CONT_AUTH,
     };
 
     const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
-
-    Transaction.wrap(() => {
-      order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
-    });
+    
     return response;
   } catch (e) {
     AdyenLogs.error_log(

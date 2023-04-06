@@ -65,7 +65,7 @@ module.exports = {
     IN: 'IN',
   },
 
-  SHOPPER_INTERCATIONS : {
+  SHOPPER_INTERACTIONS : {
     CONT_AUTH : 'ContAuth',
   },
 
