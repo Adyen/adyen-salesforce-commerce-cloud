@@ -70,10 +70,11 @@ function handle(customObj) {
   result.SkipOrder = false;
 
   // split order ID by - and remove last split (which is the date)
-  const orderIdSplit = customObj.custom.orderId.split('-').slice(0, -1);
+  const orderIdParts = customObj.custom.orderId.split('-');
+  orderIdParts.pop();
   // in case the splitted array contains more than 1 element (DONATION case), get only the last split (which is the order number)
-  const finalOrderIdSplit = orderIdSplit.length > 1 ? orderIdSplit.slice(-1) : orderIdSplit; 
-  const orderId = finalOrderIdSplit.join('-');
+  const relevantOrderIdParts = orderIdParts.length > 1 ? orderIdParts.slice(-1) : orderIdParts;
+  const orderId = relevantOrderIdParts.join('-');
   const order = OrderMgr.getOrder(orderId);
   result.Order = order;
 
