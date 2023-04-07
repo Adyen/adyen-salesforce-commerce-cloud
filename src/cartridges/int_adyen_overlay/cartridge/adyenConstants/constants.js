@@ -65,6 +65,10 @@ module.exports = {
     IN: 'IN',
   },
 
+  SHOPPER_INTERACTIONS : {
+    CONT_AUTH : 'ContAuth',
+  },
+
   MAX_API_RETRIES: 3,
 
   GIFTCARD_EXPIRATION_MINUTES: 30,

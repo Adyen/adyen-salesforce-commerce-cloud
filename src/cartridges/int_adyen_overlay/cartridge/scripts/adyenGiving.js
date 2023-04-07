@@ -29,20 +29,33 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function donate(donationReference, donationAmount, originalReference) {
   try {
+    let paymentMethodVariant;
+    const order = OrderMgr.getOrder(donationReference);
+    const paymentInstrument = order.getPaymentInstruments(
+      AdyenHelper.getOrderMainPaymentInstrumentType(order),
+    )[0];
+    const donationToken = paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
+    paymentMethodVariant = paymentInstrument.custom.Adyen_Payment_Method_Variant;
+
+    // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
+    if (paymentMethodVariant === 'ideal') {
+      paymentMethodVariant = 'sepadirectdebit';
+    }
     const requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       donationAccount: AdyenConfigs.getAdyenGivingCharityAccount(),
-      modificationAmount: donationAmount,
+      amount: donationAmount,
       reference: `${AdyenConfigs.getAdyenMerchantAccount()}-${donationReference}`,
-      originalReference,
+      donationOriginalPspReference: originalReference,
+      donationToken,
+      paymentMethod: {
+        type: paymentMethodVariant
+      },
+      shopperInteraction: constants.SHOPPER_INTERACTIONS.CONT_AUTH,
     };
 
     const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
-
-    Transaction.wrap(() => {
-      const order = OrderMgr.getOrder(donationReference);
-      order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
-    });
+    
     return response;
   } catch (e) {
     AdyenLogs.error_log(
