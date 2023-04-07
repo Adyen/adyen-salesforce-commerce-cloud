@@ -221,6 +221,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     isAdyenGivingAvailable: jest.fn(() => true),
     isApplePay: jest.fn(() => true),
     getAdyenGivingConfig: jest.fn(() => true),
+    getApplicationInfo: jest.fn(() => ({externalPlatform: {version: 'SFRA'}})),
     isOpenInvoiceMethod: jest.fn(() => false),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
     getCardToken: jest.fn(() => 'mocked_token'),

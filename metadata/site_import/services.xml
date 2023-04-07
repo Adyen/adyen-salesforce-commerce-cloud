@@ -154,6 +154,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPayment</credential-id>
     </service>
+    <service service-id="AdyenPaymentSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentSG</credential-id>
+    </service>
     <service service-id="AdyenPaymentDetails">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -162,6 +171,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPaymentDetails</credential-id>
+    </service>
+    <service service-id="AdyenPaymentDetailsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentDetailsSG</credential-id>
     </service>
     <service service-id="AdyenRecurring">
         <service-type>HTTP</service-type>
@@ -181,6 +199,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenCheckoutPaymentMethods</credential-id>
     </service>
+    <service service-id="AdyenCheckoutPaymentMethodsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenCheckoutPaymentMethodsSG</credential-id>
+    </service>
     <service service-id="AdyenSessions">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -189,6 +216,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenSessions</credential-id>
+    </service>
+    <service service-id="AdyenSessionsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenSessionsSG</credential-id>
     </service>
     <service service-id="AdyenRecurringDisable">
         <service-type>HTTP</service-type>
