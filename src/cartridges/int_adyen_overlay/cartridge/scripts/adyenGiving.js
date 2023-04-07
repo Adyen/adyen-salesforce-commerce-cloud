@@ -37,7 +37,9 @@ function donate(donationReference, donationAmount, originalReference) {
       originalReference,
     };
 
-    const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
+    const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
+    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.PAYMENT}${constants.PLATFORMS.SG}` : constants.SERVICE.PAYMENT;
+    const response = AdyenHelper.executeCall(service, requestObject);
 
     Transaction.wrap(() => {
       const order = OrderMgr.getOrder(donationReference);
