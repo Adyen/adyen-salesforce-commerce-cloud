@@ -33,16 +33,22 @@ function handleAmazonResponse(response, component) {
 }
 
 function paymentFromComponent(data, component) {
+  const partialPaymentsOrder = sessionStorage.getItem('partialPaymentsObj');
+  const requestData = partialPaymentsOrder
+    ? { ...data, partialPaymentsOrder: JSON.parse(partialPaymentsOrder) }
+    : data;
+
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
-      data: JSON.stringify(data),
+      data: JSON.stringify(requestData),
       paymentMethod: 'amazonpay',
       merchantReference: document.querySelector('#merchantReference').value,
       orderToken: document.querySelector('#orderToken').value,
     },
     success(response) {
+      sessionStorage.removeItem('partialPaymentsObj');
       helpers.setOrderFormData(response);
 
       handleAmazonResponse(response, component);

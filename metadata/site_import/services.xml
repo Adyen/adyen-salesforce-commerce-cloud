@@ -111,12 +111,12 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGiving">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/donate</url>
+        <url>https://checkout-test.adyen.com/v69/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGivingLive">
-        <url>https://[YOUR_LIVE_PREFIX]-pal-live.adyenpayments.com/pal/servlet/Payment/v40/donate</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>

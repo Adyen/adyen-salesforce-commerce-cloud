@@ -314,6 +314,12 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_donationToken">
+                <display-name xml:lang="x-default">Adyen_donationToken</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_merchantReturnData">
                 <display-name xml:lang="x-default">Adyen_merchantReturnData</display-name>
                 <type>string</type>
