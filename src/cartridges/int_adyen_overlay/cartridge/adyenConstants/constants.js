@@ -81,6 +81,9 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
-  CHECKOUT_COMPONENT_VERSION: '5.28.0',
+  CHECKOUT_COMPONENT_VERSION: {
+    SFRA: '5.28.0',
+    SG: '5.28.0'
+  },
   VERSION: '23.1.1',
 };
