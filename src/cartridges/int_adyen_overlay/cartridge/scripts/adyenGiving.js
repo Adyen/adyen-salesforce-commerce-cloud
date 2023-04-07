@@ -54,8 +54,14 @@ function donate(donationReference, donationAmount, originalReference) {
       shopperInteraction: constants.SHOPPER_INTERACTIONS.CONT_AUTH,
     };
 
-    const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
-    
+    const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
+    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.ADYENGIVING}${constants.PLATFORMS.SG}` : constants.SERVICE.ADYENGIVING;
+    const response = AdyenHelper.executeCall(service, requestObject);
+
+    Transaction.wrap(() => {
+      const order = OrderMgr.getOrder(donationReference);
+      order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
+    });
     return response;
   } catch (e) {
     AdyenLogs.error_log(

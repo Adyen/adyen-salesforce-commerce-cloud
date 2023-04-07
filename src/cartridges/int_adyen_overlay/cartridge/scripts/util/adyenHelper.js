@@ -198,13 +198,19 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
-    return `${checkoutUrl}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
+    const adyenService = require('*/cartridge/scripts/adyenService');
+    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return `${checkoutUrl}sdk/${checkoutVersionForPlatform}/adyen.js`;
   },
 
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
-    return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
+    const adyenService = require('*/cartridge/scripts/adyenService');
+    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return `${checkoutCSS}sdk/${checkoutVersionForPlatform}/adyen.css`;
   },
 
   // get the current region-based checkout environment
