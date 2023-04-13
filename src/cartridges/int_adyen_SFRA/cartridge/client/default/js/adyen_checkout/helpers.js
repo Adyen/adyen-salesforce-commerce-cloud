@@ -7,7 +7,7 @@ function assignPaymentMethodValue() {
   if (adyenPaymentMethod) {
     adyenPaymentMethod.value = store.brand
       ? store.brand
-      : document.querySelector(paymentMethodlabelId)?.innerHTML;
+      : document.querySelector(paymentMethodlabelId)?.textContent;
   }
 }
 

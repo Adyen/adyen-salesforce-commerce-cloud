@@ -251,7 +251,7 @@ function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   adyenPaymentMethod.value = document.querySelector(
       `#lb_${selectedMethod}`,
-  ).innerHTML;
+  ).textContent;
 }
 
 /**

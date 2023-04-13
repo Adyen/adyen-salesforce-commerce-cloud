@@ -47,7 +47,7 @@ function _initializeBillingEvents() {
             }
             if (isAdyen) {
               var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
-              var paymentMethodLabel = document.querySelector("#lb_".concat(selectedMethod)).innerHTML;
+              var paymentMethodLabel = document.querySelector("#lb_".concat(selectedMethod)).textContent;
               adyenPaymentMethod.value = paymentMethodLabel;
               validateComponents();
               return showValidation();
@@ -270,7 +270,7 @@ function _initializeAccountEvents() {
 }
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
-  adyenPaymentMethod.value = document.querySelector("#lb_".concat(selectedMethod)).innerHTML;
+  adyenPaymentMethod.value = document.querySelector("#lb_".concat(selectedMethod)).textContent;
 }
 
 /**
