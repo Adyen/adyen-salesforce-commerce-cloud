@@ -26,7 +26,7 @@ const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
 function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
   if (!(order || basket)) return null;
   const orderOrBasket = order || basket;
-  const allLineItems = orderOrBasket.getProductLineItems();
+  const allLineItems = orderOrBasket.getAllLineItems();
 
   // Add all product and shipping line items to request
   const lineItems = [];
