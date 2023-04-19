@@ -1,6 +1,12 @@
 <div class="modal fade" id="action-modal" role="dialog">
    <div class="modal-dialog" id="adyenModalDialog">
-        <div id="action-container"></div>
+        <div id="action-container">
+            <div class='invisible' id="cancelQrMethodsButton">
+               <a href="${URLUtils.https('Checkout-Begin')}">
+                     <input type="image" src="${URLUtils.staticURL('images/cancel.svg')}"/>  
+               </a>
+            </div>
+        </div>
         <div id="amazon-container"></div>
         <div id="giftcard-container"></div>
    </div>
