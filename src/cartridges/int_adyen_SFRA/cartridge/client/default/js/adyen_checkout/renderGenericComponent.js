@@ -56,13 +56,20 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
+function isCartModified(refresh, amount, orderAmount) {
+  return (
+    refresh === false &&
+    (amount.currency !== orderAmount.currency ||
+      amount.value !== orderAmount.value)
+  );
+}
+
 function renderGiftCardLogo(imagePath) {
   const headingImg = document.querySelector('#headingImg');
   if (headingImg) {
     headingImg.src = `${imagePath}genericgiftcard.png`;
   }
 }
-// eslint-disable-next-line complexity
 function applyGiftCards(refresh) {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
@@ -71,14 +78,11 @@ function applyGiftCards(refresh) {
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const isCartModified =
-    refresh === false &&
-    (amount.currency !== orderAmount.currency ||
-      amount.value !== orderAmount.value);
+  const cartModified = isCartModified(refresh, amount, orderAmount);
 
   if (isPartialPaymentExpired) {
     removeGiftCards();
-  } else if (isCartModified) {
+  } else if (cartModified) {
     removeGiftCards();
     showGiftCardWarningMessage();
   } else {

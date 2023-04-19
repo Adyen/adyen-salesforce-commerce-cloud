@@ -32,24 +32,22 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function createSession(basket, customer, countryCode) {
   try {
-
     let sessionsRequest = {};
 
     // There is no basket for myAccount session requests
     if(basket) {
-        AdyenLogs.error_log(`session.privacy.giftCardResponse ${session.privacy.giftCardResponse}`);
+      const getRemainingAmount = (giftCardResponse) => {
+          if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
+              return JSON.parse(giftCardResponse).remainingAmount;
+          }
+          return {
+              currency: basket.currencyCode,
+              value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
+          };
+      };
 
-        let amount;
-        if(session.privacy.giftCardResponse && JSON.parse(session.privacy.giftCardResponse).remainingAmount) {
-            AdyenLogs.error_log(`inside if statement`);
-            amount = JSON.parse(session.privacy.giftCardResponse).remainingAmount
-        } else {
-            AdyenLogs.error_log(`inside else statement`);
-            amount = {
-                currency: basket.currencyCode,
-                value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value
-            };
-        }
+      const amount = getRemainingAmount(session.privacy.giftCardResponse);
+
       //TODO: Change AdyenHelper so that this object can have a different name. Not creating a payment request here
       let paymentRequest = {
         merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
