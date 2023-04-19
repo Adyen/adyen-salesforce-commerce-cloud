@@ -1,7 +1,6 @@
 <iscontent compact="true"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 
 <isif condition="${payment.adyenAction != null}">
     <!--- Payment action for Voucher --->
