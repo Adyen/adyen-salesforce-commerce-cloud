@@ -1,6 +1,5 @@
 const store = require('../../../../store');
 const constants = require('../constants');
-const { renderGenericComponent } = require('./renderGenericComponent');
 
 function getGiftCardElements() {
   const giftCardSelect = document.querySelector('#giftCardSelect');
@@ -356,7 +355,10 @@ function createElementsToShowRemainingGiftCardAmount() {
     removeGiftCards();
     giftCardCancelButton.classList.add('invisible');
     giftCardAddButton.style.display = 'block';
-    renderGenericComponent();
+    // Emit a custom event instead of calling renderGenericComponent() directly,
+    // to avoid circular dependency
+    const event = new Event('renderGenericComponentCalled');
+    document.dispatchEvent(event);
   });
 
   remainingAmountContainer.appendChild(remainingAmountStart);

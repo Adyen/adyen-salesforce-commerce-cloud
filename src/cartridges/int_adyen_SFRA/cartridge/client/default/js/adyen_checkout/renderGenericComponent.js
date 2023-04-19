@@ -184,6 +184,11 @@ function setGiftCardContainerVisibility() {
   }
 }
 
+// used by renderGiftCardComponent.js
+document.addEventListener('renderGenericComponentCalled', async () => {
+  await module.exports.renderGenericComponent();
+});
+
 /**
  * Calls createSession and then renders the retrieved payment methods (including card component)
  */
