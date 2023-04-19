@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const constants = require('../constants');
+const { renderGenericComponent } = require('./renderGenericComponent');
 
 function getGiftCardElements() {
   const giftCardSelect = document.querySelector('#giftCardSelect');
@@ -355,6 +356,7 @@ function createElementsToShowRemainingGiftCardAmount() {
     removeGiftCards();
     giftCardCancelButton.classList.add('invisible');
     giftCardAddButton.style.display = 'block';
+    renderGenericComponent();
   });
 
   remainingAmountContainer.appendChild(remainingAmountStart);
