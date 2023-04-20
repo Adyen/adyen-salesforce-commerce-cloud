@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const { makePartialPayment } = require('./makePartialPayment');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
 const constants = require('../constants');
@@ -208,7 +209,7 @@ function getGiftCardConfig() {
               },
               giftcardBrand,
             };
-            const partialPaymentResponse = helpers.makePartialPayment(
+            const partialPaymentResponse = makePartialPayment(
               partialPaymentRequest,
             );
             if (partialPaymentResponse?.error) {

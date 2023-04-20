@@ -355,6 +355,10 @@ function createElementsToShowRemainingGiftCardAmount() {
     removeGiftCards();
     giftCardCancelButton.classList.add('invisible');
     giftCardAddButton.style.display = 'block';
+    // Emit a custom event instead of calling renderGenericComponent() directly,
+    // to avoid circular dependency
+    const event = new Event('renderGenericComponentCalled');
+    document.dispatchEvent(event);
   });
 
   remainingAmountContainer.appendChild(remainingAmountStart);
