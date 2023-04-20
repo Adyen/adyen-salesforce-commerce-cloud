@@ -440,6 +440,13 @@ input:checked + .slider:before {
     right : 0;
 }
 
+#cancelGiftCardButtonStyling, #cancelQrMethodsButtonStyling {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;  
+}
+
 .expressComponent {
     margin: 10px 0;
 }

@@ -2,9 +2,9 @@
    <div class="modal-dialog" id="adyenModalDialog">
         <div id="action-container">
             <div class='invisible' id="cancelQrMethodsButton">
-               <a href="${URLUtils.https('Checkout-Begin')}">
-                     <input type="image" src="${URLUtils.staticURL('images/cancel.svg')}"/>  
-               </a>
+               <button id='cancelQrMethodsButtonStyling' onclick="location.href='${URLUtils.https('Checkout-Begin')}';">
+                     <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
+               </button>
             </div>
         </div>
         <div id="amazon-container"></div>
