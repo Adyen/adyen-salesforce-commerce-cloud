@@ -595,6 +595,11 @@ export default class PaymentMethodsPage {
     }
   };
 
+  cancelQRCode = async () => {
+    await this.page.click('#cancelQrMethodsButton');
+    await expect(this.page).toHaveURL(/stage=shipping#shipping/);
+  };
+
   initiateBoletoPayment = async () => {
     const socialSecurityInput = this.page.locator(
       '#component_boletobancario input[name="socialSecurityNumber"]',
