@@ -8,4 +8,7 @@ module.exports = {
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
   GIFTCARD: 'giftcard',
+  ACTIONTYPE: {
+    QRCODE: 'qrCode',
+  },
 };

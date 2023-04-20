@@ -25,6 +25,10 @@ export class PendingPayments {
     await this.paymentMethodsPage.initiateQRCode(paymentMethod, envName);
   };
 
+  cancelQRCodePayment = async () => {
+    await this.paymentMethodsPage.cancelQRCode();
+  };
+
   doGooglePayPayment = async () => {
     await this.paymentMethodsPage.initiateGooglePayPayment();
   };

@@ -244,6 +244,9 @@ const actionHandler = async (action) => {
   const checkout = await AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+  if (action.type === constants.ACTIONTYPE.QRCODE){
+    document.getElementById('cancelQrMethodsButton').classList.remove('invisible');
+  };
 };
 
 function handleOnAdditionalDetails(state) {
