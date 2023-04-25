@@ -15,6 +15,18 @@
 		{
 			"name": "app.payment.form.processor.adyen_component",
 			"script": "./hooks/payment/processor/adyen_component_form_processor"
-		}
+		},
+		{
+            "name": "dw.ocapi.shop.basket.payment_methods.beforeGET",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.payment_methods.afterPOST",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.payment_methods.modifyPOSTResponse",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        }
 	]
 }
