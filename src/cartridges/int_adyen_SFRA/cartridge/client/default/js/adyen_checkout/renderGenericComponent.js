@@ -188,6 +188,17 @@ function setGiftCardContainerVisibility() {
   }
 }
 
+document.getElementById('email').addEventListener('change', (e) => {
+  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+  if (emailPattern.test(e.target.value)) {
+    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
+    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
+      e.target.value;
+    const event = new Event('renderGenericComponentCalled');
+    document.dispatchEvent(event);
+  }
+});
+
 // used by renderGiftCardComponent.js
 document.addEventListener('renderGenericComponentCalled', async () => {
   await module.exports.renderGenericComponent();
@@ -213,7 +224,6 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
     adyenDescriptions: session.adyenDescriptions,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
-
   setGiftCardContainerVisibility();
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   store.addedGiftCards = giftCards;
