@@ -15,6 +15,7 @@ function getCardConfig() {
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
     clickToPayConfiguration: {
+      shopperEmail: window.customerEmail,
       merchantDisplayName: window.merchantAccount,
     },
     onChange(state) {
