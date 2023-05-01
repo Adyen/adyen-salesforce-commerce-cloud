@@ -188,7 +188,7 @@ function setGiftCardContainerVisibility() {
   }
 }
 
-document.getElementById('email').addEventListener('change', (e) => {
+document.getElementById('email')?.addEventListener('change', (e) => {
   const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
   if (emailPattern.test(e.target.value)) {
     const { paymentMethodsConfiguration } = store.checkoutConfiguration;
