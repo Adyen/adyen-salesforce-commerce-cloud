@@ -509,8 +509,8 @@ var adyenHelperObj = {
       );
     }
 
-    stateData.recurringProcessingModel = 'CardOnFile';
-    if (stateData.paymentMethod?.storedPaymentMethodId) {
+    if (stateData.storePaymentMethod) {
+      stateData.recurringProcessingModel = 'CardOnFile';
       stateData.shopperInteraction = 'ContAuth';
     } else {
       stateData.shopperInteraction = 'Ecommerce';
