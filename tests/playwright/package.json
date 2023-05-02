@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@playwright/test": "^1.28.0"
+    "@playwright/test": "^1.33.0"
   },
   "name": "adyen_salesforce_e2e_tests",
   "version": "1.0.0",
