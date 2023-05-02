@@ -45,6 +45,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
     zeroAuthRequest.returnUrl = URLUtils.https('Adyen-Redirect3DS1Response').toString();
 
     zeroAuthRequest.storePaymentMethod = true;
+    zeroAuthRequest.recurringProcessingModel = 'CardOnFile';
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 
