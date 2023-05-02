@@ -30,7 +30,7 @@ function getLineItems(_ref) {
     addTaxPercentage = _ref.addTaxPercentage;
   if (!(order || basket)) return null;
   var orderOrBasket = order || basket;
-  var allLineItems = orderOrBasket.getProductLineItems();
+  var allLineItems = orderOrBasket.getAllLineItems();
 
   // Add all product and shipping line items to request
   var lineItems = [];

@@ -79,6 +79,25 @@ describe('Checkout Configuration', function () {
       expect(document.getElementById('adyenStateData').value).toBe(JSON.stringify(store.selectedPayment.stateData));
     });
   });
+  describe('PayPal Fail', function () {
+    it('handles onClick fail', function () {
+      document.body.innerHTML = "\n      <div id=\"lb_paypal\">PayPal</div>\n      <div id=\"adyenPaymentMethodName\"></div>\n      <div id=\"adyenStateData\"></div>\n      ";
+      store.selectedMethod = 'paypal';
+      store.formErrorsExist = true;
+      store.componentsObj = {
+        paypal: {
+          stateData: {
+            foo: 'bar'
+          }
+        }
+      };
+      var resolve = jest.fn();
+      var reject = jest.fn();
+      amazonpay.onClick(resolve, reject);
+      expect(resolve).toBeCalledTimes(0);
+      expect(reject).toBeCalledTimes(1);
+    });
+  });
   describe('GooglePay', function () {
     it('handles onSubmit', function () {
       document.body.innerHTML = "\n        <div id=\"lb_paywithgoogle\">Google Pay</div>\n        <div id=\"adyenPaymentMethodName\"></div>\n        <button value=\"submit-payment\"></button>\n      ";
