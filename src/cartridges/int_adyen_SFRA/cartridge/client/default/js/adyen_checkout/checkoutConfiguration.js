@@ -66,6 +66,10 @@ function getPaypalConfig() {
       document.querySelector('#showConfirmationForm').submit();
     },
     onClick: (data, actions) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        return actions.reject();
+      }
       if (store.paypalTerminatedEarly) {
         helpers.paymentFromComponent({
           cancelTransaction: true,
@@ -75,10 +79,6 @@ function getPaypalConfig() {
         return actions.resolve();
       }
       store.paypalTerminatedEarly = true;
-      $('#dwfrm_billing').trigger('submit');
-      if (store.formErrorsExist) {
-        return actions.reject();
-      }
       return null;
     },
   };
