@@ -9,5 +9,8 @@ module.exports = {
   RECEIVED: 'Received',
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
-  GIFTCARD: 'giftcard'
+  GIFTCARD: 'giftcard',
+  ACTIONTYPE: {
+    QRCODE: 'qrCode'
+  }
 };

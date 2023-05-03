@@ -2,8 +2,6 @@
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
-
 <script>
     var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
     var loadingContext = "${AdyenHelper.getLoadingContext()}";

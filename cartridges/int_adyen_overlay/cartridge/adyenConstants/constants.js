@@ -32,6 +32,10 @@ module.exports = {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay'
   },
+  PLATFORMS: {
+    SFRA: 'SFRA',
+    SG: 'SG'
+  },
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
@@ -60,6 +64,9 @@ module.exports = {
     EU: 'EU',
     IN: 'IN'
   },
+  SHOPPER_INTERACTIONS: {
+    CONT_AUTH: 'ContAuth'
+  },
   MAX_API_RETRIES: 3,
   GIFTCARD_EXPIRATION_MINUTES: 30,
   OMS_NAMESPACE: 'adyen_payment',
@@ -68,6 +75,9 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
-  CHECKOUT_COMPONENT_VERSION: '5.28.0',
-  VERSION: '23.1.1'
+  CHECKOUT_COMPONENT_VERSION: {
+    SFRA: '5.28.0',
+    SG: '5.28.0'
+  },
+  VERSION: '23.1.2'
 };

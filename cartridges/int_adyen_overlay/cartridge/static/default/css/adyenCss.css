@@ -434,10 +434,17 @@ input:checked + .slider:before {
     font-size: 13px;
 }
 
-#cancelGiftCardButton {
+#cancelGiftCardButton, #cancelQrMethodsButton {
     position: absolute;
     top : 0;
     right : 0;
+}
+
+#cancelGiftCardButtonStyling, #cancelQrMethodsButtonStyling {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;  
 }
 
 .expressComponent {

@@ -1,11 +1,8 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 /**
  *                       ######
  *                       ######
@@ -144,8 +141,7 @@ var adyenHelperObj = {
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
     var paymentInstrument = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order))[0];
-    var paymentMethod = paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
-    if (!AdyenConfigs.getAdyenGivingEnabled() || !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)) {
+    if (!AdyenConfigs.getAdyenGivingEnabled() || !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)) {
       return null;
     }
     var givingConfigs = {};
@@ -175,12 +171,18 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl: function getCheckoutUrl() {
     var checkoutUrl = this.getLoadingContext();
-    return "".concat(checkoutUrl, "sdk/").concat(constants.CHECKOUT_COMPONENT_VERSION, "/adyen.js");
+    var adyenService = require('*/cartridge/scripts/adyenService');
+    var externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    var checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return "".concat(checkoutUrl, "sdk/").concat(checkoutVersionForPlatform, "/adyen.js");
   },
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS: function getCheckoutCSS() {
     var checkoutCSS = this.getLoadingContext();
-    return "".concat(checkoutCSS, "sdk/").concat(constants.CHECKOUT_COMPONENT_VERSION, "/adyen.css");
+    var adyenService = require('*/cartridge/scripts/adyenService');
+    var externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    var checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return "".concat(checkoutCSS, "sdk/").concat(checkoutVersionForPlatform, "/adyen.css");
   },
   // get the current region-based checkout environment
   getCheckoutEnvironment: function getCheckoutEnvironment() {
@@ -248,10 +250,10 @@ var adyenHelperObj = {
     }
     return returnValue;
   },
-  // checks whether Adyen giving is available for the selected payment method
-  isAdyenGivingAvailable: function isAdyenGivingAvailable(paymentMethod) {
-    var availablePaymentMethods = ['visa', 'mc', 'amex', 'cup', 'jcb', 'diners', 'discover', 'cartebancaire', 'bcmc', 'ideal', 'giropay', 'directEbanking', 'vipps', 'sepadirectdebit', 'directdebit_GB'];
-    return availablePaymentMethods.indexOf(paymentMethod) !== -1;
+  // determines whether Adyen Giving is available based on the donation token 
+  isAdyenGivingAvailable: function isAdyenGivingAvailable(paymentInstrument) {
+    // Adyen giving is only available for BCMC in POS
+    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc';
   },
   // gets the ID for ratePay using the custom preference and the encoded session ID
   getRatePayID: function getRatePayID() {
@@ -527,6 +529,9 @@ var adyenHelperObj = {
     }
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : '';
     order.custom.Adyen_value = '0';
+    if (result.donationToken) {
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken;
+    }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
     return true;

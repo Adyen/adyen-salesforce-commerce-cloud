@@ -3,7 +3,6 @@
 <isset name="Order" value="${pdict.order}" scope="page"/>
 <isif condition="${AdyenHelper.getAdyenGivingConfig(Order)}">
     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-    <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 
     <script>
