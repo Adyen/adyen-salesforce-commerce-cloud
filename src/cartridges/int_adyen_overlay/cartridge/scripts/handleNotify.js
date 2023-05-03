@@ -91,6 +91,7 @@ function notify(notificationData) {
       case 'OFFER_CLOSED':
       case 'PENDING':
       case 'CAPTURE':
+      case 'DONATION':
         customObj.custom.updateStatus = 'PROCESS';
         AdyenLogs.info_log(
           `Received notification for merchantReference ${notificationData.merchantReference} with status ${notificationData.eventCode}. Custom Object set up to 'PROCESS' status.`,

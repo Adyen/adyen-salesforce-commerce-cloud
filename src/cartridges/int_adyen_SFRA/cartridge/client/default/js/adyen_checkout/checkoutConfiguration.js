@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const { makePartialPayment } = require('./makePartialPayment');
 const { onBrand, onFieldValid } = require('../commons');
 const store = require('../../../../store');
 const constants = require('../constants');
@@ -65,6 +66,10 @@ function getPaypalConfig() {
       document.querySelector('#showConfirmationForm').submit();
     },
     onClick: (data, actions) => {
+      $('#dwfrm_billing').trigger('submit');
+      if (store.formErrorsExist) {
+        return actions.reject();
+      }
       if (store.paypalTerminatedEarly) {
         helpers.paymentFromComponent({
           cancelTransaction: true,
@@ -74,10 +79,6 @@ function getPaypalConfig() {
         return actions.resolve();
       }
       store.paypalTerminatedEarly = true;
-      $('#dwfrm_billing').trigger('submit');
-      if (store.formErrorsExist) {
-        return actions.reject();
-      }
       return null;
     },
   };
@@ -208,7 +209,7 @@ function getGiftCardConfig() {
               },
               giftcardBrand,
             };
-            const partialPaymentResponse = helpers.makePartialPayment(
+            const partialPaymentResponse = makePartialPayment(
               partialPaymentRequest,
             );
             if (partialPaymentResponse?.error) {
@@ -243,6 +244,9 @@ const actionHandler = async (action) => {
   const checkout = await AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
+  if (action.type === constants.ACTIONTYPE.QRCODE){
+    document.getElementById('cancelQrMethodsButton').classList.remove('invisible');
+  };
 };
 
 function handleOnAdditionalDetails(state) {

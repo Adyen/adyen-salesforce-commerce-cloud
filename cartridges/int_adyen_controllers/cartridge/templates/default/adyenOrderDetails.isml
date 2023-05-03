@@ -1,6 +1,5 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCheckout.css')}" />
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isscript>
 	var additionalPaymentData = JSON.parse(paymentInstr.custom.adyenAdditionalPaymentData);

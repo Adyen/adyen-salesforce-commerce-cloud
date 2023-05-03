@@ -32,18 +32,26 @@ const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function createSession(basket, customer, countryCode) {
   try {
-
     let sessionsRequest = {};
 
     // There is no basket for myAccount session requests
     if(basket) {
+      const getRemainingAmount = (giftCardResponse) => {
+          if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
+              return JSON.parse(giftCardResponse).remainingAmount;
+          }
+          return {
+              currency: basket.currencyCode,
+              value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
+          };
+      };
+
+      const amount = getRemainingAmount(session.privacy.giftCardResponse);
+
       //TODO: Change AdyenHelper so that this object can have a different name. Not creating a payment request here
       let paymentRequest = {
         merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-        amount: {
-          currency: basket.currencyCode,
-          value: AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice()).value,
-        },
+        amount,
       };
 
       // Add Risk data
@@ -104,8 +112,9 @@ function createSession(basket, customer, countryCode) {
     }
 
     sessionsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
-
-    return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest); 
+        const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
+        const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.SESSIONS}${constants.PLATFORMS.SG}` : constants.SERVICE.SESSIONS;
+    return AdyenHelper.executeCall(service, sessionsRequest);
   } catch (e) {
     AdyenLogs.fatal_log(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

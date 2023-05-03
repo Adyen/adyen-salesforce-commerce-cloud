@@ -85,7 +85,9 @@
             <div id="giftCardContainer"></div>
         </div>
         <div id="cancelGiftCardButton" class="invisible">
-            <input type="image" src="${URLUtils.staticURL('images/cancel.svg')}"/>  
+            <button id='cancelGiftCardButtonStyling'>
+                <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
+            </button>
         </div>
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>

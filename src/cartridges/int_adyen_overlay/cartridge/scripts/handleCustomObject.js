@@ -70,8 +70,11 @@ function handle(customObj) {
   result.SkipOrder = false;
 
   // split order ID by - and remove last split (which is the date)
-  const orderIdSplit = customObj.custom.orderId.split('-').slice(0, -1);
-  const orderId = orderIdSplit.join('-');
+  const orderIdParts = customObj.custom.orderId.split('-');
+  orderIdParts.pop();
+  // in case the splitted array contains more than 1 element (DONATION case), get only the last split (which is the order number)
+  const relevantOrderIdParts = orderIdParts.length > 1 ? orderIdParts.slice(-1) : orderIdParts;
+  const orderId = relevantOrderIdParts.join('-');
   const order = OrderMgr.getOrder(orderId);
   result.Order = order;
 
@@ -184,6 +187,14 @@ function handle(customObj) {
         AdyenLogs.info_log(
 		`Order ${order.orderNo} was cancelled or refunded.`,
         );
+        break;
+      case 'DONATION':
+        if (customObj.custom.success === 'true') {
+          order.custom.Adyen_donationAmount = parseFloat(customObj.custom.value);
+        }
+        else{
+          AdyenLogs.info_log(`Donation failed for order ${order.orderNo}`,);
+        };
         break;
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);

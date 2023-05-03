@@ -159,11 +159,9 @@ var adyenHelperObj = {
     const paymentInstrument = order.getPaymentInstruments(
       adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
-    const paymentMethod =
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod;
     if (
       !AdyenConfigs.getAdyenGivingEnabled() ||
-      !adyenHelperObj.isAdyenGivingAvailable(paymentMethod)
+      !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)
     ) {
       return null;
     }
@@ -200,13 +198,19 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
-    return `${checkoutUrl}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
+    const adyenService = require('*/cartridge/scripts/adyenService');
+    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return `${checkoutUrl}sdk/${checkoutVersionForPlatform}/adyen.js`;
   },
 
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
-    return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
+    const adyenService = require('*/cartridge/scripts/adyenService');
+    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
+    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
+    return `${checkoutCSS}sdk/${checkoutVersionForPlatform}/adyen.css`;
   },
 
   // get the current region-based checkout environment
@@ -285,26 +289,10 @@ var adyenHelperObj = {
     return returnValue;
   },
 
-  // checks whether Adyen giving is available for the selected payment method
-  isAdyenGivingAvailable(paymentMethod) {
-    const availablePaymentMethods = [
-      'visa',
-      'mc',
-      'amex',
-      'cup',
-      'jcb',
-      'diners',
-      'discover',
-      'cartebancaire',
-      'bcmc',
-      'ideal',
-      'giropay',
-      'directEbanking',
-      'vipps',
-      'sepadirectdebit',
-      'directdebit_GB',
-    ];
-    return availablePaymentMethods.indexOf(paymentMethod) !== -1;
+  // determines whether Adyen Giving is available based on the donation token 
+  isAdyenGivingAvailable(paymentInstrument) {
+    // Adyen giving is only available for BCMC in POS
+    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc';
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
@@ -675,6 +663,9 @@ var adyenHelperObj = {
       ? result.resultCode
       : '';
     order.custom.Adyen_value = '0';
+    if (result.donationToken){
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken;
+    }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
       result,

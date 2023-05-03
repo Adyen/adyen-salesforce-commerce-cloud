@@ -5,7 +5,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentSG">
+        <url>https://checkout-test.adyen.com/checkout/v69/payments</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments</url>
         <user-id></user-id>
         <password/>
@@ -15,7 +25,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetailsSG">
+        <url>https://checkout-test.adyen.com/checkout/v69/payments/details</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenSessions">
+        <url>https://checkout-test.adyen.com/checkout/v69/sessions</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenSessionsSG">
         <url>https://checkout-test.adyen.com/checkout/v69/sessions</url>
         <user-id></user-id>
         <password/>
@@ -25,7 +45,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenSessionsLiveSG">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/sessions</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments/details</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentDetailsLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/payments/details</url>
         <user-id></user-id>
         <password/>
@@ -35,7 +65,17 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenCheckoutPaymentMethodsSG">
+        <url>https://checkout-test.adyen.com/v69/paymentMethods</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/paymentMethods</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLiveSG">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/paymentMethods</url>
         <user-id></user-id>
         <password/>
@@ -71,12 +111,22 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGiving">
-        <url>https://pal-test.adyen.com/pal/servlet/Payment/v40/donate</url>
+        <url>https://checkout-test.adyen.com/v69/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGivingLive">
-        <url>https://[YOUR_LIVE_PREFIX]-pal-live.adyenpayments.com/pal/servlet/Payment/v40/donate</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/donations</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenGivingSG">
+        <url>https://checkout-test.adyen.com/v69/donations</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenGivingLiveSG">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v69/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -114,6 +164,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPayment</credential-id>
     </service>
+    <service service-id="AdyenPaymentSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentSG</credential-id>
+    </service>
     <service service-id="AdyenPaymentDetails">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -122,6 +181,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPaymentDetails</credential-id>
+    </service>
+    <service service-id="AdyenPaymentDetailsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentDetailsSG</credential-id>
     </service>
     <service service-id="AdyenRecurring">
         <service-type>HTTP</service-type>
@@ -141,6 +209,15 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenCheckoutPaymentMethods</credential-id>
     </service>
+    <service service-id="AdyenCheckoutPaymentMethodsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenCheckoutPaymentMethodsSG</credential-id>
+    </service>
     <service service-id="AdyenSessions">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -149,6 +226,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenSessions</credential-id>
+    </service>
+    <service service-id="AdyenSessionsSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenSessionsSG</credential-id>
     </service>
     <service service-id="AdyenRecurringDisable">
         <service-type>HTTP</service-type>
@@ -185,6 +271,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenGiving</credential-id>
+    </service>
+    <service service-id="AdyenGivingSG">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenGivingSG</credential-id>
     </service>
     <service service-id="AdyenPartialPaymentsOrder">
         <service-type>HTTP</service-type>

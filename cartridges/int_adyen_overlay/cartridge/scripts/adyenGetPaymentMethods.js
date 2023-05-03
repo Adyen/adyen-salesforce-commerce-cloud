@@ -66,7 +66,9 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
     paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
-    return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
+    var platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
+    var service = platformVersion === constants.PLATFORMS.SG ? "".concat(constants.SERVICE.CHECKOUTPAYMENTMETHODS).concat(constants.PLATFORMS.SG) : constants.SERVICE.CHECKOUTPAYMENTMETHODS;
+    return AdyenHelper.executeCall(service, paymentMethodsRequest);
   } catch (e) {
     AdyenLogs.fatal_log("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
   }
