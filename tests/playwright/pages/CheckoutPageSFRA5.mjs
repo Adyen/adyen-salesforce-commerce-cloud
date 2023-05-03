@@ -188,7 +188,6 @@ export default class CheckoutPageSFRA5 {
   };
 
   completeCheckout = async () => {
-    await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
   };
