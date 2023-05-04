@@ -72,6 +72,11 @@ module.exports = {
 
   SHOPPER_INTERACTIONS : {
     CONT_AUTH : 'ContAuth',
+    ECOMMERCE : 'Ecommerce',
+  },
+
+  RECURRING_PROCESSING_MODEL : {
+    CARD_ON_FILE : 'CardOnFile',
   },
 
   MAX_API_RETRIES: 3,
@@ -86,7 +91,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.35.0',
+    SFRA: '5.40.0',
     SG: '5.28.0'
   },
   VERSION: '23.1.2',
