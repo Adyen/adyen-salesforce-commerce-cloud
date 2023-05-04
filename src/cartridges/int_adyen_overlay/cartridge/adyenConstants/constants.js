@@ -72,6 +72,11 @@ module.exports = {
 
   SHOPPER_INTERACTIONS : {
     CONT_AUTH : 'ContAuth',
+    ECOMMERCE : 'Ecommerce',
+  },
+
+  RECURRING_PROCESSING_MODEL : {
+    CARD_ON_FILE : 'CardOnFile',
   },
 
   MAX_API_RETRIES: 3,
