@@ -21,7 +21,7 @@ for (const environment of environments) {
         await checkoutPage.setEmail();
       };    
     });
-    test.only('EPS Success', async ({ page }) => {
+    test('EPS Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doEPSPayment();
       await checkoutPage.completeCheckout();

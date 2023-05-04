@@ -23,7 +23,7 @@ for (const environment of environments) {
       };
     });
 
-    test.only('iDeal Success @quick', async ({ page }) => {
+    test('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
