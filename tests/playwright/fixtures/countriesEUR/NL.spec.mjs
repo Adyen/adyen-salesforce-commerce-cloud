@@ -18,9 +18,12 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
       await checkoutPage.setShopperDetails(shopperData.NL);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
-    test('iDeal Success @quick', async ({ page }) => {
+    test.only('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
@@ -48,11 +51,19 @@ for (const environment of environments) {
       await redirectShopper.completeIdealRedirect();
       await checkoutPage.expectRefusal();
     });
+  });
 
+  test.describe.parallel(`${environment.name} EUR NL`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
+      await checkoutPage.setShopperDetails(shopperData.NL);
+    });
     test('iDeal with restored cart Fail', async ({ page, context }) => {
       if (environment.name === 'SG') test.skip();
       // Skipping SG due to CSRF token validation
-
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       // SFRA 6 email setting flow is different
