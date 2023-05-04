@@ -619,8 +619,8 @@ export default class PaymentMethodsPage {
     const ibanInput = this.page.locator('//input[contains(@name,"ibanNumber")]');
 
     await this.page.click('#rb_sepadirectdebit');
-    await nameInput.type(paymentData.SepaDirectDebit.accountName);
-    await ibanInput.type(paymentData.SepaDirectDebit.iban);
+    await nameInput.fill(paymentData.SepaDirectDebit.accountName);
+    await ibanInput.fill(paymentData.SepaDirectDebit.iban);
   };
 
   initiateBankTransferPayment = async () => {

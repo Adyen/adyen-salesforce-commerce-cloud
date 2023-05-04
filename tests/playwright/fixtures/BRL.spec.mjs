@@ -24,6 +24,9 @@ for (const environment of environments) {
 
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.BR);
       await checkoutPage.setShopperDetails(shopperData.BR);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
     test('Card payment 3DS2 installments success', async () => {

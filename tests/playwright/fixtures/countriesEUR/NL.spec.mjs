@@ -60,16 +60,15 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
       await checkoutPage.setShopperDetails(shopperData.NL);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
     test('iDeal with restored cart Fail', async ({ page, context }) => {
       if (environment.name === 'SG') test.skip();
       // Skipping SG due to CSRF token validation
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
-      // SFRA 6 email setting flow is different
-      if (environment.name.indexOf("v6") === -1) {
-        await checkoutPage.setEmail();
-      }
       await checkoutPage.submitPayment();
       const checkoutURL = await checkoutPage.getLocation();
       await checkoutPage.placeOrder()

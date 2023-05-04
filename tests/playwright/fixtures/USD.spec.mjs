@@ -160,6 +160,9 @@ for (const environment of environments) {
 
       test('GiftCard Only Success', async () => {
         await goToBillingWithFullCartGuestUser();
+        if (environment.name.indexOf("v6") === -1) {
+          await checkoutPage.setEmail();
+        };
         await cards.doGiftCardPayment(cardData.giftCard);
         await checkoutPage.placeOrder();
         await checkoutPage.expectSuccess();
@@ -167,6 +170,9 @@ for (const environment of environments) {
 
       test('GiftCard & Card Success', async () => {
         await goToBillingWithFullCartGuestUser(3);
+        if (environment.name.indexOf("v6") === -1) {
+          await checkoutPage.setEmail();
+        };
         await cards.doGiftCardPayment(cardData.giftCard);
         await cards.doCardPayment(cardData.noThreeDs);
         await checkoutPage.completeCheckout();
@@ -175,8 +181,14 @@ for (const environment of environments) {
 
       test('Remove Gift Card', async ({ page }) => {
         await goToBillingWithFullCartGuestUser(3);
+        if (environment.name.indexOf("v6") === -1) {
+          await checkoutPage.setEmail();
+        };
         await cards.doGiftCardPayment(cardData.giftCard);
         await page.locator('#cancelGiftCardContainer').click();
+        // Wait for components to re-render after cancelling the giftcard
+        await new Promise(r => setTimeout(r, 2000));
+
         await cards.doCardPayment(cardData.noThreeDs);
         await checkoutPage.completeCheckout();
         await checkoutPage.expectSuccess();
@@ -210,6 +222,9 @@ for (const environment of environments) {
     test('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doAffirmPayment(shopperData.US);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
       await checkoutPage.completeCheckout();
       await redirectShopper.completeAffirmRedirect(false);
       await checkoutPage.expectRefusal();
@@ -224,6 +239,9 @@ for (const environment of environments) {
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
       await goToBillingWithFullCartLoggedInUser();
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
     test('3DS2 oneClick test success', async () => {
