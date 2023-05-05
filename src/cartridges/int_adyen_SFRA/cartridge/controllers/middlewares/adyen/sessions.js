@@ -38,7 +38,6 @@ function callCreateSession(req, res, next) {
     );
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
     const connectedTerminals = getConnectedTerminals();
-
     res.json({
       id: response.id,
       sessionData: response.sessionData,
