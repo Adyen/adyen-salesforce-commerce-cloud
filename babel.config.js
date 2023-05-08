@@ -10,5 +10,9 @@ module.exports = function (api) {
       "@babel/plugin-proposal-class-properties",
     ],
     exclude: ["node_modules/**", "src/cartridges/adyen_controllers_changes/**", "src/cartridges/bm_adyen/cartridge/static/**"],
+    "ignore": [
+      "**/*.test.js",
+      "**/*.test.js.snap",
+    ]
   };
 };
