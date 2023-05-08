@@ -1,0 +1,10 @@
+{
+  "setupFilesAfterEnv": [
+    "./jest/globals.js",
+    "./jest/sfccPathSetup.js",
+    "./jest/sfccCartridgeMocks"
+  ],
+  "transformIgnorePatterns": [
+    ".test.(?!(js|js.snap)/)"
+  ]
+}

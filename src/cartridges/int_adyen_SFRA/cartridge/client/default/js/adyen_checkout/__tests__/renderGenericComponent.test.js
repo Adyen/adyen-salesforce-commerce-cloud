@@ -1,13 +1,13 @@
 /**
  * @jest-environment jsdom
  */
+jest.mock('../../commons');
+jest.mock('../../../../../store');
+
 const { renderGenericComponent } = require('../renderGenericComponent');
 const { createSession } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');
-
-jest.mock('../../commons');
-jest.mock('../../../../../store');
 
 beforeEach(() => {
   window.AdyenCheckout = jest.fn(async () => ({
