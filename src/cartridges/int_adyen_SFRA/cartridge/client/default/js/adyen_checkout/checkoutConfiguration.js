@@ -14,6 +14,10 @@ function getCardConfig() {
   return {
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
+    clickToPayConfiguration: {
+      shopperEmail: window.customerEmail,
+      merchantDisplayName: window.merchantAccount,
+    },
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
@@ -21,6 +25,11 @@ function getCardConfig() {
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
       store.updateSelectedPayment(method, 'stateData', state.data);
+    },
+    onSubmit: () => {
+      helpers.assignPaymentMethodValue();
+      document.querySelector('button[value="submit-payment"]').disabled = false;
+      document.querySelector('button[value="submit-payment"]').click();
     },
     onFieldValid,
     onBrand,
@@ -244,9 +253,11 @@ const actionHandler = async (action) => {
   const checkout = await AdyenCheckout(store.checkoutConfiguration);
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
-  if (action.type === constants.ACTIONTYPE.QRCODE){
-    document.getElementById('cancelQrMethodsButton').classList.remove('invisible');
-  };
+  if (action.type === constants.ACTIONTYPE.QRCODE) {
+    document
+      .getElementById('cancelQrMethodsButton')
+      .classList.remove('invisible');
+  }
 };
 
 function handleOnAdditionalDetails(state) {

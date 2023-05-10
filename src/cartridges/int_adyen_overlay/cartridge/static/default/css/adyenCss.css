@@ -326,7 +326,7 @@ input:checked + .slider:before {
     border-radius: 6px;
     box-shadow: 0 2px 7px rgb(0 15 45 / 30%);
     max-height: 375px;
-    z-index: 1;
+    z-index: 10;
     top: 10px;
     padding: 0;
 }
@@ -376,10 +376,14 @@ input:checked + .slider:before {
 
 .payment-methods-container {
     padding: 10px;
-    margin: 20px 0;
+    margin-bottom: 20px;
     border: 1px solid #b9c4c9;
     border-radius: 8px;
     background: white;
+}
+
+.additionalFields {
+    margin-bottom: 10px;
 }
 
 .gift-cards-container {

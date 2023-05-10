@@ -1,7 +1,4 @@
 {
-  "devDependencies": {
-    "@playwright/test": "^1.28.0"
-  },
   "name": "adyen_salesforce_e2e_tests",
   "version": "1.0.0",
   "description": "e2e tests for Adyen SalesForce Cartridges",
@@ -107,6 +104,9 @@
     "ws": "^8.4.2",
     "yauzl": "^2.10.0",
     "yazl": "^2.5.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.33.0"
   },
   "scripts": {
     "test": "npx playwright test",
