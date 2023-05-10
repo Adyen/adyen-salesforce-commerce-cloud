@@ -1,0 +1,16 @@
+{
+	"hooks": [
+		{
+            "name": "dw.ocapi.shop.basket.payment_methods.beforeGET",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.payment_methods.afterGET",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.payment_methods.modifyGETResponse",
+            "script": "./cartridge/scripts/hooks/basketPaymentHooks.js"
+        }
+	]
+}
