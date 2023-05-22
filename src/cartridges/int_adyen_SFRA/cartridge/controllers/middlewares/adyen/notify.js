@@ -7,14 +7,13 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 
-function handleHmacVerification(req){
-  let hmacVerification;
+function handleHmacVerification(req) {
   const hmacKey = AdyenConfigs.getAdyenHmacKey();
-  if (hmacKey){
-    hmacVerification = checkAuth.validateHmacSignature(req);
+  if (!hmacKey){
+    return false
   }
-  return hmacVerification;
-};
+  return checkAuth.validateHmacSignature(req);;
+}
 
 function notify(req, res, next) {
   const status = checkAuth.check(req);
@@ -25,11 +24,10 @@ function notify(req, res, next) {
   }
   Transaction.begin();
   const notificationResult = handleNotify.notify(req.form);
-  if (notificationResult.success && hmacVerification){
+  if (notificationResult.success && hmacVerification) {
     Transaction.commit();
     res.render('/notify');
-  }
-  else if (notificationResult.success) {
+  } else if (notificationResult.success) {
     Transaction.commit();
     res.render('/notify');
   } else {
