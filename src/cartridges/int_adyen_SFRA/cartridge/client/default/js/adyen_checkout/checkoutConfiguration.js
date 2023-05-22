@@ -310,6 +310,23 @@ function getApplePayConfig() {
   };
 }
 
+function getKlarnaConfig() {
+  return {
+    showPayButton: true,
+    useKlarnaWidget: true,
+    onSubmit: (state, component) => {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+    },
+  }
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -331,6 +348,9 @@ function setCheckoutConfiguration() {
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
     applepay: getApplePayConfig(),
+    klarna: getKlarnaConfig(),
+    klarna_account: getKlarnaConfig(),
+    klarna_paynow: getKlarnaConfig(),
   };
 }
 

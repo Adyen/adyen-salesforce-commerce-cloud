@@ -73,7 +73,7 @@ function displaySelectedMethod(type) {
   resetPaymentMethod();
 
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay'].indexOf(
+    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'klarna', 'klarna_account', 'klarna_paynow'].indexOf(
       type,
     ) > -1;
 
