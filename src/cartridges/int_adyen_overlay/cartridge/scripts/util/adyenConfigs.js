@@ -49,6 +49,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_notification_password');
   },
 
+  getAdyenHmacKey() {
+    return getCustomPreference('Adyen_Hmac_Key');
+  },
+
   getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');
   },

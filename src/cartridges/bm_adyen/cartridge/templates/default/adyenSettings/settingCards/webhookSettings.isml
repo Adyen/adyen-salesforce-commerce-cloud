@@ -34,6 +34,18 @@
                   placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword()}">
             </div>
          </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="hmacKey">HMAC Key (Optional)</label>
+            <small id="hmacKeyHelp" class="form-text mb-1">This is the HMAC key you created under the Developers section in the Customer Area.</small>
+            <span>
+               <i class="bi bi-eye-slash" id="toggleHmacKey"></i>
+            </span>
+            <div class="input-fields">
+               <input type="password" class="form-control" name="Adyen_Hmac_Key" id="hmacKey"
+                  aria-describedby="hmacKeyHelp" placeholder=""
+                  value="${AdyenConfigs.getAdyenHmacKey()}">
+            </div>
+         </div>
       </div>
    </div>
 </div>
