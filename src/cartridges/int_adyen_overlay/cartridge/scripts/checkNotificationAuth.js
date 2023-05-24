@@ -46,7 +46,7 @@ function compareHmac(hmacSignature, merchantSignature){
   if (hmacSignature.length !== merchantSignature.length){
     return false;
   }
-  for (let i = 0; i <= (hmacSignature.length - 1); i++) {
+  for (let i = 0; i < hmacSignature.length; i++) {
     bitwiseComparison |= hmacSignature.charCodeAt(i) ^ merchantSignature.charCodeAt(i);
   }
   return bitwiseComparison === 0;
