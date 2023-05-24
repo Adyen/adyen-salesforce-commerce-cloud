@@ -17,8 +17,8 @@ function handleHmacVerification(hmacKey, req) {
 function notify(req, res, next) {
   const status = checkAuth.check(req);
   const hmacKey = AdyenConfigs.getAdyenHmacKey();
-  const hmacVerification = handleHmacVerification(hmacKey, req);
-  if (!status || (hmacKey && !hmacVerification)) {
+  const isHmacValid = handleHmacVerification(hmacKey, req);
+  if (!status || (hmacKey && !isHmacValid)) {
     res.render('/adyen/error');
     return {};
   }
