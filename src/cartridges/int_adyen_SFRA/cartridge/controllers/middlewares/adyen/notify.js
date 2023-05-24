@@ -2,15 +2,14 @@ const Transaction = require('dw/system/Transaction');
 const checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
 const handleNotify = require('*/cartridge/scripts/handleNotify');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 
 function handleHmacVerification(hmacKey, req) {
-  if (!hmacKey){
-    return false
+  if (!hmacKey) {
+    return false;
   }
   return checkAuth.validateHmacSignature(req);
 }
@@ -28,8 +27,7 @@ function notify(req, res, next) {
   if (notificationResult.success) {
     Transaction.commit();
     res.render('/notify');
-  } 
-  else {
+  } else {
     res.render('/notifyError', {
       errorMessage: notificationResult.errorMessage,
     });
