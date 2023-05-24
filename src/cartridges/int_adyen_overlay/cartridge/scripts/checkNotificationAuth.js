@@ -58,9 +58,9 @@ function validateHmacSignature(request){
   const merchantSignature = AuthenticationUtils.calculateHmacSignature(request);
   // Checking for timing attacks
   if (compareHmac(hmacSignature, merchantSignature)){
-    AdyenLogs.info_log(`Successfully compared the HMAC Signatures, notification is coming from Adyen`);
     return true;
   };
+  AdyenLogs.error_log(`HMAC signatures mismatch, the notification request is not valid`);
   return false;
 };
 
