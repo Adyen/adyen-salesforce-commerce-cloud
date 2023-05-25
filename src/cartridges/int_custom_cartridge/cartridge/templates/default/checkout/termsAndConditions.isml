@@ -1,0 +1,15 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/termsAndConditions.css');
+    assets.addJs('/js/termsAndConditions.js');
+</isscript>
+<div class="card terms-and-conditions">
+    <div class="card-body">
+        <div class="custom-control custom-checkbox">
+            <input name="termsAndConditions" class="custom-control-input" id="termsAndConditions" type="checkbox">
+            <label class="checkout-checkbox custom-control-label" for="termsAndConditions">
+                ${Resource.msg('termsAndConditions', 'custom', null)}
+            </label>
+        </div>
+    </div>
+</div>
