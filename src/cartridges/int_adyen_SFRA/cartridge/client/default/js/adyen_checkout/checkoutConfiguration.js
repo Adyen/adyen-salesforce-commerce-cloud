@@ -311,21 +311,25 @@ function getApplePayConfig() {
 }
 
 function getKlarnaConfig() {
-  return {
-    showPayButton: true,
-    useKlarnaWidget: true,
-    onSubmit: (state, component) => {
-      helpers.assignPaymentMethodValue();
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: (state) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
+  const {klarnaWidgetEnabled} = window;
+  if (klarnaWidgetEnabled){
+    return {
+      showPayButton: true,
+      useKlarnaWidget: true,
+      onSubmit: (state, component) => {
+        helpers.assignPaymentMethodValue();
+        helpers.paymentFromComponent(state.data, component);
+      },
+      onAdditionalDetails: (state) => {
+        document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+          state.data,
+        );
+        document.querySelector('#showConfirmationForm').submit();
+      },
+    }
   }
-}
+  return null;
+};
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;

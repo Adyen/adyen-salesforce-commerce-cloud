@@ -1,4 +1,5 @@
 <iscontent type="text/html"/>
+<isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
@@ -19,6 +20,7 @@
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+      window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled}
 
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
