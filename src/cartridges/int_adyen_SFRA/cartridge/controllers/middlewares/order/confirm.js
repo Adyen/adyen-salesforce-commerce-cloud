@@ -14,7 +14,7 @@ function getOrderToken(req) {
     : req.querystring.token;
 }
 
-function handleAdyenGiving(req, res, order) {
+function handleAdyenGiving(req, res) {
   const clientKey = AdyenConfigs.getAdyenClientKey();
   const environment = AdyenHelper.getCheckoutEnvironment();
   const configuredAmounts = AdyenHelper.getDonationAmounts();
@@ -23,10 +23,7 @@ function handleAdyenGiving(req, res, order) {
   const charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
   const adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
   const adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
-
-  const paymentInstrument = order.getPaymentInstruments(
-    AdyenHelper.getOrderMainPaymentInstrumentType(order),
-  )[0];
+  const orderToken = getOrderToken(req);
 
   const donationAmounts = {
     currency: session.currency.currencyCode,
@@ -37,14 +34,13 @@ function handleAdyenGiving(req, res, order) {
     clientKey,
     environment,
     adyenGivingAvailable: true,
-    pspReference:
-      paymentInstrument.paymentTransaction.custom.Adyen_pspReference,
     donationAmounts: JSON.stringify(donationAmounts),
     charityName,
     charityDescription,
     charityWebsite,
     adyenGivingBackgroundUrl,
     adyenGivingLogoUrl,
+    orderToken,
   };
   res.setViewData(viewData);
 }
@@ -61,7 +57,7 @@ function confirm(req, res, next) {
       AdyenHelper.getAdyenGivingConfig(order) &&
       AdyenHelper.isAdyenGivingAvailable(paymentInstrument)
     ) {
-      handleAdyenGiving(req, res, order);
+      handleAdyenGiving(req, res);
     }
   }
   return next();

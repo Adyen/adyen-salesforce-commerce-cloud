@@ -56,8 +56,8 @@ server.post(
  * Complete a donation through adyenGiving
  */
 server.post('Donate', server.middleware.https, (req /* , res, next */) => {
-  const { pspReference } = req.form;
   const { orderNo } = req.form;
+  const { orderToken } = req.form;
   const donationAmount = {
     value: req.form.amountValue,
     currency: req.form.amountCurrency,
@@ -65,7 +65,7 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
   const donationResult = adyenGiving.donate(
     orderNo,
     donationAmount,
-    pspReference,
+    orderToken,
   );
 
   return donationResult.response;

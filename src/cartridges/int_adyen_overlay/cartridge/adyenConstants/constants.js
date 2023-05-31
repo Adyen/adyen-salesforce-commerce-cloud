@@ -75,6 +75,10 @@ module.exports = {
     ECOMMERCE : 'Ecommerce',
   },
 
+  DONATION_RESULT : {
+    COMPLETED : 'completed',
+  },
+
   RECURRING_PROCESSING_MODEL : {
     CARD_ON_FILE : 'CardOnFile',
   },
