@@ -32,7 +32,7 @@ function donate(donationReference, donationAmount, orderToken) {
 
     if (session.privacy.orderNo !== donationReference){
       throw new Error(`Donation reference is invalid`);
-    };
+    }
 
     let paymentMethodVariant;
     const order = OrderMgr.getOrder(donationReference, orderToken);
@@ -65,11 +65,11 @@ function donate(donationReference, donationAmount, orderToken) {
 
     if (availableDonationAmounts.indexOf(parseInt(donationAmount.value)) === -1){
       throw new Error(`Donation amount is invalid`);
-    };
+    }
 
     if (paymentCurrency !== donationAmount.currency){
       throw new Error(`Donation currency is invalid`);
-    };
+    }
 
     const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
     const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.ADYENGIVING}${constants.PLATFORMS.SG}` : constants.SERVICE.ADYENGIVING;
