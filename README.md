@@ -1,9 +1,13 @@
 # Salesforce Commerce Cloud Adyen Cartridge
 
-Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://docs.adyen.com/plugins/salesforce-commerce-cloud). This cartridge enables a SFCC storefront to use the Adyen payment service. This cartridge [supports](https://docs.adyen.com/plugins/salesforce-commerce-cloud#supported-versions) SFRA version 5.x.x & 6.x.x and SiteGenesis JS-Controllers version 103.1.11 and higher.
+Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://docs.adyen.com/plugins/salesforce-commerce-cloud). This cartridge enables a SFCC storefront to use the Adyen payment service.  
+This cartridge [supports](https://docs.adyen.com/plugins/salesforce-commerce-cloud#supported-versions) SFRA version 5.x.x & 6.x.x.   
+and SiteGenesis JS-Controllers version 103.1.11 and higher (no features in cartridges higher than [v22.2.2](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases/tag/22.2.2))
 
 ## Integration
-This cartridge allows you to integrate with Adyen without the need for any development work from your end. It allows you to process payments using the [checkout API](https://docs.adyen.com/api-explorer/#/CheckoutService/v67/overview), and for Point of Sale (POS) payments, it uses a cloud-based [Terminal API](https://docs.adyen.com/point-of-sale/terminal-api-fundamentals). As for the client side, Adyen’s [web components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods.
+This cartridge allows you to integrate with Adyen without the need for any development work from your end.  
+Online payments are processed on the back-end using the [Checkout API](https://docs.adyen.com/api-explorer/Checkout/latest/overview), on the client side Adyen’s [Web Components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods.  
+Point of Sale (POS) payments are processed using a cloud-based [Terminal API](https://docs.adyen.com/point-of-sale/terminal-api-fundamentals). 
 
 ## Requirements
 
@@ -13,7 +17,7 @@ It is required to have an Adyen account to use the cartridge. You can do this [h
 
 Installation, Usage and Configuration is explained in Adyen's [online documentation](https://docs.adyen.com/plugins/salesforce-commerce-cloud/).
 
-Apple Pay configuration can be found [here](https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-payment-methods/#set-up-apple-pay-on-the-web).
+Apple Pay configuration for both Adyen certificate and Apple certificate using Salesforce cartridge can be found [here](https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-payment-methods/#set-up-apple-pay-on-the-web).
 
 ## Testing
 End-to-End tests can be found in the `adyen-salesforce-commerce-cloud/tests/e2e` directory. 
@@ -31,22 +35,27 @@ To run SFRA unit tests locally use the following command:
 ```
 ## Support & Maintenance
 
-We provide three levels of support:
-1. **Level 1 (12 months)**: full support (including new features) *Keep in mind that some new features are not possible on older versions, therefore this is not inclusive of ALL new features that are built.* 
-2. **Level 2 (12 months - 18 months)**: high priority bugs / security only.
-3. **Level 3 (18 months - 24 months)**: security updates only (no support from support team).
+We provide three levels of support for major versions of the plugin:
 
-> After Level 3 there is no support or maintenance from Adyen and it should be treated as a custom integration of the merchant.
+- **Level 1**: Full support. Keep in mind that some new features are not possible on older versions, therefore this is not inclusive of ALL new features that are built.
+- **Level 2**: High priority bug fixes and security updates.
+- **Level 3**: Security updates only.
 
-The schedule for the current maintained branches is:
+After Level 3 End-of-support date, there is no support or maintenance from Adyen on the cartridge, and it will be treated as a custom integration.
 
-|  Plugin Major Version   |  Release Date  |  Level 1 Support ends   |  Level 2 Support ends   |  Level 3 Support ends  |
-|  :-----          |  :-----          |  :-----          |  :-----          |  :-----          |
-|  Version 20 |  July 2020  |  End of July 2023 |  End of Jan 2024 |  End of July 2024 |
-|  Version 21 |  August 2021 |  End of August 2023 |  End of July 2024 |  End of December 2024 |
-|  Version 22 |  May 2022 |  End of May 2024 |  End of November 2024 | End of March 2025 |
-|  Version 23 |  - |  12 months after release |  18 months after release |  24 months after release |
+| Major version | Release date | Level 1 support until | Level 2 support until | Level 3 support until |
+|---------------|--------------|-----------------------|-----------------------|-----------------------|
+| V18           | April 2018   | 30 September 2023     | 30 September 2023     | 30 September 2023     |
+| V19           | July 2019    | 30 September 2023     | 30 September 2023     | 30 September 2023     |
+| V20           | July 2020    | 31 December 2023      | 31 December 2023      | 31 December 2023      |
+| V21           | August 2021  | 31 December 2023      | 31 December 2023      | 31 December 2023      |
+| V22           | May 2022     | 30 November 2023      | 31 May 2024           | 30 November 2024      |
+| V23<sup id="fnref1">[[1]](#fn1)</sup><sup id="fnref2">[[2]](#fn2)</sup>       | February 2023 | 12 months after release | 18 months after release| 24 months after release|
+| V24           | soon in development | 12 months after release | 18 months after release| 24 months after release|
 
+<span id="fn1">[1]:From this version onward, we do not provide any level of support for SiteGenesis integrations.</span>
+
+<span id="fn2">[2]:From this version onward, all major releases will follow the V23 support schedule.</span>
 
 ## Contributing
 We strongly encourage you to join us in contributing to this repository so everyone can benefit from:
