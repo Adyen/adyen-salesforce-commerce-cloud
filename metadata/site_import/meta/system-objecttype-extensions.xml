@@ -378,7 +378,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_klarnaWidget">
                 <display-name xml:lang="x-default">Klarna Inline Widget</display-name>
-                <description xml:lang="x-default">Complete Klarna Payments without being redirected to Klarna playground</description>
+                <description xml:lang="x-default">Complete Klarna Payments without browser redirect (using in-line widget)</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

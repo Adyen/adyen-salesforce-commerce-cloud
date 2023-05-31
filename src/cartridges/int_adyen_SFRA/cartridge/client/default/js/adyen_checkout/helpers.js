@@ -72,8 +72,7 @@ function displaySelectedMethod(type) {
     : type;
   resetPaymentMethod();
 
-  const klarnaVariants = ['klarna', 'klarna_account', 'klarna_paynow'];
-  let disabledSubmitButtonMethods = [
+  const disabledSubmitButtonMethods = [
     'paypal',
     'paywithgoogle',
     'googlepay',
@@ -81,13 +80,10 @@ function displaySelectedMethod(type) {
     'applepay',
   ];
   if (window.klarnaWidgetEnabled) {
-    disabledSubmitButtonMethods = [
-      ...disabledSubmitButtonMethods,
-      ...klarnaVariants,
-    ];
+    disabledSubmitButtonMethods.push('klarna');
   }
   document.querySelector('button[value="submit-payment"]').disabled =
-    disabledSubmitButtonMethods.indexOf(type) > -1;
+    disabledSubmitButtonMethods.findIndex((pm) => type.includes(pm)) > -1;
 
   document
     .querySelector(`#component_${type}`)
