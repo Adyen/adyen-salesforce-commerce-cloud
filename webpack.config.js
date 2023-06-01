@@ -7,6 +7,7 @@ require("shelljs/make");
 const path = require("path");
 const webpack = require("sgmf-scripts").webpack;
 const jsFiles = require("sgmf-scripts").createJsPath();
+const cartridge_name = require("./package.json").name;
 
 const bootstrapPackages = {
   Alert: "exports-loader?Alert!bootstrap/js/src/alert",
@@ -28,7 +29,7 @@ module.exports = [
     name: "js",
     entry: jsFiles,
     output: {
-      path: path.resolve("./cartridges/int_adyen_SFRA/cartridge/static"),
+      path: path.resolve(`./cartridges/${cartridge_name}/cartridge/static`),
       filename: "[name].js",
     },
     module: {
