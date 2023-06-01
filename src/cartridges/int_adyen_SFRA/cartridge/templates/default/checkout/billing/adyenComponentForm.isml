@@ -53,7 +53,7 @@
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
-         window.customerEmail = '${customer.profile.email}';
+         window.customerEmail = '${customer?.profile?.email}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
     </script>
 
