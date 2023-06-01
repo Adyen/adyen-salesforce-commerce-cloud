@@ -15,8 +15,8 @@
         window.donateURL = "${URLUtils.https('Adyen-Donate')}";
 
         var orderNo = '${pdict.order.orderNumber}';
+        var orderToken = '${pdict.adyen.orderToken}';
         var donationAmounts = '${pdict.adyen.donationAmounts}'.replace(/&quot;/g, '\"');
-        var pspReference = '${pdict.adyen.pspReference}';
         var charityName = '${pdict.adyen.charityName}';
         var charityWebsite = '${pdict.adyen.charityWebsite}';
         var charityDescription = '${pdict.adyen.charityDescription}';

@@ -8,8 +8,8 @@ function handleOnDonate(state, component) {
   const donationData = {
     amountValue: selectedAmount.value,
     amountCurrency: selectedAmount.currency,
-    orderNo,
-    pspReference,
+    orderNo: window.orderNo,
+    orderToken: window.orderToken,
   };
 
   $.ajax({
