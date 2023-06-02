@@ -35,13 +35,15 @@ To run SFRA unit tests locally use the following command:
 ```
 ## Support & Maintenance
 
-We provide three levels of support for major versions of the plugin:
+We provide three levels of support for major versions of the plugin as per [SFCC B2C Support policy](https://docs.adyen.com/plugins/salesforce-commerce-cloud#support-levels):
 
 - **Level 1**: Full support. Keep in mind that some new features are not possible on older versions, therefore this is not inclusive of ALL new features that are built.
 - **Level 2**: High priority bug fixes and security updates.
 - **Level 3**: Security updates only.
 
 After Level 3 End-of-support date, there is no support or maintenance from Adyen on the cartridge, and it will be treated as a custom integration.
+
+[Migration and Upgrade Guide](https://docs.adyen.com/plugins/salesforce-commerce-cloud/upgrade)
 
 | Major version | Release date | Level 1 support until | Level 2 support until | Level 3 support until |
 |---------------|--------------|-----------------------|-----------------------|-----------------------|
