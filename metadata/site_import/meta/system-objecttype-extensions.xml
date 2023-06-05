@@ -487,6 +487,15 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Hmac_Key">
+                <display-name xml:lang="x-default">Adyen HMAC Key</display-name>
+                <description xml:lang="x-default">Adyen HMAC Key used optionally for notification validation</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenSalePaymentMethods">
                 <display-name xml:lang="x-default">Payment methods with SALE flow</display-name>
                 <description xml:lang="x-default">Only applicable for Salesforce OMS. List the txvariants with Authorisation type SALE comma separated (e.g. ideal,sepadirectdebit,paypal).</description>
