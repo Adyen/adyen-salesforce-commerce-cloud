@@ -5,7 +5,6 @@ const Transaction = require('dw/system/Transaction');
 function clearCustomSessionFields() {
   // Clears all fields used in the 3d secure payment.
   session.privacy.paymentMethod = null;
-  session.privacy.orderNo = null;
   session.privacy.brandCode = null;
   session.privacy.issuer = null;
   session.privacy.adyenPaymentMethod = null;

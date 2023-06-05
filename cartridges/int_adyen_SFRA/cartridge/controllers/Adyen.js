@@ -34,13 +34,14 @@ server.post('ShowConfirmationPaymentFromComponent', server.middleware.https, ady
  * Complete a donation through adyenGiving
  */
 server.post('Donate', server.middleware.https, function (req /* , res, next */) {
-  var pspReference = req.form.pspReference;
-  var orderNo = req.form.orderNo;
+  var _req$form = req.form,
+    orderNo = _req$form.orderNo,
+    orderToken = _req$form.orderToken;
   var donationAmount = {
     value: req.form.amountValue,
     currency: req.form.amountCurrency
   };
-  var donationResult = adyenGiving.donate(orderNo, donationAmount, pspReference);
+  var donationResult = adyenGiving.donate(orderNo, donationAmount, orderToken);
   return donationResult.response;
 });
 

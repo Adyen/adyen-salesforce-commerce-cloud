@@ -20,6 +20,9 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.SE);
       await checkoutPage.setShopperDetails(shopperData.SE);
+      if (environment.name.indexOf('v6') === -1) {
+        await checkoutPage.setEmail();
+      };
     });
     test('Swish success', async ({ page }) => {
       pendingPaymentsPage = new PendingPayments(page);

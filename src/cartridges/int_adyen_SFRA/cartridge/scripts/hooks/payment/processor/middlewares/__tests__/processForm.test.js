@@ -1,4 +1,4 @@
-import { getPaymentForm, getPaymentInstruments } from 'mockData/processForm';
+const { getPaymentForm, getPaymentInstruments } = require('mockData/processForm');
 
 /* eslint-disable global-require */
 let processForm;

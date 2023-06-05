@@ -115,6 +115,7 @@ function placeOrder(req, res, next) {
     // Creates a new order.
     var order = COHelpers.createOrder(currentBasket);
     if (!order) {
+        session.privacy.orderNo = null;
         res.json({
             error: true,
             errorMessage: Resource.msg('error.technical', 'checkout', null)
@@ -126,6 +127,7 @@ function placeOrder(req, res, next) {
     // Cache order number in order to be able to restore cart later
     req.session.privacyCache.set('currentOrderNumber', order.orderNo);
     req.session.privacyCache.set('currentOrderToken', order.orderToken);
+    session.privacy.orderNo = order.orderNo;
 
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);

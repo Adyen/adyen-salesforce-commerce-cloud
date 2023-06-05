@@ -16,6 +16,9 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.JP);
       await checkoutPage.setShopperDetails(shopperData.JP);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
     test('konbini Success', async ({ page }) => {

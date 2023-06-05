@@ -27,8 +27,6 @@ var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function getMethods(basket, customer, countryCode) {
-  AdyenLogs.info_log('CUSTOMER');
-  AdyenLogs.info_log(JSON.stringify(customer));
   try {
     var paymentAmount;
     var currencyCode;

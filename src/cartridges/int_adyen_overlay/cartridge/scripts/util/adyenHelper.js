@@ -509,11 +509,16 @@ var adyenHelperObj = {
       );
     }
 
+    // Add recurringProcessingModel in case shopper wants to save the card from checkout
+    if (stateData.storePaymentMethod){
+      stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+    }
+
     if (stateData.paymentMethod?.storedPaymentMethodId) {
-      stateData.recurringProcessingModel = 'CardOnFile';
-      stateData.shopperInteraction = 'ContAuth';
+      stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+      stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
     } else {
-      stateData.shopperInteraction = 'Ecommerce';
+      stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.ECOMMERCE;
     }
 
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();

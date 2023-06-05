@@ -28,6 +28,7 @@ var URLUtils = require('dw/web/URLUtils');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var constants = require('*/cartridge/adyenConstants/constants');
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
     var zeroAuthRequest = AdyenHelper.createAdyenRequestObject(null, paymentInstrument);
@@ -38,6 +39,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
     };
     zeroAuthRequest.returnUrl = URLUtils.https('Adyen-Redirect3DS1Response').toString();
     zeroAuthRequest.storePaymentMethod = true;
+    zeroAuthRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
     return adyenCheckout.doPaymentsCall(null, paymentInstrument, zeroAuthRequest);

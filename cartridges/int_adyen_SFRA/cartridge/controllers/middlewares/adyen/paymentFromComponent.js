@@ -135,6 +135,7 @@ function paymentFromComponent(req, res, next) {
   });
   handleExpressPayment(reqDataObj, currentBasket);
   var order = COHelpers.createOrder(currentBasket);
+  session.privacy.orderNo = order.orderNo;
 
   // Check if gift card was used
   if ((_currentBasket$custom2 = currentBasket.custom) !== null && _currentBasket$custom2 !== void 0 && _currentBasket$custom2.adyenGiftCards) {

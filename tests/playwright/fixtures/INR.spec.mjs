@@ -17,6 +17,9 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.IN);
       await checkoutPage.setShopperDetails(shopperData.IN);
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
     test('UPI Success', async ({ page }) => {

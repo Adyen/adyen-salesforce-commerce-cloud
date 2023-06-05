@@ -17,6 +17,9 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.NO);
       await checkoutPage.setShopperDetails(shopperData.NO);
+      if (environment.name.indexOf('v6') === -1) {
+        await checkoutPage.setEmail();
+      };
     });
 
     test('Vipps Success', async ({ page }) => {

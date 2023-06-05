@@ -53,6 +53,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenOneClickEnabled');
   },
 
+  getKlarnaInlineWidgetEnabled() {
+    return getCustomPreference('Adyen_klarnaWidget');
+  },
+
   getCreditCardInstallments() {
     return getCustomPreference('AdyenCreditCardInstallments');
   },

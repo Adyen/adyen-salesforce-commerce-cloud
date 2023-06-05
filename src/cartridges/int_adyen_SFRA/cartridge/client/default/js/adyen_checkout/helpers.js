@@ -72,10 +72,18 @@ function displaySelectedMethod(type) {
     : type;
   resetPaymentMethod();
 
+  const disabledSubmitButtonMethods = [
+    'paypal',
+    'paywithgoogle',
+    'googlepay',
+    'amazonpay',
+    'applepay',
+  ];
+  if (window.klarnaWidgetEnabled) {
+    disabledSubmitButtonMethods.push('klarna');
+  }
   document.querySelector('button[value="submit-payment"]').disabled =
-    ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay'].indexOf(
-      type,
-    ) > -1;
+    disabledSubmitButtonMethods.findIndex((pm) => type.includes(pm)) > -1;
 
   document
     .querySelector(`#component_${type}`)

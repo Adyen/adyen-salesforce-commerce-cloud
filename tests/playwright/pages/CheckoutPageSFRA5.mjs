@@ -83,6 +83,7 @@ export default class CheckoutPageSFRA5 {
     this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
     this.donationButton = page.locator('.adyen-checkout__button--donate');
     this.givingThankyouMessage = page.locator('.adyen-checkout__status__text');
+    this.componentsContainer = page.locator('.payment-methods-container');
   }
 
   isPaymentModalShown = async (imgAltValue) => {
@@ -163,6 +164,9 @@ export default class CheckoutPageSFRA5 {
     await this.page.waitForLoadState('networkidle');
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
+    // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
+    await this.page.keyboard.press('Tab');
+    await new Promise(r => setTimeout(r, 2000));
   };
 
   submitShipping = async () => {
@@ -188,7 +192,6 @@ export default class CheckoutPageSFRA5 {
   };
 
   completeCheckout = async () => {
-    await this.setEmail();
     await this.submitPayment();
     await this.placeOrder();
   };

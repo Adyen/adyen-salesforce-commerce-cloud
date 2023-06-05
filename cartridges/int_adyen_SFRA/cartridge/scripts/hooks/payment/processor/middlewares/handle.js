@@ -10,7 +10,10 @@ function removeAllPaymentInstruments(currentBasket) {
   });
 }
 function convertToSfccCardType(paymentInformation, paymentInstrument) {
-  var sfccCardType = !paymentInformation.creditCardToken ? AdyenHelper.getSfccCardType(paymentInformation.cardType) : paymentInformation.cardType;
+  var _stateData$paymentMet;
+  var stateData = JSON.parse(paymentInformation.stateData);
+  var cardType = paymentInformation.cardType || (stateData === null || stateData === void 0 ? void 0 : (_stateData$paymentMet = stateData.paymentMethod) === null || _stateData$paymentMet === void 0 ? void 0 : _stateData$paymentMet.srcScheme);
+  var sfccCardType = !paymentInformation.creditCardToken ? AdyenHelper.getSfccCardType(cardType) : paymentInformation.cardType;
   paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
   paymentInstrument.setCreditCardType(sfccCardType);
   paymentInstrument.custom.adyenPaymentMethod = sfccCardType;

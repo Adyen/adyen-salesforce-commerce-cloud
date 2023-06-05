@@ -65,7 +65,14 @@ module.exports = {
     IN: 'IN'
   },
   SHOPPER_INTERACTIONS: {
-    CONT_AUTH: 'ContAuth'
+    CONT_AUTH: 'ContAuth',
+    ECOMMERCE: 'Ecommerce'
+  },
+  DONATION_RESULT: {
+    COMPLETED: 'completed'
+  },
+  RECURRING_PROCESSING_MODEL: {
+    CARD_ON_FILE: 'CardOnFile'
   },
   MAX_API_RETRIES: 3,
   GIFTCARD_EXPIRATION_MINUTES: 30,
@@ -76,8 +83,8 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
   CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.28.0',
+    SFRA: '5.40.0',
     SG: '5.28.0'
   },
-  VERSION: '23.1.2'
+  VERSION: '23.2.0'
 };

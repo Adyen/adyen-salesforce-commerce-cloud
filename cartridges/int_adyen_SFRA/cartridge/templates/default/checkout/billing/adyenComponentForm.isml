@@ -1,4 +1,5 @@
 <iscontent type="text/html"/>
+<isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
@@ -19,6 +20,7 @@
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+      window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
 
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
@@ -51,6 +53,7 @@
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.cardholderNameBool = '${pdict.adyen.cardholderNameBool}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
+         window.customerEmail = '${customer?.profile?.email}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
     </script>
 
@@ -66,6 +69,10 @@
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
+    <ul id="paymentMethodsList" class="payment-methods-container"></ul>
+    <div class="adyen-checkout__content-separator adyen-checkout-ctp__separator">
+        ${Resource.msg('separator.giftCard', 'adyen', null)}
+    </div>
     <div class="gift-card-selection">
         <img id="headingImg" class="heading-img" />
         <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
@@ -92,8 +99,6 @@
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>
     <div id="giftCardsInfoMessage"></div>
-
-    <ul id="paymentMethodsList" class="payment-methods-container"></ul>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code

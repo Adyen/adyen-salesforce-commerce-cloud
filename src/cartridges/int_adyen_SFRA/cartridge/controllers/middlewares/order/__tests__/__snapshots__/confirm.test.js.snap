@@ -15,7 +15,7 @@ exports[`Confirm should set view data 1`] = `
           "clientKey": "mocked_client_key",
           "donationAmounts": "{"currency":"EUR","values":[10,20,30]}",
           "environment": "test",
-          "pspReference": undefined,
+          "orderToken": "mocked_token",
         },
       },
     ],

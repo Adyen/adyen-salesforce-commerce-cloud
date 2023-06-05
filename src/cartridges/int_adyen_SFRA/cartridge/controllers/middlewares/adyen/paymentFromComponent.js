@@ -188,6 +188,7 @@ function paymentFromComponent(req, res, next) {
   handleExpressPayment(reqDataObj, currentBasket);
 
   const order = COHelpers.createOrder(currentBasket);
+  session.privacy.orderNo = order.orderNo;
 
   // Check if gift card was used
   if (currentBasket.custom?.adyenGiftCards) {
