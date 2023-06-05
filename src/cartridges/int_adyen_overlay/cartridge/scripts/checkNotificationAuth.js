@@ -20,6 +20,7 @@
  */
 const Site = require('dw/system/Site');
 const AuthenticationUtils = require('*/cartridge/scripts/libs/libAuthenticationUtils');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function check(request) {
   const baUser = Site.getCurrent().getCustomPreferenceValue(
@@ -40,6 +41,30 @@ function check(request) {
   );
 }
 
+function compareHmac(hmacSignature, merchantSignature){
+  let bitwiseComparison;
+  if (hmacSignature.length !== merchantSignature.length){
+    return false;
+  }
+  for (let i = 0; i < hmacSignature.length; i++) {
+    bitwiseComparison |= hmacSignature.charCodeAt(i) ^ merchantSignature.charCodeAt(i);
+  }
+  return bitwiseComparison === 0;
+};
+
+function validateHmacSignature(request){
+  const notificationData = request.form;
+  const hmacSignature = notificationData['additionalData.hmacSignature'];
+  const merchantSignature = AuthenticationUtils.calculateHmacSignature(request);
+  // Checking for timing attacks
+  if (compareHmac(hmacSignature, merchantSignature)){
+    return true;
+  };
+  AdyenLogs.error_log(`HMAC signatures mismatch, the notification request is not valid`);
+  return false;
+};
+
 module.exports = {
   check,
+  validateHmacSignature,
 };

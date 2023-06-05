@@ -92,7 +92,10 @@ jest.mock('*/cartridge/scripts/adyenZeroAuth', () => {
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/checkNotificationAuth', () => {
-  return { check: jest.fn(() => true) };
+  return { 
+    check: jest.fn(() => true),
+    validateHmacSignature: jest.fn(() => true),
+   };
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/handleNotify', () => {
@@ -272,6 +275,7 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
     ),
     getAdyenGivingLogoUrl: jest.fn(() => 'mocked_logo_url'),
     getAdyenSFRA6Compatibility: jest.fn(() => false),
+    getAdyenHmacKey : jest.fn(() => 'mocked_hmacKey'),
     getAdyenBasketFieldsEnabled: jest.fn(() => false),
     getAdyen3DS2Enabled: jest.fn(() => false),
     getAdyenLevel23DataEnabled: jest.fn(() => false),
