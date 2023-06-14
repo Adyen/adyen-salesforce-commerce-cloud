@@ -187,13 +187,16 @@ function paymentFromComponent(req, res, next) {
 
   handleExpressPayment(reqDataObj, currentBasket);
 
-  const order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
-
+  let order;
   // Check if gift card was used
   if (currentBasket.custom?.adyenGiftCards) {
+    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
     handleGiftCardPayment(currentBasket, order);
+  } else {
+    order = COHelpers.createOrder(currentBasket);
   }
+  session.privacy.orderNo = order.orderNo;
 
   let result;
   Transaction.wrap(() => {
@@ -204,6 +207,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   currentBasket.custom.amazonExpressShopperDetails = null;
+  currentBasket.custom.adyenGiftCardsOrderNo = null;
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);

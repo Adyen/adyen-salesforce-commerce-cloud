@@ -43,6 +43,7 @@ function clearAdyenBasketData(basket) {
   if (basket) {
     Transaction.wrap(() => {
       basket.custom.adyenGiftCards = null;
+      basket.custom.adyenGiftCardsOrderNo = null;
     });
   }
 }
