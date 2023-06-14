@@ -29,17 +29,18 @@ function getFormattedProperties(checkBalanceResponse, orderAmount) {
   return {};
 }
 
-// eslint-disable-next-line complexity
+function getAddedGiftCards(basket) {
+  return basket.custom?.adyenGiftCards
+    ? JSON.parse(basket.custom.adyenGiftCards)
+    : null;
+}
+
 function callCheckBalance(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    let orderNo = currentBasket.custom?.adyenGiftCardsOrderNo;
-    if (!currentBasket.custom?.adyenGiftCardsOrderNo) {
-      orderNo = OrderMgr.createOrderNo();
-    }
-    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
-      ? JSON.parse(currentBasket.custom.adyenGiftCards)
-      : null;
+    const orderNo =
+      currentBasket.custom?.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
+    const giftCardsAdded = getAddedGiftCards(currentBasket);
 
     const orderAmount = {
       currency: currentBasket.currencyCode,
