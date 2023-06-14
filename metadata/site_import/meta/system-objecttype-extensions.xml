@@ -685,6 +685,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenGiftCardsOrderNo">
+                <display-name xml:lang="x-default">adyenGiftCardsOrderNo</display-name>
+                <description xml:lang="x-default">Adyen Gift Cards Order Number</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="amazonExpressShopperDetails">
                 <display-name xml:lang="x-default">amazonExpressShopperDetails</display-name>
                 <description xml:lang="x-default">Express Amazon Pay Shopper Details</description>
@@ -698,6 +706,7 @@
             <attribute-group group-id="AdyenPayment">
                 <display-name xml:lang="x-default">Adyen Payment</display-name>
                 <attribute attribute-id="adyenGiftCards"/>
+                <attribute attribute-id="adyenGiftCardsOrderNo"/>
                 <attribute attribute-id="amazonExpressShopperDetails"/>
             </attribute-group>
         </group-definitions>

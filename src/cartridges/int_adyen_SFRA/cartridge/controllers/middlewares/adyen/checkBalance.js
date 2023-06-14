@@ -1,5 +1,7 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Money = require('dw/value/Money');
+const OrderMgr = require('dw/order/OrderMgr');
+const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
@@ -27,12 +29,18 @@ function getFormattedProperties(checkBalanceResponse, orderAmount) {
   return {};
 }
 
+function getAddedGiftCards(basket) {
+  return basket.custom?.adyenGiftCards
+    ? JSON.parse(basket.custom.adyenGiftCards)
+    : null;
+}
+
 function callCheckBalance(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const giftCardsAdded = currentBasket.custom?.adyenGiftCards
-      ? JSON.parse(currentBasket.custom.adyenGiftCards)
-      : null;
+    const orderNo =
+      currentBasket.custom?.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
+    const giftCardsAdded = getAddedGiftCards(currentBasket);
 
     const orderAmount = {
       currency: currentBasket.currencyCode,
@@ -52,12 +60,17 @@ function callCheckBalance(req, res, next) {
     const checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount,
-      reference: currentBasket.getUUID(),
+      reference: orderNo,
       paymentMethod,
     };
 
     const checkBalanceResponse =
       adyenCheckout.doCheckBalanceCall(checkBalanceRequest);
+
+    Transaction.wrap(() => {
+      currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
+    });
+
     res.json({
       ...checkBalanceResponse,
       ...getFormattedProperties(checkBalanceResponse, orderAmount),
