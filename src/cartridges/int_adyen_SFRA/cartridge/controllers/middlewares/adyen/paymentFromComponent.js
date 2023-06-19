@@ -144,6 +144,17 @@ function handleExpressPayment(reqDataObj, currentBasket) {
   }
 }
 
+function checkAndSetResults(reqDataObj) {
+  if (
+    AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type) ||
+    AdyenHelper.isCashApp(reqDataObj.paymentMethod?.type)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -209,9 +220,7 @@ function paymentFromComponent(req, res, next) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
 
-  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
-    result.isApplePay = true;
-  }
+  result.isApplePayOrCashApp = checkAndSetResults(reqDataObj);
 
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;

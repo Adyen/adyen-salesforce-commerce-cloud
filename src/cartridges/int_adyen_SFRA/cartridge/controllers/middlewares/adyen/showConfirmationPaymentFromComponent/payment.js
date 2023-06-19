@@ -132,7 +132,8 @@ function handlePayment(stateData, order, options) {
     if (
       result &&
       (JSON.stringify(result).indexOf('amazonpay') > -1 ||
-        JSON.stringify(result).indexOf('applepay') > -1)
+        JSON.stringify(result).indexOf('applepay') > -1 ||
+        JSON.stringify(result).indexOf('cashapp') > -1)
     ) {
       finalResult = JSON.parse(result);
     } else {

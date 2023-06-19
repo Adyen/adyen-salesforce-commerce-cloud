@@ -310,6 +310,16 @@ function getApplePayConfig() {
   };
 }
 
+function getCashAppConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+  };
+}
+
 function getKlarnaConfig() {
   const { klarnaWidgetEnabled } = window;
   if (klarnaWidgetEnabled) {
@@ -354,6 +364,7 @@ function setCheckoutConfiguration() {
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
+    cashapp: getCashAppConfig(),
   };
 }
 
@@ -363,5 +374,6 @@ module.exports = {
   getGooglePayConfig,
   getAmazonpayConfig,
   setCheckoutConfiguration,
+  getCashAppConfig,
   actionHandler,
 };

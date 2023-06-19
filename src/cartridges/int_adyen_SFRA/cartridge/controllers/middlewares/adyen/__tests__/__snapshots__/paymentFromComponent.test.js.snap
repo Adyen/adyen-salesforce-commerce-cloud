@@ -4,7 +4,7 @@ exports[`Payment from Component should authorize express payment 1`] = `
 [
   [
     {
-      "isApplePay": true,
+      "isApplePayOrCashApp": true,
       "orderNo": "mocked_orderNo",
       "orderToken": "mocked_orderToken",
       "resultCode": "Authorised",
@@ -27,7 +27,7 @@ exports[`Payment from Component should return json response 1`] = `
 [
   [
     {
-      "isApplePay": true,
+      "isApplePayOrCashApp": true,
       "orderNo": "mocked_orderNo",
       "orderToken": "mocked_orderToken",
       "resultCode": "Authorised",

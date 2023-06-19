@@ -39,7 +39,7 @@ function paymentFromComponent(data, component = {}) {
       setOrderFormData(response);
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
-      } else if (response.isApplePay) {
+      } else if (response.isApplePayOrCashApp) {
         document.querySelector('#result').value = JSON.stringify(response);
         document.querySelector('#showConfirmationForm').submit();
       } else if (response.paymentError || response.error) {
@@ -78,6 +78,7 @@ function displaySelectedMethod(type) {
     'googlepay',
     'amazonpay',
     'applepay',
+    'cashapp',
   ];
   if (window.klarnaWidgetEnabled) {
     disabledSubmitButtonMethods.push('klarna');
