@@ -39,7 +39,7 @@ function paymentFromComponent(data, component = {}) {
       setOrderFormData(response);
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
-      } else if (response.isApplePayOrCashApp) {
+      } else if (response.skipSummaryPage) {
         document.querySelector('#result').value = JSON.stringify(response);
         document.querySelector('#showConfirmationForm').submit();
       } else if (response.paymentError || response.error) {

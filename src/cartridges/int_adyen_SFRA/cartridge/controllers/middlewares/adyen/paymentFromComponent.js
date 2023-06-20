@@ -144,7 +144,7 @@ function handleExpressPayment(reqDataObj, currentBasket) {
   }
 }
 
-function checkAndSetResults(reqDataObj) {
+function canSkipSummaryPage(reqDataObj) {
   if (
     AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type) ||
     AdyenHelper.isCashApp(reqDataObj.paymentMethod?.type)
@@ -220,7 +220,8 @@ function paymentFromComponent(req, res, next) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
 
-  result.isApplePayOrCashApp = checkAndSetResults(reqDataObj);
+  // Check if summary page can be skipped in case payment is already authorized
+  result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
 
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
