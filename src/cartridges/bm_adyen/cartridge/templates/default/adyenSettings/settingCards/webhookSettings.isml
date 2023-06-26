@@ -43,7 +43,7 @@
             <div class="input-fields">
                <input type="password" class="form-control" name="Adyen_Hmac_Key" id="hmacKey"
                   aria-describedby="hmacKeyHelp" placeholder=""
-                  value="${AdyenConfigs.getAdyenHmacKey()}">
+                  value="${AdyenConfigs.getAdyenHmacKey() || ''}">
             </div>
          </div>
       </div>
