@@ -8,10 +8,10 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
  */
 
 function handleHmacVerification(hmacKey, req) {
-  if (!hmacKey) {
-    return false;
+  if (hmacKey) {
+    return checkAuth.validateHmacSignature(req);
   }
-  return checkAuth.validateHmacSignature(req);
+  return true;
 }
 
 function notify(req, res, next) {
