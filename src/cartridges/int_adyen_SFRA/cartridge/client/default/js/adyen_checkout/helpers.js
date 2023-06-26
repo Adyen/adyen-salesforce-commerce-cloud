@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -72,14 +73,7 @@ function displaySelectedMethod(type) {
     : type;
   resetPaymentMethod();
 
-  const disabledSubmitButtonMethods = [
-    'paypal',
-    'paywithgoogle',
-    'googlepay',
-    'amazonpay',
-    'applepay',
-    'cashapp',
-  ];
+  const disabledSubmitButtonMethods = constants.DISABLED_SUBMIT_BUTTON_METHODS;
   if (window.klarnaWidgetEnabled) {
     disabledSubmitButtonMethods.push('klarna');
   }
