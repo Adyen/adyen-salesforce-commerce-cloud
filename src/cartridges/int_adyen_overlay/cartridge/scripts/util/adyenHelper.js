@@ -660,7 +660,7 @@ var adyenHelperObj = {
         result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
-        result.paymentMethod,
+        result.paymentMethod.type,
       );
     }
 
