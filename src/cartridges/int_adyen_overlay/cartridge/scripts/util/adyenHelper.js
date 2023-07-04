@@ -664,6 +664,10 @@ var adyenHelperObj = {
       );
     }
 
+    if (result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
+      paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
+    }
+
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
       ? result.resultCode
       : '';
