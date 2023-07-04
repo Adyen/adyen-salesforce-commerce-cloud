@@ -257,7 +257,7 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getCreditCardInstallments: jest.fn(() => true),
-    getAdyenApplePayTokenisationEnabled: jest.fn(() => true),
+    getAdyenTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),
