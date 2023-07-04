@@ -664,7 +664,8 @@ var adyenHelperObj = {
       );
     }
 
-    if (result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
+    const tokenAlreadyExists = paymentInstrument.getCreditCardToken();
+    if (!tokenAlreadyExists && result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
       paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
     }
 
