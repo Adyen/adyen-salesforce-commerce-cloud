@@ -683,6 +683,12 @@ var adyenHelperObj = {
     return true;
   },
 
+  getFirstTwoNumbersFromYear() {
+    return Math.floor(
+      new Date().getFullYear() / 100,
+    );
+  },
+
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi(amount) {
     const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);

@@ -25,9 +25,8 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
     sfccCardType;
 
   if (paymentInformation.creditCardToken) {
-    const firstTwoDigitsFromCurrentYear = Math.floor(
-      new Date().getFullYear() / 100,
-    );
+    const firstTwoDigitsFromCurrentYear =
+      AdyenHelper.getFirstTwoNumbersFromYear();
     const expirationYear =
       firstTwoDigitsFromCurrentYear * 100 + paymentInformation.expirationYear;
     paymentInstrument.setCreditCardExpirationMonth(
