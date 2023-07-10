@@ -158,7 +158,7 @@ function createPaymentRequest(args) {
     //Set tokenisation
     if (AdyenConfigs.getAdyenTokenisationEnabled()) {
         paymentRequest.storePaymentMethod = true;
-        paymentRequest.recurringProcessingModel = 'CardOnFile';
+        paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 
