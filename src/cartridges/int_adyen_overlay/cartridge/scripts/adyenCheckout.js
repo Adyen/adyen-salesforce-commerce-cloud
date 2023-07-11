@@ -155,10 +155,10 @@ function createPaymentRequest(args) {
       }
     }
 
-    //Set Apple Pay tokenisation
-    if (AdyenConfigs.getAdyenApplePayTokenisationEnabled() && AdyenHelper.isApplePay(paymentRequest.paymentMethod.type)) {
-          paymentRequest.storePaymentMethod = true;
-          paymentRequest.recurringProcessingModel = 'CardOnFile';
+    //Set tokenisation
+    if (AdyenConfigs.getAdyenTokenisationEnabled()) {
+        paymentRequest.storePaymentMethod = true;
+        paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
     setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
 
