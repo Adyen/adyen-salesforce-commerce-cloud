@@ -664,6 +664,13 @@ var adyenHelperObj = {
       );
     }
 
+    // For authenticated shoppers we are setting the token on other place already
+    // SFRA throws an error if you try to set token again that's why this check is added
+    const tokenAlreadyExists = paymentInstrument.getCreditCardToken();
+    if (!tokenAlreadyExists && result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
+      paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
+    }
+
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
       ? result.resultCode
       : '';
@@ -676,6 +683,12 @@ var adyenHelperObj = {
       result,
     );
     return true;
+  },
+
+  getFirstTwoNumbersFromYear() {
+    return Math.floor(
+      new Date().getFullYear() / 100,
+    );
   },
 
   // converts the currency value for the Adyen Checkout API

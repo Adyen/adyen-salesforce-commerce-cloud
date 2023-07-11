@@ -25,12 +25,14 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
     sfccCardType;
 
   if (paymentInformation.creditCardToken) {
+    const firstTwoDigitsFromCurrentYear =
+      AdyenHelper.getFirstTwoNumbersFromYear();
+    const expirationYear =
+      firstTwoDigitsFromCurrentYear * 100 + paymentInformation.expirationYear;
     paymentInstrument.setCreditCardExpirationMonth(
       paymentInformation.expirationMonth,
     );
-    paymentInstrument.setCreditCardExpirationYear(
-      paymentInformation.expirationYear,
-    );
+    paymentInstrument.setCreditCardExpirationYear(expirationYear);
     paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
   }
 }
