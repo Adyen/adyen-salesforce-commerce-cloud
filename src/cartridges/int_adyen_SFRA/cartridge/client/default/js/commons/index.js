@@ -36,6 +36,7 @@ module.exports.checkIfExpressMethodsAreReady =
     const expressMethodsConfig = {
       applepay: window.isApplePayExpressEnabled === 'true',
       amazonpay: window.isAmazonPayExpressEnabled === 'true',
+      paypal: window.isPayPalExpressEnabled === 'true',
     };
     let enabledExpressMethods = [];
     Object.keys(expressMethodsConfig).forEach((key) => {
