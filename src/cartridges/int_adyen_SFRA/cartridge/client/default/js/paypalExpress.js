@@ -40,6 +40,7 @@ initializeCheckout().then(() => {
     showPayButton: true,
     isExpress: true,
     blockPayPalPayLaterButton: true,
+    blockPayPalVenmoButton: true,
     configuration: payPalConfig,
     amount: checkout.options.amount,
   };
