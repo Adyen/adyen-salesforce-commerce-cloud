@@ -55,6 +55,7 @@ describe('Render Generic Component', () => {
       <button value="submit-payment">Submit</button>
       <div id="component_card"></div>
       <div class="gift-card-selection"></div>
+      <div class="gift-card-separator"></div>
       <div id="adyenPosTerminals">
         <span>Child #1</span>
       </div>
