@@ -2,7 +2,7 @@
 const { checkIfExpressMethodsAreReady } = require('./commons/index');
 const { updateLoadedExpressMethods } = require('./commons');
 
-const PAY_PAL = 'paypal';
+const PAYPAL = 'paypal';
 
 let checkout;
 // let shippingMethodsData;
@@ -25,11 +25,11 @@ async function initializeCheckout() {
 initializeCheckout().then(() => {
   const payPalPaymentMethod =
     checkout.paymentMethodsResponse.paymentMethods.find(
-      (pm) => pm.type === PAY_PAL,
+      (pm) => pm.type === PAYPAL,
     );
 
   if (!payPalPaymentMethod) {
-    updateLoadedExpressMethods(PAY_PAL);
+    updateLoadedExpressMethods(PAYPAL);
     checkIfExpressMethodsAreReady();
     return;
   }
@@ -45,8 +45,8 @@ initializeCheckout().then(() => {
     amount: checkout.options.amount,
   };
 
-  const payPalButton = checkout.create(PAY_PAL, payPalButtonConfig);
+  const payPalButton = checkout.create(PAYPAL, payPalButtonConfig);
   payPalButton.mount('#paypal-container');
-  updateLoadedExpressMethods(PAY_PAL);
+  updateLoadedExpressMethods(PAYPAL);
   checkIfExpressMethodsAreReady();
 });
