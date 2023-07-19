@@ -155,6 +155,7 @@ function handle(customObj) {
             );
             result.SubmitOrder = true;
           }
+          order.custom.Adyen_eventCode = customObj.custom.eventCode;
           order.custom.Adyen_value = amountPaid.toString();
         } else {
           AdyenLogs.info_log(
@@ -282,8 +283,6 @@ function handle(customObj) {
       ) {
         order.custom.Adyen_pspReference = customObj.custom.pspReference;
       }
-
-      order.custom.Adyen_eventCode = customObj.custom.eventCode;
 
       // Add a note with all details
       order.addNote('Adyen Payment Notification', createLogMessage(customObj));
