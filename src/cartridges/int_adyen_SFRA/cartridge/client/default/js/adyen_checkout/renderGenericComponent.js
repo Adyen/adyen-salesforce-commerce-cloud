@@ -185,6 +185,8 @@ function setGiftCardContainerVisibility() {
   if (availableGiftCards.length === 0) {
     const giftCardContainer = document.querySelector('.gift-card-selection');
     giftCardContainer.style.display = 'none';
+    const giftCardSeparator = document.querySelector('.gift-card-separator');
+    giftCardSeparator.style.display = 'none';
   }
 }
 
