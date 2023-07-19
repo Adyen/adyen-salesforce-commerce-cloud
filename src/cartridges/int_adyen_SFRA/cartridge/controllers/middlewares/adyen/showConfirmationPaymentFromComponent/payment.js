@@ -98,6 +98,10 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
       options,
     );
   }
+  Transaction.wrap(() => {
+    order.custom.Adyen_pspReference = result.pspReference;
+    order.custom.Adyen_eventCode = result.resultCode;
+  });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
 
