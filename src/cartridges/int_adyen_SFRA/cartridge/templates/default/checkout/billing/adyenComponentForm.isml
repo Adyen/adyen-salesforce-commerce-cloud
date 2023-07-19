@@ -70,7 +70,7 @@
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
-    <div class="adyen-checkout__content-separator adyen-checkout-ctp__separator">
+    <div class="gift-card-separator adyen-checkout__content-separator adyen-checkout-ctp__separator">
         ${Resource.msg('separator.giftCard', 'adyen', null)}
     </div>
     <div class="gift-card-selection">
