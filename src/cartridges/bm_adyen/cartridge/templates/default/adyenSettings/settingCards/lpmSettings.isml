@@ -34,7 +34,7 @@
             <label class="form-title mb-0" for="applePayDomain">Apple Pay Domain Association</label>
             <small id="applePayDomainHelp" class="form-text mb-1">Apple Pay is enabled by default in the Test environment. If you also want to activate it in the Live environment, enter <a class="text-primary" href="https://docs.adyen.com/payment-methods/apple-pay/web-component#going-live" target="_blank">Apple Pay Domain Association</a></small>
             <div class="input-fields">
-               <input type="text" class="form-control" name="Adyen_ApplePay_DomainAssociation" id="applePayDomain" aria-describedby="applePayDomainHelp" value="${AdyenConfigs.getApplePayDomainAssociation() || ''}">    
+               <textarea class="form-control" name="Adyen_ApplePay_DomainAssociation" id="applePayDomain" aria-describedby="applePayDomainHelp">${AdyenConfigs.getApplePayDomainAssociation() || ''}</textarea>    
             </div>
          </div>
          <div class="form-group">

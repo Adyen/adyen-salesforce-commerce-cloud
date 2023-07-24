@@ -19,4 +19,6 @@ module.exports = {
     'applepay',
     'cashapp',
   ],
+  APPLE_DOMAIN_URL:
+    '/.well-known/apple-developer-merchantid-domain-association',
 };
