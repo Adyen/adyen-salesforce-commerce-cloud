@@ -31,6 +31,13 @@
             </div>
          </div>
          <div class="form-group">
+            <label class="form-title mb-0" for="applePayDomain">Apple Pay Domain Association</label>
+            <small id="applePayDomainHelp" class="form-text mb-1">Apple Pay is enabled by default in the Test environment. If you also want to activate it in the Live environment, enter <a class="text-primary" href="https://docs.adyen.com/payment-methods/apple-pay/web-component#going-live" target="_blank">Apple Pay Domain Association</a></small>
+            <div class="input-fields">
+               <textarea class="form-control" name="Adyen_ApplePay_DomainAssociation" id="applePayDomain" aria-describedby="applePayDomainHelp">${AdyenConfigs.getApplePayDomainAssociation() || ''}</textarea>    
+            </div>
+         </div>
+         <div class="form-group">
             <label class="form-title mb-0" for="oneClick">Store shopper details with one-click <small class="text-secondary">(optional)</small></label>
             <small id="oneClickHelp" class="form-text mb-1"><a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-6-store-shopper-details" target="_blank">One-click</a> stores payment details of your shoppers securely. It allows you to offer subscriptions, automatic top-ups to shoppers’ accounts, and give them a faster checkout experience.</small>
             <div class="radio-buttons">

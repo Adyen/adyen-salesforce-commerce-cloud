@@ -11,4 +11,6 @@ module.exports = {
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },
+  APPLE_DOMAIN_URL:
+    '/.well-known/apple-developer-merchantid-domain-association',
 };
