@@ -18,6 +18,7 @@
  *
  *  Script used to authentication notification calls from Adyen
  */
+/* eslint-disable */
 const Site = require('dw/system/Site');
 const AuthenticationUtils = require('*/cartridge/scripts/libs/libAuthenticationUtils');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
@@ -63,7 +64,7 @@ function validateHmacSignature(request){
   AdyenLogs.error_log(`HMAC signatures mismatch, the notification request is not valid`);
   return false;
 };
-
+/* eslint-enable */
 module.exports = {
   check,
   validateHmacSignature,

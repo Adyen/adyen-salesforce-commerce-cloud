@@ -36,7 +36,7 @@
  * order creation date > current date
  *
  */
-
+/* eslint-disable */
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 
@@ -339,7 +339,7 @@ function createDelayOrderDate(orderCreateDate) {
   newDate.setTime(orderCreateDate.getTime() + adyenDelayMin * 60 * 1000);
   return newDate;
 }
-
+/* eslint-enable */
 module.exports = {
   execute,
   handle,

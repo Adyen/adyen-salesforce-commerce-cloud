@@ -18,7 +18,7 @@
  *
  * Script to run Adyen notification related jobs
  */
-
+/* eslint-disable */
 /* API Includes */
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
@@ -144,6 +144,7 @@ function submitOrder(order) {
   const adyenService = require('*/cartridge/scripts/adyenService');
   return adyenService.submit(order);
 }
+/* eslint-enable */
 
 module.exports = {
   execute,
