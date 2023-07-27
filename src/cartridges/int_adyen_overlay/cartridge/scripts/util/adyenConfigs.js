@@ -139,6 +139,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AmazonPayExpress_Enabled');
   },
 
+  isPayPalExpressEnabled() {
+    return getCustomPreference('PayPalExpress_Enabled');
+  },
+
   getExpressPaymentsOrder() {
     return getCustomPreference('ExpressPayments_order');
   },

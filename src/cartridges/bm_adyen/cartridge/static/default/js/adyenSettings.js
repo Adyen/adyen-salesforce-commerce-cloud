@@ -13,6 +13,13 @@ const expressPaymentMethods = [
     icon: window.amazonPayIcon,
     checked: window.isAmazonPayEnabled,
   },
+  {
+    id: 'paypal',
+    name: 'PayPalExpress_Enabled',
+    text: 'PayPal',
+    icon: window.payPalIcon,
+    checked: window.isPayPalEnabled,
+  },
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
