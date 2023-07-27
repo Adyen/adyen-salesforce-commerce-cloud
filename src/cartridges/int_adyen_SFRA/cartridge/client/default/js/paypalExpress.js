@@ -28,25 +28,22 @@ initializeCheckout().then(() => {
       (pm) => pm.type === PAYPAL,
     );
 
-  if (!payPalPaymentMethod) {
-    updateLoadedExpressMethods(PAYPAL);
-    checkIfExpressMethodsAreReady();
-    return;
+  if (payPalPaymentMethod) {
+    const payPalConfig = payPalPaymentMethod.configuration;
+
+    const payPalButtonConfig = {
+      showPayButton: true,
+      isExpress: true,
+      blockPayPalPayLaterButton: true,
+      blockPayPalVenmoButton: true,
+      configuration: payPalConfig,
+      amount: checkout.options.amount,
+    };
+
+    const payPalButton = checkout.create(PAYPAL, payPalButtonConfig);
+    payPalButton.mount('#paypal-container');
   }
 
-  const payPalConfig = payPalPaymentMethod.configuration;
-
-  const payPalButtonConfig = {
-    showPayButton: true,
-    isExpress: true,
-    blockPayPalPayLaterButton: true,
-    blockPayPalVenmoButton: true,
-    configuration: payPalConfig,
-    amount: checkout.options.amount,
-  };
-
-  const payPalButton = checkout.create(PAYPAL, payPalButtonConfig);
-  payPalButton.mount('#paypal-container');
   updateLoadedExpressMethods(PAYPAL);
   checkIfExpressMethodsAreReady();
 });
