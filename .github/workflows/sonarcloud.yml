@@ -28,12 +28,7 @@
 
 name: SonarCloud analysis
 
-on:
-  push:
-    branches: [ "main", "develop" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+on: ["pull_request"]
 
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
@@ -58,6 +53,7 @@ jobs:
             # mandatory
             -Dsonar.projectKey=adyen-salesforce-commerce-cloud
             -Dsonar.organization=Adyen
+            -Dsonar.sources=src/cartridges/**/*
             # Comma-separated paths to directories containing main source files.
             #-Dsonar.sources= # optional, default is project base directory
             # When you need the analysis to take place in a directory other than the one from which it was launched
