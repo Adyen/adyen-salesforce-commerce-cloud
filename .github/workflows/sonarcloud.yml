@@ -28,12 +28,7 @@
 
 name: SonarCloud analysis
 
-on:
-  push:
-    branches: [ "main", "develop" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+on: ["pull_request"]
 
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
