@@ -13,6 +13,7 @@ const {
   attachGiftCardAddButtonListener,
   showGiftCardInfoMessage,
   giftCardBrands,
+  clearGiftCardsContainer,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -56,11 +57,11 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function isCartModified(refresh, amount, orderAmount) {
+function isCartModified(refresh, amount, remainingAmount) {
   return (
     refresh === false &&
-    (amount.currency !== orderAmount.currency ||
-      amount.value !== orderAmount.value)
+    (amount.currency !== remainingAmount.currency ||
+      amount.value !== remainingAmount.value)
   );
 }
 
@@ -73,12 +74,12 @@ function renderGiftCardLogo(imagePath) {
 function applyGiftCards(refresh) {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
-  const { orderAmount } = store.partialPaymentsOrderObj;
+  const { remainingAmount } = store.partialPaymentsOrderObj;
 
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const cartModified = isCartModified(refresh, amount, orderAmount);
+  const cartModified = isCartModified(refresh, amount, remainingAmount);
 
   if (isPartialPaymentExpired) {
     removeGiftCards();
@@ -86,6 +87,7 @@ function applyGiftCards(refresh) {
     removeGiftCards();
     showGiftCardWarningMessage();
   } else {
+    clearGiftCardsContainer();
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
@@ -227,13 +229,12 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   setGiftCardContainerVisibility();
+
   const { totalDiscountedAmount, giftCards } = giftCardsData;
-  store.addedGiftCards = giftCards;
   if (giftCards?.length) {
-    const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
-    store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
-      ? { ...lastGiftCard, totalDiscountedAmount }
-      : null;
+    store.addedGiftCards = giftCards;
+    const lastGiftCard = store.addedGiftCards[store.addedGiftCards.length - 1];
+    store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
   }
 
   setCheckoutConfiguration(store.checkout.options);

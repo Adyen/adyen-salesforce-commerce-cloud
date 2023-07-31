@@ -234,6 +234,11 @@ function removeGiftCards() {
   });
 }
 
+function clearGiftCardsContainer() {
+  const { giftCardsList } = getGiftCardElements();
+  giftCardsList.innerHTML = '';
+}
+
 function renderAddedGiftCard(card) {
   const giftCardData = card.giftCard;
   const { imagePath } = store.checkoutConfiguration.session;
@@ -422,4 +427,5 @@ module.exports = {
   renderGiftCardSelectForm,
   showGiftCardInfoMessage,
   giftCardBrands,
+  clearGiftCardsContainer,
 };
