@@ -13,6 +13,7 @@
 
         AdyenCheckout(configuration).then((checkout) => {
             const voucherResult = document.getElementById('voucherResult');
+            voucherResult.style.overflow = 'hidden';
             const action = JSON.parse('${payment.adyenAction}'.replace(/&quot;/g, '\"'));
             checkout.createFromAction(action).mount(voucherResult);
         });

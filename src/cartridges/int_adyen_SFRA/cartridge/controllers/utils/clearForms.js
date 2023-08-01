@@ -32,7 +32,6 @@ function clearAdyenData(paymentInstrument) {
     paymentInstrument.custom.adyenPaymentData = null;
     paymentInstrument.custom.adyenPartialPaymentsOrder = null;
     paymentInstrument.custom.adyenMD = null;
-    paymentInstrument.custom.adyenAction = null;
   });
 }
 
