@@ -92,12 +92,15 @@
             <div id="giftCardContainer"></div>
         </div>
         <div id="cancelGiftCardButton" class="invisible">
-            <button id='cancelGiftCardButtonStyling'>
+            <button id="cancelGiftCardButtonStyling">
                 <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
             </button>
         </div>
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>
+    <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
+        <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
+    </div>
     <div id="giftCardsInfoMessage"></div>
 
      <iscomment>

@@ -14,6 +14,8 @@ const {
   showGiftCardInfoMessage,
   giftCardBrands,
   clearGiftCardsContainer,
+  attachGiftCardCancelListener,
+  showGiftCardCancelButton,
 } = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
@@ -96,6 +98,8 @@ function applyGiftCards(refresh) {
     }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
+    showGiftCardCancelButton(true);
+    attachGiftCardCancelListener();
     createElementsToShowRemainingGiftCardAmount();
   }
 }

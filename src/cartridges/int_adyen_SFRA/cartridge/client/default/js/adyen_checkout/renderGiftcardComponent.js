@@ -6,6 +6,10 @@ function getGiftCardElements() {
   const giftCardUl = document.querySelector('#giftCardUl');
   const giftCardContainer = document.querySelector('#giftCardContainer');
   const giftCardAddButton = document.querySelector('#giftCardAddButton');
+  const giftCardCancelContainer = document.querySelector(
+    '#giftCardsCancelContainer',
+  );
+  const giftCardCancelButton = document.querySelector('#giftCardCancelButton');
   const giftCardSelectContainer = document.querySelector(
     '#giftCardSelectContainer',
   );
@@ -16,7 +20,6 @@ function getGiftCardElements() {
   const giftCardsInfoMessageContainer = document.querySelector(
     '#giftCardsInfoMessage',
   );
-  const giftCardCancelButton = document.querySelector('#cancelGiftCardButton');
 
   return {
     giftCardSelect,
@@ -26,9 +29,76 @@ function getGiftCardElements() {
     giftCardSelectContainer,
     giftCardsList,
     giftCardsInfoMessageContainer,
-    giftCardCancelButton,
     giftCardSelectWrapper,
+    giftCardCancelContainer,
+    giftCardCancelButton,
   };
+}
+
+function showGiftCardCancelButton(show) {
+  const { giftCardCancelContainer } = getGiftCardElements();
+  if (show) {
+    giftCardCancelContainer.classList.remove('invisible');
+  } else {
+    giftCardCancelContainer.classList.add('invisible');
+  }
+}
+
+function removeGiftCards() {
+  store.addedGiftCards?.forEach((card) => {
+    $.ajax({
+      type: 'POST',
+      url: 'Adyen-CancelPartialPaymentOrder',
+      data: JSON.stringify(card),
+      contentType: 'application/json; charset=utf-8',
+      async: false,
+      success(res) {
+        const adyenPartialPaymentsOrder = document.querySelector(
+          '#adyenPartialPaymentsOrder',
+        );
+
+        const {
+          giftCardsList,
+          giftCardAddButton,
+          giftCardSelect,
+          giftCardUl,
+          giftCardsInfoMessageContainer,
+          giftCardSelectContainer,
+        } = getGiftCardElements();
+
+        adyenPartialPaymentsOrder.value = null;
+        giftCardsList.innerHTML = '';
+        giftCardAddButton.style.display = 'block';
+        giftCardSelect.value = null;
+        giftCardSelectContainer.classList.add('invisible');
+        giftCardSelect.classList.remove('invisible');
+        giftCardUl.innerHTML = '';
+
+        showGiftCardCancelButton(false);
+
+        store.checkout.options.amount = res.amount;
+        store.partialPaymentsOrderObj = null;
+        store.addedGiftCards = null;
+
+        giftCardsInfoMessageContainer.innerHTML = '';
+        giftCardsInfoMessageContainer.classList.remove(
+          'gift-cards-info-message-container',
+        );
+        document.querySelector(
+          'button[value="submit-payment"]',
+        ).disabled = false;
+
+        if (res.resultCode === constants.RECEIVED) {
+          document
+            .querySelector('#cancelGiftCardContainer')
+            ?.parentNode.remove();
+          store.componentsObj?.giftcard?.node.unmount('component_giftcard');
+        }
+        const event = new Event('renderGenericComponentCalled');
+        document.dispatchEvent(event);
+      },
+    });
+  });
 }
 
 function giftCardBrands() {
@@ -172,6 +242,13 @@ function attachGiftCardAddButtonListener() {
   }
 }
 
+function attachGiftCardCancelListener() {
+  const { giftCardCancelButton } = getGiftCardElements();
+  giftCardCancelButton?.addEventListener('click', () => {
+    removeGiftCards();
+  });
+}
+
 function removeGiftCardFormListeners() {
   const { giftCardUl, giftCardSelect } = getGiftCardElements();
 
@@ -179,59 +256,6 @@ function removeGiftCardFormListeners() {
   giftCardSelect.replaceWith(giftCardSelect.cloneNode(true));
 
   store.giftCardComponentListenersAdded = false;
-}
-
-function removeGiftCards() {
-  store.addedGiftCards?.forEach((card) => {
-    $.ajax({
-      type: 'POST',
-      url: 'Adyen-CancelPartialPaymentOrder',
-      data: JSON.stringify(card),
-      contentType: 'application/json; charset=utf-8',
-      async: false,
-      success(res) {
-        const adyenPartialPaymentsOrder = document.querySelector(
-          '#adyenPartialPaymentsOrder',
-        );
-
-        const {
-          giftCardsList,
-          giftCardAddButton,
-          giftCardSelect,
-          giftCardUl,
-          giftCardsInfoMessageContainer,
-          giftCardSelectContainer,
-        } = getGiftCardElements();
-
-        adyenPartialPaymentsOrder.value = null;
-        giftCardsList.innerHTML = '';
-        giftCardAddButton.style.display = 'block';
-        giftCardSelect.value = null;
-        giftCardSelectContainer.classList.add('invisible');
-        giftCardSelect.classList.remove('invisible');
-        giftCardUl.innerHTML = '';
-
-        store.checkout.options.amount = res.amount;
-        store.partialPaymentsOrderObj = null;
-        store.addedGiftCards = null;
-
-        giftCardsInfoMessageContainer.innerHTML = '';
-        giftCardsInfoMessageContainer.classList.remove(
-          'gift-cards-info-message-container',
-        );
-        document.querySelector(
-          'button[value="submit-payment"]',
-        ).disabled = false;
-
-        if (res.resultCode === constants.RECEIVED) {
-          document
-            .querySelector('#cancelGiftCardContainer')
-            ?.parentNode.remove();
-          store.componentsObj?.giftcard?.node.unmount('component_giftcard');
-        }
-      },
-    });
-  });
 }
 
 function clearGiftCardsContainer() {
@@ -292,7 +316,6 @@ function renderAddedGiftCard(card) {
 }
 
 function createElementsToShowRemainingGiftCardAmount() {
-  const { giftCardCancelButton, giftCardAddButton } = getGiftCardElements();
   const renderedRemainingAmountEndSpan = document.getElementById(
     'remainingAmountEndSpan',
   );
@@ -314,15 +337,12 @@ function createElementsToShowRemainingGiftCardAmount() {
   const discountedAmountContainer = document.createElement('div');
   const discountedAmountStart = document.createElement('div');
   const discountedAmountEnd = document.createElement('div');
-  const cancelGiftCard = document.createElement('a');
   const remainingAmountStartP = document.createElement('p');
   const remainingAmountEndP = document.createElement('p');
   const discountedAmountStartP = document.createElement('p');
   const discountedAmountEndP = document.createElement('p');
-  const cancelGiftCardP = document.createElement('p');
   const remainingAmountStartSpan = document.createElement('span');
   const discountedAmountStartSpan = document.createElement('span');
-  const cancelGiftCardSpan = document.createElement('span');
   const remainingAmountEndSpan = document.createElement('span');
   remainingAmountEndSpan.id = 'remainingAmountEndSpan';
   const discountedAmountEndSpan = document.createElement('span');
@@ -340,47 +360,30 @@ function createElementsToShowRemainingGiftCardAmount() {
   discountedAmountStart.classList.add('col-6', 'start-lines');
   discountedAmountEnd.classList.add('col-6', 'end-lines');
   discountedAmountStartP.classList.add('order-receipt-label');
-  cancelGiftCardP.classList.add('order-receipt-label');
   remainingAmountEndP.classList.add('text-right');
   discountedAmountEndP.classList.add('text-right');
-  cancelGiftCard.id = 'cancelGiftCardContainer';
-  cancelGiftCard.role = 'button';
   discountedAmountContainer.id = 'discountedAmountContainer';
   remainingAmountContainer.id = 'remainingAmountContainer';
 
   remainingAmountStartSpan.innerText = window.remainingAmountGiftCardResource;
   discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
-  cancelGiftCardSpan.innerText = window.cancelGiftCardResource;
   remainingAmountEndSpan.innerText =
     store.partialPaymentsOrderObj.remainingAmountFormatted;
   discountedAmountEndSpan.innerText =
     store.partialPaymentsOrderObj.totalDiscountedAmount;
 
-  cancelGiftCard.addEventListener('click', () => {
-    removeGiftCards();
-    giftCardCancelButton.classList.add('invisible');
-    giftCardAddButton.style.display = 'block';
-    // Emit a custom event instead of calling renderGenericComponent() directly,
-    // to avoid circular dependency
-    const event = new Event('renderGenericComponentCalled');
-    document.dispatchEvent(event);
-  });
-
   remainingAmountContainer.appendChild(remainingAmountStart);
   remainingAmountContainer.appendChild(remainingAmountEnd);
-  remainingAmountContainer.appendChild(cancelGiftCard);
   remainingAmountStart.appendChild(remainingAmountStartP);
 
   discountedAmountContainer.appendChild(discountedAmountStart);
   discountedAmountContainer.appendChild(discountedAmountEnd);
   discountedAmountStart.appendChild(discountedAmountStartP);
 
-  cancelGiftCard.appendChild(cancelGiftCardP);
   remainingAmountEnd.appendChild(remainingAmountEndP);
   remainingAmountStartP.appendChild(remainingAmountStartSpan);
   discountedAmountEnd.appendChild(discountedAmountEndP);
   discountedAmountStartP.appendChild(discountedAmountStartSpan);
-  cancelGiftCardP.appendChild(cancelGiftCardSpan);
   remainingAmountEndP.appendChild(remainingAmountEndSpan);
   discountedAmountEndP.appendChild(discountedAmountEndSpan);
 
@@ -389,7 +392,6 @@ function createElementsToShowRemainingGiftCardAmount() {
   );
   mainContainer.appendChild(discountedAmountContainer);
   mainContainer.appendChild(remainingAmountContainer);
-  mainContainer.appendChild(cancelGiftCard);
   pricingContainer.appendChild(mainContainer);
 }
 
@@ -428,4 +430,6 @@ module.exports = {
   showGiftCardInfoMessage,
   giftCardBrands,
   clearGiftCardsContainer,
+  attachGiftCardCancelListener,
+  showGiftCardCancelButton,
 };
