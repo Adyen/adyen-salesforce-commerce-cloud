@@ -183,9 +183,9 @@ for (const environment of environments) {
         await goToBillingWithFullCartGuestUser(3);
         if (environment.name.indexOf("v6") === -1) {
           await checkoutPage.setEmail();
-        };
+        }
         await cards.doGiftCardPayment(cardData.giftCard);
-        await page.locator('#cancelGiftCardContainer').click();
+        await page.locator('#cancelGiftCardButton').click();
         // Wait for components to re-render after cancelling the giftcard
         await new Promise(r => setTimeout(r, 2000));
 
