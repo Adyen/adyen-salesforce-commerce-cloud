@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const constants = require('../constants');
+const { INIT_CHECKOUT_EVENT } = require('./renderGenericComponent');
 
 function getGiftCardElements() {
   const giftCardSelect = document.querySelector('#giftCardSelect');
@@ -84,7 +85,7 @@ function removeGiftCards() {
 
         cancelMainPaymentGiftCard.classList.add('invisible');
         showGiftCardCancelButton(false);
-        giftCardInformation.remove();
+        giftCardInformation?.remove();
 
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
@@ -104,7 +105,7 @@ function removeGiftCards() {
             ?.parentNode.remove();
           store.componentsObj?.giftcard?.node.unmount('component_giftcard');
         }
-        const event = new Event('renderGenericComponentCalled');
+        const event = new Event(INIT_CHECKOUT_EVENT);
         document.dispatchEvent(event);
       },
     });
@@ -422,7 +423,7 @@ function showGiftCardInfoMessage() {
   giftCardsInfoMessage.setAttribute('role', 'alert');
 
   const infoMessage = document.createElement('span');
-  infoMessage.textContent = store.partialPaymentsOrderObj.message;
+  infoMessage.textContent = messageText;
   giftCardsInfoMessage.appendChild(infoMessage);
   giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
   giftCardsInfoMessageContainer.classList.add(

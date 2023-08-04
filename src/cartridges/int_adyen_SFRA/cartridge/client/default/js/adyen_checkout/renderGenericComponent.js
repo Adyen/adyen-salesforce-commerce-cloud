@@ -18,6 +18,8 @@ const {
   showGiftCardCancelButton,
 } = require('./renderGiftcardComponent');
 
+const INIT_CHECKOUT_EVENT = 'INIT_CHECKOUT_EVENT';
+
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
   ddTerminals.id = 'terminalList';
@@ -59,11 +61,10 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function isCartModified(refresh, amount, remainingAmount) {
+function isCartModified(amount, remainingAmount) {
   return (
-    refresh === false &&
-    (amount.currency !== remainingAmount.currency ||
-      amount.value !== remainingAmount.value)
+    amount.currency !== remainingAmount.currency ||
+    amount.value !== remainingAmount.value
   );
 }
 
@@ -73,7 +74,7 @@ function renderGiftCardLogo(imagePath) {
     headingImg.src = `${imagePath}genericgiftcard.png`;
   }
 }
-function applyGiftCards(refresh) {
+function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
   const { remainingAmount } = store.partialPaymentsOrderObj;
@@ -81,7 +82,7 @@ function applyGiftCards(refresh) {
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const cartModified = isCartModified(refresh, amount, remainingAmount);
+  const cartModified = isCartModified(amount, remainingAmount);
 
   if (isPartialPaymentExpired) {
     removeGiftCards();
@@ -196,32 +197,7 @@ function setGiftCardContainerVisibility() {
   }
 }
 
-document.getElementById('email')?.addEventListener('change', (e) => {
-  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-  if (emailPattern.test(e.target.value)) {
-    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-      e.target.value;
-    const event = new Event('renderGenericComponentCalled');
-    document.dispatchEvent(event);
-  }
-});
-
-// used by renderGiftCardComponent.js
-document.addEventListener('renderGenericComponentCalled', async () => {
-  await module.exports.renderGenericComponent();
-});
-
-/**
- * Calls createSession and then renders the retrieved payment methods (including card component)
- */
-module.exports.renderGenericComponent = async function renderGenericComponent(
-  refresh = false,
-) {
-  if (Object.keys(store.componentsObj).length !== 0) {
-    await unmountComponents();
-  }
-
+async function initializeCheckout() {
   const session = await createSession();
   const giftCardsData = await fetchGiftCards();
 
@@ -260,12 +236,6 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.addedGiftCards?.length) {
-    applyGiftCards(refresh);
-  }
-
-  attachGiftCardAddButtonListener();
-
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
   );
@@ -275,4 +245,43 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );
+}
+
+document.getElementById('email')?.addEventListener('change', (e) => {
+  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+  if (emailPattern.test(e.target.value)) {
+    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
+    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
+      e.target.value;
+    const event = new Event(INIT_CHECKOUT_EVENT);
+    document.dispatchEvent(event);
+  }
+});
+
+// used by renderGiftCardComponent.js
+document.addEventListener(INIT_CHECKOUT_EVENT, async () => {
+  await initializeCheckout();
+});
+
+/**
+ * Calls createSession and then renders the retrieved payment methods (including card component)
+ */
+async function renderGenericComponent() {
+  if (Object.keys(store.componentsObj).length !== 0) {
+    await unmountComponents();
+  }
+
+  await initializeCheckout();
+
+  if (store.addedGiftCards?.length) {
+    applyGiftCards();
+  }
+
+  attachGiftCardAddButtonListener();
+}
+
+module.exports = {
+  renderGenericComponent,
+  initializeCheckout,
+  INIT_CHECKOUT_EVENT,
 };
