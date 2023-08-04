@@ -20,6 +20,10 @@ function getGiftCardElements() {
   const giftCardsInfoMessageContainer = document.querySelector(
     '#giftCardsInfoMessage',
   );
+  const cancelMainPaymentGiftCard = document.querySelector(
+    '#cancelGiftCardButton',
+  );
+  const giftCardInformation = document.querySelector('#giftCardInformation');
 
   return {
     giftCardSelect,
@@ -32,6 +36,8 @@ function getGiftCardElements() {
     giftCardSelectWrapper,
     giftCardCancelContainer,
     giftCardCancelButton,
+    cancelMainPaymentGiftCard,
+    giftCardInformation,
   };
 }
 
@@ -64,6 +70,8 @@ function removeGiftCards() {
           giftCardUl,
           giftCardsInfoMessageContainer,
           giftCardSelectContainer,
+          cancelMainPaymentGiftCard,
+          giftCardInformation,
         } = getGiftCardElements();
 
         adyenPartialPaymentsOrder.value = null;
@@ -74,7 +82,9 @@ function removeGiftCards() {
         giftCardSelect.classList.remove('invisible');
         giftCardUl.innerHTML = '';
 
+        cancelMainPaymentGiftCard.classList.add('invisible');
         showGiftCardCancelButton(false);
+        giftCardInformation.remove();
 
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
@@ -390,6 +400,7 @@ function createElementsToShowRemainingGiftCardAmount() {
   const pricingContainer = document.querySelector(
     '.card-body.order-total-summary',
   );
+  mainContainer.id = 'giftCardInformation';
   mainContainer.appendChild(discountedAmountContainer);
   mainContainer.appendChild(remainingAmountContainer);
   pricingContainer.appendChild(mainContainer);

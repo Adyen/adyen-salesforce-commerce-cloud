@@ -111,11 +111,22 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect, giftCardsList } =
-    getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+    cancelMainPaymentGiftCard,
+    giftCardAddButton,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
+  cancelMainPaymentGiftCard.addEventListener('click', () => {
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+    cancelMainPaymentGiftCard.classList.add('invisible');
+    giftCardAddButton.style.display = 'block';
+    giftCardSelect.value = 'null';
+  });
   if (store.componentsObj.giftcard) {
     store.componentsObj.giftcard.node.unmount('component_giftcard');
   }
@@ -153,7 +164,7 @@ function getGiftCardConfig() {
             const {
               giftCardsInfoMessageContainer,
               giftCardSelect,
-              giftCardCancelButton,
+              cancelMainPaymentGiftCard,
               giftCardAddButton,
               giftCardSelectWrapper,
             } = getGiftCardElements();
@@ -161,10 +172,11 @@ function getGiftCardConfig() {
               giftCardSelectWrapper.classList.add('invisible');
             }
             const initialPartialObject = { ...store.partialPaymentsOrderObj };
-            giftCardCancelButton.classList.remove('invisible');
-            giftCardCancelButton.addEventListener('click', () => {
+
+            cancelMainPaymentGiftCard.classList.remove('invisible');
+            cancelMainPaymentGiftCard.addEventListener('click', () => {
               store.componentsObj.giftcard.node.unmount('component_giftcard');
-              giftCardCancelButton.classList.add('invisible');
+              cancelMainPaymentGiftCard.classList.add('invisible');
               giftCardAddButton.style.display = 'block';
               giftCardSelect.value = 'null';
               store.partialPaymentsOrderObj.remainingAmountFormatted =
@@ -172,6 +184,7 @@ function getGiftCardConfig() {
               store.partialPaymentsOrderObj.totalDiscountedAmount =
                 initialPartialObject.totalDiscountedAmount;
             });
+
             document.querySelector(
               'button[value="submit-payment"]',
             ).disabled = true;
