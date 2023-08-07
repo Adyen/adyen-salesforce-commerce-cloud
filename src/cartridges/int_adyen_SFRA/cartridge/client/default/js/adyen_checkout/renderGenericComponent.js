@@ -259,8 +259,8 @@ document.getElementById('email')?.addEventListener('change', (e) => {
 });
 
 // used by renderGiftCardComponent.js
-document.addEventListener(INIT_CHECKOUT_EVENT, async () => {
-  await initializeCheckout();
+document.addEventListener(INIT_CHECKOUT_EVENT, () => {
+  initializeCheckout();
 });
 
 /**
