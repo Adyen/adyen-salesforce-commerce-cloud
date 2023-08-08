@@ -14,6 +14,7 @@
           environment: '${pdict.adyen.environment}',
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
+      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
@@ -21,7 +22,12 @@
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
-
+      window.checkBalance = "${URLUtils.https('Adyen-CheckBalance')}";
+      window.partialPaymentsOrder = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
+      window.partialPayment = "${URLUtils.https('Adyen-partialPayment')}";
+      window.cancelPartialPaymentOrder = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
+      window.fetchGiftCards = "${URLUtils.https('Adyen-fetchGiftCards')}";
+      
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
       window.deductedBalanceGiftCardResource = "${Resource.msg('deductedBalance.giftCard', 'adyen', null)}";

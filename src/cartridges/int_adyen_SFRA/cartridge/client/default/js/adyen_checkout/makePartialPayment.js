@@ -5,7 +5,7 @@ const helpers = require('./helpers');
 function makePartialPayment(requestData) {
   let error;
   $.ajax({
-    url: 'Adyen-partialPayment',
+    url: window.partialPayment,
     type: 'POST',
     data: JSON.stringify(requestData),
     contentType: 'application/json; charset=utf-8',
