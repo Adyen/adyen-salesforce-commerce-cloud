@@ -9,6 +9,7 @@ const {
   getGiftCardElements,
   showGiftCardInfoMessage,
   showGiftCardCancelButton,
+  attachGiftCardCancelListener,
 } = require('./renderGiftcardComponent');
 
 function getCardConfig() {
@@ -137,6 +138,7 @@ function handlePartialPaymentSuccess() {
     showGiftCardInfoMessage();
   }
   showGiftCardCancelButton(true);
+  attachGiftCardCancelListener();
   createElementsToShowRemainingGiftCardAmount();
 }
 
