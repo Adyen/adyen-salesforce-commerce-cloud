@@ -61,10 +61,10 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function isCartModified(amount, remainingAmount) {
+function isCartModified(amount, orderAmount) {
   return (
-    amount.currency !== remainingAmount.currency ||
-    amount.value !== remainingAmount.value
+    amount.currency !== orderAmount.currency ||
+    amount.value !== orderAmount.value
   );
 }
 
@@ -77,12 +77,12 @@ function renderGiftCardLogo(imagePath) {
 function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
-  const { remainingAmount } = store.partialPaymentsOrderObj;
+  const { orderAmount } = store.partialPaymentsOrderObj;
 
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const cartModified = isCartModified(amount, remainingAmount);
+  const cartModified = isCartModified(amount, orderAmount);
 
   if (isPartialPaymentExpired) {
     removeGiftCards();
