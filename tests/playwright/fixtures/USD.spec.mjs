@@ -185,7 +185,7 @@ for (const environment of environments) {
           await checkoutPage.setEmail();
         }
         await cards.doGiftCardPayment(cardData.giftCard);
-        await page.locator('#cancelGiftCardButton').click();
+        await page.locator('#giftCardCancelButton').click();
         // Wait for components to re-render after cancelling the giftcard
         await new Promise(r => setTimeout(r, 2000));
 
