@@ -61,7 +61,7 @@ function paymentsDetails(req, res, next) {
       };
     }
     if (signature !== null) {
-      response.redirectUrl = URLUtils.url(
+      response.redirectUrl = URLUtils.https(
         'Adyen-ShowConfirmation',
         'merchantReference',
         response.merchantReference,

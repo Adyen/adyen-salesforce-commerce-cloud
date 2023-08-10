@@ -185,7 +185,7 @@ function removeGiftCards() {
   store.addedGiftCards?.forEach((card) => {
     $.ajax({
       type: 'POST',
-      url: 'Adyen-CancelPartialPaymentOrder',
+      url: window.cancelPartialPaymentOrderUrl,
       data: JSON.stringify(card),
       contentType: 'application/json; charset=utf-8',
       async: false,
