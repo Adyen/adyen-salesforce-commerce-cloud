@@ -14,7 +14,6 @@
           environment: '${pdict.adyen.environment}',
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
-      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
       window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
@@ -22,6 +21,7 @@
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
+      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
       window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
       window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
