@@ -136,7 +136,7 @@ function getGiftCardConfig() {
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
         type: 'POST',
-        url: window.checkBalance,
+        url: window.checkBalanceUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -199,7 +199,7 @@ function getGiftCardConfig() {
       const giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: window.partialPaymentsOrder,
+        url: window.partialPaymentsOrderUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,

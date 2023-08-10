@@ -22,11 +22,11 @@
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
-      window.checkBalance = "${URLUtils.https('Adyen-CheckBalance')}";
-      window.partialPaymentsOrder = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
-      window.partialPayment = "${URLUtils.https('Adyen-partialPayment')}";
-      window.cancelPartialPaymentOrder = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
-      window.fetchGiftCards = "${URLUtils.https('Adyen-fetchGiftCards')}";
+      window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
+      window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
+      window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
+      window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
+      window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
       
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";

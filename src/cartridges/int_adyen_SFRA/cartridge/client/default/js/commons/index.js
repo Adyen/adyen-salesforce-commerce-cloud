@@ -26,7 +26,7 @@ module.exports.createSession = async function createSession() {
  */
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
-    url: window.fetchGiftCards,
+    url: window.fetchGiftCardsUrl,
     type: 'get',
   });
 };
