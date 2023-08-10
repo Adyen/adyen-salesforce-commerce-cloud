@@ -32,7 +32,6 @@ module.exports = {
   PAYMENTMETHODS: {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
-    CASHAPP: 'cashapp',
   },
 
   PLATFORMS: {
@@ -97,7 +96,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.44.0',
+    SFRA: '5.40.0',
     SG: '5.28.0'
   },
   VERSION: '23.2.0',

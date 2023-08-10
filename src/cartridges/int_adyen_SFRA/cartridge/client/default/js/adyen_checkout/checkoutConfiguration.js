@@ -153,7 +153,7 @@ function getGiftCardConfig() {
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
         type: 'POST',
-        url: 'Adyen-CheckBalance',
+        url: window.checkBalanceUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -216,7 +216,7 @@ function getGiftCardConfig() {
       const giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: 'Adyen-PartialPaymentsOrder',
+        url: window.partialPaymentsOrderUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -280,7 +280,7 @@ const actionHandler = async (action) => {
 function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
+    url: window.paymentsDetailsURL,
     data: JSON.stringify({
       data: state.data,
       orderToken: window.orderToken,
@@ -318,16 +318,6 @@ function getAmazonpayConfig() {
 }
 
 function getApplePayConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      helpers.assignPaymentMethodValue();
-      helpers.paymentFromComponent(state.data, component);
-    },
-  };
-}
-
-function getCashAppConfig() {
   return {
     showPayButton: true,
     onSubmit: (state, component) => {
@@ -381,7 +371,6 @@ function setCheckoutConfiguration() {
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
-    cashapp: getCashAppConfig(),
   };
 }
 
@@ -391,6 +380,5 @@ module.exports = {
   getGooglePayConfig,
   getAmazonpayConfig,
   setCheckoutConfiguration,
-  getCashAppConfig,
   actionHandler,
 };
