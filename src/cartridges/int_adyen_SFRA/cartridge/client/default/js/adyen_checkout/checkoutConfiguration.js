@@ -153,7 +153,7 @@ function getGiftCardConfig() {
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
         type: 'POST',
-        url: 'Adyen-CheckBalance',
+        url: window.checkBalanceUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -216,7 +216,7 @@ function getGiftCardConfig() {
       const giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: 'Adyen-PartialPaymentsOrder',
+        url: window.partialPaymentsOrderUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -280,7 +280,7 @@ const actionHandler = async (action) => {
 function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
+    url: window.paymentsDetailsURL,
     data: JSON.stringify({
       data: state.data,
       orderToken: window.orderToken,
