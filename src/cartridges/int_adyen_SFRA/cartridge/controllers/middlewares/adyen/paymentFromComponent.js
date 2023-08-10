@@ -144,17 +144,6 @@ function handleExpressPayment(reqDataObj, currentBasket) {
   }
 }
 
-function canSkipSummaryPage(reqDataObj) {
-  if (
-    AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type) ||
-    AdyenHelper.isCashApp(reqDataObj.paymentMethod?.type)
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -224,8 +213,9 @@ function paymentFromComponent(req, res, next) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
 
-  // Check if summary page can be skipped in case payment is already authorized
-  result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
+  if (AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type)) {
+    result.isApplePay = true;
+  }
 
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
