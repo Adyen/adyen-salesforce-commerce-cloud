@@ -773,10 +773,6 @@ var adyenHelperObj = {
       return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
     },
 
-    isCashApp(paymentMethod) {
-      return paymentMethod === constants.PAYMENTMETHODS.CASHAPP;
-    },
-
   // validates all fields in a state data object. Filters out all invalid fields
   validateStateData(stateData) {
     const validFields = [
