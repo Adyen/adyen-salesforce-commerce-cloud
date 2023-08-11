@@ -36,6 +36,10 @@ const availableGiftCards = {
         currency: '',
         value: '',
       },
+      remainingAmount: {
+        currency: 'EUR',
+        value: 100,
+      },
     },
   ],
 }
