@@ -269,7 +269,7 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
         () => 'mocked_charity_website',
     ),
     getAdyenGivingCharityDescription: jest.fn(
-        () => 'mocked_charity_description',
+        () => '%mocked_charity_description%',
     ),
     getAdyenGivingBackgroundUrl: jest.fn(
         () => 'mocked_background_url',
