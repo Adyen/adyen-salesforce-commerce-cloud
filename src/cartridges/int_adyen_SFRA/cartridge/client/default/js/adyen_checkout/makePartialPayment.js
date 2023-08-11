@@ -1,5 +1,5 @@
 const store = require('../../../../store');
-const { renderGenericComponent } = require('./renderGenericComponent');
+const { initializeCheckout } = require('./renderGenericComponent');
 const helpers = require('./helpers');
 
 function makePartialPayment(requestData) {
@@ -22,7 +22,7 @@ function makePartialPayment(requestData) {
         sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
         store.addedGiftCards = giftCards;
         helpers.setOrderFormData(response);
-        renderGenericComponent(true);
+        initializeCheckout();
       }
     },
   }).fail(() => {});
