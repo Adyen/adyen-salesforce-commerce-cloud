@@ -37,6 +37,5 @@ describe('Confirm', () => {
   it('check if encrypted', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledWith(viewData);
-    expect(res.setViewData).toBeCalledWith(viewData);
   });
 });
