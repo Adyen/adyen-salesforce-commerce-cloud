@@ -10,7 +10,7 @@ exports[`Confirm should set view data 1`] = `
           "adyenGivingBackgroundUrl": "mocked_background_url",
           "adyenGivingLogoUrl": "mocked_logo_url",
           "charityDescription": "%25mocked_charity_description%25",
-          "charityName": "mocked_charity_name",
+          "charityName": "%25mocked_charity_name%25",
           "charityWebsite": "mocked_charity_website",
           "clientKey": "mocked_client_key",
           "donationAmounts": "{"currency":"EUR","values":[10,20,30]}",

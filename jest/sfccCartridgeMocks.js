@@ -264,7 +264,7 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
     getAdyenPayPalIntent: jest.fn(() => 'mocked_intent'),
     getAdyenMerchantAccount: jest.fn(() => 'mocked_merchant_account'),
     getAdyenGivingEnabled: jest.fn(() => true),
-    getAdyenGivingCharityName: jest.fn(() => 'mocked_charity_name'),
+    getAdyenGivingCharityName: jest.fn(() => '%mocked_charity_name%'),
     getAdyenGivingCharityWebsite: jest.fn(
         () => 'mocked_charity_website',
     ),
