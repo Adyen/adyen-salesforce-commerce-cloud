@@ -40,9 +40,9 @@ function getAmounts() {
 const donationConfig = {
   amounts: getAmounts(),
   backgroundUrl: adyenGivingBackgroundUrl,
-  description: charityDescription,
+  description: decodeURI(charityDescription),
   logoUrl: adyenGivingLogoUrl,
-  name: charityName,
+  name: decodeURI(charityName),
   url: charityWebsite,
   showCancelButton: true,
   onDonate: handleOnDonate,
