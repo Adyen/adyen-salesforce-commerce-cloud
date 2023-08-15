@@ -1,8 +1,8 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <script type="text/javascript">
         window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
@@ -80,11 +80,11 @@
             <script src="${URLUtils.httpsStatic('/js/expressPaymentMethodsVisibility.js')}" type="text/javascript"></script>
         </isif>
         <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
-        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
-            <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
-        </isif>
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isApplePayExpressEnabled()}">
             <script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
+        </isif>
+        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
+            <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
         </isif>
     </iselse>
 </isif>
