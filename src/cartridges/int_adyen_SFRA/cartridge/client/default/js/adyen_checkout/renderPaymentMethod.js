@@ -2,6 +2,8 @@ const store = require('../../../../store');
 const helpers = require('./helpers');
 const constants = require('../constants');
 
+const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
+
 function getFallback(paymentMethod) {
   const fallback = {};
   if (fallback[paymentMethod.type]) {
@@ -139,6 +141,10 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
 
   if (paymentMethodID === constants.GIFTCARD) {
+    return;
+  }
+
+  if (paymentMethodID === constants.APPLE_PAY && !isSafari) {
     return;
   }
 
