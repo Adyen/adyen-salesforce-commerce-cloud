@@ -120,12 +120,15 @@ function renderStoredPaymentMethods(data, imagePath) {
   }
 }
 
-function renderPaymentMethods(data, imagePath, adyenDescriptions) {
-  data.paymentMethods.forEach((pm) => {
-    if (pm.type !== constants.GIFTCARD) {
-      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
-    }
-  });
+function renderPaymentMethods(paymentMethods, imagePath, adyenDescriptions) {
+  const promises = [];
+  for (let i = 0; i < paymentMethods.length; i += 1) {
+    const pm = paymentMethods[i];
+    promises.push(
+      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]),
+    );
+  }
+  return Promise.all(promises);
 }
 
 function renderPosTerminals(adyenConnectedTerminals) {
@@ -222,16 +225,19 @@ async function initializeCheckout() {
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  renderStoredPaymentMethods(
-    store.checkout.paymentMethodsResponse,
-    session.imagePath,
-  );
+  const paymentMethodsWithoutGiftCards =
+    store.checkout.paymentMethodsResponse.paymentMethods.filter(
+      (pm) => pm.type !== constants.GIFTCARD,
+    );
 
-  renderPaymentMethods(
-    store.checkout.paymentMethodsResponse,
+  renderStoredPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath);
+
+  await renderPaymentMethods(
+    paymentMethodsWithoutGiftCards,
     session.imagePath,
     session.adyenDescriptions,
   );
+
   renderPosTerminals(session.adyenConnectedTerminals);
 
   renderGiftCardLogo(session.imagePath);
@@ -239,8 +245,10 @@ async function initializeCheckout() {
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
   );
-  firstPaymentMethod.checked = true;
-  helpers.displaySelectedMethod(firstPaymentMethod.value);
+  if (firstPaymentMethod) {
+    firstPaymentMethod.checked = true;
+    helpers.displaySelectedMethod(firstPaymentMethod.value);
+  }
 
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,

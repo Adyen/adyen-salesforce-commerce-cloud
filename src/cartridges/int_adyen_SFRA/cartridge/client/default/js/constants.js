@@ -8,6 +8,7 @@ module.exports = {
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
   GIFTCARD: 'giftcard',
+  GIROPAY: 'giropay',
   APPLE_PAY: 'applepay',
   ACTIONTYPE: {
     QRCODE: 'qrCode',

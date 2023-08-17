@@ -126,7 +126,44 @@ function handleInput({ paymentMethodID }) {
     helpers.displaySelectedMethod(event.target.value);
   };
 }
-// eslint-disable-next-line complexity
+
+function createListItem(rerender, paymentMethodID, liContents) {
+  let li;
+  if (rerender) {
+    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
+  } else {
+    li = document.createElement('li');
+    li.innerHTML = liContents;
+    li.classList.add('paymentMethod');
+  }
+  return li;
+}
+
+async function checkIfNodeIsAvailable(node) {
+  if (node.isAvailable) {
+    const isNodeAvailable = await node.isAvailable();
+    if (!isNodeAvailable) {
+      return false;
+    }
+  }
+  return true;
+}
+
+async function appendNodeToContainerIfAvailable(
+  paymentMethodsUI,
+  li,
+  node,
+  container,
+) {
+  if (node) {
+    const canBeMounted = await checkIfNodeIsAvailable(node);
+    if (canBeMounted) {
+      paymentMethodsUI.append(li);
+      node.mount(container);
+    }
+  }
+}
+
 module.exports.renderPaymentMethod = async function renderPaymentMethod(
   paymentMethod,
   isStored,
@@ -158,47 +195,27 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
 
     const imagePath = getImagePath(options);
     const liContents = getListContents({ ...options, imagePath, description });
+    const li = createListItem(rerender, paymentMethodID, liContents);
 
-    let li;
-    if (rerender) {
-      li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
-    } else {
-      const node = store.componentsObj[paymentMethodID]?.node;
-      if (node?.isAvailable) {
-        const paymentMethodAvailable = await node.isAvailable();
-        if (paymentMethodAvailable) {
-          li = document.createElement('li');
-          li.innerHTML = liContents;
-          li.classList.add('paymentMethod');
-          paymentMethodsUI.append(li);
-        } else {
-          delete store.componentsObj[paymentMethodID];
-          return;
-        }
-      } else {
-        li = document.createElement('li');
-        li.innerHTML = liContents;
-        li.classList.add('paymentMethod');
-        paymentMethodsUI.append(li);
-      }
-    }
     handlePayment(options);
     configureContainer(options);
 
     li.append(container);
 
-    const node = store.componentsObj[paymentMethodID]?.node;
-    if (node) {
-      node.mount(container);
-    }
+    await appendNodeToContainerIfAvailable(
+      paymentMethodsUI,
+      li,
+      store.componentsObj[paymentMethodID]?.node,
+      container,
+    );
 
-    if (paymentMethodID === 'giropay') {
+    if (paymentMethodID === constants.GIROPAY) {
       container.innerHTML = '';
     }
 
     handleInput(options);
     setValid(options);
-  } catch (error) {
-    // error while checking if button is available
+  } catch (err) {
+    // method not available
   }
 };
