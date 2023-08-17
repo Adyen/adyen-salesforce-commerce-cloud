@@ -2,8 +2,6 @@ const store = require('../../../../store');
 const helpers = require('./helpers');
 const constants = require('../constants');
 
-const isSafari = /^((?!chrome|android|ios).)*safari/i.test(navigator.userAgent);
-
 function getFallback(paymentMethod) {
   const fallback = {};
   if (fallback[paymentMethod.type]) {
@@ -129,64 +127,78 @@ function handleInput({ paymentMethodID }) {
   };
 }
 // eslint-disable-next-line complexity
-module.exports.renderPaymentMethod = function renderPaymentMethod(
+module.exports.renderPaymentMethod = async function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
   description = null,
   rerender = false,
 ) {
-  const paymentMethodsUI = document.querySelector('#paymentMethodsList');
+  try {
+    const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+    const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
 
-  if (paymentMethodID === constants.GIFTCARD) {
-    return;
+    if (paymentMethodID === constants.GIFTCARD) {
+      return;
+    }
+
+    const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
+    const container = document.createElement('div');
+
+    const options = {
+      container,
+      paymentMethod,
+      isStored,
+      path,
+      description,
+      paymentMethodID,
+      isSchemeNotStored,
+    };
+
+    const imagePath = getImagePath(options);
+    const liContents = getListContents({ ...options, imagePath, description });
+
+    let li;
+    if (rerender) {
+      li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
+    } else {
+      const node = store.componentsObj[paymentMethodID]?.node;
+      if (node?.isAvailable) {
+        const paymentMethodAvailable = await node.isAvailable();
+        if (paymentMethodAvailable) {
+          li = document.createElement('li');
+          li.innerHTML = liContents;
+          li.classList.add('paymentMethod');
+          paymentMethodsUI.append(li);
+        } else {
+          delete store.componentsObj[paymentMethodID];
+          return;
+        }
+      } else {
+        li = document.createElement('li');
+        li.innerHTML = liContents;
+        li.classList.add('paymentMethod');
+        paymentMethodsUI.append(li);
+      }
+    }
+    handlePayment(options);
+    configureContainer(options);
+
+    li.append(container);
+
+    const node = store.componentsObj[paymentMethodID]?.node;
+    if (node) {
+      node.mount(container);
+    }
+
+    if (paymentMethodID === 'giropay') {
+      container.innerHTML = '';
+    }
+
+    handleInput(options);
+    setValid(options);
+  } catch (error) {
+    // error while checking if button is available
   }
-
-  if (paymentMethodID === constants.APPLE_PAY && !isSafari) {
-    return;
-  }
-
-  const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
-  const container = document.createElement('div');
-
-  const options = {
-    container,
-    paymentMethod,
-    isStored,
-    path,
-    description,
-    paymentMethodID,
-    isSchemeNotStored,
-  };
-
-  const imagePath = getImagePath(options);
-  const liContents = getListContents({ ...options, imagePath, description });
-
-  let li;
-  if (rerender) {
-    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
-  } else {
-    li = document.createElement('li');
-    li.innerHTML = liContents;
-    li.classList.add('paymentMethod');
-    paymentMethodsUI.append(li);
-  }
-  handlePayment(options);
-  configureContainer(options);
-
-  li.append(container);
-
-  const node = store.componentsObj[paymentMethodID]?.node;
-  if (node) {
-    node.mount(container);
-  }
-
-  if (paymentMethodID === 'giropay') {
-    container.innerHTML = '';
-  }
-
-  handleInput(options);
-  setValid(options);
 };
