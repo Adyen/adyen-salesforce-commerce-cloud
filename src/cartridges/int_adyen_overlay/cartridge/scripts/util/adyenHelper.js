@@ -156,6 +156,11 @@ var adyenHelperObj = {
   },
 
   getAdyenGivingConfig(order) {
+    if (!order.getPaymentInstruments(
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+    ).length){
+      return null;
+    }
     const paymentInstrument = order.getPaymentInstruments(
       adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
