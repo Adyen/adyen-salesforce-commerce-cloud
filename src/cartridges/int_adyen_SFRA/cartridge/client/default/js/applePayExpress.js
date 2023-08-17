@@ -1,8 +1,7 @@
 const helpers = require('./adyen_checkout/helpers');
 const { checkIfExpressMethodsAreReady } = require('./commons/index');
 const { updateLoadedExpressMethods } = require('./commons');
-
-const APPLE_PAY = 'applepay';
+const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
