@@ -4,7 +4,8 @@
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
-    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/",
+    "int_adyen_SFRA": "./cartridges/int_adyen_SFRA"
   },
   "scripts": {
     "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
