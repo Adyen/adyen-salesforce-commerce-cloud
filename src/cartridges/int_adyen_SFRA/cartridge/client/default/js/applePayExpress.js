@@ -162,11 +162,14 @@ initializeCheckout()
           };
 
           const resolveApplePay = () => {
+            const value =
+              applePayButtonConfig.amount *
+              10 ** parseInt(window.digitsNumber, 10).value;
             const finalPriceUpdate = {
               newTotal: {
                 type: 'final',
                 label: applePayConfig.merchantName,
-                amount: `${applePayButtonConfig.amount.value / 100}`,
+                amount: `${Math.round(value)}`,
               },
             };
             resolve(finalPriceUpdate);
