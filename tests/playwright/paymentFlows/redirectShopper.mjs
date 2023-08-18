@@ -49,9 +49,9 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateKlarnaPayment(undefined);
   };
 
-  completeKlarnaRedirect = async (success) => {
+  completeKlarnaRedirect = async (success, skipModal) => {
     if (success) {
-      await this.paymentMethodsPage.confirmKlarnaPayment();
+      await this.paymentMethodsPage.confirmKlarnaPayment(skipModal);
     } else {
       await this.paymentMethodsPage.cancelKlarnaPayment();
     }

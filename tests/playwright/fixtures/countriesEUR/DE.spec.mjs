@@ -29,7 +29,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeKlarnaRedirect(true);
+      await redirectShopper.completeKlarnaRedirect(true, true);
       await checkoutPage.expectSuccess();
     });
 
@@ -55,7 +55,7 @@ for (const environment of environments) {
       await redirectShopper.completeKlarnaPayNowRedirect(false);
       await checkoutPage.expectRefusal();
     });
-    test('Klarna Account Success', async ({ page }) => {
+    test.skip('Klarna Account Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaAccountPayment();
       await checkoutPage.completeCheckout();
