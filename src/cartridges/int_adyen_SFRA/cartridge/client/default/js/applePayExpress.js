@@ -162,9 +162,10 @@ initializeCheckout()
           };
 
           const resolveApplePay = () => {
+            // ** is used instead of Math.pow
             const value =
-              applePayButtonConfig.amount *
-              10 ** parseInt(window.digitsNumber, 10).value;
+              applePayButtonConfig.amount.value *
+              10 ** parseInt(window.digitsNumber, 10);
             const finalPriceUpdate = {
               newTotal: {
                 type: 'final',
