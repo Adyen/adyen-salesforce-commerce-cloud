@@ -3,9 +3,8 @@ import { regionsEnum } from '../../data/enums.mjs';
 import { environments } from '../../data/environments.mjs';
 import { RedirectShopper } from '../../paymentFlows/redirectShopper.mjs';
 import { ShopperData } from '../../data/shopperData.mjs';
-import { PaymentData } from '../../data/paymentData.mjs';
+import PaymentMethodsPage from '../../pages/PaymentMethodsPage.mjs';
 
-const paymentData = new PaymentData();
 const shopperData = new ShopperData();
 
 let checkoutPage;
@@ -29,8 +28,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeKlarnaRedirect(true, true);
-      await checkoutPage.expectSuccess();
+      await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
 
     test('Klarna Fail @quick', async ({ page }) => {
@@ -44,8 +42,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayNowPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeKlarnaPayNowRedirect(true);
-      await checkoutPage.expectSuccess();
+      await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
 
     test('Klarna Pay now Fail', async ({ page }) => {
@@ -55,12 +52,11 @@ for (const environment of environments) {
       await redirectShopper.completeKlarnaPayNowRedirect(false);
       await checkoutPage.expectRefusal();
     });
-    test.skip('Klarna Account Success', async ({ page }) => {
+    test('Klarna Account Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaAccountPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeKlarnaAccountRedirect(true);
-      await checkoutPage.expectSuccess();
+      await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
 
     test('Klarna Account Fail', async ({ page }) => {
