@@ -75,7 +75,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeGiropayRedirect(paymentData.GiroPay, true);
+      await redirectShopper.completeGiropayRedirect(true);
       await checkoutPage.expectNonRedirectSuccess();
     });
 
@@ -83,7 +83,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment(page);
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeGiropayRedirect(paymentData.GiroPay, false);
+      await redirectShopper.completeGiropayRedirect(false);
       await checkoutPage.expectRefusal();
     });
   });

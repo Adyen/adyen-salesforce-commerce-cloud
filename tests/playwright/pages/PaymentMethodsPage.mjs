@@ -438,36 +438,36 @@ export default class PaymentMethodsPage {
     await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
   };
 
-  confirmGiropayPayment = async (giroPayData) => {
+  confirmGiropayPayment = async () => {
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
 
-    const giroBank = this.page.locator('#ui-id-1 li a');
-    const giroBankDropdown = this.page.locator('#tags');
+    const rejectCookies = this.page.locator('.rds-cookies-overlay__allow-essential-cookies-btn');
+    const giroBankDropdown = this.page.locator('#bankSearch');
+    const giroBankUl = this.page.getByTestId('bank-group-list').getByRole('button').first();
+    const confirmChoice = this.page.getByTestId('bank-result-list').getByRole('button').first();
+    const payNow = this.page.locator("button[name='claimCheckoutButton']");
+    const confirmPayment = this.page.locator("button[id='submitButton']");
 
+    await rejectCookies.click();
     await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
-    await giroBankDropdown.type(giroPayData.bankName, { delay: 50 });
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
-
-    await giroBank.waitFor({ state: 'visible', timeout: 15000 });
-    await giroBank.click();
-    await this.page.click('input[name="continueBtn"]');
-    await this.page.click('#yes');
-    await this.page.locator('input[name="sc"]').type(giroPayData.sc);
-    await this.page
-      .locator('input[name="extensionSc"]')
-      .type(giroPayData.extensionSc);
-    await this.page
-      .locator('input[name="customerName1"]')
-      .type(giroPayData.customerName);
-    await this.page
-      .locator('input[name="customerIBAN"]')
-      .type(giroPayData.customerIban);
-    await this.page.click('input[value="Absenden"]');
+    await giroBankUl.click();
+    await confirmChoice.click();
+    await payNow.first().click();
+    await confirmPayment.waitFor({
+      state: 'visible',
+      timeout: 15000,
+    });
+    await confirmPayment.click();
   };
 
   cancelGiropayPayment = async () => {
-    await this.page.click('#backUrl');
-    await this.page.click('.modal-dialog #yes');
+    const rejectCookies = this.page.locator('.rds-cookies-overlay__allow-essential-cookies-btn');
+    const giroBankDropdown = this.page.locator('#bankSearch');
+    const backButton = this.page.locator("button[name='backLink']");
+
+    await rejectCookies.click();
+    await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    await backButton.click();
   };
 
   initiateEPSPayment = async () => {
