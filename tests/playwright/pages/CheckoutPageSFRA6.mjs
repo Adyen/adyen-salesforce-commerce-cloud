@@ -184,11 +184,11 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('load', { timeout: 15000 });
     await this.placeOrderButton.click();
   };
 
