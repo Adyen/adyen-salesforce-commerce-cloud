@@ -69,10 +69,10 @@ for (const environment of environments) {
 
     test('Giropay Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      const popupPromise = page.waitForEvent('popup');
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
       await redirectShopper.completeGiropayRedirect(true);
+      const popupPromise = page.waitForEvent('popup');
       const popup = await popupPromise;
       await popup.waitForNavigation({
         url: /Order-Confirm/,
