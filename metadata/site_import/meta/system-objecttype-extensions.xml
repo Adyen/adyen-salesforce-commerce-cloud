@@ -83,8 +83,8 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_payment_Adyen_Payment_Method">
-                <display-name xml:lang="x-default">adyen_payment_Adyen_Payment_Method</display-name>
+            <attribute-definition attribute-id="adyen_payment__Adyen_Payment_Method">
+                <display-name xml:lang="x-default">adyen_payment__Adyen_Payment_Method</display-name>
                 <description xml:lang="x-default">paymentMethod used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -92,8 +92,8 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_payment_Adyen_Payment_Method_Variant">
-                <display-name xml:lang="x-default">adyen_payment_Adyen_Payment_Method_Variant</display-name>
+            <attribute-definition attribute-id="adyen_payment__Adyen_Payment_Method_Variant">
+                <display-name xml:lang="x-default">adyen_payment__Adyen_Payment_Method_Variant</display-name>
                 <description xml:lang="x-default">payment variant used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
