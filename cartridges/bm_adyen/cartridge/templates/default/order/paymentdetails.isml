@@ -1,0 +1,53 @@
+<div id="paymentdetailstable">
+	<table class="producttable">
+<!--- Table Header --->
+		<thead>
+			<tr>
+				<th>Payment Method</th>
+				<th>Amount</th>
+			</tr>
+		</thead>			
+<!--- Table Footer --->
+		<tfoot>
+			<tr>
+			    <td class="ordertotal">Payment Total</td>
+			    <td class="ordertotalprice"><isprint value="${request.custom.Container.totalGrossPrice}"></td>
+			</tr>
+		</tfoot>
+<!--- Table Body --->
+		<tbody>		
+		<!--- iterate over credit card payment instruments --->
+		<isloop iterator="${request.custom.Container.paymentInstruments}" alias="PaymentInstrument" status="loopstatus">
+		
+			<isif condition="${PaymentInstrument.paymentMethod == dw.order.PaymentInstrument.METHOD_CREDIT_CARD}">
+				<tr>
+					<td>
+						<isprint value="${PaymentInstrument.creditCardType}">
+						<br/>
+						<isprint value="${PaymentInstrument.maskedCreditCardNumber}">
+					</td>
+					<td class="price">
+						<isprint value="${PaymentInstrument.paymentTransaction.amount}">					
+					</td>
+				</tr>
+			</isif>
+
+		</isloop>
+
+		<!--- iterate over gift certificate payment instruments --->
+		<isloop iterator="${request.custom.Container.giftCertificatePaymentInstruments}" alias="PaymentInstrument" status="loopstatus">
+		
+				<tr>					
+					<td>
+						Gift Certificate 
+						<br/>
+						<isprint value="${PaymentInstrument.maskedGiftCertificateCode}">
+					</td>
+					<td class="price">
+						<isprint value="${PaymentInstrument.paymentTransaction.amount}">					
+					</td>
+				</tr>
+		</isloop>
+		</tbody>
+	</table>
+</div><!-- END: paymentdetailstable -->

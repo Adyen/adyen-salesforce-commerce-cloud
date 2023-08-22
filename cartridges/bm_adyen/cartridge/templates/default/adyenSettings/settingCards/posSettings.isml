@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<div id="posSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         In-person payments settings <small class="text-secondary">(optional)</small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Set up your POS to process payments in your web store.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="storeID">StoreID for Terminal API <small class="text-secondary">(optional)</small></label>
+            <small id="storeIDHelp" class="form-text mb-1">If you want a POS in your physical store, enter the unique <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-1-enable-pos-payments" target="_blank">store ID.</a> Keep in mind that you can only assign your POS to a single store. </small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
