@@ -176,12 +176,12 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod =
       AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
+      `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
     ] = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom.Adyen_Payment_Method_Variant =
       req.form.paymentMethod.toLowerCase();
     paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+      `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
     ] = req.form.paymentMethod.toLowerCase();
   });
 
