@@ -126,38 +126,8 @@ function handleInput({ paymentMethodID }) {
     helpers.displaySelectedMethod(event.target.value);
   };
 }
-// eslint-disable-next-line complexity
-module.exports.renderPaymentMethod = function renderPaymentMethod(
-  paymentMethod,
-  isStored,
-  path,
-  description = null,
-  rerender = false,
-) {
-  const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
-  const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
-
-  if (paymentMethodID === constants.GIFTCARD) {
-    return;
-  }
-
-  const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
-  const container = document.createElement('div');
-
-  const options = {
-    container,
-    paymentMethod,
-    isStored,
-    path,
-    description,
-    paymentMethodID,
-    isSchemeNotStored,
-  };
-
-  const imagePath = getImagePath(options);
-  const liContents = getListContents({ ...options, imagePath, description });
-
+function createListItem(rerender, paymentMethodID, liContents) {
   let li;
   if (rerender) {
     li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
@@ -165,22 +135,87 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(
     li = document.createElement('li');
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
-    paymentMethodsUI.append(li);
   }
-  handlePayment(options);
-  configureContainer(options);
+  return li;
+}
 
-  li.append(container);
+async function checkIfNodeIsAvailable(node) {
+  if (node.isAvailable) {
+    const isNodeAvailable = await node.isAvailable();
+    if (!isNodeAvailable) {
+      return false;
+    }
+  }
+  return true;
+}
 
-  const node = store.componentsObj[paymentMethodID]?.node;
+async function appendNodeToContainerIfAvailable(
+  paymentMethodsUI,
+  li,
+  node,
+  container,
+) {
   if (node) {
-    node.mount(container);
+    const canBeMounted = await checkIfNodeIsAvailable(node);
+    if (canBeMounted) {
+      paymentMethodsUI.append(li);
+      node.mount(container);
+    }
   }
+}
 
-  if (paymentMethodID === 'giropay') {
-    container.innerHTML = '';
+module.exports.renderPaymentMethod = async function renderPaymentMethod(
+  paymentMethod,
+  isStored,
+  path,
+  description = null,
+  rerender = false,
+) {
+  try {
+    const paymentMethodsUI = document.querySelector('#paymentMethodsList');
+
+    const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+
+    if (paymentMethodID === constants.GIFTCARD) {
+      return;
+    }
+
+    const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
+    const container = document.createElement('div');
+
+    const options = {
+      container,
+      paymentMethod,
+      isStored,
+      path,
+      description,
+      paymentMethodID,
+      isSchemeNotStored,
+    };
+
+    const imagePath = getImagePath(options);
+    const liContents = getListContents({ ...options, imagePath, description });
+    const li = createListItem(rerender, paymentMethodID, liContents);
+
+    handlePayment(options);
+    configureContainer(options);
+
+    li.append(container);
+
+    await appendNodeToContainerIfAvailable(
+      paymentMethodsUI,
+      li,
+      store.componentsObj[paymentMethodID]?.node,
+      container,
+    );
+
+    if (paymentMethodID === constants.GIROPAY) {
+      container.innerHTML = '';
+    }
+
+    handleInput(options);
+    setValid(options);
+  } catch (err) {
+    // method not available
   }
-
-  handleInput(options);
-  setValid(options);
 };

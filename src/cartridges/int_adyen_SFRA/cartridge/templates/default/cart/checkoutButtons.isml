@@ -57,6 +57,9 @@
             window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
             window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
             window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
+            window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
+                pdict.AdyenHelper.getBasketAmount().currencyCode
+            )}";
         </script>
         <div class="mb-sm-3">
             <a
