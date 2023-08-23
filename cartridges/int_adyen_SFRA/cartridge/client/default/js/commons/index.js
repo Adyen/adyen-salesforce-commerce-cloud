@@ -24,7 +24,7 @@ module.exports.createSession = /*#__PURE__*/function () {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           return _context.abrupt("return", $.ajax({
-            url: 'Adyen-Sessions',
+            url: window.sessionsUrl,
             type: 'get'
           }));
         case 1:
@@ -48,7 +48,7 @@ module.exports.fetchGiftCards = /*#__PURE__*/function () {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           return _context2.abrupt("return", $.ajax({
-            url: 'Adyen-fetchGiftCards',
+            url: window.fetchGiftCardsUrl,
             type: 'get'
           }));
         case 1:

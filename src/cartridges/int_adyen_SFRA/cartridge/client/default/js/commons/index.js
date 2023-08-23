@@ -16,7 +16,7 @@ module.exports.onBrand = function onBrand(brandObject) {
  */
 module.exports.createSession = async function createSession() {
   return $.ajax({
-    url: 'Adyen-Sessions',
+    url: window.sessionsUrl,
     type: 'get',
   });
 };
@@ -26,7 +26,7 @@ module.exports.createSession = async function createSession() {
  */
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
-    url: 'Adyen-fetchGiftCards',
+    url: window.fetchGiftCardsUrl,
     type: 'get',
   });
 };

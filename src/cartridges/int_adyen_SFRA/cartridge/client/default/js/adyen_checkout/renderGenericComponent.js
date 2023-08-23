@@ -13,7 +13,12 @@ const {
   attachGiftCardAddButtonListener,
   showGiftCardInfoMessage,
   giftCardBrands,
+  clearGiftCardsContainer,
+  attachGiftCardCancelListener,
+  showGiftCardCancelButton,
 } = require('./renderGiftcardComponent');
+
+const INIT_CHECKOUT_EVENT = 'INIT_CHECKOUT_EVENT';
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -56,11 +61,10 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function isCartModified(refresh, amount, orderAmount) {
+function isCartModified(amount, orderAmount) {
   return (
-    refresh === false &&
-    (amount.currency !== orderAmount.currency ||
-      amount.value !== orderAmount.value)
+    amount.currency !== orderAmount.currency ||
+    amount.value !== orderAmount.value
   );
 }
 
@@ -70,7 +74,7 @@ function renderGiftCardLogo(imagePath) {
     headingImg.src = `${imagePath}genericgiftcard.png`;
   }
 }
-function applyGiftCards(refresh) {
+function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
   const { orderAmount } = store.partialPaymentsOrderObj;
@@ -78,7 +82,7 @@ function applyGiftCards(refresh) {
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const cartModified = isCartModified(refresh, amount, orderAmount);
+  const cartModified = isCartModified(amount, orderAmount);
 
   if (isPartialPaymentExpired) {
     removeGiftCards();
@@ -86,6 +90,7 @@ function applyGiftCards(refresh) {
     removeGiftCards();
     showGiftCardWarningMessage();
   } else {
+    clearGiftCardsContainer();
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
@@ -94,6 +99,8 @@ function applyGiftCards(refresh) {
     }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
+    showGiftCardCancelButton(true);
+    attachGiftCardCancelListener();
     createElementsToShowRemainingGiftCardAmount();
   }
 }
@@ -113,12 +120,15 @@ function renderStoredPaymentMethods(data, imagePath) {
   }
 }
 
-function renderPaymentMethods(data, imagePath, adyenDescriptions) {
-  data.paymentMethods.forEach((pm) => {
-    if (pm.type !== constants.GIFTCARD) {
-      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
-    }
-  });
+function renderPaymentMethods(paymentMethods, imagePath, adyenDescriptions) {
+  const promises = [];
+  for (let i = 0; i < paymentMethods.length; i += 1) {
+    const pm = paymentMethods[i];
+    promises.push(
+      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]),
+    );
+  }
+  return Promise.all(promises);
 }
 
 function renderPosTerminals(adyenConnectedTerminals) {
@@ -185,35 +195,12 @@ function setGiftCardContainerVisibility() {
   if (availableGiftCards.length === 0) {
     const giftCardContainer = document.querySelector('.gift-card-selection');
     giftCardContainer.style.display = 'none';
+    const giftCardSeparator = document.querySelector('.gift-card-separator');
+    giftCardSeparator.style.display = 'none';
   }
 }
 
-document.getElementById('email')?.addEventListener('change', (e) => {
-  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-  if (emailPattern.test(e.target.value)) {
-    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-      e.target.value;
-    const event = new Event('renderGenericComponentCalled');
-    document.dispatchEvent(event);
-  }
-});
-
-// used by renderGiftCardComponent.js
-document.addEventListener('renderGenericComponentCalled', async () => {
-  await module.exports.renderGenericComponent();
-});
-
-/**
- * Calls createSession and then renders the retrieved payment methods (including card component)
- */
-module.exports.renderGenericComponent = async function renderGenericComponent(
-  refresh = false,
-) {
-  if (Object.keys(store.componentsObj).length !== 0) {
-    await unmountComponents();
-  }
-
+async function initializeCheckout() {
   const session = await createSession();
   const giftCardsData = await fetchGiftCards();
 
@@ -225,13 +212,12 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   setGiftCardContainerVisibility();
+
   const { totalDiscountedAmount, giftCards } = giftCardsData;
-  store.addedGiftCards = giftCards;
   if (giftCards?.length) {
-    const lastGiftCard = giftCards[store.addedGiftCards.length - 1];
-    store.partialPaymentsOrderObj = giftCardsData.giftCards?.length
-      ? { ...lastGiftCard, totalDiscountedAmount }
-      : null;
+    store.addedGiftCards = giftCards;
+    const lastGiftCard = store.addedGiftCards[store.addedGiftCards.length - 1];
+    store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
   }
 
   setCheckoutConfiguration(store.checkout.options);
@@ -239,33 +225,71 @@ module.exports.renderGenericComponent = async function renderGenericComponent(
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  renderStoredPaymentMethods(
-    store.checkout.paymentMethodsResponse,
-    session.imagePath,
-  );
+  const paymentMethodsWithoutGiftCards =
+    store.checkout.paymentMethodsResponse.paymentMethods.filter(
+      (pm) => pm.type !== constants.GIFTCARD,
+    );
 
-  renderPaymentMethods(
-    store.checkout.paymentMethodsResponse,
+  renderStoredPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath);
+
+  await renderPaymentMethods(
+    paymentMethodsWithoutGiftCards,
     session.imagePath,
     session.adyenDescriptions,
   );
+
   renderPosTerminals(session.adyenConnectedTerminals);
 
   renderGiftCardLogo(session.imagePath);
 
-  if (store.addedGiftCards?.length) {
-    applyGiftCards(refresh);
-  }
-
-  attachGiftCardAddButtonListener();
-
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
   );
-  firstPaymentMethod.checked = true;
-  helpers.displaySelectedMethod(firstPaymentMethod.value);
+  if (firstPaymentMethod) {
+    firstPaymentMethod.checked = true;
+    helpers.displaySelectedMethod(firstPaymentMethod.value);
+  }
 
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );
+}
+
+document.getElementById('email')?.addEventListener('change', (e) => {
+  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+  if (emailPattern.test(e.target.value)) {
+    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
+    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
+      e.target.value;
+    const event = new Event(INIT_CHECKOUT_EVENT);
+    document.dispatchEvent(event);
+  }
+});
+
+// used by renderGiftCardComponent.js
+document.addEventListener(INIT_CHECKOUT_EVENT, () => {
+  initializeCheckout();
+});
+
+/**
+ * Calls createSession and then renders the retrieved payment methods (including card component)
+ */
+async function renderGenericComponent() {
+  if (Object.keys(store.componentsObj).length !== 0) {
+    await unmountComponents();
+  }
+
+  await initializeCheckout();
+
+  if (store.addedGiftCards?.length) {
+    applyGiftCards();
+  }
+
+  attachGiftCardAddButtonListener();
+}
+
+module.exports = {
+  renderGenericComponent,
+  initializeCheckout,
+  INIT_CHECKOUT_EVENT,
 };

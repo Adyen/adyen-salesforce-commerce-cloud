@@ -24,7 +24,7 @@ function makePartialPayment(req, res, next) {
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount,
-      reference: currentBasket.getUUID(),
+      reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod,
       order: partialPaymentsOrder,
     };

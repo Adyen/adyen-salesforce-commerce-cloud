@@ -144,32 +144,7 @@ function handleInput(_ref6) {
     };
   }();
 }
-// eslint-disable-next-line complexity
-module.exports.renderPaymentMethod = function renderPaymentMethod(paymentMethod, isStored, path) {
-  var _store$componentsObj$;
-  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  var rerender = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-  var paymentMethodsUI = document.querySelector('#paymentMethodsList');
-  var paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
-  if (paymentMethodID === constants.GIFTCARD) {
-    return;
-  }
-  var isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
-  var container = document.createElement('div');
-  var options = {
-    container: container,
-    paymentMethod: paymentMethod,
-    isStored: isStored,
-    path: path,
-    description: description,
-    paymentMethodID: paymentMethodID,
-    isSchemeNotStored: isSchemeNotStored
-  };
-  var imagePath = getImagePath(options);
-  var liContents = getListContents(_objectSpread(_objectSpread({}, options), {}, {
-    imagePath: imagePath,
-    description: description
-  }));
+function createListItem(rerender, paymentMethodID, liContents) {
   var li;
   if (rerender) {
     li = document.querySelector("#rb_".concat(paymentMethodID)).closest('li');
@@ -177,18 +152,139 @@ module.exports.renderPaymentMethod = function renderPaymentMethod(paymentMethod,
     li = document.createElement('li');
     li.innerHTML = liContents;
     li.classList.add('paymentMethod');
-    paymentMethodsUI.append(li);
   }
-  handlePayment(options);
-  configureContainer(options);
-  li.append(container);
-  var node = (_store$componentsObj$ = store.componentsObj[paymentMethodID]) === null || _store$componentsObj$ === void 0 ? void 0 : _store$componentsObj$.node;
-  if (node) {
-    node.mount(container);
+  return li;
+}
+function checkIfNodeIsAvailable(_x2) {
+  return _checkIfNodeIsAvailable.apply(this, arguments);
+}
+function _checkIfNodeIsAvailable() {
+  _checkIfNodeIsAvailable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(node) {
+    var isNodeAvailable;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          if (!node.isAvailable) {
+            _context3.next = 6;
+            break;
+          }
+          _context3.next = 3;
+          return node.isAvailable();
+        case 3:
+          isNodeAvailable = _context3.sent;
+          if (isNodeAvailable) {
+            _context3.next = 6;
+            break;
+          }
+          return _context3.abrupt("return", false);
+        case 6:
+          return _context3.abrupt("return", true);
+        case 7:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return _checkIfNodeIsAvailable.apply(this, arguments);
+}
+function appendNodeToContainerIfAvailable(_x3, _x4, _x5, _x6) {
+  return _appendNodeToContainerIfAvailable.apply(this, arguments);
+}
+function _appendNodeToContainerIfAvailable() {
+  _appendNodeToContainerIfAvailable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(paymentMethodsUI, li, node, container) {
+    var canBeMounted;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          if (!node) {
+            _context4.next = 5;
+            break;
+          }
+          _context4.next = 3;
+          return checkIfNodeIsAvailable(node);
+        case 3:
+          canBeMounted = _context4.sent;
+          if (canBeMounted) {
+            paymentMethodsUI.append(li);
+            node.mount(container);
+          }
+        case 5:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
+  }));
+  return _appendNodeToContainerIfAvailable.apply(this, arguments);
+}
+module.exports.renderPaymentMethod = /*#__PURE__*/function () {
+  var _renderPaymentMethod = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethod, isStored, path) {
+    var description,
+      rerender,
+      _store$componentsObj$,
+      paymentMethodsUI,
+      paymentMethodID,
+      isSchemeNotStored,
+      container,
+      options,
+      imagePath,
+      liContents,
+      li,
+      _args2 = arguments;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          description = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : null;
+          rerender = _args2.length > 4 && _args2[4] !== undefined ? _args2[4] : false;
+          _context2.prev = 2;
+          paymentMethodsUI = document.querySelector('#paymentMethodsList');
+          paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
+          if (!(paymentMethodID === constants.GIFTCARD)) {
+            _context2.next = 7;
+            break;
+          }
+          return _context2.abrupt("return");
+        case 7:
+          isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
+          container = document.createElement('div');
+          options = {
+            container: container,
+            paymentMethod: paymentMethod,
+            isStored: isStored,
+            path: path,
+            description: description,
+            paymentMethodID: paymentMethodID,
+            isSchemeNotStored: isSchemeNotStored
+          };
+          imagePath = getImagePath(options);
+          liContents = getListContents(_objectSpread(_objectSpread({}, options), {}, {
+            imagePath: imagePath,
+            description: description
+          }));
+          li = createListItem(rerender, paymentMethodID, liContents);
+          handlePayment(options);
+          configureContainer(options);
+          li.append(container);
+          _context2.next = 18;
+          return appendNodeToContainerIfAvailable(paymentMethodsUI, li, (_store$componentsObj$ = store.componentsObj[paymentMethodID]) === null || _store$componentsObj$ === void 0 ? void 0 : _store$componentsObj$.node, container);
+        case 18:
+          if (paymentMethodID === constants.GIROPAY) {
+            container.innerHTML = '';
+          }
+          handleInput(options);
+          setValid(options);
+          _context2.next = 25;
+          break;
+        case 23:
+          _context2.prev = 23;
+          _context2.t0 = _context2["catch"](2);
+        case 25:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[2, 23]]);
+  }));
+  function renderPaymentMethod(_x7, _x8, _x9) {
+    return _renderPaymentMethod.apply(this, arguments);
   }
-  if (paymentMethodID === 'giropay') {
-    container.innerHTML = '';
-  }
-  handleInput(options);
-  setValid(options);
-};
+  return renderPaymentMethod;
+}();

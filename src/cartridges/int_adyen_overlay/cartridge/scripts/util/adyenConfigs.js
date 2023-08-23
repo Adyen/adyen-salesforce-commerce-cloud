@@ -77,6 +77,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenRatePayID');
   },
 
+  getApplePayDomainAssociation() {
+    return getCustomPreference('Adyen_ApplePay_DomainAssociation');
+  },
+
   getAdyenStoreId() {
     return getCustomPreference('Adyen_StoreId');
   },

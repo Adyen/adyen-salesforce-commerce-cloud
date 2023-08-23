@@ -116,8 +116,17 @@ function placeOrder(req, res, next) {
     return next();
   }
 
+  // Check if gift cards were used
+  var giftCardsAdded = (_currentBasket$custom = currentBasket.custom) !== null && _currentBasket$custom !== void 0 && _currentBasket$custom.adyenGiftCards ? JSON.parse(currentBasket.custom.adyenGiftCards) : null;
+
   // Creates a new order.
-  var order = COHelpers.createOrder(currentBasket);
+  var order;
+  if (giftCardsAdded) {
+    var orderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    order = OrderMgr.createOrder(currentBasket, orderNo);
+  } else {
+    order = COHelpers.createOrder(currentBasket);
+  }
   if (!order) {
     session.privacy.orderNo = null;
     res.json({
@@ -136,9 +145,6 @@ function placeOrder(req, res, next) {
   // Handles payment authorization
   var handlePaymentResult = adyenHelpers.handlePayments(order);
   var mainPaymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
-
-  // Check if gift cards were used
-  var giftCardsAdded = (_currentBasket$custom = currentBasket.custom) !== null && _currentBasket$custom !== void 0 && _currentBasket$custom.adyenGiftCards ? JSON.parse(currentBasket.custom.adyenGiftCards) : null;
   if (giftCardsAdded) {
     giftCardsAdded.forEach(function (giftCard) {
       var divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());

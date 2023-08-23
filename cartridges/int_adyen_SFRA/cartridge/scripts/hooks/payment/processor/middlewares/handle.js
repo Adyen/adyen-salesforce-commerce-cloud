@@ -40,12 +40,12 @@ function handle(basket, paymentInformation) {
       paymentInstrument.custom.adyenPartialPaymentsOrder = session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentInformation.stateData ? (_JSON$parse = JSON.parse(paymentInformation.stateData)) === null || _JSON$parse === void 0 ? void 0 : (_JSON$parse$paymentMe = _JSON$parse.paymentMethod) === null || _JSON$parse$paymentMe === void 0 ? void 0 : _JSON$parse$paymentMe.type : null;
-    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "_Adyen_Payment_Method_Variant")] = paymentInformation.stateData ? (_JSON$parse2 = JSON.parse(paymentInformation.stateData)) === null || _JSON$parse2 === void 0 ? void 0 : (_JSON$parse2$paymentM = _JSON$parse2.paymentMethod) === null || _JSON$parse2$paymentM === void 0 ? void 0 : _JSON$parse2$paymentM.type : null;
+    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method_Variant")] = paymentInformation.stateData ? (_JSON$parse2 = JSON.parse(paymentInformation.stateData)) === null || _JSON$parse2 === void 0 ? void 0 : (_JSON$parse2$paymentM = _JSON$parse2.paymentMethod) === null || _JSON$parse2$paymentM === void 0 ? void 0 : _JSON$parse2$paymentM.type : null;
     if (paymentInformation.isCreditCard) {
       // If the card wasn't a stored card we need to convert sfccCardType
       convertToSfccCardType(paymentInformation, paymentInstrument);
     } else {
-      paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "_Adyen_Payment_Method")] = paymentInformation.adyenPaymentMethod;
+      paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method")] = paymentInformation.adyenPaymentMethod;
     }
   });
   return {

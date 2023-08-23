@@ -23,14 +23,9 @@ describe('Confirm', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);
   });
-  it('should do nothing if giving is not available', () => {
+  it('should set view data', () => {
     const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
-    AdyenHelper.isAdyenGivingAvailable.mockImplementation(() => false);
-    confirm(req, res, jest.fn());
-    expect(res.setViewData).toBeCalledTimes(0);
-  });
-  it('should set view data', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toMatchSnapshot();
   });

@@ -156,6 +156,11 @@ var adyenHelperObj = {
   },
 
   getAdyenGivingConfig(order) {
+    if (!order.getPaymentInstruments(
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+    ).length){
+      return null;
+    }
     const paymentInstrument = order.getPaymentInstruments(
       adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
@@ -660,7 +665,7 @@ var adyenHelperObj = {
         result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
-        result.paymentMethod,
+        result.paymentMethod.type,
       );
     }
 

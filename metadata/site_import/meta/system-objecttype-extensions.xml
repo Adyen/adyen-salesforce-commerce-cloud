@@ -83,8 +83,8 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_payment_Adyen_Payment_Method">
-                <display-name xml:lang="x-default">adyen_payment_Adyen_Payment_Method</display-name>
+            <attribute-definition attribute-id="adyen_payment__Adyen_Payment_Method">
+                <display-name xml:lang="x-default">adyen_payment__Adyen_Payment_Method</display-name>
                 <description xml:lang="x-default">paymentMethod used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -92,8 +92,8 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="adyen_payment_Adyen_Payment_Method_Variant">
-                <display-name xml:lang="x-default">adyen_payment_Adyen_Payment_Method_Variant</display-name>
+            <attribute-definition attribute-id="adyen_payment__Adyen_Payment_Method_Variant">
+                <display-name xml:lang="x-default">adyen_payment__Adyen_Payment_Method_Variant</display-name>
                 <description xml:lang="x-default">payment variant used by shopper (used to sync with OMS Production)</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -636,6 +636,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_ApplePay_DomainAssociation">
+                <display-name xml:lang="x-default">Apple Pay Domain Association</display-name>
+                <description xml:lang="x-default">Apple Pay Domain Association used for LIVE payments</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
@@ -685,6 +693,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="adyenGiftCardsOrderNo">
+                <display-name xml:lang="x-default">adyenGiftCardsOrderNo</display-name>
+                <description xml:lang="x-default">Adyen Gift Cards Order Number</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="amazonExpressShopperDetails">
                 <display-name xml:lang="x-default">amazonExpressShopperDetails</display-name>
                 <description xml:lang="x-default">Express Amazon Pay Shopper Details</description>
@@ -698,8 +714,10 @@
             <attribute-group group-id="AdyenPayment">
                 <display-name xml:lang="x-default">Adyen Payment</display-name>
                 <attribute attribute-id="adyenGiftCards"/>
+                <attribute attribute-id="adyenGiftCardsOrderNo"/>
                 <attribute attribute-id="amazonExpressShopperDetails"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
 </metadata>
+

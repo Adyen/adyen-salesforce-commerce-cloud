@@ -49,9 +49,9 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateKlarnaPayment(undefined);
   };
 
-  completeKlarnaRedirect = async (success) => {
+  completeKlarnaRedirect = async (success, skipModal) => {
     if (success) {
-      await this.paymentMethodsPage.confirmKlarnaPayment();
+      await this.paymentMethodsPage.confirmKlarnaPayment(skipModal);
     } else {
       await this.paymentMethodsPage.cancelKlarnaPayment();
     }
@@ -93,9 +93,9 @@ export class RedirectShopper {
     await this.page.click('#rb_giropay');
   };
 
-  completeGiropayRedirect = async (paymentData, success) => {
+  completeGiropayRedirect = async (success) => {
     if (success) {
-      await this.paymentMethodsPage.confirmGiropayPayment(paymentData);
+      await this.paymentMethodsPage.confirmGiropayPayment();
     } else {
       await this.paymentMethodsPage.cancelGiropayPayment();
     }

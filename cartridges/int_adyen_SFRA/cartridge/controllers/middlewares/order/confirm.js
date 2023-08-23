@@ -46,8 +46,7 @@ function confirm(req, res, next) {
   var orderToken = getOrderToken(req);
   if (orderId && orderToken) {
     var order = OrderMgr.getOrder(orderId, orderToken);
-    var paymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
-    if (AdyenHelper.getAdyenGivingConfig(order) && AdyenHelper.isAdyenGivingAvailable(paymentInstrument)) {
+    if (AdyenHelper.getAdyenGivingConfig(order)) {
       handleAdyenGiving(req, res);
     }
   }
