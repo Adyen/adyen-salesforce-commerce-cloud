@@ -5,12 +5,12 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 var store = require('../../../../store');
 var _require = require('./renderGenericComponent'),
-  renderGenericComponent = _require.renderGenericComponent;
+  initializeCheckout = _require.initializeCheckout;
 var helpers = require('./helpers');
 function makePartialPayment(requestData) {
   var error;
   $.ajax({
-    url: 'Adyen-partialPayment',
+    url: window.partialPaymentUrl,
     type: 'POST',
     data: JSON.stringify(requestData),
     contentType: 'application/json; charset=utf-8',
@@ -28,7 +28,7 @@ function makePartialPayment(requestData) {
         sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
         store.addedGiftCards = giftCards;
         helpers.setOrderFormData(response);
-        renderGenericComponent(true);
+        initializeCheckout();
       }
     }
   }).fail(function () {});

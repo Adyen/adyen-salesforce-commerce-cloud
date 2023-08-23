@@ -143,6 +143,9 @@ var adyenHelperObj = {
     }
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
+    if (!order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order)).length) {
+      return null;
+    }
     var paymentInstrument = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order))[0];
     if (!AdyenConfigs.getAdyenGivingEnabled() || !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)) {
       return null;
@@ -533,7 +536,7 @@ var adyenHelperObj = {
     if ((_result$additionalDat = result.additionalData) !== null && _result$additionalDat !== void 0 && _result$additionalDat.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod.type);
     }
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : '';
     order.custom.Adyen_value = '0';

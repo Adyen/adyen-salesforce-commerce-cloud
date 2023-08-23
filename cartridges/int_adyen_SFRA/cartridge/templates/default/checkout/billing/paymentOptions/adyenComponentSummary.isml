@@ -4,7 +4,7 @@
 
 <isif condition="${payment.adyenAction != null}">
     <!--- Payment action for Voucher --->
-    <div id="voucherResult"></div>
+    <div id="voucherResult" style="overflow:hidden"></div>
     <br/>
     <script type="text/javascript">
         var configuration = {

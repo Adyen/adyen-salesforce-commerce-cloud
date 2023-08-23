@@ -66,6 +66,9 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getRatePayMerchantID: function getRatePayMerchantID() {
     return getCustomPreference('AdyenRatePayID');
   },
+  getApplePayDomainAssociation: function getApplePayDomainAssociation() {
+    return getCustomPreference('Adyen_ApplePay_DomainAssociation');
+  },
   getAdyenStoreId: function getAdyenStoreId() {
     return getCustomPreference('Adyen_StoreId');
   },

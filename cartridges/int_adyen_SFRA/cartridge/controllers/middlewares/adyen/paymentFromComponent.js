@@ -129,18 +129,21 @@ function paymentFromComponent(req, res, next) {
       paymentInstrument.custom.adyenPartialPaymentsOrder = session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.adyenPaymentMethod = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
-    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "_Adyen_Payment_Method")] = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
+    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method")] = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom.Adyen_Payment_Method_Variant = req.form.paymentMethod.toLowerCase();
-    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "_Adyen_Payment_Method_Variant")] = req.form.paymentMethod.toLowerCase();
+    paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method_Variant")] = req.form.paymentMethod.toLowerCase();
   });
   handleExpressPayment(reqDataObj, currentBasket);
-  var order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
-
+  var order;
   // Check if gift card was used
   if ((_currentBasket$custom2 = currentBasket.custom) !== null && _currentBasket$custom2 !== void 0 && _currentBasket$custom2.adyenGiftCards) {
+    var giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
     handleGiftCardPayment(currentBasket, order);
+  } else {
+    order = COHelpers.createOrder(currentBasket);
   }
+  session.privacy.orderNo = order.orderNo;
   var result;
   Transaction.wrap(function () {
     result = adyenCheckout.createPaymentRequest({
@@ -149,6 +152,7 @@ function paymentFromComponent(req, res, next) {
     });
   });
   currentBasket.custom.amazonExpressShopperDetails = null;
+  currentBasket.custom.adyenGiftCardsOrderNo = null;
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);
   }

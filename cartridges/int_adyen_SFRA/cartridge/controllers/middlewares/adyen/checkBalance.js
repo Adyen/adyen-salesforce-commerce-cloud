@@ -8,6 +8,8 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var BasketMgr = require('dw/order/BasketMgr');
 var Money = require('dw/value/Money');
+var OrderMgr = require('dw/order/OrderMgr');
+var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
@@ -28,11 +30,16 @@ function getFormattedProperties(checkBalanceResponse, orderAmount) {
   }
   return {};
 }
+function getAddedGiftCards(basket) {
+  var _basket$custom;
+  return (_basket$custom = basket.custom) !== null && _basket$custom !== void 0 && _basket$custom.adyenGiftCards ? JSON.parse(basket.custom.adyenGiftCards) : null;
+}
 function callCheckBalance(req, res, next) {
   try {
     var _currentBasket$custom;
     var currentBasket = BasketMgr.getCurrentBasket();
-    var giftCardsAdded = (_currentBasket$custom = currentBasket.custom) !== null && _currentBasket$custom !== void 0 && _currentBasket$custom.adyenGiftCards ? JSON.parse(currentBasket.custom.adyenGiftCards) : null;
+    var orderNo = ((_currentBasket$custom = currentBasket.custom) === null || _currentBasket$custom === void 0 ? void 0 : _currentBasket$custom.adyenGiftCardsOrderNo) || OrderMgr.createOrderNo();
+    var giftCardsAdded = getAddedGiftCards(currentBasket);
     var orderAmount = {
       currency: currentBasket.currencyCode,
       value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
@@ -43,10 +50,13 @@ function callCheckBalance(req, res, next) {
     var checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: amount,
-      reference: currentBasket.getUUID(),
+      reference: orderNo,
       paymentMethod: paymentMethod
     };
     var checkBalanceResponse = adyenCheckout.doCheckBalanceCall(checkBalanceRequest);
+    Transaction.wrap(function () {
+      currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
+    });
     res.json(_objectSpread(_objectSpread({}, checkBalanceResponse), getFormattedProperties(checkBalanceResponse, orderAmount)));
   } catch (error) {
     AdyenLogs.error_log("Failed to check gift card balance ".concat(error.toString()));
