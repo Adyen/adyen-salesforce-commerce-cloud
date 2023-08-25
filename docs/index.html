@@ -329,11 +329,15 @@
     }
 
     function handleSelect(id, value) {
-        const hasId = id in sums;
-        if (!hasId) { sums[id] = [] }
+        if (id === 0 && !sums[0]) {
+          sums[0] = [];
+        }
 
-        const hasValue = sums[id].includes(value);
-        sums[id] = hasValue ? sums[id].filter(v => v !== value) : [...sums[id], value];
+        if (id > 0 && !sums[id]) {
+          sums[id] = []
+        }
+
+        sums[id] = [...sums[id], value];
 
         result[id][2] = sums[id];
         updateHash()
@@ -347,6 +351,7 @@
     function duplicateRule(id) {
         result[rulesCount] = [...result[id]];
         sums[rulesCount] = [...sums[id]];
+        sums[id + 1] = [];
         addRule()
     }
 
@@ -361,7 +366,6 @@
         Object.entries(result).forEach(([resultId, val]) => {
             sums[resultId] = [];
             creditCards.forEach(({ id }) => {
-                console.log(id);
                 if ((parseInt(id) & val[2]) !== 0) sums[resultId] = [...sums[resultId], parseInt(id)]
             });
             addRule(resultId)
