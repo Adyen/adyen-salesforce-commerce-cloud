@@ -218,7 +218,7 @@
     let rulesCount = 0;
     let result = {};
     const creditCards = [
-        {id: 1, name: "Amex"},
+        {id: 'amex', name: "Amex"},
         // {id: "argencard", name: "Argencard"},
         // {id: "bcmc", name: "Bancontact/Mister Cash"},
         // {id: "bijcard", name: "de Bijenkorf Card"},
@@ -229,16 +229,16 @@
         // {id: "dankort", name: "Dankort"},
         // {id: "diners", name: "Diners Club"},
         // {id: "discover", name: "Discover"},
-        {id: 2, name: "ELO"},
+        {id: 'elo', name: "ELO"},
         // {id: "forbrugsforeningen", name: "Forbrugsforeningen"},
-        {id: 4, name: "HiperCard"},
+        {id: 'hipercard', name: "HiperCard"},
         // {id: "hipercard", name: "HiperCard"},
         // {id: "jcb", name: "JCB"},
         // {id: "karenmillen", name: "Karen Millen GiftCard"},
         // {id: "laser", name: "Laser"},
         // {id: "maestro", name: "Maestro"},
         // {id: "maestrouk", name: "Maestro UK"},
-        {id: 8, name: "Mastercard"},
+        {id: 'mc', name: "Mastercard"},
         // {id: "mcalphabankbonus", name: "Alpha Bank Mastercard Bonus"},
         // {id: "mir", name: "MIR"},
         // {id: "naranja", name: "Naranja"},
@@ -247,7 +247,7 @@
         // {id: "solo", name: "Solo"},
         // {id: "troy", name: "Troy"},
         // {id: "uatp", name: "UATP"},
-        {id: 16, name: "Visa"},
+        {id: 'visa', name: "Visa"},
         // {id: "visaalphabankbonus", name: "Alpha Bank Visa Bonus"},
         // {id: "visadankort", name: "Visa Dankort"},
         // {id: "warehouse", name: "Warehouse GiftCard"},
@@ -332,12 +332,10 @@
         const hasId = id in sums;
         if (!hasId) { sums[id] = [] }
 
-        const parsedValue = parseInt(value)
-        const hasValue = sums[id].includes(parsedValue);
-        sums[id] = hasValue ? sums[id].filter(v => v !== parsedValue) : [...sums[id], parsedValue];
-        const sum = sums[id].reduce((acc, num) => parseInt(acc) + parseInt(num), 0);
+        const hasValue = sums[id].includes(value);
+        sums[id] = hasValue ? sums[id].filter(v => v !== value) : [...sums[id], value];
 
-        result[id][2] = parseInt(sum);
+        result[id][2] = sums[id];
         updateHash()
     }
 
@@ -363,6 +361,7 @@
         Object.entries(result).forEach(([resultId, val]) => {
             sums[resultId] = [];
             creditCards.forEach(({ id }) => {
+                console.log(id);
                 if ((parseInt(id) & val[2]) !== 0) sums[resultId] = [...sums[resultId], parseInt(id)]
             });
             addRule(resultId)
