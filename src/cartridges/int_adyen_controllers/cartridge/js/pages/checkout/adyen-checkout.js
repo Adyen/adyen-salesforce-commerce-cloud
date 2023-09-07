@@ -103,7 +103,7 @@ async function initializeBillingEvents() {
           paypalTerminatedEarly = false;
           paymentFromComponent({
             cancelTransaction: true,
-            merchantReference: document.querySelector('#merchantReference').value, });
+            merchantReference: document.querySelector('#merchantReference').value});
         },
         onAdditionalDetails: (state /* , component */) => {
           paypalTerminatedEarly = false;
