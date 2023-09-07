@@ -101,7 +101,9 @@ async function initializeBillingEvents() {
         },
         onError: (/* error, component */) => {
           paypalTerminatedEarly = false;
-          $('#dwfrm_billing').trigger('submit');
+          paymentFromComponent({
+            cancelTransaction: true,
+            merchantReference: document.querySelector('#merchantReference').value, });
         },
         onAdditionalDetails: (state /* , component */) => {
           paypalTerminatedEarly = false;
