@@ -100,5 +100,5 @@ module.exports = {
     SFRA: '5.44.0',
     SG: '5.28.0'
   },
-  VERSION: '23.2.0',
+  VERSION: '23.2.1',
 };

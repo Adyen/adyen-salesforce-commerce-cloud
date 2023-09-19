@@ -2,7 +2,7 @@
 let confirm;
 let req;
 let res;
-
+let viewData = {"adyen": {"adyenGivingAvailable": true, "adyenGivingBackgroundUrl": "mocked_background_url", "adyenGivingLogoUrl": "mocked_logo_url", "charityDescription": "%25mocked_charity_description%25", "charityName": "%25mocked_charity_name%25", "charityWebsite": "mocked_charity_website", "clientKey": "mocked_client_key", "donationAmounts": "{\"currency\":\"EUR\",\"values\":[10,20,30]}", "environment": "test", "orderToken": "mocked_token"}}
 beforeEach(() => {
   const { order } = require('../../index');
   confirm = order.confirm;
@@ -23,15 +23,14 @@ describe('Confirm', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);
   });
-  it('should do nothing if giving is not available', () => {
+  it('should set view data', () => {
     const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
-    AdyenHelper.isAdyenGivingAvailable.mockImplementation(() => false);
-    confirm(req, res, jest.fn());
-    expect(res.setViewData).toBeCalledTimes(0);
-  });
-  it('should set view data', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toMatchSnapshot();
+  });
+  it('check if encrypted', () => {
+    confirm(req, res, jest.fn());
+    expect(res.setViewData).toBeCalledWith(viewData);
   });
 });

@@ -187,24 +187,27 @@ function paymentFromComponent(req, res, next) {
     paymentInstrument.custom.adyenPaymentMethod =
       AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method`
+      `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
     ] = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
     paymentInstrument.custom.Adyen_Payment_Method_Variant =
       req.form.paymentMethod.toLowerCase();
     paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+      `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
     ] = req.form.paymentMethod.toLowerCase();
   });
 
   handleExpressPayment(reqDataObj, currentBasket);
 
-  const order = COHelpers.createOrder(currentBasket);
-  session.privacy.orderNo = order.orderNo;
-
+  let order;
   // Check if gift card was used
   if (currentBasket.custom?.adyenGiftCards) {
+    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
     handleGiftCardPayment(currentBasket, order);
+  } else {
+    order = COHelpers.createOrder(currentBasket);
   }
+  session.privacy.orderNo = order.orderNo;
 
   let result;
   Transaction.wrap(() => {
@@ -215,6 +218,7 @@ function paymentFromComponent(req, res, next) {
   });
 
   currentBasket.custom.amazonExpressShopperDetails = null;
+  currentBasket.custom.adyenGiftCardsOrderNo = null;
 
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);

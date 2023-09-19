@@ -6,13 +6,14 @@ const Template = require('dw/util/Template');
 const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const OrderModel = require('*/cartridge/models/order');
 
 function sendEmail(order) {
   const confirmationEmail = new Mail();
   const context = new HashMap();
 
-  const savedOrderModel = order.custom.Adyen_CustomerEmail;
-  const orderObject = { order: JSON.parse(savedOrderModel) };
+  const orderModel = new OrderModel(order, { containerView: 'order' });
+  const orderObject = { order: orderModel };
 
   confirmationEmail.addTo(order.customerEmail);
   confirmationEmail.setSubject(
@@ -31,8 +32,6 @@ function sendEmail(order) {
   const content = template.render(context).text;
   confirmationEmail.setContent(content, 'text/html', 'UTF-8');
   confirmationEmail.send();
-
-  order.custom.Adyen_CustomerEmail = null;
 }
 
 function submit(order) {

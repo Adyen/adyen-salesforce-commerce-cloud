@@ -2,11 +2,9 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const Locale = require('dw/util/Locale');
 const Resource = require('dw/web/Resource');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-const OrderModel = require('*/cartridge/models/order');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
@@ -47,7 +45,7 @@ function handleAuthorisedPayment(
   order,
   result,
   adyenPaymentInstrument,
-  { req, res, next },
+  { res, next },
 ) {
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
@@ -58,14 +56,7 @@ function handleAuthorisedPayment(
     return handlePaymentError(order, adyenPaymentInstrument, { res, next });
   }
 
-  const currentLocale = Locale.getLocale(req.locale.id);
-  const orderModel = new OrderModel(order, {
-    countryCode: currentLocale.country,
-  });
-
-  // Save orderModel to custom object during session
   Transaction.wrap(() => {
-    order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 
@@ -107,6 +98,10 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
       options,
     );
   }
+  Transaction.wrap(() => {
+    order.custom.Adyen_pspReference = result.pspReference;
+    order.custom.Adyen_eventCode = result.resultCode;
+  });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
 

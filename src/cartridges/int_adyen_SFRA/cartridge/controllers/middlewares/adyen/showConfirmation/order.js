@@ -8,11 +8,9 @@ function handleOrderConfirm(
   adyenPaymentInstrument,
   result,
   order,
-  orderModel,
   { res, next },
 ) {
   Transaction.wrap(() => {
-    order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
 

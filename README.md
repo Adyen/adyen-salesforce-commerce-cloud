@@ -45,19 +45,9 @@ After Level 3 End-of-support date, there is no support or maintenance from Adyen
 
 [Migration and Upgrade Guide](https://docs.adyen.com/plugins/salesforce-commerce-cloud/upgrade)
 
-| Major version | Release date | Level 1 support until | Level 2 support until | Level 3 support until |
-|---------------|--------------|-----------------------|-----------------------|-----------------------|
-| V18           | April 2018   | 30 September 2023     | 30 September 2023     | 30 September 2023     |
-| V19           | July 2019    | 30 September 2023     | 30 September 2023     | 30 September 2023     |
-| V20           | July 2020    | 31 December 2023      | 31 December 2023      | 31 December 2023      |
-| V21           | August 2021  | 31 December 2023      | 31 December 2023      | 31 December 2023      |
-| V22           | May 2022     | 30 November 2023      | 31 May 2024           | 30 November 2024      |
-| V23<sup id="fnref1">[[1]](#fn1)</sup><sup id="fnref2">[[2]](#fn2)</sup>       | February 2023 | 12 months after release | 18 months after release| 24 months after release|
-| V24           | soon in development | 12 months after release | 18 months after release| 24 months after release|
+[SFCC Cartridge Support Schedule for SFRA and SiteGenesis](https://docs.adyen.com/plugins/salesforce-commerce-cloud/#support-levels)
 
-<span id="fn1">[1]:From this version onward, we do not provide any level of support for SiteGenesis integrations.</span>
-
-<span id="fn2">[2]:From this version onward, all major releases will follow the V23 support schedule.</span>
+From version 23 onward, we do not provide any level of support for SiteGenesis integrations.
 
 ## Contributing
 We strongly encourage you to join us in contributing to this repository so everyone can benefit from:

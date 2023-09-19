@@ -40,10 +40,10 @@ let giftCardsHelper = {
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
       paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
-      paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
+      paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
       paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
       paymentInstrument.custom[
-        `${constants.OMS_NAMESPACE}_Adyen_Payment_Method_Variant`
+        `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
         ] = parsedGiftCardObj.giftCard.brand;
       paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
       paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;

@@ -8,6 +8,8 @@ const {
   renderAddedGiftCard,
   getGiftCardElements,
   showGiftCardInfoMessage,
+  showGiftCardCancelButton,
+  attachGiftCardCancelListener,
 } = require('./renderGiftcardComponent');
 
 function getCardConfig() {
@@ -110,18 +112,33 @@ function getGooglePayConfig() {
 }
 
 function handlePartialPaymentSuccess() {
-  const { giftCardSelectContainer, giftCardSelect, giftCardsList } =
-    getGiftCardElements();
+  const {
+    giftCardSelectContainer,
+    giftCardSelect,
+    giftCardsList,
+    cancelMainPaymentGiftCard,
+    giftCardAddButton,
+  } = getGiftCardElements();
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
-  store.componentsObj.giftcard.node.unmount('component_giftcard');
+  cancelMainPaymentGiftCard.addEventListener('click', () => {
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+    cancelMainPaymentGiftCard.classList.add('invisible');
+    giftCardAddButton.style.display = 'block';
+    giftCardSelect.value = 'null';
+  });
+  if (store.componentsObj.giftcard) {
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+  }
   store.addedGiftCards.forEach((card) => {
     renderAddedGiftCard(card);
   });
   if (store.addedGiftCards?.length) {
     showGiftCardInfoMessage();
   }
+  showGiftCardCancelButton(true);
+  attachGiftCardCancelListener();
   createElementsToShowRemainingGiftCardAmount();
 }
 
@@ -136,7 +153,7 @@ function getGiftCardConfig() {
     onBalanceCheck: (resolve, reject, requestData) => {
       $.ajax({
         type: 'POST',
-        url: 'Adyen-CheckBalance',
+        url: window.checkBalanceUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -149,7 +166,7 @@ function getGiftCardConfig() {
             const {
               giftCardsInfoMessageContainer,
               giftCardSelect,
-              giftCardCancelButton,
+              cancelMainPaymentGiftCard,
               giftCardAddButton,
               giftCardSelectWrapper,
             } = getGiftCardElements();
@@ -157,18 +174,19 @@ function getGiftCardConfig() {
               giftCardSelectWrapper.classList.add('invisible');
             }
             const initialPartialObject = { ...store.partialPaymentsOrderObj };
-            giftCardCancelButton.classList.remove('invisible');
-            giftCardCancelButton.addEventListener('click', () => {
+
+            cancelMainPaymentGiftCard.classList.remove('invisible');
+            cancelMainPaymentGiftCard.addEventListener('click', () => {
               store.componentsObj.giftcard.node.unmount('component_giftcard');
-              giftCardCancelButton.classList.add('invisible');
+              cancelMainPaymentGiftCard.classList.add('invisible');
               giftCardAddButton.style.display = 'block';
               giftCardSelect.value = 'null';
               store.partialPaymentsOrderObj.remainingAmountFormatted =
                 initialPartialObject.remainingAmountFormatted;
               store.partialPaymentsOrderObj.totalDiscountedAmount =
                 initialPartialObject.totalDiscountedAmount;
-              createElementsToShowRemainingGiftCardAmount();
             });
+
             document.querySelector(
               'button[value="submit-payment"]',
             ).disabled = true;
@@ -180,7 +198,6 @@ function getGiftCardConfig() {
               data.remainingAmountFormatted;
             store.partialPaymentsOrderObj.totalDiscountedAmount =
               data.totalAmountFormatted;
-            createElementsToShowRemainingGiftCardAmount();
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
@@ -199,7 +216,7 @@ function getGiftCardConfig() {
       const giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: 'Adyen-PartialPaymentsOrder',
+        url: window.partialPaymentsOrderUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -263,7 +280,7 @@ const actionHandler = async (action) => {
 function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
+    url: window.paymentsDetailsURL,
     data: JSON.stringify({
       data: state.data,
       orderToken: window.orderToken,

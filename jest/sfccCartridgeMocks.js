@@ -230,6 +230,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
     getCardToken: jest.fn(() => 'mocked_token'),
     getSFCCCardType: jest.fn(() => 'mocked_cardType'),
+    getFirstTwoNumbersFromYear: jest.fn(() => 20),
     createAdyenCheckoutResponse: jest.fn(() => ({isFinal: true, isSuccessful: false})),
     getCustomer: jest.fn(() => {}),
     createSignature: jest.fn( () => 'mocked_signature'),
@@ -257,19 +258,19 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getCreditCardInstallments: jest.fn(() => true),
-    getAdyenApplePayTokenisationEnabled: jest.fn(() => true),
+    getAdyenTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),
     getAdyenPayPalIntent: jest.fn(() => 'mocked_intent'),
     getAdyenMerchantAccount: jest.fn(() => 'mocked_merchant_account'),
     getAdyenGivingEnabled: jest.fn(() => true),
-    getAdyenGivingCharityName: jest.fn(() => 'mocked_charity_name'),
+    getAdyenGivingCharityName: jest.fn(() => '%mocked_charity_name%'),
     getAdyenGivingCharityWebsite: jest.fn(
         () => 'mocked_charity_website',
     ),
     getAdyenGivingCharityDescription: jest.fn(
-        () => 'mocked_charity_description',
+        () => '%mocked_charity_description%',
     ),
     getAdyenGivingBackgroundUrl: jest.fn(
         () => 'mocked_background_url',
