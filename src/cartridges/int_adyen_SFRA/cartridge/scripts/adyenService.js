@@ -38,7 +38,7 @@ function submit(order) {
   try {
     Transaction.begin();
     // Places the order if not placed yet
-    if (order.status === Order.ORDER_STATUS_CREATED) {
+    if (order.status.value === Order.ORDER_STATUS_CREATED) {
       // custom fraudDetection
       const fraudDetectionStatus = { status: 'success' };
       const placeOrderResult = COHelpers.placeOrder(
