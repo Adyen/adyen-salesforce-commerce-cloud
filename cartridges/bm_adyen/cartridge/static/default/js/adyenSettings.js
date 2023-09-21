@@ -18,9 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
   const testConnectionButton = document.querySelector('#testConnectionButton');
   const togglePassword = document.querySelector('#togglePassword');
+  const toggleHmacKey = document.querySelector('#toggleHmacKey');
   const toggleApi = document.querySelector('#toggleApi');
   const formBody = document.querySelector('#formBody');
   const password = document.querySelector('#notificationsPassword');
+  const hmacKey = document.querySelector('#hmacKey');
   const merchAccount = document.getElementById('merchantAccount');
   const classicPageButton = document.querySelector('#classicButton');
   const apiKeyVal = document.getElementById('apiKey');
@@ -178,6 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
     apiKeyVal.setAttribute('type', type);
     this.classList.toggle('bi-eye');
   }
+  function showHmacKey() {
+    const type = hmacKey.getAttribute('type') === 'password' ? 'text' : 'password';
+    hmacKey.setAttribute('type', type);
+    this.classList.toggle('bi-eye');
+  }
 
   // open Adyen Giving Background upload page
   function uploadAdyenGivingBackground() {
@@ -232,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
   submitButton.addEventListener('click', showAlertsOnSave);
   window.addEventListener('load', checkBrowserSupport);
   togglePassword.addEventListener('click', showPassword);
+  toggleHmacKey.addEventListener('click', showHmacKey);
   toggleApi.addEventListener('click', showApiKey);
   adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
   adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);

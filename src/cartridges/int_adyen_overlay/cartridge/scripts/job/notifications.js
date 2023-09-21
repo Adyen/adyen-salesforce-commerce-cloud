@@ -67,7 +67,7 @@ function processNotifications(/* pdict */) {
       // Only CREATED orders can be failed
       if (
         order === null ||
-        order.status !== dw.order.Order.ORDER_STATUS_CREATED ||
+        order.status.value !== dw.order.Order.ORDER_STATUS_CREATED ||
         handlerResult.RefusedHpp
       ) {
         continue;

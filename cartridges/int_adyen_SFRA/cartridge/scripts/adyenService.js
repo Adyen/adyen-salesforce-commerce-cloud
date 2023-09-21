@@ -8,12 +8,15 @@ var Template = require('dw/util/Template');
 var Transaction = require('dw/system/Transaction');
 var Order = require('dw/order/Order');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var OrderModel = require('*/cartridge/models/order');
 function sendEmail(order) {
   var confirmationEmail = new Mail();
   var context = new HashMap();
-  var savedOrderModel = order.custom.Adyen_CustomerEmail;
+  var orderModel = new OrderModel(order, {
+    containerView: 'order'
+  });
   var orderObject = {
-    order: JSON.parse(savedOrderModel)
+    order: orderModel
   };
   confirmationEmail.addTo(order.customerEmail);
   confirmationEmail.setSubject(Resource.msg('subject.order.confirmation.email', 'order', null));
@@ -25,13 +28,12 @@ function sendEmail(order) {
   var content = template.render(context).text;
   confirmationEmail.setContent(content, 'text/html', 'UTF-8');
   confirmationEmail.send();
-  order.custom.Adyen_CustomerEmail = null;
 }
 function submit(order) {
   try {
     Transaction.begin();
     // Places the order if not placed yet
-    if (order.status === Order.ORDER_STATUS_CREATED) {
+    if (order.status.value === Order.ORDER_STATUS_CREATED) {
       // custom fraudDetection
       var fraudDetectionStatus = {
         status: 'success'

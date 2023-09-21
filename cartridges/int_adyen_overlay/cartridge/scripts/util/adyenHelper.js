@@ -143,6 +143,9 @@ var adyenHelperObj = {
     }
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
+    if (!order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order)).length) {
+      return null;
+    }
     var paymentInstrument = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order))[0];
     if (!AdyenConfigs.getAdyenGivingEnabled() || !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)) {
       return null;
@@ -533,7 +536,14 @@ var adyenHelperObj = {
     if ((_result$additionalDat = result.additionalData) !== null && _result$additionalDat !== void 0 && _result$additionalDat.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod);
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod.type);
+    }
+
+    // For authenticated shoppers we are setting the token on other place already
+    // SFRA throws an error if you try to set token again that's why this check is added
+    var tokenAlreadyExists = paymentInstrument.getCreditCardToken();
+    if (!tokenAlreadyExists && result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
+      paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
     }
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : '';
     order.custom.Adyen_value = '0';
@@ -543,6 +553,9 @@ var adyenHelperObj = {
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
     return true;
+  },
+  getFirstTwoNumbersFromYear: function getFirstTwoNumbersFromYear() {
+    return Math.floor(new Date().getFullYear() / 100);
   },
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi: function getCurrencyValueForApi(amount) {
@@ -612,9 +625,6 @@ var adyenHelperObj = {
       integrator: AdyenConfigs.getSystemIntegratorName()
     };
     return applicationInfo;
-  },
-  isApplePay: function isApplePay(paymentMethod) {
-    return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
   },
   // validates all fields in a state data object. Filters out all invalid fields
   validateStateData: function validateStateData(stateData) {

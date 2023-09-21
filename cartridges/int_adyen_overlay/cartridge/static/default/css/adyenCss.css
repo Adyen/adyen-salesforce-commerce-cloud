@@ -386,6 +386,14 @@ input:checked + .slider:before {
     margin-bottom: 10px;
 }
 
+.gift-cards-container-cancel {
+    text-align: center;
+}
+
+.gift-cards-container-cancel a {
+    cursor: pointer;
+}
+
 .gift-cards-container {
     display: flex;
     align-items: center;

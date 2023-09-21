@@ -4,11 +4,9 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
-var Locale = require('dw/util/Locale');
 var Resource = require('dw/web/Resource');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-var OrderModel = require('*/cartridge/models/order');
 var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 var constants = require('*/cartridge/adyenConstants/constants');
@@ -41,8 +39,7 @@ function handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) {
   };
 }
 function handleAuthorisedPayment(order, result, adyenPaymentInstrument, _ref2) {
-  var req = _ref2.req,
-    res = _ref2.res,
+  var res = _ref2.res,
     next = _ref2.next;
   // custom fraudDetection
   var fraudDetectionStatus = {
@@ -57,14 +54,7 @@ function handleAuthorisedPayment(order, result, adyenPaymentInstrument, _ref2) {
       next: next
     });
   }
-  var currentLocale = Locale.getLocale(req.locale.id);
-  var orderModel = new OrderModel(order, {
-    countryCode: currentLocale.country
-  });
-
-  // Save orderModel to custom object during session
   Transaction.wrap(function () {
-    order.custom.Adyen_CustomerEmail = JSON.stringify(orderModel);
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });
   clearForms.clearAdyenData(adyenPaymentInstrument);
@@ -85,6 +75,10 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf(result.resultCode) > -1) {
     return handleAuthorisedPayment(order, result, adyenPaymentInstrument, options);
   }
+  Transaction.wrap(function () {
+    order.custom.Adyen_pspReference = result.pspReference;
+    order.custom.Adyen_eventCode = result.resultCode;
+  });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
 
@@ -101,7 +95,7 @@ function handlePayment(stateData, order, options) {
   }
   var finalResult;
   if (!hasStateData) {
-    if (result && (JSON.stringify(result).indexOf('amazonpay') > -1 || JSON.stringify(result).indexOf('applepay') > -1)) {
+    if (result && (JSON.stringify(result).indexOf('amazonpay') > -1 || JSON.stringify(result).indexOf('applepay') > -1 || JSON.stringify(result).indexOf('cashapp') > -1)) {
       finalResult = JSON.parse(result);
     } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);

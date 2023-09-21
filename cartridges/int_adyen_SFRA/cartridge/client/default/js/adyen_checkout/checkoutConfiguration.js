@@ -21,7 +21,9 @@ var _require3 = require('./renderGiftcardComponent'),
   createElementsToShowRemainingGiftCardAmount = _require3.createElementsToShowRemainingGiftCardAmount,
   renderAddedGiftCard = _require3.renderAddedGiftCard,
   getGiftCardElements = _require3.getGiftCardElements,
-  showGiftCardInfoMessage = _require3.showGiftCardInfoMessage;
+  showGiftCardInfoMessage = _require3.showGiftCardInfoMessage,
+  showGiftCardCancelButton = _require3.showGiftCardCancelButton,
+  attachGiftCardCancelListener = _require3.attachGiftCardCancelListener;
 function getCardConfig() {
   return {
     enableStoreDetails: window.showStoreDetails,
@@ -113,17 +115,29 @@ function handlePartialPaymentSuccess() {
   var _getGiftCardElements = getGiftCardElements(),
     giftCardSelectContainer = _getGiftCardElements.giftCardSelectContainer,
     giftCardSelect = _getGiftCardElements.giftCardSelect,
-    giftCardsList = _getGiftCardElements.giftCardsList;
+    giftCardsList = _getGiftCardElements.giftCardsList,
+    cancelMainPaymentGiftCard = _getGiftCardElements.cancelMainPaymentGiftCard,
+    giftCardAddButton = _getGiftCardElements.giftCardAddButton;
   giftCardSelectContainer.classList.add('invisible');
   giftCardSelect.value = null;
   giftCardsList.innerHTML = '';
-  store.componentsObj.giftcard.node.unmount('component_giftcard');
+  cancelMainPaymentGiftCard.addEventListener('click', function () {
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+    cancelMainPaymentGiftCard.classList.add('invisible');
+    giftCardAddButton.style.display = 'block';
+    giftCardSelect.value = 'null';
+  });
+  if (store.componentsObj.giftcard) {
+    store.componentsObj.giftcard.node.unmount('component_giftcard');
+  }
   store.addedGiftCards.forEach(function (card) {
     renderAddedGiftCard(card);
   });
   if ((_store$addedGiftCards = store.addedGiftCards) !== null && _store$addedGiftCards !== void 0 && _store$addedGiftCards.length) {
     showGiftCardInfoMessage();
   }
+  showGiftCardCancelButton(true);
+  attachGiftCardCancelListener();
   createElementsToShowRemainingGiftCardAmount();
 }
 function getGiftCardConfig() {
@@ -137,7 +151,7 @@ function getGiftCardConfig() {
     onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
       $.ajax({
         type: 'POST',
-        url: 'Adyen-CheckBalance',
+        url: window.checkBalanceUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -148,29 +162,27 @@ function getGiftCardConfig() {
             var _getGiftCardElements2 = getGiftCardElements(),
               giftCardsInfoMessageContainer = _getGiftCardElements2.giftCardsInfoMessageContainer,
               giftCardSelect = _getGiftCardElements2.giftCardSelect,
-              giftCardCancelButton = _getGiftCardElements2.giftCardCancelButton,
+              cancelMainPaymentGiftCard = _getGiftCardElements2.cancelMainPaymentGiftCard,
               giftCardAddButton = _getGiftCardElements2.giftCardAddButton,
               giftCardSelectWrapper = _getGiftCardElements2.giftCardSelectWrapper;
             if (giftCardSelectWrapper) {
               giftCardSelectWrapper.classList.add('invisible');
             }
             var initialPartialObject = _objectSpread({}, store.partialPaymentsOrderObj);
-            giftCardCancelButton.classList.remove('invisible');
-            giftCardCancelButton.addEventListener('click', function () {
+            cancelMainPaymentGiftCard.classList.remove('invisible');
+            cancelMainPaymentGiftCard.addEventListener('click', function () {
               store.componentsObj.giftcard.node.unmount('component_giftcard');
-              giftCardCancelButton.classList.add('invisible');
+              cancelMainPaymentGiftCard.classList.add('invisible');
               giftCardAddButton.style.display = 'block';
               giftCardSelect.value = 'null';
               store.partialPaymentsOrderObj.remainingAmountFormatted = initialPartialObject.remainingAmountFormatted;
               store.partialPaymentsOrderObj.totalDiscountedAmount = initialPartialObject.totalDiscountedAmount;
-              createElementsToShowRemainingGiftCardAmount();
             });
             document.querySelector('button[value="submit-payment"]').disabled = true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove('gift-cards-info-message-container');
             store.partialPaymentsOrderObj.remainingAmountFormatted = data.remainingAmountFormatted;
             store.partialPaymentsOrderObj.totalDiscountedAmount = data.totalAmountFormatted;
-            createElementsToShowRemainingGiftCardAmount();
             resolve(data);
           } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
             resolve(data);
@@ -189,7 +201,7 @@ function getGiftCardConfig() {
       var giftCardData = requestData.paymentMethod;
       $.ajax({
         type: 'POST',
-        url: 'Adyen-PartialPaymentsOrder',
+        url: window.partialPaymentsOrderUrl,
         data: JSON.stringify(requestData),
         contentType: 'application/json; charset=utf-8',
         async: false,
@@ -266,7 +278,7 @@ var actionHandler = /*#__PURE__*/function () {
 function handleOnAdditionalDetails(state) {
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
+    url: window.paymentsDetailsURL,
     data: JSON.stringify({
       data: state.data,
       orderToken: window.orderToken
@@ -301,7 +313,9 @@ function getAmazonpayConfig() {
     onError: function onError() {}
   };
 }
-function getApplePayConfig() {
+
+// Used for Apple Pay and Cash App
+function getPaymentFromComponentDefaultConfig() {
   return {
     showPayButton: true,
     onSubmit: function onSubmit(state, component) {
@@ -351,10 +365,11 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
-    applepay: getApplePayConfig(),
+    applepay: getPaymentFromComponentDefaultConfig(),
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
-    klarna_paynow: getKlarnaConfig()
+    klarna_paynow: getKlarnaConfig(),
+    cashapp: getPaymentFromComponentDefaultConfig()
   };
 }
 module.exports = {
@@ -363,5 +378,6 @@ module.exports = {
   getGooglePayConfig: getGooglePayConfig,
   getAmazonpayConfig: getAmazonpayConfig,
   setCheckoutConfiguration: setCheckoutConfiguration,
+  getPaymentFromComponentDefaultConfig: getPaymentFromComponentDefaultConfig,
   actionHandler: actionHandler
 };

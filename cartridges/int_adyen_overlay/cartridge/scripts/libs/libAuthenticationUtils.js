@@ -22,6 +22,12 @@
  */
 
 var StringUtils = require('dw/util/StringUtils');
+var Encoding = require('dw/crypto/Encoding');
+var Mac = require('dw/crypto/Mac');
+var Bytes = require('dw/util/Bytes');
+var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 /**
  *
@@ -42,6 +48,33 @@ function checkGivenCredentials(baHeader, baUser, baPassword) {
   }
   return false;
 }
+function constructPayload(notificationData) {
+  var signedDataList = [];
+  signedDataList.push(notificationData.pspReference);
+  signedDataList.push(notificationData.originalReference);
+  signedDataList.push(notificationData.merchantAccountCode);
+  signedDataList.push(notificationData.merchantReference);
+  signedDataList.push(notificationData.value);
+  signedDataList.push(notificationData.currency);
+  signedDataList.push(notificationData.eventCode);
+  signedDataList.push(notificationData.success);
+  return signedDataList.join(constants.NOTIFICATION_PAYLOAD_DATA_SEPARATOR);
+}
+;
+function calculateHmacSignature(request) {
+  try {
+    var hmacKey = Encoding.fromHex(new Bytes(AdyenConfigs.getAdyenHmacKey(), 'UTF-8'));
+    var payload = constructPayload(request.form);
+    var macSHA256 = new Mac(Mac.HMAC_SHA_256);
+    var merchantSignature = Encoding.toBase64(macSHA256.digest(payload, hmacKey));
+    return merchantSignature;
+  } catch (e) {
+    AdyenLogs.fatal_log("Cannot calculate HMAC signature: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  }
+  ;
+}
+;
 module.exports = {
-  checkGivenCredentials: checkGivenCredentials
+  checkGivenCredentials: checkGivenCredentials,
+  calculateHmacSignature: calculateHmacSignature
 };

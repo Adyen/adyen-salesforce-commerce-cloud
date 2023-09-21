@@ -3,6 +3,7 @@
 var URLUtils = require('dw/web/URLUtils');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
+var Transaction = require('dw/system/Transaction');
 var adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 var constants = require('*/cartridge/adyenConstants/constants');
 var payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
@@ -36,6 +37,10 @@ function handlePaymentsDetailsResult(adyenPaymentInstrument, detailsResult, orde
   if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf(detailsResult.resultCode) > -1) {
     return handleAuthorised(adyenPaymentInstrument, detailsResult, order, options);
   }
+  Transaction.wrap(function () {
+    order.custom.Adyen_pspReference = detailsResult.pspReference;
+    order.custom.Adyen_eventCode = detailsResult.resultCode;
+  });
   return payment.handlePaymentError(order, 'placeOrder', options);
 }
 function isOrderAlreadyProcessed(order) {
