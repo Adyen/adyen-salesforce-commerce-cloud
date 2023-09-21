@@ -35,6 +35,8 @@ module.exports = {
     CASHAPP: 'cashapp',
   },
 
+  CAN_SKIP_SUMMARY_PAGE: ['applepay','cashapp',],
+
   PLATFORMS: {
     SFRA: 'SFRA',
     SG: 'SG'

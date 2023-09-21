@@ -146,8 +146,7 @@ function handleExpressPayment(reqDataObj, currentBasket) {
 
 function canSkipSummaryPage(reqDataObj) {
   if (
-    AdyenHelper.isApplePay(reqDataObj.paymentMethod?.type) ||
-    AdyenHelper.isCashApp(reqDataObj.paymentMethod?.type)
+    constants.CAN_SKIP_SUMMARY_PAGE.indexOf(reqDataObj.paymentMethod?.type) >= 0
   ) {
     return true;
   }

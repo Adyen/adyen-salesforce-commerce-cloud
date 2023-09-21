@@ -317,17 +317,8 @@ function getAmazonpayConfig() {
   };
 }
 
-function getApplePayConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      helpers.assignPaymentMethodValue();
-      helpers.paymentFromComponent(state.data, component);
-    },
-  };
-}
-
-function getCashAppConfig() {
+// Used for Apple Pay and Cash App
+function getPaymentFromComponentDefaultConfig() {
   return {
     showPayButton: true,
     onSubmit: (state, component) => {
@@ -377,11 +368,11 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
-    applepay: getApplePayConfig(),
+    applepay: getPaymentFromComponentDefaultConfig(),
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
-    cashapp: getCashAppConfig(),
+    cashapp: getPaymentFromComponentDefaultConfig(),
   };
 }
 
@@ -391,6 +382,6 @@ module.exports = {
   getGooglePayConfig,
   getAmazonpayConfig,
   setCheckoutConfiguration,
-  getCashAppConfig,
+  getPaymentFromComponentDefaultConfig,
   actionHandler,
 };
