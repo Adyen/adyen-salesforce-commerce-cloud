@@ -409,6 +409,26 @@ ul{
     margin-right: 48px;
 }
 
+.log-list{
+    margin-left: 17px;
+    margin-right: 48px;
+}
+
+.log-list > li {
+    border: 1px solid #ced4da;
+    color: #34444f;
+    height: 95px;
+    border-bottom: none;
+}
+
+.log-list > li .form-check-input{
+    margin-left: 23px;
+}
+
+.log-list .log-checkbox-fatal {
+    border-bottom: 1px solid #ced4da;
+}
+
 .draggable-list li {
     background-color: #fff;
     display: flex;
