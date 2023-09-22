@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function getAdyenLogs() {
-    const htmlContent = await (await fetch(window.logoUrl)).text();
+    const htmlContent = await (await fetch(window.logCenterUrl)).text();
     const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
     const logLocations = Array.from(doc.body.getElementsByTagName('a')).map(
       (log) => log.href,
