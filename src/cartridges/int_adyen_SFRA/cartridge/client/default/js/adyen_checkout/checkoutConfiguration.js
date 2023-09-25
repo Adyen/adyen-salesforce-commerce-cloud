@@ -142,6 +142,27 @@ function handlePartialPaymentSuccess() {
   createElementsToShowRemainingGiftCardAmount();
 }
 
+function makePaymentsRequest(giftCardData, giftcardBalance, reject) {
+  const brandSelect = document.getElementById('giftCardSelect');
+  const selectedBrandIndex = brandSelect.selectedIndex;
+  const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+  const partialPaymentRequest = {
+    paymentMethod: giftCardData,
+    amount: giftcardBalance,
+    partialPaymentsOrder: {
+      pspReference: store.adyenOrderData.pspReference,
+      orderData: store.adyenOrderData.orderData,
+    },
+    giftcardBrand,
+  };
+  const partialPaymentResponse = makePartialPayment(partialPaymentRequest);
+  if (partialPaymentResponse?.error) {
+    reject();
+  } else {
+    handlePartialPaymentSuccess();
+  }
+}
+
 function getGiftCardConfig() {
   let giftcardBalance;
   return {
@@ -214,38 +235,24 @@ function getGiftCardConfig() {
       // Make a POST /orders request
       // Create an order for the total transaction amount
       const giftCardData = requestData.paymentMethod;
-      $.ajax({
-        type: 'POST',
-        url: window.partialPaymentsOrderUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
-        async: false,
-        success: (data) => {
-          if (data.resultCode === 'Success') {
-            // make payments call including giftcard data and order data
-            const brandSelect = document.getElementById('giftCardSelect');
-            const selectedBrandIndex = brandSelect.selectedIndex;
-            const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
-            const partialPaymentRequest = {
-              paymentMethod: giftCardData,
-              amount: giftcardBalance,
-              partialPaymentsOrder: {
-                pspReference: data.pspReference,
-                orderData: data.orderData,
-              },
-              giftcardBrand,
-            };
-            const partialPaymentResponse = makePartialPayment(
-              partialPaymentRequest,
-            );
-            if (partialPaymentResponse?.error) {
-              reject();
-            } else {
-              handlePartialPaymentSuccess();
+      if (store.adyenOrderData) {
+        makePaymentsRequest(giftCardData, giftcardBalance, reject);
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: window.partialPaymentsOrderUrl,
+          data: JSON.stringify(requestData),
+          contentType: 'application/json; charset=utf-8',
+          async: false,
+          success: (data) => {
+            if (data.resultCode === 'Success') {
+              store.adyenOrderData = data;
+              // make payments call including giftcard data and order data
+              makePaymentsRequest(giftCardData, giftcardBalance, reject);
             }
-          }
-        },
-      });
+          },
+        });
+      }
     },
     onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
