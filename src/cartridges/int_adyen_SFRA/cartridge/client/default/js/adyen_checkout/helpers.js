@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const constants = require('../constants');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -39,7 +40,7 @@ function paymentFromComponent(data, component = {}) {
       setOrderFormData(response);
       if (response.fullResponse?.action) {
         component.handleAction(response.fullResponse.action);
-      } else if (response.isApplePay) {
+      } else if (response.skipSummaryPage) {
         document.querySelector('#result').value = JSON.stringify(response);
         document.querySelector('#showConfirmationForm').submit();
       } else if (response.paymentError || response.error) {
@@ -72,13 +73,7 @@ function displaySelectedMethod(type) {
     : type;
   resetPaymentMethod();
 
-  const disabledSubmitButtonMethods = [
-    'paypal',
-    'paywithgoogle',
-    'googlepay',
-    'amazonpay',
-    'applepay',
-  ];
+  const disabledSubmitButtonMethods = constants.DISABLED_SUBMIT_BUTTON_METHODS;
   if (window.klarnaWidgetEnabled) {
     disabledSubmitButtonMethods.push('klarna');
   }
