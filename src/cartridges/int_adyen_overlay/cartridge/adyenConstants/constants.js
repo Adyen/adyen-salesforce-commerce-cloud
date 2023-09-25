@@ -34,6 +34,8 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
   },
 
+  CAN_SKIP_SUMMARY_PAGE: ['applepay','cashapp',],
+
   PLATFORMS: {
     SFRA: 'SFRA',
     SG: 'SG'
@@ -95,7 +97,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.40.0',
+    SFRA: '5.44.0',
     SG: '5.28.0'
   },
   VERSION: '23.2.1',
