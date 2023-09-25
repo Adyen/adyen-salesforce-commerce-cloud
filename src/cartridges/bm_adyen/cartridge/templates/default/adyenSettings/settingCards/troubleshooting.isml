@@ -19,28 +19,28 @@
                   <ul class="log-list">
                      <li class='log-checkbox-debug'>
                         <label class="form-title mt-4" for="debugLogs">Debug Log</label>
-                        <input class="form-check-input" type="checkbox" name="AdyenDebugLogs" id="debugLogs">
+                        <input class="form-check-input" type="checkbox" name="AdyenDebugLogs" id="debugLogs" value="debug">
                         <small id="debugLogsHelp" class="form-text mb-1">
                         For checking order data, order create date delay, current date, and service config calls to Adyen Checkout API.
                         </small>
                      </li>
                      <li class='log-checkbox-info'>
                         <label class="form-title mt-4" for="infoLogs">Info Log</label>
-                        <input class="form-check-input" type="checkbox" name="AdyenInfoLogs" id="infoLogs">
+                        <input class="form-check-input" type="checkbox" name="AdyenInfoLogs" id="infoLogs" value="info">
                         <small id="infoLogsHelp" class="form-text mb-1">
                         For informational messages about payment results, webhooks processing, authorization, and order updates.
                         </small>
                      </li>
                      <li class='log-checkbox-error'>
                         <label class="form-title mt-4" for="errorLogs">Error Log</label>
-                        <input class="form-check-input" type="checkbox" name="AdyenErrorLogs" id="errorLogs">
+                        <input class="form-check-input" type="checkbox" name="AdyenErrorLogs" id="errorLogs" value="error">
                         <small id="errorLogsHelp" class="form-text mb-1">
                         For errors related to configuration, payment, order processing, card details, and components.
                         </small>
                      </li>
                      <li class='log-checkbox-fatal'>
                         <label class="form-title mt-4" for="fatalLogs">Fatal Log</label>
-                        <input class="form-check-input" type="checkbox" name="AdyenFatalLogs" id="fatalLogs">
+                        <input class="form-check-input" type="checkbox" name="AdyenFatalLogs" id="fatalLogs" value="fatal">
                         <small id="errorLogsHelp" class="form-text mb-1">
                         For severe errors preventing the cartridge from functioning properly.
                         </small>
