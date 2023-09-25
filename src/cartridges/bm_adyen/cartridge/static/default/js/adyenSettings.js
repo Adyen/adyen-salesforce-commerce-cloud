@@ -326,29 +326,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
-  downloadLogsButton.addEventListener('click', async () => {
-    const htmlContent = await (await fetch(window.logCenterUrl)).text();
-    const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
-    const logLocations = Array.from(doc.body.getElementsByTagName('a')).map(
-      (log) => log.href,
-    );
-    const logsToDownload = [];
-    const checkboxes = [
-      debugLogCheckbox,
-      infoLogCheckbox,
-      errorLogCheckbox,
-      fatalLogCheckbox,
-    ];
+  downloadLogsButton.addEventListener('click', () => {
+    (async () => {
+      const htmlContent = await (await fetch(window.logCenterUrl)).text();
+      const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+      const logLocations = Array.from(doc.body.getElementsByTagName('a')).map(
+        (log) => log.href,
+      );
+      const logsToDownload = [];
+      const checkboxes = [
+        debugLogCheckbox,
+        infoLogCheckbox,
+        errorLogCheckbox,
+        fatalLogCheckbox,
+      ];
 
-    checkboxes.forEach((checkbox) => {
-      if (checkbox.checked) {
-        // eslint-disable-next-line
-        logsToDownload.push(logLocations.filter((name) =>name.includes(`custom-Adyen_${checkbox.value}`)),);
-      }
-    });
-
-    const selectedLogs = Array.prototype.concat.apply([], logsToDownload);
-    selectedLogs.forEach((item) => downloadFile(item));
+      checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+          // eslint-disable-next-line
+              logsToDownload.push(logLocations.filter((name) =>name.includes(`custom-Adyen_${checkbox.value}`)),);
+        }
+      });
+      const selectedLogs = Array.prototype.concat.apply([], logsToDownload);
+      selectedLogs.forEach((item) => downloadFile(item));
+    })();
   });
 
   // add event listener to maintain form updates
