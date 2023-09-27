@@ -142,7 +142,7 @@ function handlePartialPaymentSuccess() {
   createElementsToShowRemainingGiftCardAmount();
 }
 
-function makePaymentsRequest(giftCardData, giftcardBalance, reject) {
+function makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject) {
   const brandSelect = document.getElementById('giftCardSelect');
   const selectedBrandIndex = brandSelect.selectedIndex;
   const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
@@ -236,7 +236,7 @@ function getGiftCardConfig() {
       // Create an order for the total transaction amount
       const giftCardData = requestData.paymentMethod;
       if (store.adyenOrderData) {
-        makePaymentsRequest(giftCardData, giftcardBalance, reject);
+        makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
       } else {
         $.ajax({
           type: 'POST',
@@ -248,7 +248,7 @@ function getGiftCardConfig() {
             if (data.resultCode === 'Success') {
               store.adyenOrderData = data;
               // make payments call including giftcard data and order data
-              makePaymentsRequest(giftCardData, giftcardBalance, reject);
+              makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
             }
           },
         });
