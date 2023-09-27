@@ -16,6 +16,7 @@
          const backgroundImageStorage = "!id!c_AdyenGiving_backgroundUrl!instance_type!sandbox!group_id!Adyen";
          const logoImageStorage = "!id!c_AdyenGiving_logoUrl!instance_type!sandbox!group_id!Adyen";
          window.classicConfigPageUrl = token +"#" + commonPath + classicPagePath + classicPageSubpath;
+         window.logCenterUrl = "/on/demandware.servlet/webdav/Sites/Logs";
       </script>
    </head>
    <header class="header row bg-white mt-4 mb-4">
@@ -59,6 +60,9 @@
                   <isinclude template="adyenSettings/settingCards/posSettings"/>
                   <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
                   <isinclude template="adyenSettings/settingCards/optionalSettings"/>
+               </form>
+               <form id="troubleshootingForm">
+                  <isinclude template="adyenSettings/settingCards/troubleshooting.isml"/>
                </form>
             </div>
          </div>

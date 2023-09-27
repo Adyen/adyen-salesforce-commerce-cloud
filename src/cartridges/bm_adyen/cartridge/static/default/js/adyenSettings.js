@@ -17,6 +17,7 @@ const expressPaymentMethods = [
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
+  const troubleshootingForm = document.querySelector('#troubleshootingForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
@@ -29,6 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const hmacKey = document.querySelector('#hmacKey');
   const merchAccount = document.getElementById('merchantAccount');
   const classicPageButton = document.querySelector('#classicButton');
+  const debugLogCheckbox = document.getElementById('debugLogs');
+  const infoLogCheckbox = document.getElementById('infoLogs');
+  const errorLogCheckbox = document.getElementById('errorLogs');
+  const fatalLogCheckbox = document.getElementById('fatalLogs');
+  const troubleshootingCheckboxes = [
+    debugLogCheckbox,
+    infoLogCheckbox,
+    errorLogCheckbox,
+    fatalLogCheckbox,
+  ];
+  const downloadLogsButton = document.getElementById('downloadLogsButton');
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
   const isValid = 'is-valid';
@@ -169,6 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // redirect to classic page
   function getLink() {
     window.open(window.classicConfigPageUrl);
+  }
+
+  function downloadFile(filePath) {
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = filePath.substr(filePath.lastIndexOf('/') + 1);
+    link.click();
   }
 
   function enableformButtons() {
@@ -313,6 +332,40 @@ document.addEventListener('DOMContentLoaded', () => {
   adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
 
   adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
+
+  troubleshootingForm.addEventListener('input', () => {
+    downloadLogsButton.classList.add('disabled');
+    troubleshootingCheckboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        downloadLogsButton.classList.remove('disabled');
+        downloadLogsButton.classList.add('enabled');
+      }
+    });
+  });
+
+  downloadLogsButton.addEventListener('click', () => {
+    (async () => {
+      const htmlContent = await (await fetch(window.logCenterUrl)).text();
+      const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+      const logLocations = Array.from(doc.body.getElementsByTagName('a')).map(
+        (log) => log.href,
+      );
+      const logsToDownload = [];
+
+      troubleshootingCheckboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+          // eslint-disable-next-line
+              logsToDownload.push(logLocations.filter((name) =>name.includes(`custom-Adyen_${checkbox.value}`)),);
+        }
+      });
+      const selectedLogs = Array.prototype.concat.apply([], logsToDownload);
+      selectedLogs.forEach((item) => downloadFile(item));
+      downloadLogsButton.classList.add('disabled');
+      troubleshootingCheckboxes.forEach((checkbox) => {
+        checkbox.checked = false;
+      });
+    })();
+  });
 
   // add event listener to maintain form updates
   form.addEventListener('change', (event) => {
