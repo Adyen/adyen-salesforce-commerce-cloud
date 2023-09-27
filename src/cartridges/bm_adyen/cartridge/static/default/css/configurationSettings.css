@@ -419,6 +419,7 @@ ul{
     color: #34444f;
     height: 95px;
     border-bottom: none;
+    padding-bottom: 110px;
 }
 
 .log-list > li .form-check-input{
@@ -427,6 +428,7 @@ ul{
 
 .log-list .log-checkbox-fatal {
     border-bottom: 1px solid #ced4da;
+    padding-bottom: 95px;
 }
 
 .draggable-list li {

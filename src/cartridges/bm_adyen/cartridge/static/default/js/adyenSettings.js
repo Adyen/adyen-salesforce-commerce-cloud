@@ -17,6 +17,7 @@ const expressPaymentMethods = [
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
+  const troubleshootingForm = document.querySelector('#troubleshootingForm');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
@@ -33,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const infoLogCheckbox = document.getElementById('infoLogs');
   const errorLogCheckbox = document.getElementById('errorLogs');
   const fatalLogCheckbox = document.getElementById('fatalLogs');
+  const troubleshootingCheckboxes = [
+    debugLogCheckbox,
+    infoLogCheckbox,
+    errorLogCheckbox,
+    fatalLogCheckbox,
+  ];
   const downloadLogsButton = document.getElementById('downloadLogsButton');
   const apiKeyVal = document.getElementById('apiKey');
   const changedSettings = [];
@@ -326,6 +333,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
+  troubleshootingForm.addEventListener('input', () => {
+    downloadLogsButton.classList.add('disabled');
+    troubleshootingCheckboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        downloadLogsButton.classList.remove('disabled');
+        downloadLogsButton.classList.add('enabled');
+      }
+    });
+  });
+
   downloadLogsButton.addEventListener('click', () => {
     (async () => {
       const htmlContent = await (await fetch(window.logCenterUrl)).text();
@@ -334,14 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
         (log) => log.href,
       );
       const logsToDownload = [];
-      const checkboxes = [
-        debugLogCheckbox,
-        infoLogCheckbox,
-        errorLogCheckbox,
-        fatalLogCheckbox,
-      ];
 
-      checkboxes.forEach((checkbox) => {
+      troubleshootingCheckboxes.forEach((checkbox) => {
         if (checkbox.checked) {
           // eslint-disable-next-line
               logsToDownload.push(logLocations.filter((name) =>name.includes(`custom-Adyen_${checkbox.value}`)),);
@@ -349,6 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const selectedLogs = Array.prototype.concat.apply([], logsToDownload);
       selectedLogs.forEach((item) => downloadFile(item));
+      downloadLogsButton.classList.add('disabled');
+      troubleshootingCheckboxes.forEach((checkbox) => {
+        checkbox.checked = false;
+      });
     })();
   });
 
