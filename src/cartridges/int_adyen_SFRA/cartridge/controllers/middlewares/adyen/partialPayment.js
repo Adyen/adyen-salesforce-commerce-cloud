@@ -64,6 +64,10 @@ function makePartialPayment(req, res, next) {
     const partialPaymentsOrderData = JSON.parse(
       session.privacy.partialPaymentData,
     );
+    partialPaymentsOrderData.order = {
+      orderData: response?.order?.orderData,
+      pspReference: response?.order?.pspReference,
+    };
     partialPaymentsOrderData.remainingAmount = response?.order?.remainingAmount;
     session.privacy.partialPaymentData = JSON.stringify(
       partialPaymentsOrderData,
