@@ -1,0 +1,12 @@
+{
+	"hooks": [
+		{
+			"name": "app.payment.processor.Adyen_Component",
+			"script": "./payment/processor/Adyen_Component"
+		},
+		{
+			"name": "app.payment.processor.Adyen_POS",
+			"script": "./payment/processor/Adyen_POS"
+		}
+	]
+}

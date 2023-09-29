@@ -1,0 +1,12 @@
+<!--- Generic Component--->
+<div class="tab-pane active adyen-component-content" id="adyen-component-content" role="tabpanel">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control"
+               name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+               value="AdyenComponent"
+        >
+        <fieldset class="">
+            <isinclude template="checkout/billing/adyenComponentForm" />
+        </fieldset>
+    </fieldset>
+</div>

@@ -1,0 +1,271 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+	This template visualizes the last step of the checkout, the order summary
+	page prior to the actual order placing.
+	It displays the complete content of the cart including product line items,
+	bonus products, redeemed coupons and gift certificate line items.
+</iscomment>
+
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script>
+    var clientKey = "${AdyenConfigs.getAdyenClientKey()}";
+    var loadingContext = "${AdyenHelper.getLoadingContext()}";
+    var environment = "${AdyenHelper.getCheckoutEnvironment()}";
+    var locale = "${request.locale}";
+    window.Configuration = {clientKey, loadingContext, environment, locale};
+    window.summarySubmitUrl = "${URLUtils.https('COSummary-Submit')}";
+    window.isAdyenPayment = ${dw.order.PaymentMgr.getPaymentMethod('AdyenComponent').isActive()
+       || (dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD')
+       && ['Adyen_Component', 'ADYEN_CREDIT'].indexOf(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID()) > -1) }
+</script>
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>
+
+<isreportcheckout checkoutstep="${5}" checkoutname="${'OrderSummary'}"/>
+	<isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
+		<ischeckoutprogressindicator step="3" multishipping="false" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+	<iselse/>
+		<ischeckoutprogressindicator step="4" multishipping="true" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+	</isif>
+
+	<isif condition="${pdict.PlaceOrderError != null}">
+		<div class="error-form">${Resource.msg(pdict.PlaceOrderError.code,'checkout',null)}</div>
+	</isif>
+
+		<table class="item-list" id="cart-table" cellspacing="0">
+
+			<thead>
+				<tr>
+					<th class="section-header"  colspan="2">${Resource.msg('global.product','locale',null)}</th>
+					<th class="section-header"  colspan="2">${Resource.msg('global.qty','locale',null)}</th>
+					<th class="section-header header-total-price">${Resource.msg('global.totalprice','locale',null)}</th>
+				</tr>
+			</thead>
+
+			<iscomment>render each shipment</iscomment>
+			<isset name="shipmentCount" value="${0}" scope="page"/>
+
+			<isloop items="${pdict.Basket.shipments}" var="shipment" status="shipmentloopstate">
+
+				<isif condition="${shipment.productLineItems.size() > 0 || shipment.giftCertificateLineItems.size() > 0}">
+
+					<isset name="shipmentCount" value="${shipmentCount+1}" scope="page"/>
+					<isif condition="${pdict.Basket.shipments.size() > 1}">
+						<tr class="cart-row">
+							<td colspan="5">
+								<div class="shipment-label">${Resource.msgf('multishippingshipments.shipment','checkout',null, shipmentCount)}</div>
+							</td>
+						</tr>
+					</isif>
+
+					<isloop items="${shipment.productLineItems}" var="productLineItem" status="pliloopstate">
+
+						<tr class="cart-row <isif condition="${pliloopstate.first}"> first <iselseif condition="${pliloopstate.last}"> last</isif>">
+
+							<td class="item-image">
+								<isif condition="${productLineItem.product != null && productLineItem.product.getImage('small',0) != null}">
+									<img src="${productLineItem.product.getImage('small',0).getURL()}" alt="${productLineItem.product.getImage('small',0).alt}" title="${productLineItem.product.getImage('small',0).title}"/>
+								<iselse/>
+									<img src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${productLineItem.productName}" title="${productLineItem.productName}"/>
+								</isif>
+								<isif condition="${productLineItem.bonusProductLineItem}">
+									<div class="bonus-item">
+										<isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+										<isinclude template="checkout/components/displaybonusproductprice" />
+										<isprint value="${bonusProductPriceValue}" />
+									</div>
+								</isif>
+							</td>
+
+							<td class="item-details">
+								<iscomment>Display product line and product using module</iscomment>
+								<isdisplayliproduct p_productli="${productLineItem}" p_editable="${false}"/>
+							</td>
+
+							<td class="item-quantity">
+								<isprint value="${productLineItem.quantity}" />
+							</td>
+
+							<td class="item-quantity-details">
+								<div class="item-stock">
+									<isdisplayproductavailability p_productli="${productLineItem}"/>
+								</div>
+							</td>
+
+							<td class="item-total">
+								<isif condition="${productLineItem.bonusProductLineItem}">
+									<div class="bonus-item">
+										<isprint value="${bonusProductPriceValue}" />
+									</div>
+								<iselse/>
+									<iscomment>Otherwise, render price using call to adjusted price </iscomment>
+									<isprint value="${productLineItem.adjustedPrice}" />
+								</isif>
+								<isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+									<isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+										<isif condition="${optionLI.price > 0}">
+											<p>+ <isprint value="${optionLI.adjustedPrice}"/></p>
+										</isif>
+									</isloop>
+								</isif>
+							</td>
+
+						</tr>
+
+					</isloop>
+
+					<isloop items="${shipment.giftCertificateLineItems}" var="giftCertificateLineItem" status="gcliloopstate">
+
+						<tr  class="cart-row <isif condition="${gcliloopstate.first}"> first <iselseif condition="${gcliloopstate.last}"> last</isif>">
+
+							<td class="item-image">
+								<img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="<isprint value="${giftCertificateLineItem.lineItemText}"/>" />
+							</td>
+
+							<td class="item-details">
+								<div class="gift-certificate-to">
+									<span class="label">${Resource.msg('global.to','locale',null)}:</span>
+									<span class="value">
+										<isprint value="${giftCertificateLineItem.recipientName}"/>
+										(<isprint value="${giftCertificateLineItem.recipientEmail}"/>)
+									</span>
+								</div>
+								<div class="gift-certificate-from">
+									<span class="label">${Resource.msg('global.from','locale',null)}:</span>
+									<span class="value"><isprint value="${giftCertificateLineItem.senderName}"/></span>
+								</div>
+							</td>
+
+							<td class="item-quantity" colspan="2">1</td>
+
+							<td  class="item-total">
+								<isprint value="${giftCertificateLineItem.price}"/>
+							</td>
+
+						</tr>
+
+					</isloop>
+
+				</isif>
+
+			</isloop>
+
+			<tfoot>
+
+			<iscomment>RENDER COUPON/ORDER DISCOUNTS</iscomment>
+			<isloop items="${pdict.Basket.couponLineItems}" var="couponLineItem" status="cliloopstate">
+
+				<isif condition="${couponLineItem.valid}">
+
+					<tr class="cart-row <isif condition="${cliloopstate.first}"> first <iselseif condition="${cliloopstate.last}"> last</isif>">
+
+						<td class="item-image"><!-- BLANK IMAGE CELL --></td>
+
+						<td  class="item-details">
+							<div class="name">${Resource.msg('summary.coupon','checkout',null)}</div>
+							<div class="cart-coupon">
+								<span class="label">${Resource.msg('summary.couponnumber','checkout',null)}</span>
+								<span class="value"><isprint value="${couponLineItem.couponCode}"/></span>
+							</div>
+							<isloop items="${couponLineItem.priceAdjustments}" var="Promo" status="loopstate">
+								<div class="discount clearfix <isif condition="${loopstate.first}"> first <iselseif condition="${loopstate.last}"> last</isif>">
+									<span class="label"><isprint value="${Promo.lineItemText}"/></span>
+									<span class="value">(<isprint value="${Promo.price}"/>)</span>
+								</div>
+							</isloop>
+						</td>
+
+						<td class="item-quantity">&nbsp;</td>
+
+						<td class="item-quantity-details">
+							<div class="item-edit-details">
+								<a href="${URLUtils.url('Cart-Show')}">${Resource.msg('global.editdetails','locale',null)}</a>
+							</div>
+						</td>
+
+						<td class="item-total">
+							<isif condition="${couponLineItem.applied}">
+								<span class="coupon-applied">${Resource.msg('summary.applied','checkout',null)}</span>
+							<iselse/>
+								<span class="coupon-not-applied">${Resource.msg('summary.notapplied','checkout',null)}</span>
+							</isif>
+						</td>
+
+					</tr>
+
+				</isif>
+
+			</isloop>
+
+			<isloop items="${pdict.Basket.priceAdjustments}" var="priceAdjustment" status="cliloopstate">
+
+				<tr>
+					<td colspan="5" class="cart-promo">
+						<div>
+							<span class="label">${Resource.msg('summary.orderdiscount','checkout',null)}</span>
+							<span class="value"><isprint value="${priceAdjustment.lineItemText}"/></span>
+						</div>
+					</td>
+				</tr>
+
+			</isloop>
+
+
+
+			</tfoot>
+
+		</table>
+
+		<isslot id="placeorder-slot" description="Slot next to Order Totals in the footer of the Place Order page." context="global"/>
+		<div class="order-summary-footer">
+
+		    <div class="place-order-totals">
+
+                <isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('summary.ordertotal','checkout',null)}"/>
+            </div>
+            <iscomment> ### Custom Adyen cartridge start ### </iscomment>
+			<form id="submit-order-form" action="${URLUtils.https('COSummary-Submit')}" method="post" class="submit-order">
+			    <iscomment> ### Custom Adyen cartridge end ### </iscomment>
+				<fieldset>
+					<div class="form-row">
+						<a class="back-to-cart" href="${URLUtils.url('Cart-Show')}">
+							<isprint value="${Resource.msg('summary.editcart','checkout',null)}" encoding="off" />
+						</a>
+						<button class="button-fancy-large" type="submit" name="submit" value="${Resource.msg('global.submitorder','locale',null)}">
+							${Resource.msg('global.submitorder','locale',null)}
+						</button>
+					</div>
+			        <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					<iscomment>
+                    Set the brandcode and issuerId in session for when user hits the back button on Adyen hpp
+                    </iscomment>
+                    <isif condition="${!empty(pdict.CurrentHttpParameterMap.brandCode.value) || !empty(session.custom.brandCode)}">
+                       <isset name="brandCode" value="${!empty(pdict.CurrentHttpParameterMap.brandCode.value) ? pdict.CurrentHttpParameterMap.brandCode.value : session.custom.brandCode}" scope="page"/>
+                       <input type="hidden" name="brandCode" value="${brandCode}" />
+                       <isif condition="${!empty(pdict.CurrentHttpParameterMap.issuer.value) || !empty(session.custom.issuer)}">
+                          <isset name="issuer" value="${!empty(pdict.CurrentHttpParameterMap.issuer.value) ? pdict.CurrentHttpParameterMap.issuer.value : session.custom.issuer}" scope="session"/>
+                          <input type="hidden" name="issuer" value="${session.custom.issuer}" />
+                       </isif>
+                       <isset name="brandCode" value="${!empty(pdict.CurrentHttpParameterMap.brandCode.value) ? pdict.CurrentHttpParameterMap.brandCode.value : session.custom.brandCode}" scope="session"/>
+                       <isset name="dob" value="${!empty(pdict.CurrentHttpParameterMap.dob.value) ? pdict.CurrentHttpParameterMap.dob.value : ''}" scope="session"/>
+                       <isset name="gender" value="${!empty(pdict.CurrentHttpParameterMap.gender.value) ? pdict.CurrentHttpParameterMap.dob.value : ''}" scope="session"/>
+                    </isif>
+				</fieldset>
+			</form>
+		</div>
+</isdecorate>
+
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+<div id="action-modal-SG" class="modal">
+    <div class="action-modal-content-SG">
+        <div id="action-container" />
+    </div>
+</div>
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>
