@@ -324,11 +324,21 @@ function getAmazonpayConfig() {
   };
 }
 
-// Used for Apple Pay and Cash App
-function getPaymentFromComponentDefaultConfig() {
+function getApplePayConfig() {
   return {
     showPayButton: true,
     onSubmit: (state, component) => {
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+  };
+}
+
+function getCashAppConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
       helpers.paymentFromComponent(state.data, component);
     },
@@ -375,11 +385,11 @@ function setCheckoutConfiguration() {
     paypal: getPaypalConfig(),
     amazonpay: getAmazonpayConfig(),
     giftcard: getGiftCardConfig(),
-    applepay: getPaymentFromComponentDefaultConfig(),
+    applepay: getApplePayConfig(),
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
-    cashapp: getPaymentFromComponentDefaultConfig(),
+    cashapp: getCashAppConfig(),
   };
 }
 
