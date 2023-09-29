@@ -283,8 +283,12 @@ document.getElementById('email')?.addEventListener('change', (e) => {
 });
 
 // used by renderGiftCardComponent.js
-document.addEventListener(INIT_CHECKOUT_EVENT, () => {
-  initializeCheckout();
+document.addEventListener(INIT_CHECKOUT_EVENT, async () => {
+  if (Object.keys(store.componentsObj).length !== 0) {
+    await unmountComponents();
+  }
+
+  await initializeCheckout();
 });
 
 /**
