@@ -39,6 +39,7 @@ let giftCardsHelper = {
         paymentInstrument.paymentMethod,
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.paymentTransaction.transactionID = parsedGiftCardObj.giftCard.pspReference;
       paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
       paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = parsedGiftCardObj.giftCard.name;
       paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
