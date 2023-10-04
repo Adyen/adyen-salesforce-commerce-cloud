@@ -104,12 +104,19 @@ function handleExpressPayment(reqDataObj, currentBasket) {
     setBillingAndShippingAddress(reqDataObj, currentBasket);
   }
 }
+function canSkipSummaryPage(reqDataObj) {
+  var _reqDataObj$paymentMe;
+  if (constants.CAN_SKIP_SUMMARY_PAGE.indexOf((_reqDataObj$paymentMe = reqDataObj.paymentMethod) === null || _reqDataObj$paymentMe === void 0 ? void 0 : _reqDataObj$paymentMe.type) >= 0) {
+    return true;
+  }
+  return false;
+}
 
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
-  var _currentBasket$custom2, _reqDataObj$paymentMe;
+  var _currentBasket$custom2;
   var reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     return handleCancellation(res, next, reqDataObj);
@@ -156,9 +163,9 @@ function paymentFromComponent(req, res, next) {
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
-  if (AdyenHelper.isApplePay((_reqDataObj$paymentMe = reqDataObj.paymentMethod) === null || _reqDataObj$paymentMe === void 0 ? void 0 : _reqDataObj$paymentMe.type)) {
-    result.isApplePay = true;
-  }
+
+  // Check if summary page can be skipped in case payment is already authorized
+  result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
   result.orderNo = order.orderNo;
   result.orderToken = order.orderToken;
   res.json(result);

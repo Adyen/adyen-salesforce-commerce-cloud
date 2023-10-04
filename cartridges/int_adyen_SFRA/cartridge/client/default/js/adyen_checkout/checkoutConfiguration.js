@@ -140,6 +140,26 @@ function handlePartialPaymentSuccess() {
   attachGiftCardCancelListener();
   createElementsToShowRemainingGiftCardAmount();
 }
+function makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject) {
+  var brandSelect = document.getElementById('giftCardSelect');
+  var selectedBrandIndex = brandSelect.selectedIndex;
+  var giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+  var partialPaymentRequest = {
+    paymentMethod: giftCardData,
+    amount: giftcardBalance,
+    partialPaymentsOrder: {
+      pspReference: store.adyenOrderData.pspReference,
+      orderData: store.adyenOrderData.orderData
+    },
+    giftcardBrand: giftcardBrand
+  };
+  var partialPaymentResponse = makePartialPayment(partialPaymentRequest);
+  if (partialPaymentResponse !== null && partialPaymentResponse !== void 0 && partialPaymentResponse.error) {
+    reject();
+  } else {
+    handlePartialPaymentSuccess();
+  }
+}
 function getGiftCardConfig() {
   var giftcardBalance;
   return {
@@ -199,36 +219,24 @@ function getGiftCardConfig() {
       // Make a POST /orders request
       // Create an order for the total transaction amount
       var giftCardData = requestData.paymentMethod;
-      $.ajax({
-        type: 'POST',
-        url: window.partialPaymentsOrderUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
-        async: false,
-        success: function success(data) {
-          if (data.resultCode === 'Success') {
-            // make payments call including giftcard data and order data
-            var brandSelect = document.getElementById('giftCardSelect');
-            var selectedBrandIndex = brandSelect.selectedIndex;
-            var giftcardBrand = brandSelect.options[selectedBrandIndex].text;
-            var partialPaymentRequest = {
-              paymentMethod: giftCardData,
-              amount: giftcardBalance,
-              partialPaymentsOrder: {
-                pspReference: data.pspReference,
-                orderData: data.orderData
-              },
-              giftcardBrand: giftcardBrand
-            };
-            var partialPaymentResponse = makePartialPayment(partialPaymentRequest);
-            if (partialPaymentResponse !== null && partialPaymentResponse !== void 0 && partialPaymentResponse.error) {
-              reject();
-            } else {
-              handlePartialPaymentSuccess();
+      if (store.adyenOrderData) {
+        makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: window.partialPaymentsOrderUrl,
+          data: JSON.stringify(requestData),
+          contentType: 'application/json; charset=utf-8',
+          async: false,
+          success: function success(data) {
+            if (data.resultCode === 'Success') {
+              store.adyenOrderData = data;
+              // make payments call including giftcard data and order data
+              makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
             }
           }
-        }
-      });
+        });
+      }
     },
     onSubmit: function onSubmit(state, component) {
       store.selectedMethod = state.data.paymentMethod.type;
@@ -322,6 +330,16 @@ function getApplePayConfig() {
     }
   };
 }
+function getCashAppConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: function onSubmit(state, component) {
+      $('#dwfrm_billing').trigger('submit');
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    }
+  };
+}
 function getKlarnaConfig() {
   var _window = window,
     klarnaWidgetEnabled = _window.klarnaWidgetEnabled;
@@ -366,7 +384,8 @@ function setCheckoutConfiguration() {
     applepay: getApplePayConfig(),
     klarna: getKlarnaConfig(),
     klarna_account: getKlarnaConfig(),
-    klarna_paynow: getKlarnaConfig()
+    klarna_paynow: getKlarnaConfig(),
+    cashapp: getCashAppConfig()
   };
 }
 module.exports = {

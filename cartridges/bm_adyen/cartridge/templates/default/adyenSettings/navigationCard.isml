@@ -34,5 +34,9 @@
         <img src="${URLUtils.staticURL('icons/settings.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
         Additional settings
         </a>
+        <a class="list-group-item navigation-item border-0" href="#troubleshooting">
+        <img src="${URLUtils.staticURL('icons/tools.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Troubleshooting
+        </a>
     </div>
 </div>

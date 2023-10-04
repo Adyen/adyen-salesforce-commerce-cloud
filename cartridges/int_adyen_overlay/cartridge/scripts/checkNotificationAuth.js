@@ -22,6 +22,7 @@
  */
 var Site = require('dw/system/Site');
 var AuthenticationUtils = require('*/cartridge/scripts/libs/libAuthenticationUtils');
+var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function check(request) {
   var baUser = Site.getCurrent().getCustomPreferenceValue('Adyen_notification_user');
   var baPassword = Site.getCurrent().getCustomPreferenceValue('Adyen_notification_password');
@@ -31,6 +32,31 @@ function check(request) {
   }
   return AuthenticationUtils.checkGivenCredentials(baHeader, baUser, baPassword);
 }
+function compareHmac(hmacSignature, merchantSignature) {
+  var bitwiseComparison;
+  if (hmacSignature.length !== merchantSignature.length) {
+    return false;
+  }
+  for (var i = 0; i < hmacSignature.length; i++) {
+    bitwiseComparison |= hmacSignature.charCodeAt(i) ^ merchantSignature.charCodeAt(i);
+  }
+  return bitwiseComparison === 0;
+}
+;
+function validateHmacSignature(request) {
+  var notificationData = request.form;
+  var hmacSignature = notificationData['additionalData.hmacSignature'];
+  var merchantSignature = AuthenticationUtils.calculateHmacSignature(request);
+  // Checking for timing attacks
+  if (compareHmac(hmacSignature, merchantSignature)) {
+    return true;
+  }
+  ;
+  AdyenLogs.error_log("HMAC signatures mismatch, the notification request is not valid");
+  return false;
+}
+;
 module.exports = {
-  check: check
+  check: check,
+  validateHmacSignature: validateHmacSignature
 };
