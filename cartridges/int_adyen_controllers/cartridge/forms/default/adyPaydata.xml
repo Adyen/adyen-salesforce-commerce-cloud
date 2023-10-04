@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <!--Issuer details-->
+	<field formid="issuer" type="string" mandatory="false" />
+	
+    <!--POS terminal-->
+	<field formid="terminalId" type="string" mandatory="false" />
+
+	<!--Adyen Component-->
+	<field formid="adyenStateData" type="string" mandatory="true"/>
+	<field formid="paymentFromComponentStateData" type="string" mandatory="true"/>
+	<field formid="merchantReference" type="string" mandatory="true"/>
+	<field formid="orderToken" type="string" mandatory="true"/>
+	<field formid="result" type="string" mandatory="true"/>
+	<field formid="adyenFingerprint" type="string" mandatory="false" />
+</form>

@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!-- Start: user/miniaddress (customization_defaults) -->
+
+<!---
+	Creates a miniaddress display.
+	
+	Parameter: 
+	address	 	: the address to display
+	privacy	 	: limit address, skip street (optional)
+	addressname	: display the name of the address
+ --->
+<div class="miniaddress">
+	<isif condition="${pdict.addressname != null}">
+		<div class="addressname">
+			<isif condition="${pdict.addressname != ''}">
+				<isprint value="${pdict.addressname}">
+			<iselse>
+				&nbsp;
+			</isif>		
+		</div>
+	</isif>
+	
+	<div class="name">
+		<span class="firstname"><isprint value="${pdict.address.firstName}"></span>
+		<span class="lastname"><isprint value="${pdict.address.lastName}"></span>
+	</div>
+	<div class="address">
+		<isif condition="${empty(pdict.privacy)}">
+			<div class="street">
+				<div class="line1"><isprint value="${pdict.address.address1}"></div>
+				<isif condition="${!empty(pdict.address) && !empty(pdict.address.address2)}">
+					<div class="line2"><isprint value="${pdict.address.address2}"></div>
+				<iselse>				
+					<div class="line2">&nbsp;</div> <!--- empty filler, to get height equally --->
+				</isif>
+			</div>
+		</isif>
+		<div class="location">
+			<isif condition="${!empty(pdict.address) && !empty(pdict.address.city)}">
+                <span class="city"><isprint value="${pdict.address.city}"></span><span class="statedivider">,&nbsp;</span>
+            </isif>
+            <span class="state"><isprint value="${pdict.address.stateCode}">&nbsp;</span><span class="zip"><isprint value="${pdict.address.postalCode}"></span>
+		</div>
+		<div class="country"><isprint value="${pdict.address.countryCode}"></div>
+	</div>
+</div>
+<!-- End: user/miniaddress -->
