@@ -34,6 +34,8 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
   },
 
+  CAN_SKIP_SUMMARY_PAGE: ['applepay','cashapp',],
+
   PLATFORMS: {
     SFRA: 'SFRA',
     SG: 'SG'
@@ -87,6 +89,7 @@ module.exports = {
 
   GIFTCARD_EXPIRATION_MINUTES: 30,
   OMS_NAMESPACE: 'adyen_payment',
+  NOTIFICATION_PAYLOAD_DATA_SEPARATOR : ':',
 
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
@@ -95,8 +98,8 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
   CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.40.0',
+    SFRA: '5.44.0',
     SG: '5.28.0'
   },
-  VERSION: '23.2.1',
+  VERSION: '23.3.0',
 };

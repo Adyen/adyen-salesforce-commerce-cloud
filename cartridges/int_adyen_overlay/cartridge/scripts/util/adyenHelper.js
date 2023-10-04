@@ -538,6 +538,13 @@ var adyenHelperObj = {
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod.type);
     }
+
+    // For authenticated shoppers we are setting the token on other place already
+    // SFRA throws an error if you try to set token again that's why this check is added
+    var tokenAlreadyExists = paymentInstrument.getCreditCardToken();
+    if (!tokenAlreadyExists && result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
+      paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
+    }
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : '';
     order.custom.Adyen_value = '0';
     if (result.donationToken) {
@@ -546,6 +553,9 @@ var adyenHelperObj = {
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
     return true;
+  },
+  getFirstTwoNumbersFromYear: function getFirstTwoNumbersFromYear() {
+    return Math.floor(new Date().getFullYear() / 100);
   },
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi: function getCurrencyValueForApi(amount) {

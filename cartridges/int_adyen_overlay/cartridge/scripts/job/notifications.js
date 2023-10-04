@@ -60,7 +60,7 @@ function processNotifications( /* pdict */
     order = handlerResult.Order;
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
-      if (order === null || order.status !== dw.order.Order.ORDER_STATUS_CREATED || handlerResult.RefusedHpp) {
+      if (order === null || order.status.value !== dw.order.Order.ORDER_STATUS_CREATED || handlerResult.RefusedHpp) {
         continue;
       }
       // Refused payments which are made with using Adyen payment method are

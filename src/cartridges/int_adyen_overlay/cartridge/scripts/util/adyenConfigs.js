@@ -49,6 +49,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_notification_password');
   },
 
+  getAdyenHmacKey() {
+    return getCustomPreference('Adyen_Hmac_Key');
+  },
+
   getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');
   },
@@ -93,8 +97,8 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
-  getAdyenApplePayTokenisationEnabled: function () {
-    return getCustomPreference('AdyenApplePayTokenisationEnabled');
+  getAdyenTokenisationEnabled: function () {
+    return getCustomPreference('AdyenTokenisationEnabled');
   },
 
   getAdyenSalePaymentMethods: function () {
@@ -103,10 +107,6 @@ const adyenConfigsObj = {
 
   getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
-  },
-
-  getAdyenApplePayTokenisationEnabled: function () {
-    return getCustomPreference('AdyenApplePayTokenisationEnabled');
   },
 
   getAdyenCardholderNameEnabled: function () {

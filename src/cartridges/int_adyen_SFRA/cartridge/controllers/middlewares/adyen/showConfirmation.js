@@ -1,6 +1,7 @@
 const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
+const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
@@ -57,6 +58,10 @@ function handlePaymentsDetailsResult(
       options,
     );
   }
+  Transaction.wrap(() => {
+    order.custom.Adyen_pspReference = detailsResult.pspReference;
+    order.custom.Adyen_eventCode = detailsResult.resultCode;
+  });
   return payment.handlePaymentError(order, 'placeOrder', options);
 }
 

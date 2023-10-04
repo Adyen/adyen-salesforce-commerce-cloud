@@ -16,9 +16,9 @@ function handleAdyenGiving(req, res) {
   var clientKey = AdyenConfigs.getAdyenClientKey();
   var environment = AdyenHelper.getCheckoutEnvironment();
   var configuredAmounts = AdyenHelper.getDonationAmounts();
-  var charityName = AdyenConfigs.getAdyenGivingCharityName();
+  var charityName = encodeURI(AdyenConfigs.getAdyenGivingCharityName());
   var charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-  var charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
+  var charityDescription = encodeURI(AdyenConfigs.getAdyenGivingCharityDescription());
   var adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
   var adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
   var orderToken = getOrderToken(req);

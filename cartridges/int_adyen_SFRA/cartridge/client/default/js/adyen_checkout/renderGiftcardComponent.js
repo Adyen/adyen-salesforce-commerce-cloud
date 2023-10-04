@@ -80,6 +80,7 @@ function removeGiftCards() {
         store.checkout.options.amount = res.amount;
         store.partialPaymentsOrderObj = null;
         store.addedGiftCards = null;
+        store.adyenOrderData = null;
         giftCardsInfoMessageContainer.innerHTML = '';
         giftCardsInfoMessageContainer.classList.remove('gift-cards-info-message-container');
         document.querySelector('button[value="submit-payment"]').disabled = false;

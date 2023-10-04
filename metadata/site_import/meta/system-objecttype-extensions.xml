@@ -36,14 +36,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="Adyen_CustomerEmail">
-                <display-name xml:lang="x-default">Adyen Customer email</display-name>
-                <description xml:lang="x-default">Confirmation email to shopper</description>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="Adyen_donationAmount">
                 <display-name xml:lang="x-default">Adyen donation amount</display-name>
                 <description xml:lang="x-default">Amount donated via Adyen Giving</description>
@@ -384,9 +376,9 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenApplePayTokenisationEnabled">
-                <display-name xml:lang="x-default">Tokenize Apple Pay payments</display-name>
-                <description xml:lang="x-default">Tokenize payment details for Apple Pay</description>
+            <attribute-definition attribute-id="AdyenTokenisationEnabled">
+                <display-name xml:lang="x-default">Tokenize payments</display-name>
+                <description xml:lang="x-default">Tokenize payment details for all payment methods</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -481,6 +473,15 @@
             <attribute-definition attribute-id="Adyen_notification_user">
                 <display-name xml:lang="x-default">Adyen Notifications User</display-name>
                 <description xml:lang="x-default">Adyen Notifications User for Basic Authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Hmac_Key">
+                <display-name xml:lang="x-default">Adyen HMAC Key</display-name>
+                <description xml:lang="x-default">Adyen HMAC Key used optionally for notification validation</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -661,7 +662,7 @@
                 <attribute attribute-id="Adyen_IntegratorName"/>
                 <attribute attribute-id="Adyen_StoreId"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>
-                <attribute attribute-id="AdyenApplePayTokenisationEnabled"/>
+                <attribute attribute-id="AdyenTokenisationEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
