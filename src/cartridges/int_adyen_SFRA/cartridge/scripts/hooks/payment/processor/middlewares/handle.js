@@ -21,7 +21,7 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
   paymentInstrument.setCreditCardType(sfccCardType);
 
   paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-  paymentInstrument.custom[`${constants.OMS_NAMESPACE}_Adyen_Payment_Method`] =
+  paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] =
     sfccCardType;
 
   if (paymentInformation.creditCardToken) {
