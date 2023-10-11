@@ -114,21 +114,21 @@ function renderStoredPaymentMethod(imagePath) {
 }
 
 function renderStoredPaymentMethods(data, imagePath) {
-  if (data.storedPaymentMethods) {
-    const { storedPaymentMethods } = data;
-    storedPaymentMethods.forEach(renderStoredPaymentMethod(imagePath));
+  if (data.length) {
+    data.forEach(renderStoredPaymentMethod(imagePath));
   }
 }
 
-function renderPaymentMethods(paymentMethods, imagePath, adyenDescriptions) {
-  const promises = [];
+async function renderPaymentMethods(
+  paymentMethods,
+  imagePath,
+  adyenDescriptions,
+) {
   for (let i = 0; i < paymentMethods.length; i += 1) {
     const pm = paymentMethods[i];
-    promises.push(
-      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]),
-    );
+    // eslint-disable-next-line
+    await renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
   }
-  return Promise.all(promises);
 }
 
 function renderPosTerminals(adyenConnectedTerminals) {
@@ -246,7 +246,15 @@ async function initializeCheckout() {
       (pm) => pm.type !== constants.GIFTCARD,
     );
 
-  renderStoredPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath);
+  const storedPaymentMethodsWithoutGiftCards =
+    store.checkout.paymentMethodsResponse.storedPaymentMethods.filter(
+      (pm) => pm.type !== constants.GIFTCARD,
+    );
+
+  renderStoredPaymentMethods(
+    storedPaymentMethodsWithoutGiftCards,
+    session.imagePath,
+  );
 
   await renderPaymentMethods(
     paymentMethodsWithoutGiftCards,

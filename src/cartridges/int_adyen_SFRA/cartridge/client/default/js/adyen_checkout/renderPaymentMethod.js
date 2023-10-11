@@ -171,6 +171,7 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
   description = null,
   rerender = false,
 ) {
+  let canRender;
   try {
     const paymentMethodsUI = document.querySelector('#paymentMethodsList');
 
@@ -215,7 +216,11 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
 
     handleInput(options);
     setValid(options);
+    canRender = true;
   } catch (err) {
     // method not available
+    canRender = false;
   }
+  // eslint-disable-next-line
+  return canRender;
 };
