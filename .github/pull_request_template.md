@@ -7,4 +7,7 @@ Describe the changes proposed in this pull request:
 - What existing problem does this pull request solve?
 -->
 
+## Tested scenarios
+<!-- Description of tested scenarios -->
+
 **Fixed issue**:  <!-- #-prefixed issue number -->
