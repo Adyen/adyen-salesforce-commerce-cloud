@@ -30,7 +30,7 @@ const StringUtils = require('dw/util/StringUtils');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
-/* eslint-disable */
+
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);
 }
@@ -138,7 +138,6 @@ function createLogMessage(notificationData) {
   msg = `${msg}\nlive : ${notificationData.live}`;
   return msg;
 }
-/* eslint-enable */
 
 module.exports = {
   execute,

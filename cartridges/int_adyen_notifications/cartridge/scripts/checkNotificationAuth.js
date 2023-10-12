@@ -20,6 +20,7 @@
  *
  *  Script used to authentication notification calls from Adyen
  */
+
 var Site = require('dw/system/Site');
 var AuthenticationUtils = require('*/cartridge/scripts/libs/libAuthenticationUtils');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');

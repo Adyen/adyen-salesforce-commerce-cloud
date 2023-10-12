@@ -18,7 +18,7 @@
  *
  * Delete custom objects
  */
-/* eslint-disable */
+
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 //script include
@@ -60,7 +60,7 @@ function remove(co) {
     );
   }
 }
-/* eslint-enable */
+
 module.exports = {
   execute,
   handle,

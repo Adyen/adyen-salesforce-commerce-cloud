@@ -169,21 +169,36 @@ function setAmazonPayConfig(adyenPaymentMethods) {
 }
 function setInstallments(amount) {
   try {
-    var _window$installments;
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
-    var _window$installments$ = (_window$installments = window.installments) === null || _window$installments === void 0 ? void 0 : _window$installments.replace(/\[|]/g, '').split(','),
-      _window$installments$2 = _slicedToArray(_window$installments$, 2),
-      minAmount = _window$installments$2[0],
-      numOfInstallments = _window$installments$2[1];
-    if (minAmount <= amount.value) {
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
-        card: {}
-      }; // eslint-disable-next-line max-len
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(numOfInstallments);
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    var installments = JSON.parse(window.installments.replace(/&quot;/g, '"'));
+    if (installments.length) {
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {};
     }
+    installments.forEach(function (installment) {
+      var _installment = _slicedToArray(installment, 3),
+        minAmount = _installment[0],
+        numOfInstallments = _installment[1],
+        cards = _installment[2];
+      if (minAmount <= amount.value) {
+        cards.forEach(function (cardType) {
+          var installmentOptions = store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions;
+          if (!installmentOptions[cardType]) {
+            installmentOptions[cardType] = {
+              values: [1]
+            };
+          }
+          if (!installmentOptions[cardType].values.includes(numOfInstallments)) {
+            installmentOptions[cardType].values.push(numOfInstallments);
+            installmentOptions[cardType].values.sort(function (a, b) {
+              return a - b;
+            });
+          }
+        });
+      }
+    });
+    store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
   } catch (e) {} // eslint-disable-line no-empty
 }
 
