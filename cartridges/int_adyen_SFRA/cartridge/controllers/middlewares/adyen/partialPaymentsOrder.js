@@ -30,7 +30,7 @@ function createPartialPaymentsOrder(req, res, next) {
     var partialPaymentsRequest = {
       amount: amount,
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      reference: currentBasket.getUUID(),
+      reference: currentBasket.custom.adyenGiftCardsOrderNo,
       expiresAt: date.toISOString()
     };
     var response = adyenCheckout.doCreatePartialPaymentOrderCall(partialPaymentsRequest);

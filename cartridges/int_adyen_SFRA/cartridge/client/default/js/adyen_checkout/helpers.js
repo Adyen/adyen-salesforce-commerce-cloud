@@ -7,6 +7,7 @@ function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key i
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var store = require('../../../../store');
+var constants = require('../constants');
 function assignPaymentMethodValue() {
   var adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
   // if currently selected paymentMethod contains a brand it will be part of the label ID
@@ -46,7 +47,7 @@ function paymentFromComponent(data) {
       setOrderFormData(response);
       if ((_response$fullRespons = response.fullResponse) !== null && _response$fullRespons !== void 0 && _response$fullRespons.action) {
         component.handleAction(response.fullResponse.action);
-      } else if (response.isApplePay) {
+      } else if (response.skipSummaryPage) {
         document.querySelector('#result').value = JSON.stringify(response);
         document.querySelector('#showConfirmationForm').submit();
       } else if (response.paymentError || response.error) {
@@ -76,7 +77,7 @@ function displaySelectedMethod(type) {
   // If 'type' input field is present use this as type, otherwise default to function input param
   store.selectedMethod = document.querySelector("#component_".concat(type, " .type")) ? document.querySelector("#component_".concat(type, " .type")).value : type;
   resetPaymentMethod();
-  var disabledSubmitButtonMethods = ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay'];
+  var disabledSubmitButtonMethods = constants.DISABLED_SUBMIT_BUTTON_METHODS;
   if (window.klarnaWidgetEnabled) {
     disabledSubmitButtonMethods.push('klarna');
   }

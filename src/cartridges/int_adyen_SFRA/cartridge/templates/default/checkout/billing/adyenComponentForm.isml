@@ -21,7 +21,13 @@
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
-
+      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+      window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
+      window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
+      window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
+      window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
+      window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
+      
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
       window.deductedBalanceGiftCardResource = "${Resource.msg('deductedBalance.giftCard', 'adyen', null)}";
@@ -92,12 +98,15 @@
             <div id="giftCardContainer"></div>
         </div>
         <div id="cancelGiftCardButton" class="invisible">
-            <button id='cancelGiftCardButtonStyling'>
+            <button id="cancelGiftCardButtonStyling">
                 <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
             </button>
         </div>
     </div>
     <div id="giftCardsList" class="gift-cards-container"></div>
+    <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
+        <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
+    </div>
     <div id="giftCardsInfoMessage"></div>
 
      <iscomment>

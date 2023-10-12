@@ -32,8 +32,9 @@ module.exports = {
   PAYMENTMETHODS: {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
-    CASHAPP: 'cashapp',
   },
+
+  CAN_SKIP_SUMMARY_PAGE: ['applepay','cashapp',],
 
   PLATFORMS: {
     SFRA: 'SFRA',
@@ -100,5 +101,5 @@ module.exports = {
     SFRA: '5.44.0',
     SG: '5.28.0'
   },
-  VERSION: '23.2.0',
+  VERSION: '23.3.0',
 };

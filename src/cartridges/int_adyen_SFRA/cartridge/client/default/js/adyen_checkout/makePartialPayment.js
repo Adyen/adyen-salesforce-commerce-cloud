@@ -1,11 +1,11 @@
 const store = require('../../../../store');
-const { renderGenericComponent } = require('./renderGenericComponent');
+const { initializeCheckout } = require('./renderGenericComponent');
 const helpers = require('./helpers');
 
 function makePartialPayment(requestData) {
   let error;
   $.ajax({
-    url: 'Adyen-partialPayment',
+    url: window.partialPaymentUrl,
     type: 'POST',
     data: JSON.stringify(requestData),
     contentType: 'application/json; charset=utf-8',
@@ -18,11 +18,12 @@ function makePartialPayment(requestData) {
       } else {
         const { giftCards, ...rest } = response;
         store.checkout.options.amount = rest.remainingAmount;
+        store.adyenOrderData = rest.partialPaymentsOrder;
         store.partialPaymentsOrderObj = rest;
         sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
         store.addedGiftCards = giftCards;
         helpers.setOrderFormData(response);
-        renderGenericComponent(true);
+        initializeCheckout();
       }
     },
   }).fail(() => {});

@@ -20,7 +20,7 @@ function responseContainsErrors(response) {
 }
 function makePartialPayment(req, res, next) {
   try {
-    var _response$order, _currentBasket$custom, _currentBasket$custom2;
+    var _response$order, _response$order2, _response$order3, _currentBasket$custom, _currentBasket$custom2;
     var request = JSON.parse(req.body);
     var currentBasket = BasketMgr.getCurrentBasket();
     var paymentMethod = request.paymentMethod,
@@ -30,7 +30,7 @@ function makePartialPayment(req, res, next) {
     var partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: amount,
-      reference: currentBasket.getUUID(),
+      reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod: paymentMethod,
       order: partialPaymentsOrder
     };
@@ -55,7 +55,11 @@ function makePartialPayment(req, res, next) {
 
     // Update cached session data
     var partialPaymentsOrderData = JSON.parse(session.privacy.partialPaymentData);
-    partialPaymentsOrderData.remainingAmount = response === null || response === void 0 ? void 0 : (_response$order = response.order) === null || _response$order === void 0 ? void 0 : _response$order.remainingAmount;
+    partialPaymentsOrderData.order = {
+      orderData: response === null || response === void 0 ? void 0 : (_response$order = response.order) === null || _response$order === void 0 ? void 0 : _response$order.orderData,
+      pspReference: response === null || response === void 0 ? void 0 : (_response$order2 = response.order) === null || _response$order2 === void 0 ? void 0 : _response$order2.pspReference
+    };
+    partialPaymentsOrderData.remainingAmount = response === null || response === void 0 ? void 0 : (_response$order3 = response.order) === null || _response$order3 === void 0 ? void 0 : _response$order3.remainingAmount;
     session.privacy.partialPaymentData = JSON.stringify(partialPaymentsOrderData);
     var divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
     var remainingAmountFormatted = remainingAmount.divide(divideBy).toFormattedString();

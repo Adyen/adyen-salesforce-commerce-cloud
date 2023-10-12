@@ -1,10 +1,11 @@
 {
   "name": "int_adyen_SFRA",
-  "version": "23.2.0",
+  "version": "23.3.0",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
   "paths": {
-    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/",
+    "int_adyen_SFRA": "./cartridges/int_adyen_SFRA"
   },
   "scripts": {
     "unitTest": "sgmf-scripts --test cartridges/int_adyen_SFRA/test/unit/**/*.js",
@@ -16,7 +17,7 @@
     "uploadCartridgeSG": "sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_controllers_changes && sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_core_changes",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
-    "transpile": "babel ./src/cartridges  -d ./cartridges --copy-files --no-copy-ignored --extensions '.js,.test.js,.snap'",
+    "transpile": "babel ./src/cartridges -d ./cartridges --copy-files --no-copy-ignored --extensions .js,.test.js,.snap",
     "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",

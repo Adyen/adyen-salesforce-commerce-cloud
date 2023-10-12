@@ -121,6 +121,7 @@ function handle(customObj) {
             AdyenLogs.info_log("Order ".concat(order.orderNo, " updated to status PAID."));
             result.SubmitOrder = true;
           }
+          order.custom.Adyen_eventCode = customObj.custom.eventCode;
           order.custom.Adyen_value = amountPaid.toString();
         } else {
           AdyenLogs.info_log("Authorization for order ".concat(order.orderNo, " was not successful - no update."));
@@ -215,7 +216,6 @@ function handle(customObj) {
       if (empty(order.custom.Adyen_pspReference) && !empty(customObj.custom.pspReference)) {
         order.custom.Adyen_pspReference = customObj.custom.pspReference;
       }
-      order.custom.Adyen_eventCode = customObj.custom.eventCode;
 
       // Add a note with all details
       order.addNote('Adyen Payment Notification', createLogMessage(customObj));

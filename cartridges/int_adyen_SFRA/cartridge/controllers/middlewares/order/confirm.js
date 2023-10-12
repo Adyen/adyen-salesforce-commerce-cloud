@@ -16,9 +16,9 @@ function handleAdyenGiving(req, res) {
   var clientKey = AdyenConfigs.getAdyenClientKey();
   var environment = AdyenHelper.getCheckoutEnvironment();
   var configuredAmounts = AdyenHelper.getDonationAmounts();
-  var charityName = AdyenConfigs.getAdyenGivingCharityName();
+  var charityName = encodeURI(AdyenConfigs.getAdyenGivingCharityName());
   var charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-  var charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
+  var charityDescription = encodeURI(AdyenConfigs.getAdyenGivingCharityDescription());
   var adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
   var adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
   var orderToken = getOrderToken(req);
@@ -46,8 +46,7 @@ function confirm(req, res, next) {
   var orderToken = getOrderToken(req);
   if (orderId && orderToken) {
     var order = OrderMgr.getOrder(orderId, orderToken);
-    var paymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
-    if (AdyenHelper.getAdyenGivingConfig(order) && AdyenHelper.isAdyenGivingAvailable(paymentInstrument)) {
+    if (AdyenHelper.getAdyenGivingConfig(order)) {
       handleAdyenGiving(req, res);
     }
   }

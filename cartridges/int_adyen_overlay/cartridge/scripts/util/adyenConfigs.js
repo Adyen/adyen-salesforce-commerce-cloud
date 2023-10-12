@@ -45,6 +45,9 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getAdyenNotificationPassword: function getAdyenNotificationPassword() {
     return getCustomPreference('Adyen_notification_password');
   },
+  getAdyenHmacKey: function getAdyenHmacKey() {
+    return getCustomPreference('Adyen_Hmac_Key');
+  },
   getAdyenRecurringPaymentsEnabled: function getAdyenRecurringPaymentsEnabled() {
     return getCustomPreference('AdyenOneClickEnabled');
   },
@@ -66,6 +69,9 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getRatePayMerchantID: function getRatePayMerchantID() {
     return getCustomPreference('AdyenRatePayID');
   },
+  getApplePayDomainAssociation: function getApplePayDomainAssociation() {
+    return getCustomPreference('Adyen_ApplePay_DomainAssociation');
+  },
   getAdyenStoreId: function getAdyenStoreId() {
     return getCustomPreference('Adyen_StoreId');
   },
@@ -75,24 +81,25 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getAdyenFrontendRegion: function getAdyenFrontendRegion() {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
-  getAdyenApplePayTokenisationEnabled: function getAdyenApplePayTokenisationEnabled() {
-    return getCustomPreference('AdyenApplePayTokenisationEnabled');
+  getAdyenTokenisationEnabled: function getAdyenTokenisationEnabled() {
+    return getCustomPreference('AdyenTokenisationEnabled');
   },
   getAdyenSalePaymentMethods: function getAdyenSalePaymentMethods() {
     return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
   },
   getAdyenBasketFieldsEnabled: function getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
+  },
+  getAdyenCardholderNameEnabled: function getAdyenCardholderNameEnabled() {
+    return getCustomPreference('AdyenCardHolderName_enabled');
+  },
+  getAdyenLevel23DataEnabled: function getAdyenLevel23DataEnabled() {
+    return getCustomPreference('AdyenLevel23DataEnabled');
+  },
+  getAdyenLevel23CommodityCode: function getAdyenLevel23CommodityCode() {
+    return getCustomPreference('AdyenLevel23_CommodityCode');
   }
-}, _defineProperty(_adyenConfigsObj, "getAdyenApplePayTokenisationEnabled", function getAdyenApplePayTokenisationEnabled() {
-  return getCustomPreference('AdyenApplePayTokenisationEnabled');
-}), _defineProperty(_adyenConfigsObj, "getAdyenCardholderNameEnabled", function getAdyenCardholderNameEnabled() {
-  return getCustomPreference('AdyenCardHolderName_enabled');
-}), _defineProperty(_adyenConfigsObj, "getAdyenLevel23DataEnabled", function getAdyenLevel23DataEnabled() {
-  return getCustomPreference('AdyenLevel23DataEnabled');
-}), _defineProperty(_adyenConfigsObj, "getAdyenLevel23CommodityCode", function getAdyenLevel23CommodityCode() {
-  return getCustomPreference('AdyenLevel23_CommodityCode');
-}), _defineProperty(_adyenConfigsObj, "getAdyenSalePaymentMethods", function getAdyenSalePaymentMethods() {
+}, _defineProperty(_adyenConfigsObj, "getAdyenSalePaymentMethods", function getAdyenSalePaymentMethods() {
   return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : [];
 }), _defineProperty(_adyenConfigsObj, "getAdyenGivingEnabled", function getAdyenGivingEnabled() {
   return getCustomPreference('AdyenGiving_enabled');

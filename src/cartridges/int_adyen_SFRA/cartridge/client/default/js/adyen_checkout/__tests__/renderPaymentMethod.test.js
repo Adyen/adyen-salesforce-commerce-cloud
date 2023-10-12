@@ -19,14 +19,14 @@ describe('Render Payment Method', () => {
       create: jest.fn(() => ({ mount })),
     };
   });
-  it('should render stored payment method with missing shopper information fields', () => {
+  it('should render stored payment method with missing shopper information fields', async () => {
     const paymentMethod = {
       id: 'mocked_id',
       brand: 'mocked_brand',
       name: 'mocked_name',
       lastFour: '1234',
     };
-    renderPaymentMethod(
+    await renderPaymentMethod(
         paymentMethod,
         true,
         '/mocked_path/',
@@ -92,7 +92,7 @@ describe('Render Payment Method', () => {
     });
   });
 
-  it('should handle input onChange for paypal', () => {
+  it('should handle input onChange for paypal', async () => {
     document.body.innerHTML += `
       <button value="submit-payment"></button>
       <div id="component_paypal"></div>
@@ -102,7 +102,7 @@ describe('Render Payment Method', () => {
       name: 'mocked_name',
       lastFour: '1234',
     };
-    renderPaymentMethod(
+    await renderPaymentMethod(
         paymentMethod,
         false,
         '/mocked_path/',
