@@ -387,7 +387,7 @@
             <attribute-definition attribute-id="AdyenCreditCardInstallments">
                 <display-name xml:lang="x-default">Credit Card Installments</display-name>
                 <description xml:lang="x-default">If installments are required please create the configuration value using this link: https://adyen.github.io/adyen-salesforce-commerce-cloud</description>
-                <type>string</type>
+                <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -544,6 +544,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenInstallments_enabled">
+                <display-name xml:lang="x-default">Enable Adyen Installments</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenGiving_enabled">
                 <display-name xml:lang="x-default">Enable Adyen Giving</display-name>
                 <type>boolean</type>
@@ -669,6 +676,7 @@
                 <attribute attribute-id="AdyenCardHolderName_enabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
                 <attribute attribute-id="AdyenSalePaymentMethods"/>
+                <attribute attribute-id="AdyenInstallments_enabled"/>
                 <attribute attribute-id="AdyenGiving_enabled"/>
                 <attribute attribute-id="AdyenGiving_charityName"/>
                 <attribute attribute-id="AdyenGiving_charityAccount"/>

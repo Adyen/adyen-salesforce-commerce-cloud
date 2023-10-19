@@ -18,10 +18,12 @@ const expressPaymentMethods = [
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const troubleshootingForm = document.querySelector('#troubleshootingForm');
+  const cardSettingsForm = document.getElementById('adyen_installments_div');
   const submitButton = document.querySelector('#settingsFormSubmitButton');
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
   const testConnectionButton = document.querySelector('#testConnectionButton');
+  const addRuleButton = document.getElementById('saveInstallmentButton');
   const togglePassword = document.querySelector('#togglePassword');
   const toggleHmacKey = document.querySelector('#toggleHmacKey');
   const toggleApi = document.querySelector('#toggleApi');
@@ -53,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const draggableList = document.getElementById('draggable-list');
 
+  let ruleCounter = 0;
+  const installmentsResult = {};
+  const savedInstallments = JSON.parse(window.installments.value);
   const listItems = [];
   let dragStartIndex;
 
@@ -275,6 +280,122 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
+  function removeRule(id) {
+    const element = document.getElementById(`rule${id}`);
+    if (element) {
+      element.remove();
+    }
+    delete installmentsResult[id];
+  }
+
+  function createRuleElement(id, ruleData) {
+    const el = document.createElement('div');
+    el.id = `rule${id}`;
+    el.classList.add('form-group');
+
+    el.innerHTML = `
+      <table class="table">
+        <tr>
+          <td>
+            <label for="installmentsAmount${id}">Minimum Amount</label>
+            <div>
+              <input type="number" min="0" id="installmentsAmount${id}" value="${ruleData[0]}">
+            </div>
+          </td>
+          <td>
+            <label for="installmentsNumber${id}">Number of installments</label>
+            <div>
+              <input type="number" min="2" id="installmentsNumber${id}" value="${ruleData[1]}">
+            </div>
+          </td>
+          <td>
+            <label for="card-options${id}">Allowed credit card types</label>
+            <div id="cards-dropdown-options">
+              <select id="card-options${id}" multiple required>
+                <option class="dropdown-option" value="amex" id="amexCard">Amex</option>
+                <option class="dropdown-option" value="elo" id="eloCard">Elo</option>
+                <option class="dropdown-option" value="hipercard" id="hipercardCard">Hipercard</option>
+                <option class="dropdown-option" value="mc" id="mcCard">Master Card</option>
+                <option class="dropdown-option" value="visa" id="visaCard">Visa</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <button type="button" id="removeRuleButton">
+              <img src="${window.binIcon}"/>
+            </button>
+          </td>
+        </tr>
+      </table>
+    `;
+    const removeButton = el.querySelector('#removeRuleButton');
+    removeButton.setAttribute('data-rule-counter', id);
+
+    removeButton.addEventListener('click', () => {
+      const counter = parseInt(
+        removeButton.getAttribute('data-rule-counter'),
+        10,
+      );
+      removeRule(counter);
+      enableformButtons();
+      settingChanged(
+        'AdyenCreditCardInstallments',
+        JSON.stringify(Object.values(installmentsResult)),
+      );
+    });
+
+    document.getElementById('adyen_installments_div').appendChild(el);
+
+    const cardOptionsSelect = document.getElementById(
+      `card-options${ruleCounter}`,
+    );
+
+    ruleData[2].forEach((cardType) => {
+      const option = cardOptionsSelect.querySelector(`[value="${cardType}"]`);
+      if (option) {
+        option.selected = true;
+      }
+    });
+  }
+
+  function addRule() {
+    ruleCounter += 1;
+    const ruleData = [0, 2, []]; // default values for installments
+    createRuleElement(ruleCounter, ruleData);
+  }
+
+  function getRuleValues(id) {
+    const installment = [];
+    const installmentAmount = document.getElementById(
+      `installmentsAmount${id}`,
+    ).value;
+    const installmentNumber = document.getElementById(
+      `installmentsNumber${id}`,
+    ).value;
+    const selectElement = document.getElementById(`card-options${id}`);
+    const selectedOptions = Array.from(selectElement.selectedOptions).map(
+      (option) => option.value,
+    );
+    installment.push(
+      parseInt(installmentAmount, 10),
+      parseInt(installmentNumber, 10),
+      selectedOptions,
+    );
+    installmentsResult[id] = installment;
+  }
+
+  function populateRules(savedData) {
+    savedData.forEach((ruleData) => {
+      ruleCounter += 1;
+      createRuleElement(ruleCounter, ruleData);
+      installmentsResult[ruleCounter] = ruleData;
+    });
+  }
+
+  if (savedInstallments && savedInstallments.length > 0) {
+    populateRules(savedInstallments);
+  }
+
   function getImageName(imageUrl) {
     const parts = imageUrl.split('/');
     const imageName = parts.pop();
@@ -328,6 +449,27 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('load', printBackgroundImageName);
 
   window.addEventListener('load', printLogoImageName);
+
+  addRuleButton.addEventListener('click', () => {
+    const childCount = document.getElementById(
+      'adyen_installments_div',
+    ).childElementCount;
+    if (childCount <= 0) {
+      addRule();
+    } else {
+      ruleCounter += 1;
+      addRule();
+    }
+  });
+
+  // form for installments
+  cardSettingsForm.addEventListener('input', () => {
+    getRuleValues(ruleCounter);
+    settingChanged(
+      'AdyenCreditCardInstallments',
+      JSON.stringify(Object.values(installmentsResult)),
+    );
+  });
 
   adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
 
