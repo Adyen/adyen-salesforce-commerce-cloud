@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelButton = document.querySelector('#settingsFormCancelButton');
   const formButtons = Array.from(document.getElementsByClassName('formButton'));
   const testConnectionButton = document.querySelector('#testConnectionButton');
-  const addRuleButton = document.getElementById('saveInstallmentButton');
+  const addRuleButton = document.getElementById('addRuleButton');
   const togglePassword = document.querySelector('#togglePassword');
   const toggleHmacKey = document.querySelector('#toggleHmacKey');
   const toggleApi = document.querySelector('#toggleApi');
@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let ruleCounter = 0;
   const installmentsResult = {};
-  const savedInstallments = JSON.parse(window.installments.value);
   const listItems = [];
   let dragStartIndex;
 
@@ -392,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (savedInstallments && savedInstallments.length > 0) {
+  if (window.installments.value) {
+    const savedInstallments = JSON.parse(window.installments.value);
     populateRules(savedInstallments);
   }
 
@@ -465,10 +465,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // form for installments
   cardSettingsForm.addEventListener('input', () => {
     getRuleValues(ruleCounter);
-    settingChanged(
-      'AdyenCreditCardInstallments',
-      JSON.stringify(Object.values(installmentsResult)),
-    );
+    const selectElement = document.getElementById(`card-options${ruleCounter}`);
+    const selectedOptions = Array.from(selectElement.selectedOptions);
+    if (selectedOptions.length) {
+      settingChanged(
+        'AdyenCreditCardInstallments',
+        JSON.stringify(Object.values(installmentsResult)),
+      );
+    }
   });
 
   adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
@@ -577,6 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.success) {
       const alertBar = document.getElementById('saveChangesAlert');
       alertBar.classList.add('show');
+      addRuleButton.classList.remove('disabled');
       window.setTimeout(() => {
         alertBar.classList.remove('show');
       }, 2000);

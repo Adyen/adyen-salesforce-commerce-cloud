@@ -39,7 +39,7 @@
                   <div class="adyen-installments-settings collapse ${AdyenConfigs.getAdyenInstallmentsEnabled() ? 'show': ''}">
                      <div class="input-fields" id="adyen_installments_div">
                            <div class="d-grid gap-2 d-md-flex justify-content-md-end form-buttons">
-                              <button type="button" id="saveInstallmentButton" class="btn btn-primary border formButton">Add Rule</button>
+                              <button type="button" id="addRuleButton" class="btn btn-primary border formButton">Add Rule</button>
                            </div>
                      </div>
                   </div>
