@@ -450,17 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('load', printLogoImageName);
 
-  addRuleButton.addEventListener('click', () => {
-    const childCount = document.getElementById(
-      'adyen_installments_div',
-    ).childElementCount;
-    if (childCount <= 0) {
-      addRule();
-    } else {
-      ruleCounter += 1;
-      addRule();
-    }
-  });
+  addRuleButton.addEventListener('click', addRule);
 
   // form for installments
   cardSettingsForm.addEventListener('input', () => {
