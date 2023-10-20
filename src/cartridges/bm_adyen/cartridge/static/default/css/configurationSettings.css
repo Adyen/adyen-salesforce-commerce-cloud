@@ -495,3 +495,15 @@ ul{
     line-height: 24px;
     color: #69778C;
 }
+
+#addRuleButton{
+    position: absolute;
+    bottom: 15px;
+    left: 60px;
+}
+
+#removeRuleButton {
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
