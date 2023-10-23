@@ -23,6 +23,7 @@
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
+const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getMethods(basket, customer, countryCode) {
@@ -71,7 +72,7 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
 
-    paymentMethodsRequest.blockedPaymentMethods = AdyenHelper.BLOCKED_PAYMENT_METHODS;
+    paymentMethodsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
 
     const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
     const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.CHECKOUTPAYMENTMETHODS}${constants.PLATFORMS.SG}` : constants.SERVICE.CHECKOUTPAYMENTMETHODS;
