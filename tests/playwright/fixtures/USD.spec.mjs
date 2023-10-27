@@ -63,53 +63,6 @@ for (const environment of environments) {
       await checkoutPage.makeSuccessfulDonation();
     });
 
-    test('Card payment 3DS1 success @quick', async () => {
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card payment 3DS1 with restored cart success', async () => {
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.completeCheckout();
-      environment.name == 'SG'
-        ? await checkoutPage.navigateBackFromRedirect()
-        : await checkoutPage.goBackAndSubmitShipping();
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.submitPayment();
-      await checkoutPage.placeOrder();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card payment 3DS1 failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.threeDs1);
-      cardDataInvalid.expirationDate = '0150';
-      await cards.doCardPayment(cardDataInvalid);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
-    });
-
-    test('Card payment 3DS1 with restored cart failure', async ({
-      context,
-    }) => {
-      if (environment.name === 'SG') test.fixme();
-      // Skipping SG due to CSRF token validation
-
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.submitPayment();
-      const checkoutURL = await checkoutPage.getLocation();
-      await checkoutPage.placeOrder();
-
-      const newPage = await context.newPage();
-      newPage.goto(checkoutURL);
-
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
-    });
-
     test('Card payment 3DS2 success @quick', async () => {
       await cards.doCardPayment(cardData.threeDs2);
       await checkoutPage.completeCheckout();
@@ -297,24 +250,6 @@ for (const environment of environments) {
       const cardDataInvalid = cardData.noThreeDs;
       cardDataInvalid.expirationDate = '0150';
       await accountPage.addCard(cardDataInvalid);
-      await accountPage.expectFailure();
-    });
-
-    test('my account add card 3DS1 success', async () => {
-      if (environment.name === 'SG') test.fixme();
-      await accountPage.addCard(cardData.threeDs1);
-
-      await cards.do3Ds1Verification();
-      await accountPage.expectSuccess(cardData.threeDs1);
-      await accountPage.removeCard(cardData.threeDs1);
-      await accountPage.expectCardRemoval(cardData.threeDs1);
-    });
-
-    test('my account add card 3DS1 failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.threeDs1);
-      cardDataInvalid.expirationDate = '0150';
-      await accountPage.addCard(cardDataInvalid);
-      await cards.do3Ds1Verification();
       await accountPage.expectFailure();
     });
 
