@@ -21,6 +21,21 @@ function saveShopperDetails(details) {
   });
 }
 
+function getPaymentMethods() {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: window.getPaymentMethodsURL,
+      type: 'get',
+      success(data) {
+        resolve(data);
+      },
+      error(error) {
+        reject(error);
+      },
+    });
+  });
+}
+
 function constructAddress(shopperDetails) {
   const addressKeys = Object.keys(shopperDetails.shippingAddress);
   const addressValues = Object.values(shopperDetails.shippingAddress);
@@ -76,21 +91,30 @@ async function mountAmazonPayComponent() {
   const checkout = await AdyenCheckout(window.Configuration);
 
   try {
+    const data = await getPaymentMethods();
+    const paymentMethodsResponse = data.AdyenPaymentMethods;
+    const amazonPayConfig = paymentMethodsResponse.find(
+      (pm) => pm.type === 'amazonpay',
+    )?.configuration;
+    if (!amazonPayConfig) return;
     const amazonConfig = {
       showOrderButton: true,
+      configuration: {
+        merchantId: amazonPayConfig.merchantId,
+        storeId: amazonPayConfig.storeId,
+        region: amazonPayConfig.region,
+        publicKeyId: amazonPayConfig.publicKeyId,
+      },
       returnUrl: window.returnUrl,
       showChangePaymentDetailsButton: true,
       amount: JSON.parse(window.basketAmount),
       amazonCheckoutSessionId: window.amazonCheckoutSessionId,
     };
-
     const amazonPayComponent = checkout
       .create('amazonpay', amazonConfig)
       .mount(amazonPayNode);
-
     const shopperDetails = await amazonPayComponent.getShopperDetails();
     saveShopperDetails(shopperDetails);
-
     showAddressDetails(shopperDetails);
   } catch (e) {
     //
