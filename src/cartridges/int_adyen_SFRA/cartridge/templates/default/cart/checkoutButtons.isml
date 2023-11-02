@@ -9,6 +9,7 @@
         window.locale = "${request.locale}";
         window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
         window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+        window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
 
         var queryString = '${request.getHttpQueryString()}'.split("=");
         var amazonCheckoutSessionId = queryString[queryString.length - 1];
