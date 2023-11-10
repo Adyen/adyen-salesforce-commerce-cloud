@@ -206,7 +206,6 @@ for (const environment of environments) {
 
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
-      await cards.do3Ds1Verification();
       await checkoutPage.expectSuccess();
     });
   });
