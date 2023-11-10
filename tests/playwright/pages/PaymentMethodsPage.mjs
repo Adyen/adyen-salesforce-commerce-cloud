@@ -340,9 +340,8 @@ export default class PaymentMethodsPage {
 
   waitForGiroPayLoad = async () => {
     await this.page.waitForNavigation({
-      url: /.*sandbox.paydirekt/,
+      url: /.*sandbox.paydirekt.de/,
       timeout: 15000,
-      waitUntil: 'load',
     });
   };
 

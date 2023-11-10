@@ -158,12 +158,9 @@ export default class CheckoutPageSFRA5 {
   };
 
   setEmail = async () => {
-    /* After filling the shopper details, clicking "Next" has an autoscroll
-    feature, which leads the email field to be missed, hence the flakiness.
-    Waiting until the full page load prevents this situation */
-    await this.page.waitForLoadState('networkidle');
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
+    await this.page.waitForLoadState('networkidle');
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
     await this.page.keyboard.press('Tab');
     await new Promise(r => setTimeout(r, 2000));
