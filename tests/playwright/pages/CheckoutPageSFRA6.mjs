@@ -188,7 +188,7 @@ export default class CheckoutPageSFRA {
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 15000 });
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
     await this.placeOrderButton.click();
   };
 
