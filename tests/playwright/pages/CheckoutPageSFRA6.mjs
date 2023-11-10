@@ -202,7 +202,6 @@ export default class CheckoutPageSFRA {
     }
   };
   
-
   completeCheckoutLoggedInUser = async () => {
     await this.completeCheckout();
   };

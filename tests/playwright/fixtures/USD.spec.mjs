@@ -158,10 +158,10 @@ for (const environment of environments) {
 
     test('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doAffirmPayment(shopperData.US);
       if (environment.name.indexOf("v6") === -1) {
         await checkoutPage.setEmail();
       };
+      await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();
       await redirectShopper.completeAffirmRedirect(false);
       await checkoutPage.expectRefusal();
