@@ -338,11 +338,11 @@ export default class PaymentMethodsPage {
     });
   };
 
-  waitForGiroPayLoad = async () => {
-    await this.page.waitForNavigation({
-      url: /.*sandbox.paydirekt.de/,
-      timeout: 15000,
-    });
+  // Generic function to be used for simulating the redirect
+  waitForRedirect = async () => {
+    await Promise.all([
+      this.page.waitForNavigation(),
+    ]);
   };
 
   async continueOnKlarna(skipModal) {

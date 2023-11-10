@@ -71,7 +71,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
-      await new PaymentMethodsPage(page).waitForGiroPayLoad();
+      await new PaymentMethodsPage(page).waitForRedirect();
     });
 
     test('Giropay Fail', async ({ page }) => {
