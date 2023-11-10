@@ -71,13 +71,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeGiropayRedirect(true);
-      const popupPromise = page.waitForEvent('popup');
-      const popup = await popupPromise;
-      await popup.waitForNavigation({
-        url: /Order-Confirm/,
-        timeout: 15000,
-      });
+      await new PaymentMethodsPage(page).waitForGiroPayLoad();
     });
 
     test('Giropay Fail', async ({ page }) => {

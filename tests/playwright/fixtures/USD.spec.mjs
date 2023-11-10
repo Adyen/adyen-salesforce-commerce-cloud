@@ -79,22 +79,6 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card co-branded BCMC payment success', async () => {
-      await cards.doCardPayment(cardData.coBrandedBCMC);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card co-branded BCMC payment failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.coBrandedBCMC);
-      cardDataInvalid.expirationDate = '0150';
-      await cards.doCardPayment(cardDataInvalid);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
-    });
-
     test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment();

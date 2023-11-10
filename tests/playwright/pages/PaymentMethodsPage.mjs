@@ -337,6 +337,14 @@ export default class PaymentMethodsPage {
     });
   };
 
+  waitForGiroPayLoad = async () => {
+    await this.page.waitForNavigation({
+      url: /.*sandbox.paydirekt/,
+      timeout: 15000,
+      waitUntil: 'load',
+    });
+  };
+
   async continueOnKlarna(skipModal) {
     await this.waitForKlarnaLoad();
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
@@ -436,28 +444,6 @@ export default class PaymentMethodsPage {
     await this.firstCancelButton.click();
     await this.secondCancelButton.first().click();
     await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
-  };
-
-  confirmGiropayPayment = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
-
-    const rejectCookies = this.page.locator('.rds-cookies-overlay__allow-essential-cookies-btn');
-    const giroBankDropdown = this.page.locator('#bankSearch');
-    const giroBankUl = this.page.getByTestId('bank-group-list').getByRole('button').first();
-    const confirmChoice = this.page.getByTestId('bank-result-list').getByRole('button').first();
-    const payNow = this.page.locator("button[name='claimCheckoutButton']");
-    const confirmPayment = this.page.locator("button[id='submitButton']");
-
-    await rejectCookies.click();
-    await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
-    await giroBankUl.click();
-    await confirmChoice.click();
-    await payNow.first().click();
-    await confirmPayment.waitFor({
-      state: 'visible',
-      timeout: 15000,
-    });
-    await confirmPayment.click();
   };
 
   cancelGiropayPayment = async () => {
