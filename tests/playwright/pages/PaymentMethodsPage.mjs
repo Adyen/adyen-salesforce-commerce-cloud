@@ -79,6 +79,7 @@ export default class PaymentMethodsPage {
     if (normalFlow) {
       await this.page.click("#rb_amazonpay");
     }
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
     await this.page.click(".adyen-checkout__amazonpay__button");
   
     // Amazon Sandbox selectors
