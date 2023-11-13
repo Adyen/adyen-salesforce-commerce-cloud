@@ -496,7 +496,10 @@ export default class PaymentMethodsPage {
   };
 
   confirmVippsPayment = async () => {
-    await expect(await this.getLocation()).toContain('apitest.vipps.no');
+    await this.page.locator("div[class='payment-details']").waitFor({
+      state: 'visible',
+      timeout: 15000,
+    });
   };
 
   cancelVippsPayment = async () => {
