@@ -453,6 +453,7 @@ export default class PaymentMethodsPage {
 
     await rejectCookies.click();
     await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    await backButton.waitFor({ state: 'visible', timeout: 15000 });
     await backButton.click();
   };
 
