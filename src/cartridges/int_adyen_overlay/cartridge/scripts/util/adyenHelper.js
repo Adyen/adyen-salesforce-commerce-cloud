@@ -32,6 +32,7 @@ const collections = require('*/cartridge/scripts/util/collections');
 const ShippingMgr = require('dw/order/ShippingMgr');
 const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
+const StringUtils = require('dw/util/StringUtils');
 //script includes
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 const BasketMgr = require('dw/order/BasketMgr');
@@ -216,6 +217,11 @@ var adyenHelperObj = {
     const externalPlatformVersion = adyenService.getExternalPlatformVersion();
     const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
     return `${checkoutCSS}sdk/${checkoutVersionForPlatform}/adyen.css`;
+  },
+
+  // converts to a syntax-safe HTML string
+  encodeHtml(str) {
+    return StringUtils.encodeString(str, 0);
   },
 
   // get the current region-based checkout environment
