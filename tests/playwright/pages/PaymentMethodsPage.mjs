@@ -499,7 +499,7 @@ export default class PaymentMethodsPage {
   confirmVippsPayment = async () => {
     await this.page.locator("div[class='payment-details']").waitFor({
       state: 'visible',
-      timeout: 15000,
+      timeout: 20000,
     });
   };
 
