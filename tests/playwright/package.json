@@ -106,7 +106,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.33.0"
+    "@playwright/test": "^1.38.0"
   },
   "scripts": {
     "test": "npx playwright test",
