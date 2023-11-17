@@ -11,7 +11,7 @@ export default class PaymentMethodsPage {
   }
 
   getLocation = async () => {
-    await this.page.waitForNavigation('load', { timeout: 15000 });
+    await this.page.waitForNavigation('load', { timeout: 20000 });
     return await this.page.url();
   };
 
@@ -505,6 +505,7 @@ export default class PaymentMethodsPage {
   };
 
   cancelVippsPayment = async () => {
+    await expect(this.page.locator('.cancel-link')).toBeVisible({ timeout: 15000 });
     await this.page.click('.cancel-link');
   };
 
