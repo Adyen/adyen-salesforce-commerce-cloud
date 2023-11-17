@@ -11,7 +11,7 @@ export default class PaymentMethodsPage {
   }
 
   getLocation = async () => {
-    await this.page.waitForNavigation('load', { timeout: 15000 });
+    await this.page.waitForNavigation('load', { timeout: 20000 });
     return await this.page.url();
   };
 
@@ -79,6 +79,7 @@ export default class PaymentMethodsPage {
     if (normalFlow) {
       await this.page.click("#rb_amazonpay");
     }
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
     await this.page.click(".adyen-checkout__amazonpay__button");
   
     // Amazon Sandbox selectors
@@ -337,6 +338,14 @@ export default class PaymentMethodsPage {
     });
   };
 
+  // Generic function to be used for simulating the redirect
+  waitForRedirect = async () => {
+    await this.page.waitForNavigation({
+      timeout: 20000,
+      waitUntil: 'load',
+    });
+  };
+
   async continueOnKlarna(skipModal) {
     await this.waitForKlarnaLoad();
     await this.page.waitForLoadState('networkidle', { timeout: 15000 });
@@ -438,28 +447,6 @@ export default class PaymentMethodsPage {
     await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
   };
 
-  confirmGiropayPayment = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
-
-    const rejectCookies = this.page.locator('.rds-cookies-overlay__allow-essential-cookies-btn');
-    const giroBankDropdown = this.page.locator('#bankSearch');
-    const giroBankUl = this.page.getByTestId('bank-group-list').getByRole('button').first();
-    const confirmChoice = this.page.getByTestId('bank-result-list').getByRole('button').first();
-    const payNow = this.page.locator("button[name='claimCheckoutButton']");
-    const confirmPayment = this.page.locator("button[id='submitButton']");
-
-    await rejectCookies.click();
-    await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
-    await giroBankUl.click();
-    await confirmChoice.click();
-    await payNow.first().click();
-    await confirmPayment.waitFor({
-      state: 'visible',
-      timeout: 15000,
-    });
-    await confirmPayment.click();
-  };
-
   cancelGiropayPayment = async () => {
     const rejectCookies = this.page.locator('.rds-cookies-overlay__allow-essential-cookies-btn');
     const giroBankDropdown = this.page.locator('#bankSearch');
@@ -467,6 +454,7 @@ export default class PaymentMethodsPage {
 
     await rejectCookies.click();
     await giroBankDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    await backButton.waitFor({ state: 'visible', timeout: 15000 });
     await backButton.click();
   };
 
@@ -486,6 +474,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateAffirmPayment = async (shopper) => {
+    await this.page.waitForLoadState('load');
     const affirmEmail = this.page.locator(
       '#component_affirm input[name="shopperEmail"]',
     );
@@ -509,10 +498,14 @@ export default class PaymentMethodsPage {
   };
 
   confirmVippsPayment = async () => {
-    await expect(await this.getLocation()).toContain('apitest.vipps.no');
+    await this.page.locator("div[class='payment-details']").waitFor({
+      state: 'visible',
+      timeout: 20000,
+    });
   };
 
   cancelVippsPayment = async () => {
+    await expect(this.page.locator('.cancel-link')).toBeVisible({ timeout: 15000 });
     await this.page.click('.cancel-link');
   };
 

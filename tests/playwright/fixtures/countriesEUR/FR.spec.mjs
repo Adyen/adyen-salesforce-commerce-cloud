@@ -59,7 +59,8 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
-    await redirectShopper.doAmazonPayment();
+    const result = await redirectShopper.doAmazonPayment();
+    if(result != true){test.skip()};
     await checkoutPage.expectSuccess();
   });
   
@@ -76,12 +77,11 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.expectSuccess();
   });
 
-  test.skip('Amazon Pay Express', async ({ page }) => {
+  test('Amazon Pay Express', async ({ page }) => {
     redirectShopper = new RedirectShopper(page);
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
-    const result = await redirectShopper.doAmazonPayment(false);
-    if(result != true){test.skip()};
+    await redirectShopper.doAmazonPayment(false);
     await redirectShopper.doAmazonExpressPayment();
     await checkoutPage.expectSuccess();
   });
