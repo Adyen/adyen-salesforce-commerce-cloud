@@ -340,9 +340,10 @@ export default class PaymentMethodsPage {
 
   // Generic function to be used for simulating the redirect
   waitForRedirect = async () => {
-    await Promise.all([
-      this.page.waitForNavigation(),
-    ]);
+    await this.page.waitForNavigation({
+      timeout: 20000,
+      waitUntil: 'load',
+    });
   };
 
   async continueOnKlarna(skipModal) {
