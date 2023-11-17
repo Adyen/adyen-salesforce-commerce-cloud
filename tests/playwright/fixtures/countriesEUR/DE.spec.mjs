@@ -67,7 +67,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.only('Giropay Success', async ({ page }) => {
+    test('Giropay Success', async ({ page }) => {
       test.setTimeout(0);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGiropayPayment();
