@@ -38,7 +38,7 @@ if (window.cardholderNameBool !== 'null') {
 
 if (
   window.googleMerchantID !== 'null' &&
-  window.Configuration.environment === 'live'
+  window.Configuration.environment.includes('live')
 ) {
   const id = 'merchantId';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[
