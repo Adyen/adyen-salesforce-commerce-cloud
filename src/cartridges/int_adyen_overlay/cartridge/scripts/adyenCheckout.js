@@ -37,18 +37,6 @@ const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeDa
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
-//SALE payment methods require payment transaction type to be Capture
-function setPaymentTransactionType(paymentInstrument, paymentMethod) {
-  const salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
-  if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
-    Transaction.wrap(function () {
-      paymentInstrument
-        .getPaymentTransaction()
-        .setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
-    });
-  }
-}
-
 function createPaymentRequest(args) {
   try {
     const order = args.Order;
@@ -160,8 +148,7 @@ function createPaymentRequest(args) {
         paymentRequest.storePaymentMethod = true;
         paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
-    setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-
+    AdyenHelper.setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {

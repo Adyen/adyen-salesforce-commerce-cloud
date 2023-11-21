@@ -17,6 +17,7 @@
  * See the LICENSE file for more info.
  */
 const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const Transaction = require('dw/system/Transaction');
 //script includes
 const PaymentMgr = require('dw/order/PaymentMgr');
@@ -49,6 +50,7 @@ let giftCardsHelper = {
       paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
       paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
     })
+    AdyenHelper.setPaymentTransactionType(paymentInstrument, parsedGiftCardObj.giftCard);
   }
 };
 

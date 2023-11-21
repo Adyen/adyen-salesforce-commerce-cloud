@@ -860,6 +860,23 @@ var adyenHelperObj = {
     };
   },
 
+  getPaymentMethodType(paymentMethod){
+    return paymentMethod.type === constants.ACTIONTYPES.GIFTCARD ? paymentMethod.brand : paymentMethod.type;
+  },
+
+//SALE payment methods require payment transaction type to be Capture
+  setPaymentTransactionType(paymentInstrument, paymentMethod) {
+    const salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
+    const paymentMethodType = this.getPaymentMethodType(paymentMethod);
+    if (salePaymentMethods.indexOf(paymentMethodType) > -1) {
+      Transaction.wrap(function () {
+        paymentInstrument
+          .getPaymentTransaction()
+          .setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
+      });
+    }
+  },
+
   executeCall(serviceType, requestObject) {
     const service = this.getService(serviceType);
     if (service === null) {
