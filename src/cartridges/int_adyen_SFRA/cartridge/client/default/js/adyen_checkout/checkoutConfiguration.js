@@ -327,6 +327,7 @@ function getAmazonpayConfig() {
 function getApplePayConfig() {
   return {
     showPayButton: true,
+    buttonColor: 'black',
     onSubmit: (state, component) => {
       $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
