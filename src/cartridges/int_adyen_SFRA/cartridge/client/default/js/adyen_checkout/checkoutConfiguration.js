@@ -328,6 +328,7 @@ function getApplePayConfig() {
   return {
     showPayButton: true,
     onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
       helpers.assignPaymentMethodValue();
       helpers.paymentFromComponent(state.data, component);
     },
