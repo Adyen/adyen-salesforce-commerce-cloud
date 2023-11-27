@@ -11,7 +11,8 @@ server.prepend('Start', (req, res, next) => {
   if (origin.match(constants.APPLE_DOMAIN_URL)) {
     const applePayDomainAssociation =
       AdyenConfigs.getApplePayDomainAssociation();
-    response.getWriter().print(applePayDomainAssociation);
+    res.setHttpHeader(dw.system.Response.CONTENT_TYPE, 'text/plain');
+    response.getWriter().println(applePayDomainAssociation);
     return null;
   }
   return next();
