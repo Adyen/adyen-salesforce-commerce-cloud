@@ -701,7 +701,7 @@ var adyenHelperObj = {
 
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi(amount) {
-    const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode) || dwsystem.Site.getCurrent().getDefaultCurrency();
+    const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
     const digitsNumber = adyenHelperObj.getFractionDigits(
       currencyCode.toString(),
     );
