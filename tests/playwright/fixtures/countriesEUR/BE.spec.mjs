@@ -28,16 +28,14 @@ for (const environment of environments) {
     });
     test('bcmc mobile renders', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
-      if (environment.name === 'SG') await checkoutPage.setEmail();
       await pendingPayments.doQRCodePayment('bcmc_mobile', environment.name);
-      if (environment.name != 'SG') await checkoutPage.completeCheckout();
+      await checkoutPage.completeCheckout();
       await checkoutPage.expectQRcode();
     });
     test('bcmc mobile cancellation flow', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
-      if (environment.name === 'SG') await checkoutPage.setEmail();
       await pendingPayments.doQRCodePayment('bcmc_mobile', environment.name);
-      if (environment.name != 'SG') await checkoutPage.completeCheckout();
+      await checkoutPage.completeCheckout();
       await pendingPayments.cancelQRCodePayment();
     });
 

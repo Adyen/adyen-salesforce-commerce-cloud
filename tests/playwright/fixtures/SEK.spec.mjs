@@ -27,7 +27,6 @@ for (const environment of environments) {
     test('Swish success', async ({ page }) => {
       pendingPaymentsPage = new PendingPayments(page);
 
-      if (environment.name === 'SG') await checkoutPage.setEmail();
       await pendingPaymentsPage.doQRCodePayment('swish', environment.name);
       if (environment.name.includes('SFRA'))
         await checkoutPage.completeCheckout();

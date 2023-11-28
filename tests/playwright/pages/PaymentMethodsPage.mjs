@@ -579,9 +579,6 @@ export default class PaymentMethodsPage {
     // Extra static wait due to flaky load times
     await new Promise(r => setTimeout(r, 2000));
     await this.page.click(`#rb_${paymentMethod}`);
-    if (envName === 'SG') {
-      await this.page.click(`#component_${paymentMethod} button`);
-    }
   };
 
   cancelQRCode = async () => {

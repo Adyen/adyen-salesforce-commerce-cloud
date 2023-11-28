@@ -48,8 +48,6 @@ for (const environment of environments) {
     });
 
     test('Card payment no 3DS failure @quick', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -87,7 +85,6 @@ for (const environment of environments) {
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-    if (environment.name != 'SG') {
       test.beforeEach(async ({ page }) => {
         checkoutPage = new environment.CheckoutPage(page);
         accountPage = new environment.AccountPage(page);
@@ -143,7 +140,6 @@ for (const environment of environments) {
         await checkoutPage.submitShipping();
         await checkoutPage.expectGiftCardWarning();
       });
-    }
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
@@ -182,8 +178,6 @@ for (const environment of environments) {
     });
 
     test('3DS2 oneClick test success', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       await cards.doCardPaymentOneclick(cardData.threeDs2);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
@@ -191,8 +185,6 @@ for (const environment of environments) {
     });
 
     test('3DS2 oneClick test failure', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.cvc = '123';
       await cards.doCardPaymentOneclick(cardDataInvalid);
@@ -202,8 +194,6 @@ for (const environment of environments) {
     });
 
     test('co-branded BCMC/Maestro oneClick test success', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
       await checkoutPage.expectSuccess();
@@ -237,9 +227,7 @@ for (const environment of environments) {
     });
 
     test('my account add card 3DS2 success', async () => {
-      if (environment.name === 'SG') test.fixme();
       await accountPage.addCard(cardData.threeDs2);
-
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
       await accountPage.removeCard(cardData.threeDs2);
