@@ -26,7 +26,7 @@ for (const environment of environments) {
         await checkoutPage.setEmail();
       };
     });
-    test('bcmc mobile renders', async ({ page }) => {
+    test('bcmc mobile renders @quick', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
       await pendingPayments.doQRCodePayment('bcmc_mobile', environment.name);
       await checkoutPage.completeCheckout();
