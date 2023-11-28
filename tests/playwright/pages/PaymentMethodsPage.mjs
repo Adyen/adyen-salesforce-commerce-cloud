@@ -125,9 +125,13 @@ export default class PaymentMethodsPage {
   };
   
   continueAmazonExpressFlow = async () => {
+    this.amazonCaptcha = this.page.locator('//img[contains(@alt,"captcha")]');
     this.confirmExpressPaymentButton = this.page.locator(
       ".adyen-checkout__button--pay"
     );
+    if (await this.amazonCaptcha.isVisible()){
+      return false;
+    }
     await this.confirmExpressPaymentButton.click();
   };
   
