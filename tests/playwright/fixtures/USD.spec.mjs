@@ -5,6 +5,7 @@ import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
 import { Cards } from '../paymentFlows/cards.mjs';
 import { ShopperData } from '../data/shopperData.mjs';
 import { CardData } from '../data/cardData.mjs';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 
 const shopperData = new ShopperData();
 const cardData = new CardData();
@@ -161,6 +162,13 @@ for (const environment of environments) {
       await checkoutPage.completeCheckout();
       await redirectShopper.completeAffirmRedirect(false);
       await checkoutPage.expectRefusal();
+    });
+
+    test('CashApp Renders', async ({ page }) => {
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
+      await new PaymentMethodsPage(page).initiateCashAppPayment();
     });
   });
 

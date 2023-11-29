@@ -486,6 +486,16 @@ export default class PaymentMethodsPage {
     await affirmEmail.fill(shopper.shopperEmail);
   };
 
+  initiateCashAppPayment = async () => {
+    await this.page.waitForLoadState('load');
+    await this.page.click('#rb_cashapp');
+    await this.page.click('#component_cashapp');
+    await this.page.locator("div[data-testid='qr-modal-body']").waitFor({
+      state: 'visible',
+      timeout: 20000,
+    });
+  }
+
   confirmSimulator = async () => {
     //Confirm the simulator
     this.page.locator('button[value="authorised"]').click();
