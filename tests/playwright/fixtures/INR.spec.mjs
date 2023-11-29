@@ -36,7 +36,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('UPI QR Success', async ({ page }) => {
+    test('UPI QR Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doUPIPayment('upi_qr');
       await checkoutPage.completeCheckout();

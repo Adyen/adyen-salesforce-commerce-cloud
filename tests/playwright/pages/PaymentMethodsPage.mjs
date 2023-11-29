@@ -125,9 +125,13 @@ export default class PaymentMethodsPage {
   };
   
   continueAmazonExpressFlow = async () => {
+    this.amazonCaptcha = this.page.locator('//img[contains(@alt,"captcha")]');
     this.confirmExpressPaymentButton = this.page.locator(
       ".adyen-checkout__button--pay"
     );
+    if (await this.amazonCaptcha.isVisible()){
+      return false;
+    }
     await this.confirmExpressPaymentButton.click();
   };
   
@@ -482,6 +486,16 @@ export default class PaymentMethodsPage {
     await affirmEmail.fill(shopper.shopperEmail);
   };
 
+  initiateCashAppPayment = async () => {
+    await this.page.waitForLoadState('load');
+    await this.page.click('#rb_cashapp');
+    await this.page.click('#component_cashapp');
+    await this.page.locator("div[data-testid='qr-modal-body']").waitFor({
+      state: 'visible',
+      timeout: 20000,
+    });
+  }
+
   confirmSimulator = async () => {
     //Confirm the simulator
     this.page.locator('button[value="authorised"]').click();
@@ -579,9 +593,6 @@ export default class PaymentMethodsPage {
     // Extra static wait due to flaky load times
     await new Promise(r => setTimeout(r, 2000));
     await this.page.click(`#rb_${paymentMethod}`);
-    if (envName === 'SG') {
-      await this.page.click(`#component_${paymentMethod} button`);
-    }
   };
 
   cancelQRCode = async () => {

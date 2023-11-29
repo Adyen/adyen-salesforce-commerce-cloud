@@ -35,8 +35,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.completeCheckout();
-      environment.name != 'SG' ? await checkoutPage.goBackAndSubmitShipping()
-        : await checkoutPage.goBack();
+      await checkoutPage.goBackAndSubmitShipping()
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.submitPayment();
       await checkoutPage.placeOrder();
@@ -65,8 +64,6 @@ for (const environment of environments) {
       };
     });
     test('iDeal with restored cart Fail', async ({ page, context }) => {
-      if (environment.name === 'SG') test.skip();
-      // Skipping SG due to CSRF token validation
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment(true);
       await checkoutPage.submitPayment();

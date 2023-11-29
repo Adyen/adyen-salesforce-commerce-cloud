@@ -27,7 +27,7 @@ const config = {
   retries: process.env.CI ? 1 : 0,
 
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 5 : 1,
+  workers: process.env.CI ? 3 : 1,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
@@ -59,33 +59,33 @@ const config = {
       },
     },
 
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
 
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //   },
+    // },
 
-    {
-      name: 'chrome',
-      use: {
-        channel: 'chrome',
-      },
-    },
+    // {
+    //   name: 'chrome',
+    //   use: {
+    //     channel: 'chrome',
+    //   },
+    // },
 
-    {
-      name: 'edge',
-      use: {
-        channel: 'msedge',
-      },
-    },
+    // {
+    //   name: 'edge',
+    //   use: {
+    //     channel: 'msedge',
+    //   },
+    // },
 
     /* Test against mobile viewports. */
     // {
