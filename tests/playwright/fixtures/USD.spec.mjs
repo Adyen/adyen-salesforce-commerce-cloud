@@ -102,7 +102,7 @@ for (const environment of environments) {
         await checkoutPage.expectSuccess();
       });
 
-      test('GiftCard & Card Success', async () => {
+      test('GiftCard & Card Success @quick', async () => {
         await goToBillingWithFullCartGuestUser(3);
         if (environment.name.indexOf("v6") === -1) {
           await checkoutPage.setEmail();
@@ -177,7 +177,7 @@ for (const environment of environments) {
       };
     });
 
-    test('3DS2 oneClick test success', async () => {
+    test('3DS2 oneClick test success @quick', async () => {
       await cards.doCardPaymentOneclick(cardData.threeDs2);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
@@ -212,7 +212,7 @@ for (const environment of environments) {
       await checkoutPage.loginUser(shopperData.USAccountTestUser);
     });
 
-    test('my account add card no 3DS success', async () => {
+    test('my account add card no 3DS success @quick', async () => {
       await accountPage.addCard(cardData.noThreeDs);
       await accountPage.expectSuccess(cardData.noThreeDs);
       await accountPage.removeCard(cardData.noThreeDs);
@@ -226,7 +226,7 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test('my account add card 3DS2 success', async () => {
+    test('my account add card 3DS2 success @quick', async () => {
       await accountPage.addCard(cardData.threeDs2);
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
