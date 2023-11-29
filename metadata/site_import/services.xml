@@ -135,13 +135,28 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPartialPaymentsOrderLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v70/orders</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenCancelPartialPaymentOrder">
         <url>https://checkout-test.adyen.com/v70/orders/cancel</url>
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenCancelPartialPaymentOrderLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v70/orders/cancel</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenCheckBalance">
         <url>https://checkout-test.adyen.com/v70/paymentMethods/balance</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenCheckBalanceLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v70/paymentMethods/balance</url>
         <user-id></user-id>
         <password/>
     </service-credential>
