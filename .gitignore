@@ -7,4 +7,5 @@ dw.json
 /coverage/
 screenshots/
 playwright-report/
+test-results/
 Vagrantfile
