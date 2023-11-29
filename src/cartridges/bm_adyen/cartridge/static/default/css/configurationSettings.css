@@ -498,12 +498,18 @@ ul{
 
 #addRuleButton{
     position: absolute;
-    bottom: 15px;
-    left: 60px;
+    bottom: 35px;
+    left:70px;
 }
 
 #removeRuleButton {
     border: none;
     background-color: transparent;
     outline: none;
+}
+
+#adyen_installments_div{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-size: 14px;
 }
