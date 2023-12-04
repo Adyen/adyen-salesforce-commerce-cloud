@@ -497,9 +497,8 @@ ul{
 }
 
 #addRuleButton{
-    position: absolute;
-    bottom: 35px;
-    left:70px;
+    position: relative; 
+    right: 36rem;
 }
 
 #removeRuleButton {
