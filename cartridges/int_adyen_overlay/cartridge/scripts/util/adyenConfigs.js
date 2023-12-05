@@ -1,10 +1,5 @@
 "use strict";
 
-var _adyenConfigsObj;
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var dwsystem = require('dw/system');
 var adyenCurrentSite = dwsystem.Site.getCurrent();
 function getCustomPreference(field) {
@@ -22,7 +17,7 @@ function setCustomPreference(field, value) {
   }
   return customPreference;
 }
-var adyenConfigsObj = (_adyenConfigsObj = {
+var adyenConfigsObj = {
   setCustomPreference: setCustomPreference,
   getAdyenEnvironment: function getAdyenEnvironment() {
     return getCustomPreference('Adyen_Mode').value;
@@ -54,6 +49,9 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getKlarnaInlineWidgetEnabled: function getKlarnaInlineWidgetEnabled() {
     return getCustomPreference('Adyen_klarnaWidget');
   },
+  getAdyenInstallmentsEnabled: function getAdyenInstallmentsEnabled() {
+    return getCustomPreference('AdyenInstallments_enabled');
+  },
   getCreditCardInstallments: function getCreditCardInstallments() {
     return getCustomPreference('AdyenCreditCardInstallments');
   },
@@ -84,9 +82,6 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   getAdyenTokenisationEnabled: function getAdyenTokenisationEnabled() {
     return getCustomPreference('AdyenTokenisationEnabled');
   },
-  getAdyenSalePaymentMethods: function getAdyenSalePaymentMethods() {
-    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
-  },
   getAdyenBasketFieldsEnabled: function getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
@@ -98,34 +93,47 @@ var adyenConfigsObj = (_adyenConfigsObj = {
   },
   getAdyenLevel23CommodityCode: function getAdyenLevel23CommodityCode() {
     return getCustomPreference('AdyenLevel23_CommodityCode');
+  },
+  getAdyenSalePaymentMethods: function getAdyenSalePaymentMethods() {
+    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').replace(/\s/g, '').toString().split(',') : [];
+  },
+  getAdyenGivingEnabled: function getAdyenGivingEnabled() {
+    return getCustomPreference('AdyenGiving_enabled');
+  },
+  areExpressPaymentsEnabled: function areExpressPaymentsEnabled() {
+    return getCustomPreference('ExpressPayments_enabled');
+  },
+  isApplePayExpressEnabled: function isApplePayExpressEnabled() {
+    return getCustomPreference('ApplePayExpress_Enabled');
+  },
+  isAmazonPayExpressEnabled: function isAmazonPayExpressEnabled() {
+    return getCustomPreference('AmazonPayExpress_Enabled');
+  },
+  getExpressPaymentsOrder: function getExpressPaymentsOrder() {
+    return getCustomPreference('ExpressPayments_order');
+  },
+  getAdyenGivingDonationAmounts: function getAdyenGivingDonationAmounts() {
+    return getCustomPreference('AdyenGiving_donationAmounts');
+  },
+  getAdyenGivingCharityAccount: function getAdyenGivingCharityAccount() {
+    return getCustomPreference('AdyenGiving_charityAccount');
+  },
+  getAdyenGivingCharityName: function getAdyenGivingCharityName() {
+    return getCustomPreference('AdyenGiving_charityName');
+  },
+  getAdyenGivingCharityDescription: function getAdyenGivingCharityDescription() {
+    return getCustomPreference('AdyenGiving_charityDescription');
+  },
+  getAdyenGivingCharityWebsite: function getAdyenGivingCharityWebsite() {
+    return getCustomPreference('AdyenGiving_charityUrl');
+  },
+  getAdyenGivingBackgroundUrl: function getAdyenGivingBackgroundUrl() {
+    var _getCustomPreference;
+    return (_getCustomPreference = getCustomPreference('AdyenGiving_backgroundUrl')) === null || _getCustomPreference === void 0 ? void 0 : _getCustomPreference.getAbsURL();
+  },
+  getAdyenGivingLogoUrl: function getAdyenGivingLogoUrl() {
+    var _getCustomPreference2;
+    return (_getCustomPreference2 = getCustomPreference('AdyenGiving_logoUrl')) === null || _getCustomPreference2 === void 0 ? void 0 : _getCustomPreference2.getAbsURL();
   }
-}, _defineProperty(_adyenConfigsObj, "getAdyenSalePaymentMethods", function getAdyenSalePaymentMethods() {
-  return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : [];
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingEnabled", function getAdyenGivingEnabled() {
-  return getCustomPreference('AdyenGiving_enabled');
-}), _defineProperty(_adyenConfigsObj, "areExpressPaymentsEnabled", function areExpressPaymentsEnabled() {
-  return getCustomPreference('ExpressPayments_enabled');
-}), _defineProperty(_adyenConfigsObj, "isApplePayExpressEnabled", function isApplePayExpressEnabled() {
-  return getCustomPreference('ApplePayExpress_Enabled');
-}), _defineProperty(_adyenConfigsObj, "isAmazonPayExpressEnabled", function isAmazonPayExpressEnabled() {
-  return getCustomPreference('AmazonPayExpress_Enabled');
-}), _defineProperty(_adyenConfigsObj, "getExpressPaymentsOrder", function getExpressPaymentsOrder() {
-  return getCustomPreference('ExpressPayments_order');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingDonationAmounts", function getAdyenGivingDonationAmounts() {
-  return getCustomPreference('AdyenGiving_donationAmounts');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingCharityAccount", function getAdyenGivingCharityAccount() {
-  return getCustomPreference('AdyenGiving_charityAccount');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingCharityName", function getAdyenGivingCharityName() {
-  return getCustomPreference('AdyenGiving_charityName');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingCharityDescription", function getAdyenGivingCharityDescription() {
-  return getCustomPreference('AdyenGiving_charityDescription');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingCharityWebsite", function getAdyenGivingCharityWebsite() {
-  return getCustomPreference('AdyenGiving_charityUrl');
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingBackgroundUrl", function getAdyenGivingBackgroundUrl() {
-  var _getCustomPreference;
-  return (_getCustomPreference = getCustomPreference('AdyenGiving_backgroundUrl')) === null || _getCustomPreference === void 0 ? void 0 : _getCustomPreference.getAbsURL();
-}), _defineProperty(_adyenConfigsObj, "getAdyenGivingLogoUrl", function getAdyenGivingLogoUrl() {
-  var _getCustomPreference2;
-  return (_getCustomPreference2 = getCustomPreference('AdyenGiving_logoUrl')) === null || _getCustomPreference2 === void 0 ? void 0 : _getCustomPreference2.getAbsURL();
-}), _adyenConfigsObj);
+};
 module.exports = adyenConfigsObj;

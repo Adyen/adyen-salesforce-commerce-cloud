@@ -495,3 +495,21 @@ ul{
     line-height: 24px;
     color: #69778C;
 }
+
+#addRuleButton{
+    position: relative; 
+    margin-inline-end: auto;
+    margin-bottom : 10px;
+}
+
+#removeRuleButton {
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
+
+#adyen_installments_div{
+    font-family: 'Fakt';
+    font-style: normal;
+    font-size: 14px;
+}

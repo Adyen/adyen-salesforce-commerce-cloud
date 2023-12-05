@@ -40,6 +40,7 @@ var collections = require('*/cartridge/scripts/util/collections');
 var ShippingMgr = require('dw/order/ShippingMgr');
 var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
+var StringUtils = require('dw/util/StringUtils');
 //script includes
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 var BasketMgr = require('dw/order/BasketMgr');
@@ -189,6 +190,10 @@ var adyenHelperObj = {
     var externalPlatformVersion = adyenService.getExternalPlatformVersion();
     var checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
     return "".concat(checkoutCSS, "sdk/").concat(checkoutVersionForPlatform, "/adyen.css");
+  },
+  // converts to a syntax-safe HTML string
+  encodeHtml: function encodeHtml(str) {
+    return StringUtils.encodeString(str, 0);
   },
   // get the current region-based checkout environment
   getCheckoutEnvironment: function getCheckoutEnvironment() {
@@ -531,7 +536,7 @@ var adyenHelperObj = {
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
     var _result$additionalDat;
-    paymentInstrument.paymentTransaction.transactionID = session.privacy.giftCardResponse ? JSON.parse(session.privacy.giftCardResponse).orderPSPReference : result.pspReference;
+    paymentInstrument.paymentTransaction.transactionID = result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
     if ((_result$additionalDat = result.additionalData) !== null && _result$additionalDat !== void 0 && _result$additionalDat.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
@@ -559,7 +564,7 @@ var adyenHelperObj = {
   },
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi: function getCurrencyValueForApi(amount) {
-    var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode);
+    var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
     var digitsNumber = adyenHelperObj.getFractionDigits(currencyCode.toString());
     var value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
     return new dw.value.Money(value, currencyCode);
@@ -673,6 +678,19 @@ var adyenHelperObj = {
       isFinal: true,
       isSuccessful: false
     };
+  },
+  getPaymentMethodType: function getPaymentMethodType(paymentMethod) {
+    return paymentMethod.type === constants.ACTIONTYPES.GIFTCARD ? paymentMethod.brand : paymentMethod.type;
+  },
+  //SALE payment methods require payment transaction type to be Capture
+  setPaymentTransactionType: function setPaymentTransactionType(paymentInstrument, paymentMethod) {
+    var salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
+    var paymentMethodType = this.getPaymentMethodType(paymentMethod);
+    if (salePaymentMethods.indexOf(paymentMethodType) > -1) {
+      Transaction.wrap(function () {
+        paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
+      });
+    }
   },
   executeCall: function executeCall(serviceType, requestObject) {
     var service = this.getService(serviceType);

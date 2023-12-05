@@ -46,10 +46,10 @@ function getLineItems(_ref) {
       var vatPercentage = LineItemHelper.getVatPercentage(lineItem);
       lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
       lineItemObject.taxAmount = vatAmount.getValue().toFixed();
+      lineItemObject.amountIncludingTax = itemAmount.getValue() + vatAmount.getValue();
       lineItemObject.description = description;
       lineItemObject.id = id;
       lineItemObject.quantity = quantity;
-      lineItemObject.taxCategory = 'None';
       lineItemObject.taxPercentage = addTaxPercentage ? (new Number(vatPercentage) * 10000).toFixed() : 0;
       lineItems.push(lineItemObject);
     }

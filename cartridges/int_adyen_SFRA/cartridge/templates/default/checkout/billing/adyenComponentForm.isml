@@ -1,4 +1,5 @@
 <iscontent type="text/html"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
 <isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
@@ -45,8 +46,7 @@
     </isscript>
 
     <script>
-        var queryString = '${request.getHttpQueryString()}'.split("=");
-        var amazonCheckoutSessionId = queryString[queryString.length - 1];
+        var amazonCheckoutSessionId = "${pdict.AdyenHelper.encodeHtml(request.getHttpQueryString().split("=").pop())}";
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
     </script>
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>

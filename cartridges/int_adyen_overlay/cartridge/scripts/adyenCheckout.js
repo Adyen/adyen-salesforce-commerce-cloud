@@ -44,16 +44,6 @@ var AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceDa
 var adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
 var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
-
-//SALE payment methods require payment transaction type to be Capture
-function setPaymentTransactionType(paymentInstrument, paymentMethod) {
-  var salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
-  if (salePaymentMethods.indexOf(paymentMethod.type) > -1) {
-    Transaction.wrap(function () {
-      paymentInstrument.getPaymentTransaction().setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
-    });
-  }
-}
 function createPaymentRequest(args) {
   try {
     var order = args.Order;
@@ -74,7 +64,7 @@ function createPaymentRequest(args) {
     }
 
     // Add installments
-    if (AdyenConfigs.getCreditCardInstallments()) {
+    if (AdyenConfigs.getAdyenInstallmentsEnabled() && AdyenConfigs.getCreditCardInstallments()) {
       var _JSON$parse$installme;
       var numOfInstallments = (_JSON$parse$installme = JSON.parse(paymentInstrument.custom.adyenPaymentData).installments) === null || _JSON$parse$installme === void 0 ? void 0 : _JSON$parse$installme.value;
       if (numOfInstallments !== undefined) {
@@ -144,8 +134,7 @@ function createPaymentRequest(args) {
       paymentRequest.storePaymentMethod = true;
       paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
-    setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-
+    AdyenHelper.setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
     // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {

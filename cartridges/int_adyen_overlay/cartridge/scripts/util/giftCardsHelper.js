@@ -19,6 +19,7 @@
  * See the LICENSE file for more info.
  */
 var constants = require('*/cartridge/adyenConstants/constants');
+var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 var Transaction = require('dw/system/Transaction');
 //script includes
 var PaymentMgr = require('dw/order/PaymentMgr');
@@ -36,6 +37,7 @@ var giftCardsHelper = {
       var _PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod),
         paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.paymentTransaction.transactionID = parsedGiftCardObj.giftCard.pspReference;
       paymentInstrument.custom.adyenPaymentMethod = parsedGiftCardObj.giftCard.name;
       paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method")] = parsedGiftCardObj.giftCard.name;
       paymentInstrument.custom.Adyen_Payment_Method_Variant = parsedGiftCardObj.giftCard.brand;
@@ -43,6 +45,7 @@ var giftCardsHelper = {
       paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(parsedGiftCardObj);
       paymentInstrument.paymentTransaction.custom.Adyen_pspReference = parsedGiftCardObj.giftCard.pspReference;
     });
+    AdyenHelper.setPaymentTransactionType(paymentInstrument, parsedGiftCardObj.giftCard);
   }
 };
 module.exports = giftCardsHelper;

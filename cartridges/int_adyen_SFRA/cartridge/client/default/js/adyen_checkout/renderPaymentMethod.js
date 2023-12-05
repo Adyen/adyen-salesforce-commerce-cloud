@@ -220,6 +220,7 @@ module.exports.renderPaymentMethod = /*#__PURE__*/function () {
   var _renderPaymentMethod = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethod, isStored, path) {
     var description,
       rerender,
+      canRender,
       _store$componentsObj$,
       paymentMethodsUI,
       paymentMethodID,
@@ -272,16 +273,21 @@ module.exports.renderPaymentMethod = /*#__PURE__*/function () {
           }
           handleInput(options);
           setValid(options);
-          _context2.next = 25;
+          canRender = true;
+          _context2.next = 27;
           break;
-        case 23:
-          _context2.prev = 23;
+        case 24:
+          _context2.prev = 24;
           _context2.t0 = _context2["catch"](2);
-        case 25:
+          // method not available
+          canRender = false;
+        case 27:
+          return _context2.abrupt("return", canRender);
+        case 28:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[2, 23]]);
+    }, _callee2, null, [[2, 24]]);
   }));
   function renderPaymentMethod(_x7, _x8, _x9) {
     return _renderPaymentMethod.apply(this, arguments);

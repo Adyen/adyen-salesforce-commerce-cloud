@@ -17,7 +17,7 @@ function convertToSfccCardType(paymentInformation, paymentInstrument) {
   paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
   paymentInstrument.setCreditCardType(sfccCardType);
   paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-  paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "_Adyen_Payment_Method")] = sfccCardType;
+  paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method")] = sfccCardType;
   if (paymentInformation.creditCardToken) {
     var firstTwoDigitsFromCurrentYear = AdyenHelper.getFirstTwoNumbersFromYear();
     var expirationYear = firstTwoDigitsFromCurrentYear * 100 + paymentInformation.expirationYear;
