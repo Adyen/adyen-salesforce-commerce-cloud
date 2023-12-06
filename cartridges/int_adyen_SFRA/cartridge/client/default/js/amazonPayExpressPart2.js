@@ -26,6 +26,20 @@ function saveShopperDetails(details) {
     }
   });
 }
+function getPaymentMethods() {
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url: window.getPaymentMethodsURL,
+      type: 'get',
+      success: function success(data) {
+        resolve(data);
+      },
+      error: function error(_error) {
+        reject(_error);
+      }
+    });
+  });
+}
 function constructAddress(shopperDetails) {
   var addressKeys = Object.keys(shopperDetails.shippingAddress);
   var addressValues = Object.values(shopperDetails.shippingAddress);
@@ -69,7 +83,7 @@ function mountAmazonPayComponent() {
 }
 function _mountAmazonPayComponent() {
   _mountAmazonPayComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var amazonPayNode, checkout, amazonConfig, amazonPayComponent, shopperDetails;
+    var amazonPayNode, checkout, _paymentMethodsRespon, data, paymentMethodsResponse, amazonPayConfig, amazonConfig, amazonPayComponent, shopperDetails;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -79,30 +93,50 @@ function _mountAmazonPayComponent() {
         case 3:
           checkout = _context.sent;
           _context.prev = 4;
+          _context.next = 7;
+          return getPaymentMethods();
+        case 7:
+          data = _context.sent;
+          paymentMethodsResponse = data.AdyenPaymentMethods;
+          amazonPayConfig = (_paymentMethodsRespon = paymentMethodsResponse.find(function (pm) {
+            return pm.type === 'amazonpay';
+          })) === null || _paymentMethodsRespon === void 0 ? void 0 : _paymentMethodsRespon.configuration;
+          if (amazonPayConfig) {
+            _context.next = 12;
+            break;
+          }
+          return _context.abrupt("return");
+        case 12:
           amazonConfig = {
             showOrderButton: true,
+            configuration: {
+              merchantId: amazonPayConfig.merchantId,
+              storeId: amazonPayConfig.storeId,
+              region: amazonPayConfig.region,
+              publicKeyId: amazonPayConfig.publicKeyId
+            },
             returnUrl: window.returnUrl,
             showChangePaymentDetailsButton: true,
             amount: JSON.parse(window.basketAmount),
             amazonCheckoutSessionId: window.amazonCheckoutSessionId
           };
           amazonPayComponent = checkout.create('amazonpay', amazonConfig).mount(amazonPayNode);
-          _context.next = 9;
+          _context.next = 16;
           return amazonPayComponent.getShopperDetails();
-        case 9:
+        case 16:
           shopperDetails = _context.sent;
           saveShopperDetails(shopperDetails);
           showAddressDetails(shopperDetails);
-          _context.next = 16;
+          _context.next = 23;
           break;
-        case 14:
-          _context.prev = 14;
+        case 21:
+          _context.prev = 21;
           _context.t0 = _context["catch"](4);
-        case 16:
+        case 23:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[4, 14]]);
+    }, _callee, null, [[4, 21]]);
   }));
   return _mountAmazonPayComponent.apply(this, arguments);
 }

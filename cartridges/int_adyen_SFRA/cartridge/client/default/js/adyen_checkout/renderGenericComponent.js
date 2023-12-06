@@ -123,18 +123,39 @@ function renderStoredPaymentMethod(imagePath) {
   };
 }
 function renderStoredPaymentMethods(data, imagePath) {
-  if (data.storedPaymentMethods) {
-    var storedPaymentMethods = data.storedPaymentMethods;
-    storedPaymentMethods.forEach(renderStoredPaymentMethod(imagePath));
+  if (data.length) {
+    data.forEach(renderStoredPaymentMethod(imagePath));
   }
 }
-function renderPaymentMethods(paymentMethods, imagePath, adyenDescriptions) {
-  var promises = [];
-  for (var i = 0; i < paymentMethods.length; i += 1) {
-    var pm = paymentMethods[i];
-    promises.push(renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]));
-  }
-  return Promise.all(promises);
+function renderPaymentMethods(_x2, _x3, _x4) {
+  return _renderPaymentMethods.apply(this, arguments);
+}
+function _renderPaymentMethods() {
+  _renderPaymentMethods = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethods, imagePath, adyenDescriptions) {
+    var i, pm;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          i = 0;
+        case 1:
+          if (!(i < paymentMethods.length)) {
+            _context2.next = 8;
+            break;
+          }
+          pm = paymentMethods[i]; // eslint-disable-next-line
+          _context2.next = 5;
+          return renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
+        case 5:
+          i += 1;
+          _context2.next = 1;
+          break;
+        case 8:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  }));
+  return _renderPaymentMethods.apply(this, arguments);
 }
 function renderPosTerminals(adyenConnectedTerminals) {
   var _adyenConnectedTermin;
@@ -169,21 +190,36 @@ function setAmazonPayConfig(adyenPaymentMethods) {
 }
 function setInstallments(amount) {
   try {
-    var _window$installments;
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
-    var _window$installments$ = (_window$installments = window.installments) === null || _window$installments === void 0 ? void 0 : _window$installments.replace(/\[|]/g, '').split(','),
-      _window$installments$2 = _slicedToArray(_window$installments$, 2),
-      minAmount = _window$installments$2[0],
-      numOfInstallments = _window$installments$2[1];
-    if (minAmount <= amount.value) {
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {
-        card: {}
-      }; // eslint-disable-next-line max-len
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values = helpers.getInstallmentValues(numOfInstallments);
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    var installments = JSON.parse(window.installments.replace(/&quot;/g, '"'));
+    if (installments.length) {
+      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions = {};
     }
+    installments.forEach(function (installment) {
+      var _installment = _slicedToArray(installment, 3),
+        minAmount = _installment[0],
+        numOfInstallments = _installment[1],
+        cards = _installment[2];
+      if (minAmount <= amount.value) {
+        cards.forEach(function (cardType) {
+          var installmentOptions = store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions;
+          if (!installmentOptions[cardType]) {
+            installmentOptions[cardType] = {
+              values: [1]
+            };
+          }
+          if (!installmentOptions[cardType].values.includes(numOfInstallments)) {
+            installmentOptions[cardType].values.push(numOfInstallments);
+            installmentOptions[cardType].values.sort(function (a, b) {
+              return a - b;
+            });
+          }
+        });
+      }
+    });
+    store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
   } catch (e) {} // eslint-disable-line no-empty
 }
 
@@ -200,29 +236,29 @@ function initializeCheckout() {
   return _initializeCheckout.apply(this, arguments);
 }
 function _initializeCheckout() {
-  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var session, giftCardsData, totalDiscountedAmount, giftCards, lastGiftCard, paymentMethodsWithoutGiftCards, firstPaymentMethod;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
+  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var session, giftCardsData, totalDiscountedAmount, giftCards, lastGiftCard, paymentMethodsWithoutGiftCards, storedPaymentMethodsWithoutGiftCards, firstPaymentMethod;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.next = 2;
+          _context3.next = 2;
           return createSession();
         case 2:
-          session = _context2.sent;
-          _context2.next = 5;
+          session = _context3.sent;
+          _context3.next = 5;
           return fetchGiftCards();
         case 5:
-          giftCardsData = _context2.sent;
+          giftCardsData = _context3.sent;
           store.checkoutConfiguration.session = {
             id: session.id,
             sessionData: session.sessionData,
             imagePath: session.imagePath,
             adyenDescriptions: session.adyenDescriptions
           };
-          _context2.next = 9;
+          _context3.next = 9;
           return AdyenCheckout(store.checkoutConfiguration);
         case 9:
-          store.checkout = _context2.sent;
+          store.checkout = _context3.sent;
           setGiftCardContainerVisibility();
           totalDiscountedAmount = giftCardsData.totalDiscountedAmount, giftCards = giftCardsData.giftCards;
           if (giftCards !== null && giftCards !== void 0 && giftCards.length) {
@@ -239,10 +275,13 @@ function _initializeCheckout() {
           paymentMethodsWithoutGiftCards = store.checkout.paymentMethodsResponse.paymentMethods.filter(function (pm) {
             return pm.type !== constants.GIFTCARD;
           });
-          renderStoredPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath);
-          _context2.next = 21;
+          storedPaymentMethodsWithoutGiftCards = store.checkout.paymentMethodsResponse.storedPaymentMethods.filter(function (pm) {
+            return pm.type !== constants.GIFTCARD;
+          });
+          renderStoredPaymentMethods(storedPaymentMethodsWithoutGiftCards, session.imagePath);
+          _context3.next = 22;
           return renderPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath, session.adyenDescriptions);
-        case 21:
+        case 22:
           renderPosTerminals(session.adyenConnectedTerminals);
           renderGiftCardLogo(session.imagePath);
           firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
@@ -251,11 +290,11 @@ function _initializeCheckout() {
             helpers.displaySelectedMethod(firstPaymentMethod.value);
           }
           helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
-        case 26:
+        case 27:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
-    }, _callee2);
+    }, _callee3);
   }));
   return _initializeCheckout.apply(this, arguments);
 }
@@ -305,19 +344,19 @@ function renderGenericComponent() {
   return _renderGenericComponent.apply(this, arguments);
 }
 function _renderGenericComponent() {
-  _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var _store$addedGiftCards2;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
           if (!(Object.keys(store.componentsObj).length !== 0)) {
-            _context3.next = 3;
+            _context4.next = 3;
             break;
           }
-          _context3.next = 3;
+          _context4.next = 3;
           return unmountComponents();
         case 3:
-          _context3.next = 5;
+          _context4.next = 5;
           return initializeCheckout();
         case 5:
           if ((_store$addedGiftCards2 = store.addedGiftCards) !== null && _store$addedGiftCards2 !== void 0 && _store$addedGiftCards2.length) {
@@ -326,9 +365,9 @@ function _renderGenericComponent() {
           attachGiftCardAddButtonListener();
         case 7:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3);
+    }, _callee4);
   }));
   return _renderGenericComponent.apply(this, arguments);
 }

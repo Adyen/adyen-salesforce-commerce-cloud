@@ -77,7 +77,7 @@ function handle(customObj) {
   result.Order = order;
   if (order === null) {
     // check to see if this was a $0.00 auth for recurring payment. if yes, CO can safely be deleted
-    if (orderId.indexOf('recurringPayment') > -1) {
+    if (orderIdParts.indexOf('recurringPayment') > -1) {
       result.SkipOrder = true;
       setProcessedCOInfo(customObj);
     } else {

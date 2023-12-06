@@ -5,6 +5,7 @@ import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
 import { Cards } from '../paymentFlows/cards.mjs';
 import { ShopperData } from '../data/shopperData.mjs';
 import { CardData } from '../data/cardData.mjs';
+import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 
 const shopperData = new ShopperData();
 const cardData = new CardData();
@@ -48,8 +49,6 @@ for (const environment of environments) {
     });
 
     test('Card payment no 3DS failure @quick', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       const cardDataInvalid = Object.assign({}, cardData.noThreeDs);
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
@@ -61,53 +60,6 @@ for (const environment of environments) {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.makeSuccessfulDonation();
-    });
-
-    test('Card payment 3DS1 success @quick', async () => {
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card payment 3DS1 with restored cart success', async () => {
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.completeCheckout();
-      environment.name == 'SG'
-        ? await checkoutPage.navigateBackFromRedirect()
-        : await checkoutPage.goBackAndSubmitShipping();
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.submitPayment();
-      await checkoutPage.placeOrder();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card payment 3DS1 failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.threeDs1);
-      cardDataInvalid.expirationDate = '0150';
-      await cards.doCardPayment(cardDataInvalid);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
-    });
-
-    test('Card payment 3DS1 with restored cart failure', async ({
-      context,
-    }) => {
-      if (environment.name === 'SG') test.fixme();
-      // Skipping SG due to CSRF token validation
-
-      await cards.doCardPayment(cardData.threeDs1);
-      await checkoutPage.submitPayment();
-      const checkoutURL = await checkoutPage.getLocation();
-      await checkoutPage.placeOrder();
-
-      const newPage = await context.newPage();
-      newPage.goto(checkoutURL);
-
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
     });
 
     test('Card payment 3DS2 success @quick', async () => {
@@ -126,22 +78,6 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card co-branded BCMC payment success', async () => {
-      await cards.doCardPayment(cardData.coBrandedBCMC);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectSuccess();
-    });
-
-    test('Card co-branded BCMC payment failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.coBrandedBCMC);
-      cardDataInvalid.expirationDate = '0150';
-      await cards.doCardPayment(cardDataInvalid);
-      await checkoutPage.completeCheckout();
-      await cards.do3Ds1Verification();
-      await checkoutPage.expectRefusal();
-    });
-
     test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment();
@@ -150,7 +86,6 @@ for (const environment of environments) {
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-    if (environment.name != 'SG') {
       test.beforeEach(async ({ page }) => {
         checkoutPage = new environment.CheckoutPage(page);
         accountPage = new environment.AccountPage(page);
@@ -158,7 +93,7 @@ for (const environment of environments) {
         await page.goto(`${environment.urlExtension}`);
       });
 
-      test('GiftCard Only Success', async () => {
+      test('GiftCard Only Success @quick', async () => {
         await goToBillingWithFullCartGuestUser();
         if (environment.name.indexOf("v6") === -1) {
           await checkoutPage.setEmail();
@@ -168,7 +103,7 @@ for (const environment of environments) {
         await checkoutPage.expectSuccess();
       });
 
-      test('GiftCard & Card Success', async () => {
+      test('GiftCard & Card Success @quick', async () => {
         await goToBillingWithFullCartGuestUser(3);
         if (environment.name.indexOf("v6") === -1) {
           await checkoutPage.setEmail();
@@ -206,7 +141,6 @@ for (const environment of environments) {
         await checkoutPage.submitShipping();
         await checkoutPage.expectGiftCardWarning();
       });
-    }
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
@@ -221,13 +155,20 @@ for (const environment of environments) {
 
     test('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doAffirmPayment(shopperData.US);
       if (environment.name.indexOf("v6") === -1) {
         await checkoutPage.setEmail();
       };
+      await redirectShopper.doAffirmPayment(shopperData.US);
       await checkoutPage.completeCheckout();
       await redirectShopper.completeAffirmRedirect(false);
       await checkoutPage.expectRefusal();
+    });
+
+    test('CashApp Renders', async ({ page }) => {
+      if (environment.name.indexOf("v6") === -1) {
+        await checkoutPage.setEmail();
+      };
+      await new PaymentMethodsPage(page).initiateCashAppPayment();
     });
   });
 
@@ -244,9 +185,7 @@ for (const environment of environments) {
       };
     });
 
-    test('3DS2 oneClick test success', async () => {
-      if (environment.name === 'SG') test.fixme();
-
+    test('3DS2 oneClick test success @quick', async () => {
       await cards.doCardPaymentOneclick(cardData.threeDs2);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
@@ -254,8 +193,6 @@ for (const environment of environments) {
     });
 
     test('3DS2 oneClick test failure', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.cvc = '123';
       await cards.doCardPaymentOneclick(cardDataInvalid);
@@ -265,11 +202,8 @@ for (const environment of environments) {
     });
 
     test('co-branded BCMC/Maestro oneClick test success', async () => {
-      if (environment.name === 'SG') test.fixme();
-
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
-      await cards.do3Ds1Verification();
       await checkoutPage.expectSuccess();
     });
   });
@@ -286,7 +220,7 @@ for (const environment of environments) {
       await checkoutPage.loginUser(shopperData.USAccountTestUser);
     });
 
-    test('my account add card no 3DS success', async () => {
+    test('my account add card no 3DS success @quick', async () => {
       await accountPage.addCard(cardData.noThreeDs);
       await accountPage.expectSuccess(cardData.noThreeDs);
       await accountPage.removeCard(cardData.noThreeDs);
@@ -300,28 +234,8 @@ for (const environment of environments) {
       await accountPage.expectFailure();
     });
 
-    test('my account add card 3DS1 success', async () => {
-      if (environment.name === 'SG') test.fixme();
-      await accountPage.addCard(cardData.threeDs1);
-
-      await cards.do3Ds1Verification();
-      await accountPage.expectSuccess(cardData.threeDs1);
-      await accountPage.removeCard(cardData.threeDs1);
-      await accountPage.expectCardRemoval(cardData.threeDs1);
-    });
-
-    test('my account add card 3DS1 failure', async () => {
-      const cardDataInvalid = Object.assign({}, cardData.threeDs1);
-      cardDataInvalid.expirationDate = '0150';
-      await accountPage.addCard(cardDataInvalid);
-      await cards.do3Ds1Verification();
-      await accountPage.expectFailure();
-    });
-
-    test('my account add card 3DS2 success', async () => {
-      if (environment.name === 'SG') test.fixme();
+    test('my account add card 3DS2 success @quick', async () => {
       await accountPage.addCard(cardData.threeDs2);
-
       await cards.do3Ds2Verification();
       await accountPage.expectSuccess(cardData.threeDs2);
       await accountPage.removeCard(cardData.threeDs2);

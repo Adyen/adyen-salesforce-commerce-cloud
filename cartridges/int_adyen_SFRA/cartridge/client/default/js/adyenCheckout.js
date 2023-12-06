@@ -31,7 +31,7 @@ if (window.cardholderNameBool !== 'null') {
   store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
   store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
 }
-if (window.googleMerchantID !== 'null' && window.Configuration.environment === 'live') {
+if (window.googleMerchantID !== 'null' && window.Configuration.environment.includes('live')) {
   var id = 'merchantId';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
   store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[id] = window.googleMerchantID;

@@ -61,6 +61,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_klarnaWidget');
   },
 
+  getAdyenInstallmentsEnabled(){
+    return getCustomPreference('AdyenInstallments_enabled');
+  },
+
   getCreditCardInstallments() {
     return getCustomPreference('AdyenCreditCardInstallments');
   },
@@ -101,10 +105,6 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenTokenisationEnabled');
   },
 
-  getAdyenSalePaymentMethods: function () {
-    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',') : '';
-  },
-
   getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
@@ -123,7 +123,7 @@ const adyenConfigsObj = {
 
   getAdyenSalePaymentMethods: function () {
     return getCustomPreference('AdyenSalePaymentMethods')
-      ? getCustomPreference('AdyenSalePaymentMethods').toString().split(',')
+      ? getCustomPreference('AdyenSalePaymentMethods').replace(/\s/g, '').toString().split(',')
       : [];
   },
 

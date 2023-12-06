@@ -114,21 +114,21 @@ function renderStoredPaymentMethod(imagePath) {
 }
 
 function renderStoredPaymentMethods(data, imagePath) {
-  if (data.storedPaymentMethods) {
-    const { storedPaymentMethods } = data;
-    storedPaymentMethods.forEach(renderStoredPaymentMethod(imagePath));
+  if (data.length) {
+    data.forEach(renderStoredPaymentMethod(imagePath));
   }
 }
 
-function renderPaymentMethods(paymentMethods, imagePath, adyenDescriptions) {
-  const promises = [];
+async function renderPaymentMethods(
+  paymentMethods,
+  imagePath,
+  adyenDescriptions,
+) {
   for (let i = 0; i < paymentMethods.length; i += 1) {
     const pm = paymentMethods[i];
-    promises.push(
-      renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]),
-    );
+    // eslint-disable-next-line
+    await renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
   }
-  return Promise.all(promises);
 }
 
 function renderPosTerminals(adyenConnectedTerminals) {
@@ -175,18 +175,34 @@ function setInstallments(amount) {
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
-    const [minAmount, numOfInstallments] = window.installments
-      ?.replace(/\[|]/g, '')
-      .split(',');
-    if (minAmount <= amount.value) {
+    const installments = JSON.parse(
+      window.installments.replace(/&quot;/g, '"'),
+    );
+    if (installments.length) {
       store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions =
-        {
-          card: {},
-        }; // eslint-disable-next-line max-len
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions.card.values =
-        helpers.getInstallmentValues(numOfInstallments);
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+        {};
     }
+    installments.forEach((installment) => {
+      const [minAmount, numOfInstallments, cards] = installment;
+      if (minAmount <= amount.value) {
+        cards.forEach((cardType) => {
+          const { installmentOptions } =
+            store.checkoutConfiguration.paymentMethodsConfiguration.card;
+          if (!installmentOptions[cardType]) {
+            installmentOptions[cardType] = {
+              values: [1],
+            };
+          }
+          if (
+            !installmentOptions[cardType].values.includes(numOfInstallments)
+          ) {
+            installmentOptions[cardType].values.push(numOfInstallments);
+            installmentOptions[cardType].values.sort((a, b) => a - b);
+          }
+        });
+      }
+    });
+    store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
   } catch (e) {} // eslint-disable-line no-empty
 }
 
@@ -230,7 +246,15 @@ async function initializeCheckout() {
       (pm) => pm.type !== constants.GIFTCARD,
     );
 
-  renderStoredPaymentMethods(paymentMethodsWithoutGiftCards, session.imagePath);
+  const storedPaymentMethodsWithoutGiftCards =
+    store.checkout.paymentMethodsResponse.storedPaymentMethods.filter(
+      (pm) => pm.type !== constants.GIFTCARD,
+    );
+
+  renderStoredPaymentMethods(
+    storedPaymentMethodsWithoutGiftCards,
+    session.imagePath,
+  );
 
   await renderPaymentMethods(
     paymentMethodsWithoutGiftCards,

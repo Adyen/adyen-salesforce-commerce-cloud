@@ -29,7 +29,7 @@ for (const environment of environments) {
       };
     });
 
-    test('Card payment 3DS2 installments success', async () => {
+    test('Card payment 3DS2 installments success @quick', async () => {
       await cards.doCardPaymentInstallments(cardData.threeDs2, 4);
       await checkoutPage.completeCheckout();
       await cards.do3Ds2Verification();

@@ -34,6 +34,7 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     billingAddress.setAddress1(shopperDetails.billingAddressDetails.address1);
     billingAddress.setCity(shopperDetails.billingAddressDetails.city);
     billingAddress.setCountryCode(shopperDetails.billingAddressDetails.countryCode.value);
+    billingAddress.setPostalCode(shopperDetails.billingAddressDetails.postalCode);
     if (shopperDetails.billingAddressDetails.address2) {
       billingAddress.setAddress2(shopperDetails.billingAddressDetails.address2);
     }
@@ -47,6 +48,7 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
     shippingAddress.setAddress1(shopperDetails.addressBook.preferredAddress.address1);
     shippingAddress.setCity(shopperDetails.addressBook.preferredAddress.city);
     shippingAddress.setCountryCode(shopperDetails.addressBook.preferredAddress.countryCode.value);
+    shippingAddress.setPostalCode(shopperDetails.addressBook.preferredAddress.postalCode);
     if (shopperDetails.addressBook.preferredAddress.address2) {
       shippingAddress.setAddress2(shopperDetails.addressBook.preferredAddress.address2);
     }

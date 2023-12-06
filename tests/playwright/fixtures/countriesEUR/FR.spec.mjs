@@ -52,14 +52,15 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
       cards = new Cards(page);
    });
 
-   test('No 3DS Amazon Pay', async ({ page }) => {
+   test('No 3DS Amazon Pay @quick', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
     if (environment.name.indexOf('v6') === -1) {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
-    await redirectShopper.doAmazonPayment();
+    const result = await redirectShopper.doAmazonPayment();
+    if(result != true){test.skip()};
     await checkoutPage.expectSuccess();
   });
   
@@ -76,13 +77,13 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.expectSuccess();
   });
 
-  test.skip('Amazon Pay Express', async ({ page }) => {
+  test('Amazon Pay Express @quick', async ({ page }) => {
     redirectShopper = new RedirectShopper(page);
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
-    const result = await redirectShopper.doAmazonPayment(false);
+    await redirectShopper.doAmazonPayment(false);
+    const result = await redirectShopper.doAmazonExpressPayment();
     if(result != true){test.skip()};
-    await redirectShopper.doAmazonExpressPayment();
     await checkoutPage.expectSuccess();
   });
 
