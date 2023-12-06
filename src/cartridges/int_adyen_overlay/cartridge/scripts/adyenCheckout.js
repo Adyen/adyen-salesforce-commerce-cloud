@@ -49,6 +49,7 @@ function createPaymentRequest(args) {
     );
 
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    const paymentMethodType = paymentRequest.paymentMethod.type;
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
@@ -58,7 +59,7 @@ function createPaymentRequest(args) {
     }
 
     // L2/3 Data
-    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled() && paymentMethodType.indexOf('scheme') > -1) {
       paymentRequest.additionalData = {
         ...paymentRequest.additionalData,
         ...adyenLevelTwoThreeData.getLineItems(args),
@@ -95,7 +96,6 @@ function createPaymentRequest(args) {
       };
     }
 
-    const paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
     paymentRequest = AdyenHelper.createAddressObjects(
