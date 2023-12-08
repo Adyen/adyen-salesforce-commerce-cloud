@@ -683,8 +683,8 @@ var adyenHelperObj = {
       ? result.resultCode
       : '';
     order.custom.Adyen_value = '0';
-    if (result.donationToken){
-      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken;
+    if (result.donationToken || result.fullResponse?.donationToken){
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken || result.fullResponse.donationToken;
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
