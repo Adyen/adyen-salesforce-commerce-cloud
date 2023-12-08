@@ -42,7 +42,7 @@ function donate(donationReference, donationAmount, orderToken) {
     const donationToken = paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
     const originalReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
     const paymentData = JSON.parse(paymentInstrument.paymentTransaction.custom.Adyen_log);
-    const paymentCurrency = paymentData.amount.currency;
+    const paymentCurrency = paymentData.amount.currency || paymentData.fullResponse?.amount?.currency;
     const availableDonationAmounts = AdyenHelper.getDonationAmounts();
     paymentMethodVariant = paymentData.paymentMethod?.type || paymentData.fullResponse?.paymentMethod?.type;
 
