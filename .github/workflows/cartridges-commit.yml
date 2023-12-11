@@ -1,9 +1,6 @@
 name: Release Workflow
 
-on:
-  pull_request:
-    branches:
-      - 'feature/*'
+on: [push, pull_request]
 
 jobs:
   setup-the-cartridge:
