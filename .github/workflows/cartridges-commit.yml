@@ -44,7 +44,7 @@ jobs:
         run: |
           npm run transpile && npm run compile:js | tee build_output.txt
           mkdir -p $GITHUB_WORKSPACE/cartridges
-          cp -R cartridge/* $GITHUB_WORKSPACE/cartridges
+          cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit changes
         if: success()
