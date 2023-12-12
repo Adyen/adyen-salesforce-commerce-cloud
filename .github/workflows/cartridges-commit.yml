@@ -2,9 +2,6 @@ name: Release Workflow
 
 on:
   pull_request:
-    paths-ignore:
-      - 'int_adyen_controllers/**'
-      - 'adyen_controllers_changes/**'
 
 jobs:
   commit-the-cartridge:
