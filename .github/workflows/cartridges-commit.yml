@@ -1,6 +1,10 @@
 name: Release Workflow
 
-on: [push, pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'int_adyen_controllers/**'
+      - 'adyen_controllers_changes/**'
 
 jobs:
   setup-the-cartridge:
