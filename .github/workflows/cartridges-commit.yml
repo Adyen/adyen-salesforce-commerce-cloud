@@ -7,7 +7,7 @@ on:
       - 'adyen_controllers_changes/**'
 
 jobs:
-  setup-the-cartridge:
+  commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
     strategy:
@@ -47,7 +47,9 @@ jobs:
       - name: Commit changes
         if: success()
         run: | 
+          cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add build_output.txt
-          git commit -m "chore: Commiting the built /cartridge folder"
+          git commit -m "chore: Committing the built /cartridge folder"
+          git push origin HEAD:${{ github.head_ref }}
