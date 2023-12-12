@@ -51,5 +51,5 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add build_output.txt
-          git commit -m "chore: Committing the built /cartridge folder"
+          git commit -m "chore: committing the built /cartridge folder"
           git push origin HEAD:${{ github.head_ref }}
