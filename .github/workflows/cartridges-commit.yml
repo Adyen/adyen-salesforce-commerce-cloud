@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
+          fetch-depth: 0
       - name: Install SFRA dependencies
         working-directory: storefront-reference-architecture
         run: npm install
@@ -49,7 +50,7 @@ jobs:
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add $GITHUB_WORKSPACE/cartridges/*
+          git add .
           git commit -m "chore: committing the built /cartridge folder"
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
