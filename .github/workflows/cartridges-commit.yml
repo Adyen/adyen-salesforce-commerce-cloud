@@ -43,6 +43,8 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: |
           npm run transpile && npm run compile:js | tee build_output.txt
+          mkdir -p $GITHUB_WORKSPACE/cartridge
+          cp -R cartridge/* $GITHUB_WORKSPACE/cartridge
         shell: bash
       - name: Commit changes
         if: success()
@@ -50,7 +52,7 @@ jobs:
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add cartridge/**/*
+          git add $GITHUB_WORKSPACE/cartridge/*
           git commit -m "chore: committing the built /cartridge folder"
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
