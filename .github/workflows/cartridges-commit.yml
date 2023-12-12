@@ -3,12 +3,13 @@ name: Release Workflow
 on:
   pull_request:
     branches:
-      - 'release/*'
+      - 'feature/*'
 
 jobs:
   commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
+    needs: [end-to-end-testing]
     strategy:
       fail-fast: false
       matrix:
