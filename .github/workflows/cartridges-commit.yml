@@ -49,7 +49,7 @@ jobs:
         run: | 
           cd adyen-salesforce-commerce-cloud
           for name in "int_adyen_SFRA" "int_adyen_overlay" "bm_adyen"; do
-            sed "s|<projectDescription>.*<\/projectDescription>|<projectDescription>\n\t<name>${name}</name>\n\t<comment>v23.3.1<\/comment>\n\t<projects>\n\t<\/projects>\n\t<buildSpec>\n\t\t<buildCommand>\n\t\t\t<name>com.demandware.studio.core.beehiveElementBuilder<\/name>\n\t\t\t<arguments>\n\t\t\t<\/arguments>\n\t\t<\/buildCommand>\n\t<\/buildSpec>\n\t<natures>\n\t\t<nature>com.demandware.studio.core.beehiveNature<\/nature>\n\t<\/natures>\n<\/projectDescription>|g" project_template.xml > ".project.xml"
+            sed "s|<projectDescription>.*<\/projectDescription>|<projectDescription>\n\t<name>${name}</name>\n\t<comment>v23.3.1<\/comment>\n\t<projects>\n\t<\/projects>\n\t<buildSpec>\n\t\t<buildCommand>\n\t\t\t<name>com.demandware.studio.core.beehiveElementBuilder<\/name>\n\t\t\t<arguments>\n\t\t\t<\/arguments>\n\t\t<\/buildCommand>\n\t<\/buildSpec>\n\t<natures>\n\t\t<nature>com.demandware.studio.core.beehiveNature<\/nature>\n\t<\/natures>\n<\/projectDescription>|g" project_template.xml > "project.xml"
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add cartridges/**/*
