@@ -2,7 +2,7 @@ name: Release Workflow
 
 on:
   workflow_run:
-    workflows: 'E2E For SFRA'
+    workflows: [E2E For SFRA]
     types:
       - completed
 
