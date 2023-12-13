@@ -42,34 +42,42 @@ jobs:
         run: |
           npm run transpile && npm run compile:js
           mkdir -p $GITHUB_WORKSPACE/cartridges
-          cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
+          cp -R c/* $GITHUB_WORKSPACE/cartridges
         shell: bash
-      - name: Commit changes
+      - name: Commit /cartridges folder
         if: success()
         run: | 
-          cd adyen-salesforce-commerce-cloud/cartridges
-          for name in "int_adyen_SFRA" "int_adyen_overlay" "bm_adyen"; do
-            echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-            <projectDescription>
-              <name>${name}</name>
-              <comment>v23.3.1</comment>
-              <projects></projects>
-              <buildSpec>
-                <buildCommand>
-                  <name>com.demandware.studio.core.beehiveElementBuilder</name>
-                  <arguments></arguments>
-                </buildCommand>
-              </buildSpec>
-              <natures>
-                <nature>com.demandware.studio.core.beehiveNature</nature>
-              </natures>
-            </projectDescription>" > "project.xml"
-            git add "project.xml"
-          done
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add cartridges/**/*
-          git commit -m "chore: committing the built /cartridge folder and project files"
+          git commit -m "chore: committing the built /cartridge folder"
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
+      - name: Commit .project files 
+        if: success()
+        run: | 
+          cd adyen-salesforce-commerce-cloud/cartridges
+            for name in "int_adyen_SFRA" "int_adyen_overlay" "bm_adyen"; do
+              echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+              <projectDescription>
+                <name>${name}</name>
+                <comment>v23.3.1</comment>
+                <projects></projects>
+                <buildSpec>
+                  <buildCommand>
+                    <name>com.demandware.studio.core.beehiveElementBuilder</name>
+                    <arguments></arguments>
+                  </buildCommand>
+                </buildSpec>
+                <natures>
+                  <nature>com.demandware.studio.core.beehiveNature</nature>
+                </natures>
+              </projectDescription>" > "project.xml"
+              git add "project.xml"
+              git config --local user.email "actions@github.com"
+              git config --local user.name "GitHub Actions"
+              git commit -m "chore: committing the project files"
+            done
+            git fetch origin
+            git push origin HEAD:${{ github.head_ref }} --force-with-lease
