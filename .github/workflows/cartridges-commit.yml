@@ -1,10 +1,7 @@
 name: Release Workflow
 
 on:
-  workflow_run:
-    workflows: ["end-to-end-testing"]
-    types:
-      - completed
+  pull_request:
 
 jobs:
   commit-the-cartridge:
