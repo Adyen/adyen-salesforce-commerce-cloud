@@ -50,7 +50,7 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit changes
-        if: success()
+        if: success() || github.event_name == 'workflow_dispatch'
         run: | 
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
