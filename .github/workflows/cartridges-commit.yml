@@ -57,6 +57,7 @@ jobs:
       - name: Commit .project files 
         if: success()
         run: | 
+          cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
               version=$(grep -oP "VERSION:\s*'(\d+\.\d+\.\d+)'" int_adyen_overlay/cartridge/adyenConstants/constants.js | cut -d "'" -f 2)
               echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -74,10 +75,10 @@ jobs:
                   <nature>com.demandware.studio.core.beehiveNature</nature>
                 </natures>
               </projectDescription>" > "project.xml"
+              git config --local user.email "actions@github.com"
+              git config --local user.name "GitHub Actions"
+              git add "${name}/project.xml"
+              git commit -m "chore: committing the project files"
             done
-            git config --local user.email "actions@github.com"
-            git config --local user.name "GitHub Actions"
-            git add cartridges/**/*
-            git commit -m "chore: committing the project files"
             git fetch origin
             git push origin HEAD:${{ github.head_ref }} --force-with-lease
