@@ -1,13 +1,16 @@
 name: Release Workflow
 
 on:
-  pull_request:
+  workflow_dispatch:
+    inputs:
+      manual_trigger:
+        description: 'Manually trigger the workflow'
+        required: true
 
 jobs:
   commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
-    needs: [setup-the-cartridge, end-to-end-testing]
     strategy:
       fail-fast: false
       matrix:
@@ -46,7 +49,7 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
-        if: success()
+        if: github.event.inputs.manual_trigger
         run: | 
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
@@ -56,7 +59,7 @@ jobs:
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
       - name: Commit .project files 
-        if: success()
+        if: github.event.inputs.manual_trigger
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
