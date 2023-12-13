@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - 'feature/*'
-  workflow_dispatch:
 
 jobs:
   commit-the-cartridge:
