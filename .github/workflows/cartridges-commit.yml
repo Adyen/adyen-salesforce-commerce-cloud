@@ -1,7 +1,10 @@
 name: Release Workflow
 
 on:
-  pull_request:
+  workflow_run:
+    workflows: ['E2E For SFRA']
+    types:
+      - completed
 
 jobs:
   commit-the-cartridge:
