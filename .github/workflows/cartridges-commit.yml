@@ -42,7 +42,7 @@ jobs:
         run: |
           npm run transpile && npm run compile:js
           mkdir -p $GITHUB_WORKSPACE/cartridges
-          cp -R c/* $GITHUB_WORKSPACE/cartridges
+          cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
         if: success()
