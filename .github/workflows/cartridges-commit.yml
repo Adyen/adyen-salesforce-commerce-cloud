@@ -64,11 +64,11 @@ jobs:
                 <nature>com.demandware.studio.core.beehiveNature</nature>
               </natures>
             </projectDescription>" > "project.xml"
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+            git add cartridges/**/*
             git add "project.xml"
+            git commit -m "chore: committing the built /cartridge folder and project files"
           done
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git add cartridges/**/*
-          git commit -m "chore: committing the built /cartridge folder and project files"
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
