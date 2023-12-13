@@ -1,11 +1,10 @@
 name: Release Workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      manual_trigger:
-        description: 'Manually trigger the workflow'
-        required: true
+  workflow_run:
+    workflows: ["E2E_SFRA"]
+    types:
+      - completed
 
 jobs:
   commit-the-cartridge:
@@ -49,7 +48,7 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
-        if: github.event.inputs.manual_trigger
+        if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
@@ -59,7 +58,7 @@ jobs:
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
       - name: Commit .project files 
-        if: github.event.inputs.manual_trigger
+        if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
