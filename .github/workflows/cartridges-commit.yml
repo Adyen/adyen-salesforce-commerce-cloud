@@ -1,15 +1,13 @@
 name: Release Workflow
 
 on:
-  workflow_run:
-    workflows: [E2E For SFRA]
-    types:
-      - completed
+  pull_request:
 
 jobs:
   commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
+    needs: E2E For SFRA
     strategy:
       fail-fast: false
       matrix:
