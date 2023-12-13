@@ -127,3 +127,5 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
+      - name: Create success indicator
+        run: touch e2e-tests-success.txt

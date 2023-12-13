@@ -2,7 +2,7 @@ name: Release Workflow
 
 on:
   workflow_run:
-    workflows: ["E2E_SFRA"]
+    workflows: ["end-to-end-testing"]
     types:
       - completed
 
@@ -18,6 +18,12 @@ jobs:
             sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
             code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
+      - name: Wait for e2e-tests to complete
+        run: |
+          echo "Waiting for e2e-tests to complete..."
+          while [ ! -f e2e-tests-success.txt ]; do
+            sleep 10
+          done
       - name: Checkout SFRA code
         uses: actions/checkout@v3
         with:
