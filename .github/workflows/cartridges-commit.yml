@@ -64,6 +64,7 @@ jobs:
                 <nature>com.demandware.studio.core.beehiveNature</nature>
               </natures>
             </projectDescription>" > "project.xml"
+            git add "project.xml"
           done
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
