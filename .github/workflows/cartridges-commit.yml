@@ -2,11 +2,16 @@ name: Release Workflow
 
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
 
 
 jobs:
   commit-the-cartridge:
-    if: ${{ (github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]')}}
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.head_ref, 'release')    
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -46,7 +51,7 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
-        if: success() && '[[ "${{ github.ref }}" == "refs/heads/release/"* ]]'
+        if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud
           git config --local user.email "actions@github.com"
@@ -56,7 +61,7 @@ jobs:
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
       - name: Commit .project files 
-        if: success() && '[[ "${{ github.ref }}" == "refs/heads/release/"* ]]'
+        if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
