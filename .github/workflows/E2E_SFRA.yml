@@ -5,6 +5,8 @@ on:
     paths-ignore:
       - 'int_adyen_controllers/**'
       - 'adyen_controllers_changes/**'
+      repository_dispatch:
+      workflow_dispatch:
 
 jobs:
   setup-the-cartridge:

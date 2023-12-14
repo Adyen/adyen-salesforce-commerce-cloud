@@ -1,10 +1,6 @@
 name: Release Workflow
 
-on:
-  workflow_run:
-    workflows: ["end-to-end-testing"]
-    types:
-      - completed
+on: [repository_dispatch]
 
 jobs:
   commit-the-cartridge:
