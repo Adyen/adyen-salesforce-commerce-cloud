@@ -56,7 +56,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('Card payment no 3DS with adyen giving donation success', async () => {
+    test('Card payment no 3DS with adyen giving donation success @quick', async () => {
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.makeSuccessfulDonation();
