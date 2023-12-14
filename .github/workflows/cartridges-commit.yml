@@ -3,7 +3,7 @@ name: Release Workflow
 on:
   pull_request:
     branches:
-      - 'feature/*'
+      - 'feature'
 jobs:
   commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
