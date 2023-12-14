@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Check if branch starts with release/
         run: |
-          if [[ "${{ github.event.pull_request.head.ref }}" =~ ^feature/ ]]; then
+          if [[ "${{ github.event.pull_request.head.ref }}" =~ ^release/ ]]; then
             echo "Running workflow for pull request targeting a branch starting with feature/"
           else
             echo "Skipping workflow for pull request targeting a branch not starting with feature/"
