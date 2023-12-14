@@ -16,6 +16,14 @@ jobs:
             sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
             code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
+      - name: Check if branch starts with release/
+        run: |
+          if [[ "${{ github.event.pull_request.head.ref }}" =~ ^feature/ ]]; then
+            echo "Running workflow for pull request targeting a branch starting with feature/"
+          else
+            echo "Skipping workflow for pull request targeting a branch not starting with feature/"
+            exit 78
+          fi
       - name: Checkout SFRA code
         uses: actions/checkout@v3
         with:
