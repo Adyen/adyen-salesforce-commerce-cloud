@@ -11,7 +11,7 @@ jobs:
   commit-the-cartridge:
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release')    
+      contains(github.head_ref, 'feature')    
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
