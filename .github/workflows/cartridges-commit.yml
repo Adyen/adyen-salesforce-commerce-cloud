@@ -1,6 +1,7 @@
 name: Release Workflow
 
-on: [repository_dispatch]
+on:
+  workflow_dispatch:  
 
 jobs:
   commit-the-cartridge:
