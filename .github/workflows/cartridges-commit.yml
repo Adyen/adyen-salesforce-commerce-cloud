@@ -60,10 +60,11 @@ jobs:
           cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
               version=$(grep -oP "VERSION:\s*'(\d+\.\d+\.\d+)'" int_adyen_overlay/cartridge/adyenConstants/constants.js | cut -d "'" -f 2)
+              version="v${version}"
               echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
               <projectDescription>
                 <name>${name}</name>
-                <comment>v23.3.1</comment>
+                <comment>${version}</comment>
                 <projects></projects>
                 <buildSpec>
                   <buildCommand>
