@@ -1,13 +1,13 @@
 name: Release Workflow
 
 on:
-  pull_request:
+  workflow_success:
+    workflow: end-to-end-testing
 
 jobs:
   commit-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     runs-on: ubuntu-latest
-    needs: [setup-the-cartridge, end-to-end-testing]
     strategy:
       fail-fast: false
       matrix:
