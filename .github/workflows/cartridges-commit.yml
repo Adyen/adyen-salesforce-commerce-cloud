@@ -2,7 +2,7 @@ name: Release Workflow
 
 on:
   workflow_run:
-    workflows: [setup-the-cartridge ,end-to-end-testing]
+    workflows: ["end-to-end-testing"]
     types:
       - completed
 
