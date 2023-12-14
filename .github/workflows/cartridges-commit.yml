@@ -1,8 +1,10 @@
 name: Release Workflow
 
 on:
-  workflow_success:
-    workflow: end-to-end-testing
+  workflow_run:
+    workflows: [setup-the-cartridge ,end-to-end-testing]
+    types:
+      - completed
 
 jobs:
   commit-the-cartridge:
