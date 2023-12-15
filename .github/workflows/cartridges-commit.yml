@@ -90,3 +90,4 @@ jobs:
             git commit -m "chore: committing the project files"
             git fetch origin
             git push origin HEAD:${{ github.head_ref }} --force-with-lease
+            
