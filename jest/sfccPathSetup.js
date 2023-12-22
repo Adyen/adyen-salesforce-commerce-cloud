@@ -220,6 +220,10 @@ jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/shippingHelpers');
 }, {virtual: true});
 
+jest.mock('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent', () => {
+  return require('../src/cartridges/int_adyen_SFRA/client/default/js/adyen_checkout/renderGiftcardComponent');
+}, {virtual: true});
+
 // scripts/hooks/payment/processor/middlewares/authorize subclasses
 jest.mock('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/paymentResponse', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/hooks/payment/processor/middlewares/authorize/paymentResponse');

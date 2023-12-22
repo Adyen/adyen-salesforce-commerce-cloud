@@ -400,6 +400,10 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   getAmazonpayConfig,
+  getGiftCardConfig,
+  getApplePayConfig,
+  getCashAppConfig,
+  getKlarnaConfig,
   setCheckoutConfiguration,
   actionHandler,
 };
