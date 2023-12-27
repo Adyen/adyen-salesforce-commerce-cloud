@@ -240,7 +240,8 @@ export default class PaymentMethodsPage {
     await giftCardPinField.fill(giftCardInput.pin);
 
     await this.page.locator(".adyen-checkout__button--pay").click();
-
+    await new Promise(r => setTimeout(r, 2000));
+    
     if (await this.page.locator(".adyen-checkout__button--pay").isVisible()){
 	    await this.page.locator(".adyen-checkout__button--pay").click();
     }
