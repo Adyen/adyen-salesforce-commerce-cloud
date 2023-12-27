@@ -45,7 +45,12 @@ describe('Make partial payment request', () => {
       done: jest.fn().mockImplementation((callback) => callback(responseData)),
       fail: jest.fn(),
     }));
-    await expect(makePartialPayment(data)).rejects.toEqual({ error: true });
+    try {
+      await makePartialPayment(data);
+      fail();
+    } catch (error) {
+      expect(error.message).toBe('Partial payment error true');
+    }  
   });
 
   it('should fail to make partial payment', async () => {
@@ -55,5 +60,6 @@ describe('Make partial payment request', () => {
     }));
     await expect(makePartialPayment(data)).resolves.toBeUndefined();
     expect(store.addedGiftCards).toBeUndefined();
+    expect(store.adyenOrderData).toBeUndefined();
   });
 });
