@@ -4,54 +4,56 @@
 const { makePartialPayment } = require('../makePartialPayment');
 const store = require('../../../../../store');
 let data;
-
-beforeEach( () => {
-    store.checkout = {
-     options: {amount: 100}
-    };
-    data = {
-      paymentMethod: 'giftCardData',
-      amount: '10',
-      partialPaymentsOrder: {
-        pspReference: 'store.adyenOrderData.pspReference',
-        orderData: 'store.adyenOrderData.orderData',
-      },
-      giftCards : 'visa',
+beforeEach(() => {
+  store.checkout = {
+    options: { amount: 100 },
   };
-  });
+  data = {
+    paymentMethod: {
+      type: 'giftcard',
+      brand: 'givex',
+    },
+    amount: {
+      currency: 'USD',
+      value: '50',
+    },
+    partialPaymentsOrder: {
+      pspReference: 'store.adyenOrderData.pspReference',
+      orderData: 'store.adyenOrderData.orderData',
+    },
+    giftcardBrand: 'Givex',
+  };
+});
 
-  afterEach(() => {
-    jest.resetModules();
-  });
+afterEach(() => {
+  jest.resetModules();
+});
 
 describe('Make partial payment request', () => {
-  it.skip('should make partial payment', async () => {
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
-    makePartialPayment(data);
-    expect(store.addedGiftCards).toBe(data.giftCards);
-    expect(store.adyenOrderData).toBe(data.partialPaymentsOrder);
+  it('should make partial payment', async () => {
+    jest.spyOn($, 'ajax').mockImplementation(() => ({
+      done: jest.fn().mockImplementation((callback) => callback(data)),
+      fail: jest.fn(),
+    }));
+    await makePartialPayment(data);
+    expect(store.adyenOrderData).toEqual(data.partialPaymentsOrder);
   });
 
-  it.skip('should handle partial payment with error', () => {
+  it('should handle partial payment with error', async () => {
     const responseData = { error: true };
-    $.ajax = jest.fn(({ success }) => {
-      success(responseData);
-      return { fail: jest.fn() };
-    });
-    const result = makePartialPayment(data);
-    expect(result).toEqual({ error: true });
+    jest.spyOn($, 'ajax').mockImplementation(() => ({
+      done: jest.fn().mockImplementation((callback) => callback(responseData)),
+      fail: jest.fn(),
+    }));
+    await expect(makePartialPayment(data)).rejects.toEqual({ error: true });
   });
 
-  it.skip('should fail to make partial payment', () => {
-    $.ajax = jest.fn(({ success }) => {
-      success({});
-      return { fail: jest.fn() };
-    });  
-    const result = makePartialPayment(data);
+  it('should fail to make partial payment', async () => {
+    jest.spyOn($, 'ajax').mockImplementation(() => ({
+      done: jest.fn().mockImplementation((callback) => callback({})),
+      fail: jest.fn(),
+    }));
+    await expect(makePartialPayment(data)).resolves.toBeUndefined();
     expect(store.addedGiftCards).toBeUndefined();
-    expect(result).toBeUndefined();
   });
 });
