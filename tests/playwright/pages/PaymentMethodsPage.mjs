@@ -323,7 +323,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
-    //await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =
