@@ -620,6 +620,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_LivePrefix">
+                <display-name xml:lang="x-default">Your Adyen Live Prefix. Required to accept live payments</display-name>
+                <description xml:lang="x-default">Retrieve this value from Customer Area</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_GooglePayMerchantID">
                 <display-name xml:lang="x-default">Your Google MerchantID (required in production only)</display-name>
                 <description xml:lang="x-default">As described in https://developers.google.com/pay/api/web/guides/test-and-deploy/deploy-production-environment#obtain-your-merchantID</description>

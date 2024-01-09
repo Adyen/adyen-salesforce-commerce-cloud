@@ -25,6 +25,16 @@
             </div>
          </div>
          <div class="form-group">
+            <label class="form-title mb-0" for="livePrefix">Adyen Live Prefix</label>
+            <small id="livePrefixHelp" class="form-text mb-1">
+               This is the LIVE prefix you can retrieve from the <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area.</a>
+               Different sites can use different prefixes depending in the selected datacenter.
+            </small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_LivePrefix" id="livePrefix" aria-describedby="livePrefixHelp" placeholder="" value="${AdyenConfigs.getLivePrefix() || ''}" ${AdyenConfigs.getAdyenEnvironment() === 'TEST' ? 'disabled' : ''}>
+            </div>
+         </div>
+         <div class="form-group">
             <label class="form-title mb-0" for="clienKey">Adyen Client Key</label>
             <small id="clienKeyHelp" class="form-text mb-1">
             <a class="text-primary" href="https://docs.adyen.com/development-resources/client-side-authentication#get-your-client-key" target="_blank">How to set up your client key?</a> 

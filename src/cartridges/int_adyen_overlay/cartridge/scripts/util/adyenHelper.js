@@ -881,6 +881,13 @@ var adyenHelperObj = {
     if (service === null) {
       throw new Error(`Could not create ${serviceType} service object`);
     }
+
+    if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
+      const livePrefix = AdyenConfigs.getLivePrefix();
+      const serviceUrl = service.getURL().replace(`[YOUR_LIVE_PREFIX]`, livePrefix);
+      service.setURL(serviceUrl);
+    }
+
     const maxRetries = constants.MAX_API_RETRIES;
     const apiKey = AdyenConfigs.getAdyenApiKey();
     const uuid = UUIDUtils.createUUID();
