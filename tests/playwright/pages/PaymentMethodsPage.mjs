@@ -323,7 +323,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    //await this.page.waitForLoadState('networkidle', { timeout: 15000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =
@@ -441,7 +441,7 @@ export default class PaymentMethodsPage {
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-apf-iframe',
     );
-    this.firstCancelButton = this.klarnaIframe.locator('#newCollectPhone__navbar__right-icon__icon-wrapper');
+    this.firstCancelButton = this.klarnaIframe.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
     this.secondCancelButton = this.klarnaIframe.locator("button[title='Close']");
     await this.firstCancelButton.waitFor({
       state: 'visible',
