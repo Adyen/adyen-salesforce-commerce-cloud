@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   productionRadio.addEventListener('click', () => {
-    livePrefix.disabled = productionRadio.value === 'TEST';
+    livePrefix.disabled = false;
   });
 
   testRadio.addEventListener('click', () => {
