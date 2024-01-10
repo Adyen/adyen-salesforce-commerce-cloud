@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   testRadio.addEventListener('click', () => {
-    livePrefix.disabled = testRadio.value === 'TEST';
+    livePrefix.disabled = true;
   });
 
   adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
