@@ -77,6 +77,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_ClientKey');
   },
 
+  getLivePrefix() {
+    return getCustomPreference('Adyen_LivePrefix');
+  },
+
   getGoogleMerchantID() {
     return getCustomPreference('Adyen_GooglePayMerchantID');
   },

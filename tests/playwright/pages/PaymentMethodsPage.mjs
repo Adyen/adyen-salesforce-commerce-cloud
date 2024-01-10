@@ -441,7 +441,7 @@ export default class PaymentMethodsPage {
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-apf-iframe',
     );
-    this.firstCancelButton = this.klarnaIframe.locator('#newCollectPhone__navbar__right-icon__icon-wrapper');
+    this.firstCancelButton = this.klarnaIframe.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
     this.secondCancelButton = this.klarnaIframe.locator("button[title='Close']");
     await this.firstCancelButton.waitFor({
       state: 'visible',
