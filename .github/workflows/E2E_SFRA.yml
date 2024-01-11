@@ -141,7 +141,8 @@ jobs:
           with:
             path: adyen-salesforce-commerce-cloud
         - name: Print failed tests to console
-          run: echo "Failed tests: $FAILED_TESTS"
+          run: |
+            echo "Failed tests: $FAILED_TESTS"
         - name: Rerun failed tests
           run: |
             IFS=',' read -ra failed_tests <<< "$FAILED_TESTS"
