@@ -111,7 +111,9 @@ jobs:
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref != 'main'
-        run: npm run test:ci:quick
+        run: |
+          failed_tests=$(npm run test:ci:quick | grep -oE '› [^›]*$' | sed 's/› //g')
+          echo "failed-tests=${failed_tests}" >> $GITHUB_ENV
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
@@ -138,11 +140,9 @@ jobs:
           uses: actions/checkout@v3
           with:
             path: adyen-salesforce-commerce-cloud
-        - name: Extract failed tests from the workflow output
-          run: echo "${{ needs.end-to-end-testing.outputs.failed-tests }}" | grep -oE '› [^›]*$' | sed 's/› //g' > failed-tests.txt
         - name: Rerun failed tests
           run: |
-            failed_tests=$(cat failed-tests.txt)
+            failed_tests=${{ env.failed_tests }}
             echo "Failed tests: $failed_tests"
             for test_name in $failed_tests; do
               npm run test:ci:"$test_name"
