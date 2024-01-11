@@ -127,3 +127,38 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
+    outputs: 
+      failed-tests: ${{ steps.run-e2e.outputs.failed-tests }}
+  rerun-only-failed-tests:
+      needs: end-to-end-testing
+      runs-on: ubuntu-latest
+      if: ${{ failure() }}
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+          with:
+            path: adyen-salesforce-commerce-cloud
+        - name: Extract failed tests from the workflow output
+          run: echo "${{ needs.end-to-end-testing.outputs.failed-tests }}" > failed-tests.txt
+        - name: Rerun failed tests
+          run: |
+            failed_tests=$(cat failed-tests.txt)
+            for test_name in $failed_tests; do
+              npm test -- --grep="$test_name"
+            done
+          env:
+            SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+            SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+            PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+            PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+            AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+            AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+            SFRA_VERSION: ${{ matrix.sfra-version }}
+            SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+        - name: Archive test result artifacts
+          if: always()
+          uses: actions/upload-artifact@v3
+          with:
+            name: failed-tests-artifact
+            path: adyen-salesforce-commerce-cloud/tests/playwright/failed-tests.txt
+
