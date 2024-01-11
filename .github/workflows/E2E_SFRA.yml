@@ -139,12 +139,12 @@ jobs:
           with:
             path: adyen-salesforce-commerce-cloud
         - name: Extract failed tests from the workflow output
-          run: echo "${{ needs.end-to-end-testing.outputs.failed-tests }}" > failed-tests.txt
+          run: echo "${{ needs.end-to-end-testing.outputs.failed-tests }}" | grep -oE '› [^›]*$' | sed 's/› //g' > failed-tests.txt
         - name: Rerun failed tests
           run: |
             failed_tests=$(cat failed-tests.txt)
             for test_name in $failed_tests; do
-              npm test -- --grep="$test_name"
+              npx playwright test -g "$test_name"
             done
           env:
             SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
