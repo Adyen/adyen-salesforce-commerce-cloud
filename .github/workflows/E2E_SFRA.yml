@@ -143,8 +143,9 @@ jobs:
         - name: Rerun failed tests
           run: |
             failed_tests=$(cat failed-tests.txt)
+            echo "Failed tests: $failed_tests"
             for test_name in $failed_tests; do
-              npx playwright test -g "$test_name"
+              npm run test:ci:"$test_name"
             done
           env:
             SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
