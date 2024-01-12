@@ -111,7 +111,7 @@ jobs:
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref != 'main'
-        run: npm run test:ci:quick
+        run: npm run test:ci:quick > test-output.txt
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
@@ -126,9 +126,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: playwright-report
-          path: playwright-report
-    outputs: 
-      failed-tests: ${{ steps.run-e2e.outputs.failed-tests }}
+          path: |
+            playwright-report
+            test-output.txt
   rerun-only-failed-tests:
       needs: end-to-end-testing
       runs-on: ubuntu-latest
@@ -138,8 +138,12 @@ jobs:
           uses: actions/checkout@v3
           with:
             path: adyen-salesforce-commerce-cloud
-        - name: List files in the current dir
-          run: ls
+        - name: Download test output artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: playwright-report
+        - name: Print test output
+          run: cat test-output.txt
         - name: Rerun failed tests
           run: |
             failed_tests=$(grep -oE '› [^›]*$' playwright-report/*.html | sed 's/› //g' | tr '\n' ',' | sed 's/,$//')
