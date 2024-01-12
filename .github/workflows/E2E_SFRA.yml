@@ -135,7 +135,7 @@ jobs:
         - name: Download test output artifact
           uses: actions/download-artifact@v2
           with:
-            name: playwright-report
+            name: html-report
         - name: Checkout
           uses: actions/checkout@v3
           with:
