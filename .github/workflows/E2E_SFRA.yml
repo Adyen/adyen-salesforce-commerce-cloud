@@ -138,6 +138,8 @@ jobs:
           uses: actions/checkout@v3
           with:
             path: adyen-salesforce-commerce-cloud
+        - name: List files in the current dir
+          run: ls
         - name: Rerun failed tests
           run: |
             failed_tests=$(grep -oE '› [^›]*$' playwright-report/*.html | sed 's/› //g' | tr '\n' ',' | sed 's/,$//')
