@@ -126,24 +126,16 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: playwright-report
-          path: playwright-report
+          path: test-results/
   rerun-only-failed-tests:
       needs: end-to-end-testing
       runs-on: ubuntu-latest
       if: ${{ failure() }}
       steps:
-        - name: List available artifacts
-          run: |
-            echo "Available artifacts:"
-            ls $GITHUB_WORKSPACE
         - name: Download test output artifact
           uses: actions/download-artifact@v2
           with:
             name: playwright-report
-        - name: List available artifacts after download
-          run: |
-            echo "Available artifacts:"
-            ls $GITHUB_WORKSPACE
         - name: Checkout
           uses: actions/checkout@v3
           with:
