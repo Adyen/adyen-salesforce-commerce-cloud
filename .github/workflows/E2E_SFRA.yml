@@ -126,27 +126,31 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: playwright-report
-          path: |
-            playwright-report
-            test-output.txt
+          path: playwright-report
   rerun-only-failed-tests:
       needs: end-to-end-testing
       runs-on: ubuntu-latest
       if: ${{ failure() }}
       steps:
-        - name: Checkout
-          uses: actions/checkout@v3
-          with:
-            path: adyen-salesforce-commerce-cloud
+        - name: List available artifacts
+          run: |
+            echo "Available artifacts:"
+            ls $GITHUB_WORKSPACE
         - name: Download test output artifact
           uses: actions/download-artifact@v2
           with:
             name: playwright-report
-        - name: Print test output
-          run: cat test-output.txt
+        - name: List available artifacts after download
+          run: |
+            echo "Available artifacts:"
+            ls $GITHUB_WORKSPACE
+        - name: Checkout
+          uses: actions/checkout@v3
+          with:
+            path: adyen-salesforce-commerce-cloud
         - name: Rerun failed tests
           run: |
-            failed_tests=$(grep -oE '› [^›]*$' playwright-report/*.html | sed 's/› //g' | tr '\n' ',' | sed 's/,$//')
+            failed_tests=$(grep -oE '› [^›]*$' test-results/*.html | sed 's/› //g' | tr '\n' ',' | sed 's/,$//')
             echo "FAILED_TESTS=$failed_tests" >> $GITHUB_ENV
             for test_name in "${failed_tests[@]}"; do
               npx playwright test --grep="$test_name"
