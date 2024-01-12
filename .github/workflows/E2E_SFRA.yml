@@ -111,7 +111,8 @@ jobs:
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref != 'main'
-        run: npm run test:ci:quick
+        run: |
+          export E2E_TESTS_OUTPUT=$(npm run test:ci:quick)
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
@@ -121,6 +122,10 @@ jobs:
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+      - name: Capture E2E tests output
+          id: capture-e2e-output
+          run: echo "::set-output name=e2e-tests-output::${{ env.E2E_TESTS_OUTPUT }}"
+          shell: bash
       - name: Archive test result artifacts
         if: always()
         uses: actions/upload-artifact@v3
@@ -132,10 +137,9 @@ jobs:
       runs-on: ubuntu-latest
       if: ${{ failure() }}
       steps:
-        - name: Download test output artifact
-          uses: actions/download-artifact@v2
-          with:
-            name: html-report
+        - name: Use E2E tests output
+          run: |
+            echo "E2E Tests Output: ${{ steps.capture-e2e-output.outputs.e2e-tests-output }}"
         - name: Checkout
           uses: actions/checkout@v3
           with:
