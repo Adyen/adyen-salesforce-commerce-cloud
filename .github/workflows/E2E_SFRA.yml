@@ -123,7 +123,8 @@ jobs:
           SFRA_VERSION: ${{ matrix.sfra-version }}
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
       - name: Capture E2E tests output
-          run: echo "E2E_TESTS_OUTPUT=${E2E_TESTS_OUTPUT}" >> $GITHUB_ENV
+          run: |
+            echo "E2E_TESTS_OUTPUT=${E2E_TESTS_OUTPUT}" >> $GITHUB_ENV
           shell: bash
       - name: Archive test result artifacts
         if: always()
