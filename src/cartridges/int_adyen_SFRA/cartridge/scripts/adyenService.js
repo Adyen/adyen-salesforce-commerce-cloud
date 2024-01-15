@@ -64,12 +64,6 @@ function submit(order) {
   }
 }
 
-const EXTERNAL_PLATFORM_VERSION = 'SFRA';
-function getExternalPlatformVersion() {
-  return EXTERNAL_PLATFORM_VERSION;
-}
-
 module.exports = {
   submit,
-  getExternalPlatformVersion,
 };
