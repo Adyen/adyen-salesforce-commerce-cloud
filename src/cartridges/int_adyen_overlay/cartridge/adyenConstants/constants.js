@@ -92,7 +92,10 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
+  MERCHANT_APPLICATION_NAME : 'adyen-salesforce-commerce-cloud',
+  EXTERNAL_PLATFORM_NAME : 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION : 'SFRA',
+
   CHECKOUT_COMPONENT_VERSION: '5.44.0',
   VERSION: '23.3.1',
 };

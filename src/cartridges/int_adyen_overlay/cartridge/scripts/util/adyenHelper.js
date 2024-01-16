@@ -748,12 +748,12 @@ var adyenHelperObj = {
   getApplicationInfo() {
     const applicationInfo = {};
     applicationInfo.merchantApplication = {
-      name: 'adyen-salesforce-commerce-cloud',
+      name: constants.MERCHANT_APPLICATION_NAME,
       version: constants.VERSION,
     };
 
     applicationInfo.externalPlatform = {
-      name: 'SalesforceCommerceCloud',
+      name: constants.EXTERNAL_PLATFORM_NAME,
       version: constants.EXTERNAL_PLATFORM_VERSION,
       integrator: AdyenConfigs.getSystemIntegratorName(),
     };
