@@ -754,7 +754,7 @@ var adyenHelperObj = {
 
     applicationInfo.externalPlatform = {
       name: 'SalesforceCommerceCloud',
-      version: 'SFRA',
+      version: constants.EXTERNAL_PLATFORM_VERSION,
       integrator: AdyenConfigs.getSystemIntegratorName(),
     };
 
