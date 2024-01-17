@@ -13,8 +13,7 @@
     "lint:fix": "eslint --ext js --fix src",
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge int_adyen_controllers && sgmf-scripts --uploadCartridge bm_adyen",
-    "uploadCartridgeSG": "sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_controllers_changes && sgmf-scripts --uploadCartridge [YOUR_WORKING_DIRECTORY]/adyen-salesforce-commerce-cloud/src/cartridges/adyen_controllers_changes/app_storefront_core_changes",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge bm_adyen",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges -d ./cartridges --copy-files --no-copy-ignored --extensions .js,.test.js,.snap",
@@ -24,7 +23,6 @@
     "test:coverage": "jest ./src --coverage",
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
     "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
-    "check-build:sg": "chmod 755 ./check-build.sh && sh ./check-build.sh SG",
     "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
     "prepare": "husky install",
     "preinstall": "npx npm-force-resolutions"

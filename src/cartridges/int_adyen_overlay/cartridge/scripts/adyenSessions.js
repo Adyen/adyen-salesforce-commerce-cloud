@@ -112,9 +112,7 @@ function createSession(basket, customer, countryCode) {
     }
 
     sessionsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
-        const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-        const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.SESSIONS}${constants.PLATFORMS.SG}` : constants.SERVICE.SESSIONS;
-    return AdyenHelper.executeCall(service, sessionsRequest);
+    return AdyenHelper.executeCall(constants.SERVICE.SESSIONS, sessionsRequest);
   } catch (e) {
     AdyenLogs.fatal_log(
         `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,

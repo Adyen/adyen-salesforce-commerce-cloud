@@ -75,9 +75,7 @@ function donate(donationReference, donationAmount, orderToken) {
       throw new Error(`Donation currency is invalid`);
     }
 
-    const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.ADYENGIVING}${constants.PLATFORMS.SG}` : constants.SERVICE.ADYENGIVING;
-    const response = AdyenHelper.executeCall(service, requestObject);    
+    const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);    
 
     Transaction.wrap(() => {
       const order = OrderMgr.getOrder(donationReference);
