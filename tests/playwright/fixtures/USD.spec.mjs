@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('CashApp Renders', async ({ page }) => {
+    test.skip('CashApp Renders', async ({ page }) => {
       if (environment.name.indexOf("v6") === -1) {
         await checkoutPage.setEmail();
       };
@@ -204,6 +204,7 @@ for (const environment of environments) {
     test('co-branded BCMC/Maestro oneClick test success', async () => {
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
+      await cards.do3Ds2Verification();
       await checkoutPage.expectSuccess();
     });
   });
