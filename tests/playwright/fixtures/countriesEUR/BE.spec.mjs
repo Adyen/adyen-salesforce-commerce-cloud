@@ -42,6 +42,7 @@ for (const environment of environments) {
     test('Card co-branded BCMC payment success', async () => {
       await cards.doCardPayment(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckout();
+      await cards.do3Ds2Verification();
       await checkoutPage.expectSuccess();
     });
 
@@ -50,6 +51,7 @@ for (const environment of environments) {
       cardDataInvalid.expirationDate = '0150';
       await cards.doCardPayment(cardDataInvalid);
       await checkoutPage.completeCheckout();
+      await cards.do3Ds2Verification();
       await checkoutPage.expectRefusal();
     });
   });
