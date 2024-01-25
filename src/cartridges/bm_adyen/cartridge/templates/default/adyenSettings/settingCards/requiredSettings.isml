@@ -61,6 +61,7 @@
             <label class="form-title mb-0" for="frontendRegion">Front-end resources region</label>
             <small id="frontendRegionHelp" class="form-text mb-1">
             Enter the closest regions to your shoppers. This setup influences the speed of the Adyen Checkout Component during checkout.
+            Ensure that when updating the front-end region, it corresponds specifically to the chosen datacenter for your live prefix (applicable only in LIVE environment).
             <a class="text-primary" href="https://docs.adyen.com/online-payments/android/components#testing-your-integration" target="_blank">Check the list of regions</a></small>
             <div class='input-fields' id="dropdown-options">
                <select name="Adyen_Frontend_Region" class="form-select" required>
