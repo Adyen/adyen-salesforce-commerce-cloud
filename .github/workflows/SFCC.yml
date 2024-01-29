@@ -20,7 +20,7 @@ jobs:
       - name: npm install, build and test
         run: |
           npm install
-          npm run lint:fix
+          npm run lint:fix -reporter=github-pr-check 
           npm run lint
           npm test
         env:
