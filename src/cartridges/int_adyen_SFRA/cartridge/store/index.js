@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const { observable, computed } = require('mobx');
 
 class Store {
