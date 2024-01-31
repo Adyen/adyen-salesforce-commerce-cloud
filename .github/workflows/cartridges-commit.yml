@@ -11,8 +11,8 @@ jobs:
   commit-the-cartridge-and-project-files:
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main' 
+      contains(github.head_ref, 'bugfix') &&
+      github.event.pull_request.base.ref == 'develop' 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -66,7 +66,7 @@ jobs:
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
-              version=$(grep -oP "VERSION:\s*'(\d+\.\d+\.\d+)'" int_adyen_overlay/cartridge/adyenConstants/constants.js | cut -d "'" -f 2)
+              version=$(awk -F"'" '/VERSION:/ {print "v" $2}' int_adyen_overlay/cartridge/adyenConstants/constants.js)
               version="v${version}"
               echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
               <projectDescription>
