@@ -8,18 +8,15 @@ var _require = require('./renderGenericComponent'),
   initializeCheckout = _require.initializeCheckout;
 var helpers = require('./helpers');
 function makePartialPayment(requestData) {
-  var error;
-  $.ajax({
-    url: window.partialPaymentUrl,
-    type: 'POST',
-    data: JSON.stringify(requestData),
-    contentType: 'application/json; charset=utf-8',
-    async: false,
-    success: function success(response) {
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url: window.partialPaymentUrl,
+      type: 'POST',
+      data: JSON.stringify(requestData),
+      contentType: 'application/json; charset=utf-8'
+    }).done(function (response) {
       if (response.error) {
-        error = {
-          error: true
-        };
+        reject(new Error("Partial payment error ".concat(response === null || response === void 0 ? void 0 : response.error)));
       } else {
         var giftCards = response.giftCards,
           rest = _objectWithoutProperties(response, _excluded);
@@ -30,10 +27,12 @@ function makePartialPayment(requestData) {
         store.addedGiftCards = giftCards;
         helpers.setOrderFormData(response);
         initializeCheckout();
+        resolve();
       }
-    }
-  }).fail(function () {});
-  return error;
+    }).fail(function () {
+      reject(new Error('makePartialPayment request failed'));
+    });
+  });
 }
 module.exports = {
   makePartialPayment: makePartialPayment

@@ -1,11 +1,11 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /**
  *                       ######
  *                       ######
@@ -71,7 +71,6 @@ var adyenHelperObj = {
       AdyenLogs.error_log("Can't get service instance with name ".concat(service));
       // e.message
     }
-
     return adyenService;
   },
   // returns SFCC customer object based on currentCustomer object
@@ -178,18 +177,12 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl: function getCheckoutUrl() {
     var checkoutUrl = this.getLoadingContext();
-    var adyenService = require('*/cartridge/scripts/adyenService');
-    var externalPlatformVersion = adyenService.getExternalPlatformVersion();
-    var checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
-    return "".concat(checkoutUrl, "sdk/").concat(checkoutVersionForPlatform, "/adyen.js");
+    return "".concat(checkoutUrl, "sdk/").concat(constants.CHECKOUT_COMPONENT_VERSION, "/adyen.js");
   },
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS: function getCheckoutCSS() {
     var checkoutCSS = this.getLoadingContext();
-    var adyenService = require('*/cartridge/scripts/adyenService');
-    var externalPlatformVersion = adyenService.getExternalPlatformVersion();
-    var checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
-    return "".concat(checkoutCSS, "sdk/").concat(checkoutVersionForPlatform, "/adyen.css");
+    return "".concat(checkoutCSS, "sdk/").concat(constants.CHECKOUT_COMPONENT_VERSION, "/adyen.css");
   },
   // converts to a syntax-safe HTML string
   encodeHtml: function encodeHtml(str) {
@@ -535,7 +528,7 @@ var adyenHelperObj = {
   },
   // saves the payment details in the paymentInstrument's custom object
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
-    var _result$additionalDat;
+    var _result$additionalDat, _result$fullResponse;
     paymentInstrument.paymentTransaction.transactionID = result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
     if ((_result$additionalDat = result.additionalData) !== null && _result$additionalDat !== void 0 && _result$additionalDat.paymentMethod) {
@@ -552,8 +545,8 @@ var adyenHelperObj = {
     }
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode ? result.resultCode : '';
     order.custom.Adyen_value = '0';
-    if (result.donationToken) {
-      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken;
+    if (result.donationToken || (_result$fullResponse = result.fullResponse) !== null && _result$fullResponse !== void 0 && _result$fullResponse.donationToken) {
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken || result.fullResponse.donationToken;
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(result);
@@ -610,23 +603,14 @@ var adyenHelperObj = {
     return Math.pow(10, fractionDigits);
   },
   getApplicationInfo: function getApplicationInfo() {
-    var externalPlatformVersion = '';
     var applicationInfo = {};
-    try {
-      // AdyenController can be coming either from int_adyen_controllers
-      // or int_adyen_SFRA, depending on the cartridge path
-      var AdyenController = require('*/cartridge/controllers/Adyen.js');
-      externalPlatformVersion = AdyenController.getExternalPlatformVersion;
-    } catch (e) {
-      /* no applicationInfo available */
-    }
     applicationInfo.merchantApplication = {
-      name: 'adyen-salesforce-commerce-cloud',
+      name: constants.MERCHANT_APPLICATION_NAME,
       version: constants.VERSION
     };
     applicationInfo.externalPlatform = {
-      name: 'SalesforceCommerceCloud',
-      version: externalPlatformVersion,
+      name: constants.EXTERNAL_PLATFORM_NAME,
+      version: constants.EXTERNAL_PLATFORM_VERSION,
       integrator: AdyenConfigs.getSystemIntegratorName()
     };
     return applicationInfo;
@@ -696,6 +680,11 @@ var adyenHelperObj = {
     var service = this.getService(serviceType);
     if (service === null) {
       throw new Error("Could not create ".concat(serviceType, " service object"));
+    }
+    if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
+      var livePrefix = AdyenConfigs.getLivePrefix();
+      var serviceUrl = service.getURL().replace("[YOUR_LIVE_PREFIX]", livePrefix);
+      service.setURL(serviceUrl);
     }
     var maxRetries = constants.MAX_API_RETRIES;
     var apiKey = AdyenConfigs.getAdyenApiKey();

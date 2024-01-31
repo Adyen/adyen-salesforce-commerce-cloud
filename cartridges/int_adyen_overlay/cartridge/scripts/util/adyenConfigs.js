@@ -61,6 +61,9 @@ var adyenConfigsObj = {
   getAdyenClientKey: function getAdyenClientKey() {
     return getCustomPreference('Adyen_ClientKey');
   },
+  getLivePrefix: function getLivePrefix() {
+    return getCustomPreference('Adyen_LivePrefix');
+  },
   getGoogleMerchantID: function getGoogleMerchantID() {
     return getCustomPreference('Adyen_GooglePayMerchantID');
   },
