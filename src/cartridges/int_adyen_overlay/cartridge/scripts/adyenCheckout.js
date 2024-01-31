@@ -49,6 +49,7 @@ function createPaymentRequest(args) {
     );
 
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    const paymentMethodType = paymentRequest.paymentMethod.type;
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
@@ -58,7 +59,7 @@ function createPaymentRequest(args) {
     }
 
     // L2/3 Data
-    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled() && paymentMethodType.indexOf('scheme') > -1) {
       paymentRequest.additionalData = {
         ...paymentRequest.additionalData,
         ...adyenLevelTwoThreeData.getLineItems(args),
@@ -95,7 +96,6 @@ function createPaymentRequest(args) {
       };
     }
 
-    const paymentMethodType = paymentRequest.paymentMethod.type;
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
     paymentRequest = AdyenHelper.createAddressObjects(
@@ -165,10 +165,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.PAYMENT}${constants.PLATFORMS.SG}` : constants.SERVICE.PAYMENT;
     const responseObject = AdyenHelper.executeCall(
-      service,
+      constants.SERVICE.PAYMENT,
       paymentRequest,
     );
     // There is no order for zero auth transactions.
@@ -267,10 +265,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   try {
-      const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-      const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.PAYMENTDETAILS}${constants.PLATFORMS.SG}` : constants.SERVICE.PAYMENTDETAILS;
     return AdyenHelper.executeCall(
-      service,
+      constants.SERVICE.PAYMENTDETAILS,
       paymentDetailsRequest,
     );
   } catch (ex) {

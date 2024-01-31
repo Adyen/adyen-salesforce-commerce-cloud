@@ -142,7 +142,11 @@ function handlePartialPaymentSuccess() {
   createElementsToShowRemainingGiftCardAmount();
 }
 
-function makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject) {
+async function makeGiftcardPaymentRequest(
+  giftCardData,
+  giftcardBalance,
+  reject,
+) {
   const brandSelect = document.getElementById('giftCardSelect');
   const selectedBrandIndex = brandSelect.selectedIndex;
   const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
@@ -155,7 +159,9 @@ function makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject) {
     },
     giftcardBrand,
   };
-  const partialPaymentResponse = makePartialPayment(partialPaymentRequest);
+  const partialPaymentResponse = await makePartialPayment(
+    partialPaymentRequest,
+  );
   if (partialPaymentResponse?.error) {
     reject();
   } else {
@@ -400,6 +406,10 @@ module.exports = {
   getPaypalConfig,
   getGooglePayConfig,
   getAmazonpayConfig,
+  getGiftCardConfig,
+  getApplePayConfig,
+  getCashAppConfig,
+  getKlarnaConfig,
   setCheckoutConfiguration,
   actionHandler,
 };

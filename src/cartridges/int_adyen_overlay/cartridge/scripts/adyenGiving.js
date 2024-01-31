@@ -42,13 +42,17 @@ function donate(donationReference, donationAmount, orderToken) {
     const donationToken = paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
     const originalReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
     const paymentData = JSON.parse(paymentInstrument.paymentTransaction.custom.Adyen_log);
-    const paymentCurrency = paymentData.amount.currency;
+    const paymentCurrency = paymentData.amount.currency || paymentData.fullResponse?.amount?.currency;
     const availableDonationAmounts = AdyenHelper.getDonationAmounts();
-    paymentMethodVariant = paymentInstrument.custom.Adyen_Payment_Method_Variant;
+    paymentMethodVariant = paymentData.paymentMethod?.type || paymentData.fullResponse?.paymentMethod?.type;
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
     if (paymentMethodVariant === 'ideal') {
       paymentMethodVariant = 'sepadirectdebit';
+    }
+    // for Apple Pay donations, the payment method variant needs to be the brand
+    if (paymentMethodVariant === 'applepay'){
+      paymentMethodVariant = paymentData.paymentMethod?.brand || paymentData.fullResponse?.paymentMethod?.brand;
     }
     const requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -71,9 +75,7 @@ function donate(donationReference, donationAmount, orderToken) {
       throw new Error(`Donation currency is invalid`);
     }
 
-    const platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    const service = platformVersion === constants.PLATFORMS.SG ? `${constants.SERVICE.ADYENGIVING}${constants.PLATFORMS.SG}` : constants.SERVICE.ADYENGIVING;
-    const response = AdyenHelper.executeCall(service, requestObject);    
+    const response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);    
 
     Transaction.wrap(() => {
       const order = OrderMgr.getOrder(donationReference);

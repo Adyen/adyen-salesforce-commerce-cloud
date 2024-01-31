@@ -119,7 +119,7 @@ export default class PaymentMethodsPage {
     }
     await this.page.waitForLoadState("networkidle", { timeout: 15000 });
     this.submitButton = this.page.locator(
-      'span[data-action="continue-checkout"]'
+      'input[class="a-button-input"]'
     );
     await this.submitButton.click();
   };
@@ -240,7 +240,8 @@ export default class PaymentMethodsPage {
     await giftCardPinField.fill(giftCardInput.pin);
 
     await this.page.locator(".adyen-checkout__button--pay").click();
-
+    await new Promise(r => setTimeout(r, 2000));
+    
     if (await this.page.locator(".adyen-checkout__button--pay").isVisible()){
 	    await this.page.locator(".adyen-checkout__button--pay").click();
     }
@@ -440,7 +441,7 @@ export default class PaymentMethodsPage {
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-apf-iframe',
     );
-    this.firstCancelButton = this.klarnaIframe.locator('#newCollectPhone__navbar__right-icon__icon-wrapper');
+    this.firstCancelButton = this.klarnaIframe.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
     this.secondCancelButton = this.klarnaIframe.locator("button[title='Close']");
     await this.firstCancelButton.waitFor({
       state: 'visible',

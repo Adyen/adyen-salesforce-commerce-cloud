@@ -1,13 +1,26 @@
 # Salesforce Commerce Cloud Adyen Cartridge
 
-Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://docs.adyen.com/plugins/salesforce-commerce-cloud). This cartridge enables a SFCC storefront to use the Adyen payment service.  
-This cartridge [supports](https://docs.adyen.com/plugins/salesforce-commerce-cloud#supported-versions) SFRA version 5.x.x & 6.x.x.   
-and SiteGenesis JS-Controllers version 103.1.11 and higher (no features in cartridges higher than [v22.2.2](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases/tag/22.2.2))
+Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://docs.adyen.com/plugins/salesforce-commerce-cloud). This cartridge enables an SFCC storefront to use the Adyen payment service.  
+
+## Compatibility with SFCC architectures
+SFRA version 5.x.x & 6.x.x.: [Supported in all cartridge versions, see the latest](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases)    
+SiteGenesis JS-Controllers version 103.1.11 and higher: Supported up to cartridge [v22.2.2](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases/tag/22.2.2)
 
 ## Integration
-This cartridge allows you to integrate with Adyen without the need for any development work from your end.  
-Online payments are processed on the back-end using the [Checkout API](https://docs.adyen.com/api-explorer/Checkout/latest/overview), on the client side Adyen’s [Web Components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods.  
-Point of Sale (POS) payments are processed using a cloud-based [Terminal API](https://docs.adyen.com/point-of-sale/terminal-api-fundamentals). 
+This cartridge allows you to integrate with Adyen without the need for any development work from your end. Online payments are processed on the back-end using the [Checkout API](https://docs.adyen.com/api-explorer/Checkout/latest/overview), and on the client side, Adyen’s [Web Components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods. 
+Point of Sale (POS) payments are processed using a cloud-based [Terminal API](https://docs.adyen.com/point-of-sale/terminal-api-fundamentals).
+
+This cartridge contains 2 folders, /src and /cartridges. The /src folder is the origin, while the /cartridges folder contains the transpiled code.
+
+### Transpilation 
+Some files in the /src directory contain modern JavaScript (ES6, MobX) that Salesforce Commerce Cloud does not natively support. 
+
+To make the code compatible, we downgrade the ES6 to ES5 by transpiling, compiling, and uploading the auto-generated code to the /cartridges directory, see [more in our Docs](https://docs.adyen.com/plugins/salesforce-commerce-cloud/install-the-cartridge-and-import-the-metadata/#step-3-build-the-code).
+
+### How to customize the cartridge
+* (Before v 23.2.1) (**Recommended**) If you want to modify the cartridge code and you write in JavaScript ES6, you may need to use the /src folder. Performing a transpilation on the /src folder ensures that you can later move your customizations to a new cartridge version during an upgrade. This is achieved by comparing the code in the /src folders between different releases, see [GitHub instructions](https://docs.github.com/en/repositories/releasing-projects-on-github/comparing-releases).
+* (Before v 23.2.1) You can add changes directly to /cartridges without transpiling if you use JavaScript ES5. These customizations will not be transpiled. This may result in a more complex upgrading process.
+* (After v [23.2.1](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases/tag/23.2.1)) (**Recommended**) If you are able to modularize your customizations, create a new cartridge in your /cartridges directory and name it, for example, `int_custom_cartridge`, see [more in our Docs](https://docs.adyen.com/plugins/salesforce-commerce-cloud/customization-guide/#add-custom-code). These customizations will not be transpiled and will be preserved when you [upgrade to a new cartridge version](https://docs.adyen.com/plugins/salesforce-commerce-cloud/upgrade/#customized-integration).
 
 ## Requirements
 
@@ -35,19 +48,15 @@ To run SFRA unit tests locally use the following command:
 ```
 ## Support & Maintenance
 
-We provide three levels of support for major versions of the plugin as per [SFCC B2C Support policy](https://docs.adyen.com/plugins/salesforce-commerce-cloud#support-levels):
+We provide specialized cartridge support for major versions of the plugin following the [SFCC B2C Support policy](https://docs.adyen.com/plugins/salesforce-commerce-cloud#support-levels), along with permanent Adyen support. 
 
-- **Level 1**: Full support. Keep in mind that some new features are not possible on older versions, therefore this is not inclusive of ALL new features that are built.
-- **Level 2**: High priority bug fixes and security updates.
-- **Level 3**: Security updates only.
-
-After Level 3 End-of-support date, there is no support or maintenance from Adyen on the cartridge, and it will be treated as a custom integration.
+When a major cartridge version is no longer under cartridge support, it will be treated as a custom merchant integration. From version 23 onward, we do not provide any level of support for SiteGenesis integrations.
 
 [Migration and Upgrade Guide](https://docs.adyen.com/plugins/salesforce-commerce-cloud/upgrade)
 
 [SFCC Cartridge Support Schedule for SFRA and SiteGenesis](https://docs.adyen.com/plugins/salesforce-commerce-cloud/#support-levels)
 
-From version 23 onward, we do not provide any level of support for SiteGenesis integrations.
+
 
 ## Contributing
 We strongly encourage you to join us in contributing to this repository so everyone can benefit from:
