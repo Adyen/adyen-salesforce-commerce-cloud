@@ -65,9 +65,9 @@ jobs:
         if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
+          version=$(grep "VERSION:" int_adyen_overlay/cartridge/adyenConstants/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
+          version="v${version}"
             for name in "int_adyen_overlay" "int_adyen_SFRA" "bm_adyen"; do
-              version=$(awk -F"'" '/VERSION:/ {print "v" $2}' int_adyen_overlay/cartridge/adyenConstants/constants.js)
-              version="v${version}"
               echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
               <projectDescription>
                 <name>${name}</name>
