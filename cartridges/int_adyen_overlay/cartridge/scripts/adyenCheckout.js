@@ -1,11 +1,11 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /**
  *                       ######
  *                       ######
@@ -52,6 +52,7 @@ function createPaymentRequest(args) {
     // Create request object with payment details
     var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    var paymentMethodType = paymentRequest.paymentMethod.type;
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
@@ -59,7 +60,7 @@ function createPaymentRequest(args) {
     }
 
     // L2/3 Data
-    if (AdyenConfigs.getAdyenLevel23DataEnabled()) {
+    if (AdyenConfigs.getAdyenLevel23DataEnabled() && paymentMethodType.indexOf('scheme') > -1) {
       paymentRequest.additionalData = _objectSpread(_objectSpread({}, paymentRequest.additionalData), adyenLevelTwoThreeData.getLineItems(args));
     }
 
@@ -90,7 +91,7 @@ function createPaymentRequest(args) {
         value: value
       };
     }
-    var paymentMethodType = paymentRequest.paymentMethod.type;
+
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
     paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
@@ -149,9 +150,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   var errorMessage = '';
   try {
     var _paymentRequest$payme, _paymentRequest$payme2;
-    var platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    var service = platformVersion === constants.PLATFORMS.SG ? "".concat(constants.SERVICE.PAYMENT).concat(constants.PLATFORMS.SG) : constants.SERVICE.PAYMENT;
-    var responseObject = AdyenHelper.executeCall(service, paymentRequest);
+    var responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
@@ -210,9 +209,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 }
 function doPaymentsDetailsCall(paymentDetailsRequest) {
   try {
-    var platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    var service = platformVersion === constants.PLATFORMS.SG ? "".concat(constants.SERVICE.PAYMENTDETAILS).concat(constants.PLATFORMS.SG) : constants.SERVICE.PAYMENTDETAILS;
-    return AdyenHelper.executeCall(service, paymentDetailsRequest);
+    return AdyenHelper.executeCall(constants.SERVICE.PAYMENTDETAILS, paymentDetailsRequest);
   } catch (ex) {
     AdyenLogs.error_log("error parsing response object ".concat(ex.message));
     return {

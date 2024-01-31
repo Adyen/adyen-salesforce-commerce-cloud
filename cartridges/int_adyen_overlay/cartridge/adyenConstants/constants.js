@@ -33,10 +33,6 @@ module.exports = {
     AMAZONPAY: 'amazonpay'
   },
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
-  PLATFORMS: {
-    SFRA: 'SFRA',
-    SG: 'SG'
-  },
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
@@ -84,9 +80,9 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
-  CHECKOUT_COMPONENT_VERSION: {
-    SFRA: '5.44.0',
-    SG: '5.28.0'
-  },
-  VERSION: '23.3.1'
+  MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
+  EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
+  EXTERNAL_PLATFORM_VERSION: 'SFRA',
+  CHECKOUT_COMPONENT_VERSION: '5.56.0',
+  VERSION: '24.1.0'
 };
