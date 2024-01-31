@@ -1,5 +1,4 @@
 // mocks for all cartridge paths containing asterisk (*) symbol
-
 // cartridge/models mocks
 jest.mock('*/cartridge/models/order', () => {
   return jest.fn();
@@ -10,6 +9,13 @@ jest.mock('*/cartridge/models/cart', () => {
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
+  return {
+    getShipmentByUUID: jest.fn(() => 'mocked_uuid'),
+    selectShippingMethod : jest.fn(),
+  };
+}, {virtual: true});
+
+jest.mock('*/cartridge/models/cart', () => {
   return jest.fn();
 }, {virtual: true});
 
@@ -287,12 +293,28 @@ jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
   };
 }, {virtual: true});
 
+jest.mock('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent', () => {
+  return {
+    removeGiftCards : jest.fn(),
+    showGiftCardWarningMessage : jest.fn(),
+    clearGiftCardsContainer : jest.fn(),
+    renderAddedGiftCard : jest.fn(),
+  };
+}, {virtual: true});     
+
 jest.mock('*/cartridge/scripts/util/array', () => {
   return { find: jest.fn((array, callback) => array.find(callback))};
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/collections', () => {
   return { forEach: (arr, cb) => arr.toArray().forEach(cb) };
+}, {virtual: true});
+
+jest.mock('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices', () => {
+  return {
+    processPayment: jest.fn(),
+    isNotAdyen: jest.fn(() => false),
+  };
 }, {virtual: true});
 
 jest.mock('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices', () => {

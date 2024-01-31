@@ -81,6 +81,8 @@ function handleAuthorised(response, resolveApplePay) {
     paymentMethod: response.fullResponse?.paymentMethod
       ? response.fullResponse.paymentMethod
       : response.fullResponse?.additionalData?.paymentMethod,
+    donationToken: response.fullResponse?.donationToken,
+    amount: response.fullResponse?.amount,
   });
   document.querySelector('#showConfirmationForm').submit();
 }

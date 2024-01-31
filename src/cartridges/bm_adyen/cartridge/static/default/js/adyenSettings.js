@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const infoLogCheckbox = document.getElementById('infoLogs');
   const errorLogCheckbox = document.getElementById('errorLogs');
   const fatalLogCheckbox = document.getElementById('fatalLogs');
+  const testRadio = document.getElementById('testRadio');
+  const productionRadio = document.getElementById('productionRadio');
+  const livePrefix = document.getElementById('livePrefix');
   const troubleshootingCheckboxes = [
     debugLogCheckbox,
     infoLogCheckbox,
@@ -463,6 +466,14 @@ document.addEventListener('DOMContentLoaded', () => {
         JSON.stringify(Object.values(installmentsResult)),
       );
     }
+  });
+
+  productionRadio.addEventListener('click', () => {
+    livePrefix.disabled = false;
+  });
+
+  testRadio.addEventListener('click', () => {
+    livePrefix.disabled = true;
   });
 
   adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
