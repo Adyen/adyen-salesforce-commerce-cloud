@@ -156,7 +156,6 @@ function placeOrder(req, res, next) {
       Transaction.wrap(function () {
         mainPaymentInstrument.paymentTransaction.setAmount(formattedAmount); //update amount from order total to PM total
       });
-
       GiftCardsHelper.createGiftCardPaymentInstrument(giftCard, divideBy, order);
     });
   }

@@ -343,7 +343,6 @@ var adyenCheckout = require('../adyenCheckout');
         }, 500);
         return p; // eslint-disable-line
       },
-
       /**
        * Initialize the checkout stage.
        *
