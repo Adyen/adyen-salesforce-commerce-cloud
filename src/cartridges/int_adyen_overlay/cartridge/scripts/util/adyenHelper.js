@@ -204,19 +204,13 @@ var adyenHelperObj = {
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
-    const adyenService = require('*/cartridge/scripts/adyenService');
-    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
-    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
-    return `${checkoutUrl}sdk/${checkoutVersionForPlatform}/adyen.js`;
+    return `${checkoutUrl}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.js`;
   },
 
   // get the URL for the checkout component css based on the current Adyen component version
   getCheckoutCSS() {
     const checkoutCSS = this.getLoadingContext();
-    const adyenService = require('*/cartridge/scripts/adyenService');
-    const externalPlatformVersion = adyenService.getExternalPlatformVersion();
-    const checkoutVersionForPlatform = constants.CHECKOUT_COMPONENT_VERSION[externalPlatformVersion];
-    return `${checkoutCSS}sdk/${checkoutVersionForPlatform}/adyen.css`;
+    return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
   },
 
   // converts to a syntax-safe HTML string
@@ -683,8 +677,8 @@ var adyenHelperObj = {
       ? result.resultCode
       : '';
     order.custom.Adyen_value = '0';
-    if (result.donationToken){
-      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken;
+    if (result.donationToken || result.fullResponse?.donationToken){
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken || result.fullResponse.donationToken;
     }
     // Save full response to transaction custom attribute
     paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
@@ -752,25 +746,15 @@ var adyenHelperObj = {
   },
 
   getApplicationInfo() {
-    let externalPlatformVersion = '';
     const applicationInfo = {};
-    try {
-      // AdyenController can be coming either from int_adyen_controllers
-      // or int_adyen_SFRA, depending on the cartridge path
-      const AdyenController = require('*/cartridge/controllers/Adyen.js');
-      externalPlatformVersion = AdyenController.getExternalPlatformVersion;
-    } catch (e) {
-      /* no applicationInfo available */
-    }
-
     applicationInfo.merchantApplication = {
-      name: 'adyen-salesforce-commerce-cloud',
+      name: constants.MERCHANT_APPLICATION_NAME,
       version: constants.VERSION,
     };
 
     applicationInfo.externalPlatform = {
-      name: 'SalesforceCommerceCloud',
-      version: externalPlatformVersion,
+      name: constants.EXTERNAL_PLATFORM_NAME,
+      version: constants.EXTERNAL_PLATFORM_VERSION,
       integrator: AdyenConfigs.getSystemIntegratorName(),
     };
 
@@ -881,6 +865,13 @@ var adyenHelperObj = {
     if (service === null) {
       throw new Error(`Could not create ${serviceType} service object`);
     }
+
+    if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
+      const livePrefix = AdyenConfigs.getLivePrefix();
+      const serviceUrl = service.getURL().replace(`[YOUR_LIVE_PREFIX]`, livePrefix);
+      service.setURL(serviceUrl);
+    }
+
     const maxRetries = constants.MAX_API_RETRIES;
     const apiKey = AdyenConfigs.getAdyenApiKey();
     const uuid = UUIDUtils.createUUID();

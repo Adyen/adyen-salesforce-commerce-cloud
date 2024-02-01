@@ -30,6 +30,7 @@ var constants = require('*/cartridge/adyenConstants/constants');
 var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 function donate(donationReference, donationAmount, orderToken) {
   try {
+    var _paymentData$fullResp, _paymentData$fullResp2, _paymentData$paymentM, _paymentData$fullResp3, _paymentData$fullResp4;
     if (session.privacy.orderNo !== donationReference) {
       throw new Error("Donation reference is invalid");
     }
@@ -39,13 +40,18 @@ function donate(donationReference, donationAmount, orderToken) {
     var donationToken = paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
     var originalReference = paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
     var paymentData = JSON.parse(paymentInstrument.paymentTransaction.custom.Adyen_log);
-    var paymentCurrency = paymentData.amount.currency;
+    var paymentCurrency = paymentData.amount.currency || ((_paymentData$fullResp = paymentData.fullResponse) === null || _paymentData$fullResp === void 0 ? void 0 : (_paymentData$fullResp2 = _paymentData$fullResp.amount) === null || _paymentData$fullResp2 === void 0 ? void 0 : _paymentData$fullResp2.currency);
     var availableDonationAmounts = AdyenHelper.getDonationAmounts();
-    paymentMethodVariant = paymentInstrument.custom.Adyen_Payment_Method_Variant;
+    paymentMethodVariant = ((_paymentData$paymentM = paymentData.paymentMethod) === null || _paymentData$paymentM === void 0 ? void 0 : _paymentData$paymentM.type) || ((_paymentData$fullResp3 = paymentData.fullResponse) === null || _paymentData$fullResp3 === void 0 ? void 0 : (_paymentData$fullResp4 = _paymentData$fullResp3.paymentMethod) === null || _paymentData$fullResp4 === void 0 ? void 0 : _paymentData$fullResp4.type);
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
     if (paymentMethodVariant === 'ideal') {
       paymentMethodVariant = 'sepadirectdebit';
+    }
+    // for Apple Pay donations, the payment method variant needs to be the brand
+    if (paymentMethodVariant === 'applepay') {
+      var _paymentData$paymentM2, _paymentData$fullResp5, _paymentData$fullResp6;
+      paymentMethodVariant = ((_paymentData$paymentM2 = paymentData.paymentMethod) === null || _paymentData$paymentM2 === void 0 ? void 0 : _paymentData$paymentM2.brand) || ((_paymentData$fullResp5 = paymentData.fullResponse) === null || _paymentData$fullResp5 === void 0 ? void 0 : (_paymentData$fullResp6 = _paymentData$fullResp5.paymentMethod) === null || _paymentData$fullResp6 === void 0 ? void 0 : _paymentData$fullResp6.brand);
     }
     var requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -65,9 +71,7 @@ function donate(donationReference, donationAmount, orderToken) {
     if (paymentCurrency !== donationAmount.currency) {
       throw new Error("Donation currency is invalid");
     }
-    var platformVersion = AdyenHelper.getApplicationInfo().externalPlatform.version;
-    var service = platformVersion === constants.PLATFORMS.SG ? "".concat(constants.SERVICE.ADYENGIVING).concat(constants.PLATFORMS.SG) : constants.SERVICE.ADYENGIVING;
-    var response = AdyenHelper.executeCall(service, requestObject);
+    var response = AdyenHelper.executeCall(constants.SERVICE.ADYENGIVING, requestObject);
     Transaction.wrap(function () {
       var order = OrderMgr.getOrder(donationReference);
       order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);

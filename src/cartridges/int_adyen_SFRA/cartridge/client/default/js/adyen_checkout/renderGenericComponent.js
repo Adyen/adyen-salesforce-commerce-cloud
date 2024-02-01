@@ -323,5 +323,15 @@ async function renderGenericComponent() {
 module.exports = {
   renderGenericComponent,
   initializeCheckout,
+  setInstallments,
+  setAmazonPayConfig,
+  renderStoredPaymentMethods,
+  renderPaymentMethods,
+  renderPosTerminals,
+  isCartModified,
+  resolveUnmount,
+  renderGiftCardLogo,
+  setGiftCardContainerVisibility,
+  applyGiftCards,
   INIT_CHECKOUT_EVENT,
 };
