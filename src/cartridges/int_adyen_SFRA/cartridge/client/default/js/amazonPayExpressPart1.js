@@ -34,8 +34,7 @@ async function mountAmazonPayComponent() {
     updateLoadedExpressMethods(AMAZON_PAY);
     checkIfExpressMethodsAreReady();
   } catch (e) {
-    updateLoadedExpressMethods(AMAZON_PAY);
-    checkIfExpressMethodsAreReady();
+    //
   }
 }
 
