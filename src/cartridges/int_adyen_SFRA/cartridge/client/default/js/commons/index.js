@@ -31,6 +31,16 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
   });
 };
 
+/**
+ * Makes an ajax call to the controller function GetPaymentMethods
+ */
+module.exports.getPaymentMethods = async function getPaymentMethods() {
+  return $.ajax({
+    url: window.getPaymentMethodsURL,
+    type: 'get',
+  });
+};
+
 module.exports.checkIfExpressMethodsAreReady =
   function checkIfExpressMethodsAreReady() {
     const expressMethodsConfig = {
