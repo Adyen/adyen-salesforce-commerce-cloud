@@ -27,6 +27,14 @@ describe('getCheckoutPaymentMethods', () => {
          AdyenPaymentMethods: [{
             type: 'visa'
          }, ],
+         adyenConnectedTerminals: {
+            "foo": "bar",
+          },
+          adyenDescriptions: {
+            "ideal": "Dutch payment method example description",
+            "paypal": "PayPal example description",
+          },
+          imagePath: "mocked_loading_contextimages/logos/medium/",
       });
       expect(next).toHaveBeenCalled();
    });
@@ -39,6 +47,14 @@ describe('getCheckoutPaymentMethods', () => {
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
          AdyenPaymentMethods: [],
+         adyenConnectedTerminals: {
+            "foo": "bar",
+          },
+          adyenDescriptions: {
+            "ideal": "Dutch payment method example description",
+            "paypal": "PayPal example description",
+          },
+          imagePath: "mocked_loading_contextimages/logos/medium/",
       });
    });
 });

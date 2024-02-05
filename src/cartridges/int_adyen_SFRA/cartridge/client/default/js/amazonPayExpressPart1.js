@@ -1,29 +1,14 @@
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
+  getPaymentMethods,
 } = require('./commons');
 
 const AMAZON_PAY = 'amazonpay';
 
 async function mountAmazonPayComponent() {
-  /**
-   * Makes an ajax call to the controller function GetPaymentMethods
-   */
-  function getPaymentMethods(paymentMethods) {
-    $.ajax({
-      url: window.getPaymentMethodsURL,
-      type: 'get',
-      success(data) {
-        paymentMethods(data);
-      },
-      error() {
-        updateLoadedExpressMethods(AMAZON_PAY);
-        checkIfExpressMethodsAreReady();
-      },
-    });
-  }
-
-  getPaymentMethods(async (data) => {
+  try {
+    const data = await getPaymentMethods();
     const paymentMethodsResponse = data.AdyenPaymentMethods;
 
     const checkout = await AdyenCheckout({
@@ -48,7 +33,9 @@ async function mountAmazonPayComponent() {
     amazonPayButton.mount('#amazonpay-container');
     updateLoadedExpressMethods(AMAZON_PAY);
     checkIfExpressMethodsAreReady();
-  });
+  } catch (e) {
+    //
+  }
 }
 
 mountAmazonPayComponent();
