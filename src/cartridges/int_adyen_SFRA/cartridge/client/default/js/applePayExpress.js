@@ -5,16 +5,21 @@ const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
+let paymentMethodsResponse;
 
 async function initializeCheckout() {
-  const shippingMethods = await fetch(window.shippingMethodsUrl);
-  shippingMethodsData = await shippingMethods.json();
-
-  checkout = await AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-  });
+  try {
+    paymentMethodsResponse = await getPaymentMethods();
+    const shippingMethods = await fetch(window.shippingMethodsUrl);
+    shippingMethodsData = await shippingMethods.json();
+    checkout = await AdyenCheckout({
+      environment: window.environment,
+      clientKey: window.clientKey,
+      locale: window.locale,
+    });
+  } catch (e) {
+    //
+  }
 }
 
 async function createApplePayButton(applePayButtonConfig) {
@@ -121,9 +126,8 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 
 initializeCheckout()
   .then(async () => {
-    const paymentMethodsResponse = await getPaymentMethods();
     const applePayPaymentMethod =
-      paymentMethodsResponse.AdyenPaymentMethods.find(
+      paymentMethodsResponse?.AdyenPaymentMethods.find(
         (pm) => pm.type === APPLE_PAY,
       );
 
