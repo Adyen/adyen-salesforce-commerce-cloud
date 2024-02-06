@@ -8,18 +8,14 @@ let shippingMethodsData;
 let paymentMethodsResponse;
 
 async function initializeCheckout() {
-  try {
-    paymentMethodsResponse = await getPaymentMethods();
-    const shippingMethods = await fetch(window.shippingMethodsUrl);
-    shippingMethodsData = await shippingMethods.json();
-    checkout = await AdyenCheckout({
-      environment: window.environment,
-      clientKey: window.clientKey,
-      locale: window.locale,
-    });
-  } catch (e) {
-    //
-  }
+  paymentMethodsResponse = await getPaymentMethods();
+  const shippingMethods = await fetch(window.shippingMethodsUrl);
+  shippingMethodsData = await shippingMethods.json();
+  checkout = await AdyenCheckout({
+    environment: window.environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+  });
 }
 
 async function createApplePayButton(applePayButtonConfig) {
