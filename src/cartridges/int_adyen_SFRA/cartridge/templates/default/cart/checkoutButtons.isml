@@ -60,6 +60,7 @@
             window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
                 pdict.AdyenHelper.getBasketAmount().currencyCode
             )}";
+            window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
         </script>
         <div class="mb-sm-3">
             <a
