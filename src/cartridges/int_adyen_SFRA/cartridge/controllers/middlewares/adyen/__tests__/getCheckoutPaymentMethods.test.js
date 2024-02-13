@@ -4,6 +4,7 @@ const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 let req;
 let res;
 let next;
+let Logger;
 beforeEach(() => {
    req = {
       locale: {
@@ -14,6 +15,7 @@ beforeEach(() => {
       json: jest.fn(),
    };
    next = jest.fn();
+   Logger = require('dw/system/Logger');
 });
 
 afterEach(() => {
@@ -54,21 +56,7 @@ describe('getCheckoutPaymentMethods', () => {
          new Logger.error('error'),
       );
       getCheckoutPaymentMethods(req, res, next);
-      expect(res.json).toHaveBeenCalledWith({
-         AdyenPaymentMethods: [],
-         amount: {
-            currency: "EUR",
-            value: 1000,
-         },
-         adyenConnectedTerminals: {
-            "foo": "bar",
-          },
-          adyenDescriptions: {
-            "ideal": "Dutch payment method example description",
-            "paypal": "PayPal example description",
-          },
-          imagePath: "mocked_loading_contextimages/logos/medium/",
-          countryCode: "NL",
-      });
+      expect(res.json).not.toHaveBeenCalledWith();
+      expect(Logger.fatal.mock.calls.length).toBe(1);
    });
 });

@@ -6,6 +6,7 @@ const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
 const constants = require('*/cartridge/adyenConstants/constants');
 const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
+const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;
@@ -43,17 +44,19 @@ function getCheckoutPaymentMethods(req, res, next) {
       AdyenHelper.getCustomer(req.currentCustomer),
       countryCode,
     );
+    res.json({
+      AdyenPaymentMethods: paymentMethods,
+      imagePath: adyenURL,
+      adyenDescriptions: paymentMethodDescriptions,
+      adyenConnectedTerminals: connectedTerminals,
+      amount: { value: paymentAmount.value, currency },
+      countryCode,
+    });
   } catch (err) {
-    paymentMethods = [];
+    AdyenLogs.fatal_log(
+      `Failed to fetch payment methods ${JSON.stringify(err)}`,
+    );
   }
-  res.json({
-    AdyenPaymentMethods: paymentMethods,
-    imagePath: adyenURL,
-    adyenDescriptions: paymentMethodDescriptions,
-    adyenConnectedTerminals: connectedTerminals,
-    amount: { value: paymentAmount.value, currency },
-    countryCode,
-  });
   return next();
 }
 
