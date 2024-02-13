@@ -24,9 +24,17 @@ describe('getCheckoutPaymentMethods', () => {
    it('returns AdyenPaymentMethods', () => {
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
-         AdyenPaymentMethods: [{
-            type: 'visa'
-         }, ],
+         AdyenPaymentMethods:  {
+            paymentMethods: [
+               {
+                  "type": "visa",
+               },
+            ],
+         },
+         amount: {
+            currency: "EUR",
+            value: 1000,
+         },
          adyenConnectedTerminals: {
             "foo": "bar",
           },
@@ -35,6 +43,7 @@ describe('getCheckoutPaymentMethods', () => {
             "paypal": "PayPal example description",
           },
           imagePath: "mocked_loading_contextimages/logos/medium/",
+          countryCode: "NL",
       });
       expect(next).toHaveBeenCalled();
    });
@@ -47,6 +56,10 @@ describe('getCheckoutPaymentMethods', () => {
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
          AdyenPaymentMethods: [],
+         amount: {
+            currency: "EUR",
+            value: 1000,
+         },
          adyenConnectedTerminals: {
             "foo": "bar",
           },
@@ -55,6 +68,7 @@ describe('getCheckoutPaymentMethods', () => {
             "paypal": "PayPal example description",
           },
           imagePath: "mocked_loading_contextimages/logos/medium/",
+          countryCode: "NL",
       });
    });
 });

@@ -35,7 +35,7 @@ beforeEach(() => {
   }));
   window.Configuration = { amount: 0 };
   store.checkoutConfiguration = {
-    session: {
+    paymentMethodsResponse: {
       imagePath: 'test_image_path',
     },
   };

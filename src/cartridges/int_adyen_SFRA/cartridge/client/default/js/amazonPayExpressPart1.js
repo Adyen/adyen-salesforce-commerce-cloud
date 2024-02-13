@@ -17,7 +17,7 @@ async function mountAmazonPayComponent() {
       locale: window.locale,
     });
 
-    const amazonPayConfig = paymentMethodsResponse.find(
+    const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
       (pm) => pm.type === AMAZON_PAY,
     )?.configuration;
     if (!amazonPayConfig) return;
