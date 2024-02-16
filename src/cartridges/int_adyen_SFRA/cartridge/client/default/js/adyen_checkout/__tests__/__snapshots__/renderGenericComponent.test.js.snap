@@ -2,7 +2,10 @@
 
 exports[`Render Generic Component should hide giftcard container 1`] = `
 {
-  "amount": "mocked_amount",
+  "amount": {
+    "currency": "mocked_currency",
+    "value": "mocked_amount",
+  },
   "countryCode": "mocked_countrycode",
   "paymentMethodsConfiguration": {
     "amazonpay": {
@@ -18,18 +21,18 @@ exports[`Render Generic Component should hide giftcard container 1`] = `
       "configuration": undefined,
     },
   },
-  "session": {
-    "adyenDescriptions": {},
-    "id": "mock_id",
+  "paymentMethodsResponse": {
     "imagePath": "example.com",
-    "sessionData": "mock_session_data",
   },
 }
 `;
 
 exports[`Render Generic Component should render 1`] = `
 {
-  "amount": "mocked_amount",
+  "amount": {
+    "currency": "mocked_currency",
+    "value": "mocked_amount",
+  },
   "countryCode": "mocked_countrycode",
   "paymentMethodsConfiguration": {
     "amazonpay": {
@@ -45,11 +48,8 @@ exports[`Render Generic Component should render 1`] = `
       "configuration": undefined,
     },
   },
-  "session": {
-    "adyenDescriptions": {},
-    "id": "mock_id",
+  "paymentMethodsResponse": {
     "imagePath": "example.com",
-    "sessionData": "mock_session_data",
   },
 }
 `;

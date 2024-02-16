@@ -128,7 +128,7 @@ function renderGiftCardSelectForm() {
     return;
   }
 
-  const { imagePath } = store.checkoutConfiguration.session;
+  const { imagePath } = store.checkoutConfiguration.paymentMethodsResponse;
 
   giftCardBrands().forEach((giftCard) => {
     const newListItem = document.createElement('li');
@@ -277,7 +277,7 @@ function clearGiftCardsContainer() {
 
 function renderAddedGiftCard(card) {
   const giftCardData = card.giftCard;
-  const { imagePath } = store.checkoutConfiguration.session;
+  const { imagePath } = store.checkoutConfiguration.paymentMethodsResponse;
 
   const { giftCardsList, giftCardAddButton } = getGiftCardElements();
 

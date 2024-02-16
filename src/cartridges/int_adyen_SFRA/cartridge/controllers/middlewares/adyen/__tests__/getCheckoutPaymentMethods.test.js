@@ -4,6 +4,7 @@ const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 let req;
 let res;
 let next;
+let Logger;
 beforeEach(() => {
    req = {
       locale: {
@@ -14,6 +15,7 @@ beforeEach(() => {
       json: jest.fn(),
    };
    next = jest.fn();
+   Logger = require('dw/system/Logger');
 });
 
 afterEach(() => {
@@ -24,9 +26,17 @@ describe('getCheckoutPaymentMethods', () => {
    it('returns AdyenPaymentMethods', () => {
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
-         AdyenPaymentMethods: [{
-            type: 'visa'
-         }, ],
+         AdyenPaymentMethods:  {
+            paymentMethods: [
+               {
+                  "type": "visa",
+               },
+            ],
+         },
+         amount: {
+            currency: "EUR",
+            value: 1000,
+         },
          adyenConnectedTerminals: {
             "foo": "bar",
           },
@@ -35,6 +45,7 @@ describe('getCheckoutPaymentMethods', () => {
             "paypal": "PayPal example description",
           },
           imagePath: "mocked_loading_contextimages/logos/medium/",
+          countryCode: "NL",
       });
       expect(next).toHaveBeenCalled();
    });
@@ -45,16 +56,7 @@ describe('getCheckoutPaymentMethods', () => {
          new Logger.error('error'),
       );
       getCheckoutPaymentMethods(req, res, next);
-      expect(res.json).toHaveBeenCalledWith({
-         AdyenPaymentMethods: [],
-         adyenConnectedTerminals: {
-            "foo": "bar",
-          },
-          adyenDescriptions: {
-            "ideal": "Dutch payment method example description",
-            "paypal": "PayPal example description",
-          },
-          imagePath: "mocked_loading_contextimages/logos/medium/",
-      });
+      expect(res.json).not.toHaveBeenCalled();
+      expect(Logger.fatal.mock.calls.length).toBe(1);
    });
 });

@@ -123,7 +123,7 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 initializeCheckout()
   .then(async () => {
     const applePayPaymentMethod =
-      paymentMethodsResponse?.AdyenPaymentMethods.find(
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
         (pm) => pm.type === APPLE_PAY,
       );
 

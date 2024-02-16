@@ -80,7 +80,7 @@ async function mountAmazonPayComponent() {
   try {
     const data = await getPaymentMethods();
     const paymentMethodsResponse = data.AdyenPaymentMethods;
-    const amazonPayConfig = paymentMethodsResponse.find(
+    const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
       (pm) => pm.type === 'amazonpay',
     )?.configuration;
     if (!amazonPayConfig) return;

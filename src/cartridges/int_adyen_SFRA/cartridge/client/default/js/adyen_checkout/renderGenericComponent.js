@@ -3,7 +3,7 @@ const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
 const { installmentLocales } = require('./localesUsingInstallments');
-const { createSession, fetchGiftCards } = require('../commons');
+const { getPaymentMethods, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
   createElementsToShowRemainingGiftCardAmount,
@@ -217,18 +217,17 @@ function setGiftCardContainerVisibility() {
 }
 
 async function initializeCheckout() {
-  const session = await createSession();
+  const paymentMethodsResponse = await getPaymentMethods();
   const giftCardsData = await fetchGiftCards();
 
-  store.checkoutConfiguration.session = {
-    id: session.id,
-    sessionData: session.sessionData,
-    imagePath: session.imagePath,
-    adyenDescriptions: session.adyenDescriptions,
+  setCheckoutConfiguration(paymentMethodsResponse);
+
+  store.checkoutConfiguration.paymentMethodsResponse = {
+    ...paymentMethodsResponse.AdyenPaymentMethods,
+    imagePath: paymentMethodsResponse.imagePath,
   };
   store.checkout = await AdyenCheckout(store.checkoutConfiguration);
   setGiftCardContainerVisibility();
-
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   if (giftCards?.length) {
     store.addedGiftCards = giftCards;
@@ -236,8 +235,7 @@ async function initializeCheckout() {
     store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
   }
 
-  setCheckoutConfiguration(store.checkout.options);
-  setInstallments(store.checkout.options.amount);
+  setInstallments(paymentMethodsResponse.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
@@ -251,20 +249,23 @@ async function initializeCheckout() {
       (pm) => pm.type !== constants.GIFTCARD,
     );
 
-  renderStoredPaymentMethods(
-    storedPaymentMethodsWithoutGiftCards,
-    session.imagePath,
-  );
+  // Rendering stored payment methods if one-click is enabled in BM
+  if (window.adyenRecurringPaymentsEnabled) {
+    renderStoredPaymentMethods(
+      storedPaymentMethodsWithoutGiftCards,
+      paymentMethodsResponse.imagePath,
+    );
+  }
 
   await renderPaymentMethods(
     paymentMethodsWithoutGiftCards,
-    session.imagePath,
-    session.adyenDescriptions,
+    paymentMethodsResponse.imagePath,
+    paymentMethodsResponse.adyenDescriptions,
   );
 
-  renderPosTerminals(session.adyenConnectedTerminals);
+  renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
 
-  renderGiftCardLogo(session.imagePath);
+  renderGiftCardLogo(paymentMethodsResponse.imagePath);
 
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',

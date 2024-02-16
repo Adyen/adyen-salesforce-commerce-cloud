@@ -8,6 +8,7 @@ module.exports = {
   NOTENOUGHBALANCE: 'NotEnoughBalance',
   SUCCESS: 'Success',
   GIFTCARD: 'giftcard',
+  SCHEME: 'scheme',
   GIROPAY: 'giropay',
   APPLE_PAY: 'applepay',
   ACTIONTYPE: {
