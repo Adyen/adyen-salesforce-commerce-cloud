@@ -20,8 +20,6 @@ server.post(
   adyen.paymentsDetails,
 );
 
-server.get('Sessions', server.middleware.https, adyen.callCreateSession);
-
 server.get(
   'ShippingMethods',
   server.middleware.https,

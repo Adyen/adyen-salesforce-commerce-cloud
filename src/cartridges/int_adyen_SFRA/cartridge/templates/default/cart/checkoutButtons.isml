@@ -50,7 +50,6 @@
             window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
             window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
             window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
-            window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
             window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
             window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
             window.returnUrl = "${URLUtils.https('Cart-Show')}";
