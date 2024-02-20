@@ -1,4 +1,4 @@
-const { onFieldValid, onBrand, createSession } = require('./commons/index');
+const { onFieldValid, onBrand } = require('./commons/index');
 const store = require('../../../store');
 
 let checkout;
@@ -53,12 +53,6 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
 };
 
 async function initializeCardComponent() {
-  // card and checkout component creation
-  const session = await createSession();
-  store.checkoutConfiguration.session = {
-    id: session.id,
-    sessionData: session.sessionData,
-  };
   const cardNode = document.getElementById('card');
   checkout = await AdyenCheckout(store.checkoutConfiguration);
   card = checkout.create('card').mount(cardNode);
@@ -102,3 +96,8 @@ $('button[value="add-new-payment"]').on('click', (event) => {
     card?.showValidation();
   }
 });
+
+module.exports = {
+  initializeCardComponent,
+  submitAddCard,
+};
