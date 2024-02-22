@@ -53,15 +53,6 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails',
   return jest.fn();
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/adyenSessions', () => {
-  return {
-    createSession: jest.fn( () => ({
-      id: 'mock_id',
-      sessionData: 'mock_session_data',
-    }))
-  }
-}, {virtual: true});
-
 jest.mock('*/cartridge/scripts/adyenGetPaymentMethods', () => {
   return {
     getMethods: jest.fn(() => ({

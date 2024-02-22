@@ -305,7 +305,7 @@ document.addEventListener(INIT_CHECKOUT_EVENT, () => {
 });
 
 /**
- * Calls createSession and then renders the retrieved payment methods (including card component)
+ * Calls getPaymentMethods and then renders the retrieved payment methods (including card component)
  */
 async function renderGenericComponent() {
   if (Object.keys(store.componentsObj).length !== 0) {

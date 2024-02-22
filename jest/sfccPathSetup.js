@@ -25,10 +25,6 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/notify', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/notify');
 }, {virtual: true});
 
-jest.mock('*/cartridge/controllers/middlewares/adyen/sessions', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/sessions');
-}, {virtual: true});
-
 jest.mock('*/cartridge/controllers/middlewares/adyen/paymentFromComponent', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/paymentFromComponent');
 }, {virtual: true});
