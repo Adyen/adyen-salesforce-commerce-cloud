@@ -110,10 +110,7 @@ jobs:
           SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        if: |
-          github.event.pull_request.base.ref != 'main' && 
-          !contains(github.event.commits.*.added, "adyen-salesforce-commerce-cloud/src/cartridges/bm_adyen") && 
-          !contains(github.event.commits.*.modified, "adyen-salesforce-commerce-cloud/src/cartridges/bm_adyen")
+        if: github.event.pull_request.base.ref != 'main'
         run: npm run test:ci:quick
         env:
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
