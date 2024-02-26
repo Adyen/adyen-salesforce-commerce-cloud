@@ -3,8 +3,8 @@
 Adyen provides a LINK cartridge to integrate with [Salesforce Commerce Cloud (SFCC)](https://docs.adyen.com/plugins/salesforce-commerce-cloud). This cartridge enables an SFCC storefront to use the Adyen payment service.  
 
 ## Compatibility with SFCC architectures
-SFRA version 5.x.x & 6.x.x.: [Supported in all cartridge versions, see the latest](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases)    
-SiteGenesis JS-Controllers version 103.1.11 and higher: Supported up to cartridge [v22.2.2](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases/tag/22.2.2)
+- SFRA version 5.x.x & 6.x.x.: [Supported in all cartridge versions, see the latest](https://github.com/Adyen/adyen-salesforce-commerce-cloud/releases)    
+- SiteGenesis JS-Controllers version 103.1.11 and higher: Hosted in a separate repo - see cartridge [v22.2.3](https://github.com/Adyen/adyen-salesforce-commerce-cloud-site-genesis/releases/tag/22.2.3)
 
 ## Integration
 This cartridge allows you to integrate with Adyen without the need for any development work from your end. Online payments are processed on the back-end using the [Checkout API](https://docs.adyen.com/api-explorer/Checkout/latest/overview), and on the client side, Adyen’s [Web Components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods. 

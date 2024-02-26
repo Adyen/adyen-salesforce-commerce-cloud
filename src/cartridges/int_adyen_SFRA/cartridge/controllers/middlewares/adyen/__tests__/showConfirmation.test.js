@@ -59,12 +59,13 @@ describe('Show Confirmation', () => {
   })
 
   it('should not continue processing when order is not open or failed', () => {
-    const URLUtils = require('dw/web/URLUtils');
+    const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
     req.querystring.merchantReference = 4;
     const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
     adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     showConfirmation(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls[0][0]).toEqual('Cart-Show');
+    expect(res.render.mock.calls[0][0]).toEqual('orderConfirmForm');
+    expect(adyenCheckout.doPaymentsDetailsCall).not.toBeCalled();
   })
 
   test.each(['Authorised', 'Pending', 'Received'])(
