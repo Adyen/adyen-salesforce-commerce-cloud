@@ -24,7 +24,7 @@ function getCardConfig() {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-        : store.selectedMethod;
+        : constants.SCHEME;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
       store.updateSelectedPayment(method, 'stateData', state.data);
     },

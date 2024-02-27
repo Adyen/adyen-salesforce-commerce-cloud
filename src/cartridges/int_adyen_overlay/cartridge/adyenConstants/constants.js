@@ -40,7 +40,6 @@ module.exports = {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
-    SESSIONS: 'AdyenSessions',
     POSPAYMENT: 'AdyenPosPayment',
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',

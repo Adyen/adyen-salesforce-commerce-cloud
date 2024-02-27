@@ -5,7 +5,7 @@ jest.mock('../../commons');
 jest.mock('../../../../../store');
 
 const { renderGenericComponent, setInstallments, renderPosTerminals, isCartModified, renderGiftCardLogo, setGiftCardContainerVisibility, applyGiftCards } = require('../renderGenericComponent');
-const { createSession } = require('../../commons');
+const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');
 const giftCardHtml = `
@@ -59,19 +59,17 @@ beforeEach(() => {
       storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
       paymentMethods: [{ type: 'amazonpay' }],
     },
-    options: {
-      amount: 'mocked_amount',
-      countryCode: 'mocked_countrycode',
-    },
   }));
   window.installments = '[[0,2,["amex","hipercard"]]]';
   store.checkout = {
    options: {}
   };
-  createSession.mockReturnValue({
+  store.checkoutConfiguration = {
+    amount: {value : 'mocked_amount', currency : 'mocked_currency'},
+    countryCode: 'mocked_countrycode',
+  };
+  getPaymentMethods.mockReturnValue({
     adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-    id: 'mock_id',
-    sessionData: 'mock_session_data',
     imagePath: 'example.com',
     adyenDescriptions: {},
   });
@@ -83,7 +81,7 @@ describe('Render Generic Component', () => {
     store.componentsObj = { foo: 'bar', bar: 'baz' };
     store.checkoutConfiguration.paymentMethodsConfiguration = { amazonpay: {} };
     await renderGenericComponent();
-    expect(createSession).toBeCalled();
+    expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
         document.querySelector('input[type=radio][name=brandCode]').value,
@@ -96,7 +94,7 @@ describe('Render Generic Component', () => {
     store.componentsObj = { foo: 'bar', bar: 'baz' };
     store.checkoutConfiguration.paymentMethodsConfiguration = { amazonpay: {} };
     await renderGenericComponent();
-    expect(createSession).toBeCalled();
+    expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
       document.querySelector('.gift-card-selection').style.display,
@@ -171,8 +169,8 @@ describe('Render Generic Component', () => {
   });
 
   it('handles errors in initializeCheckout', async () => {
-    createSession.mockRejectedValue(new Error('Session creation failed'));
-    await expect(renderGenericComponent()).rejects.toThrow('Session creation failed');
+    getPaymentMethods.mockRejectedValue(new Error('Payments method call failed'));
+    await expect(renderGenericComponent()).rejects.toThrow('Payments method call failed');
   });
 
   it('correctly sets Pos Terminals', () => {
@@ -276,7 +274,7 @@ describe('Render Generic Component', () => {
     const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
     store.checkoutConfiguration = {
       amount: { currency: 'USD', value: 50 },
-      session: {
+      paymentMethodsResponse: {
         imagePath: 'test_image_path',
       },
     };

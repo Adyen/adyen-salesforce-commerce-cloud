@@ -22,7 +22,8 @@
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
-      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
+      window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
+      window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
       window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
       window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";

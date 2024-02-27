@@ -1,23 +1,20 @@
 const helpers = require('./adyen_checkout/helpers');
 const { checkIfExpressMethodsAreReady } = require('./commons/index');
-const { updateLoadedExpressMethods } = require('./commons');
+const { updateLoadedExpressMethods, getPaymentMethods } = require('./commons');
 const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
+let paymentMethodsResponse;
 
 async function initializeCheckout() {
-  const session = await fetch(window.sessionsUrl);
-  const sessionData = await session.json();
-
+  paymentMethodsResponse = await getPaymentMethods();
   const shippingMethods = await fetch(window.shippingMethodsUrl);
   shippingMethodsData = await shippingMethods.json();
-
   checkout = await AdyenCheckout({
     environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
-    session: sessionData,
   });
 }
 
@@ -126,7 +123,7 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
 initializeCheckout()
   .then(async () => {
     const applePayPaymentMethod =
-      checkout.paymentMethodsResponse.paymentMethods.find(
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
         (pm) => pm.type === APPLE_PAY,
       );
 
@@ -141,7 +138,7 @@ initializeCheckout()
     const applePayButtonConfig = {
       showPayButton: true,
       configuration: applePayConfig,
-      amount: checkout.options.amount,
+      amount: JSON.parse(window.basketAmount),
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
       requiredBillingContactFields: ['postalAddress', 'phone'],
       shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({

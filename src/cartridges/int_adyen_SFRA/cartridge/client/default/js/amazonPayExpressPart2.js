@@ -1,3 +1,5 @@
+const { getPaymentMethods } = require('./commons');
+
 function saveShopperDetails(details) {
   $.ajax({
     url: window.saveShopperDetailsURL,
@@ -18,21 +20,6 @@ function saveShopperDetails(details) {
       select.options[0].selected = true;
       select.dispatchEvent(new Event('change'));
     },
-  });
-}
-
-function getPaymentMethods() {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: window.getPaymentMethodsURL,
-      type: 'get',
-      success(data) {
-        resolve(data);
-      },
-      error(error) {
-        reject(error);
-      },
-    });
   });
 }
 
@@ -93,7 +80,7 @@ async function mountAmazonPayComponent() {
   try {
     const data = await getPaymentMethods();
     const paymentMethodsResponse = data.AdyenPaymentMethods;
-    const amazonPayConfig = paymentMethodsResponse.find(
+    const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
       (pm) => pm.type === 'amazonpay',
     )?.configuration;
     if (!amazonPayConfig) return;

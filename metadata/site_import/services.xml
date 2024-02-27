@@ -15,16 +15,6 @@
         <user-id></user-id>
         <password/>
     </service-credential>
-    <service-credential service-credential-id="AdyenSessions">
-        <url>https://checkout-test.adyen.com/checkout/v71/sessions</url>
-        <user-id></user-id>
-        <password/>
-    </service-credential>
-    <service-credential service-credential-id="AdyenSessionsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/sessions</url>
-        <user-id></user-id>
-        <password/>
-    </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
         <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/payments/details</url>
         <user-id></user-id>
@@ -155,15 +145,6 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenCheckoutPaymentMethods</credential-id>
-    </service>
-    <service service-id="AdyenSessions">
-        <service-type>HTTP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>adyen</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
-        <credential-id>AdyenSessions</credential-id>
     </service>
     <service service-id="AdyenRecurringDisable">
         <service-type>HTTP</service-type>

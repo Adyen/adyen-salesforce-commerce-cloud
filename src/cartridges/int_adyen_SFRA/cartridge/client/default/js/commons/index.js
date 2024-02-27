@@ -12,21 +12,21 @@ module.exports.onBrand = function onBrand(brandObject) {
 };
 
 /**
- * Makes an ajax call to the controller function CreateSession
- */
-module.exports.createSession = async function createSession() {
-  return $.ajax({
-    url: window.sessionsUrl,
-    type: 'get',
-  });
-};
-
-/**
  * Makes an ajax call to the controller function FetchGiftCards
  */
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
     url: window.fetchGiftCardsUrl,
+    type: 'get',
+  });
+};
+
+/**
+ * Makes an ajax call to the controller function GetPaymentMethods
+ */
+module.exports.getPaymentMethods = async function getPaymentMethods() {
+  return $.ajax({
+    url: window.getPaymentMethodsURL,
     type: 'get',
   });
 };
