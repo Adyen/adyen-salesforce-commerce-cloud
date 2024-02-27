@@ -12,7 +12,6 @@ src/cartridges/int_adyen_SFRA/cartridge/client/default/js/bundle.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA5.js
 src/cartridges/int_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA6.js
 src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder.js
-src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder.js
 src/cartridges/int_adyen_SFRA/cartridge/scripts
 
 # Test files
