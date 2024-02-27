@@ -12,7 +12,7 @@
                 <step step-id="Process" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
                     <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_overlay/cartridge/scripts/job/notifications.js</parameter>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/scripts/job/notifications.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">processNotifications</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
@@ -21,7 +21,7 @@
                 <step step-id="Clean" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
                     <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_overlay/cartridge/scripts/job/notifications.js</parameter>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/scripts/job/notifications.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">clearNotifications</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
