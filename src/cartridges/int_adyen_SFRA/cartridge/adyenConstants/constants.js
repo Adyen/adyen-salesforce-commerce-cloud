@@ -95,6 +95,9 @@ module.exports = {
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION: 'SFRA',
 
+  APPLE_DOMAIN_URL:
+    '/.well-known/apple-developer-merchantid-domain-association',
+
   CHECKOUT_COMPONENT_VERSION: '5.56.0',
   VERSION: '24.1.0',
 };
