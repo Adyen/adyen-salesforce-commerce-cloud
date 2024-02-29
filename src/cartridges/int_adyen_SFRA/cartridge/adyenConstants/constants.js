@@ -34,7 +34,7 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay','cashapp',],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
@@ -66,24 +66,24 @@ module.exports = {
     IN: 'IN',
   },
 
-  SHOPPER_INTERACTIONS : {
-    CONT_AUTH : 'ContAuth',
-    ECOMMERCE : 'Ecommerce',
+  SHOPPER_INTERACTIONS: {
+    CONT_AUTH: 'ContAuth',
+    ECOMMERCE: 'Ecommerce',
   },
 
-  DONATION_RESULT : {
-    COMPLETED : 'completed',
+  DONATION_RESULT: {
+    COMPLETED: 'completed',
   },
 
-  RECURRING_PROCESSING_MODEL : {
-    CARD_ON_FILE : 'CardOnFile',
+  RECURRING_PROCESSING_MODEL: {
+    CARD_ON_FILE: 'CardOnFile',
   },
 
   MAX_API_RETRIES: 3,
 
   GIFTCARD_EXPIRATION_MINUTES: 30,
   OMS_NAMESPACE: 'adyen_payment',
-  NOTIFICATION_PAYLOAD_DATA_SEPARATOR : ':',
+  NOTIFICATION_PAYLOAD_DATA_SEPARATOR: ':',
 
   CHECKOUT_ENVIRONMENT_TEST: 'test',
   CHECKOUT_ENVIRONMENT_LIVE_EU: 'live',
@@ -91,9 +91,9 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
 
-  MERCHANT_APPLICATION_NAME : 'adyen-salesforce-commerce-cloud',
-  EXTERNAL_PLATFORM_NAME : 'SalesforceCommerceCloud',
-  EXTERNAL_PLATFORM_VERSION : 'SFRA',
+  MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
+  EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
+  EXTERNAL_PLATFORM_VERSION: 'SFRA',
 
   CHECKOUT_COMPONENT_VERSION: '5.56.0',
   VERSION: '24.1.0',

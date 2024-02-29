@@ -227,33 +227,33 @@ jest.mock('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/pay
 
 // int_adyen_overlay mocks
 jest.mock('*/cartridge/adyenConstants/constants', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/constants');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyenConstants/constants');
 }, {virtual: true});
 
 jest.mock('*/cartridge/adyenConstants/paymentMethodDescriptions', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/adyenConstants/paymentMethodDescriptions');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyenConstants/paymentMethodDescriptions');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/riskDataHelper', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/util/riskDataHelper');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/riskDataHelper');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/lineItemHelper', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/util/lineItemHelper');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/lineItemHelper');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/adyenGetOpenInvoiceData', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenGetOpenInvoiceData');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/adyenGetOpenInvoiceData');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/adyenLevelTwoThreeData', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenLevelTwoThreeData');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/adyenLevelTwoThreeData');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/adyenCustomLogs', () => {
-	return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/adyenCustomLogs');
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/adyenCustomLogs');
   }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/giftCardsHelper', () => {
-  return require('../src/cartridges/int_adyen_overlay/cartridge/scripts/util/giftCardsHelper');
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/giftCardsHelper');
 }, {virtual: true});
