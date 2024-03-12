@@ -1,5 +1,5 @@
 {
-  "name": "int_adyen_SFRA",
+  "name": "app_adyen_SFRA",
   "version": "24.1.0",
   "description": "Adyen's official cartridge for SFRA and controllers-based SiteGenesis",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "lint:fix": "eslint --ext js --fix src",
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge int_adyen_overlay && sgmf-scripts --uploadCartridge bm_adyen",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge app_adyen_SFRA && sgmf-scripts --uploadCartridge bm_adyen",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges -d ./cartridges --copy-files --no-copy-ignored --extensions .js,.test.js,.snap",
