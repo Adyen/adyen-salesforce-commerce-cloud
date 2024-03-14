@@ -34,9 +34,18 @@ function getCheckoutPaymentMethods(req, res, next) {
   const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
   const connectedTerminals = JSON.parse(getConnectedTerminals());
   const currency = currentBasket.getTotalGrossPrice().currencyCode;
-  const paymentAmount = currentBasket.getTotalGrossPrice().isAvailable()
-    ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
-    : new dw.value.Money(1000, currency);
+  const getRemainingAmount = (giftCardResponse) => {
+    if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
+      return JSON.parse(giftCardResponse).remainingAmount;
+    }
+    return {
+      currency,
+      value: AdyenHelper.getCurrencyValueForApi(
+        currentBasket.getTotalGrossPrice(),
+      ).value,
+    };
+  };
+  const paymentAmount = getRemainingAmount(session.privacy.giftCardResponse);
   let paymentMethods;
   try {
     paymentMethods = getPaymentMethods.getMethods(
