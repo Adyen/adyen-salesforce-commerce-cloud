@@ -184,7 +184,6 @@ export default class PaymentMethodsPage {
 
   initiateCardPayment = async (cardInput) => {
     await this.page.locator('#rb_scheme').click();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
 
     const ccComponentWrapper = this.page.locator("#component_scheme");
 
