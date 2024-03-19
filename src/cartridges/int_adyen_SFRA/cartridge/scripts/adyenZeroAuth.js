@@ -25,7 +25,7 @@ const URLUtils = require('dw/web/URLUtils');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyenConstants/constants');
 
 function zeroAuthPayment(customer, paymentInstrument) {

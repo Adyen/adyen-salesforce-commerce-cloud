@@ -6,7 +6,7 @@ const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 
 function cancelPartialPaymentOrder(req, res, next) {

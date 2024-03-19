@@ -1,7 +1,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const handlePayment = require('*/cartridge/controllers/middlewares/adyen/showConfirmationPaymentFromComponent/payment');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /*
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..

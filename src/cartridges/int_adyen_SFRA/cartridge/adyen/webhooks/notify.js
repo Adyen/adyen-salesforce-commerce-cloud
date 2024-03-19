@@ -1,6 +1,6 @@
 const Transaction = require('dw/system/Transaction');
-const checkAuth = require('*/cartridge/scripts/checkNotificationAuth');
-const handleNotify = require('*/cartridge/scripts/handleNotify');
+const checkAuth = require('*/cartridge/adyen/webhooks/checkNotificationAuth');
+const handleNotify = require('*/cartridge/adyen/webhooks/handleNotify');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 
 /**

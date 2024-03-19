@@ -28,7 +28,7 @@
 const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);

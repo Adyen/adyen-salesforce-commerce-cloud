@@ -25,7 +25,7 @@ const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 //script includes
-const AdyenLogs = require('../adyenCustomLogs');
+const AdyenLogs = require('../../logs/adyenCustomLogs');
 
 function execute() {
   processNotifications();
@@ -38,7 +38,7 @@ function execute() {
  *  to be processed and handle them to place or fail order
  */
 function processNotifications(/* pdict */) {
-  const objectsHandler = require('*/cartridge/scripts/handleCustomObject');
+  const objectsHandler = require('*/cartridge/adyen/webhooks/handleCustomObject');
   const searchQuery = CustomObjectMgr.queryCustomObjects(
     'adyenNotification',
     "custom.updateStatus = 'PROCESS'",
@@ -107,7 +107,7 @@ function processNotifications(/* pdict */) {
  * cleanNotifications
  */
 function clearNotifications(/* pdict */) {
-  const deleteCustomObjects = require('*/cartridge/scripts/deleteCustomObjects');
+  const deleteCustomObjects = require('*/cartridge/adyen/webhooks/deleteCustomObjects');
   const searchQuery = CustomObjectMgr.queryCustomObjects(
     'adyenNotification',
     "custom.processedStatus = 'SUCCESS'",

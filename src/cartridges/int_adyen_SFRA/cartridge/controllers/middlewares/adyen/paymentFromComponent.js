@@ -9,7 +9,7 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyenConstants/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/scripts/util/giftCardsHelper');
 
 const expressMethods = ['applepay', 'amazonpay'];

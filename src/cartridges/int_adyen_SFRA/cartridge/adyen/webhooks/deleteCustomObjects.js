@@ -22,7 +22,7 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 //script include
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function execute(args) {
   return handle(args.orderID);

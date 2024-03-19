@@ -13,6 +13,7 @@ src/cartridges/app_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA5
 src/cartridges/app_adyen_SFRA/cartridge/client/default/js/checkout/checkoutSFRA6.js
 src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_services/placeOrder.js
 src/cartridges/int_adyen_SFRA/cartridge/scripts
+src/cartridges/int_adyen_SFRA/cartridge/adyen/
 
 # Test files
 src/cartridges/int_adyen_SFRA/test

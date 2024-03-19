@@ -34,7 +34,7 @@ const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod'
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const StringUtils = require('dw/util/StringUtils');
 //script includes
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
