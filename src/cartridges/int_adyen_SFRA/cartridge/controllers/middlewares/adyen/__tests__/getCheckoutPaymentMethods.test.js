@@ -56,7 +56,10 @@ describe('getCheckoutPaymentMethods', () => {
          new Logger.error('error'),
       );
       getCheckoutPaymentMethods(req, res, next);
-      expect(res.json).not.toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({
+         error: true,
+       });      
       expect(Logger.fatal.mock.calls.length).toBe(1);
+      expect(next).toHaveBeenCalled();
    });
 });
