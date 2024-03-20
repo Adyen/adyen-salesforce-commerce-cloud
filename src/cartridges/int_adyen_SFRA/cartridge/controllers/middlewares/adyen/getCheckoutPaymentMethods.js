@@ -25,30 +25,29 @@ function getConnectedTerminals() {
 }
 
 function getCheckoutPaymentMethods(req, res, next) {
-  const currentBasket = BasketMgr.getCurrentBasket();
-  const countryCode =
-    currentBasket.getShipments().length > 0 &&
-    currentBasket.getShipments()[0].shippingAddress
-      ? currentBasket.getShipments()[0].shippingAddress.getCountryCode().value
-      : getCountryCode(currentBasket, req.locale).value;
-  const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
-  const connectedTerminals = JSON.parse(getConnectedTerminals());
-  const currency = currentBasket.getTotalGrossPrice().currencyCode;
-  const getRemainingAmount = (giftCardResponse) => {
-    if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
-      return JSON.parse(giftCardResponse).remainingAmount;
-    }
-    return {
-      currency,
-      value: AdyenHelper.getCurrencyValueForApi(
-        currentBasket.getTotalGrossPrice(),
-      ).value,
-    };
-  };
-  const paymentAmount = getRemainingAmount(session.privacy.giftCardResponse);
-  let paymentMethods;
   try {
-    paymentMethods = getPaymentMethods.getMethods(
+    const currentBasket = BasketMgr.getCurrentBasket();
+    const countryCode =
+      currentBasket.getShipments().length > 0 &&
+      currentBasket.getShipments()[0].shippingAddress
+        ? currentBasket.getShipments()[0].shippingAddress.getCountryCode().value
+        : getCountryCode(currentBasket, req.locale).value;
+    const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
+    const connectedTerminals = JSON.parse(getConnectedTerminals());
+    const currency = currentBasket.getTotalGrossPrice().currencyCode;
+    const getRemainingAmount = (giftCardResponse) => {
+      if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
+        return JSON.parse(giftCardResponse).remainingAmount;
+      }
+      return {
+        currency,
+        value: AdyenHelper.getCurrencyValueForApi(
+          currentBasket.getTotalGrossPrice(),
+        ).value,
+      };
+    };
+    const paymentAmount = getRemainingAmount(session.privacy.giftCardResponse);
+    const paymentMethods = getPaymentMethods.getMethods(
       currentBasket,
       AdyenHelper.getCustomer(req.currentCustomer),
       countryCode,
@@ -65,6 +64,7 @@ function getCheckoutPaymentMethods(req, res, next) {
     AdyenLogs.fatal_log(
       `Failed to fetch payment methods ${JSON.stringify(err)}`,
     );
+    res.json({ error: true });
   }
   return next();
 }
