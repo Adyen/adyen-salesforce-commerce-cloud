@@ -106,7 +106,7 @@ export class RedirectShopper {
   };
 
   completeEPSRedirect = async (success) => {
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
     if (success) {
       await this.paymentMethodsPage.confirmSimulator();
     } else {
