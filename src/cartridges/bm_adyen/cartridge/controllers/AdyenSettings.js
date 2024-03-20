@@ -4,7 +4,7 @@ const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const constants = require('*/cartridge/adyenConstants/constants');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
   res.render('adyenSettings/settings');
