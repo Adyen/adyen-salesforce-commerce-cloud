@@ -38,7 +38,7 @@ jobs:
           path: adyen-salesforce-commerce-cloud
       - name: Install SFRA dependencies
         working-directory: storefront-reference-architecture
-        run: npm install
+        run: npm install && npm run compile:js && npm run compile:scss && npm run compile:fonts
       - name: Install Adyen SFCC dependencies
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
