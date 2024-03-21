@@ -6,7 +6,7 @@ const adyenTerminalApi = require('*/cartridge/scripts/adyenTerminalApi');
 const paymentMethodDescriptions = require('*/cartridge/adyenConstants/paymentMethodDescriptions');
 const constants = require('*/cartridge/adyenConstants/constants');
 const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getCountryCode(currentBasket, locale) {
   const countryCode = Locale.getLocale(locale.id).country;

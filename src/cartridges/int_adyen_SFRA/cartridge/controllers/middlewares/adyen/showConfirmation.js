@@ -7,7 +7,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 
 function getPaymentDetailsPayload(querystring) {

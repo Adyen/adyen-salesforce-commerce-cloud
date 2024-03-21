@@ -88,14 +88,14 @@ jest.mock('*/cartridge/scripts/adyenZeroAuth', () => {
   };
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/checkNotificationAuth', () => {
+jest.mock('*/cartridge/adyen/webhooks/checkNotificationAuth', () => {
   return { 
     check: jest.fn(() => true),
     validateHmacSignature: jest.fn(() => true),
    };
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/handleNotify', () => {
+jest.mock('*/cartridge/adyen/webhooks/handleNotify', () => {
   return {
     notify: jest.fn(() => ({ success: true }))
   };

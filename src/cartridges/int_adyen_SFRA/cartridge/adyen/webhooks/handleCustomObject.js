@@ -43,7 +43,7 @@ const Order = require('dw/order/Order');
 //script includes
 const constants = require('*/cartridge/adyenConstants/constants');
 const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function execute(args) {
   const result = handle(args.CustomObj);

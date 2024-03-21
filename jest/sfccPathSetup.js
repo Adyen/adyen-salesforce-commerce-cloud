@@ -21,8 +21,8 @@ jest.mock('*/cartridge/controllers/middlewares/adyen/paymentsDetails', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/paymentsDetails');
 }, {virtual: true});
 
-jest.mock('*/cartridge/controllers/middlewares/adyen/notify', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/adyen/notify');
+jest.mock('*/cartridge/adyen/webhooks/notify', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/webhooks/notify');
 }, {virtual: true});
 
 jest.mock('*/cartridge/controllers/middlewares/adyen/paymentFromComponent', () => {
@@ -250,8 +250,8 @@ jest.mock('*/cartridge/scripts/adyenLevelTwoThreeData', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/adyenLevelTwoThreeData');
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/adyenCustomLogs', () => {
-	return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/adyenCustomLogs');
+jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/logs/adyenCustomLogs');
   }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/util/giftCardsHelper', () => {

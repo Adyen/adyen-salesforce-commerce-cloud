@@ -9,7 +9,7 @@ const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
 const { clearForms } = require('*/cartridge/controllers/utils/index');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);

@@ -19,8 +19,8 @@
  *  Script used to authentication notification calls from Adyen
  */
 const Site = require('dw/system/Site');
-const AuthenticationUtils = require('*/cartridge/scripts/libs/libAuthenticationUtils');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AuthenticationUtils = require('*/cartridge/adyen/webhooks/libs/libAuthenticationUtils');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function check(request) {
   const baUser = Site.getCurrent().getCustomPreferenceValue(

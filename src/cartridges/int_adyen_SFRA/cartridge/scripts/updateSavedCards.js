@@ -27,7 +27,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function updateSavedCards(args) {
   try {
