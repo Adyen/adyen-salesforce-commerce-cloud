@@ -222,7 +222,6 @@ export default class PaymentMethodsPage {
       timeout: 20000,
     });
     await giftCardBrand.click();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
 
     const giftCardNumberInputField = giftCardComponentWrapper
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
