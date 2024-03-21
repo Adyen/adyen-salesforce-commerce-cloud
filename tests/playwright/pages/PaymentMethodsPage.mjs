@@ -42,7 +42,7 @@ export default class PaymentMethodsPage {
 
     // Click PayPal radio button
     await this.page.click('#rb_paypal');
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
@@ -184,7 +184,6 @@ export default class PaymentMethodsPage {
 
   initiateCardPayment = async (cardInput) => {
     await this.page.locator('#rb_scheme').click();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
 
     const ccComponentWrapper = this.page.locator("#component_scheme");
 
@@ -323,7 +322,6 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =
