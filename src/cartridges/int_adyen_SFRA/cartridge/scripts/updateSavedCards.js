@@ -28,7 +28,31 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 
+function getOneClickPaymentMethods(customer) {
+  const { storedPaymentMethods } = getPaymentMethods.getMethods(
+    null,
+    customer,
+    '',
+  );
+  const oneClickPaymentMethods = [];
+  if (storedPaymentMethods) {
+    for (let i = 0; i < storedPaymentMethods.length; i++) {
+      if (
+        storedPaymentMethods[i].supportedShopperInteractions &&
+        storedPaymentMethods[i].supportedShopperInteractions.indexOf(
+          'Ecommerce',
+        ) > -1
+      ) {
+        oneClickPaymentMethods.push(storedPaymentMethods[i]);
+      }
+    }
+  }
+  return oneClickPaymentMethods;
+}
+
+/* eslint-disable */
 function updateSavedCards(args) {
   try {
     const customer = args.CurrentCustomer;
@@ -41,7 +65,7 @@ function updateSavedCards(args) {
       return { error: true };
     }
 
-    if(AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
+    if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
       const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
       // To make it compatible with upgrade from older versions (<= 19.2.2),
       // first delete payment instruments with METHOD_CREDIT_CARD
@@ -102,36 +126,11 @@ function updateSavedCards(args) {
         }
       });
     }
-      return { error: false };
+    return { error: false };
   } catch (ex) {
-    AdyenLogs.error_log(
-      `${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`,
-    );
+    AdyenLogs.error_log(`${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`);
     return { error: true };
   }
-}
-
-function getOneClickPaymentMethods(customer) {
-  const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
-  const { storedPaymentMethods } = getPaymentMethods.getMethods(
-    null,
-    customer,
-    '',
-  );
-  const oneClickPaymentMethods = [];
-  if(storedPaymentMethods) {
-    for (let i = 0; i < storedPaymentMethods.length; i++) {
-      if (
-          storedPaymentMethods[i].supportedShopperInteractions &&
-          storedPaymentMethods[i].supportedShopperInteractions.indexOf(
-              'Ecommerce',
-          ) > -1
-      ) {
-        oneClickPaymentMethods.push(storedPaymentMethods[i]);
-      }
-    }
-  }
-  return oneClickPaymentMethods;
 }
 
 module.exports = {

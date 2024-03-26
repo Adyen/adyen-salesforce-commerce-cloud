@@ -25,6 +25,7 @@ const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
+// eslint-disable-next-line complexity
 function deleteRecurringPayment(args) {
   try {
     const customer = args.Customer ? args.Customer : null;
@@ -49,15 +50,18 @@ function deleteRecurringPayment(args) {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       shopperReference: customerID,
       recurringDetailReference,
-      contract : constants.CONTRACT.ONECLICK, 
+      contract: constants.CONTRACT.ONECLICK,
     };
 
-    AdyenHelper.executeCall(constants.SERVICE.RECURRING_DISABLE, requestObject);
-    
+    return AdyenHelper.executeCall(
+      constants.SERVICE.RECURRING_DISABLE,
+      requestObject,
+    );
   } catch (e) {
     AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
+    return { error: true };
   }
 }
 

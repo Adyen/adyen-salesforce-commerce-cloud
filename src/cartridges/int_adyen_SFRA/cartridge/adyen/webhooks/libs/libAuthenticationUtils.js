@@ -48,7 +48,7 @@ function checkGivenCredentials(baHeader, baUser, baPassword) {
   return false;
 }
 
-function constructPayload(notificationData){
+function constructPayload(notificationData) {
   const signedDataList = [];
   signedDataList.push(notificationData.pspReference);
   signedDataList.push(notificationData.originalReference);
@@ -59,22 +59,28 @@ function constructPayload(notificationData){
   signedDataList.push(notificationData.eventCode);
   signedDataList.push(notificationData.success);
   return signedDataList.join(constants.NOTIFICATION_PAYLOAD_DATA_SEPARATOR);
-};
+}
 
-function calculateHmacSignature(request){
-  try{
-    const hmacKey = Encoding.fromHex(new Bytes(AdyenConfigs.getAdyenHmacKey(), 'UTF-8'));
+function calculateHmacSignature(request) {
+  try {
+    const hmacKey = Encoding.fromHex(
+      new Bytes(AdyenConfigs.getAdyenHmacKey(), 'UTF-8'),
+    );
     const payload = constructPayload(request.form);
     const macSHA256 = new Mac(Mac.HMAC_SHA_256);
-    const merchantSignature = Encoding.toBase64(macSHA256.digest(payload, hmacKey));
-    return merchantSignature;
-  }
-  catch(e) {
-    AdyenLogs.fatal_log(
-      `Cannot calculate HMAC signature: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
+    const merchantSignature = Encoding.toBase64(
+      macSHA256.digest(payload, hmacKey),
     );
-  };
-};
+    return merchantSignature;
+  } catch (e) {
+    AdyenLogs.fatal_log(
+      `Cannot calculate HMAC signature: ${e.toString()} in ${e.fileName}:${
+        e.lineNumber
+      }`,
+    );
+    return { error: true };
+  }
+}
 
 module.exports = {
   checkGivenCredentials,

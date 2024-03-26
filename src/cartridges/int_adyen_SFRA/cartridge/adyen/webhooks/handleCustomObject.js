@@ -40,7 +40,7 @@
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 
-//script includes
+// script includes
 const constants = require('*/cartridge/adyenConstants/constants');
 const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
@@ -73,7 +73,8 @@ function handle(customObj) {
   const orderIdParts = customObj.custom.orderId.split('-');
   orderIdParts.pop();
   // in case the splitted array contains more than 1 element (DONATION case), get only the last split (which is the order number)
-  const relevantOrderIdParts = orderIdParts.length > 1 ? orderIdParts.slice(-1) : orderIdParts;
+  const relevantOrderIdParts =
+    orderIdParts.length > 1 ? orderIdParts.slice(-1) : orderIdParts;
   const orderId = relevantOrderIdParts.join('-');
   const order = OrderMgr.getOrder(orderId);
   result.Order = order;
@@ -121,9 +122,11 @@ function handle(customObj) {
               constants.PAYMENT_INSTRUMENT_ADYEN_CREDIT,
               constants.PAYMENT_INSTRUMENT_ADYEN_POS,
               constants.PAYMENT_INSTRUMENT_ADYEN_COMPONENT,
-            ].indexOf(PaymentMgr.getPaymentMethod(
-              paymentInstruments[pi].getPaymentMethod(),
-            ).getPaymentProcessor().ID) !== -1
+            ].indexOf(
+              PaymentMgr.getPaymentMethod(
+                paymentInstruments[pi].getPaymentMethod(),
+              ).getPaymentProcessor().ID,
+            ) !== -1
           ) {
             isAdyen = true;
             // Move adyen log request to order payment transaction
@@ -133,25 +136,27 @@ function handle(customObj) {
           }
         }
         if (customObj.custom.success === 'true' && adyenPaymentInstrument) {
-          const amountPaid = parseFloat(order.custom.Adyen_value) + parseFloat(customObj.custom.value);
-          const totalAmount = adyenHelper.getCurrencyValueForApi(adyenPaymentInstrument.getPaymentTransaction().getAmount()).value;
+          const amountPaid =
+            parseFloat(order.custom.Adyen_value) +
+            parseFloat(customObj.custom.value);
+          const totalAmount = adyenHelper.getCurrencyValueForApi(
+            adyenPaymentInstrument.getPaymentTransaction().getAmount(),
+          ).value;
           if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
             AdyenLogs.info_log(
-			`Duplicate callback received for order ${order.orderNo}.`,
+              `Duplicate callback received for order ${order.orderNo}.`,
             );
-          }
-          else if(amountPaid < totalAmount) {
+          } else if (amountPaid < totalAmount) {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
             AdyenLogs.info_log(
-                `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
+              `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
-          }
-          else {
+          } else {
             order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(Order.EXPORT_STATUS_READY);
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
             AdyenLogs.info_log(
-				`Order ${order.orderNo} updated to status PAID.`,
+              `Order ${order.orderNo} updated to status PAID.`,
             );
             result.SubmitOrder = true;
           }
@@ -178,31 +183,26 @@ function handle(customObj) {
       case 'CANCELLATION':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('CANCELLATION notification received');
-        AdyenLogs.info_log(
-		`Order ${order.orderNo} was cancelled.`,
-        );
+        AdyenLogs.info_log(`Order ${order.orderNo} was cancelled.`);
         break;
       case 'CANCEL_OR_REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('CANCEL_OR_REFUND notification received');
-        AdyenLogs.info_log(
-		`Order ${order.orderNo} was cancelled or refunded.`,
-        );
+        AdyenLogs.info_log(`Order ${order.orderNo} was cancelled or refunded.`);
         break;
       case 'DONATION':
         if (customObj.custom.success === 'true') {
-          order.custom.Adyen_donationAmount = parseFloat(customObj.custom.value);
+          order.custom.Adyen_donationAmount = parseFloat(
+            customObj.custom.value,
+          );
+        } else {
+          AdyenLogs.info_log(`Donation failed for order ${order.orderNo}`);
         }
-        else{
-          AdyenLogs.info_log(`Donation failed for order ${order.orderNo}`,);
-        };
         break;
       case 'REFUND':
         order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
         order.trackOrderChange('REFUND notification received');
-        AdyenLogs.info_log(
-			`Order ${order.orderNo} was refunded.`,
-        );
+        AdyenLogs.info_log(`Order ${order.orderNo} was refunded.`);
         break;
       // CustomAdyen
       case 'CAPTURE_FAILED':
@@ -211,23 +211,19 @@ function handle(customObj) {
           order.trackOrderChange('Capture failed, cancelling order');
           OrderMgr.cancelOrder(order);
         }
-        AdyenLogs.info_log(
-			`Capture Failed for order ${order.orderNo}`,
-        );
+        AdyenLogs.info_log(`Capture Failed for order ${order.orderNo}`);
         break;
       case 'ORDER_OPENED':
         if (customObj.custom.success === 'true') {
           AdyenLogs.info_log(
-			`Order ${order.orderNo} opened for partial payments`,
+            `Order ${order.orderNo} opened for partial payments`,
           );
         }
         break;
       case 'ORDER_CLOSED':
         if (customObj.custom.success === 'true') {
           order.setExportStatus(Order.EXPORT_STATUS_READY);
-          AdyenLogs.info_log(
-			`Order ${order.orderNo} closed`,
-          );
+          AdyenLogs.info_log(`Order ${order.orderNo} closed`);
         }
         break;
       case 'OFFER_CLOSED':
@@ -237,14 +233,12 @@ function handle(customObj) {
           OrderMgr.failOrder(order, false);
         });
         AdyenLogs.info_log(
-			`Offer closed for order ${order.orderNo} and updated to status NOT PAID.`,
+          `Offer closed for order ${order.orderNo} and updated to status NOT PAID.`,
         );
         break;
       case 'PENDING':
         pending = true;
-        AdyenLogs.info_log(
-			`Order ${order.orderNo} was in pending status.`,
-        );
+        AdyenLogs.info_log(`Order ${order.orderNo} was in pending status.`);
         break;
       case 'CAPTURE':
         if (
@@ -263,7 +257,7 @@ function handle(customObj) {
         break;
       default:
         AdyenLogs.info_log(
-		`Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
+          `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
         );
     }
 

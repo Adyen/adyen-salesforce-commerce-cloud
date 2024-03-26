@@ -26,14 +26,13 @@ const __RiskDataHelper = {
     const productLines = order.getProductLineItems().toArray();
     let itemNr = 1;
     const basketData = {};
+    // eslint-disable-next-line complexity
     productLines.forEach((item) => {
       const quantity = LineItemHelper.getQuantity(item);
-      basketData[`riskdata.basket.item${itemNr}.itemID`] = LineItemHelper.getId(
-        item,
-      );
-      basketData[
-        `riskdata.basket.item${itemNr}.productTitle`
-      ] = LineItemHelper.getDescription(item);
+      basketData[`riskdata.basket.item${itemNr}.itemID`] =
+        LineItemHelper.getId(item);
+      basketData[`riskdata.basket.item${itemNr}.productTitle`] =
+        LineItemHelper.getDescription(item);
       basketData[`riskdata.basket.item${itemNr}.amountPerItem`] =
         LineItemHelper.getItemAmount(item).divide(quantity).value.toFixed();
       basketData[`riskdata.basket.item${itemNr}.currency`] =
@@ -47,9 +46,8 @@ const __RiskDataHelper = {
       basketData[`riskdata.basket.item${itemNr}.brand`] = item.product
         ? item.product.brand
         : '';
-      basketData[
-        `riskdata.basket.item${itemNr}.manufacturerName`
-      ] = item.product ? item.product.manufacturerName : '';
+      basketData[`riskdata.basket.item${itemNr}.manufacturerName`] =
+        item.product ? item.product.manufacturerName : '';
       basketData[`riskdata.basket.item${itemNr}.category`] =
         item.product && item.product.primaryCategory
           ? item.product.primaryCategory.displayName

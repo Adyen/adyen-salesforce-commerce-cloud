@@ -21,11 +21,20 @@
 
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
-//script include
+// script include
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-function execute(args) {
-  return handle(args.orderID);
+function remove(co) {
+  AdyenLogs.info_log(
+    `Remove CO object with merchantReference ${co.custom.merchantReference} and pspReferenceNumber ${co.custom.pspReference}`,
+  );
+  try {
+    CustomObjectMgr.remove(co);
+  } catch (e) {
+    AdyenLogs.error_log(
+      `Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}`,
+    );
+  }
 }
 
 function handle(orderID) {
@@ -48,17 +57,8 @@ function handle(orderID) {
   return PIPELET_NEXT;
 }
 
-function remove(co) {
-  AdyenLogs.info_log(
-    `Remove CO object with merchantReference ${co.custom.merchantReference} and pspReferenceNumber ${co.custom.pspReference}`,
-  );
-  try {
-    CustomObjectMgr.remove(co);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}`,
-    );
-  }
+function execute(args) {
+  return handle(args.orderID);
 }
 
 module.exports = {

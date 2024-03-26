@@ -30,7 +30,6 @@ const constants = require('*/cartridge/adyenConstants/constants');
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
-
     let zeroAuthRequest = AdyenHelper.createAdyenRequestObject(
       null,
       paymentInstrument,
@@ -43,10 +42,13 @@ function zeroAuthPayment(customer, paymentInstrument) {
       value: 0,
     };
 
-    zeroAuthRequest.returnUrl = URLUtils.https('Adyen-Redirect3DS1Response').toString();
+    zeroAuthRequest.returnUrl = URLUtils.https(
+      'Adyen-Redirect3DS1Response',
+    ).toString();
 
     zeroAuthRequest.storePaymentMethod = true;
-    zeroAuthRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+    zeroAuthRequest.recurringProcessingModel =
+      constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
 
