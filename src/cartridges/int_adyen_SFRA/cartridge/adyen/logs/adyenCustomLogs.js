@@ -1,4 +1,4 @@
-var Logger = require('dw/system/Logger');
+const Logger = require('dw/system/Logger');
 
 function fatal_log(msg) {
   return Logger.getLogger('Adyen_fatal', 'Adyen').fatal(msg);

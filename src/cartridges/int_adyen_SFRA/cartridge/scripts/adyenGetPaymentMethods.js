@@ -26,6 +26,7 @@ const constants = require('*/cartridge/adyenConstants/constants');
 const blockedPayments = require('*/cartridge/scripts/config/blockedPaymentMethods.json');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
+// eslint-disable-next-line complexity
 function getMethods(basket, customer, countryCode) {
   try {
     let paymentAmount;
@@ -55,7 +56,7 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.countryCode = countryCode;
     }
 
-    if(request.getLocale()){
+    if (request.getLocale()) {
       paymentMethodsRequest.shopperLocale = request.getLocale();
     }
 
@@ -72,13 +73,18 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
 
-    paymentMethodsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
+    paymentMethodsRequest.blockedPaymentMethods =
+      blockedPayments.blockedPaymentMethods;
 
-    return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
+    return AdyenHelper.executeCall(
+      constants.SERVICE.CHECKOUTPAYMENTMETHODS,
+      paymentMethodsRequest,
+    );
   } catch (e) {
     AdyenLogs.fatal_log(
       `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
     );
+    return { error: true };
   }
 }
 

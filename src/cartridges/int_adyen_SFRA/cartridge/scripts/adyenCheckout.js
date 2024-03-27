@@ -25,7 +25,6 @@
 /* API Includes */
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
-const Transaction = require('dw/system/Transaction');
 const StringUtils = require('dw/util/StringUtils');
 
 /* Script Modules */
@@ -37,130 +36,7 @@ const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeDa
 const constants = require('*/cartridge/adyenConstants/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-function createPaymentRequest(args) {
-  try {
-    const order = args.Order;
-    const paymentInstrument = args.PaymentInstrument;
-
-    // Create request object with payment details
-    let paymentRequest = AdyenHelper.createAdyenRequestObject(
-      order,
-      paymentInstrument,
-    );
-
-    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
-    const paymentMethodType = paymentRequest.paymentMethod.type;
-
-    // Add Risk data
-    if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
-      paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(
-        order,
-      );
-    }
-
-    // L2/3 Data
-    if (AdyenConfigs.getAdyenLevel23DataEnabled() && paymentMethodType.indexOf('scheme') > -1) {
-      paymentRequest.additionalData = {
-        ...paymentRequest.additionalData,
-        ...adyenLevelTwoThreeData.getLineItems(args),
-      };
-    }
-
-    // Add installments
-    if (AdyenConfigs.getAdyenInstallmentsEnabled() && AdyenConfigs.getCreditCardInstallments()) {
-      const numOfInstallments = JSON.parse(
-        paymentInstrument.custom.adyenPaymentData,
-      ).installments?.value;
-      if (numOfInstallments !== undefined) {
-        paymentRequest.installments = { value: numOfInstallments };
-      }
-    }
-
-    const value = AdyenHelper.getCurrencyValueForApi(
-      paymentInstrument.paymentTransaction.amount,
-    ).getValueOrNull();
-    const currency = paymentInstrument.paymentTransaction.amount.currencyCode;
-    // Add partial payments order if applicable
-    if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
-      const adyenPartialPaymentsOrder = JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
-      if (value === adyenPartialPaymentsOrder.amount.value && currency === adyenPartialPaymentsOrder.amount.currency) {
-        paymentRequest.order = adyenPartialPaymentsOrder.order;
-        paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
-      } else {
-        throw new Error("Cart has been edited after applying a gift card");
-      }
-    } else {
-      paymentRequest.amount = {
-        currency,
-        value,
-      };
-    }
-
-    // Create billing and delivery address objects for new orders,
-    // no address fields for credit cards through My Account
-    paymentRequest = AdyenHelper.createAddressObjects(
-      order,
-      paymentMethodType,
-      paymentRequest,
-    );
-    // Create shopper data fields
-    paymentRequest = AdyenHelper.createShopperObject({
-      order,
-      paymentRequest,
-    });
-
-    if (session.privacy.adyenFingerprint) {
-      paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
-    }
-    // Set open invoice data
-    if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
-      args.addTaxPercentage = true;
-      if (paymentRequest.paymentMethod.type.indexOf('klarna') > -1) {
-        args.addTaxPercentage = false;
-        const address = order.getBillingAddress();
-        const shippingMethod = order.getDefaultShipment()?.shippingMethod;
-        const otherDeliveryAddress = {
-          shipping_method: shippingMethod?.displayName,
-          shipping_type: shippingMethod?.description,
-          first_name: address.firstName,
-          last_name: address.lastName,
-          street_address: `${address.address1} ${address.address2}`,
-          postal_code: address.postalCode,
-          city: address.city,
-          country: address.countryCode.value,
-        };
-        // openinvoicedata.merchantData holds merchant data. It takes data in a Base64 encoded string.
-        paymentRequest.additionalData[
-          'openinvoicedata.merchantData'
-        ] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
-      }
-      paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
-      if (
-        paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&
-        session.privacy.ratePayFingerprint
-      ) {
-        paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
-      }
-    }
-
-    //Set tokenisation
-    if (AdyenConfigs.getAdyenTokenisationEnabled()) {
-        paymentRequest.storePaymentMethod = true;
-        paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
-    }
-    AdyenHelper.setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-    // make API call
-    return doPaymentsCall(order, paymentInstrument, paymentRequest);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `error processing payment. Error message: ${
-        e.message
-      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
-    return { error: true };
-  }
-}
-
+// eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
@@ -174,7 +50,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     if (!order) {
       return responseObject;
     }
-    // set custom payment method field to sync with OMS. for card payments (scheme) we will store the brand
+    // set custom payment method field to sync with OMS.
+    // for card payments (scheme) we will store the brand
     order.custom.Adyen_paymentMethod =
       paymentRequest?.paymentMethod?.brand ||
       paymentRequest?.paymentMethod?.type;
@@ -190,10 +67,10 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     paymentResponse.decision = 'ERROR';
 
     if (responseObject.additionalData) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = responseObject
-        .additionalData.paymentMethod
-        ? responseObject.additionalData.paymentMethod
-        : null;
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
+        responseObject.additionalData.paymentMethod
+          ? responseObject.additionalData.paymentMethod
+          : null;
     }
 
     const acceptedResultCodes = [
@@ -260,6 +137,145 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
         ),
       },
     };
+  }
+}
+
+// eslint-disable-next-line complexity
+function createPaymentRequest(args) {
+  try {
+    const order = args.Order;
+    const paymentInstrument = args.PaymentInstrument;
+
+    // Create request object with payment details
+    let paymentRequest = AdyenHelper.createAdyenRequestObject(
+      order,
+      paymentInstrument,
+    );
+
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    const paymentMethodType = paymentRequest.paymentMethod.type;
+
+    // Add Risk data
+    if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
+      paymentRequest.additionalData =
+        RiskDataHelper.createBasketContentFields(order);
+    }
+
+    // L2/3 Data
+    if (
+      AdyenConfigs.getAdyenLevel23DataEnabled() &&
+      paymentMethodType.indexOf('scheme') > -1
+    ) {
+      paymentRequest.additionalData = {
+        ...paymentRequest.additionalData,
+        ...adyenLevelTwoThreeData.getLineItems(args),
+      };
+    }
+
+    // Add installments
+    if (
+      AdyenConfigs.getAdyenInstallmentsEnabled() &&
+      AdyenConfigs.getCreditCardInstallments()
+    ) {
+      const numOfInstallments = JSON.parse(
+        paymentInstrument.custom.adyenPaymentData,
+      ).installments?.value;
+      if (numOfInstallments !== undefined) {
+        paymentRequest.installments = { value: numOfInstallments };
+      }
+    }
+
+    const value = AdyenHelper.getCurrencyValueForApi(
+      paymentInstrument.paymentTransaction.amount,
+    ).getValueOrNull();
+    const currency = paymentInstrument.paymentTransaction.amount.currencyCode;
+    // Add partial payments order if applicable
+    if (paymentInstrument.custom.adyenPartialPaymentsOrder) {
+      const adyenPartialPaymentsOrder = JSON.parse(
+        paymentInstrument.custom.adyenPartialPaymentsOrder,
+      );
+      if (
+        value === adyenPartialPaymentsOrder.amount.value &&
+        currency === adyenPartialPaymentsOrder.amount.currency
+      ) {
+        paymentRequest.order = adyenPartialPaymentsOrder.order;
+        paymentRequest.amount = adyenPartialPaymentsOrder.remainingAmount;
+      } else {
+        throw new Error('Cart has been edited after applying a gift card');
+      }
+    } else {
+      paymentRequest.amount = {
+        currency,
+        value,
+      };
+    }
+
+    // Create billing and delivery address objects for new orders,
+    // no address fields for credit cards through My Account
+    paymentRequest = AdyenHelper.createAddressObjects(
+      order,
+      paymentMethodType,
+      paymentRequest,
+    );
+    // Create shopper data fields
+    paymentRequest = AdyenHelper.createShopperObject({
+      order,
+      paymentRequest,
+    });
+
+    if (session.privacy.adyenFingerprint) {
+      paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
+    }
+    // Set open invoice data
+    if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
+      args.addTaxPercentage = true;
+      if (paymentRequest.paymentMethod.type.indexOf('klarna') > -1) {
+        args.addTaxPercentage = false;
+        const address = order.getBillingAddress();
+        const shippingMethod = order.getDefaultShipment()?.shippingMethod;
+        const otherDeliveryAddress = {
+          shipping_method: shippingMethod?.displayName,
+          shipping_type: shippingMethod?.description,
+          first_name: address.firstName,
+          last_name: address.lastName,
+          street_address: `${address.address1} ${address.address2}`,
+          postal_code: address.postalCode,
+          city: address.city,
+          country: address.countryCode.value,
+        };
+        // openinvoicedata.merchantData holds merchant data.
+        // It takes data in a Base64 encoded string.
+        paymentRequest.additionalData['openinvoicedata.merchantData'] =
+          StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
+      }
+      paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
+      if (
+        paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&
+        session.privacy.ratePayFingerprint
+      ) {
+        paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
+      }
+    }
+
+    // Set tokenisation
+    if (AdyenConfigs.getAdyenTokenisationEnabled()) {
+      paymentRequest.storePaymentMethod = true;
+      paymentRequest.recurringProcessingModel =
+        constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+    }
+    AdyenHelper.setPaymentTransactionType(
+      paymentInstrument,
+      paymentRequest.paymentMethod,
+    );
+    // make API call
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  } catch (e) {
+    AdyenLogs.error_log(
+      `error processing payment. Error message: ${
+        e.message
+      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
+    );
+    return { error: true };
   }
 }
 
