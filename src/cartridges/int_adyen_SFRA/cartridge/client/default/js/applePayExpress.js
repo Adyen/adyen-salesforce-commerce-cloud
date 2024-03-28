@@ -15,6 +15,21 @@ async function initializeCheckout() {
     environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
+	analytics: {
+		analyticsData: {
+			applicationInfo: {
+				merchantApplication: {
+					name: 'adyen-salesforce-commerce-cloud',
+					version: '24.1.0'
+				},
+				externalPlatform: {
+					name: 'SalesforceCommerceCloud',
+					version: 'SFRA',
+					integrator: 'ZENIT'
+				}
+			}
+		}
+	}
   });
 }
 
@@ -137,6 +152,8 @@ initializeCheckout()
 
     const applePayButtonConfig = {
       showPayButton: true,
+	  isExpress: true,
+	  expressPage: 'cart',
       configuration: applePayConfig,
       amount: JSON.parse(window.basketAmount),
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
