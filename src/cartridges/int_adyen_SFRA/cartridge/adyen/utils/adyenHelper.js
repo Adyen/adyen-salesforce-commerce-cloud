@@ -38,10 +38,10 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
-var adyenHelperObj = {
+let adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service) {
-    var adyenService = null;
+    let adyenService = null;
 
     try {
       adyenService = dwsvc.LocalServiceRegistry.createService(service, {
@@ -302,13 +302,13 @@ var adyenHelperObj = {
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
   getRatePayID: function getRatePayID() {
-    var returnValue = {};
+    let returnValue = {};
     const ratePayMerchantID = AdyenConfigs.getRatePayMerchantID();
     if (ratePayMerchantID) {
       returnValue.ratePayID = ratePayMerchantID;
     }
 
-    var digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
+    let digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
     returnValue.sessionID = Encoding.toHex(
       digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')),
     );
