@@ -1,6 +1,6 @@
 const URLUtils = require('dw/web/URLUtils');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /*

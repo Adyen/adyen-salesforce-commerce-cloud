@@ -2,10 +2,10 @@ const BasketMgr = require('dw/order/BasketMgr');
 const Money = require('dw/value/Money');
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getFormattedProperties(checkBalanceResponse, orderAmount) {

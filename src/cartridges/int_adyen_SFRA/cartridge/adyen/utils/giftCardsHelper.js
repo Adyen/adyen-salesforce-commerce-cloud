@@ -20,8 +20,8 @@ const Transaction = require('dw/system/Transaction');
 // script includes
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Money = require('dw/value/Money');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const constants = require('*/cartridge/adyen/config/constants');
 
 const giftCardsHelper = {
   createGiftCardPaymentInstrument(parsedGiftCardObj, divideBy, order) {

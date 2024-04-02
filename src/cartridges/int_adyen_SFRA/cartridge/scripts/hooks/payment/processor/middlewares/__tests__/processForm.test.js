@@ -16,7 +16,7 @@ beforeEach(() => {
     },
     currentCustomer: { raw: {} },
   };
-  adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+  adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 });
 
 describe('processForm', () => {

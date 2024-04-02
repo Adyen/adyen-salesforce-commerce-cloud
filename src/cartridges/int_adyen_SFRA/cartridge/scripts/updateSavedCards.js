@@ -22,11 +22,11 @@
 /* API Includes */
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const Transaction = require('dw/system/Transaction');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 
 /* Script Modules */
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const getPaymentMethods = require('*/cartridge/scripts/adyenGetPaymentMethods');
 

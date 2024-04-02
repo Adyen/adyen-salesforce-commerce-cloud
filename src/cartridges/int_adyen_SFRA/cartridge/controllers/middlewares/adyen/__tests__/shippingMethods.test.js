@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 let res;
 let req;

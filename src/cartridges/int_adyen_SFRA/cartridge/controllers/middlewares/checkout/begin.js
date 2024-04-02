@@ -3,8 +3,8 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 

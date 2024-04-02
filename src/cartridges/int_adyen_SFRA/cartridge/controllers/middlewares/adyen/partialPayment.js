@@ -2,11 +2,11 @@ const Transaction = require('dw/system/Transaction');
 const Money = require('dw/value/Money');
 const BasketMgr = require('dw/order/BasketMgr');
 const Resource = require('dw/web/Resource');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 
 function responseContainsErrors(response) {
   return (

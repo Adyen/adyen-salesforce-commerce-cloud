@@ -1,6 +1,6 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 /**
  * Make a request to Adyen to get shipping methods

@@ -1,8 +1,8 @@
 <iscontent type="text/html"/>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
 <isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
-<isset name="AdyenConstants" value="${require('*/cartridge/adyenConstants/constants')}" scope="page"/>
+<isset name="AdyenConstants" value="${require('*/cartridge/adyen/config/constants')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
@@ -64,7 +64,7 @@
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
     </script>
 
-     <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+     <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
      <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>

@@ -1,5 +1,5 @@
 <isif condition="${pdict.adyen && pdict.adyen.adyenGivingAvailable}">
-    <isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
+    <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
     <isscript>

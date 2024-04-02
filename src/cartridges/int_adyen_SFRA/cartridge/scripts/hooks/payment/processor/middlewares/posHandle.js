@@ -1,6 +1,6 @@
 const Transaction = require('dw/system/Transaction');
 const collections = require('*/cartridge/scripts/util/collections');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 
 function posHandle(basket) {
   Transaction.wrap(() => {

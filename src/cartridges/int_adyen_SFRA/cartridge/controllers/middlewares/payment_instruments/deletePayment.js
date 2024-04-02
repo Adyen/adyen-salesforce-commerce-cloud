@@ -1,5 +1,5 @@
 const CustomerMgr = require('dw/customer/CustomerMgr');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const {
   deleteRecurringPayment,
 } = require('*/cartridge/scripts/adyenDeleteRecurringPayment');

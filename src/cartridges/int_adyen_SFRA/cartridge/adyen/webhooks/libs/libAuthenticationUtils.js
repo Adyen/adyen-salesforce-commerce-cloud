@@ -23,9 +23,9 @@ const StringUtils = require('dw/util/StringUtils');
 const Encoding = require('dw/crypto/Encoding');
 const Mac = require('dw/crypto/Mac');
 const Bytes = require('dw/util/Bytes');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
 /**
  *

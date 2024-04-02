@@ -5,7 +5,7 @@ let paymentInformation;
 let handle;
 let req;
 let res;
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -19,12 +19,12 @@ afterEach(() => {
 
 describe('Handle', () => {
   it('payment instrument type should be CREDIT_CARD', () => {
-    const constants = require('*/cartridge/adyenConstants/constants');
+    const constants = require('*/cartridge/adyen/config/constants');
     const paymentInformation = { isCreditCard: true };
     expect(AdyenHelper.getPaymentInstrumentType(paymentInformation.isCreditCard)).toBe(constants.METHOD_CREDIT_CARD);
   });
   it('payment instrument type should be AdyenComponent', () => {
-    const constants = require('*/cartridge/adyenConstants/constants');
+    const constants = require('*/cartridge/adyen/config/constants');
     const paymentInformation = { isCreditCard: false };
     expect(AdyenHelper.getPaymentInstrumentType(paymentInformation.isCreditCard)).toBe(constants.METHOD_ADYEN_COMPONENT);
   });

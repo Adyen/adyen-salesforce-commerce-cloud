@@ -1,6 +1,6 @@
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="pdict"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
 <div>
     <isif condition="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}">
         <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>

@@ -1,6 +1,6 @@
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const array = require('*/cartridge/scripts/util/array');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getCreditCardErrors(req, isCreditCard, paymentForm) {

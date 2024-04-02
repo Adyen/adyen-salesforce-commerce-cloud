@@ -6,11 +6,11 @@ const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const GiftCardsHelper = require('*/cartridge/scripts/util/giftCardsHelper');
+const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 
 const expressMethods = ['applepay', 'amazonpay'];
 
