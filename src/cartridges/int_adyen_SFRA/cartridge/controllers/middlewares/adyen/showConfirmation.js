@@ -3,12 +3,12 @@ const OrderMgr = require('dw/order/OrderMgr');
 const Order = require('dw/order/Order');
 const Transaction = require('dw/system/Transaction');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const payment = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/payment');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 const handleAuthorised = require('*/cartridge/controllers/middlewares/adyen/showConfirmation/authorise');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 function getPaymentDetailsPayload(querystring) {
   const details = querystring.redirectResult

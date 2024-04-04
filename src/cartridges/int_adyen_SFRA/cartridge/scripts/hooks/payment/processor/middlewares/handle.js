@@ -1,7 +1,7 @@
 const Transaction = require('dw/system/Transaction');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const collections = require('*/cartridge/scripts/util/collections');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 
 function removeAllPaymentInstruments(currentBasket) {
   collections.forEach(currentBasket.getPaymentInstruments(), (item) => {

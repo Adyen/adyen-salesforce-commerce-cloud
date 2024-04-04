@@ -1,5 +1,5 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
 <div id="posSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">

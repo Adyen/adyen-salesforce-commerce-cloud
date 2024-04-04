@@ -1,8 +1,8 @@
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 
 function handleOrderConfirm(
   adyenPaymentInstrument,

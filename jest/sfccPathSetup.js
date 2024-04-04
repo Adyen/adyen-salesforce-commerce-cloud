@@ -151,8 +151,8 @@ jest.mock('*/cartridge/controllers/utils/index', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/utils/index');
 }, {virtual: true});
 
-jest.mock('*/cartridge/controllers/utils/clearForms', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/controllers/utils/clearForms');
+jest.mock('*/cartridge/adyen/utils/clearForms', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/clearForms');
 }, {virtual: true});
 
 // controllers/middlewares/checkout_services subclasses
@@ -204,12 +204,12 @@ jest.mock('*/cartridge/scripts/checkout/utils/index', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/utils/index');
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/checkout/utils/getPayments', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/utils/getPayments');
+jest.mock('*/cartridge/adyen/utils/getPayments', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/getPayments');
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/checkout/utils/validatePaymentMethod', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/checkout/utils/validatePaymentMethod');
+jest.mock('*/cartridge/adyen/utils/validatePaymentMethod', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/validatePaymentMethod');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/checkout/shippingHelpers', () => {
@@ -226,20 +226,20 @@ jest.mock('*/cartridge/scripts/hooks/payment/processor/middlewares/authorize/pay
 }, {virtual: true});
 
 // int_adyen_overlay mocks
-jest.mock('*/cartridge/adyenConstants/constants', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyenConstants/constants');
+jest.mock('*/cartridge/adyen/config/constants', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/constants');
 }, {virtual: true});
 
-jest.mock('*/cartridge/adyenConstants/paymentMethodDescriptions', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyenConstants/paymentMethodDescriptions');
+jest.mock('*/cartridge/adyen/config/paymentMethodDescriptions', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/paymentMethodDescriptions');
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/util/riskDataHelper', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/riskDataHelper');
+jest.mock('*/cartridge/adyen/utils/riskDataHelper', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/riskDataHelper');
 }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/util/lineItemHelper', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/lineItemHelper');
+jest.mock('*/cartridge/adyen/utils/lineItemHelper', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/lineItemHelper');
 }, {virtual: true});
 
 jest.mock('*/cartridge/scripts/adyenGetOpenInvoiceData', () => {
@@ -254,6 +254,6 @@ jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => {
 	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/logs/adyenCustomLogs');
   }, {virtual: true});
 
-jest.mock('*/cartridge/scripts/util/giftCardsHelper', () => {
-  return require('../src/cartridges/int_adyen_SFRA/cartridge/scripts/util/giftCardsHelper');
+jest.mock('*/cartridge/adyen/utils/giftCardsHelper', () => {
+  return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/giftCardsHelper');
 }, {virtual: true});

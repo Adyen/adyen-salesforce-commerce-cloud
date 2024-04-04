@@ -1,6 +1,6 @@
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 

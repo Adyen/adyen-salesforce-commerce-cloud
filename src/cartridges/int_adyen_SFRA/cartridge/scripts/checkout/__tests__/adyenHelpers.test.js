@@ -1,6 +1,3 @@
-jest.mock('../utils/index', () => ({
-  validatePaymentMethod: jest.fn(() => jest.fn(() => true)),
-}));
 /* eslint-disable global-require */
 let handlePayments;
 let order;

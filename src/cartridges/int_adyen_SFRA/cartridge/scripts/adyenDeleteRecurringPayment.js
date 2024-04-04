@@ -20,9 +20,9 @@
  */
 
 /* Script Modules */
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const constants = require('*/cartridge/adyenConstants/constants');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 // eslint-disable-next-line complexity

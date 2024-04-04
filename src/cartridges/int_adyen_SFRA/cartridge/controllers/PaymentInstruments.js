@@ -5,8 +5,8 @@ server.extend(module.superModule);
 const userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
 const {
   paymentInstruments,

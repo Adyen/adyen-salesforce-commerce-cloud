@@ -36,7 +36,7 @@ describe('Confirm paymentsDetails', () => {
   it('should fail when doPaymentsDetailsCall results in an error', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementationOnce(() => {throw new Error('mock_error')});
     paymentsDetails(req, res, jest.fn());
@@ -48,7 +48,7 @@ describe('Confirm paymentsDetails', () => {
   it('should fail when createAdyenCheckoutResponse results in an error', () => {
     const URLUtils = require('dw/web/URLUtils');
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementationOnce(() => { return {}; });
     AdyenHelper.createAdyenCheckoutResponse.mockImplementationOnce(() => {throw new Error('mock_error')});
@@ -61,7 +61,7 @@ describe('Confirm paymentsDetails', () => {
 
   it('should call paymentDetails request and response handler', () => {
     const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     const URLUtils = require('dw/web/URLUtils');
 
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({

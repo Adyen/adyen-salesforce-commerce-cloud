@@ -1,13 +1,13 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const collections = require('*/cartridge/scripts/util/collections');
-const constants = require('*/cartridge/adyenConstants/constants');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const constants = require('*/cartridge/adyen/config/constants');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 
 function cancelPartialPaymentOrder(req, res, next) {
   try {

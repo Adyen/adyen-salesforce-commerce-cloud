@@ -21,7 +21,7 @@
  */
 
 // script include
-const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
+const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 
 function getLineItems({ Order: order, Basket: basket, addTaxPercentage }) {
   if (!(order || basket)) return null;

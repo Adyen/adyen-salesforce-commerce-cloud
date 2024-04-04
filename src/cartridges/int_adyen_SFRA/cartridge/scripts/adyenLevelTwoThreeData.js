@@ -19,9 +19,9 @@
  * Add all product and shipping line items to request
  */
 
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
-const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
+const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 
 // eslint-disable-next-line complexity
 function getShopperReference(orderOrBasket) {

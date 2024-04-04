@@ -1,8 +1,8 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Money = require('dw/value/Money');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 
 function fetchGiftCards(req, res, next) {
   try {

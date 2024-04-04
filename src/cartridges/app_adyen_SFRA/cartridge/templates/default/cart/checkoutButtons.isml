@@ -1,5 +1,5 @@
-<isset name="AdyenHelper" value="${require('*/cartridge/scripts/util/adyenHelper')}" scope="pdict"/>
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />

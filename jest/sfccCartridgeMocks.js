@@ -209,8 +209,11 @@ jest.mock('*/cartridge/scripts/helpers/hooks', () => {
 jest.mock('*/cartridge/scripts/hooks/fraudDetection', () => { return {} }, {virtual: true})
 jest.mock('*/cartridge/scripts/hooks/validateOrder', () => { return {}} , {virtual: true})
 jest.mock('*/cartridge/scripts/hooks/postAuthorizationHandling', () => { return {}} , {virtual: true})
-// cartridge/scripts/util mocks
-jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
+// cartridge/adyen/util mocks
+jest.mock('*/cartridge/adyen/utils/validatePaymentMethod', () => ({
+	validatePaymentMethod: jest.fn(() => jest.fn(() => true)),
+  }));
+jest.mock('*/cartridge/adyen/utils/adyenHelper', () => ({
     savePaymentDetails: jest.fn(),
     getAdyenHash: jest.fn((str, str2) => `${str} __ ${str2}`),
     getLoadingContext: jest.fn(() => 'mocked_loading_context'),
@@ -251,7 +254,7 @@ jest.mock('*/cartridge/scripts/util/adyenHelper', () => ({
     getPaymentInstrumentType: jest.fn((isCreditCard) => isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),
   }), {virtual: true});
 
-jest.mock('*/cartridge/scripts/util/adyenConfigs', () => {
+jest.mock('*/cartridge/adyen/utils/adyenConfigs', () => {
   return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getAdyenInstallmentsEnabled: jest.fn(() => true),

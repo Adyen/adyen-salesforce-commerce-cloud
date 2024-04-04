@@ -23,7 +23,7 @@ describe('Delete Payment', () => {
     expect(CustomerMgr.getCustomerByCustomerNumber).toBeCalledTimes(0);
   });
   it('should not delete payment if theres no token', () => {
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     const {
       deleteRecurringPayment,
     } = require('*/cartridge/scripts/adyenDeleteRecurringPayment');

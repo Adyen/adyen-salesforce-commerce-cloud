@@ -17,7 +17,7 @@
  * See the LICENSE file for more info.
  */
 
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 const __LineItemHelper = {
   getDescription(lineItem) {

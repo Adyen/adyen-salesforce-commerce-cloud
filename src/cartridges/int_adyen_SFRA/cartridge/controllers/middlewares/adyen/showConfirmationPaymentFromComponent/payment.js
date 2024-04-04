@@ -5,10 +5,10 @@ const URLUtils = require('dw/web/URLUtils');
 const Resource = require('dw/web/Resource');
 const adyenCheckout = require('*/cartridge/scripts/adyenCheckout');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const constants = require('*/cartridge/adyenConstants/constants');
-const { clearForms } = require('*/cartridge/controllers/utils/index');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('*/cartridge/adyen/config/constants');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {

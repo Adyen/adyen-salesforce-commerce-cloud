@@ -19,7 +19,7 @@
  * Risk data fields
  */
 
-const LineItemHelper = require('*/cartridge/scripts/util/lineItemHelper');
+const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 
 const __RiskDataHelper = {
   createBasketContentFields(order) {

@@ -28,12 +28,12 @@ const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
 
 /* Script Modules */
-const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const RiskDataHelper = require('*/cartridge/scripts/util/riskDataHelper');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const RiskDataHelper = require('*/cartridge/adyen/utils/riskDataHelper');
 const AdyenGetOpenInvoiceData = require('*/cartridge/scripts/adyenGetOpenInvoiceData');
 const adyenLevelTwoThreeData = require('*/cartridge/scripts/adyenLevelTwoThreeData');
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 // eslint-disable-next-line complexity

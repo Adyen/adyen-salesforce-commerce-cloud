@@ -41,8 +41,8 @@ const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 
 // script includes
-const constants = require('*/cartridge/adyenConstants/constants');
-const adyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+const constants = require('*/cartridge/adyen/config/constants');
+const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function execute(args) {
