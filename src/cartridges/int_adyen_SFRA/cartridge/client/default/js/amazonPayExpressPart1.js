@@ -9,12 +9,15 @@ const AMAZON_PAY = 'amazonpay';
 async function mountAmazonPayComponent() {
   try {
     const data = await getPaymentMethods();
-    const paymentMethodsResponse = data.AdyenPaymentMethods;
-
+    const paymentMethodsResponse = data?.AdyenPaymentMethods;
+    const applicationInfo = data?.applicationInfo;
     const checkout = await AdyenCheckout({
       environment: window.environment,
       clientKey: window.clientKey,
       locale: window.locale,
+      analytics: {
+        analyticsData: { applicationInfo },
+      },
     });
 
     const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
@@ -27,6 +30,7 @@ async function mountAmazonPayComponent() {
       productType: 'PayAndShip',
       configuration: amazonPayConfig,
       returnUrl: window.returnUrl,
+      isExpress: true,
     };
 
     const amazonPayButton = checkout.create(AMAZON_PAY, amazonPayButtonConfig);
