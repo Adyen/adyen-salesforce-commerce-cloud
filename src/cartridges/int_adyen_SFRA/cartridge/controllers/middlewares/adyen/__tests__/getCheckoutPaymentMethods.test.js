@@ -46,6 +46,11 @@ describe('getCheckoutPaymentMethods', () => {
           },
           imagePath: "mocked_loading_contextimages/logos/medium/",
           countryCode: "NL",
+		  applicationInfo: {
+			externalPlatform: {
+				"version" : "SFRA",
+			}
+		  }
       });
       expect(next).toHaveBeenCalled();
    });
