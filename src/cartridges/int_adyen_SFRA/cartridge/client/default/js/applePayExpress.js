@@ -11,10 +11,14 @@ async function initializeCheckout() {
   paymentMethodsResponse = await getPaymentMethods();
   const shippingMethods = await fetch(window.shippingMethodsUrl);
   shippingMethodsData = await shippingMethods.json();
+  const applicationInfo = paymentMethodsResponse?.applicationInfo;
   checkout = await AdyenCheckout({
     environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
+    analytics: {
+      analyticsData: { applicationInfo },
+    },
   });
 }
 
@@ -137,6 +141,7 @@ initializeCheckout()
 
     const applePayButtonConfig = {
       showPayButton: true,
+      isExpress: true,
       configuration: applePayConfig,
       amount: JSON.parse(window.basketAmount),
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],

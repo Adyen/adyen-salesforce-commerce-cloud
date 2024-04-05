@@ -59,6 +59,7 @@ function getCheckoutPaymentMethods(req, res, next) {
       adyenConnectedTerminals: connectedTerminals,
       amount: { value: paymentAmount.value, currency },
       countryCode,
+      applicationInfo: AdyenHelper.getApplicationInfo(),
     });
   } catch (err) {
     AdyenLogs.fatal_log(
