@@ -35,7 +35,7 @@ afterEach(() => {
 
 describe('Shipping methods', () => {
   it('Should return available shipping methods', () => {
-    var Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
+    const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
     callGetShippingMethods(req, res, next);
     expect(AdyenHelper.getApplicableShippingMethods).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith({
@@ -45,7 +45,7 @@ describe('Shipping methods', () => {
   });
 
   it('Should fail returning available shipping methods', () => {
-    var Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
+    const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
     AdyenHelper.getApplicableShippingMethods = jest.fn(
       new Logger.error('error'),
     );
