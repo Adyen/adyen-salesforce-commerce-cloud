@@ -31,7 +31,7 @@ describe('Save Payment', () => {
   });
 
   it('should fail if zeroAuth has error', () => {
-    const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+    const adyenZeroAuth = require('*/cartridge/adyen/scripts/payments/adyenZeroAuth');
     adyenZeroAuth.zeroAuthPayment.mockImplementation(() => ({
       error: true,
     }));
@@ -40,7 +40,7 @@ describe('Save Payment', () => {
   });
 
   it('should fail if resultCode is not Authorised', () => {
-    const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+    const adyenZeroAuth = require('*/cartridge/adyen/scripts/payments/adyenZeroAuth');
     adyenZeroAuth.zeroAuthPayment.mockImplementation(() => ({
       resultCode: 'Not_Authorised',
     }));
@@ -54,7 +54,7 @@ describe('Save Payment', () => {
   });
 
   it('should return redirectAction and succeed', () => {
-    const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
+    const adyenZeroAuth = require('*/cartridge/adyen/scripts/payments/adyenZeroAuth');
     adyenZeroAuth.zeroAuthPayment.mockReturnValue({
       resultCode: 'RedirectShopper',
       action: {

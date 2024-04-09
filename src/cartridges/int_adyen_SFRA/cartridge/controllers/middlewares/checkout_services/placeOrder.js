@@ -1,5 +1,5 @@
 /* ### Custom Adyen cartridge start ### */
-const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
+const adyenHelpers = require('*/cartridge/adyen/utils/authorizationHelper');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const constants = require('*/cartridge/adyen/config/constants');

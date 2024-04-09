@@ -1,6 +1,6 @@
 const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-const adyenGiving = require('*/cartridge/scripts/adyenGiving');
+const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';

@@ -5,7 +5,9 @@ const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const {
+  updateSavedCards,
+} = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function shouldRestoreBasket(cachedOrderNumber) {
