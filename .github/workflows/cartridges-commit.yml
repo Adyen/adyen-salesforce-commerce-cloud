@@ -12,7 +12,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       contains(github.head_ref, 'improvement') &&
-      github.event.pull_request.base.ref == 'feature/SFI-544--cartridges' 
+      github.event.pull_request.base.ref == 'feature/SFI-544-separate-cartridges' 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
