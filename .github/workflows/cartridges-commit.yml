@@ -65,9 +65,10 @@ jobs:
         if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
-          version=$(grep "^\s*VERSION:" int_adyen_overlay/cartridge/adyenConstants/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
+          version=$(grep "^\s*VERSION:" int_adyen_SFRA/cartridge/adyen/config/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
           version="v${version}"
-            for dir in */; do
+          find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '
+            for dir do
               name=$(basename "$dir")
               echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
               <projectDescription>
@@ -85,6 +86,7 @@ jobs:
                 </natures>
               </projectDescription>" > "${name}/.project"
             done
+            ' sh {} +
             git add .
             git config --local user.email "actions@github.com"
             git config --local user.name "GitHub Actions"
