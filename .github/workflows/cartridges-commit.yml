@@ -68,6 +68,7 @@ jobs:
           version=$(sed -nE 's/^\s*VERSION:\s*'"'"'([^'"'"']+)'"'"'/\1/p' int_adyen_SFRA/cartridge/adyen/config/constants.js | awk '{print $1}')
           printf "Extracted version: %s\n" "$version"
           version="v${version}"
+          export version
           find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '
             for dir do
               name=$(basename "$dir")
