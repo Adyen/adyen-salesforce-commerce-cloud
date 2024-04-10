@@ -65,7 +65,7 @@ jobs:
         if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
-          version=$(sed -nE 's/^\s*VERSION:\s*'"'"'([^'"'"']+)'"'"'/\1/p' int_adyen_SFRA/cartridge/adyen/config/constants.js | awk '{print $1}')
+          version=$(grep "^\s*VERSION:" int_adyen_SFRA/cartridge/adyen/config/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
           printf "Extracted version: %s\n" "$version"
           version="v${version}"
           export version
