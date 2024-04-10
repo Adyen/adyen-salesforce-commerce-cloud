@@ -11,8 +11,8 @@ jobs:
   commit-the-cartridge-and-project-files:
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'improvement') &&
-      github.event.pull_request.base.ref == 'feature/SFI-544-separate-cartridges' 
+      contains(github.head_ref, 'release') &&
+      github.event.pull_request.base.ref == 'main' 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
