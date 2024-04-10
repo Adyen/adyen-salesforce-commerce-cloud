@@ -12,7 +12,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       contains(github.head_ref, 'improvement') &&
-      github.event.pull_request.base.ref == 'feature/SFI-544-separate-cartridges' 
+      github.event.pull_request.base.ref == 'feature/SFI-544--cartridges' 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -66,13 +66,12 @@ jobs:
         run: | 
           cd adyen-salesforce-commerce-cloud/cartridges
           version=$(grep "^\s*VERSION:" int_adyen_SFRA/cartridge/adyen/config/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
-          printf "Extracted version: %s\n" "$version"
           version="v${version}"
           export version
           find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '
             for dir do
               name=$(basename "$dir")
-              echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+              echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
               <projectDescription>
                 <name>${name}</name>
                 <comment>${version}</comment>
