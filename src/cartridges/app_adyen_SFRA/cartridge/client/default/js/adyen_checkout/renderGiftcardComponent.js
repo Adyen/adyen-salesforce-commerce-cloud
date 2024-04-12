@@ -184,6 +184,9 @@ function attachGiftCardFormListeners() {
       giftCardSelect.appendChild(newOption);
 
       giftCardSelect.value = selectedGiftCard.brand;
+      const giftCardAmount = store.partialPaymentsOrderObj.remainingAmount
+        ? store.partialPaymentsOrderObj.remainingAmount
+        : store.checkout.options.amount;
 
       giftCardContainer.innerHTML = '';
       const giftCardNode = store.checkout
@@ -191,6 +194,7 @@ function attachGiftCardFormListeners() {
           ...store.checkoutConfiguration.giftcard,
           brand: selectedGiftCard.brand,
           name: selectedGiftCard.name,
+          amount: giftCardAmount,
         })
         .mount(giftCardContainer);
       store.componentsObj.giftcard = { node: giftCardNode };
