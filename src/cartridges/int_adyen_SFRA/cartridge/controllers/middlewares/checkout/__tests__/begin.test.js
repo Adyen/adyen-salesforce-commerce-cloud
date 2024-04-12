@@ -23,7 +23,7 @@ describe('Begin', () => {
   it('should update saved cards', () => {
     const {
       updateSavedCards,
-    } = require('*/cartridge/scripts/updateSavedCards');
+    } = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
     req.currentCustomer.raw.isAuthenticated.mockImplementation(() => true);
     begin(req, res, jest.fn());
     expect(updateSavedCards).toBeCalledTimes(1);

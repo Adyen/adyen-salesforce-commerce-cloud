@@ -141,7 +141,7 @@ function clearNotifications(/* pdict */) {
  * Ortherwise, object.order_created is true, and object.Order is set to the order.
  */
 function submitOrder(order) {
-  const adyenService = require('*/cartridge/scripts/adyenService');
+  const adyenService = require('*/cartridge/adyen/utils/adyenService');
   return adyenService.submit(order);
 }
 

@@ -7,7 +7,9 @@ const consentTracking = require('*/cartridge/scripts/middleware/consentTracking'
 const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const {
+  updateSavedCards,
+} = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
 const {
   paymentInstruments,
 } = require('*/cartridge/controllers/middlewares/index');

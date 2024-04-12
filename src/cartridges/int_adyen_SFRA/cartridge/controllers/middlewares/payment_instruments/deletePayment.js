@@ -2,7 +2,7 @@ const CustomerMgr = require('dw/customer/CustomerMgr');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const {
   deleteRecurringPayment,
-} = require('*/cartridge/scripts/adyenDeleteRecurringPayment');
+} = require('*/cartridge/adyen/scripts/payments/adyenDeleteRecurringPayment');
 
 function deletePayment(req, res, next) {
   const payment = res.getViewData();
