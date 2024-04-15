@@ -74,12 +74,19 @@ function showAddressDetails(shopperDetails) {
 }
 
 async function mountAmazonPayComponent() {
-  const amazonPayNode = document.getElementById('amazon-container');
-  const checkout = await AdyenCheckout(window.Configuration);
-
   try {
+    const amazonPayNode = document.getElementById('amazon-container');
     const data = await getPaymentMethods();
-    const paymentMethodsResponse = data.AdyenPaymentMethods;
+    const paymentMethodsResponse = data?.AdyenPaymentMethods;
+    const applicationInfo = data?.applicationInfo;
+    const checkout = await AdyenCheckout({
+      environment: window.Configuration.environment,
+      clientKey: window.Configuration.clientKey,
+      locale: window.Configuration.locale,
+      analytics: {
+        analyticsData: { applicationInfo },
+      },
+    });
     const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
       (pm) => pm.type === 'amazonpay',
     )?.configuration;
