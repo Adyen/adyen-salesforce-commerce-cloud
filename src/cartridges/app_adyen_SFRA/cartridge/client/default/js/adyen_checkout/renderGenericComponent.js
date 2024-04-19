@@ -216,7 +216,7 @@ function setGiftCardContainerVisibility() {
   }
 }
 
-async function initializeCheckout() {
+export async function initializeCheckout() {
   const paymentMethodsResponse = await getPaymentMethods();
   const giftCardsData = await fetchGiftCards();
 

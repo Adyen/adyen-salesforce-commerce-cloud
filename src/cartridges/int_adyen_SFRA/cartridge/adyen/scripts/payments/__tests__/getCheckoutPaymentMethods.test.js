@@ -46,6 +46,11 @@ describe('getCheckoutPaymentMethods', () => {
           },
           imagePath: "mocked_loading_contextimages/logos/medium/",
           countryCode: "NL",
+		  applicationInfo: {
+			externalPlatform: {
+				"version" : "SFRA",
+			}
+		  }
       });
       expect(next).toHaveBeenCalled();
    });
@@ -55,7 +60,10 @@ describe('getCheckoutPaymentMethods', () => {
          new Logger.error('error'),
       );
       getCheckoutPaymentMethods(req, res, next);
-      expect(res.json).not.toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({
+         error: true,
+       });      
       expect(Logger.fatal.mock.calls.length).toBe(1);
+      expect(next).toHaveBeenCalled();
    });
 });

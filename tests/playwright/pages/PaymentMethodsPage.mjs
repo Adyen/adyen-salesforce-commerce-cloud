@@ -42,8 +42,8 @@ export default class PaymentMethodsPage {
 
     // Click PayPal radio button
     await this.page.click('#rb_paypal');
-    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
-
+	await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
+	
     // Capture popup for interaction
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
@@ -222,6 +222,7 @@ export default class PaymentMethodsPage {
       timeout: 20000,
     });
     await giftCardBrand.click();
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
 
     const giftCardNumberInputField = giftCardComponentWrapper
       .frameLocator('.adyen-checkout__card__cardNumber__input iframe')
@@ -321,6 +322,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateKlarnaPayment = async (klarnaVariant) => {
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
     let klarnaSelector = this.page.locator('#rb_klarna');
     if (klarnaVariant) {
       klarnaSelector =

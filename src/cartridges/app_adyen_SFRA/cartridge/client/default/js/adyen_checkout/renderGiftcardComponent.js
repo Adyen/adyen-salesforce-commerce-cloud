@@ -1,6 +1,6 @@
 const store = require('../../../../store');
 const constants = require('../constants');
-const { INIT_CHECKOUT_EVENT } = require('./renderGenericComponent');
+const { initializeCheckout } = require('./renderGenericComponent');
 
 function getGiftCardElements() {
   const giftCardSelect = document.querySelector('#giftCardSelect');
@@ -106,8 +106,7 @@ function removeGiftCards() {
             ?.parentNode.remove();
           store.componentsObj?.giftcard?.node.unmount('component_giftcard');
         }
-        const event = new Event(INIT_CHECKOUT_EVENT);
-        document.dispatchEvent(event);
+        initializeCheckout();
       },
     });
   });
