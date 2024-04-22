@@ -15,6 +15,7 @@ src/cartridges/int_adyen_SFRA/cartridge/controllers/middlewares/checkout_service
 src/cartridges/int_adyen_SFRA/cartridge/adyen/webhooks
 src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/adyenHelper.js
 src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/adyenConfigs.js
+src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/lineItemHelper.js
 src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/adyenGetOpenInvoiceData.js
 src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/adyenTerminalApi.js
 

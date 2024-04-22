@@ -251,3 +251,7 @@ jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => {
 jest.mock('*/cartridge/adyen/utils/giftCardsHelper', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/giftCardsHelper');
 }, {virtual: true});
+
+jest.mock('*/cartridge/adyen/scripts/payments/paypalHelper', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/paypalHelper');
+}, {virtual: true});

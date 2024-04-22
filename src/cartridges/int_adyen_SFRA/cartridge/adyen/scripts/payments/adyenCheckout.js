@@ -35,6 +35,7 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/adyen/scripts/payments/adye
 const adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const paypalHelper = require('*/cartridge/adyen/scripts/payments/paypalHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -255,6 +256,11 @@ function createPaymentRequest(args) {
       ) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
+    }
+
+    // add line items for paypal
+    if (paymentRequest.paymentMethod.type.indexOf('paypal') > -1) {
+      paymentRequest.lineItems = paypalHelper.getLineItems(args);
     }
 
     // Set tokenisation
