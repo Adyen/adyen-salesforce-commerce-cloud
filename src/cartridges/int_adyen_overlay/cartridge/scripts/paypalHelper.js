@@ -27,23 +27,23 @@ function getLineItems({ Order: order, Basket: basket }) {
   const orderOrBasket = order || basket;
   const allLineItems = LineItemHelper.getAllLineItems(orderOrBasket.getAllLineItems());
   return allLineItems.map((lineItem) => {
+    const lineItemObject = {};
     const description = LineItemHelper.getDescription(lineItem);
     const id = LineItemHelper.getId(lineItem);
     const quantity = LineItemHelper.getQuantity(lineItem);
     const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
     const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-    let category = PAYPAL_ITEM_CATEGORY[0];
     if (lineItem.hasOwnProperty('category')) {
-      category = PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1 ? lineItem.category : PAYPAL_ITEM_CATEGORY[0]
+      if (PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1) {
+        lineItemObject.itemCategory = lineItem.category
+      }
     }
-    return {
-      quantity: quantity,
-      description: description,
-      itemCategory: category,
-      sku: id,
-      amountExcludingTax: itemAmount.getValue().toFixed(),
-      taxAmount: vatAmount.getValue().toFixed()
-    }
+    lineItemObject.quantity= quantity;
+    lineItemObject.description= description;
+    lineItemObject.sku= id;
+    lineItemObject.amountExcludingTax= itemAmount.getValue().toFixed();
+    lineItemObject.taxAmount= vatAmount.getValue().toFixed()
+    return lineItemObject;
   });
 }
 
