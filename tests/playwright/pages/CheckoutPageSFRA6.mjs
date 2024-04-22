@@ -184,7 +184,7 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load', { timeout: 30000 });
     await this.submitPaymentButton.click();
   };
 
@@ -192,7 +192,7 @@ export default class CheckoutPageSFRA {
     let retries = 3;
     while (retries > 0) {
       try {
-        await this.page.waitForLoadState('load', { timeout: 20000 });
+        await this.page.waitForLoadState('load', { timeout: 30000 });
         await this.placeOrderButton.click();
         break; // Break out of the loop if successful
       } catch (error) {

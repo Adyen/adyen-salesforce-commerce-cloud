@@ -95,6 +95,24 @@ const __LineItemHelper = {
     }
     return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
+
+  getAllLineItems(allLineItems) {
+    const lineItems = [];
+    for (const item in allLineItems) {
+      const lineItem = allLineItems[item];
+      if (
+        (lineItem instanceof dw.order.ProductLineItem &&
+          !lineItem.bonusProductLineItem) ||
+        lineItem instanceof dw.order.ShippingLineItem ||
+        (lineItem instanceof dw.order.PriceAdjustment &&
+          lineItem.promotion.promotionClass ===
+          dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+      ) {
+        lineItems.push(lineItem)
+      }
+    }
+    return lineItems
+  }
 };
 
 module.exports = __LineItemHelper;
