@@ -4,11 +4,7 @@ describe('paypalHelper', () => {
   beforeEach(() => {
     args = (item) => ({
       Order: {
-        getProductLineItems: jest.fn(() => {
-          return {
-            toArray: jest.fn(() => ([item]))
-          }
-        })
+        getAllLineItems: jest.fn(() => ([item]))
       }
     })
 

@@ -389,6 +389,7 @@ jest.mock(
         getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
       })),
     })),
+    getAllLineItems: jest.fn((lineItem) => lineItem),
   }),
   { virtual: true },
 );
