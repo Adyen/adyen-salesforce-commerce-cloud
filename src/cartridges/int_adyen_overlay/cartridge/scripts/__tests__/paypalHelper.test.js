@@ -33,7 +33,13 @@ const paypalLineItems = paypalHelper.getLineItems(args(lineItem))
 
   it('should return lineItems for paypal with default itemCategory when category is not as per paypal', () => {
     const paypalLineItems = paypalHelper.getLineItems(args({...lineItem, category: 'TEST_GOODS'}))
-    expect(paypalLineItems[0]).toStrictEqual(result)
+    expect(paypalLineItems[0]).toStrictEqual({
+      quantity: '1',
+      description: 'test',
+      sku: '123',
+      amountExcludingTax: '10000',
+      taxAmount: '1000'
+    })
   })
 
   it('should return no lineItems for paypal if order or basket is not defined', () => {
