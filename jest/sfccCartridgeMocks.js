@@ -317,3 +317,24 @@ jest.mock('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutSe
     isNotAdyen: jest.fn(() => false),
   };
 }, {virtual: true});
+
+jest.mock(
+	'*/cartridge/adyen/utils/lineItemHelper',
+	() => ({
+	  getDescription: jest.fn((lineItem) => lineItem.productName),
+	  getId: jest.fn((lineItem) => lineItem.productID),
+	  getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
+	  getItemAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
+		})),
+	  })),
+	  getVatAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
+		})),
+	  })),
+	  getAllLineItems: jest.fn((lineItem) => lineItem),
+	}),
+	{ virtual: true },
+  );
