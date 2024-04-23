@@ -17,14 +17,14 @@ afterEach(() => {
 
 describe('Confirm', () => {
   it('should do nothing if giving is not enabled', () => {
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     AdyenHelper.getAdyenGivingConfig.mockImplementation(() => null);
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);
   });
   it('should set view data', () => {
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     confirm(req, res, jest.fn());
     expect(res.setViewData).toMatchSnapshot();

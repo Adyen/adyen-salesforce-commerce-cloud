@@ -15,129 +15,109 @@ jest.mock(
 
 jest.mock('*/cartridge/models/cart', () => jest.fn(), { virtual: true });
 
-jest.mock(
-  '*/cartridge/controllers/middlewares/adyen/selectShippingMethods',
-  () => jest.fn(),
-  { virtual: true },
-);
+jest.mock('*/cartridge/adyen/scripts/expressPayments/selectShippingMethods', () => {
+  return jest.fn();
+}, {virtual: true});
 
 // cartridge/scripts mocks
-jest.mock(
-  '*/cartridge/scripts/adyenCheckout',
-  () => ({
+jest.mock('*/cartridge/adyen/scripts/payments/adyenCheckout', () => {
+  return {
     doPaymentsDetailsCall: jest.fn((payload) => {
       let resultCode;
       if (payload.paymentData) {
         resultCode = payload.paymentData;
       } else if (payload.details?.MD) {
-        resultCode =
-          payload.details.MD === 'mocked_md' ? 'Authorised' : 'Not_Authorised';
+        resultCode = payload.details.MD === 'mocked_md' ? 'Authorised' : 'Not_Authorised';
       }
-      return { resultCode };
+      return {resultCode};
     }),
     createPaymentRequest: jest.fn(() => ({
       resultCode: 'Authorised',
     })),
-    doCreatePartialPaymentOrderCall: jest.fn(() => ({
-      remainingAmount: 'mocked_amount',
-      orderData: 'mocked_data',
-    })),
-  }),
-  { virtual: true },
-);
+    doCreatePartialPaymentOrderCall: jest.fn(() => {
+       return {remainingAmount: 'mocked_amount', orderData: 'mocked_data'};
 
-jest.mock(
-  '*/cartridge/scripts/adyenDeleteRecurringPayment',
-  () => ({ deleteRecurringPayment: jest.fn(() => true) }),
-  { virtual: true },
-);
+     }),
+  };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/controllers/middlewares/adyen/saveExpressShopperDetails',
-  () => jest.fn(),
-  { virtual: true },
-);
+jest.mock('*/cartridge/adyen/scripts/payments/adyenDeleteRecurringPayment', () => {
+  return { deleteRecurringPayment: jest.fn(() => true) };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/adyenGetPaymentMethods',
-  () => ({
+jest.mock('*/cartridge/adyen/scripts/expressPayments/saveExpressShopperDetails', () => {
+  return jest.fn();
+}, {virtual: true});
+
+jest.mock('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods', () => {
+  return {
     getMethods: jest.fn(() => ({
-      paymentMethods: [{ type: 'visa' }],
-    })),
-  }),
-  { virtual: true },
-);
+      paymentMethods: [{type: 'visa'}],
+    }))
+  };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/adyenGetPaymentMethods',
-  () => ({
+jest.mock('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods', () => {
+  return {
     getMethods: jest.fn(() => ({
-      paymentMethods: [{ type: 'visa' }],
-    })),
-  }),
-  { virtual: true },
-);
-jest.mock(
-  '*/cartridge/scripts/adyenTerminalApi',
-  () => ({
+      paymentMethods: [{type: 'visa'}],
+    }))
+  };
+}, {virtual: true});
+jest.mock('*/cartridge/adyen/scripts/payments/adyenTerminalApi', () => {
+  return {
     getTerminals: jest.fn(() => ({
       response: JSON.stringify({ foo: 'bar' }),
     })),
     createTerminalPayment: jest.fn(() => ({
-      response: 'mockedSuccessResponse',
-    })),
-  }),
-  { virtual: true },
-);
+      response: 'mockedSuccessResponse'
+    }))
+  };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/adyenZeroAuth',
-  () => ({
+jest.mock('*/cartridge/adyen/scripts/payments/adyenZeroAuth', () => {
+  return {
     zeroAuthPayment: jest.fn(() => ({
       error: false,
       resultCode: 'Authorised',
-    })),
-  }),
-  { virtual: true },
-);
+    }))
+  };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/checkNotificationAuth',
-  () => ({
+jest.mock('*/cartridge/adyen/webhooks/checkNotificationAuth', () => {
+  return { 
     check: jest.fn(() => true),
     validateHmacSignature: jest.fn(() => true),
-  }),
-  { virtual: true },
-);
+   };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/handleNotify',
-  () => ({
-    notify: jest.fn(() => ({ success: true })),
-  }),
-  { virtual: true },
-);
+jest.mock('*/cartridge/adyen/webhooks/handleNotify', () => {
+  return {
+    notify: jest.fn(() => ({ success: true }))
+  };
+}, {virtual: true});
 
-jest.mock(
-  '*/cartridge/scripts/updateSavedCards',
-  () => ({
-    updateSavedCards: jest.fn(),
-  }),
-  { virtual: true },
-);
+jest.mock('*/cartridge/adyen/scripts/payments/updateSavedCards', () => {
+  return {
+    updateSavedCards: jest.fn()
+  };
+}, {virtual: true});
 
 // cartridge/scripts/checkout mocks
-jest.mock(
-  '*/cartridge/scripts/checkout/adyenHelpers',
-  () => ({
+jest.mock('*/cartridge/adyen/utils/authorizationHelper', () => {
+	return {
+	  validatePayment: jest.fn(() => ({ error: false })),
+	  handlePayments: jest.fn(() => ({ error: false, action: {type: 'mockedAction'} })),
+	};
+  }, {virtual: true});
+
+// cartridge/scripts/checkout mocks
+jest.mock('*/cartridge/adyen/utils/adyenHelpers', () => {
+  return {
     validatePayment: jest.fn(() => ({ error: false })),
-    handlePayments: jest.fn(() => ({
-      error: false,
-      action: { type: 'mockedAction' },
-    })),
-  }),
-  { virtual: true },
-);
+    handlePayments: jest.fn(() => ({ error: false, action: {type: 'mockedAction'} })),
+  };
+}, {virtual: true});
 
 jest.mock(
   '*/cartridge/scripts/checkout/checkoutHelpers',
@@ -243,19 +223,14 @@ jest.mock(
 );
 
 // cartridge/scripts/hooks mocks
-jest.mock('*/cartridge/scripts/hooks/fraudDetection', () => ({}), {
-  virtual: true,
-});
-jest.mock('*/cartridge/scripts/hooks/validateOrder', () => ({}), {
-  virtual: true,
-});
-jest.mock('*/cartridge/scripts/hooks/postAuthorizationHandling', () => ({}), {
-  virtual: true,
-});
-// cartridge/scripts/util mocks
-jest.mock(
-  '*/cartridge/scripts/util/adyenHelper',
-  () => ({
+jest.mock('*/cartridge/scripts/hooks/fraudDetection', () => { return {} }, {virtual: true})
+jest.mock('*/cartridge/scripts/hooks/validateOrder', () => { return {}} , {virtual: true})
+jest.mock('*/cartridge/scripts/hooks/postAuthorizationHandling', () => { return {}} , {virtual: true})
+// cartridge/adyen/util mocks
+jest.mock('*/cartridge/adyen/utils/validatePaymentMethod', () => ({
+	validatePaymentMethod: jest.fn(() => jest.fn(() => true)),
+  }));
+jest.mock('*/cartridge/adyen/utils/adyenHelper', () => ({
     savePaymentDetails: jest.fn(),
     getAdyenHash: jest.fn((str, str2) => `${str} __ ${str2}`),
     getLoadingContext: jest.fn(() => 'mocked_loading_context'),
@@ -302,9 +277,8 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock(
-  '*/cartridge/scripts/util/adyenConfigs',
-  () => ({
+jest.mock('*/cartridge/adyen/utils/adyenConfigs', () => {
+  return {
     getAdyenEnvironment: jest.fn(() => 'TEST'),
     getAdyenInstallmentsEnabled: jest.fn(() => true),
     getCreditCardInstallments: jest.fn(() => true),
@@ -316,21 +290,25 @@ jest.mock(
     getAdyenMerchantAccount: jest.fn(() => 'mocked_merchant_account'),
     getAdyenGivingEnabled: jest.fn(() => true),
     getAdyenGivingCharityName: jest.fn(() => '%mocked_charity_name%'),
-    getAdyenGivingCharityWebsite: jest.fn(() => 'mocked_charity_website'),
-    getAdyenGivingCharityDescription: jest.fn(
-      () => '%mocked_charity_description%',
+    getAdyenGivingCharityWebsite: jest.fn(
+        () => 'mocked_charity_website',
     ),
-    getAdyenGivingBackgroundUrl: jest.fn(() => 'mocked_background_url'),
+    getAdyenGivingCharityDescription: jest.fn(
+        () => '%mocked_charity_description%',
+    ),
+    getAdyenGivingBackgroundUrl: jest.fn(
+        () => 'mocked_background_url',
+    ),
     getAdyenGivingLogoUrl: jest.fn(() => 'mocked_logo_url'),
     getAdyenSFRA6Compatibility: jest.fn(() => false),
-    getAdyenHmacKey: jest.fn(() => 'mocked_hmacKey'),
+    getAdyenHmacKey : jest.fn(() => 'mocked_hmacKey'),
     getAdyenBasketFieldsEnabled: jest.fn(() => false),
     getAdyen3DS2Enabled: jest.fn(() => false),
     getAdyenLevel23DataEnabled: jest.fn(() => false),
-    getAdyenSalePaymentMethods: jest.fn(() => []),
-  }),
-  { virtual: true },
-);
+    getAdyenSalePaymentMethods:jest.fn(() => []),
+
+  };
+}, {virtual: true});
 
 jest.mock(
   '*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent',
@@ -364,32 +342,51 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock(
-  '*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices',
-  () => ({
-    processPayment: jest.fn(),
-    isNotAdyen: jest.fn(() => false),
-  }),
-  { virtual: true },
-);
+jest.mock('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices', () => {
+	return {
+	  processPayment: jest.fn(),
+	  isNotAdyen: jest.fn(() => false),
+	};
+  }, {virtual: true});
 
 jest.mock(
-  '*/cartridge/scripts/util/lineItemHelper',
-  () => ({
-    getDescription: jest.fn((lineItem) => lineItem.productName),
-    getId: jest.fn((lineItem) => lineItem.productID),
-    getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
-    getItemAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
-      })),
-    })),
-    getVatAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
-      })),
-    })),
-    getAllLineItems: jest.fn((lineItem) => lineItem),
-  }),
-  { virtual: true },
-);
+	'*/cartridge/adyen/utils/lineItemHelper',
+	() => ({
+	  getDescription: jest.fn((lineItem) => lineItem.productName),
+	  getId: jest.fn((lineItem) => lineItem.productID),
+	  getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
+	  getItemAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
+		})),
+	  })),
+	  getVatAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
+		})),
+	  })),
+	  getAllLineItems: jest.fn((lineItem) => lineItem),
+	}),
+	{ virtual: true },
+  );
+
+jest.mock(
+	'*/cartridge/adyen/utils/lineItemHelper',
+	() => ({
+	  getDescription: jest.fn((lineItem) => lineItem.productName),
+	  getId: jest.fn((lineItem) => lineItem.productID),
+	  getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
+	  getItemAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
+		})),
+	  })),
+	  getVatAmount: jest.fn((lineItem) => ({
+		divide: jest.fn((quantity) => ({
+		  getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
+		})),
+	  })),
+	  getAllLineItems: jest.fn((lineItem) => lineItem),
+	}),
+	{ virtual: true },
+  );
