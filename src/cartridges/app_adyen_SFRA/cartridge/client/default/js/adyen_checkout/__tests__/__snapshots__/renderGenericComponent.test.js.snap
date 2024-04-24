@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render Generic Component should hide giftcard container 1`] = `
+{
+  "amount": {
+    "currency": "mocked_currency",
+    "value": "mocked_amount",
+  },
+  "countryCode": "mocked_countrycode",
+  "paymentMethodsConfiguration": {
+    "amazonpay": {
+      "addressDetails": {
+        "addressLine1": "test",
+        "city": "test",
+        "countryCode": "test",
+        "name": "test test",
+        "phoneNumber": "test",
+        "postalCode": "test",
+        "stateOrRegion": "test",
+      },
+      "configuration": undefined,
+    },
+  },
+  "paymentMethodsResponse": {
+    "imagePath": "example.com",
+  },
+}
+`;
+
+exports[`Render Generic Component should render 1`] = `
+{
+  "amount": {
+    "currency": "mocked_currency",
+    "value": "mocked_amount",
+  },
+  "countryCode": "mocked_countrycode",
+  "paymentMethodsConfiguration": {
+    "amazonpay": {
+      "addressDetails": {
+        "addressLine1": "test",
+        "city": "test",
+        "countryCode": "test",
+        "name": "test test",
+        "phoneNumber": "test",
+        "postalCode": "test",
+        "stateOrRegion": "test",
+      },
+      "configuration": undefined,
+    },
+  },
+  "paymentMethodsResponse": {
+    "imagePath": "example.com",
+  },
+}
+`;

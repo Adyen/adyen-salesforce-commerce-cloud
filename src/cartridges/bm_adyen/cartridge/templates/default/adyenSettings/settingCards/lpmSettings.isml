@@ -1,5 +1,5 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
 <div id="lpmSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
@@ -39,7 +39,7 @@
          </div>
          <div class="form-group">
             <label class="form-title mb-0" for="oneClick">Store shopper details with one-click <small class="text-secondary">(optional)</small></label>
-            <small id="oneClickHelp" class="form-text mb-1"><a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-6-store-shopper-details" target="_blank">One-click</a> stores payment details of your shoppers securely. It allows you to offer subscriptions, automatic top-ups to shoppers’ accounts, and give them a faster checkout experience.</small>
+            <small id="oneClickHelp" class="form-text mb-1"><a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#store-shopper-details" target="_blank">One-click</a> stores payment details of your shoppers securely. It allows you to offer subscriptions, automatic top-ups to shoppers’ accounts, and give them a faster checkout experience.</small>
             <div class="radio-buttons">
                <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" name="AdyenOneClickEnabled" id="oneClickYes" value=true ${AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>

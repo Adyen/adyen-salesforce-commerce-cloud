@@ -1,7 +1,7 @@
 const server = require('server');
 const URLRedirectMgr = require('dw/web/URLRedirectMgr');
-const AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-const constants = require('../client/default/js/constants');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('../adyen/config/constants');
 
 server.extend(module.superModule);
 

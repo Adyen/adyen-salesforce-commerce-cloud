@@ -296,7 +296,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_authResult">
                 <display-name xml:lang="x-default">Adyen_authResult</display-name>
-                <type>string</type>
+                <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -645,8 +645,8 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_SFRA6_Compatibility">
-                <display-name xml:lang="x-default">SFRA v6 compatibility enabled </display-name>
-                <description xml:lang="x-default">This setting should be enabled when using SFRA v6. Otherwise it should be disabled</description>
+                <display-name xml:lang="x-default">SFRA v6/v7 compatibility enabled </display-name>
+                <description xml:lang="x-default">This setting should be enabled when using SFRA v6 or v7. Otherwise it should be disabled</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

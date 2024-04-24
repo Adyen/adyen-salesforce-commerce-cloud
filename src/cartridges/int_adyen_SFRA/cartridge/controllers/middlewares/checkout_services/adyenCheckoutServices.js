@@ -1,4 +1,4 @@
-const constants = require('*/cartridge/adyenConstants/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 
 function processPayment(order, handlePaymentResult, req, res, emit) {
