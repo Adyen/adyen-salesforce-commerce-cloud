@@ -1,16 +1,15 @@
 "use strict";
 
 /* ### Custom Adyen cartridge start ### */
-var adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var GiftCardsHelper = require('*/cartridge/scripts/util/giftCardsHelper');
-var constants = require('*/cartridge/adyenConstants/constants');
+var adyenHelpers = require('*/cartridge/adyen/utils/authorizationHelper');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
+var constants = require('*/cartridge/adyen/config/constants');
 var _require = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices'),
   processPayment = _require.processPayment,
   isNotAdyen = _require.isNotAdyen;
 var Money = require('dw/value/Money');
-var _require2 = require('*/cartridge/controllers/utils/index'),
-  clearForms = _require2.clearForms;
+var clearForms = require('*/cartridge/adyen/utils/clearForms');
 
 /* ### Custom Adyen cartridge end ### */
 

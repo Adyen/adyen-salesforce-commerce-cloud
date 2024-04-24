@@ -1,0 +1,176 @@
+<body>
+    <div>
+        <p>${Resource.msg('msg.placed.order.thank.you', 'confirmation', null)}</p>
+    </div>
+    <p>
+        <strong>${Resource.msg('label.order.number', 'confirmation', null)}</strong>
+        <br/>
+        <span>${pdict.order.orderNumber}</span>
+    </p>
+    <p>
+        <strong>${Resource.msg('label.order.date', 'confirmation', null)}</strong>
+        <br/>
+        <span><isprint value="${pdict.order.creationDate}" style="DATE_LONG"/></span>
+    </p>
+
+    <!--- Shipping Address --->
+    <isloop items="${pdict.order.shipping}" var="shippingModel" status="shippingLoop">
+        <isinclude template="checkout/confirmation/shippingTitle"/>
+        <isset name="address" value="${shippingModel.shippingAddress}" scope="page"/>
+        <isinclude template="checkout/addressSummary" />
+        <br/>
+        <p>
+            <strong>${Resource.msg('label.order.shipping.method', 'confirmation', null)}</strong>
+            <br/>
+            ${shippingModel.selectedShippingMethod.displayName}
+            <isif condition="${shippingModel.selectedShippingMethod.estimatedArrivalTime}">
+                (${shippingModel.selectedShippingMethod.estimatedArrivalTime})
+            </isif>
+        </p>
+
+        <isif condition="${shippingModel.isGift}">
+            <p>
+                <strong>
+                    ${Resource.msg('heading.gift.message', 'checkout', null)}
+                </strong>
+                ${shippingModel.giftMessage}
+            </p>
+        </isif>
+
+        <isif condition="${pdict.order.shipping.length > 1}">
+            <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
+            <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
+                <p>
+                    ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
+                    <br/>
+
+                    <isif condition="${lineItem.productType === 'bundle'}">
+                        <isloop items="${lineItem.bundledProductLineItems}" var="bundledLineItem">
+                            ${Resource.msg('label.order.bundled.item.name', 'confirmation', null)}: ${bundledLineItem.productName}
+                            <br/>
+                            <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
+                                ${attribute.displayName}: ${attribute.displayValue}
+                                <br/>
+                            </isloop>
+                        </isloop>
+                        <iselse/>
+                        <isloop items="${lineItem.variationAttributes}" var="attribute">
+                            ${attribute.displayName}: ${attribute.displayValue}
+                            <br/>
+                        </isloop>
+                    </isif>
+
+                    <!--- item price --->
+                    ${Resource.msg('label.each.item.price','cart',null)} -
+                    ${lineItem.price.formatted || lineItem.price.sales.formatted}
+                    <br/>
+                    <!--- quantity --->
+                    ${Resource.msg('field.selectquantity','cart',null)}
+                    - <isprint value="${lineItem.quantity}" formatter="##" />
+                    <br/>
+
+                    <!--- line item total price --->
+                    ${Resource.msg('label.total.price','cart',null)}
+                    - ${lineItem.priceTotal.price}
+                    <br/>
+                </p>
+            </isloop>
+        </isif>
+    </isloop>
+    <p>${pdict.order.totals.totalShippingCost}</p>
+    <!--- Billing Address --->
+    <strong>${Resource.msg('label.order.billing.address', 'confirmation', null)}</strong>
+    <br/>
+    <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
+    <isinclude template="checkout/addressSummary" />
+
+    <br/>
+
+    <!--- Payment information --->
+    <div>
+        <strong>${Resource.msg('label.order.payment.info', 'confirmation', null)}</strong>
+        <br/>
+        <div>
+            <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+                <isif condition="${payment.paymentMethod === 'AdyenComponent' || payment.paymentMethod === 'CREDIT_CARD'}">
+                     <isinclude template="checkout/confirmation/adyenConfirmationDetails"/>
+                </isif>
+            </isloop>
+        </div>
+    </div>
+
+    <p>
+        ${Resource.msgf('label.number.items.in.cart','cart', null, pdict.order.items.totalQuantity)}
+        <br/>
+        ${pdict.order.totals.subTotal}
+    </p>
+
+    <br/>
+    <isif condition="${pdict.order.shipping.length === 1}">
+        <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
+        <isloop items="${pdict.order.items.items}" var="lineItem">
+            <p>
+                ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
+                <br/>
+
+                <isif condition="${lineItem.productType === 'bundle'}">
+                    <isloop items="${lineItem.bundledProductLineItems}" var="bundledLineItem">
+                        ${Resource.msg('label.order.bundled.item.name', 'confirmation', null)}: ${bundledLineItem.productName}
+                        <br/>
+                        <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
+                            ${attribute.displayName}: ${attribute.displayValue}
+                            <br/>
+                        </isloop>
+                    </isloop>
+                    <iselse/>
+                    <isloop items="${lineItem.variationAttributes}" var="attribute">
+                        ${attribute.displayName}: ${attribute.displayValue}
+                        <br/>
+                    </isloop>
+                </isif>
+
+                <isif condition="${lineItem.bonusProductLineItemUUID === 'bonus'}">
+                    <isloop items="${lineItem.bonusProducts}" var="bonusProduct" status="loopState">
+                        <isif condition="${loopState.first}">
+                            <br/>
+                            ${Resource.msg('text.lineitem.bonus.msg','cart',null)}
+                        </isif>
+                        ${bonusProduct.productName}
+                        <isloop items="${bonusProduct.variationAttributes}" var="attribute">
+                            ${attribute.displayName}: ${attribute.displayValue}
+                            <br/>
+                        </isloop>
+
+                        <!--- item price --->
+                        ${Resource.msg('label.each.item.price','cart',null)} -
+                        ${bonusProduct.priceTotal.price}
+                        <br/>
+
+                        <!--- quantity --->
+                        ${Resource.msg('field.selectquantity','cart',null)}
+                        - <isprint value="${bonusProduct.quantity}" formatter="##" />
+                        <br/>
+                        <isif condition="${loopState.last}">
+                            <br/>
+                        </isif>
+                    </isloop>
+                </isif>
+
+                <!--- item price --->
+                ${Resource.msg('label.each.item.price','cart',null)} -
+                ${lineItem.price.formatted || lineItem.price.sales.formatted}
+                <br/>
+                <!--- quantity --->
+                ${Resource.msg('field.selectquantity','cart',null)}
+                - <isprint value="${lineItem.quantity}" formatter="##" />
+                <br/>
+
+                <!--- line item total price --->
+                ${Resource.msg('label.total.price','cart',null)}
+                - ${lineItem.priceTotal.price}
+                <br/>
+            </p>
+        </isloop>
+    </isif>
+    <isinclude template="checkout/confirmation/confirmationOrderTotal" />
+</body>
