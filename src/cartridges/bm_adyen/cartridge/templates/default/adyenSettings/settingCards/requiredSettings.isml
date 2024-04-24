@@ -44,8 +44,8 @@
             </div>
          </div>
          <div class="form-group">
-            <label class="form-title mb-0" for="sfraCompatibility">Storefront Reference Architecture (SFRA) - version 6</label>
-            <small id="sfraCompatibilityHelp" class="form-text mb-1"><a class="text-primary" href="https://developer.salesforce.com/docs/commerce/sfra/guide/sfra-faq.html" target="_blank">SFRA</a> combines best practices in site design and technical architecture so you can customize your store’s website. This setting should only be enabled if you’re using SFRA v6.</small>
+            <label class="form-title mb-0" for="sfraCompatibility">Storefront Reference Architecture (SFRA) - version 6 or 7</label>
+            <small id="sfraCompatibilityHelp" class="form-text mb-1"><a class="text-primary" href="https://developer.salesforce.com/docs/commerce/sfra/guide/sfra-faq.html" target="_blank">SFRA</a> combines best practices in site design and technical architecture so you can customize your store’s website. This setting should only be enabled if you’re using SFRA v6 or v7.</small>
             <div class="radio-buttons">
                <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" name="Adyen_SFRA6_Compatibility" id="sfraYesRadio" value=true ${AdyenConfigs.getAdyenSFRA6Compatibility() ? 'checked': ''}>
