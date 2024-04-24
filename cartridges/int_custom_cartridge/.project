@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <projectDescription>
-      <name>int_adyen_overlay</name>
+      <name>int_custom_cartridge</name>
       <comment>v24.2.0</comment>
       <projects></projects>
       <buildSpec>
