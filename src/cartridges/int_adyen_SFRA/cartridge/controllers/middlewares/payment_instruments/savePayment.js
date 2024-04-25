@@ -4,10 +4,12 @@ const CustomerMgr = require('dw/customer/CustomerMgr');
 const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const PaymentMgr = require('dw/order/PaymentMgr');
-const adyenZeroAuth = require('*/cartridge/scripts/adyenZeroAuth');
-const constants = require('*/cartridge/adyenConstants/constants');
+const adyenZeroAuth = require('*/cartridge/adyen/scripts/payments/adyenZeroAuth');
+const constants = require('*/cartridge/adyen/config/constants');
 const accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
-const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const {
+  updateSavedCards,
+} = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
 const {
   paymentProcessorIDs,
 } = require('*/cartridge/controllers/middlewares/payment_instruments/paymentProcessorIDs');

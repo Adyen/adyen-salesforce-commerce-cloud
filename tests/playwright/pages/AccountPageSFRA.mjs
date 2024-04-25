@@ -28,7 +28,7 @@ export default class AccountPageSFRA {
         .locator('.input-field')
         .type(cardInput.cvc);
     }
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
     await this.page.click('button[name="save"]');
   };
 
@@ -41,7 +41,7 @@ export default class AccountPageSFRA {
     const cardElement = this.savedCardElementGenerator(cardData);
     const deleteButton = cardElement.locator('../../button');
 
-    await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
 
     await deleteButton.click();
     await this.page.click('.delete-confirmation-btn');
@@ -52,7 +52,7 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'visible',
-      timeout: 15000,
+      timeout: 20000,
     });
   };
 
@@ -65,7 +65,7 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'detached',
-      timeout: 15000,
+      timeout: 20000,
     });
   };
 

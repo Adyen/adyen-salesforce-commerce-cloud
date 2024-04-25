@@ -1,5 +1,7 @@
 const server = require('server');
-const { updateSavedCards } = require('*/cartridge/scripts/updateSavedCards');
+const {
+  updateSavedCards,
+} = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
 
 server.extend(module.superModule);
 

@@ -3,6 +3,7 @@
 let req;
 let res;
 const placeOrder = require('../placeOrder');
+const adyenHelpers = require('*/cartridge/adyen/utils/authorizationHelper');
 
 beforeEach(() => {
   const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
@@ -32,7 +33,6 @@ describe('Checkout Services', () => {
     expect(processPayment).toHaveBeenCalledTimes(1);
   });
   it('should not process payment and return json response at end of file when there is no action', () => {
-    const adyenHelpers = require('*/cartridge/scripts/checkout/adyenHelpers');
     const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     adyenHelpers.handlePayments.mockImplementationOnce(() => ({error: false}));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());

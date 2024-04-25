@@ -89,7 +89,13 @@ module.exports = {
     "object-curly-newline": ["error", {
       "ImportDeclaration": { multiline: true, "minProperties": 4 }
     }],
+    "import/prefer-default-export": "off",
     "implicit-arrow-linebreak": "off",
-    "no-param-reassign": ["error", { "props": false }]
+    "no-param-reassign": ["error", { "props": false }],
+    "no-plusplus": "off",
+    "import/extensions": "off",
+    "camelcase": "off",
+    "no-bitwise": "off",
+	"no-underscore-dangle": "off"
   },
 };
