@@ -1,8 +1,8 @@
 "use strict";
 
 var CustomerMgr = require('dw/customer/CustomerMgr');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var _require = require('*/cartridge/scripts/adyenDeleteRecurringPayment'),
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var _require = require('*/cartridge/adyen/scripts/payments/adyenDeleteRecurringPayment'),
   deleteRecurringPayment = _require.deleteRecurringPayment;
 function deletePayment(req, res, next) {
   var payment = res.getViewData();

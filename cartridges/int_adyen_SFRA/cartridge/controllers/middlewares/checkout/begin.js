@@ -5,11 +5,11 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var _require = require('*/cartridge/scripts/updateSavedCards'),
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var _require = require('*/cartridge/adyen/scripts/payments/updateSavedCards'),
   updateSavedCards = _require.updateSavedCards;
-var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
   if (cachedOrderNumber) {

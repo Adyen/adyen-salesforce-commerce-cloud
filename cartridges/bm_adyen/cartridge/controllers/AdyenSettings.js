@@ -3,10 +3,10 @@
 var server = require('server');
 var Transaction = require('dw/system/Transaction');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var constants = require('*/cartridge/adyenConstants/constants');
-var AdyenLogs = require('*/cartridge/scripts/adyenCustomLogs');
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var constants = require('*/cartridge/adyen/config/constants');
+var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 server.get('Start', csrfProtection.generateToken, function (_req, res, next) {
   res.render('adyenSettings/settings');
   return next();

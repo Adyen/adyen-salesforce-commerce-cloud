@@ -1,8 +1,8 @@
 "use strict";
 
 var OrderMgr = require('dw/order/OrderMgr');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
 // order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
 // This was a GET call with a querystring containing ID & token in earlier versions.

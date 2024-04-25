@@ -1,6 +1,6 @@
 "use strict";
 
-var constants = require('*/cartridge/adyenConstants/constants');
+var constants = require('*/cartridge/adyen/config/constants');
 var collections = require('*/cartridge/scripts/util/collections');
 function processPayment(order, handlePaymentResult, req, res, emit) {
   res.json({

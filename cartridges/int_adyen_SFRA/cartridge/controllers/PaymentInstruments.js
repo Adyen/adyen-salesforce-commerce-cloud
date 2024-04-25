@@ -5,9 +5,9 @@ server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-var AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
-var _require = require('*/cartridge/scripts/updateSavedCards'),
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var _require = require('*/cartridge/adyen/scripts/payments/updateSavedCards'),
   updateSavedCards = _require.updateSavedCards;
 var _require2 = require('*/cartridge/controllers/middlewares/index'),
   paymentInstruments = _require2.paymentInstruments;

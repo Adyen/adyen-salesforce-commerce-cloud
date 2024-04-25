@@ -1,7 +1,7 @@
 "use strict";
 
 var server = require('server');
-var _require = require('*/cartridge/scripts/updateSavedCards'),
+var _require = require('*/cartridge/adyen/scripts/payments/updateSavedCards'),
   updateSavedCards = _require.updateSavedCards;
 server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');

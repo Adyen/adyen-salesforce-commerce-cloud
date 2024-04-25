@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
 <iscontent type="text/html" charset="UTF-8" compact="true">
-<isset name="AdyenConfigs" value="${require('*/cartridge/scripts/util/adyenConfigs')}" scope="page" />
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
 <div id="webhookSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
@@ -9,7 +9,7 @@
       </h5>
       <h7 class="card-subtitle">
          <div class="first-subtitle">
-            To receive authorization status updates, you need to <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/set-up-the-cartridge#step-5-receive-payment-status-updates" target="_blank">set up your webhook notification credentials</a> in your Customer Area.
+            To receive authorization status updates, you need to <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#set-up-webhooks" target="_blank">set up your webhook notification credentials</a> in your Customer Area.
          </div>
       </h7>
       <div class="mt-2">

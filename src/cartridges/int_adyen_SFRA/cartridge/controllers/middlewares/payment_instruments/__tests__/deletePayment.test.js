@@ -23,10 +23,10 @@ describe('Delete Payment', () => {
     expect(CustomerMgr.getCustomerByCustomerNumber).toBeCalledTimes(0);
   });
   it('should not delete payment if theres no token', () => {
-    const AdyenHelper = require('*/cartridge/scripts/util/adyenHelper');
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     const {
       deleteRecurringPayment,
-    } = require('*/cartridge/scripts/adyenDeleteRecurringPayment');
+    } = require('*/cartridge/adyen/scripts/payments/adyenDeleteRecurringPayment');
     AdyenHelper.getCardToken.mockImplementation(() => false);
     deletePayment(req, res, jest.fn());
     expect(deleteRecurringPayment).toBeCalledTimes(0);
@@ -34,7 +34,7 @@ describe('Delete Payment', () => {
   it('should delete recurring payment', () => {
     const {
       deleteRecurringPayment,
-    } = require('*/cartridge/scripts/adyenDeleteRecurringPayment');
+    } = require('*/cartridge/adyen/scripts/payments/adyenDeleteRecurringPayment');
     deletePayment(req, res, jest.fn());
     expect(deleteRecurringPayment).toBeCalledTimes(1);
   });

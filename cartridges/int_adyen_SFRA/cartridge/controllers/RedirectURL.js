@@ -2,8 +2,8 @@
 
 var server = require('server');
 var URLRedirectMgr = require('dw/web/URLRedirectMgr');
-var AdyenConfigs = require('*/cartridge/scripts/util/adyenConfigs');
-var constants = require('../client/default/js/constants');
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+var constants = require('../adyen/config/constants');
 server.extend(module.superModule);
 server.prepend('Start', function (req, res, next) {
   var origin = URLRedirectMgr.redirectOrigin;
