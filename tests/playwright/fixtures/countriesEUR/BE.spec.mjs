@@ -21,8 +21,8 @@ for (const environment of environments) {
       cards = new Cards(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
       await checkoutPage.setShopperDetails(shopperData.BE);
-      // SFRA 6 email setting flow is different
-      if (environment.name.indexOf('v6') === -1) {
+      // SFRA 5 email setting flow is different
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
     });

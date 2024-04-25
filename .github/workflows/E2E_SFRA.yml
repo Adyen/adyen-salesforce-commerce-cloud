@@ -90,7 +90,7 @@ jobs:
             code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
           - sfra-version: 'v7.0.0'
             node-version: '18'
-            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA7'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA7'
             code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
     steps:
       - name: setup Node

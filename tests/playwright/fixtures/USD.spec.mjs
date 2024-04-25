@@ -36,8 +36,8 @@ for (const environment of environments) {
 
       await page.goto(`${environment.urlExtension}`);
       await goToBillingWithFullCartGuestUser();
-      // SFRA 6 email setting flow is different
-      if (environment.name.indexOf('v6') === -1) {
+      // SFRA 5 email setting flow is different
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
     });
@@ -95,7 +95,7 @@ for (const environment of environments) {
 
       test('GiftCard Only Success @quick', async () => {
         await goToBillingWithFullCartGuestUser();
-        if (environment.name.indexOf("v6") === -1) {
+        if (environment.name.indexOf('v5') !== -1) {
           await checkoutPage.setEmail();
         };
         await cards.doGiftCardPayment(cardData.giftCard);
@@ -105,7 +105,7 @@ for (const environment of environments) {
 
       test('GiftCard & Card Success @quick', async () => {
         await goToBillingWithFullCartGuestUser(3);
-        if (environment.name.indexOf("v6") === -1) {
+        if (environment.name.indexOf('v5') !== -1) {
           await checkoutPage.setEmail();
         };
         await cards.doGiftCardPayment(cardData.giftCard);
@@ -116,7 +116,7 @@ for (const environment of environments) {
 
       test('Remove Gift Card', async ({ page }) => {
         await goToBillingWithFullCartGuestUser(3);
-        if (environment.name.indexOf("v6") === -1) {
+        if (environment.name.indexOf('v5') !== -1) {
           await checkoutPage.setEmail();
         }
         await cards.doGiftCardPayment(cardData.giftCard);
@@ -135,7 +135,7 @@ for (const environment of environments) {
         await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
         await page.locator('.add-to-cart').click();
         await checkoutPage.navigateToCheckout(regionsEnum.US);
-        if (environment.name.indexOf('v6') === -1) {
+        if (environment.name.indexOf('v5') !== -1) {
           await checkoutPage.checkoutGuest.click();
         }
         await checkoutPage.submitShipping();
@@ -155,7 +155,7 @@ for (const environment of environments) {
 
     test('Affirm Fail', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      if (environment.name.indexOf("v6") === -1) {
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
       await redirectShopper.doAffirmPayment(shopperData.US);
@@ -165,7 +165,7 @@ for (const environment of environments) {
     });
 
     test.skip('CashApp Renders', async ({ page }) => {
-      if (environment.name.indexOf("v6") === -1) {
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
       await new PaymentMethodsPage(page).initiateCashAppPayment();
@@ -180,7 +180,7 @@ for (const environment of environments) {
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
       await goToBillingWithFullCartLoggedInUser();
-      if (environment.name.indexOf("v6") === -1) {
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
     });
