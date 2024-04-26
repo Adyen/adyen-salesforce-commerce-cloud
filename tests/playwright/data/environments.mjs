@@ -23,4 +23,13 @@ if (process.env.SFRA_VERSION === 'v6.1.0') {
   });
 }
 
+if (process.env.SFRA_VERSION === 'v7.0.0') {
+  environments.push({
+    name: 'SFRA v7.0.0',
+    CheckoutPage: CheckoutPageSFRA6,
+    urlExtension: '/s/RefArch/home',
+    AccountPage: AccountPageSFRA,
+  });
+}
+
 
