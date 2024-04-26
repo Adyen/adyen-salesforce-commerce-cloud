@@ -76,7 +76,7 @@
             <div id="express-container" class="hidden">
                 <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
                 <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
-				<div data-method="paypal" class="expressComponent" id="paypal-container"></div>
+			    <div data-method="paypal" class="expressComponent" id="paypal-container"></div>
             </div>
             <script src="${URLUtils.httpsStatic('/js/expressPaymentMethodsVisibility.js')}" type="text/javascript"></script>
         </isif>
@@ -88,6 +88,6 @@
             <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
         </isif>
 		<!--This has to be conditional when adding the BM manager enable/disable feature-->
-		<script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
+	    <script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
     </iselse>
 </isif>
