@@ -87,7 +87,7 @@
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
             <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
         </isif>
-		<!--This has to be conditional when adding the BM manager enable/disable feature-->
-		<script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
+        <!--This has to be conditional when adding the BM manager enable/disable feature-->
+        <script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
     </iselse>
 </isif>
