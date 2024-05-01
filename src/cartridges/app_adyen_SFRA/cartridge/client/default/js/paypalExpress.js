@@ -1,6 +1,50 @@
 const { getPaymentMethods } = require('./commons');
+const helpers = require('./adyen_checkout/helpers');
 
 const PAYPAL = 'paypal';
+
+function handlePaypalResponse(response, component) {
+  if (response?.action) {
+    component.handleAction(response.action);
+  } else {
+    component.handleError();
+  }
+}
+
+function callPaymentFromComponent(data, component) {
+  return $.ajax({
+    url: window.makeExpressPaymentsCall,
+    type: 'post',
+    data: {
+      data: JSON.stringify(data),
+    },
+    success(response) {
+      helpers.createShowConfirmationForm(window.showConfirmationAction);
+      helpers.setOrderFormData(response);
+      handlePaypalResponse(response, component);
+    },
+  });
+}
+
+function saveShopperDetails(details) {
+  return $.ajax({
+    url: window.saveShopperData,
+    type: 'post',
+    data: {
+      shopperDetails: JSON.stringify(details),
+    },
+  });
+}
+
+function makeExpressPaymentDetailsCall(data) {
+  return $.ajax({
+    type: 'POST',
+    url: window.makeExpressPaymentDetailsCall,
+    data: JSON.stringify({ data }),
+    contentType: 'application/json; charset=utf-8',
+    async: false,
+  });
+}
 
 async function mountPaypalComponent() {
   try {
@@ -26,6 +70,16 @@ async function mountPaypalComponent() {
       configuration: paypalConfig,
       returnUrl: window.returnUrl,
       isExpress: true,
+      onSubmit: (state, component) => {
+        callPaymentFromComponent(state.data, component);
+      },
+      onShopperDetails: async (shopperDetails, rawData, actions) => {
+        saveShopperDetails(shopperDetails);
+        actions.resolve();
+      },
+      onAdditionalDetails: (state) => {
+        makeExpressPaymentDetailsCall(state.data);
+      },
     };
 
     const paypalExpressButton = checkout.create(PAYPAL, paypalButtonConfig);

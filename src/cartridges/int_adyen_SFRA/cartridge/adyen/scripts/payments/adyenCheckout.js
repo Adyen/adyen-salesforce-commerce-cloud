@@ -155,6 +155,9 @@ function createPaymentRequest(args) {
 
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     const paymentMethodType = paymentRequest.paymentMethod.type;
+    const isPayPalExpress =
+      paymentRequest.paymentMethod.type === 'paypal' &&
+      paymentRequest.paymentMethod.subtype === 'express';
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
@@ -211,18 +214,22 @@ function createPaymentRequest(args) {
       };
     }
 
-    // Create billing and delivery address objects for new orders,
-    // no address fields for credit cards through My Account
-    paymentRequest = AdyenHelper.createAddressObjects(
-      order,
-      paymentMethodType,
-      paymentRequest,
-    );
-    // Create shopper data fields
-    paymentRequest = AdyenHelper.createShopperObject({
-      order,
-      paymentRequest,
-    });
+    // Address object and shopper data fields are filled later for PayPal Express
+    if (!isPayPalExpress) {
+      // Create billing and delivery address objects for new orders,
+      // no address fields for credit cards through My Account
+      paymentRequest = AdyenHelper.createAddressObjects(
+        order,
+        paymentMethodType,
+        paymentRequest,
+      );
+
+      // Create shopper data fields
+      paymentRequest = AdyenHelper.createShopperObject({
+        order,
+        paymentRequest,
+      });
+    }
 
     if (session.privacy.adyenFingerprint) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
