@@ -53,6 +53,18 @@ jest.mock('*/cartridge/adyen/scripts/expressPayments/shippingMethods', () => {
   return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/shippingMethods');
 }, {virtual: true});
 
+jest.mock('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall');
+  }, {virtual: true});
+
+jest.mock('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall');
+}, {virtual: true});
+
+jest.mock('*/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData', () => {
+	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData');
+}, {virtual: true});
+
 jest.mock('*/cartridge/adyen/scripts/partialPayments/fetchGiftCards', () => {
 	return require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/partialPayments/fetchGiftCards');
   }, {virtual: true});

@@ -126,6 +126,28 @@ server.post(
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
 /**
+ * Called by Adyen to make /payments call for PayPal Express flow
+ */
+server.post(
+  'MakeExpressPaymentsCall',
+  server.middleware.https,
+  adyen.makeExpressPaymentsCall,
+);
+
+/**
+ * Called by Adyen to make /paymentsDetails for PayPal Express flow
+ */
+server.post(
+  'MakeExpressPaymentDetailsCall',
+  server.middleware.https,
+  adyen.makeExpressPaymentDetailsCall,
+);
+
+/**
+ * Called by Adyen to save the shopper data coming from PayPal Express
+ */
+server.post('SaveShopperData', server.middleware.https, adyen.saveShopperData);
+/**
  * Called by Adyen to fetch applied giftcards
  */
 server.get('fetchGiftCards', server.middleware.https, adyen.fetchGiftCards);

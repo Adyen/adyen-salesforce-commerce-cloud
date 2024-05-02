@@ -60,6 +60,9 @@
                 pdict.AdyenHelper.getBasketAmount().currencyCode
             )}";
             window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+            window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
+            window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
+            window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
         </script>
         <div class="mb-sm-3">
             <a

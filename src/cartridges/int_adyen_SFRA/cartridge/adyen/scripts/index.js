@@ -13,6 +13,9 @@ const fetchGiftCards = require('*/cartridge/adyen/scripts/partialPayments/fetchG
 const showConfirmationPaymentFromComponent = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmationPaymentFromComponent');
 const showConfirmation = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmation');
 const notify = require('*/cartridge/adyen/webhooks/notify');
+const makeExpressPaymentsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall');
+const makeExpressPaymentDetailsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall');
+const saveShopperData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData');
 
 module.exports = {
   getCheckoutPaymentMethods,
@@ -30,4 +33,7 @@ module.exports = {
   showConfirmation,
   showConfirmationPaymentFromComponent,
   notify,
+  makeExpressPaymentsCall,
+  makeExpressPaymentDetailsCall,
+  saveShopperData,
 };
