@@ -1,4 +1,5 @@
 const BasketMgr = require('dw/order/BasketMgr');
+const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
@@ -13,14 +14,25 @@ function callGetShippingMethods(req, res, next) {
         city: req.querystring.city,
         countryCode: req.querystring.countryCode,
         stateCode: req.querystring.stateCode,
+        postalCode: req.querystring.postalCode,
       };
     }
     const currentBasket = BasketMgr.getCurrentBasket();
+    const shipment = currentBasket.getDefaultShipment();
+    Transaction.wrap(() => {
+      let { shippingAddress } = shipment;
+      if (!shippingAddress) {
+        shippingAddress = currentBasket
+          .getDefaultShipment()
+          .createShippingAddress();
+      }
+      shippingAddress.setCity(address.city);
+      shippingAddress.setPostalCode(address.postalCode);
+      shippingAddress.setStateCode(address.stateCode);
+      shippingAddress.setCountryCode(address.countryCode);
+    });
     const currentShippingMethodsModels =
-      AdyenHelper.getApplicableShippingMethods(
-        currentBasket.getDefaultShipment(),
-        address,
-      );
+      AdyenHelper.getApplicableShippingMethods(shipment, address);
     res.json({
       shippingMethods: currentShippingMethodsModels,
     });
