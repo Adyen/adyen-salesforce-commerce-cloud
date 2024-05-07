@@ -61,7 +61,7 @@ describe('Shipping methods', () => {
     const setPostalCodeMock = jest.fn()
     const setStateCodeMock = jest.fn()
     const setCountryCodeMock = jest.fn()
-    const currentBasket = {
+    const currentBasketMock = {
       getDefaultShipment: jest.fn(() =>({
         createShippingAddress: jest.fn(() => ({
           setCity: setCityMock,
@@ -71,7 +71,7 @@ describe('Shipping methods', () => {
         }))
       })),
     };
-    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
+    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasketMock);
     callGetShippingMethods(req, res, next);
     expect(setCityMock).toHaveBeenCalledWith('Amsterdam');
     expect(setPostalCodeMock).toHaveBeenCalledWith('1001');
