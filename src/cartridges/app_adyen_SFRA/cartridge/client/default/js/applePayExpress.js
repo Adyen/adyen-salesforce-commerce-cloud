@@ -233,6 +233,7 @@ initializeCheckout()
             country: shippingContact.country,
             countryCode: shippingContact.countryCode,
             stateCode: shippingContact.administrativeArea,
+            postalCode: shippingContact.postalCode,
           })}`,
         );
         if (shippingMethods.ok) {
