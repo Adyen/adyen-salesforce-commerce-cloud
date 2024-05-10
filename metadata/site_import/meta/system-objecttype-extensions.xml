@@ -44,6 +44,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			<attribute-definition attribute-id="Adyen_paypalExpressResponse">
+                <display-name xml:lang="x-default">Adyen PayPal Express Response</display-name>
+                <description xml:lang="x-default">PayPal Express response used to render the confirmation form</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayments">
@@ -53,6 +61,7 @@
                 <attribute attribute-id="Adyen_paymentMethod"/>
                 <attribute attribute-id="Adyen_value"/>
                 <attribute attribute-id="Adyen_donationAmount"/>
+				<attribute attribute-id="Adyen_paypalExpressResponse"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

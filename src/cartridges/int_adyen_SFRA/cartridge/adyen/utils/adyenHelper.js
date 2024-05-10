@@ -32,6 +32,7 @@ const collections = require('*/cartridge/scripts/util/collections');
 const ShippingMgr = require('dw/order/ShippingMgr');
 const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
+const OrderMgr = require('dw/order/OrderMgr');
 const StringUtils = require('dw/util/StringUtils');
 //script includes
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
@@ -339,6 +340,13 @@ let adyenHelperObj = {
     return false;
   },
 
+  isPayPalExpress(paymentMethod){
+	if (paymentMethod.type === 'paypal' && paymentMethod.subtype === 'express'){
+		return true;
+	}
+	return false;
+  },
+
   // Get stored card token of customer saved card based on matched cardUUID
   getCardToken(cardUUID, customer) {
     let token = '';
@@ -503,6 +511,13 @@ let adyenHelperObj = {
       reference = order.getOrderNo();
       orderToken = order.getOrderToken();
     }
+
+	// creates order number to be utilized for PayPal express
+	if (adyenHelperObj.isPayPalExpress){
+		const paypalExpressOrderNo = OrderMgr.createOrderNo();
+		session.privacy.paypalExpressOrderNo = paypalExpressOrderNo;
+		reference = paypalExpressOrderNo;
+	}
 
     let signature = '';
     //Create signature to verify returnUrl if there is an order
