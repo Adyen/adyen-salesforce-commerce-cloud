@@ -104,6 +104,7 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   Transaction.wrap(() => {
     order.custom.Adyen_pspReference = result.pspReference;
     order.custom.Adyen_eventCode = result.resultCode;
+    order.custom.Adyen_paypalExpressResponse = null;
   });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
@@ -156,7 +157,6 @@ function handlePayment(stateData, order, options) {
 
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
-    order.custom.Adyen_paypalExpressResponse = null;
   });
 
   return handlePaymentResult(
