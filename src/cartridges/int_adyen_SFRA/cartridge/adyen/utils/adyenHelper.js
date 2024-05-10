@@ -513,7 +513,7 @@ let adyenHelperObj = {
     }
 
 	// creates order number to be utilized for PayPal express
-	if (adyenHelperObj.isPayPalExpress){
+	if (adyenHelperObj.isPayPalExpress(stateData.paymentMethod)){
 		const paypalExpressOrderNo = OrderMgr.createOrderNo();
 		session.privacy.paypalExpressOrderNo = paypalExpressOrderNo;
 		reference = paypalExpressOrderNo;

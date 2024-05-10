@@ -156,6 +156,7 @@ function handlePayment(stateData, order, options) {
 
   Transaction.wrap(() => {
     adyenPaymentInstrument.custom.adyenPaymentData = null;
+	order.custom.Adyen_paypalExpressResponse = null;
   });
 
   return handlePaymentResult(
