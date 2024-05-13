@@ -24,7 +24,7 @@ function callPaymentFromComponent(data, component) {
   });
 }
 
-function saveShopperDetails(details) {
+async function saveShopperDetails(details) {
   return $.ajax({
     url: window.saveShopperData,
     type: 'post',
@@ -76,7 +76,7 @@ async function mountPaypalComponent() {
         callPaymentFromComponent(state.data, component);
       },
       onShopperDetails: async (shopperDetails, rawData, actions) => {
-        saveShopperDetails(shopperDetails);
+        await saveShopperDetails(shopperDetails);
         actions.resolve();
       },
       onAdditionalDetails: (state) => {

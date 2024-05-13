@@ -590,6 +590,9 @@ let adyenHelperObj = {
       case 'amazonpay':
         methodName = 'Amazon Pay';
         break;
+	  case 'paypal':
+		methodName = 'PayPal';
+		break;
       default:
         methodName = paymentMethod;
     }
