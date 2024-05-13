@@ -19,8 +19,6 @@ function callPaymentFromComponent(data, component) {
       data: JSON.stringify(data),
     },
     success(response) {
-      helpers.createShowConfirmationForm(window.showConfirmationAction);
-      helpers.setOrderFormData(response);
       handlePaypalResponse(response, component);
     },
   });
@@ -43,6 +41,10 @@ function makeExpressPaymentDetailsCall(data) {
     data: JSON.stringify({ data }),
     contentType: 'application/json; charset=utf-8',
     async: false,
+    success(response) {
+      helpers.createShowConfirmationForm(window.showConfirmationAction);
+      helpers.setOrderFormData(response);
+    },
   });
 }
 
@@ -79,6 +81,9 @@ async function mountPaypalComponent() {
       },
       onAdditionalDetails: (state) => {
         makeExpressPaymentDetailsCall(state.data);
+        document.querySelector('#additionalDetailsHidden').value =
+          JSON.stringify(state.data);
+        document.querySelector('#showConfirmationForm').submit();
       },
     };
 

@@ -2,7 +2,6 @@ const URLUtils = require('dw/web/URLUtils');
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const BasketMgr = require('dw/order/BasketMgr');
-const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
@@ -60,25 +59,26 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     const request = JSON.parse(req.body);
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
-      request.data,
-    );
+    const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 
     setBillingAndShippingAddress(currentBasket);
-    const order = OrderMgr.createOrder(currentBasket);
+    const order = OrderMgr.createOrder(
+      currentBasket,
+      session.privacy.paypalExpressOrderNo,
+    );
     const fraudDetectionStatus = { status: 'success' };
     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
       AdyenLogs.error_log('Failed to place the PayPal express order');
     }
 
-    const response = AdyenHelper.createAdyenCheckoutResponse(
-      paymentsDetailsResponse,
-    );
-
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;
-    res.json(response);
+    // Storing the paypal express response to make use of show confirmation logic
+    Transaction.wrap(() => {
+      order.custom.Adyen_paypalExpressResponse = JSON.stringify(response);
+    });
+    res.json({ orderNo: response.orderNo, orderToken: response.orderToken });
     return next();
   } catch (e) {
     AdyenLogs.error_log(

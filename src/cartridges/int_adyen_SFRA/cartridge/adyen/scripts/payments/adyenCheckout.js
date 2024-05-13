@@ -155,9 +155,9 @@ function createPaymentRequest(args) {
 
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     const paymentMethodType = paymentRequest.paymentMethod.type;
-    const isPayPalExpress =
-      paymentRequest.paymentMethod.type === 'paypal' &&
-      paymentRequest.paymentMethod.subtype === 'express';
+    const isPayPalExpress = AdyenHelper.isPayPalExpress(
+      paymentRequest.paymentMethod,
+    );
 
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
