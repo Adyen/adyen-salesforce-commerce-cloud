@@ -26,7 +26,6 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
-
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -149,16 +148,13 @@ function createPaymentRequest(args) {
 
     // Create request object with payment details
     let paymentRequest = AdyenHelper.createAdyenRequestObject(
-      order,
+      order.getOrderNo(),
+      order.getOrderToken(),
       paymentInstrument,
     );
 
-    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     const paymentMethodType = paymentRequest.paymentMethod.type;
-    const isPayPalExpress = AdyenHelper.isPayPalExpress(
-      paymentRequest.paymentMethod,
-    );
-
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData =
@@ -188,7 +184,6 @@ function createPaymentRequest(args) {
         paymentRequest.installments = { value: numOfInstallments };
       }
     }
-
     const value = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount,
     ).getValueOrNull();
@@ -214,22 +209,19 @@ function createPaymentRequest(args) {
       };
     }
 
-    // Address object and shopper data fields are filled later for PayPal Express
-    if (!isPayPalExpress) {
-      // Create billing and delivery address objects for new orders,
-      // no address fields for credit cards through My Account
-      paymentRequest = AdyenHelper.createAddressObjects(
-        order,
-        paymentMethodType,
-        paymentRequest,
-      );
+    // Create billing and delivery address objects for new orders,
+    // no address fields for credit cards through My Account
+    paymentRequest = AdyenHelper.createAddressObjects(
+      order,
+      paymentMethodType,
+      paymentRequest,
+    );
 
-      // Create shopper data fields
-      paymentRequest = AdyenHelper.createShopperObject({
-        order,
-        paymentRequest,
-      });
-    }
+    // Create shopper data fields
+    paymentRequest = AdyenHelper.createShopperObject({
+      order,
+      paymentRequest,
+    });
 
     if (session.privacy.adyenFingerprint) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
@@ -280,7 +272,6 @@ function createPaymentRequest(args) {
       paymentInstrument,
       paymentRequest.paymentMethod,
     );
-    // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     AdyenLogs.error_log(
@@ -325,6 +316,55 @@ function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
   );
 }
 
+function createPaypalUpdateOrderRequest(
+  pspReference,
+  currentBasket,
+  currentShippingMethods,
+  paymentData,
+) {
+  const adjustedShippingTotalGrossPrice = {
+    currency: currentBasket.currencyCode,
+    value: AdyenHelper.getCurrencyValueForApi(
+      currentBasket.getAdjustedShippingTotalGrossPrice(),
+    ).value,
+  };
+  const adjustedMerchandizeTotalGrossPrice = {
+    currency: currentBasket.currencyCode,
+    value:
+      AdyenHelper.getCurrencyValueForApi(
+        currentBasket.getAdjustedMerchandizeTotalGrossPrice(),
+      ).value + adjustedShippingTotalGrossPrice.value,
+  };
+  const deliveryMethods = currentShippingMethods.map((shippingMethod) => {
+    const { currencyCode, value } = shippingMethod.shippingCost;
+    return {
+      reference: shippingMethod.ID,
+      description: shippingMethod.displayName,
+      type: 'Shipping',
+      amount: {
+        currency: currencyCode,
+        value: AdyenHelper.getCurrencyValueForApi(
+          new dw.value.Money(value, currencyCode),
+        ).value,
+      },
+      selected: shippingMethod.selected,
+    };
+  });
+  return {
+    pspReference,
+    paymentData,
+    amount: adjustedMerchandizeTotalGrossPrice,
+    deliveryMethods,
+  };
+}
+
+function doPaypalUpdateOrderCall(paypalUpdateOrderRequest) {
+  return AdyenHelper.executeCall(
+    constants.SERVICE.PAYPALUPDATEORDER,
+    paypalUpdateOrderRequest,
+  );
+}
+
 module.exports = {
   createPaymentRequest,
   doPaymentsCall,
@@ -332,4 +372,6 @@ module.exports = {
   doCheckBalanceCall,
   doCancelPartialPaymentOrderCall,
   doCreatePartialPaymentOrderCall,
+  createPaypalUpdateOrderRequest,
+  doPaypalUpdateOrderCall,
 };

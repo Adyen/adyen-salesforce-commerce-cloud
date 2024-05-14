@@ -24,19 +24,21 @@ const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
 const Encoding = require('dw/crypto/Encoding');
 const CustomerMgr = require('dw/customer/CustomerMgr');
-const constants = require('*/cartridge/adyen/config/constants');
-const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const Transaction = require('dw/system/Transaction');
 const UUIDUtils = require('dw/util/UUIDUtils');
-const collections = require('*/cartridge/scripts/util/collections');
 const ShippingMgr = require('dw/order/ShippingMgr');
-const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
-const OrderMgr = require('dw/order/OrderMgr');
 const StringUtils = require('dw/util/StringUtils');
-//script includes
-const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const Money = require('dw/value/Money');
 const BasketMgr = require('dw/order/BasketMgr');
+const TaxMgr = require('dw/order/TaxMgr');
+const ShippingLocation = require('dw/order/ShippingLocation');
+//script includes
+const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
+const collections = require('*/cartridge/scripts/util/collections');
+const constants = require('*/cartridge/adyen/config/constants');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /* eslint no-var: off */
 let adyenHelperObj = {
@@ -81,11 +83,28 @@ let adyenHelperObj = {
 
   getShippingCost(shippingMethod, shipment) {
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
-    const shippingCost = shipmentShippingModel.getShippingCost(shippingMethod);
+    let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
+    collections.forEach(shipment.getProductLineItems(), (lineItem) => {
+      const product = lineItem.getProduct();
+      const productQuantity = lineItem.getQuantity();
+      const productShippingModel = ShippingMgr.getProductShippingModel(product);
+      let productShippingCost = productShippingModel.getShippingCost(shippingMethod)
+        ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity)
+        : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
+      shippingCost = shippingCost.add(productShippingCost);
+    })
+    shippingCost = shippingCost.addRate(this.getShippingTaxRate(shippingMethod, shipment));
     return {
-      value: shippingCost.amount.value,
-      currencyCode: shippingCost.amount.currencyCode,
+      value: shippingCost.getValue(),
+      currencyCode: shippingCost.getCurrencyCode(),
     };
+  },
+
+  getShippingTaxRate(shippingMethod, shipment) {
+    let { shippingAddress } = shipment;
+    const taxClassID = shippingMethod.getTaxClassID();
+    const taxJurisdictionID = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress));
+    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
 
   getShippingMethods(shipment, address) {
@@ -135,26 +154,6 @@ let adyenHelperObj = {
     });
 
     return filteredMethods;
-  },
-
-  callGetShippingMethods(shippingAddress) {
-    let address;
-    try {
-        address = {
-          city: shippingAddress.city,
-          countryCode: shippingAddress.countryCode,
-          stateCode: shippingAddress.stateOrRegion,
-        };
-      const currentBasket = BasketMgr.getCurrentBasket();
-      const currentShippingMethodsModels = this.getApplicableShippingMethods(
-        currentBasket.getDefaultShipment(),
-        address,
-      );
-      return currentShippingMethodsModels;
-    } catch (error) {
-      AdyenLogs.error_log('Failed to fetch shipping methods');
-      AdyenLogs.error_log(error);
-    }
   },
 
   getAdyenGivingConfig(order) {
@@ -295,7 +294,7 @@ let adyenHelperObj = {
     return returnValue;
   },
 
-  // determines whether Adyen Giving is available based on the donation token 
+  // determines whether Adyen Giving is available based on the donation token
   isAdyenGivingAvailable(paymentInstrument) {
     // Adyen giving is only available for BCMC in POS
     return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc';
@@ -499,35 +498,18 @@ let adyenHelperObj = {
   },
 
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject(order, paymentInstrument) {
+  createAdyenRequestObject(orderNo, orderToken, paymentInstrument) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
-    let reference = 'recurringPayment-account';
-    let orderToken = 'recurringPayment-token';
-    if (order && order.getOrderNo()) {
-      reference = order.getOrderNo();
-      orderToken = order.getOrderToken();
-    }
-
-	// creates order number to be utilized for PayPal express
-	if (adyenHelperObj.isPayPalExpress(stateData.paymentMethod)){
-		const paypalExpressOrderNo = OrderMgr.createOrderNo();
-		session.privacy.paypalExpressOrderNo = paypalExpressOrderNo;
-		reference = paypalExpressOrderNo;
-	}
-
-    let signature = '';
     //Create signature to verify returnUrl if there is an order
-    if (order && order.getUUID()) {
-      signature = adyenHelperObj.createSignature(
+    let signature = adyenHelperObj.createSignature(
         paymentInstrument,
-        order.getUUID(),
-        reference,
+        UUIDUtils.createUUID(),
+        orderNo,
       );
-    }
 
     // Add recurringProcessingModel in case shopper wants to save the card from checkout
     if (stateData.storePaymentMethod){
@@ -542,11 +524,11 @@ let adyenHelperObj = {
     }
 
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
-    stateData.reference = reference;
+    stateData.reference = orderNo;
     stateData.returnUrl = URLUtils.https(
       'Adyen-ShowConfirmation',
       'merchantReference',
-      reference,
+      orderNo,
       'signature',
       signature,
       'orderToken',

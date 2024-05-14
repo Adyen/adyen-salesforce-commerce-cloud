@@ -11,6 +11,7 @@ module.exports = {
   SCHEME: 'scheme',
   GIROPAY: 'giropay',
   APPLE_PAY: 'applepay',
+  PAYPAL: 'paypal',
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },

@@ -20,12 +20,19 @@ server.post(
   adyen.paymentsDetails,
 );
 
-server.get(
+/**
+ *  Save shipping address to currentBasket and
+ *  get applicable shipping methods from an Express component in the SFCC session
+ */
+server.post(
   'ShippingMethods',
   server.middleware.https,
   adyen.callGetShippingMethods,
 );
 
+/**
+ *  Save selected shipping method to currentBasket from an Express component in the SFCC session
+ */
 server.post(
   'SelectShippingMethod',
   server.middleware.https,
