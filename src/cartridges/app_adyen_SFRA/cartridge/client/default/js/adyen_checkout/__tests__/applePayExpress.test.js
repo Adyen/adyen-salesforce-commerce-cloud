@@ -8,20 +8,8 @@ const {
   handleApplePayResponse,
   callPaymentFromComponent,
   formatCustomerObject,
-  createApplePayButton,
-  initializeCheckout,
 } = require('../../applePayExpress');
 
-// global.AdyenCheckout = () => {
-// 	return Promise.resolve({
-// 	  create: () => {
-// 		return { mount: jest.fn() };
-// 	  },
-// 	  createFromAction: () => {
-// 		return { mount: jest.fn() };
-// 	  },
-// 	});
-//   };
 
 beforeEach(() => {
   jest.clearAllMocks();
