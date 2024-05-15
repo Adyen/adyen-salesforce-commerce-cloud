@@ -307,4 +307,5 @@ module.exports = {
   handleError,
   handleApplePayResponse,
   callPaymentFromComponent,
+  formatCustomerObject,
 };
