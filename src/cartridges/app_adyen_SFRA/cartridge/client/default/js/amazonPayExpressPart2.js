@@ -35,10 +35,12 @@ function constructAddress(shopperDetails) {
   return addressStr;
 }
 
-function positionElementBefore(elm) {
-  const addressDetails = document.querySelector('#amazonPayAddressDetails');
-  const containerNode = addressDetails.parentNode.parentNode.parentNode;
-  containerNode.insertBefore(addressDetails, document.querySelector(elm));
+function positionElementBefore(elm, target) {
+  const targetNode = document.querySelector(target);
+  const addressDetails = document.querySelector(elm);
+  if (targetNode && addressDetails) {
+    targetNode.parentNode.insertBefore(addressDetails, targetNode);
+  }
 }
 
 function wrapChangeAddressButton() {
@@ -63,7 +65,7 @@ function showAddressDetails(shopperDetails) {
   addressElement.innerText = addressText;
   paymentDiscriptorElement.innerText = shopperDetails.paymentDescriptor;
 
-  positionElementBefore('.coupons-and-promos');
+  positionElementBefore('#amazonPayAddressDetails', '.coupons-and-promos');
 
   wrapChangeAddressButton();
 
@@ -117,4 +119,10 @@ async function mountAmazonPayComponent() {
 
 mountAmazonPayComponent();
 
-module.exports = saveShopperDetails;
+module.exports = {
+  saveShopperDetails,
+  constructAddress,
+  positionElementBefore,
+  wrapChangeAddressButton,
+  showAddressDetails,
+};
