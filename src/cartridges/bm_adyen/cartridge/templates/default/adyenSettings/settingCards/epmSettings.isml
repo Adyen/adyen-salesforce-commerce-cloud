@@ -4,7 +4,7 @@
     window.dragIcon = "${URLUtils.staticURL('icons/drag.svg')}";
     window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
     window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
-	window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
+    window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};

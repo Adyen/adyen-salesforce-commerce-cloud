@@ -56,8 +56,8 @@
             window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
             window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
             window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
-			window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
-			window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
+            window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+            window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
             window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
                 pdict.AdyenHelper.getBasketAmount().currencyCode
             )}";

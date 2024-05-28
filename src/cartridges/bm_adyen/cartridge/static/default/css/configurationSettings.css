@@ -459,7 +459,7 @@ ul{
 .draggable {
     cursor: move;
     display: flex;
-	flex-direction: column; /* Set to column direction */
+    flex-direction: column;
     align-items: flex-start; /* Align items to the start */
     justify-content: space-between;
     padding: 15px;
@@ -520,10 +520,10 @@ ul{
 }
 
 .additional-item-container .additional-switch-button{
-	position: absolute;
-	left: 89%;
+    position: absolute;
+    left: 89%;
 }
 
 .additional-item{
-	margin-left: 48px;
+    margin-left: 48px;
 }
