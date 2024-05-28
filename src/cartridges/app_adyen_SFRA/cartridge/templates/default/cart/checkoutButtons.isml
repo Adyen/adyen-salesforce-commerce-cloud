@@ -56,6 +56,8 @@
             window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
             window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
             window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
+			window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+			window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
             window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
                 pdict.AdyenHelper.getBasketAmount().currencyCode
             )}";
@@ -90,7 +92,8 @@
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
             <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
         </isif>
-        <!--This has to be conditional when adding the BM manager enable/disable feature-->
-        <script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
+        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isPayPalExpressEnabled()}">
+            <script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
+        </isif>
     </iselse>
 </isif>
