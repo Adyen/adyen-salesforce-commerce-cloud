@@ -42,8 +42,6 @@ function makeExpressPaymentsCall(req, res, next) {
     paymentRequest.lineItems = paypalHelper.getLineItems({
       Basket: currentBasket,
     });
-    AdyenLogs.error_log('express-paymentRequest');
-    AdyenLogs.error_log(JSON.stringify(paymentRequest));
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.doPaymentsCall(

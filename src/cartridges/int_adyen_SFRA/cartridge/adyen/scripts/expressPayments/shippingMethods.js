@@ -2,12 +2,28 @@ const BasketMgr = require('dw/order/BasketMgr');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
-const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { PAYMENTMETHODS } = require('*/cartridge/adyen/config/constants');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+
+function updateShippingAddress(currentBasket, address) {
+  if (address) {
+    let { shippingAddress } = currentBasket.getDefaultShipment();
+    Transaction.wrap(() => {
+      if (!shippingAddress) {
+        shippingAddress = currentBasket
+          .getDefaultShipment()
+          .createShippingAddress();
+      }
+      shippingAddress.setCity(address?.city);
+      shippingAddress.setPostalCode(address?.postalCode);
+      shippingAddress.setStateCode(address?.stateCode);
+      shippingAddress.setCountryCode(address?.countryCode);
+    });
+  }
+}
 /**
  * Make a request to Adyen to get shipping methods
  */
@@ -25,21 +41,8 @@ function callGetShippingMethods(req, res, next) {
 
       return next();
     }
-    const shipment = currentBasket.getDefaultShipment();
-    Transaction.wrap(() => {
-      let { shippingAddress } = shipment;
-      if (!shippingAddress) {
-        shippingAddress = currentBasket
-          .getDefaultShipment()
-          .createShippingAddress();
-      }
-      shippingAddress.setCity(address.city);
-      shippingAddress.setPostalCode(address.postalCode);
-      shippingAddress.setStateCode(address.stateCode);
-      shippingAddress.setCountryCode(address.countryCode);
-    });
-    // shippingHelper.ensureShipmentHasMethod(shipment);
-    basketCalculationHelpers.calculateTotals(currentBasket);
+    updateShippingAddress(currentBasket, address);
+    currentBasket.updateTotals();
     const currentShippingMethodsModels =
       AdyenHelper.getApplicableShippingMethods(
         currentBasket.getDefaultShipment(),

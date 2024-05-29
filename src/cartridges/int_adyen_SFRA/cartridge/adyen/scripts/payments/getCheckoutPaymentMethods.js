@@ -9,12 +9,12 @@ const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPa
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getCountryCode(currentBasket, locale) {
-  const countryCode = Locale.getLocale(locale.id).country;
-  const firstItem = currentBasket?.getShipments()?.[0];
-  if (firstItem?.shippingAddress) {
-    return firstItem.shippingAddress.getCountryCode().value;
+  let countryCode;
+  const { shippingAddress } = currentBasket.getDefaultShipment();
+  if (shippingAddress) {
+    countryCode = shippingAddress.getCountryCode().value;
   }
-  return countryCode;
+  return countryCode || Locale.getLocale(locale.id).country;
 }
 
 function getConnectedTerminals() {
@@ -27,11 +27,7 @@ function getConnectedTerminals() {
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const countryCode =
-      currentBasket.getShipments().length > 0 &&
-      currentBasket.getShipments()[0].shippingAddress
-        ? currentBasket.getShipments()[0].shippingAddress.getCountryCode().value
-        : getCountryCode(currentBasket, req.locale).value;
+    const countryCode = getCountryCode(currentBasket, req.locale).value;
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
     const connectedTerminals = JSON.parse(getConnectedTerminals());
     const currency = currentBasket.getTotalGrossPrice().currencyCode;
