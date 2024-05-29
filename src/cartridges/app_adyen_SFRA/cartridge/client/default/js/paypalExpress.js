@@ -118,11 +118,13 @@ function getPaypalButtonConfig(paypalConfig) {
       actions.resolve();
     },
     onAdditionalDetails: (state) => {
+      $.spinner().start();
       makeExpressPaymentDetailsCall(state.data);
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
         state.data,
       );
       document.querySelector('#showConfirmationForm').submit();
+      $.spinner().stop();
     },
     onShippingAddressChange: async (data, actions, component) => {
       await handleShippingAddressChange(data, actions, component);
