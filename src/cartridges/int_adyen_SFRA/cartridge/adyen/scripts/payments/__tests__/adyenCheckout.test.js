@@ -8,12 +8,14 @@ describe('AdyenCheckout', () => {
                 custom: {},
                 setPaymentStatus: jest.fn(),
                 setExportStatus: jest.fn(),
+                getOrderNo: jest.fn(),
+                getOrderToken: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
                     adyenPaymentData: "{}",
                     adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' + 
+                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
                         '"remainingAmount":{"currency":"EUR","value":20799},' +
                         '"amount":{"currency":"EUR","value":1000}}'
 
@@ -39,12 +41,14 @@ describe('AdyenCheckout', () => {
                 custom: {},
                 setPaymentStatus: jest.fn(),
                 setExportStatus: jest.fn(),
+                getOrderNo: jest.fn(),
+                getOrderToken: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
                     adyenPaymentData: "{}",
                     adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' + 
+                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
                         '"remainingAmount":{"currency":"EUR","value":20799},' +
                         '"amount":{"currency":"EUR","value":25799}}'
 
@@ -70,12 +74,14 @@ describe('AdyenCheckout', () => {
                 custom: {},
                 setPaymentStatus: jest.fn(),
                 setExportStatus: jest.fn(),
+                getOrderNo: jest.fn(),
+                getOrderToken: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
                     adyenPaymentData: "{}",
                     adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' + 
+                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
                         '"remainingAmount":{"currency":"USD","value":20799},' +
                         '"amount":{"currency":"USD","value":1000}}'
 

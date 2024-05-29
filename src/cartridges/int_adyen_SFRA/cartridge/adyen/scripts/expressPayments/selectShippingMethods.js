@@ -9,6 +9,7 @@ const { PAYMENTMETHODS } = require('*/cartridge/adyen/config/constants');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 /**
  * Make a request to Adyen to select shipping methods
@@ -50,8 +51,11 @@ function callSelectShippingMethod(req, res, next) {
     if (paymentMethodType === PAYMENTMETHODS.PAYPAL) {
       const currentShippingMethodsModels =
         AdyenHelper.getApplicableShippingMethods(shipment);
+      if (!currentShippingMethodsModels?.length) {
+        throw new Error('No applicable shipping methods found');
+      }
       const paypalUpdateOrderResponse = adyenCheckout.doPaypalUpdateOrderCall(
-        adyenCheckout.createPaypalUpdateOrderRequest(
+        paypalHelper.createPaypalUpdateOrderRequest(
           session.privacy.pspReference,
           currentBasket,
           currentShippingMethodsModels,

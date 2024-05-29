@@ -30,7 +30,6 @@ const ShippingMgr = require('dw/order/ShippingMgr');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const StringUtils = require('dw/util/StringUtils');
 const Money = require('dw/value/Money');
-const BasketMgr = require('dw/order/BasketMgr');
 const TaxMgr = require('dw/order/TaxMgr');
 const ShippingLocation = require('dw/order/ShippingLocation');
 //script includes
@@ -81,6 +80,12 @@ let adyenHelperObj = {
     return null;
   },
 
+  /**
+   * Returns shippingCost including taxes for a specific Shipment / ShippingMethod pair including the product level shipping cost if any
+   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
+   */
   getShippingCost(shippingMethod, shipment) {
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
@@ -100,6 +105,12 @@ let adyenHelperObj = {
     };
   },
 
+  /**
+   * Returns tax rate for specific Shipment / ShippingMethod pair.
+   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
+   */
   getShippingTaxRate(shippingMethod, shipment) {
     let { shippingAddress } = shipment;
     const taxClassID = shippingMethod.getTaxClassID();
@@ -107,6 +118,12 @@ let adyenHelperObj = {
     return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
 
+  /**
+   * Returns applicable shipping methods for specific Shipment / ShippingAddress pair.
+   * @param {dw.order.OrderAddress} address - the shipping address of the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {dw.util.ArrayList<dw.order.ShippingMethod> | null} - list of applicable shipping methods or null
+   */
   getShippingMethods(shipment, address) {
     if (!shipment) return null;
 
@@ -124,11 +141,33 @@ let adyenHelperObj = {
     return shippingMethods;
   },
 
+  /**
+   * Returns shipment UUID for the shipment.
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {String | null} - shipment UUID or null
+   */
   getShipmentUUID(shipment) {
     if (!shipment) return null;
     return shipment.UUID;
   },
 
+  /**
+   * @typedef {object} ApplicableShippingMethodModel
+   * @property {string|null} ID
+   * @property {string|null} displayName
+   * @property {string|null} estimatedArrivalTime
+   * @property {boolean|null} default
+   * @property {boolean|null} [selected]
+   * @property {{currencyCode: String, value: String}} shippingCost
+   * @property {string|null} shipmentUUID
+   */
+
+  /**
+   * Returns applicable shipping methods(excluding store pickup methods) for specific Shipment / ShippingAddress pair.
+   * @param {dw.order.OrderAddress} address - the shipping address of the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {dw.util.ArrayList<ApplicableShippingMethodModel> | null} - list of applicable shipping methods or null
+   */
   getApplicableShippingMethods(shipment, address) {
     const shippingMethods = this.getShippingMethods(shipment, address);
     if (!shippingMethods) {

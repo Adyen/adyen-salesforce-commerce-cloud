@@ -34,7 +34,7 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/adyen/scripts/payments/adye
 const adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const paypalHelper = require('*/cartridge/adyen/scripts/payments/paypalHelper');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -316,48 +316,6 @@ function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
   );
 }
 
-function createPaypalUpdateOrderRequest(
-  pspReference,
-  currentBasket,
-  currentShippingMethods,
-  paymentData,
-) {
-  const adjustedShippingTotalGrossPrice = {
-    currency: currentBasket.currencyCode,
-    value: AdyenHelper.getCurrencyValueForApi(
-      currentBasket.getAdjustedShippingTotalGrossPrice(),
-    ).value,
-  };
-  const adjustedMerchandizeTotalGrossPrice = {
-    currency: currentBasket.currencyCode,
-    value:
-      AdyenHelper.getCurrencyValueForApi(
-        currentBasket.getAdjustedMerchandizeTotalGrossPrice(),
-      ).value + adjustedShippingTotalGrossPrice.value,
-  };
-  const deliveryMethods = currentShippingMethods.map((shippingMethod) => {
-    const { currencyCode, value } = shippingMethod.shippingCost;
-    return {
-      reference: shippingMethod.ID,
-      description: shippingMethod.displayName,
-      type: 'Shipping',
-      amount: {
-        currency: currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(
-          new dw.value.Money(value, currencyCode),
-        ).value,
-      },
-      selected: shippingMethod.selected,
-    };
-  });
-  return {
-    pspReference,
-    paymentData,
-    amount: adjustedMerchandizeTotalGrossPrice,
-    deliveryMethods,
-  };
-}
-
 function doPaypalUpdateOrderCall(paypalUpdateOrderRequest) {
   return AdyenHelper.executeCall(
     constants.SERVICE.PAYPALUPDATEORDER,
@@ -372,6 +330,5 @@ module.exports = {
   doCheckBalanceCall,
   doCancelPartialPaymentOrderCall,
   doCreatePartialPaymentOrderCall,
-  createPaypalUpdateOrderRequest,
   doPaypalUpdateOrderCall,
 };

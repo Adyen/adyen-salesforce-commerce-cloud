@@ -13,10 +13,7 @@ describe('callSelectShippingMethod', () => {
     jest.clearAllMocks();
 
     req = {
-      querystring: {
-      },
-      form: {
-      },
+      body: JSON.stringify({})
     };
 
     res = {
@@ -25,6 +22,10 @@ describe('callSelectShippingMethod', () => {
     };
     next = jest.fn();
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  })
 
   it('should handle the case when there is no current basket', () => {
     currentBasket = BasketMgr.getCurrentBasket.mockReturnValueOnce(null);
@@ -37,13 +38,13 @@ describe('callSelectShippingMethod', () => {
   });
 
   it('should handle the case when there is an error selecting the shipping method', () => {
-    req.querystring.shipmentUUID = 'mocked_uuid';
+    req.body = JSON.stringify({shipmentUUID: 'mocked_uuid'});
     currentBasket = {
       defaultShipment: {},
     };
     BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket.defaultShipment);
     shippingHelper.getShipmentByUUID.mockReturnValueOnce(currentBasket.defaultShipment);
-  
+
     callSelectShippingMethod(req, res, next);
 
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
@@ -75,8 +76,8 @@ describe('callSelectShippingMethod', () => {
       someMethod: jest.fn(),
     };
     CartModel.mockReturnValueOnce(basketModelInstance);
-    
-    callSelectShippingMethod(req, res, next);  
+
+    callSelectShippingMethod(req, res, next);
 
     expect(res.json).toHaveBeenCalledWith({
       ...basketModelInstance,

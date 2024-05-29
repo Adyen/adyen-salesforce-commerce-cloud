@@ -11,21 +11,18 @@ beforeEach(() => {
   jest.clearAllMocks();
 
   req = {
-    querystring: {
+    body: JSON.stringify({address:{
       city: 'Amsterdam',
       countryCode: 'NL',
       stateCode: 'AMS',
       shipmentUUID: 'mocked_uuid',
-    },
-    locale: { id: 'nl_NL' },
-    form: {
-      methodID: 'mocked_methodID',
-    },
+    }}),
   };
 
   res = {
     redirect: jest.fn(),
     json: jest.fn(),
+    setStatusCode: jest.fn(),
   };
 });
 
@@ -50,6 +47,10 @@ describe('Shipping methods', () => {
       new Logger.error('error'),
     );
     callGetShippingMethods(req, res, next);
-    expect(res.json).not.toHaveBeenCalled();
+    expect(res.setStatusCode).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      errorMessage: 'mocked_error.cannot.find.shipping.methods',
+    });
+    expect(next).toHaveBeenCalled();
   });
 });

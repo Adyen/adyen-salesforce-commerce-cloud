@@ -7,7 +7,7 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const paypalHelper = require('*/cartridge/adyen/scripts/payments/paypalHelper');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 function makeExpressPaymentsCall(req, res, next) {
   try {

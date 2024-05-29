@@ -7,6 +7,7 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { PAYMENTMETHODS } = require('*/cartridge/adyen/config/constants');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 /**
  * Make a request to Adyen to get shipping methods
  */
@@ -50,7 +51,7 @@ function callGetShippingMethods(req, res, next) {
     let response = {};
     if (paymentMethodType === PAYMENTMETHODS.PAYPAL) {
       const paypalUpdateOrderResponse = adyenCheckout.doPaypalUpdateOrderCall(
-        adyenCheckout.createPaypalUpdateOrderRequest(
+        paypalHelper.createPaypalUpdateOrderRequest(
           session.privacy.pspReference,
           currentBasket,
           currentShippingMethodsModels,
@@ -71,7 +72,7 @@ function callGetShippingMethods(req, res, next) {
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg(
-        'error.cannot.select.shipping.method',
+        'error.cannot.find.shipping.methods',
         'cart',
         null,
       ),
