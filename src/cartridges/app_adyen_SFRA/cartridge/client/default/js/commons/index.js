@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
 
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
@@ -34,8 +35,9 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
 module.exports.checkIfExpressMethodsAreReady =
   function checkIfExpressMethodsAreReady() {
     const expressMethodsConfig = {
-      applepay: window.isApplePayExpressEnabled === 'true',
-      amazonpay: window.isAmazonPayExpressEnabled === 'true',
+      [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
+      [AMAZON_PAY]: window.isAmazonPayExpressEnabled === 'true',
+      [PAYPAL]: window.isPayPalExpressEnabled === 'true',
     };
     let enabledExpressMethods = [];
     Object.keys(expressMethodsConfig).forEach((key) => {

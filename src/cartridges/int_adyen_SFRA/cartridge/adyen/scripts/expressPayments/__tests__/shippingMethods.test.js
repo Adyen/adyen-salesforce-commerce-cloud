@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+const BasketMgr = require('dw/order/BasketMgr');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 let res;
@@ -33,6 +34,25 @@ afterEach(() => {
 describe('Shipping methods', () => {
   it('Should return available shipping methods', () => {
     const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
+    currentBasket = {
+      getDefaultShipment: jest.fn(() => {
+        return {
+          shippingAddress: {
+            setCity: jest.fn(),
+            setPostalCode: jest.fn(),
+            setStateCode: jest.fn(),
+            setCountryCode: jest.fn(),
+          }}
+      }),
+      getTotalGrossPrice: jest.fn(() => {
+        return {
+          currencyCode: 'EUR',
+          value: '1000'
+        }
+      }),
+      updateTotals: jest.fn(),
+    };
+    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
     callGetShippingMethods(req, res, next);
     expect(AdyenHelper.getApplicableShippingMethods).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith({

@@ -1,4 +1,8 @@
-const { getPaymentMethods } = require('./commons');
+const {
+  getPaymentMethods,
+  updateLoadedExpressMethods,
+  checkIfExpressMethodsAreReady,
+} = require('./commons');
 const helpers = require('./adyen_checkout/helpers');
 const { PAYPAL } = require('./constants');
 
@@ -155,6 +159,8 @@ async function mountPaypalComponent() {
     const paypalButtonConfig = getPaypalButtonConfig(paypalConfig);
     const paypalExpressButton = checkout.create(PAYPAL, paypalButtonConfig);
     paypalExpressButton.mount('#paypal-container');
+    updateLoadedExpressMethods(PAYPAL);
+    checkIfExpressMethodsAreReady();
   } catch (e) {
     //
   }

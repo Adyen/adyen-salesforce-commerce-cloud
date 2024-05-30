@@ -1,6 +1,7 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
+const URLUtils = require('dw/web/URLUtils');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
@@ -27,7 +28,15 @@ function getConnectedTerminals() {
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const countryCode = getCountryCode(currentBasket, req.locale).value;
+    if (!currentBasket) {
+      res.json({
+        error: true,
+        redirectUrl: URLUtils.url('Cart-Show').toString(),
+      });
+
+      return next();
+    }
+    const countryCode = getCountryCode(currentBasket, req.locale);
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
     const connectedTerminals = JSON.parse(getConnectedTerminals());
     const currency = currentBasket.getTotalGrossPrice().currencyCode;
