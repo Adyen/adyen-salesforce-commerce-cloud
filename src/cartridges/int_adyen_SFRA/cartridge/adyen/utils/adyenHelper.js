@@ -665,7 +665,9 @@ let adyenHelperObj = {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
-	  order.custom.Adyen_paymentMethod  = JSON.stringify(result.paymentMethod.type);
+	  order.custom.Adyen_paymentMethod = JSON.stringify(
+        result.paymentMethod.type,
+      );
     }
 
     // For authenticated shoppers we are setting the token on other place already
