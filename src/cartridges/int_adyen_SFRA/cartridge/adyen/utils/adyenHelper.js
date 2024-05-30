@@ -652,6 +652,7 @@ let adyenHelperObj = {
   },
 
   // saves the payment details in the paymentInstrument's custom object
+  // set custom payment method field to sync with OMS
   savePaymentDetails(paymentInstrument, order, result) {
     paymentInstrument.paymentTransaction.transactionID = result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference =
@@ -660,10 +661,12 @@ let adyenHelperObj = {
     if (result.additionalData?.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
         result.additionalData.paymentMethod;
+		order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
+	  order.custom.Adyen_paymentMethod  = JSON.stringify(result.paymentMethod.type);
     }
 
     // For authenticated shoppers we are setting the token on other place already
