@@ -660,7 +660,7 @@ let adyenHelperObj = {
     if (result.additionalData?.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
         result.additionalData.paymentMethod;
-		order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
