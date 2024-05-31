@@ -665,7 +665,7 @@ let adyenHelperObj = {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
-	  order.custom.Adyen_paymentMethod = JSON.stringify(
+      order.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
     }
