@@ -17,7 +17,6 @@
  * See the LICENSE file for more info.
  */
 const dwsvc = require('dw/svc');
-const dwsystem = require('dw/system');
 const dwutil = require('dw/util');
 const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
@@ -543,13 +542,6 @@ let adyenHelperObj = {
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
-    //Create signature to verify returnUrl if there is an order
-    let signature = adyenHelperObj.createSignature(
-        paymentInstrument,
-        UUIDUtils.createUUID(),
-        orderNo,
-      );
-
     // Add recurringProcessingModel in case shopper wants to save the card from checkout
     if (stateData.storePaymentMethod){
       stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
@@ -564,7 +556,42 @@ let adyenHelperObj = {
 
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
     stateData.reference = orderNo;
-    stateData.returnUrl = URLUtils.https(
+    stateData.returnUrl = adyenHelperObj.createRedirectUrl(paymentInstrument, orderNo, orderToken)
+    stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
+
+    stateData.additionalData = {};
+    return stateData;
+  },
+
+  /**
+   * Returns unique hashed signature.
+   * @param {dw.order.OrderPaymentInstrument} paymentInstrument - paymentInstrument for the current order or current basket.
+   * @param {String} value - UUID to be hashed for creating signature.
+   * @param {String} salt - order number for the current order or from createOrderNo() used as Salt for hash.
+   * @returns {String} - returns hashed signature.
+   */
+  createSignature(paymentInstrument, value, salt) {
+    const newSignature = adyenHelperObj.getAdyenHash(value, salt);
+    Transaction.wrap(function () {
+      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
+    });
+    return newSignature;
+  },
+
+  /**
+   * Returns redirectURL with 'Adyen-ShowConfirmation' route and query params .
+   * @param {dw.order.OrderPaymentInstrument} paymentInstrument - paymentInstrument for the current order or current basket
+   * @param {String} orderNo - order number for the current order or from createOrderNo()
+   * @param {String} [orderToken] - orderToken for current order if order exists
+   * @returns {String<dw.web.URL>} - returns String representation of the redirectURL
+   */
+  createRedirectUrl(paymentInstrument, orderNo, orderToken) {
+    const signature = adyenHelperObj.createSignature(
+      paymentInstrument,
+      UUIDUtils.createUUID(),
+      orderNo,
+    );
+    return URLUtils.https(
       'Adyen-ShowConfirmation',
       'merchantReference',
       orderNo,
@@ -573,18 +600,6 @@ let adyenHelperObj = {
       'orderToken',
       orderToken,
     ).toString();
-    stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
-
-    stateData.additionalData = {};
-    return stateData;
-  },
-
-  createSignature(paymentInstrument, value, salt) {
-    const newSignature = adyenHelperObj.getAdyenHash(value, salt);
-    Transaction.wrap(function () {
-      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
-    });
-    return newSignature;
   },
 
   // adds 3DS2 fields to an Adyen Checkout payments Request

@@ -309,6 +309,7 @@ jest.mock(
       error: false,
       action: { type: 'mockedAction' },
     })),
+    createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
   }),
   { virtual: true },
 );
