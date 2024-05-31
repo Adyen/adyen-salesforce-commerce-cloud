@@ -70,8 +70,7 @@ function callGetShippingMethods(req, res, next) {
     res.json(response);
     return next();
   } catch (error) {
-    AdyenLogs.error_log('Failed to fetch shipping methods');
-    AdyenLogs.error_log(error);
+    AdyenLogs.error_log('Failed to fetch shipping methods', error);
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg(

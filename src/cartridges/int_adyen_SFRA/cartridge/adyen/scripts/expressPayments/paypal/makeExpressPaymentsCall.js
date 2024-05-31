@@ -30,7 +30,7 @@ function makeExpressPaymentsCall(req, res, next) {
     // Create request object with payment details
     const paymentRequest = AdyenHelper.createAdyenRequestObject(
       paypalExpressOrderNo,
-      paypalExpressOrderNo,
+      null,
       paymentInstrument,
     );
     paymentRequest.amount = {
@@ -53,8 +53,8 @@ function makeExpressPaymentsCall(req, res, next) {
     session.privacy.paypalExpressOrderNo = paypalExpressOrderNo;
     session.privacy.pspReference = result.pspReference;
     res.json(result);
-  } catch (ex) {
-    AdyenLogs.fatal_log(`${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`);
+  } catch (error) {
+    AdyenLogs.fatal_log('Paypal express payments request failed', error);
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg('error.express.paypal.payments', 'cart', null),

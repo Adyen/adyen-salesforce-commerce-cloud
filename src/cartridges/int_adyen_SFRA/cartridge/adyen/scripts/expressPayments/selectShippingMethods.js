@@ -75,8 +75,7 @@ function callSelectShippingMethod(req, res, next) {
     response = { ...response, ...basketModel, grandTotalAmount };
     res.json(response);
   } catch (error) {
-    AdyenLogs.error_log('Failed to set shipping method');
-    AdyenLogs.error_log(error);
+    AdyenLogs.error_log('Failed to set shipping method', error);
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg(
