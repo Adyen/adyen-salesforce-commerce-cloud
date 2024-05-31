@@ -22,6 +22,9 @@ jobs:
           npm install
           npm run lint:fix
           npm run lint
-          npm test
+          npm run test:coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           CI: true
+          SONAR_TOKEN: ${{ secrets. SONARCLOUD_TOKEN }}
