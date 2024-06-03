@@ -586,6 +586,9 @@ let adyenHelperObj = {
    * @returns {String<dw.web.URL>} - returns String representation of the redirectURL
    */
   createRedirectUrl(paymentInstrument, orderNo, orderToken) {
+    if(!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
+      return null
+    }
     const signature = adyenHelperObj.createSignature(
       paymentInstrument,
       UUIDUtils.createUUID(),
