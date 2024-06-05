@@ -436,14 +436,11 @@ export default class PaymentMethodsPage {
   cancelKlarnaPayment = async () => {
     await this.waitForKlarnaLoad();
     await this.page.waitForLoadState('networkidle', { timeout: 20000 });
-    this.klarnaIframe = this.page.frameLocator(
-      '#klarna-apf-iframe',
-    );
-    this.firstCancelButton = this.klarnaIframe.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
-    this.secondCancelButton = this.klarnaIframe.locator("button[title='Close']");
+    this.firstCancelButton = this.page.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
+    this.secondCancelButton = this.page.locator("button[title='Close']");
     await this.firstCancelButton.waitFor({
       state: 'visible',
-      timeout: 20000,
+      timeout: 25000,
     });
     await this.firstCancelButton.click();
     await this.secondCancelButton.first().click();
