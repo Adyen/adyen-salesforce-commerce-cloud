@@ -30,8 +30,8 @@ export default class PaymentMethodsPage {
 
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();
-    await iDealDropDown.click();
-    await issuer.click();
+   // await iDealDropDown.click();
+   // await issuer.click();
   };
 
   initiatePayPalPayment = async () => {
@@ -174,8 +174,13 @@ export default class PaymentMethodsPage {
     await this.page.locator('#SubmitForm').click();
   };
 
-  submitSimulator = async () => {
-    await this.page.locator('input[type="submit"]').click();
+  submitSimulator = async (testSuccess) => {
+    await this.page.locator('button[data-testid="payment-action-button"]').click();
+	await this.page.locator('button[data-testid="ideal-box-bank-item-TESTNL2A"]').click();
+	const actionButton = testSuccess 
+    ? this.page.getByRole('button', { name: 'Success', exact: true })
+    : this.page.getByRole('button', { name: 'Cancellation', exact: true });
+	await actionButton.click();
   };
 
   submitBankSimulator = async () => {
