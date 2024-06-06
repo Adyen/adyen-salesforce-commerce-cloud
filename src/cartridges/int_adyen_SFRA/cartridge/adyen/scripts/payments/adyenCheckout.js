@@ -26,7 +26,6 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
-
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -35,7 +34,7 @@ const AdyenGetOpenInvoiceData = require('*/cartridge/adyen/scripts/payments/adye
 const adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const paypalHelper = require('*/cartridge/adyen/scripts/payments/paypalHelper');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -149,16 +148,13 @@ function createPaymentRequest(args) {
 
     // Create request object with payment details
     let paymentRequest = AdyenHelper.createAdyenRequestObject(
-      order,
+      order.getOrderNo(),
+      order.getOrderToken(),
       paymentInstrument,
     );
 
-    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     const paymentMethodType = paymentRequest.paymentMethod.type;
-    const isPayPalExpress = AdyenHelper.isPayPalExpress(
-      paymentRequest.paymentMethod,
-    );
-
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData =
@@ -188,7 +184,6 @@ function createPaymentRequest(args) {
         paymentRequest.installments = { value: numOfInstallments };
       }
     }
-
     const value = AdyenHelper.getCurrencyValueForApi(
       paymentInstrument.paymentTransaction.amount,
     ).getValueOrNull();
@@ -214,22 +209,19 @@ function createPaymentRequest(args) {
       };
     }
 
-    // Address object and shopper data fields are filled later for PayPal Express
-    if (!isPayPalExpress) {
-      // Create billing and delivery address objects for new orders,
-      // no address fields for credit cards through My Account
-      paymentRequest = AdyenHelper.createAddressObjects(
-        order,
-        paymentMethodType,
-        paymentRequest,
-      );
+    // Create billing and delivery address objects for new orders,
+    // no address fields for credit cards through My Account
+    paymentRequest = AdyenHelper.createAddressObjects(
+      order,
+      paymentMethodType,
+      paymentRequest,
+    );
 
-      // Create shopper data fields
-      paymentRequest = AdyenHelper.createShopperObject({
-        order,
-        paymentRequest,
-      });
-    }
+    // Create shopper data fields
+    paymentRequest = AdyenHelper.createShopperObject({
+      order,
+      paymentRequest,
+    });
 
     if (session.privacy.adyenFingerprint) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
@@ -280,7 +272,6 @@ function createPaymentRequest(args) {
       paymentInstrument,
       paymentRequest.paymentMethod,
     );
-    // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     AdyenLogs.error_log(
@@ -325,6 +316,13 @@ function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
   );
 }
 
+function doPaypalUpdateOrderCall(paypalUpdateOrderRequest) {
+  return AdyenHelper.executeCall(
+    constants.SERVICE.PAYPALUPDATEORDER,
+    paypalUpdateOrderRequest,
+  );
+}
+
 module.exports = {
   createPaymentRequest,
   doPaymentsCall,
@@ -332,4 +330,5 @@ module.exports = {
   doCheckBalanceCall,
   doCancelPartialPaymentOrderCall,
   doCreatePartialPaymentOrderCall,
+  doPaypalUpdateOrderCall,
 };

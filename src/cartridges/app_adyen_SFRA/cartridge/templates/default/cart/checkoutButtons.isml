@@ -45,7 +45,7 @@
         <script type="text/javascript">
             window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
             window.locale = "${request.locale}";
-            window.calculateAmountUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
+            window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
             window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
             window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
             window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
@@ -65,6 +65,7 @@
             window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
             window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
             window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
+            window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
         </script>
         <div class="mb-sm-3">
             <a
@@ -81,7 +82,7 @@
             <div id="express-container" class="hidden">
                 <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
                 <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
-                <div data-method="paypal" class="expressComponent" id="paypal-container"></div>
+                <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
             </div>
             <script src="${URLUtils.httpsStatic('/js/expressPaymentMethodsVisibility.js')}" type="text/javascript"></script>
         </isif>

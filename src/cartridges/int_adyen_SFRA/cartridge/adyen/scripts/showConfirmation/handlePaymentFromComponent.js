@@ -105,6 +105,9 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
     order.custom.Adyen_pspReference = result.pspReference;
     order.custom.Adyen_eventCode = result.resultCode;
     order.custom.Adyen_paypalExpressResponse = null;
+    adyenPaymentInstrument.custom.adyenPaymentData = null;
+    session.privacy.paypalExpressOrderNo = null;
+    session.privacy.pspReference = null;
   });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
@@ -154,10 +157,6 @@ function handlePayment(stateData, order, options) {
   } else {
     finalResult = finalResult || detailsCall?.result;
   }
-
-  Transaction.wrap(() => {
-    adyenPaymentInstrument.custom.adyenPaymentData = null;
-  });
 
   return handlePaymentResult(
     finalResult,
