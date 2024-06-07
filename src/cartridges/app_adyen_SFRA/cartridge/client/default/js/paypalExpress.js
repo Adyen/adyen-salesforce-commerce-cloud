@@ -7,6 +7,7 @@ const helpers = require('./adyen_checkout/helpers');
 const { PAYPAL } = require('./constants');
 
 async function callPaymentFromComponent(data, component) {
+  $.spinner().start();
   const response = await fetch(window.makeExpressPaymentsCall, {
     method: 'POST',
     headers: {
@@ -32,6 +33,9 @@ async function saveShopperDetails(details) {
     data: {
       shopperDetails: JSON.stringify(details),
     },
+    error() {
+      $.spinner().stop();
+    },
   });
 }
 
@@ -46,66 +50,80 @@ function makeExpressPaymentDetailsCall(data) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
     },
+    error() {
+      $.spinner().stop();
+    },
   });
 }
 
-async function updateComponent(response, actions, component) {
+async function updateComponent(response, component) {
   if (response.ok) {
-    const { paymentData, status } = await response.json();
+    const { paymentData, status, errorMessage = '' } = await response.json();
     if (!paymentData || status !== 'success') {
-      actions.reject();
+      throw new Error(errorMessage);
     }
     // Update the Component paymentData value with the new one.
     component.updatePaymentData(paymentData);
+  } else {
+    const { errorMessage = '' } = await response.json();
+    throw new Error(errorMessage);
   }
-  actions.reject();
+  return false;
 }
 async function handleShippingAddressChange(data, actions, component) {
-  const { shippingAddress } = data;
-  const currentPaymentData = component.paymentData;
-  if (!shippingAddress) {
-    actions.reject();
+  try {
+    const { shippingAddress, errors } = data;
+    const currentPaymentData = component.paymentData;
+    if (!shippingAddress) {
+      throw new Error(errors?.ADDRESS_ERROR);
+    }
+    const request = {
+      paymentMethodType: PAYPAL,
+      currentPaymentData,
+      address: {
+        city: shippingAddress.city,
+        country: shippingAddress.country,
+        countryCode: shippingAddress.countryCode,
+        stateCode: shippingAddress.state,
+        postalCode: shippingAddress.postalCode,
+      },
+    };
+    const response = await fetch(window.shippingMethodsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify(request),
+    });
+    return updateComponent(response, component);
+  } catch (e) {
+    return actions.reject();
   }
-  const request = {
-    paymentMethodType: PAYPAL,
-    currentPaymentData,
-    address: {
-      city: shippingAddress.city,
-      country: shippingAddress.country,
-      countryCode: shippingAddress.countryCode,
-      stateCode: shippingAddress.state,
-      postalCode: shippingAddress.postalCode,
-    },
-  };
-  const response = await fetch(window.shippingMethodsUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify(request),
-  });
-  await updateComponent(response, actions, component);
 }
 
 async function handleShippingOptionChange(data, actions, component) {
-  const { selectedShippingOption } = data;
-  const currentPaymentData = component.paymentData;
-  if (!selectedShippingOption) {
-    actions.reject();
+  try {
+    const { selectedShippingOption, errors } = data;
+    const currentPaymentData = component.paymentData;
+    if (!selectedShippingOption) {
+      throw new Error(errors?.METHOD_UNAVAILABLE);
+    }
+    const request = {
+      paymentMethodType: PAYPAL,
+      currentPaymentData,
+      methodID: selectedShippingOption?.id,
+    };
+    const response = await fetch(window.selectShippingMethodUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify(request),
+    });
+    return updateComponent(response, component);
+  } catch (e) {
+    return actions.reject();
   }
-  const request = {
-    paymentMethodType: PAYPAL,
-    currentPaymentData,
-    methodID: selectedShippingOption?.id,
-  };
-  const response = await fetch(window.selectShippingMethodUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify(request),
-  });
-  await updateComponent(response, actions, component);
 }
 
 function getPaypalButtonConfig(paypalConfig) {
@@ -117,18 +135,19 @@ function getPaypalButtonConfig(paypalConfig) {
     onSubmit: async (state, component) => {
       await callPaymentFromComponent(state.data, component);
     },
+    onError: async () => {
+      $.spinner().stop();
+    },
     onShopperDetails: async (shopperDetails, rawData, actions) => {
       await saveShopperDetails(shopperDetails);
       actions.resolve();
     },
     onAdditionalDetails: (state) => {
-      $.spinner().start();
       makeExpressPaymentDetailsCall(state.data);
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
         state.data,
       );
       document.querySelector('#showConfirmationForm').submit();
-      $.spinner().stop();
     },
     onShippingAddressChange: async (data, actions, component) => {
       await handleShippingAddressChange(data, actions, component);

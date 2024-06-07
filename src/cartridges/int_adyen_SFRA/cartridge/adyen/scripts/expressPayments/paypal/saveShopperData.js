@@ -1,3 +1,4 @@
+const URLUtils = require('dw/web/URLUtils');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function saveShopperData(req, res, next) {
@@ -6,13 +7,9 @@ function saveShopperData(req, res, next) {
     session.privacy.shopperDetails = JSON.stringify(shopperDetails);
     res.json({ success: true });
     return next();
-  } catch (ex) {
-    AdyenLogs.error_log(
-      `Failed to save the shopper details ${ex.toString()} in ${ex.fileName}:${
-        ex.lineNumber
-      }`,
-    );
-    res.json({ success: false });
+  } catch (error) {
+    AdyenLogs.error_log('Failed to save the shopper details:', error);
+    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }
 }

@@ -83,7 +83,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     const fraudDetectionStatus = { status: 'success' };
     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
-      AdyenLogs.error_log('Failed to place the PayPal express order');
+      throw new Error('Failed to place the PayPal express order');
     }
 
     response.orderNo = order.orderNo;
@@ -98,12 +98,8 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     });
     res.json({ orderNo: response.orderNo, orderToken: response.orderToken });
     return next();
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Could not verify express /payment/details: ${e.toString()} in ${
-        e.fileName
-      }:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Could not verify express /payment/details:', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }
