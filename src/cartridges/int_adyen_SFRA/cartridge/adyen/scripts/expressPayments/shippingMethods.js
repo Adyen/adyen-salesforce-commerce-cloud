@@ -10,7 +10,12 @@ const addressMapping = {
   postalCode: 'setPostalCode',
 };
 
-// Sets address properties for express PM
+/**
+ * Sets address properties for express PM
+ * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
+ * @param {object} inputAddress - address coming from the input field based on shopper selection
+ * @param {object} mapping - address mapping between property and setter for that property
+ */
 function setAddressProperties(shippingAddress, inputAddress, mapping) {
   Object.keys(inputAddress).forEach((key) => {
     if (inputAddress[key] && mapping[key]) {
