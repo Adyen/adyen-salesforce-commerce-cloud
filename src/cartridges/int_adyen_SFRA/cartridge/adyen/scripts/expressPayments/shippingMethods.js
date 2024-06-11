@@ -1,6 +1,28 @@
 const BasketMgr = require('dw/order/BasketMgr');
+const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+
+const addressMapping = {
+  city: 'setCity',
+  countryCode: 'setCountryCode',
+  stateCode: 'setStateCode',
+  postalCode: 'setPostalCode',
+};
+
+/**
+ * Sets address properties for express PM
+ * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
+ * @param {object} inputAddress - address coming from the input field based on shopper selection
+ * @param {object} mapping - address mapping between property and setter for that property
+ */
+function setAddressProperties(shippingAddress, inputAddress, mapping) {
+  Object.keys(inputAddress).forEach((key) => {
+    if (inputAddress[key] && mapping[key]) {
+      shippingAddress[mapping[key]](inputAddress[key]);
+    }
+  });
+}
 
 /**
  * Make a request to Adyen to get shipping methods
@@ -13,14 +35,24 @@ function callGetShippingMethods(req, res, next) {
         city: req.querystring.city,
         countryCode: req.querystring.countryCode,
         stateCode: req.querystring.stateCode,
+        postalCode: req.querystring.postalCode,
       };
     }
     const currentBasket = BasketMgr.getCurrentBasket();
+    const shipment = currentBasket.getDefaultShipment();
+    Transaction.wrap(() => {
+      let { shippingAddress } = shipment;
+      if (!shippingAddress) {
+        shippingAddress = currentBasket
+          .getDefaultShipment()
+          .createShippingAddress();
+      }
+      if (address) {
+        setAddressProperties(shippingAddress, address, addressMapping);
+      }
+    });
     const currentShippingMethodsModels =
-      AdyenHelper.getApplicableShippingMethods(
-        currentBasket.getDefaultShipment(),
-        address,
-      );
+      AdyenHelper.getApplicableShippingMethods(shipment, address);
     res.json({
       shippingMethods: currentShippingMethodsModels,
     });

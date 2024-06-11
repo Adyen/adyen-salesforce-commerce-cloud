@@ -20,7 +20,7 @@ for (const environment of environments) {
     });
     test('Oney Success', async ({ page }) => {
       // Skipping the test for SFRA5
-      if (environment.name.indexOf('v6') === -1) test.skip();
+      if (environment.name.indexOf('v5') !== -1) test.skip();
 
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 4);
       await checkoutPage.setShopperDetails(shopperData.FR);
@@ -34,8 +34,8 @@ for (const environment of environments) {
     test('Oney Fail', async ({ page }) => {
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1);
       await checkoutPage.setShopperDetails(shopperData.FR);
-      // SFRA 6 email setting flow is different
-      if (environment.name.indexOf('v6') === -1) {
+      // SFRA 5 email setting flow is different
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
       redirectShopper = new RedirectShopper(page);
@@ -55,7 +55,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
    test('No 3DS Amazon Pay @quick', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
-    if (environment.name.indexOf('v6') === -1) {
+    if (environment.name.indexOf('v5') !== -1) {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
@@ -67,7 +67,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
   test('3DS2 Amazon Pay', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
-    if (environment.name.indexOf('v6') === -1) {
+    if (environment.name.indexOf('v5') !== -1) {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);
@@ -90,7 +90,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
   test('Amazon Pay Failure', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
-    if (environment.name.indexOf('v6') === -1) {
+    if (environment.name.indexOf('v5') !== -1) {
       await checkoutPage.setEmail();
     }
     redirectShopper = new RedirectShopper(page);

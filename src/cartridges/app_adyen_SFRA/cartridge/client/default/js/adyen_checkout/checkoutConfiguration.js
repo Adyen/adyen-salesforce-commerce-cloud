@@ -20,6 +20,7 @@ function getCardConfig() {
       shopperEmail: window.customerEmail,
       merchantDisplayName: window.merchantAccount,
     },
+    exposeExpiryDate: false,
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
