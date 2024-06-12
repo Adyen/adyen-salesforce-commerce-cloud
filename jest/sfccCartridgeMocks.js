@@ -390,3 +390,5 @@ jest.mock(
 	}),
 	{ virtual: true },
   );
+
+jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), { virtual: true });
