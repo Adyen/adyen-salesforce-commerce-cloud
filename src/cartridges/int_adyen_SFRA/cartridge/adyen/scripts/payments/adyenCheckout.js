@@ -51,11 +51,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     if (!order) {
       return responseObject;
     }
-    // set custom payment method field to sync with OMS.
-    // for card payments (scheme) we will store the brand
-    order.custom.Adyen_paymentMethod =
-      paymentRequest?.paymentMethod?.brand ||
-      paymentRequest?.paymentMethod?.type;
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action
       ? responseObject.action

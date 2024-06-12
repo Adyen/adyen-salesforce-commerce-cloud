@@ -16,9 +16,8 @@
  * This file is open source and available under the MIT license.
  * See the LICENSE file for more info.
  */
-const dwsvc = require('dw/svc');
-const dwsystem = require('dw/system');
-const dwutil = require('dw/util');
+const LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
+const Currency = require('dw/util/Currency');
 const URLUtils = require('dw/web/URLUtils');
 const Bytes = require('dw/util/Bytes');
 const MessageDigest = require('dw/crypto/MessageDigest');
@@ -44,7 +43,7 @@ let adyenHelperObj = {
     let adyenService = null;
 
     try {
-      adyenService = dwsvc.LocalServiceRegistry.createService(service, {
+      adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
           svc.setRequestMethod('POST');
           if (args) {
@@ -652,6 +651,7 @@ let adyenHelperObj = {
   },
 
   // saves the payment details in the paymentInstrument's custom object
+  // set custom payment method field to sync with OMS
   savePaymentDetails(paymentInstrument, order, result) {
     paymentInstrument.paymentTransaction.transactionID = result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference =
@@ -660,8 +660,12 @@ let adyenHelperObj = {
     if (result.additionalData?.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
         result.additionalData.paymentMethod;
+      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
+        result.paymentMethod.type,
+      );
+      order.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
     }
@@ -695,7 +699,7 @@ let adyenHelperObj = {
 
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi(amount) {
-    const currencyCode = dwutil.Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
+    const currencyCode = Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
     const digitsNumber = adyenHelperObj.getFractionDigits(
       currencyCode.toString(),
     );
