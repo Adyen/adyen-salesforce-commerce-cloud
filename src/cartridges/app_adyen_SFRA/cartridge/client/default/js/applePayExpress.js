@@ -233,6 +233,7 @@ initializeCheckout()
             country: shippingContact.country,
             countryCode: shippingContact.countryCode,
             stateCode: shippingContact.administrativeArea,
+            postalCode: shippingContact.postalCode,
           })}`,
         );
         if (shippingMethods.ok) {
@@ -306,4 +307,5 @@ module.exports = {
   handleError,
   handleApplePayResponse,
   callPaymentFromComponent,
+  formatCustomerObject,
 };

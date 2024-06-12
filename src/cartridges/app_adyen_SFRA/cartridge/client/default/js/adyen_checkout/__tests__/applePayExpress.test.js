@@ -7,7 +7,9 @@ const {
   handleError,
   handleApplePayResponse,
   callPaymentFromComponent,
+  formatCustomerObject,
 } = require('../../applePayExpress');
+
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -96,5 +98,70 @@ describe('Apple Pay Express', () => {
     expect(document.getElementById('result').value).toBe(
       JSON.stringify(response.fullResponse),
     );
+  });
+
+  it('Should format customer and billing data correctly', () => {
+    const customerData = {
+      addressLines: ['123 Main St', 'Apt 2'],
+      locality: 'City',
+      country: 'United States',
+      countryCode: 'US',
+      givenName: 'John',
+      familyName: 'Doe',
+      emailAddress: 'john@example.com',
+      postalCode: '12345',
+      administrativeArea: 'State',
+      phoneNumber: '+1234567890',
+    };
+    const billingData = {
+      addressLines: ['456 Oak St'],
+      locality: 'Town',
+      country: 'United States',
+      countryCode: 'US',
+      givenName: 'Jane',
+      familyName: 'Doe',
+      postalCode: '54321',
+      administrativeArea: 'Province',
+    };
+    const formattedData = formatCustomerObject(customerData, billingData);
+    expect(formattedData).toEqual({
+      addressBook: {
+        addresses: {},
+        preferredAddress: {
+          address1: '123 Main St',
+          address2: 'Apt 2',
+          city: 'City',
+          countryCode: {
+            displayValue: 'United States',
+            value: 'US',
+          },
+          firstName: 'John',
+          lastName: 'Doe',
+          ID: 'john@example.com',
+          postalCode: '12345',
+          stateCode: 'State',
+        },
+      },
+      billingAddressDetails: {
+        address1: '456 Oak St',
+        address2: null,
+        city: 'Town',
+        countryCode: {
+          displayValue: 'United States',
+          value: 'US',
+        },
+        firstName: 'Jane',
+        lastName: 'Doe',
+        postalCode: '54321',
+        stateCode: 'Province',
+      },
+      customer: {},
+      profile: {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '+1234567890',
+      },
+    });
   });
 });

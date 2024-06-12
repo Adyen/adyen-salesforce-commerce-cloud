@@ -17,7 +17,7 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DK);
       await checkoutPage.setShopperDetails(shopperData.DK);
-      if (environment.name.indexOf('v6') === -1) {
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
     });

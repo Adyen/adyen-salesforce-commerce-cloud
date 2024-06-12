@@ -18,7 +18,7 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
       await checkoutPage.setShopperDetails(shopperData.PT);
-      if (environment.name.indexOf('v6') === -1) {
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       };
     });
@@ -37,8 +37,8 @@ for (const environment of environments) {
     test.fixme('MBWay Success', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
 
-      // SFRA 6 email setting flow is different
-      if (environment.name.indexOf("v6") === -1) {
+      // SFRA 5 email setting flow is different
+      if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
       await pendingPayments.doMBWayPayment();
