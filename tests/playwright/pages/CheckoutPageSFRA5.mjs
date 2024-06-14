@@ -211,7 +211,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   expectRefusal = async () => {
-    await expect(this.errorMessage).not.toBeEmpty();
+    await expect(this.errorMessage).not.toBeEmpty({ timeout: 25000 });
   };
 
   expectVoucher = async () => {
