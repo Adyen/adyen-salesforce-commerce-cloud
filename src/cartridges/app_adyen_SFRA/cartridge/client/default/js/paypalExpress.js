@@ -39,6 +39,19 @@ async function saveShopperDetails(details) {
   });
 }
 
+async function redirectToReviewPage() {
+  return $.ajax({
+    url: window.checkoutReview,
+    type: 'get',
+    success() {
+      window.location.href = window.checkoutReview;
+    },
+    error() {
+      $.spinner().stop();
+    },
+  });
+}
+
 function makeExpressPaymentDetailsCall(data) {
   return $.ajax({
     type: 'POST',
@@ -127,11 +140,13 @@ async function handleShippingOptionChange(data, actions, component) {
 }
 
 function getPaypalButtonConfig(paypalConfig) {
+  const { paypalReviewPageEnabled } = window;
   return {
     showPayButton: true,
     configuration: paypalConfig,
     returnUrl: window.returnUrl,
     isExpress: true,
+    ...(paypalReviewPageEnabled ? { userAction: 'continue' } : {}),
     onSubmit: async (state, component) => {
       await callPaymentFromComponent(state.data, component);
     },
@@ -143,11 +158,15 @@ function getPaypalButtonConfig(paypalConfig) {
       actions.resolve();
     },
     onAdditionalDetails: (state) => {
-      makeExpressPaymentDetailsCall(state.data);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
+      if (paypalReviewPageEnabled) {
+        redirectToReviewPage();
+        // continue the rest of logic
+      } else {
+        makeExpressPaymentDetailsCall(state.data);
+        document.querySelector('#additionalDetailsHidden').value =
+          JSON.stringify(state.data);
+        document.querySelector('#showConfirmationForm').submit();
+      }
     },
     onShippingAddressChange: async (data, actions, component) => {
       await handleShippingAddressChange(data, actions, component);

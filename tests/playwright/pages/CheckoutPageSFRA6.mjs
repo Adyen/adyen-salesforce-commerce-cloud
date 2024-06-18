@@ -231,7 +231,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectRefusal = async () => {
-    await expect(this.errorMessage).not.toBeEmpty();
+    await expect(this.errorMessage).not.toBeEmpty({ timeout: 25000 });
   };
 
   expectVoucher = async () => {
@@ -254,9 +254,7 @@ export default class CheckoutPageSFRA {
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
   };
 
   loginUser = async (credentials) => {

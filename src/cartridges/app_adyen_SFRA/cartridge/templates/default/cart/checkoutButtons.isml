@@ -66,6 +66,8 @@
             window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
             window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
             window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
+            window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
+            window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
         </script>
         <div class="mb-sm-3">
             <a

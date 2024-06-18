@@ -5,12 +5,12 @@ export class RedirectShopper {
     this.paymentMethodsPage = new PaymentMethodsPage(page);
   }
 
-  doIdealPayment = async (testSuccess) => {
-    await this.paymentMethodsPage.initiateIdealPayment(testSuccess);
+  doIdealPayment = async () => {
+    await this.paymentMethodsPage.initiateIdealPayment();
   };
 
-  completeIdealRedirect = async () => {
-    await this.paymentMethodsPage.submitSimulator();
+  completeIdealRedirect = async (testSuccess) => {
+    await this.paymentMethodsPage.submitSimulator(testSuccess);
   };
 
   doBillDeskPayment = async (paymentMethod) => {

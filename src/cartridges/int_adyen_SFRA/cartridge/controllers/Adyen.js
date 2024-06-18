@@ -100,6 +100,15 @@ server.get(
 );
 
 /**
+ * Show the review page template.
+ */
+server.get(
+  'CheckoutReview',
+  server.middleware.https,
+  adyen.handleCheckoutReview,
+);
+
+/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);
