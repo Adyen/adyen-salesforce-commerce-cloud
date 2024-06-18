@@ -16,6 +16,7 @@ const notify = require('*/cartridge/adyen/webhooks/notify');
 const makeExpressPaymentsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall');
 const makeExpressPaymentDetailsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall');
 const saveShopperData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData');
+const handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview');
 
 module.exports = {
   getCheckoutPaymentMethods,
@@ -36,4 +37,5 @@ module.exports = {
   makeExpressPaymentsCall,
   makeExpressPaymentDetailsCall,
   saveShopperData,
+  handleCheckoutReview,
 };
