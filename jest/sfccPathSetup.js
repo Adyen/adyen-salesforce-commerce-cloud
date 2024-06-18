@@ -113,10 +113,10 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview',
-	() =>
-	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview'),
-	{ virtual: true },
+  '*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview'),
+  { virtual: true },
 );
 
 jest.mock(
