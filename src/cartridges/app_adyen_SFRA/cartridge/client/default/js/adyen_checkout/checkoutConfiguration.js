@@ -272,12 +272,17 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  store.isValid = state.isValid;
-  if (!store.componentsObj[store.selectedMethod]) {
-    store.componentsObj[store.selectedMethod] = {};
+  let { type } = state.data.paymentMethod;
+  const multipleTxVariantComponents = constants.MULTIPLE_TX_VARIANTS_COMPONENTS;
+  if (multipleTxVariantComponents.includes(store.selectedMethod)) {
+    type = store.selectedMethod;
   }
-  store.componentsObj[store.selectedMethod].isValid = store.isValid;
-  store.componentsObj[store.selectedMethod].stateData = state.data;
+  store.isValid = state.isValid;
+  if (!store.componentsObj[type]) {
+    store.componentsObj[type] = {};
+  }
+  store.componentsObj[type].isValid = store.isValid;
+  store.componentsObj[type].stateData = state.data;
 }
 
 const actionHandler = async (action) => {
