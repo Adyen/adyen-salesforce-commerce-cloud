@@ -82,7 +82,7 @@
     "minimatch": "7.4.6",
     "glob-parent": "6.0.2",
     "yargs-parser": "21.1.1",
-    "braces": "3.0.2",
+    "braces": "3.0.3",
     "jszip": "3.8.0",
     "merge": "2.1.1",
     "got": "12.6.1",
