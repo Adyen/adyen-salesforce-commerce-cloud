@@ -117,7 +117,7 @@ export default class PaymentMethodsPage {
     }
     await this.page.waitForLoadState("networkidle", { timeout: 20000 });
     this.submitButton = this.page.locator(
-      'input[class="a-button-input"]'
+      'span[data-action="continue-checkout"]'
     );
     await this.submitButton.click();
   };
@@ -127,9 +127,6 @@ export default class PaymentMethodsPage {
     this.confirmExpressPaymentButton = this.page.locator(
       ".adyen-checkout__button--pay"
     );
-    if (await this.amazonCaptcha.isVisible()){
-      return false;
-    }
     await this.confirmExpressPaymentButton.click();
   };
   

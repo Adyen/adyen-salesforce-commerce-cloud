@@ -77,13 +77,12 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.expectSuccess();
   });
 
-  test.skip('Amazon Pay Express @quick', async ({ page }) => {
+  test('Amazon Pay Express @quick', async ({ page }) => {
     redirectShopper = new RedirectShopper(page);
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
     await redirectShopper.doAmazonPayment(false);
-    const result = await redirectShopper.doAmazonExpressPayment();
-    if(result != true){test.skip()};
+    await redirectShopper.doAmazonExpressPayment();
     await checkoutPage.expectSuccess();
   });
 
