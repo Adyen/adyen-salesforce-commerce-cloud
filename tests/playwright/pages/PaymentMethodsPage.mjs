@@ -127,9 +127,9 @@ export default class PaymentMethodsPage {
     this.confirmExpressPaymentButton = this.page.locator(
       ".adyen-checkout__button--pay"
     );
-	if (await this.amazonCaptcha.isVisible()){
-		return false;
-	}
+    if (await this.amazonCaptcha.isVisible()){
+      return false;
+    }
     await this.confirmExpressPaymentButton.click();
   };
   
