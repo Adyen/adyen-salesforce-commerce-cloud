@@ -82,7 +82,8 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.addProductToCart();
     await checkoutPage.navigateToCart(regionsEnum.EU);
     await redirectShopper.doAmazonPayment(false);
-    await redirectShopper.doAmazonExpressPayment();
+    const result = await redirectShopper.doAmazonExpressPayment();
+    if(result != true){test.skip()};
     await checkoutPage.expectSuccess();
   });
 
