@@ -43,7 +43,7 @@
     <div id="amazon-container"></div>
     <iselse>
         <script type="text/javascript">
-            window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+            window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
             window.locale = "${request.locale}";
             window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
             window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
