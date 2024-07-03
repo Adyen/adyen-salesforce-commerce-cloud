@@ -116,9 +116,8 @@ export default class PaymentMethodsPage {
       await this.confirmPaymentChangeButton.click();
     }
     await this.page.waitForLoadState("networkidle", { timeout: 20000 });
-    this.submitButton = this.page.locator(
-      'span[data-action="continue-checkout"]'
-    );
+	this.submitButton = this.page.locator('#a-autoid-0');
+	await this.submitButton.waitFor({ state: 'visible' });
     await this.submitButton.click();
   };
   
