@@ -87,6 +87,6 @@
     "merge": "2.1.1",
     "got": "12.6.1",
     "@babel/traverse" : "7.23.2",
-    "get-func-name" : "2.0.1"
+    "get-func-name" : "3.0.0"
   }
 }
