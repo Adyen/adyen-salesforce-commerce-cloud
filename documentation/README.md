@@ -1,6 +1,10 @@
 # Adyen Salesforce Commerce Cloud Integration
 
-Integrate Adyen with Salesforce Commerce Cloud using the Storefront Reference Architecture (SFRA). This method allows seamless access to Adyen's extensive payment features through the Adyen payments cartridge. Enhance your e-commerce capabilities by leveraging Adyen's robust payment processing solutions within your SFRA-based Salesforce Commerce Cloud storefront.
+Integrate Adyen with Salesforce Commerce Cloud using the Storefront Reference Architecture (SFRA). This method provides seamless access to Adyen's extensive payment features through the Adyen payments cartridge.
+&nbsp; 
+
+The documentation includes detailed diagrams to help you understand the integration process and enhance your e-commerce capabilities using Adyen's robust payment solutions.
+&nbsp;
 
 For more details, visit the [Adyen Salesforce Commerce Cloud documentation](https://docs.adyen.com/plugins/salesforce-commerce-cloud/).
 
