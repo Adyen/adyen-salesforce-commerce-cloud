@@ -1,7 +1,8 @@
-# Adyen SFCC Cartridge Documentation
+# Adyen Salesforce Commerce Cloud Integration
 
-The documentation regarding the Salesforce Commerce Cloud Cartridge can be found on Adyen's online docs here:
-https://docs.adyen.com/developers/plug-ins-and-partners/salesforce-commerce-cloud
+Integrate Adyen with Salesforce Commerce Cloud using the Storefront Reference Architecture (SFRA). This method allows seamless access to Adyen's extensive payment features through the Adyen payments cartridge. Enhance your e-commerce capabilities by leveraging Adyen's robust payment processing solutions within your SFRA-based Salesforce Commerce Cloud storefront.
+
+For more details, visit the [Adyen Salesforce Commerce Cloud documentation](https://docs.adyen.com/plugins/salesforce-commerce-cloud/).
 
 ## Get Payment Methods
 ![get-payment-methods.png](diagrams/get-payment-methods.png)
