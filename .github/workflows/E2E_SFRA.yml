@@ -28,7 +28,7 @@ jobs:
             code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
     steps:
       - name: Checkout SFRA code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
           ref: ${{ matrix.sfra-version }}
@@ -39,7 +39,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: adyen-salesforce-commerce-cloud
       - name: Install SFRA dependencies
@@ -98,7 +98,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: adyen-salesforce-commerce-cloud
       - name: install e2e test dependencies
