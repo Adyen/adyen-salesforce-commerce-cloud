@@ -46,8 +46,9 @@ const __RiskDataHelper = {
       basketData[`riskdata.basket.item${itemNr}.brand`] = item.product
         ? item.product.brand
         : '';
-      basketData[`riskdata.basket.item${itemNr}.manufacturerName`] =
-        item.product ? item.product.manufacturerName : '';
+      basketData[`riskdata.basket.item${itemNr}.manufacturer`] = item.product
+        ? item.product.manufacturerName
+        : '';
       basketData[`riskdata.basket.item${itemNr}.category`] =
         item.product && item.product.primaryCategory
           ? item.product.primaryCategory.displayName
