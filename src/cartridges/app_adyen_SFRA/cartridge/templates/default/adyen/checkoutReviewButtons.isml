@@ -10,7 +10,7 @@
   <div class="col-12 next-step-button">
     <div class="mb-sm-3">
       <button class="btn btn-primary btn-block" type="submit" name="place-order" value="place-order">
-        ${Resource.msg('checkout.review.button.submit', 'adyen', null)}
+        ${Resource.msg('button.submit.checkout.review', 'adyen', null)}
       </button>
       <form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${pdict.showConfirmationUrl}">
         <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="${pdict.data}"/>

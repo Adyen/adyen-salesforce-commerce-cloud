@@ -19,6 +19,7 @@
  * Add all product and shipping line items to request
  */
 const Money = require('dw/value/Money');
+const Transaction = require('dw/system/Transaction');
 const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
@@ -123,4 +124,54 @@ function createPaypalUpdateOrderRequest(
   };
 }
 
-module.exports = { createPaypalUpdateOrderRequest, getLineItems };
+/**
+ * sets Shipping and Billing address for the basket
+ * @param {dw.order.Basket} currentBasket - the current basket
+ * @returns {undefined}
+ */
+function setBillingAndShippingAddress(currentBasket) {
+  let { billingAddress } = currentBasket;
+  let { shippingAddress } = currentBasket.getDefaultShipment();
+  Transaction.wrap(() => {
+    if (!shippingAddress) {
+      shippingAddress = currentBasket
+        .getDefaultShipment()
+        .createShippingAddress();
+    }
+    if (!billingAddress) {
+      billingAddress = currentBasket.createBillingAddress();
+    }
+  });
+
+  const shopperDetails = JSON.parse(session.privacy.shopperDetails);
+
+  Transaction.wrap(() => {
+    billingAddress.setFirstName(shopperDetails.shopperName.firstName);
+    billingAddress.setLastName(shopperDetails.shopperName.lastName);
+    billingAddress.setAddress1(shopperDetails.billingAddress.street);
+    billingAddress.setCity(shopperDetails.billingAddress.city);
+    billingAddress.setPhone(shopperDetails.telephoneNumber);
+    billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode);
+    billingAddress.setStateCode(shopperDetails.billingAddress.stateOrProvince);
+    billingAddress.setCountryCode(shopperDetails.billingAddress.country);
+
+    shippingAddress.setFirstName(shopperDetails.shopperName.firstName);
+    shippingAddress.setLastName(shopperDetails.shopperName.lastName);
+    shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
+    shippingAddress.setCity(shopperDetails.shippingAddress.city);
+    shippingAddress.setPhone(shopperDetails.telephoneNumber);
+    shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
+    shippingAddress.setStateCode(
+      shopperDetails.shippingAddress.stateOrProvince,
+    );
+    shippingAddress.setCountryCode(shopperDetails.shippingAddress.country);
+
+    currentBasket.setCustomerEmail(shopperDetails.shopperEmail);
+  });
+}
+
+module.exports = {
+  createPaypalUpdateOrderRequest,
+  getLineItems,
+  setBillingAndShippingAddress,
+};
