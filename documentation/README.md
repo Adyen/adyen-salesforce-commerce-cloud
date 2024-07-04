@@ -30,7 +30,7 @@ Example payment methods, that are covered by this flow: Apple Pay Express from C
 ![apple-pay-express.png](diagrams/apple-pay-express.png)
 ## PayPal Express
 Example payment methods, that are covered by this flow: PayPal Express from Cart/mini-cart.
-
+![paypal-express.png](diagrams/paypal-express.png)
 ## Amazon Pay Express
 Example payment methods, that are covered by this flow: Amazon Pay Express from Cart/mini-cart.
 ![amazon-pay-express.png](diagrams/amazon-pay-express.png)
