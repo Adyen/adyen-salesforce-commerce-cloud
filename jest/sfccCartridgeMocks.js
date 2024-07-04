@@ -7,6 +7,8 @@ jest.mock('*/cartridge/models/cart', () => jest.fn(), { virtual: true });
 
 jest.mock('*/cartridge/models/account', () => jest.fn(), { virtual: true });
 
+jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), { virtual: true });
+
 jest.mock(
   '*/cartridge/scripts/checkout/shippingHelpers',
   () => ({
