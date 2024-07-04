@@ -24,4 +24,5 @@ module.exports = {
     'applepay',
     'cashapp',
   ],
+  MULTIPLE_TX_VARIANTS_COMPONENTS: ['upi'],
 };

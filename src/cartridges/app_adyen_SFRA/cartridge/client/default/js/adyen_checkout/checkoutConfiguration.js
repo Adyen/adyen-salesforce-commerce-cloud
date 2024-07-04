@@ -20,6 +20,7 @@ function getCardConfig() {
       shopperEmail: window.customerEmail,
       merchantDisplayName: window.merchantAccount,
     },
+    exposeExpiryDate: false,
     onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
@@ -186,9 +187,8 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector(
-            'button[value="submit-payment"]',
-          ).disabled = false;
+          document.querySelector('button[value="submit-payment"]').disabled =
+            false;
           if (data.resultCode === constants.SUCCESS) {
             const {
               giftCardsInfoMessageContainer,
@@ -214,9 +214,8 @@ function getGiftCardConfig() {
                 initialPartialObject.totalDiscountedAmount;
             });
 
-            document.querySelector(
-              'button[value="submit-payment"]',
-            ).disabled = true;
+            document.querySelector('button[value="submit-payment"]').disabled =
+              true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
@@ -271,12 +270,17 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  store.isValid = state.isValid;
-  if (!store.componentsObj[store.selectedMethod]) {
-    store.componentsObj[store.selectedMethod] = {};
+  let { type } = state.data.paymentMethod;
+  const multipleTxVariantComponents = constants.MULTIPLE_TX_VARIANTS_COMPONENTS;
+  if (multipleTxVariantComponents.includes(store.selectedMethod)) {
+    type = store.selectedMethod;
   }
-  store.componentsObj[store.selectedMethod].isValid = store.isValid;
-  store.componentsObj[store.selectedMethod].stateData = state.data;
+  store.isValid = state.isValid;
+  if (!store.componentsObj[type]) {
+    store.componentsObj[type] = {};
+  }
+  store.componentsObj[type].isValid = store.isValid;
+  store.componentsObj[type].stateData = state.data;
 }
 
 const actionHandler = async (action) => {
