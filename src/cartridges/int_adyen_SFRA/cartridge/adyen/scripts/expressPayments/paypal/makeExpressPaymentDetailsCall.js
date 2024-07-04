@@ -6,51 +6,8 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const constants = require('*/cartridge/adyen/config/constants');
-
-function setBillingAndShippingAddress(currentBasket) {
-  let { billingAddress } = currentBasket;
-  let { shippingAddress } = currentBasket.getDefaultShipment();
-  Transaction.wrap(() => {
-    if (!shippingAddress) {
-      shippingAddress = currentBasket
-        .getDefaultShipment()
-        .createShippingAddress();
-    }
-    if (!billingAddress) {
-      billingAddress = currentBasket.createBillingAddress();
-    }
-  });
-
-  const shopperDetails = JSON.parse(session.privacy.shopperDetails);
-
-  Transaction.wrap(() => {
-    billingAddress.setFirstName(shopperDetails.shopperName.firstName);
-    billingAddress.setLastName(shopperDetails.shopperName.lastName);
-    billingAddress.setAddress1(shopperDetails.billingAddress.street);
-    billingAddress.setCity(shopperDetails.billingAddress.city);
-    billingAddress.setPhone(shopperDetails.telephoneNumber);
-    billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode);
-    billingAddress.setStateCode(shopperDetails.billingAddress.stateOrProvince);
-    billingAddress.setCountryCode(shopperDetails.billingAddress.country);
-
-    shippingAddress.setFirstName(shopperDetails.shopperName.firstName);
-    shippingAddress.setLastName(shopperDetails.shopperName.lastName);
-    shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
-    shippingAddress.setCity(shopperDetails.shippingAddress.city);
-    shippingAddress.setPhone(shopperDetails.telephoneNumber);
-    shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
-    shippingAddress.setStateCode(
-      shopperDetails.shippingAddress.stateOrProvince,
-    );
-    shippingAddress.setCountryCode(shopperDetails.shippingAddress.country);
-
-    currentBasket.setCustomerEmail(shopperDetails.shopperEmail);
-
-    // Setting the session variable to null after assigning the shopper data to basket level
-    session.privacy.shopperDetails = null;
-  });
-}
 
 function setPaymentInstrumentFields(paymentInstrument, response) {
   paymentInstrument.custom.adyenPaymentMethod =
@@ -75,7 +32,11 @@ function makeExpressPaymentDetailsCall(req, res, next) {
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 
-    setBillingAndShippingAddress(currentBasket);
+    paypalHelper.setBillingAndShippingAddress(currentBasket);
+
+    // Setting the session variable to null after assigning the shopper data to basket level
+    session.privacy.shopperDetails = null;
+
     const order = OrderMgr.createOrder(
       currentBasket,
       session.privacy.paypalExpressOrderNo,

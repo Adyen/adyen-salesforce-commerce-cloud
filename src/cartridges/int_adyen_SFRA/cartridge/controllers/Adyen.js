@@ -102,7 +102,7 @@ server.get(
 /**
  * Show the review page template.
  */
-server.get(
+server.post(
   'CheckoutReview',
   server.middleware.https,
   adyen.handleCheckoutReview,

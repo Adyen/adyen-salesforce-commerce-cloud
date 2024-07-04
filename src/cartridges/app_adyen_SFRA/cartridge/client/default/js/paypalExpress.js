@@ -39,17 +39,19 @@ async function saveShopperDetails(details) {
   });
 }
 
-async function redirectToReviewPage() {
-  return $.ajax({
-    url: window.checkoutReview,
-    type: 'get',
-    success() {
-      window.location.href = window.checkoutReview;
-    },
-    error() {
-      $.spinner().stop();
-    },
+function redirectToReviewPage(data) {
+  const redirect = $('<form>').appendTo(document.body).attr({
+    method: 'POST',
+    action: window.checkoutReview,
   });
+  $('<input>')
+    .appendTo(redirect)
+    .attr({
+      name: 'data',
+      value: JSON.stringify(data),
+    });
+
+  redirect.submit();
 }
 
 function makeExpressPaymentDetailsCall(data) {
@@ -159,8 +161,7 @@ function getPaypalButtonConfig(paypalConfig) {
     },
     onAdditionalDetails: (state) => {
       if (paypalReviewPageEnabled) {
-        redirectToReviewPage();
-        // continue the rest of logic
+        redirectToReviewPage(state.data);
       } else {
         makeExpressPaymentDetailsCall(state.data);
         document.querySelector('#additionalDetailsHidden').value =
