@@ -27,7 +27,7 @@ function updateCurrentBasket(currentBasket, req) {
   const paymentInstrument = currentBasket.getPaymentInstruments()[0];
   Transaction.wrap(() => {
     paymentInstrument.custom.adyenPaymentMethod =
-      AdyenHelper.getAdyenComponentType(details.paymentSource);
+      AdyenHelper.getAdyenComponentType(details?.paymentSource);
   });
 }
 
