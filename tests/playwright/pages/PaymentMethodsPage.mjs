@@ -32,16 +32,18 @@ export default class PaymentMethodsPage {
     await iDealInput.click();
   };
 
-  initiatePayPalPayment = async () => {
+  initiatePayPalPayment = async (expressFlow, shippingChange, success) => {
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
       .locator('.paypal-button');
 
     // Click PayPal radio button
-    await this.page.click('#rb_paypal');
-	await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
-	
+    if (!expressFlow) {
+      await this.page.click('#rb_paypal');
+    }
+    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
+
     // Capture popup for interaction
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
@@ -60,13 +62,29 @@ export default class PaymentMethodsPage {
     this.passwordInput = popup.locator('#password');
     this.loginButton = popup.locator('#btnLogin');
     this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
+	this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
+    this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
     await this.emailInput.fill(paymentData.PayPal.username);
     await this.nextButton.click();
     await this.passwordInput.fill(paymentData.PayPal.password);
     await this.loginButton.click();
-    await this.agreeAndPayNowButton.click();
+	await this.page.waitForTimeout(5000);
+
+	if (shippingChange){
+		await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
+		await this.page.waitForTimeout(5000);
+	}
+
+	if (success){
+		await this.agreeAndPayNowButton.click();
+	}
+	else {
+		await this.cancelButton.click();
+		await this.page.goBack();
+		await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
+	}
   };
 
   initiateAmazonPayment = async (

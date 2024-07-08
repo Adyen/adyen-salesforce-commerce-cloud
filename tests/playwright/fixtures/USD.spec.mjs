@@ -80,7 +80,7 @@ for (const environment of environments) {
 
     test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doPayPalPayment();
+      await redirectShopper.doPayPalPayment(false, false, false);
       await checkoutPage.expectSuccess();
     });
   });
@@ -250,5 +250,43 @@ for (const environment of environments) {
       await cards.do3Ds2Verification();
       await accountPage.expectFailure();
     });
+  });
+
+  test.describe.parallel(`${environment.name} USD`, () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto(`${environment.urlExtension}`);
+    });
+
+    test('PayPal Express @quick', async ({ page }) => {
+        checkoutPage = new environment.CheckoutPage(page);
+        await checkoutPage.addProductToCart();
+        await checkoutPage.navigateToCart(regionsEnum.US);
+        redirectShopper = new RedirectShopper(page);
+        await redirectShopper.doPayPalPayment(true, false, false);
+        if (environment.name.indexOf('v5') !== -1) {
+            await checkoutPage.placeOrder();
+        };
+        await checkoutPage.expectSuccess();
+    });
+
+	test('PayPal Express shipping change @quick', async ({ page }) => {
+	    checkoutPage = new environment.CheckoutPage(page);
+		await checkoutPage.addProductToCart();
+		await checkoutPage.navigateToCart(regionsEnum.US);
+		redirectShopper = new RedirectShopper(page);
+		await redirectShopper.doPayPalPayment(true, true, false);
+		if (environment.name.indexOf('v5') !== -1) {
+		  await checkoutPage.placeOrder();
+		};
+		await checkoutPage.expectSuccess();
+	});
+
+	test('PayPal Express Cancellation @quick', async ({ page }) => {
+		checkoutPage = new environment.CheckoutPage(page);
+		await checkoutPage.addProductToCart();
+		await checkoutPage.navigateToCart(regionsEnum.US);
+		redirectShopper = new RedirectShopper(page);
+		await redirectShopper.doPayPalPayment(true, false, true);
+	});
   });
 }
