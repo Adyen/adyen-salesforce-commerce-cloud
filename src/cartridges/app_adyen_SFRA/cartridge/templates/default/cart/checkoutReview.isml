@@ -1,3 +1,4 @@
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
 <isdecorate template="common/layout/checkout">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
@@ -34,6 +35,7 @@
         <div class="col-sm-7">
 
             <!-- Customer -->
+		<isif condition="${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()}">
             <div class="card customer-summary">
                 <div class="card-header clearfix">
                     <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
@@ -42,6 +44,7 @@
                     <isinclude template="checkout/customer/customerSummary" />
                 </div>
             </div>
+		</isif>
 
             <!-- Shipping -->
             <div class="card shipping-summary">
