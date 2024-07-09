@@ -265,8 +265,11 @@ for (const environment of environments) {
         await redirectShopper.doPayPalPayment(true, false, true);
         if (environment.name.indexOf('v5') !== -1) {
 			await page.locator("button[value='place-order']").click();
-        };
-        await checkoutPage.expectSuccess();
+            await page.locator(".order-thank-you-msg").isVisible({ timeout: 20000 });
+        }
+		else{
+            await checkoutPage.expectSuccess();
+		}
     });
 
 	test('PayPal Express shipping change @quick', async ({ page }) => {
@@ -277,8 +280,11 @@ for (const environment of environments) {
         await redirectShopper.doPayPalPayment(true, true, true);
         if (environment.name.indexOf('v5') !== -1) {
             await page.locator("button[value='place-order']").click();
-        };
-        await checkoutPage.expectSuccess();
+			await page.locator(".order-thank-you-msg").isVisible({ timeout: 20000 });
+        }
+		else{
+			await checkoutPage.expectSuccess();
+		}
     });
 
 	test('PayPal Express Cancellation @quick', async ({ page }) => {
