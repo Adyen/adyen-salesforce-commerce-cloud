@@ -80,7 +80,7 @@ for (const environment of environments) {
 
     test('PayPal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doPayPalPayment(false, false, false);
+      await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
     });
   });
@@ -262,7 +262,7 @@ for (const environment of environments) {
         await checkoutPage.addProductToCart();
         await checkoutPage.navigateToCart(regionsEnum.US);
         redirectShopper = new RedirectShopper(page);
-        await redirectShopper.doPayPalPayment(true, false, false);
+        await redirectShopper.doPayPalPayment(true, false, true);
         if (environment.name.indexOf('v5') !== -1) {
             await checkoutPage.placeOrder();
         };
@@ -274,7 +274,7 @@ for (const environment of environments) {
 		await checkoutPage.addProductToCart();
 		await checkoutPage.navigateToCart(regionsEnum.US);
 		redirectShopper = new RedirectShopper(page);
-		await redirectShopper.doPayPalPayment(true, true, false);
+		await redirectShopper.doPayPalPayment(true, true, true);
 		if (environment.name.indexOf('v5') !== -1) {
 		  await checkoutPage.placeOrder();
 		};
@@ -286,7 +286,7 @@ for (const environment of environments) {
 		await checkoutPage.addProductToCart();
 		await checkoutPage.navigateToCart(regionsEnum.US);
 		redirectShopper = new RedirectShopper(page);
-		await redirectShopper.doPayPalPayment(true, false, true);
+		await redirectShopper.doPayPalPayment(true, false, false);
 	});
   });
 }

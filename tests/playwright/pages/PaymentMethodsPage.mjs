@@ -62,7 +62,7 @@ export default class PaymentMethodsPage {
     this.passwordInput = popup.locator('#password');
     this.loginButton = popup.locator('#btnLogin');
     this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
-	this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
+    this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
     this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
@@ -70,7 +70,7 @@ export default class PaymentMethodsPage {
     await this.nextButton.click();
     await this.passwordInput.fill(paymentData.PayPal.password);
     await this.loginButton.click();
-	await this.page.waitForTimeout(5000);
+    await this.page.waitForTimeout(5000);
 
 	if (shippingChange){
 		await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
