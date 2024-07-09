@@ -72,19 +72,19 @@ export default class PaymentMethodsPage {
     await this.loginButton.click();
     await this.page.waitForTimeout(5000);
 
-	if (shippingChange){
-		await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
-		await this.page.waitForTimeout(5000);
-	}
+    if (shippingChange){
+        await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
+        await this.page.waitForTimeout(5000);
+    }
 
-	if (success){
-		await this.agreeAndPayNowButton.click();
-	}
-	else {
-		await this.cancelButton.click();
-		await this.page.goBack();
-		await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
-	}
+    if (success) {
+	await this.agreeAndPayNowButton.click();
+    }
+    else {
+	await this.cancelButton.click();
+	await this.page.goBack();
+	await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
+    }
   };
 
   initiateAmazonPayment = async (
