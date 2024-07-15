@@ -95,23 +95,19 @@ jobs:
       - name: Install Salesforce CLI
         run: |
           npm install -g sfcc-ci
-          echo "Installed Salesforce CLI"
       - name: Zip site_import
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: |
           zip -r $GITHUB_WORKSPACE/site_import.zip site_import
-          echo "Zipped site_import"
       - name: Upload the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: | 
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}' -D
+          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
           sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
-          echo "Uploaded site_import"
       - name: Import the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: |
           sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
-          echo "Imported site_import"
   end-to-end-testing:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge
