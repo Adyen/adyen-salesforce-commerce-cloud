@@ -69,6 +69,31 @@ jobs:
       - name: Check build result
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
+  upload-metadata:
+    if: ${{ github.event.pull_request.changed_files != null && contains(github.event.pull_request.changed_files, 'metadata/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g sfcc-ci
+          echo "Installed Salesforce CLI"
+      - name: Zip site_import
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          zip -r site_import.zip site_import
+          echo "Zipped site_import"
+      - name: Upload the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: | 
+          sfcc-ci instance:upload metadata/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
+          echo "Uploaded site_import"
+      - name: Import the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
+          echo "Imported site_import"
   end-to-end-testing:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge
