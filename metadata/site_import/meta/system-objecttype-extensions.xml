@@ -660,6 +660,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			<attribute-definition attribute-id="Test_Attribute">
+                <display-name xml:lang="x-default">Testing purpose for github action</display-name>
+                <description xml:lang="x-default">Testing purpose for github action</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
