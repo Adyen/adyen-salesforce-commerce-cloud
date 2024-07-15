@@ -110,7 +110,7 @@ jobs:
       - name: Import the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: |
-          sfcc-ci instance:import $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
+          sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
           echo "Imported site_import"
   end-to-end-testing:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
