@@ -173,7 +173,7 @@ export default class PaymentMethodsPage {
 
   submitSimulator = async (testSuccess) => {
     await this.page.locator('button[data-testid="payment-action-button"]').click();
-    await this.page.locator('button[data-testid="ideal-box-bank-item-TESTNL2A"]').click();
+    await this.page.locator('div[id="bank-item-TESTNL2A"]').click();
     const actionButton = testSuccess ? this.page.getByRole('button', { name: 'Success', exact: true }) : this.page.getByRole('button', { name: 'Cancellation', exact: true });
     await actionButton.click();
   };
