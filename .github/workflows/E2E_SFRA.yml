@@ -70,7 +70,7 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
   upload-metadata:
-    if: ${{ github.event.pull_request.changed_files != null && contains(github.event.pull_request.changed_files, 'metadata/') }}
+    if: ${{ github.event.pull_request.changed_files != null && contains(github.event.pull_request.changed_files, 'adyen-salesforce-commerce-cloud/metadata/') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
