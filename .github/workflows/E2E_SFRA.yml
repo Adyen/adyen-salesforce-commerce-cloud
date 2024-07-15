@@ -71,22 +71,22 @@ jobs:
         run: npm run check-build:sfra
   upload-metadata:
     runs-on: ubuntu-latest
-        strategy:
-    fail-fast: false
-    matrix:
-      include:
-        - sfra-version: 'v5.3.0'
-          node-version: '14'
-          sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA5'
-          code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
-        - sfra-version: 'v6.1.0'
-          node-version: '14'
-          sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
-          code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
-        - sfra-version: 'v7.0.0'
-          node-version: '18'
-          sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA7'
-          code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: 'v5.3.0'
+            node-version: '16'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA5'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
+          - sfra-version: 'v6.1.0'
+            node-version: '16'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA6'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
+          - sfra-version: 'v7.0.0'
+            node-version: '18'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA7'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
