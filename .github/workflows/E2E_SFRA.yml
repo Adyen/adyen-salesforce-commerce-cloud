@@ -104,6 +104,7 @@ jobs:
       - name: Upload the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: | 
+          sfcc-ci auth:login ${{ secrets.SFCC_CLIENT_ID }} ${{ secrets.SFCC_CLIENT_SECRET }} 
           sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
           echo "Uploaded site_import"
       - name: Import the metadata to the sandbox
