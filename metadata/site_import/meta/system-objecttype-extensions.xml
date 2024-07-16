@@ -352,6 +352,13 @@
     </type-extension>
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+		    <attribute-definition attribute-id="TestAttribute">
+                <display-name xml:lang="x-default">TestAttribute used for github pipeline testing</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenRatePayID">
                 <display-name xml:lang="x-default">RatePay ID</display-name>
                 <type>string</type>
