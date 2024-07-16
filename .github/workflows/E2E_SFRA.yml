@@ -69,45 +69,6 @@ jobs:
       - name: Check build result
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
-  upload-metadata:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - sfra-version: 'v5.3.0'
-            node-version: '16'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA5'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
-          - sfra-version: 'v6.1.0'
-            node-version: '16'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA6'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
-          - sfra-version: 'v7.0.0'
-            node-version: '18'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA7'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: adyen-salesforce-commerce-cloud
-      - name: Install Salesforce CLI
-        run: |
-          npm install -g sfcc-ci
-      - name: Zip site_import
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: |
-          zip -r $GITHUB_WORKSPACE/site_import.zip site_import
-      - name: Upload the metadata to the sandbox
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: | 
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-          sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
-      - name: Import the metadata to the sandbox
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: |
-          sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
   end-to-end-testing:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge
