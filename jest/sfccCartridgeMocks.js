@@ -7,7 +7,9 @@ jest.mock('*/cartridge/models/cart', () => jest.fn(), { virtual: true });
 
 jest.mock('*/cartridge/models/account', () => jest.fn(), { virtual: true });
 
-jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), { virtual: true });
+jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), {
+  virtual: true,
+});
 
 jest.mock(
   '*/cartridge/scripts/checkout/shippingHelpers',
@@ -28,6 +30,9 @@ jest.mock(
 jest.mock(
   '*/cartridge/adyen/scripts/payments/adyenCheckout',
   () => ({
+    doPaymentsCall: jest.fn(() => ({
+      pspReference: 'mocked_pspReference',
+    })),
     doPaymentsDetailsCall: jest.fn((payload) => {
       let resultCode;
       if (payload.paymentData) {
@@ -36,7 +41,7 @@ jest.mock(
         resultCode =
           payload.details.MD === 'mocked_md' ? 'Authorised' : 'Not_Authorised';
       }
-      return { resultCode };
+      return { resultCode, paymentMethod: { type: 'mocked_type' } };
     }),
     createPaymentRequest: jest.fn(() => ({
       resultCode: 'Authorised',
@@ -71,15 +76,6 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock(
-  '*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods',
-  () => ({
-    getMethods: jest.fn(() => ({
-      paymentMethods: [{ type: 'visa' }],
-    })),
-  }),
-  { virtual: true },
-);
 jest.mock(
   '*/cartridge/adyen/scripts/payments/adyenTerminalApi',
   () => ({
@@ -453,6 +449,22 @@ jest.mock(
         },
       ],
     })),
+    setBillingAndShippingAddress: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/client/default/js/adyen_checkout/helpers',
+  () => ({
+    setOrderFormData: jest.fn(),
+    assignPaymentMethodValue: jest.fn(),
+    paymentFromComponent: jest.fn(),
+    resetPaymentMethod: jest.fn(),
+    displaySelectedMethod: jest.fn(),
+    showValidation: jest.fn(),
+    createShowConfirmationForm: jest.fn(),
+    getInstallmentValues: jest.fn(),
   }),
   { virtual: true },
 );

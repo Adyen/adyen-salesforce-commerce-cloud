@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+const BasketMgr = require('dw/order/BasketMgr');
 jest.mock('dw/value/Money', () => jest.fn());
 jest.mock('*/cartridge/adyen/utils/adyenHelper', () => {
   return {
@@ -12,6 +13,7 @@ jest.mock('*/cartridge/adyen/utils/adyenHelper', () => {
 
 const paypalHelper = require('../paypalHelper')
 const Money = require('dw/value/Money');
+const { createBillingAddress } = require("../../../../../../../jest/__mocks__/dw/order/BasketMgr");
 describe('paypalHelper', () => {
   describe('getLineItems', () => {
     let args,lineItem, result
@@ -114,6 +116,70 @@ describe('paypalHelper', () => {
       Money.mockReturnValue(() => {return {value: 10, currency: 'TEST'}})
       const paypalUpdateOrderRequest = paypalHelper.createPaypalUpdateOrderRequest(pspReference, currentBasket, currentShippingMethods, paymentData)
       expect(paypalUpdateOrderRequest).toStrictEqual(result)
+    })
+  })
+  describe('setBillingAndShippingAddress', () => {
+    let shopperDetails, billingAddress, shippingAddress;
+    beforeEach(() => {
+      jest.clearAllMocks();
+      billingAddress = require('../../../../../../../jest/__mocks__/dw/order/BasketMgr');
+      shopperDetails = {
+        shopperName:{
+          firstName: 'John',
+          lastName: 'Doe'
+        },
+        billingAddress:{
+          street: '123 Main St',
+          city: 'City',
+          postalCode: '12345',
+          stateOrProvince: 'State',
+          country: 'United States',
+        },
+        shippingAddress:{
+          street: '123 Main St',
+          city: 'City',
+          postalCode: '12345',
+          stateOrProvince: 'State',
+          country: 'United States',
+        },
+        telephoneNumber: '+1234567890',
+        shopperEmail: 'john@example.com'
+      }
+      session.privacy.shopperDetails = JSON.stringify(shopperDetails);
+    });
+    afterEach(() => {
+      jest.resetModules();
+    });
+    it('should update billing and shipping address for current basket', () => {
+      const currentBasket = BasketMgr.getCurrentBasket();
+      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      expect(currentBasket.billingAddress.setFirstName).toHaveBeenCalledWith('John');
+    })
+    it('should set billing and shipping address if current basket has no billing Address', () => {
+      const currentBasket = BasketMgr.getCurrentBasket();
+      currentBasket.billingAddress= '';
+      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      expect(currentBasket.createBillingAddress).toHaveBeenCalled();
+    })
+    it('should set billing and shipping address if current basket has no shipping Address', () => {
+      const currentBasket = BasketMgr.getCurrentBasket();
+      const createShippingAddress = jest.fn(() => ({
+        setPostalCode: jest.fn(),
+        setAddress1: jest.fn(),
+        setAddress2: jest.fn(),
+        setCountryCode: jest.fn(),
+        setCity: jest.fn(),
+        setFirstName: jest.fn(),
+        setLastName: jest.fn(),
+        setPhone: jest.fn(),
+        setStateCode: jest.fn(),
+      }));
+      currentBasket.getDefaultShipment= jest.fn(() => ({
+        createShippingAddress: createShippingAddress
+      }));
+      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      expect(currentBasket.getDefaultShipment).toHaveBeenCalled();
+      expect(createShippingAddress).toHaveBeenCalled();
     })
   })
 })

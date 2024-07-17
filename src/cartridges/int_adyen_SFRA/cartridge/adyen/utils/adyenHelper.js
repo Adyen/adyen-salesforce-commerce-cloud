@@ -98,7 +98,7 @@ let adyenHelperObj = {
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     })
-    shippingCost = shippingAddress ? shippingCost.addRate(this.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
+    shippingCost = shippingAddress ? shippingCost.addRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode(),
@@ -168,7 +168,7 @@ let adyenHelperObj = {
    * @returns {dw.util.ArrayList<ApplicableShippingMethodModel> | null} - list of applicable shipping methods or null
    */
   getApplicableShippingMethods(shipment, address) {
-    const shippingMethods = this.getShippingMethods(shipment, address);
+    const shippingMethods = adyenHelperObj.getShippingMethods(shipment, address);
     if (!shippingMethods) {
       return null;
     }
@@ -181,8 +181,8 @@ let adyenHelperObj = {
           shippingMethod,
           shipment,
         );
-        const shippingCost = this.getShippingCost(shippingMethod, shipment);
-        const shipmentUUID = this.getShipmentUUID(shipment);
+        const shippingCost = adyenHelperObj.getShippingCost(shippingMethod, shipment);
+        const shipmentUUID = adyenHelperObj.getShipmentUUID(shipment);
         filteredMethods.push({
           ...shippingMethodModel,
           shippingCost,

@@ -18,7 +18,7 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
  */
 function updateCurrentBasket(currentBasket, req) {
   const { details } = JSON.parse(req.form.data);
-  if (currentBasket.shipments.length <= 1) {
+  if (currentBasket.shipments?.length <= 1) {
     req.session.privacyCache.set('usingMultiShipping', false);
   }
 
@@ -36,7 +36,7 @@ function updateCurrentBasket(currentBasket, req) {
  * @param {sfra.Request} req - request
  * @param {sfra.Response} res - response
  * @param {sfra.Next} next - next
- * @returns {void}
+ * @returns {sfra.Next} next - next
  */
 function handleCheckoutReview(req, res, next) {
   try {
