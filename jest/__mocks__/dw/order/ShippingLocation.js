@@ -1,1 +1,5 @@
-export const ShippingLocation = jest.fn();
+function ShippingLocation() {
+  return jest.fn();
+}
+
+module.exports = ShippingLocation;

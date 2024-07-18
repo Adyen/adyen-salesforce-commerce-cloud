@@ -7,31 +7,35 @@ const helpers = require('./adyen_checkout/helpers');
 const { PAYPAL } = require('./constants');
 
 async function callPaymentFromComponent(data, component) {
-  $.spinner().start();
-  const response = await fetch(window.makeExpressPaymentsCall, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-  if (response.ok) {
-    const { action } = await response.json();
-    if (!action) {
-      component.handleError();
+  try {
+    $.spinner().start();
+    const response = await fetch(window.makeExpressPaymentsCall, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const { action, errorMessage = '' } = await response.json();
+    if (response.ok && action) {
+      component.handleAction(action);
+    } else {
+      throw new Error(errorMessage);
     }
-    component.handleAction(action);
-  } else {
+  } catch (e) {
     component.handleError();
   }
 }
 
-async function saveShopperDetails(details) {
+async function saveShopperDetails(details, actions) {
   return $.ajax({
     url: window.saveShopperData,
     type: 'post',
     data: {
       shopperDetails: JSON.stringify(details),
+    },
+    success() {
+      actions.resolve();
     },
     error() {
       $.spinner().stop();
@@ -110,10 +114,11 @@ async function handleShippingAddressChange(data, actions, component) {
       },
       body: JSON.stringify(request),
     });
-    return updateComponent(response, component);
+    await updateComponent(response, component);
   } catch (e) {
-    return actions.reject();
+    actions.reject();
   }
+  return false;
 }
 
 async function handleShippingOptionChange(data, actions, component) {
@@ -135,10 +140,11 @@ async function handleShippingOptionChange(data, actions, component) {
       },
       body: JSON.stringify(request),
     });
-    return updateComponent(response, component);
+    await updateComponent(response, component);
   } catch (e) {
-    return actions.reject();
+    actions.reject();
   }
+  return false;
 }
 
 function getPaypalButtonConfig(paypalConfig) {
@@ -156,8 +162,7 @@ function getPaypalButtonConfig(paypalConfig) {
       $.spinner().stop();
     },
     onShopperDetails: async (shopperDetails, rawData, actions) => {
-      await saveShopperDetails(shopperDetails);
-      actions.resolve();
+      await saveShopperDetails(shopperDetails, actions);
     },
     onAdditionalDetails: (state) => {
       if (paypalReviewPageEnabled) {
@@ -206,3 +211,15 @@ async function mountPaypalComponent() {
 }
 
 mountPaypalComponent();
+
+module.exports = {
+  callPaymentFromComponent,
+  saveShopperDetails,
+  redirectToReviewPage,
+  makeExpressPaymentDetailsCall,
+  updateComponent,
+  handleShippingAddressChange,
+  handleShippingOptionChange,
+  getPaypalButtonConfig,
+  mountPaypalComponent,
+};
