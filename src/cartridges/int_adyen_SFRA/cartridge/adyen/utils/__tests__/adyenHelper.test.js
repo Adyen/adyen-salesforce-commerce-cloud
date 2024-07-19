@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 const Money = require('../../../../../../../jest/__mocks__/dw/value/Money');
-const { savePaymentDetails, getApplicableShippingMethods } = require('../adyenHelper');
+const { getApplicableShippingMethods } = require('../adyenHelper');
+const savePaymentDetails = require('../adyenHelper').savePaymentDetails;
 describe('savePaymentDetails', () => {
   let paymentInstrument;
   let order;
@@ -68,6 +69,7 @@ describe('savePaymentDetails', () => {
     expect(paymentInstrument.paymentTransaction.custom.Adyen_donationToken).toBe('donation-token-123');
   });
 });
+
 describe('getApplicableShippingMethods', () => {
   let shippingMethod, shipment, address;
   beforeEach(() => {

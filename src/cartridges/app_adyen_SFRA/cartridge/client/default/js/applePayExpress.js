@@ -257,7 +257,15 @@ initializeCheckout()
       },
       onShippingContactSelected: async (resolve, reject, event) => {
         const { shippingContact } = event;
-        const shippingMethods = await getShippingMethod(shippingContact);
+        const shippingMethods = await fetch(
+          `${window.shippingMethodsUrl}?${new URLSearchParams({
+            city: shippingContact.locality,
+            country: shippingContact.country,
+            countryCode: shippingContact.countryCode,
+            stateCode: shippingContact.administrativeArea,
+            postalCode: shippingContact.postalCode,
+          })}`,
+        );
         if (shippingMethods.ok) {
           shippingMethodsData = await shippingMethods.json();
           if (shippingMethodsData.shippingMethods?.length) {
