@@ -295,8 +295,7 @@ let adyenHelperObj = {
 
   // determines whether Adyen Giving is available based on the donation token 
   isAdyenGivingAvailable(paymentInstrument) {
-    // Adyen giving is only available for BCMC in POS
-    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc';
+    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
