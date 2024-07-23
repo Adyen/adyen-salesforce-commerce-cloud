@@ -23,7 +23,7 @@ jobs:
             code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
       - name: Checkout SFRA code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
           ref: ${{ matrix.sfra-version }}
@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '14'
       - name: Checkout
         uses: actions/checkout@v4
         with:
