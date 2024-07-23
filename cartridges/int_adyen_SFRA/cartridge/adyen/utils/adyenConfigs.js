@@ -112,6 +112,12 @@ var adyenConfigsObj = {
   isAmazonPayExpressEnabled: function isAmazonPayExpressEnabled() {
     return getCustomPreference('AmazonPayExpress_Enabled');
   },
+  isPayPalExpressEnabled: function isPayPalExpressEnabled() {
+    return getCustomPreference('PayPalExpress_Enabled');
+  },
+  isPayPalExpressReviewPageEnabled: function isPayPalExpressReviewPageEnabled() {
+    return getCustomPreference('PayPalExpress_ReviewPage_Enabled');
+  },
   getExpressPaymentsOrder: function getExpressPaymentsOrder() {
     return getCustomPreference('ExpressPayments_order');
   },

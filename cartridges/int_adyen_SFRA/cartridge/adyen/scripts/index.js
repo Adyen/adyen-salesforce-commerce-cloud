@@ -15,6 +15,10 @@ var fetchGiftCards = require('*/cartridge/adyen/scripts/partialPayments/fetchGif
 var showConfirmationPaymentFromComponent = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmationPaymentFromComponent');
 var showConfirmation = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmation');
 var notify = require('*/cartridge/adyen/webhooks/notify');
+var makeExpressPaymentsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall');
+var makeExpressPaymentDetailsCall = require('*/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall');
+var saveShopperData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData');
+var handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview');
 module.exports = {
   getCheckoutPaymentMethods: getCheckoutPaymentMethods,
   paymentFromComponent: paymentFromComponent,
@@ -30,5 +34,9 @@ module.exports = {
   fetchGiftCards: fetchGiftCards,
   showConfirmation: showConfirmation,
   showConfirmationPaymentFromComponent: showConfirmationPaymentFromComponent,
-  notify: notify
+  notify: notify,
+  makeExpressPaymentsCall: makeExpressPaymentsCall,
+  makeExpressPaymentDetailsCall: makeExpressPaymentDetailsCall,
+  saveShopperData: saveShopperData,
+  handleCheckoutReview: handleCheckoutReview
 };

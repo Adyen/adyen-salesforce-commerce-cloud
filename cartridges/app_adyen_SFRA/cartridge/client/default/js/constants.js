@@ -13,8 +13,11 @@ module.exports = {
   SCHEME: 'scheme',
   GIROPAY: 'giropay',
   APPLE_PAY: 'applepay',
+  PAYPAL: 'paypal',
+  AMAZON_PAY: 'amazonpay',
   ACTIONTYPE: {
     QRCODE: 'qrCode'
   },
-  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp']
+  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp'],
+  MULTIPLE_TX_VARIANTS_COMPONENTS: ['upi']
 };

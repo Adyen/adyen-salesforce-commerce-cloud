@@ -8,7 +8,8 @@ var _require = require('./commons'),
   checkIfExpressMethodsAreReady = _require.checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods = _require.updateLoadedExpressMethods,
   getPaymentMethods = _require.getPaymentMethods;
-var AMAZON_PAY = 'amazonpay';
+var _require2 = require('./constants'),
+  AMAZON_PAY = _require2.AMAZON_PAY;
 function mountAmazonPayComponent() {
   return _mountAmazonPayComponent.apply(this, arguments);
 }

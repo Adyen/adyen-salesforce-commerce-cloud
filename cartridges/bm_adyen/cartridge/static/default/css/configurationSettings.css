@@ -65,7 +65,6 @@
     padding-right: 51px;
 }
 
-
 .form-check-input, .form-check-label{
     width: 26px;
     height: 20px;
@@ -240,7 +239,7 @@ html {
 #saveChangesAlert{
     width: 420px;
     left: 0;
-    margin: auto; // Centers alert component
+    margin: auto; /* Centers alert component */
     right: 0;
     text-align: center; 
     top: 1em;
@@ -276,8 +275,8 @@ html {
 
 #notSavedChangesAlert{
     left: 0;
-    margin: auto; // Centers alert component
-    position: absolute; // So that it will display relative to the entire page
+    margin: auto; /* Centers alert component */
+    position: absolute; /* So that it will display relative to the entire page */
     right: 0;
     text-align: center; 
     top: 1em;
@@ -460,7 +459,8 @@ ul{
 .draggable {
     cursor: move;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start */
     justify-content: space-between;
     padding: 15px;
     flex: 1;
@@ -468,8 +468,7 @@ ul{
 }
 
 .draggable .switch-button {
-    position: initial;
-    left: 95.5%;
+    left: 89%;
 }
 
 .draggable .title {
@@ -512,4 +511,19 @@ ul{
     font-family: 'Fakt';
     font-style: normal;
     font-size: 14px;
+}
+
+.additional-item-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.additional-item-container .additional-switch-button{
+    position: absolute;
+    left: 89%;
+}
+
+.additional-item{
+    margin-left: 48px;
 }

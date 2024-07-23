@@ -31,7 +31,7 @@ var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var constants = require('*/cartridge/adyen/config/constants');
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
-    var zeroAuthRequest = AdyenHelper.createAdyenRequestObject(null, paymentInstrument);
+    var zeroAuthRequest = AdyenHelper.createAdyenRequestObject('recurringPayment-account', 'recurringPayment-token', paymentInstrument);
     zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
