@@ -96,9 +96,8 @@ function removeGiftCards() {
         giftCardsInfoMessageContainer.classList.remove(
           'gift-cards-info-message-container',
         );
-        document.querySelector(
-          'button[value="submit-payment"]',
-        ).disabled = false;
+        document.querySelector('button[value="submit-payment"]').disabled =
+          false;
 
         if (res.resultCode === constants.RECEIVED) {
           document

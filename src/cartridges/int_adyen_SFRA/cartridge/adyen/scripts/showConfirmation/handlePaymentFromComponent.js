@@ -49,11 +49,14 @@ function handleAuthorisedPayment(
 ) {
   // custom fraudDetection
   const fraudDetectionStatus = { status: 'success' };
+  const isPayPalExpress = order.custom.Adyen_paypalExpressResponse;
 
-  // Places the order
-  const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-  if (placeOrderResult.error) {
-    return handlePaymentError(order, adyenPaymentInstrument, { res, next });
+  // Places the order, for PayPal express the order is placed from makeExpressPaymentDetailsCall.js
+  if (!isPayPalExpress) {
+    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+    if (placeOrderResult.error) {
+      return handlePaymentError(order, adyenPaymentInstrument, { res, next });
+    }
   }
 
   Transaction.wrap(() => {
@@ -101,6 +104,10 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   Transaction.wrap(() => {
     order.custom.Adyen_pspReference = result.pspReference;
     order.custom.Adyen_eventCode = result.resultCode;
+    order.custom.Adyen_paypalExpressResponse = null;
+    adyenPaymentInstrument.custom.adyenPaymentData = null;
+    session.privacy.paypalExpressOrderNo = null;
+    session.privacy.pspReference = null;
   });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
@@ -135,15 +142,21 @@ function handlePayment(stateData, order, options) {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }
   }
-
-  const detailsCall = hasStateData
-    ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument)
-    : null;
-
-  Transaction.wrap(() => {
-    adyenPaymentInstrument.custom.adyenPaymentData = null;
-  });
-  finalResult = finalResult || detailsCall?.result;
+  const paymentData = JSON.parse(
+    adyenPaymentInstrument.custom.adyenPaymentData,
+  );
+  const isPayPalExpress = AdyenHelper.isPayPalExpress(
+    paymentData.paymentMethod,
+  );
+  const detailsCall =
+    hasStateData && !isPayPalExpress
+      ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument)
+      : null;
+  if (isPayPalExpress) {
+    finalResult = JSON.parse(order.custom.Adyen_paypalExpressResponse);
+  } else {
+    finalResult = finalResult || detailsCall?.result;
+  }
 
   return handlePaymentResult(
     finalResult,

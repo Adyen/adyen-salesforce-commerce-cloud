@@ -1,6 +1,7 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
 const PaymentMgr = require('dw/order/PaymentMgr');
+const URLUtils = require('dw/web/URLUtils');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
@@ -9,12 +10,12 @@ const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPa
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getCountryCode(currentBasket, locale) {
-  const countryCode = Locale.getLocale(locale.id).country;
-  const firstItem = currentBasket?.getShipments()?.[0];
-  if (firstItem?.shippingAddress) {
-    return firstItem.shippingAddress.getCountryCode().value;
+  let countryCode;
+  const { shippingAddress } = currentBasket.getDefaultShipment();
+  if (shippingAddress) {
+    countryCode = shippingAddress.getCountryCode().value;
   }
-  return countryCode;
+  return countryCode || Locale.getLocale(locale.id).country;
 }
 
 function getConnectedTerminals() {
@@ -27,11 +28,15 @@ function getConnectedTerminals() {
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const countryCode =
-      currentBasket.getShipments().length > 0 &&
-      currentBasket.getShipments()[0].shippingAddress
-        ? currentBasket.getShipments()[0].shippingAddress.getCountryCode().value
-        : getCountryCode(currentBasket, req.locale).value;
+    if (!currentBasket) {
+      res.json({
+        error: true,
+        redirectUrl: URLUtils.url('Cart-Show').toString(),
+      });
+
+      return next();
+    }
+    const countryCode = getCountryCode(currentBasket, req.locale);
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
     const connectedTerminals = JSON.parse(getConnectedTerminals());
     const currency = currentBasket.getTotalGrossPrice().currencyCode;

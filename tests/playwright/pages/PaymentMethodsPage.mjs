@@ -30,20 +30,20 @@ export default class PaymentMethodsPage {
 
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();
-    await iDealDropDown.click();
-    await issuer.click();
   };
 
-  initiatePayPalPayment = async () => {
+  initiatePayPalPayment = async (expressFlow, shippingChange, success) => {
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
       .locator('.paypal-button');
 
     // Click PayPal radio button
-    await this.page.click('#rb_paypal');
-	await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
-	
+    if (!expressFlow) {
+      await this.page.click('#rb_paypal');
+    }
+    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
+
     // Capture popup for interaction
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
@@ -62,13 +62,29 @@ export default class PaymentMethodsPage {
     this.passwordInput = popup.locator('#password');
     this.loginButton = popup.locator('#btnLogin');
     this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
+    this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
+    this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
     await this.emailInput.fill(paymentData.PayPal.username);
     await this.nextButton.click();
     await this.passwordInput.fill(paymentData.PayPal.password);
     await this.loginButton.click();
-    await this.agreeAndPayNowButton.click();
+    await this.page.waitForTimeout(5000);
+
+    if (shippingChange){
+        await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
+        await this.page.waitForTimeout(5000);
+    }
+
+    if (success) {
+	await this.agreeAndPayNowButton.click();
+    }
+    else {
+	await this.cancelButton.click();
+	await this.page.goBack();
+	await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
+    }
   };
 
   initiateAmazonPayment = async (
@@ -118,9 +134,8 @@ export default class PaymentMethodsPage {
       await this.confirmPaymentChangeButton.click();
     }
     await this.page.waitForLoadState("networkidle", { timeout: 20000 });
-    this.submitButton = this.page.locator(
-      'input[class="a-button-input"]'
-    );
+    this.submitButton = this.page.locator('#a-autoid-0');
+    await this.submitButton.waitFor({ state: 'visible' });
     await this.submitButton.click();
   };
   
@@ -174,8 +189,11 @@ export default class PaymentMethodsPage {
     await this.page.locator('#SubmitForm').click();
   };
 
-  submitSimulator = async () => {
-    await this.page.locator('input[type="submit"]').click();
+  submitSimulator = async (testSuccess) => {
+    await this.page.locator('button[data-testid="payment-action-button"]').click();
+    await this.page.locator('div[id="bank-item-TESTNL2A"]').click();
+    const actionButton = testSuccess ? this.page.getByRole('button', { name: 'Success', exact: true }) : this.page.getByRole('button', { name: 'Cancellation', exact: true });
+    await actionButton.click();
   };
 
   submitBankSimulator = async () => {
