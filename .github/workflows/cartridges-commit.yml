@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '14'
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -52,6 +52,8 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
+        with:
+          node-version: '18'
         if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud
