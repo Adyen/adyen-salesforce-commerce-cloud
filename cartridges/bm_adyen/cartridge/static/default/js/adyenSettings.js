@@ -10,6 +10,17 @@ const expressPaymentMethods = [{
   text: 'Amazon Pay',
   icon: window.amazonPayIcon,
   checked: window.isAmazonPayEnabled
+}, {
+  id: 'paypal',
+  name: 'PayPalExpress_Enabled',
+  text: 'PayPal',
+  icon: window.paypalIcon,
+  checked: window.isPayPalExpressEnabled,
+  reviewPage: window.isPayPalExpressReviewPageEnabled,
+  additionalField: {
+    name: 'PayPalExpress_ReviewPage_Enabled',
+    text: 'Show shopper order review page'
+  }
 }];
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
@@ -120,6 +131,24 @@ document.addEventListener('DOMContentLoaded', () => {
     expressPaymentMethods.forEach((item, index) => {
       const listItem = document.createElement('li');
       listItem.setAttribute('data-index', index.toString());
+      let additionalFieldHtml = '';
+      if (item.additionalField) {
+        additionalFieldHtml = `
+        <div class="additional-item-container">
+          <p class="additional-item">${item.additionalField.text}</p>
+           <div class="additional-switch-button">
+              <div class="form-check form-switch">
+                 <input class="form-check-input" 
+                        type="checkbox" 
+                        name="${item.additionalField.name}" 
+                        id="${item.additionalField.name}"
+                        ${item.reviewPage ? 'checked' : 'unchecked'}
+                 >
+              </div>
+           </div>
+        </div>
+      `;
+      }
       listItem.innerHTML = `
         <div class="draggable" draggable="true">
           <div class="title">
@@ -142,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  >
               </div>
            </div>
+           ${additionalFieldHtml}
         </div>
       `;
       listItems.push(listItem);

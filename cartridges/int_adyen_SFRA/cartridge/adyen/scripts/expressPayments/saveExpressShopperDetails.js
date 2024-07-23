@@ -49,7 +49,9 @@ function saveExpressShopperDetails(req, res, next) {
       currentBasket.custom.amazonExpressShopperDetails = JSON.stringify(shopperDetails);
     });
     setBillingAndShippingAddress(currentBasket);
-    var shippingMethods = AdyenHelper.callGetShippingMethods(shopperDetails.shippingAddress);
+    var _currentBasket$getDef2 = currentBasket.getDefaultShipment(),
+      shippingAddress = _currentBasket$getDef2.shippingAddress;
+    var shippingMethods = AdyenHelper.getApplicableShippingMethods(currentBasket.getDefaultShipment(), shippingAddress);
     res.json({
       shippingMethods: shippingMethods
     });

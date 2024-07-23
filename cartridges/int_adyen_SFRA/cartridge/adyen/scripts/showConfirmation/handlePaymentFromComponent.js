@@ -44,14 +44,17 @@ function handleAuthorisedPayment(order, result, adyenPaymentInstrument, _ref2) {
   var fraudDetectionStatus = {
     status: 'success'
   };
+  var isPayPalExpress = order.custom.Adyen_paypalExpressResponse;
 
-  // Places the order
-  var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-  if (placeOrderResult.error) {
-    return handlePaymentError(order, adyenPaymentInstrument, {
-      res: res,
-      next: next
-    });
+  // Places the order, for PayPal express the order is placed from makeExpressPaymentDetailsCall.js
+  if (!isPayPalExpress) {
+    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+    if (placeOrderResult.error) {
+      return handlePaymentError(order, adyenPaymentInstrument, {
+        res: res,
+        next: next
+      });
+    }
   }
   Transaction.wrap(function () {
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
@@ -77,6 +80,10 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   Transaction.wrap(function () {
     order.custom.Adyen_pspReference = result.pspReference;
     order.custom.Adyen_eventCode = result.resultCode;
+    order.custom.Adyen_paypalExpressResponse = null;
+    adyenPaymentInstrument.custom.adyenPaymentData = null;
+    session.privacy.paypalExpressOrderNo = null;
+    session.privacy.pspReference = null;
   });
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
@@ -100,11 +107,14 @@ function handlePayment(stateData, order, options) {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }
   }
-  var detailsCall = hasStateData ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) : null;
-  Transaction.wrap(function () {
-    adyenPaymentInstrument.custom.adyenPaymentData = null;
-  });
-  finalResult = finalResult || (detailsCall === null || detailsCall === void 0 ? void 0 : detailsCall.result);
+  var paymentData = JSON.parse(adyenPaymentInstrument.custom.adyenPaymentData);
+  var isPayPalExpress = AdyenHelper.isPayPalExpress(paymentData.paymentMethod);
+  var detailsCall = hasStateData && !isPayPalExpress ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument) : null;
+  if (isPayPalExpress) {
+    finalResult = JSON.parse(order.custom.Adyen_paypalExpressResponse);
+  } else {
+    finalResult = finalResult || (detailsCall === null || detailsCall === void 0 ? void 0 : detailsCall.result);
+  }
   return handlePaymentResult(finalResult, order, adyenPaymentInstrument, options);
 }
 module.exports = handlePayment;

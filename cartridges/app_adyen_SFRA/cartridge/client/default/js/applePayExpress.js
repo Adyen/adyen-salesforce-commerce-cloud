@@ -20,67 +20,6 @@ var _require3 = require('./constants'),
 var checkout;
 var shippingMethodsData;
 var paymentMethodsResponse;
-function initializeCheckout() {
-  return _initializeCheckout.apply(this, arguments);
-}
-function _initializeCheckout() {
-  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-    var _paymentMethodsRespon3;
-    var shippingMethods, applicationInfo;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          _context5.next = 2;
-          return getPaymentMethods();
-        case 2:
-          paymentMethodsResponse = _context5.sent;
-          _context5.next = 5;
-          return fetch(window.shippingMethodsUrl);
-        case 5:
-          shippingMethods = _context5.sent;
-          _context5.next = 8;
-          return shippingMethods.json();
-        case 8:
-          shippingMethodsData = _context5.sent;
-          applicationInfo = (_paymentMethodsRespon3 = paymentMethodsResponse) === null || _paymentMethodsRespon3 === void 0 ? void 0 : _paymentMethodsRespon3.applicationInfo;
-          _context5.next = 12;
-          return AdyenCheckout({
-            environment: window.environment,
-            clientKey: window.clientKey,
-            locale: window.locale,
-            analytics: {
-              analyticsData: {
-                applicationInfo: applicationInfo
-              }
-            }
-          });
-        case 12:
-          checkout = _context5.sent;
-        case 13:
-        case "end":
-          return _context5.stop();
-      }
-    }, _callee5);
-  }));
-  return _initializeCheckout.apply(this, arguments);
-}
-function createApplePayButton(_x) {
-  return _createApplePayButton.apply(this, arguments);
-}
-function _createApplePayButton() {
-  _createApplePayButton = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(applePayButtonConfig) {
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          return _context6.abrupt("return", checkout.create(APPLE_PAY, applePayButtonConfig));
-        case 1:
-        case "end":
-          return _context6.stop();
-      }
-    }, _callee6);
-  }));
-  return _createApplePayButton.apply(this, arguments);
-}
 function formatCustomerObject(customerData, billingData) {
   return {
     addressBook: {
@@ -165,6 +104,104 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   }).fail(function () {
     rejectApplePay();
   });
+}
+function selectShippingMethod(_ref) {
+  var shipmentUUID = _ref.shipmentUUID,
+    ID = _ref.ID;
+  var request = {
+    paymentMethodType: APPLE_PAY,
+    shipmentUUID: shipmentUUID,
+    methodID: ID
+  };
+  return fetch(window.selectShippingMethodUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(request)
+  });
+}
+function getShippingMethod(shippingContact) {
+  var request = {
+    paymentMethodType: APPLE_PAY
+  };
+  if (shippingContact) {
+    request.address = {
+      city: shippingContact.locality,
+      country: shippingContact.country,
+      countryCode: shippingContact.countryCode,
+      stateCode: shippingContact.administrativeArea,
+      postalCode: shippingContact.postalCode
+    };
+  }
+  return fetch(window.shippingMethodsUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(request)
+  });
+}
+function initializeCheckout() {
+  return _initializeCheckout.apply(this, arguments);
+}
+function _initializeCheckout() {
+  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+    var _paymentMethodsRespon3;
+    var shippingMethods, applicationInfo;
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return getPaymentMethods();
+        case 2:
+          paymentMethodsResponse = _context5.sent;
+          _context5.next = 5;
+          return getShippingMethod();
+        case 5:
+          shippingMethods = _context5.sent;
+          _context5.next = 8;
+          return shippingMethods.json();
+        case 8:
+          shippingMethodsData = _context5.sent;
+          applicationInfo = (_paymentMethodsRespon3 = paymentMethodsResponse) === null || _paymentMethodsRespon3 === void 0 ? void 0 : _paymentMethodsRespon3.applicationInfo;
+          _context5.next = 12;
+          return AdyenCheckout({
+            environment: window.environment,
+            clientKey: window.clientKey,
+            locale: window.locale,
+            analytics: {
+              analyticsData: {
+                applicationInfo: applicationInfo
+              }
+            }
+          });
+        case 12:
+          checkout = _context5.sent;
+        case 13:
+        case "end":
+          return _context5.stop();
+      }
+    }, _callee5);
+  }));
+  return _initializeCheckout.apply(this, arguments);
+}
+function createApplePayButton(_x) {
+  return _createApplePayButton.apply(this, arguments);
+}
+function _createApplePayButton() {
+  _createApplePayButton = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(applePayButtonConfig) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
+        case 0:
+          return _context6.abrupt("return", checkout.create(APPLE_PAY, applePayButtonConfig));
+        case 1:
+        case "end":
+          return _context6.stop();
+      }
+    }, _callee6);
+  }));
+  return _createApplePayButton.apply(this, arguments);
 }
 initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
   var _paymentMethodsRespon, _paymentMethodsRespon2;
@@ -265,12 +302,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
                       return sm.ID === shippingMethod.identifier;
                     });
                     _context2.next = 4;
-                    return fetch("".concat(window.calculateAmountUrl, "?").concat(new URLSearchParams({
-                      shipmentUUID: matchingShippingMethod.shipmentUUID,
-                      methodID: matchingShippingMethod.ID
-                    })), {
-                      method: 'POST'
-                    });
+                    return selectShippingMethod(matchingShippingMethod);
                   case 4:
                     calculationResponse = _context2.sent;
                     if (!calculationResponse.ok) {
@@ -316,13 +348,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
                   case 0:
                     shippingContact = event.shippingContact;
                     _context3.next = 3;
-                    return fetch("".concat(window.shippingMethodsUrl, "?").concat(new URLSearchParams({
-                      city: shippingContact.locality,
-                      country: shippingContact.country,
-                      countryCode: shippingContact.countryCode,
-                      stateCode: shippingContact.administrativeArea,
-                      postalCode: shippingContact.postalCode
-                    })));
+                    return getShippingMethod(shippingContact);
                   case 3:
                     shippingMethods = _context3.sent;
                     if (!shippingMethods.ok) {
@@ -339,12 +365,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
                     }
                     selectedShippingMethod = shippingMethodsData.shippingMethods[0];
                     _context3.next = 12;
-                    return fetch("".concat(window.calculateAmountUrl, "?").concat(new URLSearchParams({
-                      shipmentUUID: selectedShippingMethod.shipmentUUID,
-                      methodID: selectedShippingMethod.ID
-                    })), {
-                      method: 'POST'
-                    });
+                    return selectShippingMethod(selectedShippingMethod);
                   case 12:
                     calculationResponse = _context3.sent;
                     if (!calculationResponse.ok) {

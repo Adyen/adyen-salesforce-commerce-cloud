@@ -3,6 +3,7 @@
 var BasketMgr = require('dw/order/BasketMgr');
 var Locale = require('dw/util/Locale');
 var PaymentMgr = require('dw/order/PaymentMgr');
+var URLUtils = require('dw/web/URLUtils');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
 var paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
@@ -10,13 +11,13 @@ var constants = require('*/cartridge/adyen/config/constants');
 var getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 function getCountryCode(currentBasket, locale) {
-  var _currentBasket$getShi;
-  var countryCode = Locale.getLocale(locale.id).country;
-  var firstItem = currentBasket === null || currentBasket === void 0 ? void 0 : (_currentBasket$getShi = currentBasket.getShipments()) === null || _currentBasket$getShi === void 0 ? void 0 : _currentBasket$getShi[0];
-  if (firstItem !== null && firstItem !== void 0 && firstItem.shippingAddress) {
-    return firstItem.shippingAddress.getCountryCode().value;
+  var countryCode;
+  var _currentBasket$getDef = currentBasket.getDefaultShipment(),
+    shippingAddress = _currentBasket$getDef.shippingAddress;
+  if (shippingAddress) {
+    countryCode = shippingAddress.getCountryCode().value;
   }
-  return countryCode;
+  return countryCode || Locale.getLocale(locale.id).country;
 }
 function getConnectedTerminals() {
   if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
@@ -27,7 +28,14 @@ function getConnectedTerminals() {
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     var currentBasket = BasketMgr.getCurrentBasket();
-    var countryCode = currentBasket.getShipments().length > 0 && currentBasket.getShipments()[0].shippingAddress ? currentBasket.getShipments()[0].shippingAddress.getCountryCode().value : getCountryCode(currentBasket, req.locale).value;
+    if (!currentBasket) {
+      res.json({
+        error: true,
+        redirectUrl: URLUtils.url('Cart-Show').toString()
+      });
+      return next();
+    }
+    var countryCode = getCountryCode(currentBasket, req.locale);
     var adyenURL = "".concat(AdyenHelper.getLoadingContext(), "images/logos/medium/");
     var connectedTerminals = JSON.parse(getConnectedTerminals());
     var currency = currentBasket.getTotalGrossPrice().currencyCode;
