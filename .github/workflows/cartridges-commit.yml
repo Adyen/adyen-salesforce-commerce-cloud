@@ -52,7 +52,6 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
-        uses: actions/setup-node@v3
         if: success()
         run: | 
           cd adyen-salesforce-commerce-cloud
