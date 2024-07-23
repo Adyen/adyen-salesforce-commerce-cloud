@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`paypal express getPaypalButtonConfig should return config when review page is enabled 1`] = `
+{
+  "configuration": {},
+  "isExpress": true,
+  "onAdditionalDetails": [Function],
+  "onError": [Function],
+  "onShippingAddressChange": [Function],
+  "onShippingOptionsChange": [Function],
+  "onShopperDetails": [Function],
+  "onSubmit": [Function],
+  "returnUrl": "test_returnUrl",
+  "showPayButton": true,
+  "userAction": "continue",
+}
+`;
+
+exports[`paypal express getPaypalButtonConfig should return config when review page is not enabled 1`] = `
+{
+  "configuration": {},
+  "isExpress": true,
+  "onAdditionalDetails": [Function],
+  "onError": [Function],
+  "onShippingAddressChange": [Function],
+  "onShippingOptionsChange": [Function],
+  "onShopperDetails": [Function],
+  "onSubmit": [Function],
+  "returnUrl": "test_returnUrl",
+  "showPayButton": true,
+}
+`;

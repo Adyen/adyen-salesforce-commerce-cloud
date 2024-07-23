@@ -3,8 +3,7 @@ const {
   updateLoadedExpressMethods,
   getPaymentMethods,
 } = require('./commons');
-
-const AMAZON_PAY = 'amazonpay';
+const { AMAZON_PAY } = require('./constants');
 
 async function mountAmazonPayComponent() {
   try {

@@ -32,6 +32,7 @@ module.exports = {
   PAYMENTMETHODS: {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
+    PAYPAL: 'paypal',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
@@ -47,6 +48,7 @@ module.exports = {
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
+    PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder',
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK',
@@ -98,6 +100,6 @@ module.exports = {
   APPLE_DOMAIN_URL:
     '/.well-known/apple-developer-merchantid-domain-association',
 
-  CHECKOUT_COMPONENT_VERSION: '5.64.0',
-  VERSION: '24.2.1',
+  CHECKOUT_COMPONENT_VERSION: '5.65.0',
+  VERSION: '24.3.0',
 };
