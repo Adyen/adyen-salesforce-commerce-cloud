@@ -23,7 +23,7 @@ jobs:
             code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
     steps:
       - name: Checkout SFRA code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
           ref: ${{ matrix.sfra-version }}
@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: '14'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
           fetch-depth: 0
@@ -58,7 +58,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add cartridges/**/*
-          git commit -m "chore: committing the built /cartridge folder"
+          git commit --no-verify -m "chore: committing the built /cartridge folder"
           git fetch origin
           git push origin HEAD:${{ github.head_ref }} --force-with-lease
       - name: Commit .project files 
@@ -91,6 +91,6 @@ jobs:
             git add .
             git config --local user.email "actions@github.com"
             git config --local user.name "GitHub Actions"
-            git commit -m "chore: committing the project files"
+            git commit --no-verify -m "chore: committing the project files"
             git fetch origin
             git push origin HEAD:${{ github.head_ref }} --force-with-lease
