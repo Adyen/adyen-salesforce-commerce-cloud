@@ -5,7 +5,7 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-function getSignature(paymentsDetailsResponse, orderToken) {
+function getRedirectUrl(paymentsDetailsResponse, orderToken) {
   const order = OrderMgr.getOrder(
     paymentsDetailsResponse.merchantReference,
     orderToken,
@@ -14,18 +14,16 @@ function getSignature(paymentsDetailsResponse, orderToken) {
     const paymentInstruments = order.getPaymentInstruments(
       AdyenHelper.getOrderMainPaymentInstrumentType(order),
     );
-
-    const signature = AdyenHelper.createSignature(
+    const redirectUrl = AdyenHelper.createRedirectUrl(
       paymentInstruments[0],
-      order.getUUID(),
       paymentsDetailsResponse.merchantReference,
+      orderToken,
     );
-
     Transaction.wrap(() => {
       paymentInstruments[0].paymentTransaction.custom.Adyen_authResult =
         JSON.stringify(paymentsDetailsResponse);
     });
-    return signature;
+    return redirectUrl;
   }
   return undefined;
 }
@@ -49,10 +47,11 @@ function paymentsDetails(req, res, next) {
     const response = AdyenHelper.createAdyenCheckoutResponse(
       paymentsDetailsResponse,
     );
-
     // Create signature to verify returnUrl
-    const signature = getSignature(paymentsDetailsResponse, request.orderToken);
-
+    const redirectUrl = getRedirectUrl(
+      paymentsDetailsResponse,
+      request.orderToken,
+    );
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
@@ -60,16 +59,8 @@ function paymentsDetails(req, res, next) {
         resultCode: paymentsDetailsResponse.resultCode,
       };
     }
-    if (signature !== null) {
-      response.redirectUrl = URLUtils.https(
-        'Adyen-ShowConfirmation',
-        'merchantReference',
-        response.merchantReference,
-        'signature',
-        signature,
-        'orderToken',
-        request.orderToken,
-      ).toString();
+    if (redirectUrl) {
+      response.redirectUrl = redirectUrl;
     }
 
     res.json(response);

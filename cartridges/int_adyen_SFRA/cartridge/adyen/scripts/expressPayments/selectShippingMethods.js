@@ -13,6 +13,12 @@ var URLUtils = require('dw/web/URLUtils');
 var CartModel = require('*/cartridge/models/cart');
 var shippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
 var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+var _require = require('*/cartridge/adyen/config/constants'),
+  PAYMENTMETHODS = _require.PAYMENTMETHODS;
+var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
+var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 /**
  * Make a request to Adyen to select shipping methods
@@ -27,33 +33,47 @@ function callSelectShippingMethod(req, res, next) {
     });
     return next();
   }
-  var error = false;
-  var shipUUID = req.querystring.shipmentUUID || req.form.shipmentUUID;
-  var methodID = req.querystring.methodID || req.form.methodID;
-  var shipment;
-  if (shipUUID) {
-    shipment = shippingHelper.getShipmentByUUID(currentBasket, shipUUID);
-  } else {
-    shipment = currentBasket.defaultShipment;
-  }
-  Transaction.wrap(function () {
-    shippingHelper.selectShippingMethod(shipment, methodID);
-    if (currentBasket && !shipment.shippingMethod) {
-      error = true;
-      return;
+  try {
+    var _JSON$parse = JSON.parse(req.body),
+      shipmentUUID = _JSON$parse.shipmentUUID,
+      methodID = _JSON$parse.methodID,
+      currentPaymentData = _JSON$parse.currentPaymentData,
+      paymentMethodType = _JSON$parse.paymentMethodType;
+    var shipment;
+    if (shipmentUUID) {
+      shipment = shippingHelper.getShipmentByUUID(currentBasket, shipmentUUID);
+    } else {
+      shipment = currentBasket.defaultShipment;
     }
-    basketCalculationHelpers.calculateTotals(currentBasket);
-  });
-  if (!error) {
+    Transaction.wrap(function () {
+      shippingHelper.selectShippingMethod(shipment, methodID);
+      if (currentBasket && !shipment.shippingMethod) {
+        var _shipment;
+        throw new Error("cannot set shippingMethod: ".concat(methodID, " for shipment:").concat((_shipment = shipment) === null || _shipment === void 0 ? void 0 : _shipment.UUID));
+      }
+      basketCalculationHelpers.calculateTotals(currentBasket);
+    });
+    var response = {};
+    if (paymentMethodType === PAYMENTMETHODS.PAYPAL) {
+      var currentShippingMethodsModels = AdyenHelper.getApplicableShippingMethods(shipment);
+      if (!(currentShippingMethodsModels !== null && currentShippingMethodsModels !== void 0 && currentShippingMethodsModels.length)) {
+        throw new Error('No applicable shipping methods found');
+      }
+      var paypalUpdateOrderResponse = adyenCheckout.doPaypalUpdateOrderCall(paypalHelper.createPaypalUpdateOrderRequest(session.privacy.pspReference, currentBasket, currentShippingMethodsModels, currentPaymentData));
+      AdyenLogs.info_log("Paypal Order Update Call: ".concat(paypalUpdateOrderResponse.status));
+      response = _objectSpread(_objectSpread({}, response), paypalUpdateOrderResponse);
+    }
     var basketModel = new CartModel(currentBasket);
     var grandTotalAmount = {
       value: currentBasket.getTotalGrossPrice().value,
       currency: currentBasket.getTotalGrossPrice().currencyCode
     };
-    res.json(_objectSpread(_objectSpread({}, basketModel), {}, {
+    response = _objectSpread(_objectSpread(_objectSpread({}, response), basketModel), {}, {
       grandTotalAmount: grandTotalAmount
-    }));
-  } else {
+    });
+    res.json(response);
+  } catch (error) {
+    AdyenLogs.error_log('Failed to set shipping method', error);
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg('error.cannot.select.shipping.method', 'cart', null)

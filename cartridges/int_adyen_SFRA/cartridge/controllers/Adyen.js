@@ -16,7 +16,16 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
  *  Confirm payment status after receiving redirectResult from Adyen
  */
 server.post('PaymentsDetails', server.middleware.https, consentTracking.consent, adyen.paymentsDetails);
-server.get('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
+
+/**
+ *  Save shipping address to currentBasket and
+ *  get applicable shipping methods from an Express component in the SFCC session
+ */
+server.post('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
+
+/**
+ *  Save selected shipping method to currentBasket from an Express component in the SFCC session
+ */
 server.post('SelectShippingMethod', server.middleware.https, adyen.callSelectShippingMethod);
 
 /**
@@ -56,6 +65,11 @@ server.post('SaveExpressShopperDetails', server.middleware.https, adyen.saveExpr
 server.get('GetPaymentMethods', server.middleware.https, adyen.getCheckoutPaymentMethods);
 
 /**
+ * Show the review page template.
+ */
+server.post('CheckoutReview', server.middleware.https, adyen.handleCheckoutReview);
+
+/**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
 server.post('Notify', server.middleware.https, adyen.notify);
@@ -80,6 +94,20 @@ server.post('PartialPaymentsOrder', server.middleware.https, adyen.partialPaymen
  */
 server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 
+/**
+ * Called by Adyen to make /payments call for PayPal Express flow
+ */
+server.post('MakeExpressPaymentsCall', server.middleware.https, adyen.makeExpressPaymentsCall);
+
+/**
+ * Called by Adyen to make /paymentsDetails for PayPal Express flow
+ */
+server.post('MakeExpressPaymentDetailsCall', server.middleware.https, adyen.makeExpressPaymentDetailsCall);
+
+/**
+ * Called by Adyen to save the shopper data coming from PayPal Express
+ */
+server.post('SaveShopperData', server.middleware.https, adyen.saveShopperData);
 /**
  * Called by Adyen to fetch applied giftcards
  */

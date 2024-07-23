@@ -24,26 +24,27 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  * This file is open source and available under the MIT license.
  * See the LICENSE file for more info.
  */
-var dwsvc = require('dw/svc');
-var dwsystem = require('dw/system');
-var dwutil = require('dw/util');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
+var Currency = require('dw/util/Currency');
 var URLUtils = require('dw/web/URLUtils');
 var Bytes = require('dw/util/Bytes');
 var MessageDigest = require('dw/crypto/MessageDigest');
 var Encoding = require('dw/crypto/Encoding');
 var CustomerMgr = require('dw/customer/CustomerMgr');
-var constants = require('*/cartridge/adyen/config/constants');
-var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 var Transaction = require('dw/system/Transaction');
 var UUIDUtils = require('dw/util/UUIDUtils');
-var collections = require('*/cartridge/scripts/util/collections');
 var ShippingMgr = require('dw/order/ShippingMgr');
-var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var StringUtils = require('dw/util/StringUtils');
+var Money = require('dw/value/Money');
+var TaxMgr = require('dw/order/TaxMgr');
+var ShippingLocation = require('dw/order/ShippingLocation');
 //script includes
+var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
+var collections = require('*/cartridge/scripts/util/collections');
+var constants = require('*/cartridge/adyen/config/constants');
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-var BasketMgr = require('dw/order/BasketMgr');
 
 /* eslint no-var: off */
 var adyenHelperObj = {
@@ -51,7 +52,7 @@ var adyenHelperObj = {
   getService: function getService(service) {
     var adyenService = null;
     try {
-      adyenService = dwsvc.LocalServiceRegistry.createService(service, {
+      adyenService = LocalServiceRegistry.createService(service, {
         createRequest: function createRequest(svc, args) {
           svc.setRequestMethod('POST');
           if (args) {
@@ -81,14 +82,46 @@ var adyenHelperObj = {
     }
     return null;
   },
+  /**
+   * Returns shippingCost including taxes for a specific Shipment / ShippingMethod pair including the product level shipping cost if any
+   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
+   */
   getShippingCost: function getShippingCost(shippingMethod, shipment) {
+    var shippingAddress = shipment.shippingAddress;
     var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
-    var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod);
+    var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
+    collections.forEach(shipment.getProductLineItems(), function (lineItem) {
+      var product = lineItem.getProduct();
+      var productQuantity = lineItem.getQuantity();
+      var productShippingModel = ShippingMgr.getProductShippingModel(product);
+      var productShippingCost = productShippingModel.getShippingCost(shippingMethod) ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity) : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
+      shippingCost = shippingCost.add(productShippingCost);
+    });
+    shippingCost = shippingAddress ? shippingCost.addRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
-      value: shippingCost.amount.value,
-      currencyCode: shippingCost.amount.currencyCode
+      value: shippingCost.getValue(),
+      currencyCode: shippingCost.getCurrencyCode()
     };
   },
+  /**
+   * Returns tax rate for specific Shipment / ShippingMethod pair.
+   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
+   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
+   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
+   */
+  getShippingTaxRate: function getShippingTaxRate(shippingMethod, shippingAddress) {
+    var taxClassID = shippingMethod.getTaxClassID();
+    var taxJurisdictionID = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress));
+    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
+  },
+  /**
+   * Returns applicable shipping methods for specific Shipment / ShippingAddress pair.
+   * @param {dw.order.OrderAddress} address - the shipping address of the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {dw.util.ArrayList<dw.order.ShippingMethod> | null} - list of applicable shipping methods or null
+   */
   getShippingMethods: function getShippingMethods(shipment, address) {
     if (!shipment) return null;
     var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
@@ -100,13 +133,33 @@ var adyenHelperObj = {
     }
     return shippingMethods;
   },
+  /**
+   * Returns shipment UUID for the shipment.
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {String | null} - shipment UUID or null
+   */
   getShipmentUUID: function getShipmentUUID(shipment) {
     if (!shipment) return null;
     return shipment.UUID;
   },
+  /**
+   * @typedef {object} ApplicableShippingMethodModel
+   * @property {string|null} ID
+   * @property {string|null} displayName
+   * @property {string|null} estimatedArrivalTime
+   * @property {boolean|null} default
+   * @property {boolean|null} [selected]
+   * @property {{currencyCode: String, value: String}} shippingCost
+   * @property {string|null} shipmentUUID
+   */
+  /**
+   * Returns applicable shipping methods(excluding store pickup methods) for specific Shipment / ShippingAddress pair.
+   * @param {dw.order.OrderAddress} address - the shipping address of the default shipment of the current basket
+   * @param {dw.order.Shipment} shipment - a shipment of the current basket
+   * @returns {dw.util.ArrayList<ApplicableShippingMethodModel> | null} - list of applicable shipping methods or null
+   */
   getApplicableShippingMethods: function getApplicableShippingMethods(shipment, address) {
-    var _this = this;
-    var shippingMethods = this.getShippingMethods(shipment, address);
+    var shippingMethods = adyenHelperObj.getShippingMethods(shipment, address);
     if (!shippingMethods) {
       return null;
     }
@@ -116,8 +169,8 @@ var adyenHelperObj = {
     collections.forEach(shippingMethods, function (shippingMethod) {
       if (!shippingMethod.custom.storePickupEnabled) {
         var shippingMethodModel = new ShippingMethodModel(shippingMethod, shipment);
-        var shippingCost = _this.getShippingCost(shippingMethod, shipment);
-        var shipmentUUID = _this.getShipmentUUID(shipment);
+        var shippingCost = adyenHelperObj.getShippingCost(shippingMethod, shipment);
+        var shipmentUUID = adyenHelperObj.getShipmentUUID(shipment);
         filteredMethods.push(_objectSpread(_objectSpread({}, shippingMethodModel), {}, {
           shippingCost: shippingCost,
           shipmentUUID: shipmentUUID
@@ -125,22 +178,6 @@ var adyenHelperObj = {
       }
     });
     return filteredMethods;
-  },
-  callGetShippingMethods: function callGetShippingMethods(shippingAddress) {
-    var address;
-    try {
-      address = {
-        city: shippingAddress.city,
-        countryCode: shippingAddress.countryCode,
-        stateCode: shippingAddress.stateOrRegion
-      };
-      var currentBasket = BasketMgr.getCurrentBasket();
-      var currentShippingMethodsModels = this.getApplicableShippingMethods(currentBasket.getDefaultShipment(), address);
-      return currentShippingMethodsModels;
-    } catch (error) {
-      AdyenLogs.error_log('Failed to fetch shipping methods');
-      AdyenLogs.error_log(error);
-    }
   },
   getAdyenGivingConfig: function getAdyenGivingConfig(order) {
     if (!order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order)).length) {
@@ -254,10 +291,9 @@ var adyenHelperObj = {
     }
     return returnValue;
   },
-  // determines whether Adyen Giving is available based on the donation token 
+  // determines whether Adyen Giving is available based on the donation token
   isAdyenGivingAvailable: function isAdyenGivingAvailable(paymentInstrument) {
-    // Adyen giving is only available for BCMC in POS
-    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken && paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod !== 'bcmc';
+    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
   },
   // gets the ID for ratePay using the custom preference and the encoded session ID
   getRatePayID: function getRatePayID() {
@@ -279,6 +315,12 @@ var adyenHelperObj = {
   },
   isMolpayMethod: function isMolpayMethod(paymentMethod) {
     if (paymentMethod.indexOf('molpay') > -1) {
+      return true;
+    }
+    return false;
+  },
+  isPayPalExpress: function isPayPalExpress(paymentMethod) {
+    if (paymentMethod.type === 'paypal' && paymentMethod.subtype === 'express') {
       return true;
     }
     return false;
@@ -394,22 +436,11 @@ var adyenHelperObj = {
     return paymentRequest;
   },
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject: function createAdyenRequestObject(order, paymentInstrument) {
+  createAdyenRequestObject: function createAdyenRequestObject(orderNo, orderToken, paymentInstrument) {
     var _stateData$paymentMet;
     var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
     var filteredJson = adyenHelperObj.validateStateData(jsonObject);
     var stateData = filteredJson.stateData;
-    var reference = 'recurringPayment-account';
-    var orderToken = 'recurringPayment-token';
-    if (order && order.getOrderNo()) {
-      reference = order.getOrderNo();
-      orderToken = order.getOrderToken();
-    }
-    var signature = '';
-    //Create signature to verify returnUrl if there is an order
-    if (order && order.getUUID()) {
-      signature = adyenHelperObj.createSignature(paymentInstrument, order.getUUID(), reference);
-    }
 
     // Add recurringProcessingModel in case shopper wants to save the card from checkout
     if (stateData.storePaymentMethod) {
@@ -422,18 +453,39 @@ var adyenHelperObj = {
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.ECOMMERCE;
     }
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
-    stateData.reference = reference;
-    stateData.returnUrl = URLUtils.https('Adyen-ShowConfirmation', 'merchantReference', reference, 'signature', signature, 'orderToken', orderToken).toString();
+    stateData.reference = orderNo;
+    stateData.returnUrl = adyenHelperObj.createRedirectUrl(paymentInstrument, orderNo, orderToken);
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
     stateData.additionalData = {};
     return stateData;
   },
+  /**
+   * Returns unique hashed signature.
+   * @param {dw.order.OrderPaymentInstrument} paymentInstrument - paymentInstrument for the current order or current basket.
+   * @param {String} value - UUID to be hashed for creating signature.
+   * @param {String} salt - order number for the current order or from createOrderNo() used as Salt for hash.
+   * @returns {String} - returns hashed signature.
+   */
   createSignature: function createSignature(paymentInstrument, value, salt) {
     var newSignature = adyenHelperObj.getAdyenHash(value, salt);
     Transaction.wrap(function () {
       paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
     });
     return newSignature;
+  },
+  /**
+   * Returns redirectURL with 'Adyen-ShowConfirmation' route and query params .
+   * @param {dw.order.OrderPaymentInstrument} paymentInstrument - paymentInstrument for the current order or current basket
+   * @param {String} orderNo - order number for the current order or from createOrderNo()
+   * @param {String} [orderToken] - orderToken for current order if order exists
+   * @returns {String<dw.web.URL>} - returns String representation of the redirectURL
+   */
+  createRedirectUrl: function createRedirectUrl(paymentInstrument, orderNo, orderToken) {
+    if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
+      return null;
+    }
+    var signature = adyenHelperObj.createSignature(paymentInstrument, UUIDUtils.createUUID(), orderNo);
+    return URLUtils.https('Adyen-ShowConfirmation', 'merchantReference', orderNo, 'signature', signature, 'orderToken', orderToken).toString();
   },
   // adds 3DS2 fields to an Adyen Checkout payments Request
   add3DS2Data: function add3DS2Data(jsonObject) {
@@ -455,6 +507,9 @@ var adyenHelperObj = {
         break;
       case 'amazonpay':
         methodName = 'Amazon Pay';
+        break;
+      case 'paypal':
+        methodName = 'PayPal';
         break;
       default:
         methodName = paymentMethod;
@@ -527,14 +582,17 @@ var adyenHelperObj = {
     throw new Error('cardType argument is not passed to getSfccCardType function');
   },
   // saves the payment details in the paymentInstrument's custom object
+  // set custom payment method field to sync with OMS
   savePaymentDetails: function savePaymentDetails(paymentInstrument, order, result) {
     var _result$additionalDat, _result$fullResponse;
     paymentInstrument.paymentTransaction.transactionID = result.pspReference;
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference = result.pspReference;
     if ((_result$additionalDat = result.additionalData) !== null && _result$additionalDat !== void 0 && _result$additionalDat.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
+      order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
       paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod.type);
+      order.custom.Adyen_paymentMethod = JSON.stringify(result.paymentMethod.type);
     }
 
     // For authenticated shoppers we are setting the token on other place already
@@ -557,7 +615,7 @@ var adyenHelperObj = {
   },
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi: function getCurrencyValueForApi(amount) {
-    var currencyCode = dwutil.Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
+    var currencyCode = Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
     var digitsNumber = adyenHelperObj.getFractionDigits(currencyCode.toString());
     var value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
     return new dw.value.Money(value, currencyCode);

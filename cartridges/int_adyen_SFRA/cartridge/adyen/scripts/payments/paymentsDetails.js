@@ -6,15 +6,15 @@ var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-function getSignature(paymentsDetailsResponse, orderToken) {
+function getRedirectUrl(paymentsDetailsResponse, orderToken) {
   var order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference, orderToken);
   if (order) {
     var paymentInstruments = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order));
-    var signature = AdyenHelper.createSignature(paymentInstruments[0], order.getUUID(), paymentsDetailsResponse.merchantReference);
+    var redirectUrl = AdyenHelper.createRedirectUrl(paymentInstruments[0], paymentsDetailsResponse.merchantReference, orderToken);
     Transaction.wrap(function () {
       paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
     });
-    return signature;
+    return redirectUrl;
   }
   return undefined;
 }
@@ -32,9 +32,8 @@ function paymentsDetails(req, res, next) {
     }
     var paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(request.data);
     var response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
-
     // Create signature to verify returnUrl
-    var signature = getSignature(paymentsDetailsResponse, request.orderToken);
+    var redirectUrl = getRedirectUrl(paymentsDetailsResponse, request.orderToken);
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
@@ -42,8 +41,8 @@ function paymentsDetails(req, res, next) {
         resultCode: paymentsDetailsResponse.resultCode
       };
     }
-    if (signature !== null) {
-      response.redirectUrl = URLUtils.https('Adyen-ShowConfirmation', 'merchantReference', response.merchantReference, 'signature', signature, 'orderToken', request.orderToken).toString();
+    if (redirectUrl) {
+      response.redirectUrl = redirectUrl;
     }
     res.json(response);
     return next();

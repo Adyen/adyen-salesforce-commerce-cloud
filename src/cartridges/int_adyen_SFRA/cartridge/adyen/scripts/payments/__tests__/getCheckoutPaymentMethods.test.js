@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+const BasketMgr = require('dw/order/BasketMgr');
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 let req;
@@ -24,6 +25,25 @@ afterEach(() => {
 
 describe('getCheckoutPaymentMethods', () => {
    it('returns AdyenPaymentMethods', () => {
+      currentBasket = {
+         getDefaultShipment: jest.fn(() => {
+            return {
+               shippingAddress: {
+                  getCountryCode: jest.fn(() => {
+                     return {
+                        value: "NL"
+                     }
+                  })
+               }}
+         }),
+         getTotalGrossPrice: jest.fn(() => {
+            return {
+               currencyCode: 'EUR',
+               value: '1000'
+            }
+         })
+      };
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
          AdyenPaymentMethods:  {
@@ -62,7 +82,7 @@ describe('getCheckoutPaymentMethods', () => {
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
          error: true,
-       });      
+       });
       expect(Logger.fatal.mock.calls.length).toBe(1);
       expect(next).toHaveBeenCalled();
    });

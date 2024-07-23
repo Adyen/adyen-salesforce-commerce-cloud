@@ -34,7 +34,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var Resource = require('dw/web/Resource');
 var Order = require('dw/order/Order');
 var StringUtils = require('dw/util/StringUtils');
-
 /* Script Modules */
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -43,23 +42,19 @@ var AdyenGetOpenInvoiceData = require('*/cartridge/adyen/scripts/payments/adyenG
 var adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
 var constants = require('*/cartridge/adyen/config/constants');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-var paypalHelper = require('*/cartridge/adyen/scripts/payments/paypalHelper');
+var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   var paymentResponse = {};
   var errorMessage = '';
   try {
-    var _paymentRequest$payme, _paymentRequest$payme2;
     var responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     // There is no order for zero auth transactions.
     // Return response directly to PaymentInstruments-SavePayment
     if (!order) {
       return responseObject;
     }
-    // set custom payment method field to sync with OMS.
-    // for card payments (scheme) we will store the brand
-    order.custom.Adyen_paymentMethod = (paymentRequest === null || paymentRequest === void 0 ? void 0 : (_paymentRequest$payme = paymentRequest.paymentMethod) === null || _paymentRequest$payme === void 0 ? void 0 : _paymentRequest$payme.brand) || (paymentRequest === null || paymentRequest === void 0 ? void 0 : (_paymentRequest$payme2 = paymentRequest.paymentMethod) === null || _paymentRequest$payme2 === void 0 ? void 0 : _paymentRequest$payme2.type);
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action ? responseObject.action : '';
     paymentResponse.resultCode = responseObject.resultCode;
@@ -117,10 +112,9 @@ function createPaymentRequest(args) {
     var paymentInstrument = args.PaymentInstrument;
 
     // Create request object with payment details
-    var paymentRequest = AdyenHelper.createAdyenRequestObject(order, paymentInstrument);
-    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
+    var paymentRequest = AdyenHelper.createAdyenRequestObject(order.getOrderNo(), order.getOrderToken(), paymentInstrument);
     var paymentMethodType = paymentRequest.paymentMethod.type;
-
+    paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
       paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
@@ -162,6 +156,7 @@ function createPaymentRequest(args) {
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
     paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
+
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
       order: order,
@@ -209,7 +204,6 @@ function createPaymentRequest(args) {
       paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
     AdyenHelper.setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-    // make API call
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
   } catch (e) {
     AdyenLogs.error_log("error processing payment. Error message: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
@@ -237,11 +231,15 @@ function doCancelPartialPaymentOrderCall(cancelOrderRequest) {
 function doCreatePartialPaymentOrderCall(partialPaymentRequest) {
   return AdyenHelper.executeCall(constants.SERVICE.PARTIALPAYMENTSORDER, partialPaymentRequest);
 }
+function doPaypalUpdateOrderCall(paypalUpdateOrderRequest) {
+  return AdyenHelper.executeCall(constants.SERVICE.PAYPALUPDATEORDER, paypalUpdateOrderRequest);
+}
 module.exports = {
   createPaymentRequest: createPaymentRequest,
   doPaymentsCall: doPaymentsCall,
   doPaymentsDetailsCall: doPaymentsDetailsCall,
   doCheckBalanceCall: doCheckBalanceCall,
   doCancelPartialPaymentOrderCall: doCancelPartialPaymentOrderCall,
-  doCreatePartialPaymentOrderCall: doCreatePartialPaymentOrderCall
+  doCreatePartialPaymentOrderCall: doCreatePartialPaymentOrderCall,
+  doPaypalUpdateOrderCall: doPaypalUpdateOrderCall
 };

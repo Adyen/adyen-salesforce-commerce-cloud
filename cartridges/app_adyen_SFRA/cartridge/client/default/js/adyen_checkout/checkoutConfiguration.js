@@ -35,7 +35,7 @@ function getCardConfig() {
     exposeExpiryDate: false,
     onChange: function onChange(state) {
       store.isValid = state.isValid;
-      var method = state.data.paymentMethod.storedPaymentMethodId ? "storedCard".concat(state.data.paymentMethod.storedPaymentMethodId) : constants.SCHEME;
+      var method = state.data.paymentMethod.storedPaymentMethodId ? "storedCard".concat(state.data.paymentMethod.storedPaymentMethodId) : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
       store.updateSelectedPayment(method, 'stateData', state.data);
     },
@@ -267,12 +267,17 @@ function getGiftCardConfig() {
   };
 }
 function handleOnChange(state) {
-  store.isValid = state.isValid;
-  if (!store.componentsObj[store.selectedMethod]) {
-    store.componentsObj[store.selectedMethod] = {};
+  var type = state.data.paymentMethod.type;
+  var multipleTxVariantComponents = constants.MULTIPLE_TX_VARIANTS_COMPONENTS;
+  if (multipleTxVariantComponents.includes(store.selectedMethod)) {
+    type = store.selectedMethod;
   }
-  store.componentsObj[store.selectedMethod].isValid = store.isValid;
-  store.componentsObj[store.selectedMethod].stateData = state.data;
+  store.isValid = state.isValid;
+  if (!store.componentsObj[type]) {
+    store.componentsObj[type] = {};
+  }
+  store.componentsObj[type].isValid = store.isValid;
+  store.componentsObj[type].stateData = state.data;
 }
 var actionHandler = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(action) {

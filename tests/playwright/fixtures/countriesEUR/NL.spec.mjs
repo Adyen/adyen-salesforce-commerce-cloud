@@ -25,29 +25,29 @@ for (const environment of environments) {
 
     test('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doIdealPayment(true);
+      await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect(true);
       await checkoutPage.expectNonRedirectSuccess();
     });
 
     test('iDeal with restored cart success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doIdealPayment(true);
+      await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();
       await checkoutPage.goBackAndSubmitShipping()
-      await redirectShopper.doIdealPayment(true);
+      await redirectShopper.doIdealPayment();
       await checkoutPage.submitPayment();
       await checkoutPage.placeOrder();
-      await redirectShopper.completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect(true);
       await checkoutPage.expectNonRedirectSuccess();
     });
 
     test('iDeal Fail @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doIdealPayment(false);
+      await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();
-      await redirectShopper.completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect(false);
       await checkoutPage.expectRefusal();
     });
   });
@@ -65,7 +65,7 @@ for (const environment of environments) {
     });
     test('iDeal with restored cart Fail', async ({ page, context }) => {
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doIdealPayment(true);
+      await redirectShopper.doIdealPayment();
       await checkoutPage.submitPayment();
       const checkoutURL = await checkoutPage.getLocation();
       await checkoutPage.placeOrder()
@@ -73,7 +73,7 @@ for (const environment of environments) {
       const newPage = await context.newPage();
       newPage.goto(checkoutURL);
 
-      await redirectShopper.completeIdealRedirect();
+      await redirectShopper.completeIdealRedirect(true);
       await checkoutPage.expectRefusal();
     });
 

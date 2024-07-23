@@ -30,7 +30,8 @@ module.exports = {
   CHECKOUT_COMPONENT_IMAGE_URL_PATH: 'images/logos/medium/',
   PAYMENTMETHODS: {
     APPLEPAY: 'applepay',
-    AMAZONPAY: 'amazonpay'
+    AMAZONPAY: 'amazonpay',
+    PAYPAL: 'paypal'
   },
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
   SERVICE: {
@@ -43,7 +44,8 @@ module.exports = {
     ADYENGIVING: 'AdyenGiving',
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
-    PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder'
+    PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
+    PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder'
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK'
@@ -83,6 +85,6 @@ module.exports = {
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION: 'SFRA',
   APPLE_DOMAIN_URL: '/.well-known/apple-developer-merchantid-domain-association',
-  CHECKOUT_COMPONENT_VERSION: '5.64.0',
-  VERSION: '24.2.1'
+  CHECKOUT_COMPONENT_VERSION: '5.65.0',
+  VERSION: '24.3.0'
 };

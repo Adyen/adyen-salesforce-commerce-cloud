@@ -64,8 +64,10 @@ function saveExpressShopperDetails(req, res, next) {
         JSON.stringify(shopperDetails);
     });
     setBillingAndShippingAddress(currentBasket);
-    const shippingMethods = AdyenHelper.callGetShippingMethods(
-      shopperDetails.shippingAddress,
+    const { shippingAddress } = currentBasket.getDefaultShipment();
+    const shippingMethods = AdyenHelper.getApplicableShippingMethods(
+      currentBasket.getDefaultShipment(),
+      shippingAddress,
     );
     res.json({ shippingMethods });
     return next();

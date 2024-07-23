@@ -37,7 +37,7 @@ var __RiskDataHelper = {
       basketData["riskdata.basket.item".concat(itemNr, ".upc")] = item.product ? item.product.UPC : '';
       basketData["riskdata.basket.item".concat(itemNr, ".sku")] = item.product ? item.product.manufacturerSKU : '';
       basketData["riskdata.basket.item".concat(itemNr, ".brand")] = item.product ? item.product.brand : '';
-      basketData["riskdata.basket.item".concat(itemNr, ".manufacturerName")] = item.product ? item.product.manufacturerName : '';
+      basketData["riskdata.basket.item".concat(itemNr, ".manufacturer")] = item.product ? item.product.manufacturerName : '';
       basketData["riskdata.basket.item".concat(itemNr, ".category")] = item.product && item.product.primaryCategory ? item.product.primaryCategory.displayName : '';
       basketData["riskdata.basket.item".concat(itemNr, ".quantity")] = quantity;
       itemNr++;
