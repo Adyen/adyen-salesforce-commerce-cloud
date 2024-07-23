@@ -22,6 +22,6 @@ jobs:
           npm install
           npm run lint:fix
           npm run lint
-          npm test
+          npm run test:coverage
         env:
           CI: true

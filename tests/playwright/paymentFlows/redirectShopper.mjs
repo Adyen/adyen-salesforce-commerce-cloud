@@ -29,8 +29,8 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateOneyPayment(shopper);
   };
 
-  doPayPalPayment = async () => {
-    await this.paymentMethodsPage.initiatePayPalPayment();
+  doPayPalPayment = async (expressFlow, shippingChange, success) => {
+    await this.paymentMethodsPage.initiatePayPalPayment(expressFlow, shippingChange, success);
   };
 
   doAmazonPayment = async (normalFlow, selectedCard, success) => {

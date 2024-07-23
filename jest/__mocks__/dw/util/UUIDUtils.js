@@ -1,1 +1,1 @@
-export const createUUID = jest.fn();
+export const createUUID = jest.fn(() => 'mock_UUID');

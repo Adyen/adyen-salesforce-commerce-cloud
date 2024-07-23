@@ -62,21 +62,18 @@ describe('Confirm paymentsDetails', () => {
   it('should call paymentDetails request and response handler', () => {
     const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
     const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-    const URLUtils = require('dw/web/URLUtils');
-
     adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
       resultCode:'mocked_resultCode',
       pspReference: 'mocked_pspReference',
     }));
     paymentsDetails(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls[0][0]).toEqual('Adyen-ShowConfirmation');
+    expect(AdyenHelper.createRedirectUrl.mock.calls.length).toEqual(1);
     expect(adyenCheckout.doPaymentsDetailsCall.mock.calls.length).toEqual(1);
     expect(AdyenHelper.createAdyenCheckoutResponse.mock.calls.length).toEqual(1);
-
     expect(res.json.mock.calls[0][0]).toEqual({
       isFinal: true,
       isSuccessful: false,
-      redirectUrl: "[\"Adyen-ShowConfirmation\",\"merchantReference\",null,\"signature\",\"mocked_signature\",\"orderToken\",null]"
+      redirectUrl: "mocked_RedirectUrl"
     });
   });
 });

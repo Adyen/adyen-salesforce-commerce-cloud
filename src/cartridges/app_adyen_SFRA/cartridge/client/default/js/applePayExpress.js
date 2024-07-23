@@ -7,25 +7,6 @@ let checkout;
 let shippingMethodsData;
 let paymentMethodsResponse;
 
-async function initializeCheckout() {
-  paymentMethodsResponse = await getPaymentMethods();
-  const shippingMethods = await fetch(window.shippingMethodsUrl);
-  shippingMethodsData = await shippingMethods.json();
-  const applicationInfo = paymentMethodsResponse?.applicationInfo;
-  checkout = await AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    analytics: {
-      analyticsData: { applicationInfo },
-    },
-  });
-}
-
-async function createApplePayButton(applePayButtonConfig) {
-  return checkout.create(APPLE_PAY, applePayButtonConfig);
-}
-
 function formatCustomerObject(customerData, billingData) {
   return {
     addressBook: {
@@ -124,6 +105,61 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
+function selectShippingMethod({ shipmentUUID, ID }) {
+  const request = {
+    paymentMethodType: APPLE_PAY,
+    shipmentUUID,
+    methodID: ID,
+  };
+  return fetch(window.selectShippingMethodUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(request),
+  });
+}
+
+function getShippingMethod(shippingContact) {
+  const request = {
+    paymentMethodType: APPLE_PAY,
+  };
+  if (shippingContact) {
+    request.address = {
+      city: shippingContact.locality,
+      country: shippingContact.country,
+      countryCode: shippingContact.countryCode,
+      stateCode: shippingContact.administrativeArea,
+      postalCode: shippingContact.postalCode,
+    };
+  }
+  return fetch(window.shippingMethodsUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(request),
+  });
+}
+
+async function initializeCheckout() {
+  paymentMethodsResponse = await getPaymentMethods();
+  const shippingMethods = await getShippingMethod();
+  shippingMethodsData = await shippingMethods.json();
+  const applicationInfo = paymentMethodsResponse?.applicationInfo;
+  checkout = await AdyenCheckout({
+    environment: window.environment,
+    clientKey: window.clientKey,
+    locale: window.locale,
+    analytics: {
+      analyticsData: { applicationInfo },
+    },
+  });
+}
+
+async function createApplePayButton(applePayButtonConfig) {
+  return checkout.create(APPLE_PAY, applePayButtonConfig);
+}
 initializeCheckout()
   .then(async () => {
     const applePayPaymentMethod =
@@ -198,14 +234,8 @@ initializeCheckout()
         const matchingShippingMethod = shippingMethodsData.shippingMethods.find(
           (sm) => sm.ID === shippingMethod.identifier,
         );
-        const calculationResponse = await fetch(
-          `${window.calculateAmountUrl}?${new URLSearchParams({
-            shipmentUUID: matchingShippingMethod.shipmentUUID,
-            methodID: matchingShippingMethod.ID,
-          })}`,
-          {
-            method: 'POST',
-          },
+        const calculationResponse = await selectShippingMethod(
+          matchingShippingMethod,
         );
         if (calculationResponse.ok) {
           const newCalculation = await calculationResponse.json();
@@ -227,28 +257,14 @@ initializeCheckout()
       },
       onShippingContactSelected: async (resolve, reject, event) => {
         const { shippingContact } = event;
-        const shippingMethods = await fetch(
-          `${window.shippingMethodsUrl}?${new URLSearchParams({
-            city: shippingContact.locality,
-            country: shippingContact.country,
-            countryCode: shippingContact.countryCode,
-            stateCode: shippingContact.administrativeArea,
-            postalCode: shippingContact.postalCode,
-          })}`,
-        );
+        const shippingMethods = await getShippingMethod(shippingContact);
         if (shippingMethods.ok) {
           shippingMethodsData = await shippingMethods.json();
           if (shippingMethodsData.shippingMethods?.length) {
             const selectedShippingMethod =
               shippingMethodsData.shippingMethods[0];
-            const calculationResponse = await fetch(
-              `${window.calculateAmountUrl}?${new URLSearchParams({
-                shipmentUUID: selectedShippingMethod.shipmentUUID,
-                methodID: selectedShippingMethod.ID,
-              })}`,
-              {
-                method: 'POST',
-              },
+            const calculationResponse = await selectShippingMethod(
+              selectedShippingMethod,
             );
             if (calculationResponse.ok) {
               const shippingMethodsStructured =

@@ -31,7 +31,8 @@ const constants = require('*/cartridge/adyen/config/constants');
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
     let zeroAuthRequest = AdyenHelper.createAdyenRequestObject(
-      null,
+      'recurringPayment-account',
+      'recurringPayment-token',
       paymentInstrument,
     );
 

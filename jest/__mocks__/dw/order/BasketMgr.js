@@ -36,6 +36,11 @@ export const getTotalGrossPrice = jest.fn(() => ({
   isAvailable,
 }));
 
+export const getAdjustedMerchandizeTotalGrossPrice = jest.fn(() => ({
+  currencyCode: 'EUR',
+  isAvailable,
+}));
+
 export const getCreditCardToken = jest.fn(() => 'mockedCreditCardToken');
 export const getPaymentMethod = jest.fn(() => 'mockedPaymentMethod');
 
@@ -47,8 +52,14 @@ export const setCreditCardToken = jest.fn();
 
 export const toArray = jest.fn(() => [
   {
-    custom: {},
-    paymentTransaction: { paymentProcessor: 'mocked_payment_processor' },
+    custom: { adyenPaymentMethod: '' },
+    paymentTransaction: {
+      paymentProcessor: 'mocked_payment_processor',
+      amount: {
+        value: 'mockedValue',
+        currencyCode: 'mockedValue',
+      },
+    },
     setCreditCardNumber,
     setCreditCardType,
     setCreditCardExpirationMonth,
@@ -72,7 +83,6 @@ export const getDefaultShipment = jest.fn(() => ({
   },
 }));
 export const getBillingAddress = jest.fn(() => 'mocked_billing_address');
-
 
 function formatCustomerObject(shopperDetails) {
   return {
@@ -121,7 +131,9 @@ export const getCurrentBasket = jest.fn(() => ({
   setCustomerEmail: jest.fn(),
   getAllProductLineItems,
   getTotalGrossPrice,
+  getAdjustedMerchandizeTotalGrossPrice,
   getPaymentInstruments,
+  removeAllPaymentInstruments: jest.fn(),
   removePaymentInstrument: jest.fn(),
   custom: {
     amazonExpressShopperDetails: JSON.stringify({
@@ -138,15 +150,15 @@ export const getCurrentBasket = jest.fn(() => ({
       },
       addressBook: {
         preferredAddress: {
-            address1: 'address1',
-            address2: 'mocked address2',
-            phone: 'mocked phone',
-            postalCode: 'mocked postalCode',
-            countryCode: 'mocked CC',
-            city: 'mocked city',
-            lastName: 'mocked name',
-            firstName: 'mocked name',
-            stateCode: 'mocked state',
+          address1: 'address1',
+          address2: 'mocked address2',
+          phone: 'mocked phone',
+          postalCode: 'mocked postalCode',
+          countryCode: 'mocked CC',
+          city: 'mocked city',
+          lastName: 'mocked name',
+          firstName: 'mocked name',
+          stateCode: 'mocked state',
         },
       },
       profile: {
@@ -158,7 +170,7 @@ export const getCurrentBasket = jest.fn(() => ({
     }),
   },
   getUUID: jest.fn(),
-  createBillingAddress,
+  createBillingAddress: jest.fn(() => createBillingAddress),
   createPaymentInstrument: jest.fn(() => toArray()[0]),
   defaultShipment: getDefaultShipment(),
   getDefaultShipment,

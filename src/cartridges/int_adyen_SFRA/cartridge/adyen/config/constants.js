@@ -32,6 +32,7 @@ module.exports = {
   PAYMENTMETHODS: {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
+    PAYPAL: 'paypal',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
@@ -47,6 +48,7 @@ module.exports = {
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
+    PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder',
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK',

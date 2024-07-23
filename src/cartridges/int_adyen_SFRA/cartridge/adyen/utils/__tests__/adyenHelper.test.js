@@ -1,4 +1,6 @@
 /* eslint-disable global-require */
+const Money = require('../../../../../../../jest/__mocks__/dw/value/Money');
+const { getApplicableShippingMethods } = require('../adyenHelper');
 const savePaymentDetails = require('../adyenHelper').savePaymentDetails;
 describe('savePaymentDetails', () => {
   let paymentInstrument;
@@ -67,3 +69,50 @@ describe('savePaymentDetails', () => {
     expect(paymentInstrument.paymentTransaction.custom.Adyen_donationToken).toBe('donation-token-123');
   });
 });
+
+describe('getApplicableShippingMethods', () => {
+  let shippingMethod, shipment, address;
+  beforeEach(() => {
+    shippingMethod = {
+      description: 'Order received within 7-10 business days',
+      displayName: 'Ground',
+      ID: '001',
+      custom: {
+        estimatedArrivalTime: '7-10 Business Days'
+      },
+      getTaxClassID: jest.fn(),
+    };
+    shipment = {
+      UUID: 'mock_UUID',
+      shippingAddress: {
+        setCity: jest.fn(),
+        setPostalCode: jest.fn(),
+        setStateCode: jest.fn(),
+        setCountryCode: jest.fn(),
+      },
+      getProductLineItems: jest.fn(() => ({
+        toArray: jest.fn(() =>[{
+          getProduct: jest.fn(() => ({
+            getPriceModel: jest.fn(() => ({
+              getPrice: jest.fn(() => Money())
+            }))
+          })),
+          getQuantity: jest.fn()
+        }])
+      }))
+    };
+    address = {}
+  });
+  it('should return applicable shipping methods for shipment and address', () => {
+    const shippingMethods = getApplicableShippingMethods(shipment, address);
+    expect(shippingMethods).toStrictEqual([{"shipmentUUID": "mock_UUID", "shippingCost": {"currencyCode": "USD", "value": "10.99"}}, {"shipmentUUID": "mock_UUID", "shippingCost": {"currencyCode": "USD", "value": "10.99"}}]);
+  })
+  it('should return applicable shipping methods when address is not provided', () => {
+    const shippingMethods = getApplicableShippingMethods(shipment);
+    expect(shippingMethods).toStrictEqual([{"shipmentUUID": "mock_UUID", "shippingCost": {"currencyCode": "USD", "value": "10.99"}}, {"shipmentUUID": "mock_UUID", "shippingCost": {"currencyCode": "USD", "value": "10.99"}}]);
+  })
+  it('should return no shipping methods when shipment is not provided', () => {
+    const shippingMethods = getApplicableShippingMethods();
+    expect(shippingMethods).toBeNull();
+  })
+})
