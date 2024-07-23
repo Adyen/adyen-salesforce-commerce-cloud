@@ -52,6 +52,7 @@ jobs:
           cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
         shell: bash
       - name: Commit /cartridges folder
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
         if: success()
