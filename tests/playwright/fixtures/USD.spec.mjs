@@ -1,10 +1,10 @@
-import { test } from '@playwright/test';
-import { regionsEnum } from '../data/enums.mjs';
-import { environments } from '../data/environments.mjs';
-import { RedirectShopper } from '../paymentFlows/redirectShopper.mjs';
-import { Cards } from '../paymentFlows/cards.mjs';
-import { ShopperData } from '../data/shopperData.mjs';
-import { CardData } from '../data/cardData.mjs';
+import {test} from '@playwright/test';
+import {regionsEnum} from '../data/enums.mjs';
+import {environments} from '../data/environments.mjs';
+import {RedirectShopper} from '../paymentFlows/redirectShopper.mjs';
+import {Cards} from '../paymentFlows/cards.mjs';
+import {ShopperData} from '../data/shopperData.mjs';
+import {CardData} from '../data/cardData.mjs';
 import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
 
 const shopperData = new ShopperData();
@@ -29,7 +29,7 @@ const goToBillingWithFullCartLoggedInUser = async () => {
 
 for (const environment of environments) {
   test.describe.parallel(`${environment.name} USD`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
@@ -78,7 +78,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('PayPal Success @quick', async ({ page }) => {
+    test('PayPal Success @quick', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
@@ -86,65 +86,65 @@ for (const environment of environments) {
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-      test.beforeEach(async ({ page }) => {
-        checkoutPage = new environment.CheckoutPage(page);
-        accountPage = new environment.AccountPage(page);
-        cards = new Cards(page);
-        await page.goto(`${environment.urlExtension}`);
-      });
+    test.beforeEach(async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      accountPage = new environment.AccountPage(page);
+      cards = new Cards(page);
+      await page.goto(`${environment.urlExtension}`);
+    });
 
-      test('GiftCard Only Success @quick', async () => {
-        await goToBillingWithFullCartGuestUser();
-        if (environment.name.indexOf('v5') !== -1) {
-          await checkoutPage.setEmail();
-        }
-        await cards.doGiftCardPayment(cardData.giftCard);
-        await checkoutPage.placeOrder();
-        await checkoutPage.expectSuccess();
-      });
+    test('GiftCard Only Success @quick', async () => {
+      await goToBillingWithFullCartGuestUser();
+      if (environment.name.indexOf('v5') !== -1) {
+        await checkoutPage.setEmail();
+      }
+      await cards.doGiftCardPayment(cardData.giftCard);
+      await checkoutPage.placeOrder();
+      await checkoutPage.expectSuccess();
+    });
 
-      test('GiftCard & Card Success @quick', async () => {
-        await goToBillingWithFullCartGuestUser(3);
-        if (environment.name.indexOf('v5') !== -1) {
-          await checkoutPage.setEmail();
-        }
-        await cards.doGiftCardPayment(cardData.giftCard);
-        await cards.doCardPayment(cardData.noThreeDs);
-        await checkoutPage.completeCheckout();
-        await checkoutPage.expectSuccess();
-      });
+    test('GiftCard & Card Success @quick', async () => {
+      await goToBillingWithFullCartGuestUser(3);
+      if (environment.name.indexOf('v5') !== -1) {
+        await checkoutPage.setEmail();
+      }
+      await cards.doGiftCardPayment(cardData.giftCard);
+      await cards.doCardPayment(cardData.noThreeDs);
+      await checkoutPage.completeCheckout();
+      await checkoutPage.expectSuccess();
+    });
 
-      test('Remove Gift Card', async ({ page }) => {
-        await goToBillingWithFullCartGuestUser(3);
-        if (environment.name.indexOf('v5') !== -1) {
-          await checkoutPage.setEmail();
-        }
-        await cards.doGiftCardPayment(cardData.giftCard);
-        await page.locator('#giftCardCancelButton').click();
-        // Wait for components to re-render after cancelling the giftcard
-        await new Promise(r => setTimeout(r, 2000));
+    test('Remove Gift Card', async ({page}) => {
+      await goToBillingWithFullCartGuestUser(3);
+      if (environment.name.indexOf('v5') !== -1) {
+        await checkoutPage.setEmail();
+      }
+      await cards.doGiftCardPayment(cardData.giftCard);
+      await page.locator('#giftCardCancelButton').click();
+      // Wait for components to re-render after cancelling the giftcard
+      await new Promise(r => setTimeout(r, 2000));
 
-        await cards.doCardPayment(cardData.noThreeDs);
-        await checkoutPage.completeCheckout();
-        await checkoutPage.expectSuccess();
-      });
+      await cards.doCardPayment(cardData.noThreeDs);
+      await checkoutPage.completeCheckout();
+      await checkoutPage.expectSuccess();
+    });
 
-      test('Gift Card Fail', async ({ page, locale }) => {
-        await goToBillingWithFullCartGuestUser(3);
-        await cards.doGiftCardPayment(cardData.giftCard);
-        await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
-        await page.locator('.add-to-cart').click();
-        await checkoutPage.navigateToCheckout(regionsEnum.US);
-        if (environment.name.indexOf('v5') !== -1) {
-          await checkoutPage.checkoutGuest.click();
-        }
-        await checkoutPage.submitShipping();
-        await checkoutPage.expectGiftCardWarning();
-      });
+    test('Gift Card Fail', async ({page, locale}) => {
+      await goToBillingWithFullCartGuestUser(3);
+      await cards.doGiftCardPayment(cardData.giftCard);
+      await page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+      await page.locator('.add-to-cart').click();
+      await checkoutPage.navigateToCheckout(regionsEnum.US);
+      if (environment.name.indexOf('v5') !== -1) {
+        await checkoutPage.checkoutGuest.click();
+      }
+      await checkoutPage.submitShipping();
+      await checkoutPage.expectGiftCardWarning();
+    });
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       accountPage = new environment.AccountPage(page);
       cards = new Cards(page);
@@ -153,7 +153,7 @@ for (const environment of environments) {
       await goToBillingWithFullCartGuestUser(5);
     });
 
-    test('Affirm Fail', async ({ page }) => {
+    test('Affirm Fail', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('CashApp Renders', async ({ page }) => {
+    test.skip('CashApp Renders', async ({page}) => {
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
@@ -173,7 +173,7 @@ for (const environment of environments) {
   });
 
   test.describe(`${environment.name} USD Card logged in user `, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({page}) => {
       await page.goto(`${environment.urlExtension}`);
 
       checkoutPage = new environment.CheckoutPage(page);
@@ -210,7 +210,7 @@ for (const environment of environments) {
   });
 
   test.describe(`${environment.name} USD`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({page}) => {
       await page.goto(`${environment.urlExtension}`);
 
       checkoutPage = new environment.CheckoutPage(page);
@@ -253,44 +253,44 @@ for (const environment of environments) {
   });
 
   test.describe.parallel(`${environment.name} USD`, () => {
-    test.beforeEach(async ({ page }) => {
-        await page.goto(`${environment.urlExtension}`);
+    test.beforeEach(async ({page}) => {
+      await page.goto(`${environment.urlExtension}`);
     });
 
-    test('PayPal Express @quick', async ({ page }) => {
-        checkoutPage = new environment.CheckoutPage(page);
-        await checkoutPage.addProductToCart();
-        await checkoutPage.navigateToCart(regionsEnum.US);
-        redirectShopper = new RedirectShopper(page);
-        await redirectShopper.doPayPalPayment(true, false, true);
-        if (environment.name.indexOf('v5') !== -1) {
-	          await page.locator("button[value='place-order']").click();
-            await page.locator(".order-thank-you-msg").isVisible({ timeout: 20000 });
-        } else {
-            await checkoutPage.expectSuccess();
-	      }
+    test('PayPal Express @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, false, true);
+      if (environment.name.indexOf('v5') !== -1) {
+        await page.locator("button[value='place-order']").click();
+        await page.locator(".order-thank-you-msg").isVisible({timeout: 20000});
+      } else {
+        await checkoutPage.expectSuccess();
+      }
     });
 
-	test('PayPal Express shipping change @quick', async ({ page }) => {
-        checkoutPage = new environment.CheckoutPage(page);
-        await checkoutPage.addProductToCart();
-        await checkoutPage.navigateToCart(regionsEnum.US);
-        redirectShopper = new RedirectShopper(page);
-        await redirectShopper.doPayPalPayment(true, true, true);
-        if (environment.name.indexOf('v5') !== -1) {
-            await page.locator("button[value='place-order']").click();
-	          await page.locator(".order-thank-you-msg").isVisible({ timeout: 20000 });
-        } else {
-	        await checkoutPage.expectSuccess();
-	      }
+    test('PayPal Express shipping change @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, true, true);
+      if (environment.name.indexOf('v5') !== -1) {
+        await page.locator("button[value='place-order']").click();
+        await page.locator(".order-thank-you-msg").isVisible({timeout: 20000});
+      } else {
+        await checkoutPage.expectSuccess();
+      }
     });
 
-	test('PayPal Express Cancellation @quick', async ({ page }) => {
-        checkoutPage = new environment.CheckoutPage(page);
-        await checkoutPage.addProductToCart();
-        await checkoutPage.navigateToCart(regionsEnum.US);
-        redirectShopper = new RedirectShopper(page);
-        await redirectShopper.doPayPalPayment(true, false, false);
+    test('PayPal Express Cancellation @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, false, false);
     });
   });
 }
