@@ -19,7 +19,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.NO);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('Vipps Success', async ({ page }) => {

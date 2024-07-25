@@ -26,7 +26,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.BR);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('Card payment 3DS2 installments success @quick', async () => {
