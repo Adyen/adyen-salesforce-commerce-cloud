@@ -61,7 +61,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment();
     if (!result) {
-      test.skip()
+      test.skip();
     }
     await checkoutPage.expectSuccess();
   });
@@ -75,7 +75,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment(true, true, '3ds2_card');
     if (!result) {
-      test.skip()
+      test.skip();
     }
     await cards.do3Ds2Verification();
     await checkoutPage.expectSuccess();
@@ -88,7 +88,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await redirectShopper.doAmazonPayment(false);
     const result = await redirectShopper.doAmazonExpressPayment();
     if (!result) {
-      test.skip()
+      test.skip();
     }
     await checkoutPage.expectSuccess();
   });
@@ -102,7 +102,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment(true, false);
     if (!result) {
-      test.skip()
+      test.skip();
     }
     await checkoutPage.expectRefusal();
   });
