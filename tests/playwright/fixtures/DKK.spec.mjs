@@ -19,7 +19,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.DK);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('MobilePay', async ({ page }) => {
