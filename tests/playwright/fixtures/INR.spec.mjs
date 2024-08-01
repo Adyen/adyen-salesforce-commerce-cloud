@@ -19,7 +19,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.IN);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('UPI Success', async ({ page }) => {

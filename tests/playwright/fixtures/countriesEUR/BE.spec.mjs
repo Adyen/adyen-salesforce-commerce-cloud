@@ -24,7 +24,7 @@ for (const environment of environments) {
       // SFRA 5 email setting flow is different
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
     test('bcmc mobile renders @quick', async ({ page }) => {
       pendingPayments = new PendingPayments(page);

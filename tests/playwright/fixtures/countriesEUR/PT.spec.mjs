@@ -20,7 +20,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.PT);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('MultiBanco Success', async ({ page }) => {

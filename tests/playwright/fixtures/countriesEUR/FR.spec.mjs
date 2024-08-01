@@ -37,7 +37,7 @@ for (const environment of environments) {
       // SFRA 5 email setting flow is different
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doOneyPayment(shopperData.FR);
       await checkoutPage.completeCheckout();
@@ -60,7 +60,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     }
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment();
-    if(result != true){test.skip()};
+    if (!result) {
+      test.skip();
+    }
     await checkoutPage.expectSuccess();
   });
   
@@ -72,7 +74,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     }
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment(true, true, '3ds2_card');
-    if(result != true){test.skip()};
+    if (!result) {
+      test.skip();
+    }
     await cards.do3Ds2Verification();
     await checkoutPage.expectSuccess();
   });
@@ -83,7 +87,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     await checkoutPage.navigateToCart(regionsEnum.EU);
     await redirectShopper.doAmazonPayment(false);
     const result = await redirectShopper.doAmazonExpressPayment();
-    if(result != true){test.skip()};
+    if (!result) {
+      test.skip();
+    }
     await checkoutPage.expectSuccess();
   });
 
@@ -95,7 +101,9 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
     }
     redirectShopper = new RedirectShopper(page);
     const result = await redirectShopper.doAmazonPayment(true, false);
-    if(result != true){test.skip()};
+    if (!result) {
+      test.skip();
+    }
     await checkoutPage.expectRefusal();
   });
 

@@ -54,6 +54,9 @@ class Store {
   }
 
   updateSelectedPayment(method, key, val) {
+    if (!this.componentsObj[method]) {
+      this.componentsObj[method] = {};
+    }
     this.componentsObj[method][key] = val;
   }
 }

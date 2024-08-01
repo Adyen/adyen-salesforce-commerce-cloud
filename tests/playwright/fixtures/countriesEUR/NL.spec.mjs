@@ -20,7 +20,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.NL);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('iDeal Success @quick', async ({ page }) => {
@@ -61,7 +61,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.NL);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
     test('iDeal with restored cart Fail', async ({ page, context }) => {
       redirectShopper = new RedirectShopper(page);

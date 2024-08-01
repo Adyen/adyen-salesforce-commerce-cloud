@@ -18,7 +18,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.JP);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
 
     test('konbini Success', async ({ page }) => {
