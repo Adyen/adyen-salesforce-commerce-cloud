@@ -89,7 +89,10 @@ function displaySelectedMethod(type) {
   store.brand = (_document$querySelect2 = document.querySelector("#component_".concat(type, " .brand"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.value;
 }
 function displayValidationErrors() {
-  store.selectedPayment.node.showValidation();
+  var _store$selectedMethod;
+  if ((_store$selectedMethod = store.selectedMethod) !== null && _store$selectedMethod !== void 0 && _store$selectedMethod.node) {
+    store.selectedPayment.node.showValidation();
+  }
   return false;
 }
 var selectedMethods = {};
