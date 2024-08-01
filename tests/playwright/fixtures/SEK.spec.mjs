@@ -22,7 +22,7 @@ for (const environment of environments) {
       await checkoutPage.setShopperDetails(shopperData.SE);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
-      };
+      }
     });
     test('Swish success', async ({ page }) => {
       pendingPaymentsPage = new PendingPayments(page);
