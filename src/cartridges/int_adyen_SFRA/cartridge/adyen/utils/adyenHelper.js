@@ -453,16 +453,11 @@ let adyenHelperObj = {
       args.paymentRequest.shopperReference = args.order.getCustomerNo();
     }
 
-    const shopperIP = request.getHttpRemoteAddress()
-      ? request.getHttpRemoteAddress()
-      : null;
-    if (shopperIP) {
-      args.paymentRequest.shopperIP = shopperIP;
-    }
-
     if (request.getLocale()) {
       args.paymentRequest.shopperLocale = request.getLocale();
     }
+
+    args.paymentRequest.shopperIP = request.getHttpRemoteAddress();
 
     return args.paymentRequest;
   },
