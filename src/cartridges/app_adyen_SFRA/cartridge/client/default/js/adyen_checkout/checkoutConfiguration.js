@@ -14,6 +14,8 @@ const {
 
 function getCardConfig() {
   return {
+    hasHolderName: true,
+    holderNameRequired: true,
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
     clickToPayConfiguration: {

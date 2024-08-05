@@ -535,7 +535,7 @@ let adyenHelperObj = {
   },
 
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject(orderNo, orderToken, paymentInstrument) {
+  createAdyenRequestObject(orderNo, orderToken, paymentInstrument, customerEmail) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
@@ -549,6 +549,9 @@ let adyenHelperObj = {
     if (stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
+      if (customerEmail) {
+        stateData.shopperEmail = customerEmail;
+      }
     } else {
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.ECOMMERCE;
     }
