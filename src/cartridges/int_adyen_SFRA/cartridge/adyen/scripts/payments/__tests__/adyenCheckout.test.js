@@ -10,6 +10,7 @@ describe('AdyenCheckout', () => {
                 setExportStatus: jest.fn(),
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
+                getCustomerEmail: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
@@ -43,6 +44,7 @@ describe('AdyenCheckout', () => {
                 setExportStatus: jest.fn(),
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
+                getCustomerEmail: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
@@ -76,6 +78,7 @@ describe('AdyenCheckout', () => {
                 setExportStatus: jest.fn(),
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
+                getCustomerEmail: jest.fn(),
             },
             PaymentInstrument: {
                 custom: {
