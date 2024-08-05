@@ -66,6 +66,9 @@ var Store = (_class = /*#__PURE__*/function () {
   }, {
     key: "updateSelectedPayment",
     value: function updateSelectedPayment(method, key, val) {
+      if (!this.componentsObj[method]) {
+        this.componentsObj[method] = {};
+      }
       this.componentsObj[method][key] = val;
     }
   }]);
