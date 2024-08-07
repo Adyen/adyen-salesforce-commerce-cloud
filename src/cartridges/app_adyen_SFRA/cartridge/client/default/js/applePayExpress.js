@@ -143,7 +143,8 @@ function getShippingMethod(shippingContact) {
 }
 
 async function initializeCheckout() {
-  paymentMethodsResponse = await getPaymentMethods();
+  const paymentMethods = await getPaymentMethods();
+  paymentMethodsResponse = await paymentMethods.json();
   const shippingMethods = await getShippingMethod();
   shippingMethodsData = await shippingMethods.json();
   const applicationInfo = paymentMethodsResponse?.applicationInfo;
@@ -160,6 +161,7 @@ async function initializeCheckout() {
 async function createApplePayButton(applePayButtonConfig) {
   return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
+
 initializeCheckout()
   .then(async () => {
     const applePayPaymentMethod =
@@ -179,15 +181,15 @@ initializeCheckout()
       showPayButton: true,
       isExpress: true,
       configuration: applePayConfig,
-      amount: JSON.parse(window.basketAmount),
+      // amount: JSON.parse(window.basketAmount),
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
       requiredBillingContactFields: ['postalAddress', 'phone'],
-      shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
-        label: sm.displayName,
-        detail: sm.description,
-        identifier: sm.ID,
-        amount: `${sm.shippingCost.value}`,
-      })),
+      // shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
+      //   label: sm.displayName,
+      //   detail: sm.description,
+      //   identifier: sm.ID,
+      //   amount: `${sm.shippingCost.value}`,
+      // })),
       onAuthorized: async (resolve, reject, event) => {
         try {
           const customerData = event.payment.shippingContact;
