@@ -24,18 +24,22 @@ function getCardConfig() {
     },
     exposeExpiryDate: false,
     onChange(state, component) {
-      const { paymentMethod } = state.data;
-      const { holderName } = component.props;
-      paymentMethod.holderName = holderName;
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
-      store.updateSelectedPayment(method, 'stateData', {
-        ...state.data,
-        paymentMethod,
-      });
+      if (state.data?.paymentMethod?.storedPaymentMethodId) {
+        const { paymentMethod } = state.data;
+        const { holderName } = component.props;
+        paymentMethod.holderName = holderName;
+        store.updateSelectedPayment(method, 'stateData', {
+          ...state.data,
+          paymentMethod,
+        });
+      } else {
+        store.updateSelectedPayment(method, 'stateData', state.data);
+      }
     },
     onSubmit: () => {
       helpers.assignPaymentMethodValue();
