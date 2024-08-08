@@ -47,7 +47,7 @@ describe('Checkout Configuration', () => {
       store.selectedMethod = 'scheme';
       store.componentsObj = { scheme: {} };
       const data = { paymentMethod: { type: 'scheme' } };
-      card.onChange({ isValid: true, data });
+      card.onChange({ isValid: true, data }, { props: { holderName: 'test' } });
       expect(store.selectedPayment.isValid).toBeTruthy();
     });
 
