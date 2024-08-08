@@ -23,13 +23,19 @@ function getCardConfig() {
       merchantDisplayName: window.merchantAccount,
     },
     exposeExpiryDate: false,
-    onChange(state) {
+    onChange(state, component) {
+      const { paymentMethod } = state.data;
+      const { holderName } = component.props;
+      paymentMethod.holderName = holderName;
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
-      store.updateSelectedPayment(method, 'stateData', state.data);
+      store.updateSelectedPayment(method, 'stateData', {
+        ...state.data,
+        paymentMethod,
+      });
     },
     onSubmit: () => {
       helpers.assignPaymentMethodValue();
@@ -390,7 +396,6 @@ function setCheckoutConfiguration() {
     bcmc: getCardConfig(),
     storedCard: {
       ...getCardConfig(),
-      hasHolderName: false,
       holderNameRequired: false,
     },
     boletobancario: {
