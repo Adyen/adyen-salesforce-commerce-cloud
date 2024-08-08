@@ -30,8 +30,8 @@ function getCardConfig() {
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
       if (state.data?.paymentMethod?.storedPaymentMethodId) {
-        const { paymentMethod } = state.data;
         const { holderName } = component.props;
+        const { paymentMethod } = state.data;
         paymentMethod.holderName = holderName;
         store.updateSelectedPayment(method, 'stateData', {
           ...state.data,
