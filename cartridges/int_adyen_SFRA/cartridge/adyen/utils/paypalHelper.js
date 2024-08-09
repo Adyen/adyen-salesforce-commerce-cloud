@@ -77,20 +77,20 @@ function getLineItems(_ref) {
  * Returns applicable shipping methods(excluding store pickup methods)
  * for specific Shipment / ShippingAddress pair.
  * @param {String} pspReference - the pspReference returned from adyen /payments endpoint
- * @param {dw.order.basket} amount - a shipment of the current basket
+ * @param {dw.order.basket} currentBasket - a shipment of the current basket
  * @param {dw.util.ArrayList<ApplicableShippingMethodModel>} currentShippingMethods
  *        - a shipment of the current basket
  * @param {String} paymentData - encrypted payment data from paypal component
  * @returns {paypalUpdateOrderRequest} - list of applicable shipping methods or null
  */
 function createPaypalUpdateOrderRequest(pspReference, currentBasket, currentShippingMethods, paymentData) {
-  var adjustedShippingTotalGrossPrice = {
+  var totalGrossPrice = {
     currency: currentBasket.currencyCode,
-    value: AdyenHelper.getCurrencyValueForApi(currentBasket.getAdjustedShippingTotalGrossPrice()).value
+    value: AdyenHelper.getCurrencyValueForApi(currentBasket.totalGrossPrice).value
   };
-  var adjustedMerchandizeTotalGrossPrice = {
+  var totalTax = {
     currency: currentBasket.currencyCode,
-    value: AdyenHelper.getCurrencyValueForApi(currentBasket.getAdjustedMerchandizeTotalGrossPrice()).value + adjustedShippingTotalGrossPrice.value
+    value: AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value
   };
   var deliveryMethods = currentShippingMethods.map(function (shippingMethod) {
     var _shippingMethod$shipp = shippingMethod.shippingCost,
@@ -110,7 +110,10 @@ function createPaypalUpdateOrderRequest(pspReference, currentBasket, currentShip
   return {
     pspReference: pspReference,
     paymentData: paymentData,
-    amount: adjustedMerchandizeTotalGrossPrice,
+    amount: totalGrossPrice,
+    taxTotal: {
+      amount: totalTax
+    },
     deliveryMethods: deliveryMethods
   };
 }

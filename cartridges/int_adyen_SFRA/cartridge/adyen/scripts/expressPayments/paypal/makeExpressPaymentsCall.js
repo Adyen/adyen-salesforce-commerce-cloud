@@ -16,7 +16,7 @@ function makeExpressPaymentsCall(req, res, next) {
     var paymentInstrument;
     Transaction.wrap(function () {
       currentBasket.removeAllPaymentInstruments();
-      paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.getAdjustedMerchandizeTotalGrossPrice());
+      paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.getAdjustedMerchandizeTotalNetPrice());
       var _PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod),
         paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;

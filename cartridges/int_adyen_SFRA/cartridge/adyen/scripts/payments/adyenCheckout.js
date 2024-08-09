@@ -112,7 +112,7 @@ function createPaymentRequest(args) {
     var paymentInstrument = args.PaymentInstrument;
 
     // Create request object with payment details
-    var paymentRequest = AdyenHelper.createAdyenRequestObject(order.getOrderNo(), order.getOrderToken(), paymentInstrument);
+    var paymentRequest = AdyenHelper.createAdyenRequestObject(order.getOrderNo(), order.getOrderToken(), paymentInstrument, order.getCustomerEmail());
     var paymentMethodType = paymentRequest.paymentMethod.type;
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
