@@ -14,6 +14,8 @@ const {
 
 function getCardConfig() {
   return {
+    hasHolderName: true,
+    holderNameRequired: true,
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
     clickToPayConfiguration: {
@@ -21,13 +23,23 @@ function getCardConfig() {
       merchantDisplayName: window.merchantAccount,
     },
     exposeExpiryDate: false,
-    onChange(state) {
+    onChange(state, component) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
-      store.updateSelectedPayment(method, 'stateData', state.data);
+      if (state.data?.paymentMethod?.storedPaymentMethodId) {
+        const { holderName } = component.props;
+        const { paymentMethod } = state.data;
+        paymentMethod.holderName = holderName;
+        store.updateSelectedPayment(method, 'stateData', {
+          ...state.data,
+          paymentMethod,
+        });
+      } else {
+        store.updateSelectedPayment(method, 'stateData', state.data);
+      }
     },
     onSubmit: () => {
       helpers.assignPaymentMethodValue();
@@ -388,7 +400,10 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: getCardConfig(),
     bcmc: getCardConfig(),
-    storedCard: getCardConfig(),
+    storedCard: {
+      ...getCardConfig(),
+      holderNameRequired: false,
+    },
     boletobancario: {
       personalDetailsRequired: true, // turn personalDetails section on/off
       billingAddressRequired: false, // turn billingAddress section on/off
