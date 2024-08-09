@@ -17,7 +17,7 @@ function makeExpressPaymentsCall(req, res, next) {
       currentBasket.removeAllPaymentInstruments();
       paymentInstrument = currentBasket.createPaymentInstrument(
         constants.METHOD_ADYEN_COMPONENT,
-        currentBasket.getAdjustedMerchandizeTotalGrossPrice(),
+        currentBasket.getAdjustedMerchandizeTotalNetPrice(),
       );
       const { paymentProcessor } = PaymentMgr.getPaymentMethod(
         paymentInstrument.paymentMethod,
