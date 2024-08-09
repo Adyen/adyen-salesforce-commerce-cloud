@@ -31,7 +31,7 @@ var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var constants = require('*/cartridge/adyen/config/constants');
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
-    var zeroAuthRequest = AdyenHelper.createAdyenRequestObject('recurringPayment-account', 'recurringPayment-token', paymentInstrument);
+    var zeroAuthRequest = AdyenHelper.createAdyenRequestObject('recurringPayment-account', 'recurringPayment-token', paymentInstrument, customer.getProfile().email);
     zeroAuthRequest = AdyenHelper.add3DS2Data(zeroAuthRequest);
     zeroAuthRequest.amount = {
       currency: session.currency.currencyCode,
@@ -42,6 +42,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
     zeroAuthRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     zeroAuthRequest.shopperReference = customer.getProfile().getCustomerNo();
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
+    zeroAuthRequest.shopperIP = request.getHttpRemoteAddress();
     return adyenCheckout.doPaymentsCall(null, paymentInstrument, zeroAuthRequest);
   } catch (e) {
     AdyenLogs.error_log("error processing zero auth payment. Error message: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
