@@ -87,8 +87,6 @@ describe('paypalHelper', () => {
       }]
       currentBasket = {
         currencyCode: 'USD',
-        getAdjustedShippingTotalGrossPrice: jest.fn(),
-        getAdjustedMerchandizeTotalGrossPrice: jest.fn(),
       }
 
       result = {
@@ -96,7 +94,13 @@ describe('paypalHelper', () => {
         paymentData: 'test',
         amount: {
           currency: 'USD',
-          value: 2000
+          value: 1000
+        },
+        taxTotal: {
+          amount: {
+            currency: 'USD',
+            value: 1000
+          }
         },
         deliveryMethods:[{
           reference: '001',
