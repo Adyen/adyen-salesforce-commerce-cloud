@@ -2,6 +2,10 @@
 
 exports[`paypal express getPaypalButtonConfig should return config when review page is enabled 1`] = `
 {
+  "amount": {
+    "currency": "USD",
+    "value": 1000,
+  },
   "configuration": {},
   "isExpress": true,
   "onAdditionalDetails": [Function],
@@ -18,6 +22,10 @@ exports[`paypal express getPaypalButtonConfig should return config when review p
 
 exports[`paypal express getPaypalButtonConfig should return config when review page is not enabled 1`] = `
 {
+  "amount": {
+    "currency": "USD",
+    "value": 1000,
+  },
   "configuration": {},
   "isExpress": true,
   "onAdditionalDetails": [Function],
