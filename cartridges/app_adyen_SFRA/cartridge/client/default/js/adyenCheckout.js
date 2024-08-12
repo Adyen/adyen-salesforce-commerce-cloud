@@ -27,10 +27,6 @@ $('#dwfrm_billing').submit(function apiRequest(e) {
   });
 });
 setCheckoutConfiguration();
-if (window.cardholderNameBool !== 'null') {
-  store.checkoutConfiguration.paymentMethodsConfiguration.card.hasHolderName = true;
-  store.checkoutConfiguration.paymentMethodsConfiguration.card.holderNameRequired = true;
-}
 if (window.googleMerchantID !== 'null' && window.Configuration.environment.includes('live')) {
   var id = 'merchantId';
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
