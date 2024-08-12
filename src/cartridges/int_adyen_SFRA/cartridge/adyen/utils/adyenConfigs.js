@@ -113,10 +113,6 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
-  getAdyenCardholderNameEnabled: function () {
-    return getCustomPreference('AdyenCardHolderName_enabled');
-  },
-
   getAdyenLevel23DataEnabled: function () {
     return getCustomPreference('AdyenLevel23DataEnabled');
   },
