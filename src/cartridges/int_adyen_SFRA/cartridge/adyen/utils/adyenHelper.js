@@ -86,7 +86,6 @@ let adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost(shippingMethod, shipment) {
-    const { shippingAddress } = shipment
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), (lineItem) => {
@@ -98,23 +97,10 @@ let adyenHelperObj = {
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     })
-    shippingCost = shippingAddress ? shippingCost.addRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode(),
     };
-  },
-
-  /**
-   * Returns tax rate for specific Shipment / ShippingMethod pair.
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
-   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
-   */
-  getShippingTaxRate(shippingMethod, shippingAddress) {
-    const taxClassID = shippingMethod.getTaxClassID();
-    const taxJurisdictionID = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress));
-    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
 
   /**
@@ -453,16 +439,11 @@ let adyenHelperObj = {
       args.paymentRequest.shopperReference = args.order.getCustomerNo();
     }
 
-    const shopperIP = request.getHttpRemoteAddress()
-      ? request.getHttpRemoteAddress()
-      : null;
-    if (shopperIP) {
-      args.paymentRequest.shopperIP = shopperIP;
-    }
-
     if (request.getLocale()) {
       args.paymentRequest.shopperLocale = request.getLocale();
     }
+
+    args.paymentRequest.shopperIP = request.getHttpRemoteAddress();
 
     return args.paymentRequest;
   },
@@ -535,7 +516,7 @@ let adyenHelperObj = {
   },
 
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject(orderNo, orderToken, paymentInstrument) {
+  createAdyenRequestObject(orderNo, orderToken, paymentInstrument, customerEmail) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
@@ -549,6 +530,9 @@ let adyenHelperObj = {
     if (stateData.paymentMethod?.storedPaymentMethodId) {
       stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
+      if (customerEmail) {
+        stateData.shopperEmail = customerEmail;
+      }
     } else {
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.ECOMMERCE;
     }

@@ -88,9 +88,6 @@ var adyenConfigsObj = {
   getAdyenBasketFieldsEnabled: function getAdyenBasketFieldsEnabled() {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
-  getAdyenCardholderNameEnabled: function getAdyenCardholderNameEnabled() {
-    return getCustomPreference('AdyenCardHolderName_enabled');
-  },
   getAdyenLevel23DataEnabled: function getAdyenLevel23DataEnabled() {
     return getCustomPreference('AdyenLevel23DataEnabled');
   },

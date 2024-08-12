@@ -146,6 +146,7 @@ function createPaymentRequest(args) {
       order.getOrderNo(),
       order.getOrderToken(),
       paymentInstrument,
+      order.getCustomerEmail(),
     );
 
     const paymentMethodType = paymentRequest.paymentMethod.type;

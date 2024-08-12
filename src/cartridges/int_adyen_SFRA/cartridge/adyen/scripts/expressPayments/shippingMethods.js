@@ -2,6 +2,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
 const URLUtils = require('dw/web/URLUtils');
+const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { PAYMENTMETHODS } = require('*/cartridge/adyen/config/constants');
@@ -42,7 +43,9 @@ function callGetShippingMethods(req, res, next) {
       return next();
     }
     updateShippingAddress(currentBasket, address);
-    currentBasket.updateTotals();
+    Transaction.wrap(() => {
+      basketCalculationHelpers.calculateTotals(currentBasket);
+    });
     const currentShippingMethodsModels =
       AdyenHelper.getApplicableShippingMethods(
         currentBasket.getDefaultShipment(),

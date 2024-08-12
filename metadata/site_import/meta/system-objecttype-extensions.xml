@@ -407,13 +407,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="AdyenCardHolderName_enabled">
-                <display-name xml:lang="x-default">Show input field for card holder name</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23DataEnabled">
                 <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
                 <type>boolean</type>
@@ -704,7 +697,6 @@
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
-                <attribute attribute-id="AdyenCardHolderName_enabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
                 <attribute attribute-id="AdyenSalePaymentMethods"/>
                 <attribute attribute-id="AdyenInstallments_enabled"/>
