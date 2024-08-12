@@ -41,6 +41,11 @@ export const getAdjustedMerchandizeTotalGrossPrice = jest.fn(() => ({
   isAvailable,
 }));
 
+export const getAdjustedMerchandizeTotalNetPrice = jest.fn(() => ({
+  currencyCode: 'EUR',
+  isAvailable,
+}));
+
 export const getCreditCardToken = jest.fn(() => 'mockedCreditCardToken');
 export const getPaymentMethod = jest.fn(() => 'mockedPaymentMethod');
 
@@ -132,6 +137,7 @@ export const getCurrentBasket = jest.fn(() => ({
   getAllProductLineItems,
   getTotalGrossPrice,
   getAdjustedMerchandizeTotalGrossPrice,
+  getAdjustedMerchandizeTotalNetPrice,
   getPaymentInstruments,
   removeAllPaymentInstruments: jest.fn(),
   removePaymentInstrument: jest.fn(),

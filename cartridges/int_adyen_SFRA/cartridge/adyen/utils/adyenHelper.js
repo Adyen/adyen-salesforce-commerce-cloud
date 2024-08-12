@@ -89,7 +89,6 @@ var adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost: function getShippingCost(shippingMethod, shipment) {
-    var shippingAddress = shipment.shippingAddress;
     var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), function (lineItem) {
@@ -99,22 +98,10 @@ var adyenHelperObj = {
       var productShippingCost = productShippingModel.getShippingCost(shippingMethod) ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity) : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     });
-    shippingCost = shippingAddress ? shippingCost.addRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode()
     };
-  },
-  /**
-   * Returns tax rate for specific Shipment / ShippingMethod pair.
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
-   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
-   */
-  getShippingTaxRate: function getShippingTaxRate(shippingMethod, shippingAddress) {
-    var taxClassID = shippingMethod.getTaxClassID();
-    var taxJurisdictionID = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress));
-    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
   /**
    * Returns applicable shipping methods for specific Shipment / ShippingAddress pair.
@@ -375,13 +362,10 @@ var adyenHelperObj = {
     } else if (args.order.getCustomerNo()) {
       args.paymentRequest.shopperReference = args.order.getCustomerNo();
     }
-    var shopperIP = request.getHttpRemoteAddress() ? request.getHttpRemoteAddress() : null;
-    if (shopperIP) {
-      args.paymentRequest.shopperIP = shopperIP;
-    }
     if (request.getLocale()) {
       args.paymentRequest.shopperLocale = request.getLocale();
     }
+    args.paymentRequest.shopperIP = request.getHttpRemoteAddress();
     return args.paymentRequest;
   },
   // populates the paymentRequest with address information using the order and payment method and returns it
@@ -436,7 +420,7 @@ var adyenHelperObj = {
     return paymentRequest;
   },
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject: function createAdyenRequestObject(orderNo, orderToken, paymentInstrument) {
+  createAdyenRequestObject: function createAdyenRequestObject(orderNo, orderToken, paymentInstrument, customerEmail) {
     var _stateData$paymentMet;
     var jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
     var filteredJson = adyenHelperObj.validateStateData(jsonObject);
@@ -449,6 +433,9 @@ var adyenHelperObj = {
     if ((_stateData$paymentMet = stateData.paymentMethod) !== null && _stateData$paymentMet !== void 0 && _stateData$paymentMet.storedPaymentMethodId) {
       stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
+      if (customerEmail) {
+        stateData.shopperEmail = customerEmail;
+      }
     } else {
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.ECOMMERCE;
     }

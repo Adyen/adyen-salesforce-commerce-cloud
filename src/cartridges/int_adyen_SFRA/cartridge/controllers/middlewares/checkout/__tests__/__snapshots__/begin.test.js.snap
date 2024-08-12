@@ -7,7 +7,6 @@ exports[`Begin should not attempt to restore cart when no order number is cached
       "adyen": {
         "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
-        "cardholderNameBool": true,
         "clientKey": "mocked_client_key",
         "environment": "test",
         "googleMerchantID": "mocked_google_merchant_id",
@@ -26,7 +25,6 @@ exports[`Begin should set view data 1`] = `
       "adyen": {
         "SFRA6Enabled": false,
         "adyenClientKey": "mocked_client_key",
-        "cardholderNameBool": true,
         "clientKey": "mocked_client_key",
         "environment": "test",
         "googleMerchantID": "mocked_google_merchant_id",

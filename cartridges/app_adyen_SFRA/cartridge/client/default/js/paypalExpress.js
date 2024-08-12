@@ -292,6 +292,7 @@ function getPaypalButtonConfig(paypalConfig) {
     showPayButton: true,
     configuration: paypalConfig,
     returnUrl: window.returnUrl,
+    amount: JSON.parse(window.basketAmount),
     isExpress: true
   }, paypalReviewPageEnabled ? {
     userAction: 'continue'
