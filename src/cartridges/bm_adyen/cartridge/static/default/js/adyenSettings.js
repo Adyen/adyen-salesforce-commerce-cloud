@@ -27,6 +27,16 @@ const expressPaymentMethods = [
   },
 ];
 
+const expressPaymentMethodsOnPdp = [
+  {
+    id: 'applepay',
+    name: 'ApplePayExpress_Pdp_Enabled',
+    text: 'Apple Pay',
+    icon: window.applePayIcon,
+    checked: window.isApplePayExpressOnPdpEnabled,
+  },
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const troubleshootingForm = document.querySelector('#troubleshootingForm');
@@ -69,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   const draggableList = document.getElementById('draggable-list');
+  const draggableListPdp = document.getElementById('draggable-list-pdp');
 
   let ruleCounter = 0;
   const installmentsResult = {};
@@ -137,8 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addExpressEventListeners() {
-    const draggables = document.querySelectorAll('.draggable');
-    const dragListItems = document.querySelectorAll('.draggable-list li');
+    // Targeting only cart/mini-cart list as PDP doesn't need a swapping logic for the moment
+    const draggables = draggableList.querySelectorAll('.draggable');
+    const dragListItems = draggableList.querySelectorAll('.draggable-list li');
 
     draggables.forEach((draggable) => {
       draggable.addEventListener('dragstart', dragStart);
@@ -152,15 +164,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function createExpressPaymentsComponent() {
+  function createExpressPaymentsComponent(
+    paymentMethodsArray,
+    draggableListContainer,
+  ) {
     const { expressMethodsOrder } = window;
     if (expressMethodsOrder) {
       const sortOrder = expressMethodsOrder.split(',');
-      expressPaymentMethods.sort(
+      paymentMethodsArray.sort(
         (a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id),
       );
     }
-    expressPaymentMethods.forEach((item, index) => {
+
+    paymentMethodsArray.forEach((item, index) => {
       const listItem = document.createElement('li');
       listItem.setAttribute('data-index', index.toString());
 
@@ -210,8 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       listItems.push(listItem);
-
-      draggableList.appendChild(listItem);
+      draggableListContainer.appendChild(listItem);
     });
 
     addExpressEventListeners();
@@ -631,5 +646,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.reload();
   });
 
-  createExpressPaymentsComponent();
+  createExpressPaymentsComponent(expressPaymentMethods, draggableList);
+  createExpressPaymentsComponent(expressPaymentMethodsOnPdp, draggableListPdp);
 });
