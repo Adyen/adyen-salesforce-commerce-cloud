@@ -1,5 +1,4 @@
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
-const getExpressPdpPaymentMethods = require('*/cartridge/adyen/scripts/payments/getExpressPdpPaymentMethods');
 const paymentFromComponent = require('*/cartridge/adyen/scripts/payments/paymentFromComponent');
 const paymentsDetails = require('*/cartridge/adyen/scripts/payments/paymentsDetails');
 const redirect3ds1Response = require('*/cartridge/adyen/scripts/payments/redirect3ds1Response');
@@ -21,7 +20,6 @@ const handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/
 
 module.exports = {
   getCheckoutPaymentMethods,
-  getExpressPdpPaymentMethods,
   paymentFromComponent,
   paymentsDetails,
   redirect3ds1Response,

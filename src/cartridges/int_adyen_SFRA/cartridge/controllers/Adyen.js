@@ -99,12 +99,6 @@ server.get(
   adyen.getCheckoutPaymentMethods,
 );
 
-server.get(
-  'GetExpressPdpPaymentMethods',
-  server.middleware.https,
-  adyen.getExpressPdpPaymentMethods,
-);
-
 /**
  * Show the review page template.
  */
