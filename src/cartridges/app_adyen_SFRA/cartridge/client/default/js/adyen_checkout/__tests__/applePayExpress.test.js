@@ -8,7 +8,7 @@ const {
   handleApplePayResponse,
   callPaymentFromComponent,
   formatCustomerObject,
-} = require('../../adyen_express/applepay/common');
+} = require('../../common');
 
 
 beforeEach(() => {

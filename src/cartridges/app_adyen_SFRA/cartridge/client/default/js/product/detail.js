@@ -1,4 +1,4 @@
-const applePayExpressModule = require('../adyen_express/applepay/common');
+const applePayExpressModule = require('../applePayExpressCommon');
 
 function getValueForCurrency(amount, currency) {
   const value = Math.round(amount * 10 ** window.fractionDigits);

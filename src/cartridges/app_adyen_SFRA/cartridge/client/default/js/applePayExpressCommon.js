@@ -1,10 +1,10 @@
-const helpers = require('../../adyen_checkout/helpers');
+const helpers = require('./adyen_checkout/helpers');
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
   getPaymentMethods,
-} = require('../../commons');
-const { APPLE_PAY } = require('../../constants');
+} = require('./commons');
+const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;

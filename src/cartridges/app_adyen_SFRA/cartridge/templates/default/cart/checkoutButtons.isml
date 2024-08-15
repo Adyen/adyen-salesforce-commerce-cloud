@@ -90,7 +90,7 @@
         </isif>
         <script src="${URLUtils.httpsStatic('/js/main.js')}" type="text/javascript"></script>
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isApplePayExpressEnabled()}">
-            <script src="${URLUtils.httpsStatic('/js/adyen_express/applepay/applePayExpress.js')}" type="text/javascript"></script>
+            <script src="${URLUtils.httpsStatic('/js/applePayExpress.js')}" type="text/javascript"></script>
         </isif>
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isAmazonPayExpressEnabled()}">
             <script src="${URLUtils.httpsStatic('/js/amazonPayExpressPart1.js')}" type="text/javascript"></script>
