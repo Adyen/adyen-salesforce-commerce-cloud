@@ -10,6 +10,7 @@ var BasketMgr = require('dw/order/BasketMgr');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
 var URLUtils = require('dw/web/URLUtils');
+var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var _require = require('*/cartridge/adyen/config/constants'),
@@ -49,7 +50,9 @@ function callGetShippingMethods(req, res, next) {
       return next();
     }
     updateShippingAddress(currentBasket, address);
-    currentBasket.updateTotals();
+    Transaction.wrap(function () {
+      basketCalculationHelpers.calculateTotals(currentBasket);
+    });
     var currentShippingMethodsModels = AdyenHelper.getApplicableShippingMethods(currentBasket.getDefaultShipment(), address);
     if (!(currentShippingMethodsModels !== null && currentShippingMethodsModels !== void 0 && currentShippingMethodsModels.length)) {
       throw new Error('No applicable shipping methods found');

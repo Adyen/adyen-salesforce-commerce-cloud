@@ -86,7 +86,6 @@ let adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost(shippingMethod, shipment) {
-    const { shippingAddress } = shipment
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), (lineItem) => {
@@ -98,23 +97,10 @@ let adyenHelperObj = {
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     })
-    shippingCost = shippingAddress ? shippingCost.addRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode(),
     };
-  },
-
-  /**
-   * Returns tax rate for specific Shipment / ShippingMethod pair.
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
-   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
-   */
-  getShippingTaxRate(shippingMethod, shippingAddress) {
-    const taxClassID = shippingMethod.getTaxClassID();
-    const taxJurisdictionID = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress));
-    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
 
   /**

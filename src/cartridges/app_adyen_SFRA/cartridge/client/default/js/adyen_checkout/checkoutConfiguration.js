@@ -23,13 +23,23 @@ function getCardConfig() {
       merchantDisplayName: window.merchantAccount,
     },
     exposeExpiryDate: false,
-    onChange(state) {
+    onChange(state, component) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
-      store.updateSelectedPayment(method, 'stateData', state.data);
+      if (state.data?.paymentMethod?.storedPaymentMethodId) {
+        const { holderName } = component.props;
+        const { paymentMethod } = state.data;
+        paymentMethod.holderName = holderName;
+        store.updateSelectedPayment(method, 'stateData', {
+          ...state.data,
+          paymentMethod,
+        });
+      } else {
+        store.updateSelectedPayment(method, 'stateData', state.data);
+      }
     },
     onSubmit: () => {
       helpers.assignPaymentMethodValue();
@@ -189,8 +199,9 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector('button[value="submit-payment"]').disabled =
-            false;
+          document.querySelector(
+            'button[value="submit-payment"]',
+          ).disabled = false;
           if (data.resultCode === constants.SUCCESS) {
             const {
               giftCardsInfoMessageContainer,
@@ -216,8 +227,9 @@ function getGiftCardConfig() {
                 initialPartialObject.totalDiscountedAmount;
             });
 
-            document.querySelector('button[value="submit-payment"]').disabled =
-              true;
+            document.querySelector(
+              'button[value="submit-payment"]',
+            ).disabled = true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
@@ -390,7 +402,6 @@ function setCheckoutConfiguration() {
     bcmc: getCardConfig(),
     storedCard: {
       ...getCardConfig(),
-      hasHolderName: false,
       holderNameRequired: false,
     },
     boletobancario: {

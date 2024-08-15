@@ -503,6 +503,7 @@ describe('paypal express', () => {
   })
   describe('getPaypalButtonConfig',() => {
     window.returnUrl = 'test_returnUrl';
+    window.basketAmount = '{"currency":"USD","value":1000}';
     beforeEach(() => {
       jest.clearAllMocks();
     });
