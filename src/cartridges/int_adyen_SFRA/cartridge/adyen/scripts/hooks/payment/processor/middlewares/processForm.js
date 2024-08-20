@@ -80,6 +80,7 @@ function getViewData(
       stateData: paymentForm.adyenPaymentFields.adyenStateData.value,
       partialPaymentsOrder:
         paymentForm.adyenPaymentFields.adyenPartialPaymentsOrder.value,
+      optimizationData: paymentForm.adyenPaymentFields.adyenOptimizationData,
     },
     saveCard: paymentForm.creditCardFields.saveCard.checked,
   };

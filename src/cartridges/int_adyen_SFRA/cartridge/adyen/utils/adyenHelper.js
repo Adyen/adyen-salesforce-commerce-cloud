@@ -237,6 +237,11 @@ let adyenHelperObj = {
     return `${checkoutCSS}sdk/${constants.CHECKOUT_COMPONENT_VERSION}/adyen.css`;
   },
 
+  getOptimizationData() {
+    const optimizationSdk = this.getLoadingContext();
+	return `${optimizationSdk}assets/js/datacollection/datacollection.js`;
+  },
+
   // converts to a syntax-safe HTML string
   encodeHtml(str) {
     return StringUtils.encodeString(str, 0);

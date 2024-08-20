@@ -3,6 +3,8 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<script src="${pdict.AdyenHelper.getOptimizationData()}" type="text/javascript"></script>
+<input id="adyenOptimizationData" type="hidden" name="${adyenPaymentFields.adyenOptimizationData.htmlName}"/>
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <script type="text/javascript">
         window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",

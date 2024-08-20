@@ -10,4 +10,7 @@
     <field formid="adyenStateData" type="string" mandatory="false" />
     <field formid="adyenFingerprint" label="Fingerprint" type="string" mandatory="false"/>
     <field formid="adyenPartialPaymentsOrder" type="string" mandatory="false" />
+
+	<!--Optimization SDK-->
+	<field formid="adyenOptimizationData" type="string" mandatory="false"/>
 </form>

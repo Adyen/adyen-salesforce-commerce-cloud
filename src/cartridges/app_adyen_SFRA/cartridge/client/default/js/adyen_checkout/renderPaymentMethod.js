@@ -124,6 +124,8 @@ function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
   input.onchange = async (event) => {
     helpers.displaySelectedMethod(event.target.value);
+    // eslint-disable-next-line
+    document.querySelector('#adyenOptimizationData').value = getData();
   };
 }
 

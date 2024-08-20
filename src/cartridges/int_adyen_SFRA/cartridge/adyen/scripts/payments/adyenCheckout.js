@@ -26,6 +26,7 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
+const server = require('server');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -150,11 +151,16 @@ function createPaymentRequest(args) {
     );
 
     const paymentMethodType = paymentRequest.paymentMethod.type;
+    const optimizationData =
+      server.forms.getForm('billing').adyenPaymentFields.adyenOptimizationData
+        .value;
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
-      paymentRequest.additionalData =
-        RiskDataHelper.createBasketContentFields(order);
+      paymentRequest.additionalData = {
+        ...RiskDataHelper.createBasketContentFields(order),
+        clientData: optimizationData,
+      };
     }
 
     // L2/3 Data

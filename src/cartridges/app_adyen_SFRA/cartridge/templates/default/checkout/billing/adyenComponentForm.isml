@@ -8,6 +8,8 @@
 
 <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<script src="${pdict.AdyenHelper.getOptimizationData()}" type="text/javascript"></script>
+<input id="adyenOptimizationData" type="hidden" name="${adyenPaymentFields.adyenOptimizationData.htmlName}" value=getData()/>
 <script>
       window.Configuration = {
           locale: '${request.locale}',
