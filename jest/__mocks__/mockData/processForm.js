@@ -24,7 +24,7 @@ export const getPaymentForm = jest.fn(() => ({
     adyenPartialPaymentsOrder: {
         value: 'mockedOrder'
     },
-	adyenOptimizationData : 'mockedOptimizationData'
+    adyenOptimizationData: 'mockedOptimizationData',
   },
 }));
 

@@ -2,7 +2,7 @@ const adyenCheckout = require('../adyenCheckout');
 const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
 
 describe('AdyenCheckout', () => {
-	let getData;
+    let getData;
     it('should not error when cached gift card amount and actual amount match', () => {
         const args = {
             Order: {
@@ -30,7 +30,7 @@ describe('AdyenCheckout', () => {
                 }
             },
         };
-		getData = jest.fn();
+        getData = jest.fn();
         const response =  adyenCheckout.createPaymentRequest(args);
         expect(Logger.error.mock.calls.length).toBe(0);
         expect(response.resultCode).toEqual("Authorised");
@@ -64,7 +64,7 @@ describe('AdyenCheckout', () => {
                 }
             },
         };
-		getData = jest.fn();
+        getData = jest.fn();
         const response =  adyenCheckout.createPaymentRequest(args);
         expect(Logger.error.mock.calls[0][0]).toContain("Cart has been edited after applying a gift card");
         expect(response.error).toEqual(true);

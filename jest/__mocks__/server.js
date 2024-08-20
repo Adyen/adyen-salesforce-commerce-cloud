@@ -4,7 +4,7 @@ export const forms = {
 	adyenOptimizationData: { value: 'mocked_value' },
     adyenPaymentFields: {
       terminalId: {value: "mockedTerminalID"},
-	  adyenOptimizationData : 'mockedOptimizationData'
+      adyenOptimizationData: 'mockedOptimizationData',
     }
   })),
 };

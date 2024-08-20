@@ -9,7 +9,7 @@ describe('Render Payment Method', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <ul id="paymentMethodsList"></ul>
-	  <input id="adyenOptimizationData" value="mocked_value"/>
+      <input id="adyenOptimizationData" value="mocked_value"/>
     `;
     store.componentsObj = {
       mocked_id: { node: { mocked_node: { foo: 'bar' } } },
