@@ -11,6 +11,15 @@
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
    window.isExpressPdp = true;
    window.fractionDigits = "${pdict.AdyenHelper.getFractionDigits()}"
+   window.initialProduct = {
+    readyToOrder: JSON.parse("${pdict.product.readyToOrder}"),
+    price: {
+        sales: {
+            value: JSON.parse("${pdict.product.price.sales.value}"),
+            currency: "${pdict.product.price.sales.currency}"
+        }
+    }
+   };
 </script>
 <div id="applepay-pdp"
    data-method="applepay"
