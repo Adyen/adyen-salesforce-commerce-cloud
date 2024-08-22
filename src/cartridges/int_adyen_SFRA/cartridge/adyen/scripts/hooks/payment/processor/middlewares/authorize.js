@@ -18,7 +18,7 @@ function errorHandler() {
 }
 
 function paymentErrorHandler(result) {
-  AdyenLogs.error_log(`Payment failed, result: ${JSON.stringify(result)}`);
+  AdyenLogs.error_log('Payment failed:', JSON.stringify(result));
   Transaction.rollback();
   return { error: true };
 }

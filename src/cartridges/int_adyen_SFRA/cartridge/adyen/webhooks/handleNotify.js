@@ -106,14 +106,11 @@ function notify(notificationData) {
     return {
       success: true,
     };
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Notification failed: ${JSON.stringify(notificationData)}\n` +
-        `Error message: ${e.message}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Notification failed',error);
     return {
       success: false,
-      errorMessage: e.message,
+      errorMessage: error.message,
     };
   }
 }

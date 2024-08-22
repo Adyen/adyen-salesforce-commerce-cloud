@@ -118,10 +118,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       AdyenLogs.info_log('Payment result: Refused');
     }
     return paymentResponse;
-  } catch (e) {
-    AdyenLogs.fatal_log(
-      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('Payments call failed:', error);
     return {
       error: true,
       args: {
@@ -269,12 +267,8 @@ function createPaymentRequest(args) {
       paymentRequest.paymentMethod,
     );
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `error processing payment. Error message: ${
-        e.message
-      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Error processing payment:', error);
     return { error: true };
   }
 }
@@ -285,8 +279,8 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
       constants.SERVICE.PAYMENTDETAILS,
       paymentDetailsRequest,
     );
-  } catch (ex) {
-    AdyenLogs.error_log(`error parsing response object ${ex.message}`);
+  } catch (error) {
+    AdyenLogs.error_log('Error parsing response object:', error);
     return { error: true };
   }
 }
