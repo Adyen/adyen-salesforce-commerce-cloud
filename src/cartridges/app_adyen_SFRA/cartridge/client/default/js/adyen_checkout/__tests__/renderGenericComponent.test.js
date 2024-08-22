@@ -69,9 +69,11 @@ beforeEach(() => {
     countryCode: 'mocked_countrycode',
   };
   getPaymentMethods.mockReturnValue({
-    adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-    imagePath: 'example.com',
-    adyenDescriptions: {},
+    json: jest.fn().mockReturnValue({
+      adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
+      imagePath: 'example.com',
+      adyenDescriptions: {},
+    }),
   });
 });
 describe('Render Generic Component', () => {

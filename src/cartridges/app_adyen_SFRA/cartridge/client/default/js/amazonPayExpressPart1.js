@@ -7,7 +7,8 @@ const { AMAZON_PAY } = require('./constants');
 
 async function mountAmazonPayComponent() {
   try {
-    const data = await getPaymentMethods();
+    const paymentMethods = await getPaymentMethods();
+    const data = await paymentMethods.json();
     const paymentMethodsResponse = data?.AdyenPaymentMethods;
     const applicationInfo = data?.applicationInfo;
     const checkout = await AdyenCheckout({

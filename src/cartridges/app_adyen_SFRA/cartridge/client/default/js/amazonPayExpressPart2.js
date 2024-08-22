@@ -78,7 +78,8 @@ function showAddressDetails(shopperDetails) {
 async function mountAmazonPayComponent() {
   try {
     const amazonPayNode = document.getElementById('amazon-container');
-    const data = await getPaymentMethods();
+    const paymentMethods = await getPaymentMethods();
+    const data = await paymentMethods.json();
     const paymentMethodsResponse = data?.AdyenPaymentMethods;
     const applicationInfo = data?.applicationInfo;
     const checkout = await AdyenCheckout({

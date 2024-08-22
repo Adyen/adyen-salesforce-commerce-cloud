@@ -186,7 +186,8 @@ function getPaypalButtonConfig(paypalConfig) {
 
 async function mountPaypalComponent() {
   try {
-    const paymentMethod = await getPaymentMethods();
+    const response = await getPaymentMethods();
+    const paymentMethod = await response.json();
     const paymentMethodsResponse = paymentMethod?.AdyenPaymentMethods;
     const applicationInfo = paymentMethod?.applicationInfo;
     const paypalConfig = paymentMethodsResponse?.paymentMethods.find(
