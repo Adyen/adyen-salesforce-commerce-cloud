@@ -40,7 +40,6 @@ function authorize(order, paymentInstrument, paymentProcessor) {
   Transaction.begin();
   const result = adyenCheckout.createPaymentRequest({
     Order: order,
-    PaymentInstrument: paymentInstrument,
   });
   if (result.error) {
     return errorHandler();
