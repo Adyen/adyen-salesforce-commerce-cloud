@@ -1,0 +1,27 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<script type="text/javascript">
+   window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
+   window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+   window.locale = "${request.locale}";
+   window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+   window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+   window.isExpressPdp = true;
+   window.fractionDigits = "${pdict.AdyenHelper.getFractionDigits()}"
+   window.initialProduct = {
+    readyToOrder: JSON.parse("${pdict.product.readyToOrder}"),
+    price: {
+        sales: {
+            value: JSON.parse("${pdict.product.price.sales.value}"),
+            currency: "${pdict.product.price.sales.currency}"
+        }
+    }
+   };
+</script>
+<div id="applepay-pdp"
+   data-method="applepay"
+   class="expressComponent applepay"
+></div>

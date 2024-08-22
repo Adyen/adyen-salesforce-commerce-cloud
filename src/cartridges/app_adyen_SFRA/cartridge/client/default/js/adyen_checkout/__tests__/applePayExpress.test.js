@@ -8,7 +8,7 @@ const {
   handleApplePayResponse,
   callPaymentFromComponent,
   formatCustomerObject,
-} = require('../../applePayExpress');
+} = require('../../applePayExpressCommon');
 
 
 beforeEach(() => {
