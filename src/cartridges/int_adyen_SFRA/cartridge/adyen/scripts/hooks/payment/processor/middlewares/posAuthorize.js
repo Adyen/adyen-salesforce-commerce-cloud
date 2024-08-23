@@ -8,16 +8,25 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
  * Authorize
  */
 function posAuthorize(order, paymentInstrument, paymentProcessor) {
-  Transaction.wrap(() => {
-    paymentInstrument.paymentTransaction.transactionID = order.orderNo;
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-  });
+  try {
+    Transaction.wrap(() => {
+      paymentInstrument.paymentTransaction.transactionID = order.orderNo;
+      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
 
-  const adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
-  const terminalId = adyenPaymentForm.terminalId.value;
+    const adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;
+    const terminalId = adyenPaymentForm?.terminalId.value;
 
-  if (!terminalId) {
-    AdyenLogs.fatal_log('No terminal selected');
+    if (!terminalId) {
+      throw new Error('No terminal selected');
+    }
+    return adyenTerminalApi.createTerminalPayment(
+      order,
+      paymentInstrument,
+      terminalId,
+    );
+  } catch (error) {
+    AdyenLogs.fatal_log('POS Authorise error', error);
     const errors = [
       Resource.msg('error.payment.processor.not.supported', 'checkout', null),
     ];
@@ -28,25 +37,6 @@ function posAuthorize(order, paymentInstrument, paymentProcessor) {
       error: true,
     };
   }
-
-  const result = adyenTerminalApi.createTerminalPayment(
-    order,
-    paymentInstrument,
-    terminalId,
-  );
-  if (result.error) {
-    AdyenLogs.fatal_log(`POS Authorise error, result: ${result.response}`);
-    const errors = [
-      Resource.msg('error.payment.processor.not.supported', 'checkout', null),
-    ];
-    return {
-      authorized: false,
-      fieldErrors: [],
-      serverErrors: errors,
-      error: true,
-    };
-  }
-  return result;
 }
 
 module.exports = posAuthorize;

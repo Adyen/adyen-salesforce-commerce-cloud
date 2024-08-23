@@ -140,9 +140,7 @@ function makePartialPayment(req, res, next) {
       ),
     });
   } catch (error) {
-    AdyenLogs.error_log(
-      `Failed to create partial payment.. ${error.toString()}`,
-    );
+    AdyenLogs.error_log('Failed to create partial payment:', error);
     res.json({ error: true });
   }
   return next();
