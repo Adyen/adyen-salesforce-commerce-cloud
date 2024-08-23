@@ -139,7 +139,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 function createPaymentRequest(args) {
   try {
     const order = args.Order;
-    const paymentInstrument = args.PaymentInstrument;
+    const { paymentInstrument } = order;
 
     // Create request object with payment details
     let paymentRequest = AdyenHelper.createAdyenRequestObject(
