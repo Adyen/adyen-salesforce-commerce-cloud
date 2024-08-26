@@ -16,12 +16,8 @@ function showConfirmationPaymentFromComponent(req, res, next) {
       req.form.orderToken,
     );
     return handlePayment(stateData, order, options);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
-        e.lineNumber
-      }`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Could not verify /payment/details', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

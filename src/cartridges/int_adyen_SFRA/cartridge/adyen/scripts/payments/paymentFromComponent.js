@@ -218,7 +218,6 @@ function paymentFromComponent(req, res, next) {
   Transaction.wrap(() => {
     result = adyenCheckout.createPaymentRequest({
       Order: order,
-      PaymentInstrument: paymentInstrument,
     });
   });
 

@@ -31,7 +31,7 @@ function fetchGiftCards(req, res, next) {
       totalDiscountedAmount,
     });
   } catch (error) {
-    AdyenLogs.error_log(`Failed to fetch gift cards ${error.toString()}`);
+    AdyenLogs.error_log('Failed to fetch gift cards:', error);
     const currentBasket = BasketMgr.getCurrentBasket();
     clearForms.clearAdyenBasketData(currentBasket);
     res.json({ error: true });

@@ -26,12 +26,8 @@ function redirect(req, res, next) {
     }
 
     return next();
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Error during 3ds1 response verification: ${e.toString()} in ${
-        e.fileName
-      }:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Error during 3ds1 response verification:', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

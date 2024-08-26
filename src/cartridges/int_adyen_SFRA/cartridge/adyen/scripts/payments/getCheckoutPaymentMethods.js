@@ -67,10 +67,8 @@ function getCheckoutPaymentMethods(req, res, next) {
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
     });
-  } catch (err) {
-    AdyenLogs.fatal_log(
-      `Failed to fetch payment methods ${JSON.stringify(err)}`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('Failed to fetch payment methods', error);
     res.json({ error: true });
   }
   return next();

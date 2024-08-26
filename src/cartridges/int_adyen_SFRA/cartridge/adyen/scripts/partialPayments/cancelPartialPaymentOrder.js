@@ -50,9 +50,7 @@ function cancelPartialPaymentOrder(req, res, next) {
       amount,
     });
   } catch (error) {
-    AdyenLogs.error_log(
-      `Could not cancel partial payments order.. ${error.toString()}`,
-    );
+    AdyenLogs.error_log('Could not cancel partial payments order:', error);
     res.json({
       error: true,
       errorMessage: Resource.msg('error.technical', 'checkout', null),
