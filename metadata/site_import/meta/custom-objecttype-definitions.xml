@@ -198,4 +198,41 @@
             </attribute-group>
         </group-definitions>
     </custom-type>
+    <custom-type type-id="adyenAnalyticsEvent">
+        <display-name xml:lang="x-default">Adyen Analytics Events</display-name>
+        <description xml:lang="x-default">Adyen Analytics Events Update Queue</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <retention-days>3</retention-days>
+        <key-definition attribute-id="checkoutAttemptId">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+        <attribute-definition attribute-id="checkoutAttemptId">
+            <display-name xml:lang="x-default">checkoutAttemptId</display-name>
+            <type>string</type>
+            <localizable-flag>false</localizable-flag>
+            <mandatory-flag>false</mandatory-flag>
+            <externally-managed-flag>false</externally-managed-flag>
+            <min-length>0</min-length>
+        </attribute-definition>
+        <attribute-definition attribute-id="eventData">
+            <display-name xml:lang="x-default">eventData</display-name>
+            <type>string</type>
+            <localizable-flag>false</localizable-flag>
+            <mandatory-flag>false</mandatory-flag>
+            <externally-managed-flag>false</externally-managed-flag>
+            <min-length>0</min-length>
+        </attribute-definition>
+        <attribute-definition attribute-id="sessionId">
+            <display-name xml:lang="x-default">sessionId</display-name>
+            <type>string</type>
+            <localizable-flag>false</localizable-flag>
+            <mandatory-flag>false</mandatory-flag>
+            <externally-managed-flag>false</externally-managed-flag>
+            <min-length>0</min-length>
+        </attribute-definition>
+        </attribute-definitions>
+    </custom-type>
 </metadata>

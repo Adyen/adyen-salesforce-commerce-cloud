@@ -37,5 +37,78 @@
             </run-once>
         </triggers>
     </job>
-
+    <job job-id="Process" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_48"/>
+            </flow>
+            <flow-template template-id="template_48">
+                <step step-id="Process" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/webhooks/job/notifications.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">processNotifications</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+                <step step-id="Clean" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/webhooks/job/notifications.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">clearNotifications</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2018-03-01Z</date>
+                <time>18:55:46.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+    <job job-id="AnalyticsEvent" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_48"/>
+            </flow>
+            <flow-template template-id="template_48">
+                <step step-id="ProcessAnalyticsEvents" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsEvents.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">processAnalyticsEvents</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+                <step step-id="CleanAnalyticsEvents" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsEvents.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">clearAnalyticsEvents</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2018-03-01Z</date>
+                <time>18:55:46.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
 </jobs>
