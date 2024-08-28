@@ -28,7 +28,7 @@
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
       window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
       window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
-      
+
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
       window.deductedBalanceGiftCardResource = "${Resource.msg('deductedBalance.giftCard', 'adyen', null)}";
@@ -129,3 +129,4 @@
 
 </iselse>
 </isif>
+<input type="hidden" id="adyen-sessions-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
