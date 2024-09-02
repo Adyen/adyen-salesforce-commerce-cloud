@@ -1,14 +1,16 @@
 const helpers = require('./adyen_checkout/helpers');
-const { checkIfExpressMethodsAreReady } = require('./commons/index');
-const { updateLoadedExpressMethods } = require('./commons');
+const {
+  checkIfExpressMethodsAreReady,
+  createSession,
+  updateLoadedExpressMethods,
+} = require('./commons');
 const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
 
 async function initializeCheckout() {
-  const session = await fetch(window.sessionsUrl);
-  const sessionData = await session.json();
+  const sessionData = await createSession();
 
   const shippingMethods = await fetch(window.shippingMethodsUrl);
   shippingMethodsData = await shippingMethods.json();
@@ -123,181 +125,184 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
-initializeCheckout()
-  .then(async () => {
-    const applePayPaymentMethod =
-      checkout.paymentMethodsResponse.paymentMethods.find(
-        (pm) => pm.type === APPLE_PAY,
-      );
+$(document).ready(() => {
+  initializeCheckout()
+    .then(async () => {
+      const applePayPaymentMethod =
+        checkout.paymentMethodsResponse.paymentMethods.find(
+          (pm) => pm.type === APPLE_PAY,
+        );
 
-    if (!applePayPaymentMethod) {
-      updateLoadedExpressMethods(APPLE_PAY);
-      checkIfExpressMethodsAreReady();
-      return;
-    }
+      if (!applePayPaymentMethod) {
+        updateLoadedExpressMethods(APPLE_PAY);
+        checkIfExpressMethodsAreReady();
+        return;
+      }
 
-    const applePayConfig = applePayPaymentMethod.configuration;
+      const applePayConfig = applePayPaymentMethod.configuration;
 
-    const applePayButtonConfig = {
-      showPayButton: true,
-      configuration: applePayConfig,
-      amount: checkout.options.amount,
-      requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
-      requiredBillingContactFields: ['postalAddress', 'phone'],
-      shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
-        label: sm.displayName,
-        detail: sm.description,
-        identifier: sm.ID,
-        amount: `${sm.shippingCost.value}`,
-      })),
-      onAuthorized: async (resolve, reject, event) => {
-        try {
-          const customerData = event.payment.shippingContact;
-          const billingData = event.payment.billingContact;
-          const customer = formatCustomerObject(customerData, billingData);
-          const stateData = {
-            paymentMethod: {
-              type: APPLE_PAY,
-              applePayToken: event.payment.token.paymentData,
-            },
-            paymentType: 'express',
-          };
-
-          const resolveApplePay = () => {
-            // ** is used instead of Math.pow
-            const value =
-              applePayButtonConfig.amount.value *
-              10 ** parseInt(window.digitsNumber, 10);
-            const finalPriceUpdate = {
-              newTotal: {
-                type: 'final',
-                label: applePayConfig.merchantName,
-                amount: `${Math.round(value)}`,
+      const applePayButtonConfig = {
+        showPayButton: true,
+        configuration: applePayConfig,
+        amount: checkout.options.amount,
+        requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
+        requiredBillingContactFields: ['postalAddress', 'phone'],
+        shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
+          label: sm.displayName,
+          detail: sm.description,
+          identifier: sm.ID,
+          amount: `${sm.shippingCost.value}`,
+        })),
+        onAuthorized: async (resolve, reject, event) => {
+          try {
+            const customerData = event.payment.shippingContact;
+            const billingData = event.payment.billingContact;
+            const customer = formatCustomerObject(customerData, billingData);
+            const stateData = {
+              paymentMethod: {
+                type: APPLE_PAY,
+                applePayToken: event.payment.token.paymentData,
               },
+              paymentType: 'express',
             };
-            resolve(finalPriceUpdate);
-          };
 
-          await callPaymentFromComponent(
-            { ...stateData, customer },
-            resolveApplePay,
-            reject,
-          );
-        } catch (error) {
-          reject(error);
-        }
-      },
-      onSubmit: () => {
-        // This handler is empty to prevent sending a second payment request
-        // We already do the payment in paymentFromComponent
-      },
-      onShippingMethodSelected: async (resolve, reject, event) => {
-        const { shippingMethod } = event;
-        const matchingShippingMethod = shippingMethodsData.shippingMethods.find(
-          (sm) => sm.ID === shippingMethod.identifier,
-        );
-        const calculationResponse = await fetch(
-          `${window.calculateAmountUrl}?${new URLSearchParams({
-            shipmentUUID: matchingShippingMethod.shipmentUUID,
-            methodID: matchingShippingMethod.ID,
-          })}`,
-          {
-            method: 'POST',
-          },
-        );
-        if (calculationResponse.ok) {
-          const newCalculation = await calculationResponse.json();
-          applePayButtonConfig.amount = {
-            value: newCalculation.grandTotalAmount.value,
-            currency: newCalculation.grandTotalAmount.currency,
-          };
-          const applePayShippingMethodUpdate = {
-            newTotal: {
-              type: 'final',
-              label: applePayConfig.merchantName,
-              amount: newCalculation.grandTotalAmount.value,
-            },
-          };
-          resolve(applePayShippingMethodUpdate);
-        } else {
-          reject();
-        }
-      },
-      onShippingContactSelected: async (resolve, reject, event) => {
-        const { shippingContact } = event;
-        const shippingMethods = await fetch(
-          `${window.shippingMethodsUrl}?${new URLSearchParams({
-            city: shippingContact.locality,
-            country: shippingContact.country,
-            countryCode: shippingContact.countryCode,
-            stateCode: shippingContact.administrativeArea,
-          })}`,
-        );
-        if (shippingMethods.ok) {
-          shippingMethodsData = await shippingMethods.json();
-          if (shippingMethodsData.shippingMethods?.length) {
-            const selectedShippingMethod =
-              shippingMethodsData.shippingMethods[0];
-            const calculationResponse = await fetch(
-              `${window.calculateAmountUrl}?${new URLSearchParams({
-                shipmentUUID: selectedShippingMethod.shipmentUUID,
-                methodID: selectedShippingMethod.ID,
-              })}`,
-              {
-                method: 'POST',
-              },
-            );
-            if (calculationResponse.ok) {
-              const shippingMethodsStructured =
-                shippingMethodsData.shippingMethods.map((sm) => ({
-                  label: sm.displayName,
-                  detail: sm.description,
-                  identifier: sm.ID,
-                  amount: `${sm.shippingCost.value}`,
-                }));
-              const newCalculation = await calculationResponse.json();
-              const applePayShippingContactUpdate = {
-                newShippingMethods: shippingMethodsStructured,
+            const resolveApplePay = () => {
+              // ** is used instead of Math.pow
+              const value =
+                applePayButtonConfig.amount.value *
+                10 ** parseInt(window.digitsNumber, 10);
+              const finalPriceUpdate = {
                 newTotal: {
                   type: 'final',
                   label: applePayConfig.merchantName,
-                  amount: newCalculation.grandTotalAmount.value,
+                  amount: `${Math.round(value)}`,
                 },
               };
-              resolve(applePayShippingContactUpdate);
+              resolve(finalPriceUpdate);
+            };
+
+            await callPaymentFromComponent(
+              { ...stateData, customer },
+              resolveApplePay,
+              reject,
+            );
+          } catch (error) {
+            reject(error);
+          }
+        },
+        onSubmit: () => {
+          // This handler is empty to prevent sending a second payment request
+          // We already do the payment in paymentFromComponent
+        },
+        onShippingMethodSelected: async (resolve, reject, event) => {
+          const { shippingMethod } = event;
+          const matchingShippingMethod =
+            shippingMethodsData.shippingMethods.find(
+              (sm) => sm.ID === shippingMethod.identifier,
+            );
+          const calculationResponse = await fetch(
+            `${window.calculateAmountUrl}?${new URLSearchParams({
+              shipmentUUID: matchingShippingMethod.shipmentUUID,
+              methodID: matchingShippingMethod.ID,
+            })}`,
+            {
+              method: 'POST',
+            },
+          );
+          if (calculationResponse.ok) {
+            const newCalculation = await calculationResponse.json();
+            applePayButtonConfig.amount = {
+              value: newCalculation.grandTotalAmount.value,
+              currency: newCalculation.grandTotalAmount.currency,
+            };
+            const applePayShippingMethodUpdate = {
+              newTotal: {
+                type: 'final',
+                label: applePayConfig.merchantName,
+                amount: newCalculation.grandTotalAmount.value,
+              },
+            };
+            resolve(applePayShippingMethodUpdate);
+          } else {
+            reject();
+          }
+        },
+        onShippingContactSelected: async (resolve, reject, event) => {
+          const { shippingContact } = event;
+          const shippingMethods = await fetch(
+            `${window.shippingMethodsUrl}?${new URLSearchParams({
+              city: shippingContact.locality,
+              country: shippingContact.country,
+              countryCode: shippingContact.countryCode,
+              stateCode: shippingContact.administrativeArea,
+            })}`,
+          );
+          if (shippingMethods.ok) {
+            shippingMethodsData = await shippingMethods.json();
+            if (shippingMethodsData.shippingMethods?.length) {
+              const selectedShippingMethod =
+                shippingMethodsData.shippingMethods[0];
+              const calculationResponse = await fetch(
+                `${window.calculateAmountUrl}?${new URLSearchParams({
+                  shipmentUUID: selectedShippingMethod.shipmentUUID,
+                  methodID: selectedShippingMethod.ID,
+                })}`,
+                {
+                  method: 'POST',
+                },
+              );
+              if (calculationResponse.ok) {
+                const shippingMethodsStructured =
+                  shippingMethodsData.shippingMethods.map((sm) => ({
+                    label: sm.displayName,
+                    detail: sm.description,
+                    identifier: sm.ID,
+                    amount: `${sm.shippingCost.value}`,
+                  }));
+                const newCalculation = await calculationResponse.json();
+                const applePayShippingContactUpdate = {
+                  newShippingMethods: shippingMethodsStructured,
+                  newTotal: {
+                    type: 'final',
+                    label: applePayConfig.merchantName,
+                    amount: newCalculation.grandTotalAmount.value,
+                  },
+                };
+                resolve(applePayShippingContactUpdate);
+              } else {
+                reject();
+              }
             } else {
               reject();
             }
           } else {
             reject();
           }
-        } else {
-          reject();
+        },
+      };
+
+      const cartContainer = document.getElementsByClassName(APPLE_PAY);
+      const applePayButton = await createApplePayButton(applePayButtonConfig);
+      const isApplePayButtonAvailable = await applePayButton.isAvailable();
+
+      if (isApplePayButtonAvailable) {
+        for (
+          let expressCheckoutNodesIndex = 0;
+          expressCheckoutNodesIndex < cartContainer.length;
+          expressCheckoutNodesIndex += 1
+        ) {
+          applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
         }
-      },
-    };
-
-    const cartContainer = document.getElementsByClassName(APPLE_PAY);
-    const applePayButton = await createApplePayButton(applePayButtonConfig);
-    const isApplePayButtonAvailable = await applePayButton.isAvailable();
-
-    if (isApplePayButtonAvailable) {
-      for (
-        let expressCheckoutNodesIndex = 0;
-        expressCheckoutNodesIndex < cartContainer.length;
-        expressCheckoutNodesIndex += 1
-      ) {
-        applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
       }
-    }
 
-    updateLoadedExpressMethods(APPLE_PAY);
-    checkIfExpressMethodsAreReady();
-  })
-  .catch(() => {
-    updateLoadedExpressMethods(APPLE_PAY);
-    checkIfExpressMethodsAreReady();
-  });
+      updateLoadedExpressMethods(APPLE_PAY);
+      checkIfExpressMethodsAreReady();
+    })
+    .catch(() => {
+      updateLoadedExpressMethods(APPLE_PAY);
+      checkIfExpressMethodsAreReady();
+    });
+});
 
 module.exports = {
   handleAuthorised,
