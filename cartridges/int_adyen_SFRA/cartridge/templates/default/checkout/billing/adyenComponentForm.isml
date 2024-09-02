@@ -20,6 +20,7 @@
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
       window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
+      window.sessionsUrl = "${URLUtils.https('Adyen-Sessions')}";
 
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
@@ -107,3 +108,4 @@
 
 </iselse>
 </isif>
+<input type="hidden" id="adyen-sessions-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
