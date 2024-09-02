@@ -1,5 +1,6 @@
 const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
+const csrf = require('*/cartridge/scripts/middleware/csrf');
 const adyenGiving = require('*/cartridge/scripts/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
 
@@ -20,7 +21,12 @@ server.post(
   adyen.paymentsDetails,
 );
 
-server.get('Sessions', server.middleware.https, adyen.callCreateSession);
+server.post(
+  'Sessions',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.callCreateSession,
+);
 
 server.get(
   'ShippingMethods',
