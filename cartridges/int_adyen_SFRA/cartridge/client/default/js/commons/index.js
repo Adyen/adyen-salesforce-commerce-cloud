@@ -25,7 +25,8 @@ module.exports.createSession = /*#__PURE__*/function () {
         case 0:
           return _context.abrupt("return", $.ajax({
             url: window.sessionsUrl,
-            type: 'get'
+            type: 'post',
+            data: $('#adyen-sessions-token').serialize()
           }));
         case 1:
         case "end":
