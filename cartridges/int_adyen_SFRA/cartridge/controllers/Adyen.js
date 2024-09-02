@@ -2,6 +2,7 @@
 
 var server = require('server');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
+var csrf = require('*/cartridge/scripts/middleware/csrf');
 var adyenGiving = require('*/cartridge/scripts/adyenGiving');
 var _require = require('*/cartridge/controllers/middlewares/index'),
   adyen = _require.adyen;
@@ -16,7 +17,7 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
  *  Confirm payment status after receiving redirectResult from Adyen
  */
 server.post('PaymentsDetails', server.middleware.https, consentTracking.consent, adyen.paymentsDetails);
-server.get('Sessions', server.middleware.https, adyen.callCreateSession);
+server.post('Sessions', server.middleware.https, csrf.validateRequest, adyen.callCreateSession);
 server.get('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
 server.post('SelectShippingMethod', server.middleware.https, adyen.callSelectShippingMethod);
 
