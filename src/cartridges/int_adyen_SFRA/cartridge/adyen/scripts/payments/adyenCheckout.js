@@ -248,8 +248,7 @@ function createPaymentRequest(args) {
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
         paymentMethodType.indexOf('ratepay') > -1 &&
-        session.privacy.ratePayFingerprint &&
-        paymentMethodType.indexOf('riverty') === -1
+        session.privacy.ratePayFingerprint
       ) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
