@@ -217,7 +217,10 @@ function createPaymentRequest(args) {
       paymentRequest,
     });
 
-    if (session.privacy.adyenFingerprint) {
+    if (
+      session.privacy.adyenFingerprint &&
+      paymentMethodType.indexOf('riverty') === -1
+    ) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
     }
     // Set open invoice data
@@ -244,7 +247,7 @@ function createPaymentRequest(args) {
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
-        paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&
+        paymentMethodType.indexOf('ratepay') > -1 &&
         session.privacy.ratePayFingerprint
       ) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
