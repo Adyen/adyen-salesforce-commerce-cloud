@@ -97,10 +97,10 @@ for (const environment of environments) {
 
       // SFRA 5 email setting flow is different
       if (environment.name.indexOf('v5') !== -1) {
-        await checkoutPage.setEmail();
+        await checkoutPage.setEmail(email);
       }
       redirectShopper = new RedirectShopper(page);
-      await redirectShopper.doRivertyPayment(page);
+      await redirectShopper.doRivertyPayment(email);
       await checkoutPage.completeCheckout();
 
       if (expectSuccess) {
@@ -119,7 +119,7 @@ for (const environment of environments) {
       });
     });
 
-    test('Riverty Failure @quick', async ({ page }) => {
+    test.only('Riverty Failure @quick', async ({ page }) => {
       await rivertyCheckoutFlow({
         page,
         email: shopperData.DERiverty.refusalShopperEmail,
