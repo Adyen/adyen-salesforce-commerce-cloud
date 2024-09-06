@@ -7,4 +7,5 @@ export const regionsEnum = {
   SE: 'sv_SE',
   IN: 'hi_IN',
   JP: 'ja_JP',
+  DE: 'de_DE',
 };

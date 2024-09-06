@@ -100,12 +100,12 @@ export default class CheckoutPageSFRA {
     await this.page.goto(this.getCartUrl(locale));
   }
 
-  goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
+  goToCheckoutPageWithFullCart = async (locale, itemCount = 1, email) => {
     await this.addProductToCart(locale, itemCount);
     await this.successMessage.waitFor({ visible: true, timeout: 20000 });
 
     await this.navigateToCheckout(locale);
-    await this.setEmail();
+    await this.setEmail(email);
     await this.checkoutGuest.click();
   };
 
@@ -165,13 +165,13 @@ export default class CheckoutPageSFRA {
     await this.submitShipping();
   };
 
-  setEmail = async () => {
+  setEmail = async (email = 'test@adyenTest.com') => {
     /* After filling the shopper details, clicking "Next" has an autoscroll
     feature, which leads the email field to be missed, hence the flakiness.
     Waiting until the full page load prevents this situation */
     await this.page.waitForLoadState('networkidle');
     await this.checkoutPageUserEmailInput.fill('');
-    await this.checkoutPageUserEmailInput.fill('test@adyenTest.com');
+    await this.checkoutPageUserEmailInput.fill(email);
   };
 
   submitShipping = async () => {
