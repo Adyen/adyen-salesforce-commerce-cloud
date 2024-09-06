@@ -95,9 +95,9 @@ export class RedirectShopper {
 
   doRivertyPayment = async () => {
     await this.page.click('#rb_riverty');
-	await this.page.fill('input[name="dateOfBirth"]', '1980-01-11');
-	// There is no static locator to click the checkbox
-	await this.page.locator('label:has-text("Ich stimme den")').click();
+    await this.page.fill('input[name="dateOfBirth"]', '1980-01-11');
+    // There is no static locator to click the checkbox
+    await this.page.locator('label:has-text("Ich stimme den")').click();
 };
 
   completeGiropayRedirect = async (success) => {

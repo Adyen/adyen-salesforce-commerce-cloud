@@ -119,7 +119,7 @@ for (const environment of environments) {
       });
     });
 
-    test('Riverty Success @quick', async ({ page }) => {
+    test('Riverty Failure @quick', async ({ page }) => {
       await rivertyCheckoutFlow({
         page,
         email: shopperData.DERiverty.refusalShopperEmail,
