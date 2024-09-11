@@ -77,8 +77,10 @@ function makeExpressPaymentDetailsCall(data) {
   return $.ajax({
     type: 'POST',
     url: window.makeExpressPaymentDetailsCall,
-    data: JSON.stringify({ data }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({ data }),
+    },
     async: false,
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);

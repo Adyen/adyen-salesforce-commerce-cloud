@@ -178,6 +178,7 @@ server.post(
 server.post(
   'MakeExpressPaymentDetailsCall',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.makeExpressPaymentDetailsCall,
 );
 
