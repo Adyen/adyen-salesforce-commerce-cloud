@@ -63,6 +63,13 @@ function redirectToReviewPage(data) {
       value: JSON.stringify(data),
     });
 
+  $('<input>')
+    .appendTo(redirect)
+    .attr({
+      name: 'csrf_token',
+      value: $('#adyen-token').val(),
+    });
+
   redirect.submit();
 }
 

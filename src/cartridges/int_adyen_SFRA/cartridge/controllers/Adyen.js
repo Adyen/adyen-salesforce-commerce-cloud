@@ -113,6 +113,7 @@ server.get(
 server.post(
   'CheckoutReview',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.handleCheckoutReview,
 );
 
