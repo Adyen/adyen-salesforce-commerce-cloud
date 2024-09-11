@@ -9,7 +9,12 @@ const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 /**
  * Show confirmation after return from Adyen
  */
-server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
+server.get(
+  'ShowConfirmation',
+  server.middleware.https,
+  csrf.generateToken,
+  adyen.showConfirmation,
+);
 
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
@@ -18,6 +23,7 @@ server.post(
   'PaymentsDetails',
   server.middleware.https,
   consentTracking.consent,
+  // to add validation
   adyen.paymentsDetails,
 );
 
@@ -46,6 +52,7 @@ server.post(
 server.get(
   'Redirect3DS1Response',
   server.middleware.https,
+  csrf.generateToken,
   adyen.redirect3ds1Response,
 );
 
@@ -104,6 +111,7 @@ server.post(
 server.get(
   'GetPaymentMethods',
   server.middleware.https,
+  csrf.generateToken,
   adyen.getCheckoutPaymentMethods,
 );
 
@@ -194,7 +202,12 @@ server.post(
 /**
  * Called by Adyen to fetch applied giftcards
  */
-server.get('fetchGiftCards', server.middleware.https, adyen.fetchGiftCards);
+server.get(
+  'fetchGiftCards',
+  server.middleware.https,
+  csrf.generateToken,
+  adyen.fetchGiftCards,
+);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
