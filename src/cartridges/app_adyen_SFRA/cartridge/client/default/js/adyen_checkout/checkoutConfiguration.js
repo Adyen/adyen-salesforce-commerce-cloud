@@ -18,10 +18,10 @@ function getCardConfig() {
     holderNameRequired: true,
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
-    // clickToPayConfiguration: {
-    //   shopperEmail: window.customerEmail,
-    //   merchantDisplayName: window.merchantAccount,
-    // },
+    clickToPayConfiguration: {
+      shopperEmail: window.customerEmail,
+      merchantDisplayName: window.merchantAccount,
+    },
     exposeExpiryDate: false,
     onChange(state, component) {
       store.isValid = state.isValid;

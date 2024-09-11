@@ -33,6 +33,7 @@ async function saveShopperDetails(details, actions) {
     type: 'post',
     data: {
       shopperDetails: JSON.stringify(details),
+      csrf_token: $('#adyen-token').val(),
     },
     success() {
       actions.resolve();

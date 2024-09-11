@@ -61,20 +61,25 @@ server.post(
 /**
  * Complete a donation through adyenGiving
  */
-server.post('Donate', server.middleware.https, (req /* , res, next */) => {
-  const { orderNo, orderToken } = req.form;
-  const donationAmount = {
-    value: req.form.amountValue,
-    currency: req.form.amountCurrency,
-  };
-  const donationResult = adyenGiving.donate(
-    orderNo,
-    donationAmount,
-    orderToken,
-  );
+server.post(
+  'Donate',
+  server.middleware.https,
+  csrf.validateRequest,
+  (req /* , res, next */) => {
+    const { orderNo, orderToken } = req.form;
+    const donationAmount = {
+      value: req.form.amountValue,
+      currency: req.form.amountCurrency,
+    };
+    const donationResult = adyenGiving.donate(
+      orderNo,
+      donationAmount,
+      orderToken,
+    );
 
-  return donationResult.response;
-});
+    return donationResult.response;
+  },
+);
 
 /**
  * Make a payment from inside a component (paypal)
@@ -177,7 +182,12 @@ server.post(
 /**
  * Called by Adyen to save the shopper data coming from PayPal Express
  */
-server.post('SaveShopperData', server.middleware.https, adyen.saveShopperData);
+server.post(
+  'SaveShopperData',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.saveShopperData,
+);
 /**
  * Called by Adyen to fetch applied giftcards
  */
