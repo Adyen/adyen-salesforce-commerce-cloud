@@ -7,8 +7,10 @@ function makePartialPayment(requestData) {
     $.ajax({
       url: window.partialPaymentUrl,
       type: 'POST',
-      data: JSON.stringify(requestData),
-      contentType: 'application/json; charset=utf-8',
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData),
+      },
     })
       .done((response) => {
         if (response.error) {

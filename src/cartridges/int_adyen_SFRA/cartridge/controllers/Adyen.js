@@ -2,6 +2,7 @@ const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
+const csrf = require('*/cartridge/scripts/middleware/csrf');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
@@ -81,6 +82,7 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
 server.post(
   'PaymentFromComponent',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.paymentFromComponent,
 );
 
@@ -90,6 +92,7 @@ server.post(
 server.post(
   'SaveExpressShopperDetails',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.saveExpressShopperDetails,
 );
 
@@ -116,7 +119,12 @@ server.post('Notify', server.middleware.https, adyen.notify);
 /**
  * Called by Adyen to check balance of gift card.
  */
-server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
+server.post(
+  'CheckBalance',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.checkBalance,
+);
 
 /**
  * Called by Adyen to cancel a partial payment order.
@@ -124,6 +132,7 @@ server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 server.post(
   'CancelPartialPaymentOrder',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.cancelPartialPaymentOrder,
 );
 
@@ -133,13 +142,19 @@ server.post(
 server.post(
   'PartialPaymentsOrder',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.partialPaymentsOrder,
 );
 
 /**
  * Called by Adyen to apply a giftcard
  */
-server.post('partialPayment', server.middleware.https, adyen.partialPayment);
+server.post(
+  'partialPayment',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.partialPayment,
+);
 
 /**
  * Called by Adyen to make /payments call for PayPal Express flow

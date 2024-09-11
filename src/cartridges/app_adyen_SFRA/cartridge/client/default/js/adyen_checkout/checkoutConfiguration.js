@@ -18,10 +18,10 @@ function getCardConfig() {
     holderNameRequired: true,
     enableStoreDetails: window.showStoreDetails,
     showBrandsUnderCardNumber: false,
-    clickToPayConfiguration: {
-      shopperEmail: window.customerEmail,
-      merchantDisplayName: window.merchantAccount,
-    },
+    // clickToPayConfiguration: {
+    //   shopperEmail: window.customerEmail,
+    //   merchantDisplayName: window.merchantAccount,
+    // },
     exposeExpiryDate: false,
     onChange(state, component) {
       store.isValid = state.isValid;
@@ -191,11 +191,14 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
+      const payload = {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData),
+      };
       $.ajax({
         type: 'POST',
         url: window.checkBalanceUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
+        data: payload,
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
@@ -258,8 +261,10 @@ function getGiftCardConfig() {
         $.ajax({
           type: 'POST',
           url: window.partialPaymentsOrderUrl,
-          data: JSON.stringify(requestData),
-          contentType: 'application/json; charset=utf-8',
+          data: {
+            csrf_token: $('#adyen-token').val(),
+            data: JSON.stringify(requestData),
+          },
           async: false,
           success: (data) => {
             if (data.resultCode === 'Success') {
