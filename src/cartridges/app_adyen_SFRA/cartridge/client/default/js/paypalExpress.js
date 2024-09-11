@@ -9,19 +9,26 @@ const { PAYPAL } = require('./constants');
 async function callPaymentFromComponent(data, component) {
   try {
     $.spinner().start();
-    const response = await fetch(window.makeExpressPaymentsCall, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+
+    $.ajax({
+      type: 'POST',
+      url: window.makeExpressPaymentsCall,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(data),
+      }, // Send the data as a JSON string
+      success(response) {
+        const { action, errorMessage = '' } = response;
+        if (action) {
+          component.handleAction(action);
+        } else {
+          throw new Error(errorMessage);
+        }
       },
-      body: JSON.stringify(data),
+      error() {
+        component.handleError();
+      },
     });
-    const { action, errorMessage = '' } = await response.json();
-    if (response.ok && action) {
-      component.handleAction(action);
-    } else {
-      throw new Error(errorMessage);
-    }
   } catch (e) {
     component.handleError();
   }
