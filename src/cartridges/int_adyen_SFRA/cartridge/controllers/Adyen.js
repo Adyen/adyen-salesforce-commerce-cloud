@@ -23,7 +23,7 @@ server.post(
   'PaymentsDetails',
   server.middleware.https,
   consentTracking.consent,
-  // to add validation
+  csrf.validateRequest,
   adyen.paymentsDetails,
 );
 

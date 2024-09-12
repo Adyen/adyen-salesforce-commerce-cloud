@@ -312,14 +312,17 @@ const actionHandler = async (action) => {
 };
 
 function handleOnAdditionalDetails(state) {
+  const requestData = JSON.stringify({
+    data: state.data,
+    orderToken: window.orderToken,
+  });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
-    data: JSON.stringify({
-      data: state.data,
-      orderToken: window.orderToken,
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: requestData,
+    },
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {
