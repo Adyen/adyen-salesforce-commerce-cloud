@@ -110,7 +110,7 @@ for (const environment of environments) {
       }
     }
 
-    test('Riverty Success @quick', async ({ page }) => {
+    test.only('Riverty Success @quick', async ({ page }) => {
       await rivertyCheckoutFlow({
         page,
         email: shopperData.DERiverty.successShopperEmail,
