@@ -137,23 +137,33 @@ function setBillingAndShippingAddress(currentBasket) {
   });
   var shopperDetails = JSON.parse(session.privacy.shopperDetails);
   Transaction.wrap(function () {
+
+    var billingAddressObject = shopperDetails.billingAddress;
+    if (Object.keys(billingAddressObject).length === 0) {
+      billingAddressObject = shopperDetails.shippingAddress;
+    }
+
     billingAddress.setFirstName(shopperDetails.shopperName.firstName);
     billingAddress.setLastName(shopperDetails.shopperName.lastName);
-    billingAddress.setAddress1(shopperDetails.billingAddress.street);
-    billingAddress.setCity(shopperDetails.billingAddress.city);
-    billingAddress.setPhone(shopperDetails.telephoneNumber);
-    billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode);
-    billingAddress.setStateCode(shopperDetails.billingAddress.stateOrProvince);
-    billingAddress.setCountryCode(shopperDetails.billingAddress.country);
+    billingAddress.setAddress1(billingAddressObject.street);
+    billingAddress.setCity(billingAddressObject.city);
+    billingAddress.setPostalCode(billingAddressObject.postalCode);
+    billingAddress.setStateCode(billingAddressObject.stateOrProvince);
+    billingAddress.setCountryCode(billingAddressObject.country);
+
     shippingAddress.setFirstName(shopperDetails.shopperName.firstName);
     shippingAddress.setLastName(shopperDetails.shopperName.lastName);
     shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
     shippingAddress.setCity(shopperDetails.shippingAddress.city);
-    shippingAddress.setPhone(shopperDetails.telephoneNumber);
     shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
     shippingAddress.setStateCode(shopperDetails.shippingAddress.stateOrProvince);
     shippingAddress.setCountryCode(shopperDetails.shippingAddress.country);
     currentBasket.setCustomerEmail(shopperDetails.shopperEmail);
+
+    if (shopperDetails.telephoneNumber) {
+      billingAddress.setPhone(shopperDetails.telephoneNumber);
+      shippingAddress.setPhone(shopperDetails.telephoneNumber);
+    }
   });
 }
 module.exports = {
