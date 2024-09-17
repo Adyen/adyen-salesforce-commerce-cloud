@@ -24,32 +24,46 @@ const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 const PAYPAL_ITEM_CATEGORY = ['PHYSICAL_GOODS', 'DIGITAL_GOODS', 'DONATION'];
-function getLineItems({ Order: order, Basket: basket }) {
+function getLineItems({ Order: order, Basket: basket }, isExpress) {
   if (!(order || basket)) return null;
   const orderOrBasket = order || basket;
   const allLineItems = LineItemHelper.getAllLineItems(
     orderOrBasket.getAllLineItems(),
   );
-  return allLineItems.map((lineItem) => {
-    const lineItemObject = {};
-    const description = LineItemHelper.getDescription(lineItem);
-    const id = LineItemHelper.getId(lineItem);
-    const quantity = LineItemHelper.getQuantity(lineItem);
-    const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
-    const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-    // eslint-disable-next-line
+  return allLineItems
+    .filter(
+      // For paypal express the shipping method could be changed in the paypal
+      // light box and so the shipping line items are excluded in the initial payments call
+      // as lineItems cannot be patched in /paypalUpdateOrder call.
+      (lineItem) =>
+        !isExpress || !(lineItem instanceof dw.order.ShippingLineItem),
+    )
+    .map((lineItem) => {
+      const lineItemObject = {};
+      const description = LineItemHelper.getDescription(lineItem);
+      const id = LineItemHelper.getId(lineItem);
+      const quantity = LineItemHelper.getQuantity(lineItem);
+      const itemAmount =
+        LineItemHelper.getItemAmount(lineItem).divide(quantity);
+      const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
+      // eslint-disable-next-line
     if (lineItem.hasOwnProperty('category')) {
-      if (PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1) {
-        lineItemObject.itemCategory = lineItem.category;
+        if (PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1) {
+          lineItemObject.itemCategory = lineItem.category;
+        }
       }
-    }
-    lineItemObject.quantity = quantity;
-    lineItemObject.description = description;
-    lineItemObject.sku = id;
-    lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
-    lineItemObject.taxAmount = vatAmount.getValue().toFixed();
-    return lineItemObject;
-  });
+      lineItemObject.quantity = quantity;
+      lineItemObject.description = description;
+      lineItemObject.sku = id;
+      lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
+      // For paypal express tax amount could change based on shipping Address
+      // so the tax amount in lineItem is excluded in the initial /Payments call.
+      // The final tax would be passed as tax_total in /paypalUpdateOrder call.
+      if (!isExpress) {
+        lineItemObject.taxAmount = vatAmount.getValue().toFixed();
+      }
+      return lineItemObject;
+    });
 }
 
 /**
@@ -106,7 +120,9 @@ function createPaypalUpdateOrderRequest(
       amount: {
         currency: currencyCode,
         value: AdyenHelper.getCurrencyValueForApi(
-          new Money(value, currencyCode),
+          shippingMethod.selected
+            ? currentBasket.adjustedShippingTotalNetPrice
+            : new Money(value, currencyCode),
         ).value,
       },
       selected: shippingMethod.selected,

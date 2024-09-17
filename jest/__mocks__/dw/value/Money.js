@@ -24,6 +24,9 @@ function Money(isAvailable) {
     addRate() {
       return new Money(isAvailable);
     },
+    subtractRate() {
+      return new Money(isAvailable);
+    },
   };
 }
 
