@@ -23,7 +23,7 @@ server.post('Save', server.middleware.https, function (req, res, next) {
       success: true
     });
   } catch (error) {
-    AdyenLogs.error_log("Error while saving settings in BM configuration: ".concat(error));
+    AdyenLogs.error_log('Error while saving settings in BM configuration:', error);
     res.json({
       success: false
     });
@@ -60,7 +60,7 @@ server.post('TestConnection', server.middleware.https, function (req, res, next)
       error: false
     });
   } catch (error) {
-    AdyenLogs.error_log("Error while testing API credentials: ".concat(error));
+    AdyenLogs.error_log('Error while testing API credentials:', error);
     res.json({
       error: true,
       message: 'an unknown error has occurred',

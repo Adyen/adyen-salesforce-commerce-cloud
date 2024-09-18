@@ -72,7 +72,7 @@ function mountAmazonPayComponent() {
   return _mountAmazonPayComponent.apply(this, arguments);
 }
 function _mountAmazonPayComponent() {
-  _mountAmazonPayComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  _mountAmazonPayComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var _paymentMethodsRespon, amazonPayNode, data, paymentMethodsResponse, applicationInfo, checkout, amazonPayConfig, amazonConfig, amazonPayComponent, shopperDetails;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

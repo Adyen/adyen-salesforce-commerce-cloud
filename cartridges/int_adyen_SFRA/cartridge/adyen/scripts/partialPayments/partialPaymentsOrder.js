@@ -49,7 +49,7 @@ function createPartialPaymentsOrder(req, res, next) {
     });
     res.json(responseData);
   } catch (error) {
-    AdyenLogs.error_log("Failed to create partial payments order.. ".concat(error.toString()));
+    AdyenLogs.error_log('Failed to create partial payments order:', error);
     res.json({
       error: true
     });

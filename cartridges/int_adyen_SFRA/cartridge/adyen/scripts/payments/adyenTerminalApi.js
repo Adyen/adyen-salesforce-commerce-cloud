@@ -42,8 +42,8 @@ function getTerminals() {
     }
     requestObject.request = getTerminalRequest;
     return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
-  } catch (e) {
-    AdyenLogs.fatal_log("Adyen getTerminals: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.fatal_log('/getTerminals call failed', error);
     return {
       error: true,
       response: '{}'

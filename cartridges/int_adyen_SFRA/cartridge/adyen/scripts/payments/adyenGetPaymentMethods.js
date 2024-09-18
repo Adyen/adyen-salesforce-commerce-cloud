@@ -68,8 +68,8 @@ function getMethods(basket, customer, countryCode) {
     }
     paymentMethodsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
     return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
-  } catch (e) {
-    AdyenLogs.fatal_log("Adyen: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.fatal_log('/paymentMethods call failed', error);
     return {
       error: true
     };

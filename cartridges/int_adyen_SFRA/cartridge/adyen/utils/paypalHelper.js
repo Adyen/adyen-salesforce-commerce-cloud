@@ -25,13 +25,19 @@ var Transaction = require('dw/system/Transaction');
 var LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var PAYPAL_ITEM_CATEGORY = ['PHYSICAL_GOODS', 'DIGITAL_GOODS', 'DONATION'];
-function getLineItems(_ref) {
+function getLineItems(_ref, isExpress) {
   var order = _ref.Order,
     basket = _ref.Basket;
   if (!(order || basket)) return null;
   var orderOrBasket = order || basket;
   var allLineItems = LineItemHelper.getAllLineItems(orderOrBasket.getAllLineItems());
-  return allLineItems.map(function (lineItem) {
+  return allLineItems.filter(
+  // For paypal express the shipping method could be changed in the paypal
+  // light box and so the shipping line items are excluded in the initial payments call
+  // as lineItems cannot be patched in /paypalUpdateOrder call.
+  function (lineItem) {
+    return !isExpress || !(lineItem instanceof dw.order.ShippingLineItem);
+  }).map(function (lineItem) {
     var lineItemObject = {};
     var description = LineItemHelper.getDescription(lineItem);
     var id = LineItemHelper.getId(lineItem);
@@ -48,7 +54,12 @@ function getLineItems(_ref) {
     lineItemObject.description = description;
     lineItemObject.sku = id;
     lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
-    lineItemObject.taxAmount = vatAmount.getValue().toFixed();
+    // For paypal express tax amount could change based on shipping Address
+    // so the tax amount in lineItem is excluded in the initial /Payments call.
+    // The final tax would be passed as tax_total in /paypalUpdateOrder call.
+    if (!isExpress) {
+      lineItemObject.taxAmount = vatAmount.getValue().toFixed();
+    }
     return lineItemObject;
   });
 }
@@ -102,7 +113,7 @@ function createPaypalUpdateOrderRequest(pspReference, currentBasket, currentShip
       type: 'Shipping',
       amount: {
         currency: currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(new Money(value, currencyCode)).value
+        value: AdyenHelper.getCurrencyValueForApi(shippingMethod.selected ? currentBasket.adjustedShippingTotalNetPrice : new Money(value, currencyCode)).value
       },
       selected: shippingMethod.selected
     };

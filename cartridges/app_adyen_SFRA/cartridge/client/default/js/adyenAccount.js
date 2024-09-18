@@ -66,7 +66,7 @@ function initializeCardComponent() {
   return _initializeCardComponent.apply(this, arguments);
 }
 function _initializeCardComponent() {
-  _initializeCardComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  _initializeCardComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var cardNode;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
