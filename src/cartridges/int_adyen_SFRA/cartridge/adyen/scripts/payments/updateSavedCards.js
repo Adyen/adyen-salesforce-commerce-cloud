@@ -59,10 +59,7 @@ function updateSavedCards(args) {
     if (
       !(customer && customer.getProfile() && customer.getProfile().getWallet())
     ) {
-      AdyenLogs.error_log(
-        'Error while updating saved cards, could not get customer data',
-      );
-      return { error: true };
+	  throw new Error('Error while updating saved cards, could not get customer data');
     }
 
     if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
@@ -127,8 +124,8 @@ function updateSavedCards(args) {
       });
     }
     return { error: false };
-  } catch (ex) {
-    AdyenLogs.error_log(`${ex.toString()} in ${ex.fileName}:${ex.lineNumber}`);
+  } catch (error) {
+    AdyenLogs.error_log('Error while updating saved cards:', error);
     return { error: true };
   }
 }

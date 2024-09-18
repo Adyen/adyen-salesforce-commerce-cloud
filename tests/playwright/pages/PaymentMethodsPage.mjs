@@ -353,7 +353,7 @@ export default class PaymentMethodsPage {
   waitForKlarnaLoad = async () => {
     await this.page.waitForNavigation({
       url: /.*playground.klarna/,
-      timeout: 20000,
+      timeout: 25000,
       waitUntil: 'load',
     });
   };
@@ -368,7 +368,7 @@ export default class PaymentMethodsPage {
 
   async continueOnKlarna(skipModal) {
     await this.waitForKlarnaLoad();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 25000 });
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-apf-iframe',
     );
@@ -381,7 +381,7 @@ export default class PaymentMethodsPage {
     await this.klarnaContinueButton.click();
     await this.klarnaVerificationCodeInput.waitFor({
       state: 'visible',
-      timeout: 20000,
+      timeout: 25000,
     });
     await this.klarnaVerificationCodeInput.fill('123456');
     if (this.klarnaSelectPlanButton.isVisible() && !skipModal) {
@@ -390,7 +390,7 @@ export default class PaymentMethodsPage {
     }
     await this.klarnaBuyButton.waitFor({
       state: 'visible',
-      timeout: 20000,
+      timeout: 25000,
     });
     await this.klarnaBuyButton.click();
   }
@@ -452,15 +452,9 @@ export default class PaymentMethodsPage {
 
   cancelKlarnaPayment = async () => {
     await this.waitForKlarnaLoad();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
-    this.firstCancelButton = this.page.locator('#collectPhonePurchaseFlow__nav-bar__right-icon-wrapper');
-    this.secondCancelButton = this.page.locator("button[title='Close']");
-    await this.firstCancelButton.waitFor({
-      state: 'visible',
-      timeout: 25000,
-    });
-    await this.firstCancelButton.click();
-    await this.secondCancelButton.first().click();
+    await this.page.waitForLoadState('networkidle', { timeout: 25000 });
+    this.cancelButton = this.page.locator("button[title='Close']");
+    await this.cancelButton.click();
     await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
   };
 
@@ -527,7 +521,7 @@ export default class PaymentMethodsPage {
   confirmVippsPayment = async () => {
     await this.page.locator("div[class='payment-details']").waitFor({
       state: 'visible',
-      timeout: 20000,
+      timeout: 25000,
     });
   };
 

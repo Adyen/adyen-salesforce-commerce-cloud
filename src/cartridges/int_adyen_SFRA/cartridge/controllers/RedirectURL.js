@@ -12,7 +12,7 @@ server.prepend('Start', (req, res, next) => {
     const applePayDomainAssociation =
       AdyenConfigs.getApplePayDomainAssociation();
     res.setHttpHeader(dw.system.Response.CONTENT_TYPE, 'text/plain');
-    response.getWriter().println(applePayDomainAssociation);
+    response.getWriter().print(applePayDomainAssociation);
     return null;
   }
   return next();

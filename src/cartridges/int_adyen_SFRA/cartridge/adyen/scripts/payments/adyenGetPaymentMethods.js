@@ -80,10 +80,8 @@ function getMethods(basket, customer, countryCode) {
       constants.SERVICE.CHECKOUTPAYMENTMETHODS,
       paymentMethodsRequest,
     );
-  } catch (e) {
-    AdyenLogs.fatal_log(
-      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('/paymentMethods call failed', error);
     return { error: true };
   }
 }

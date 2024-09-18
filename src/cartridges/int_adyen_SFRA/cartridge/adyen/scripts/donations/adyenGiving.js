@@ -100,10 +100,8 @@ function donate(donationReference, donationAmount, orderToken) {
       }
     });
     return response;
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('/donations call failed:', error);
     return { error: true };
   }
 }
