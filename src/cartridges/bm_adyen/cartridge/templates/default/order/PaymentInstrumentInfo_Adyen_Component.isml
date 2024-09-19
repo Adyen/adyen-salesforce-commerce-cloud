@@ -1,5 +1,4 @@
 <!--- TEMPLATENAME: paymentInstrumentInfo_Adyen_Component.isml --->
-
 <iscontent type="text/html" charset="UTF-8" compact="true">
 
 <isscript>
@@ -27,7 +26,21 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr><td class='infobox_title'>PSP reference</td><td class='infobox_item'><A target='new' HREF='https://ca-test.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${order.custom.Adyen_pspReference}&txType=Payment'><isprint value="${order.custom.Adyen_pspReference}"></A></td></tr>
+		<tr>
+		    <td class='infobox_title'>PSP reference</td>
+		    <td class='infobox_item'>
+		        <isscript>
+                    var mode : String = dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+                    var urlPrefixType : String = 'test';
+                    if (mode == 'LIVE') {
+                        urlPrefixType = 'live';
+                    }
+                </isscript>
+		        <A target='new' HREF='https://ca-${urlPrefixType}.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${order.custom.Adyen_pspReference}&txType=Payment'>
+		            <isprint value="${order.custom.Adyen_pspReference}">
+                </A>
+            </td>
+        </tr>
 		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
 		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
 		<isif condition="${adyenAdditionalPaymentData != null}">
