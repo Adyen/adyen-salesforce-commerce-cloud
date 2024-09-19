@@ -38,7 +38,7 @@ function execute() {
  * ProcessNotifications - search for custom objects that need
  *  to be processed and handle them to place or fail order
  */
-function processNotifications( /* pdict */
+function processNotifications(/* pdict */
 ) {
   var objectsHandler = require('*/cartridge/adyen/webhooks/handleCustomObject');
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.updateStatus = 'PROCESS'", null);
@@ -91,7 +91,7 @@ function processNotifications( /* pdict */
 /**
  * cleanNotifications
  */
-function clearNotifications( /* pdict */
+function clearNotifications(/* pdict */
 ) {
   var deleteCustomObjects = require('*/cartridge/adyen/webhooks/deleteCustomObjects');
   var searchQuery = CustomObjectMgr.queryCustomObjects('adyenNotification', "custom.processedStatus = 'SUCCESS'", null);

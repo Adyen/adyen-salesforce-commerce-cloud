@@ -146,7 +146,7 @@ function initializeCheckout() {
   return _initializeCheckout.apply(this, arguments);
 }
 function _initializeCheckout() {
-  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+  _initializeCheckout = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
     var _paymentMethodsRespon3;
     var shippingMethods, applicationInfo;
     return _regeneratorRuntime().wrap(function _callee5$(_context5) {
@@ -190,7 +190,7 @@ function createApplePayButton(_x) {
   return _createApplePayButton.apply(this, arguments);
 }
 function _createApplePayButton() {
-  _createApplePayButton = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(applePayButtonConfig) {
+  _createApplePayButton = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(applePayButtonConfig) {
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
@@ -203,7 +203,7 @@ function _createApplePayButton() {
   }));
   return _createApplePayButton.apply(this, arguments);
 }
-initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+initializeCheckout().then(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
   var _paymentMethodsRespon, _paymentMethodsRespon2;
   var applePayPaymentMethod, applePayConfig, applePayButtonConfig, cartContainer, applePayButton, isApplePayButtonAvailable, expressCheckoutNodesIndex;
   return _regeneratorRuntime().wrap(function _callee4$(_context4) {
@@ -237,7 +237,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
             };
           }),
           onAuthorized: function () {
-            var _onAuthorized = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(resolve, reject, event) {
+            var _onAuthorized = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(resolve, reject, event) {
               var customerData, billingData, customer, stateData, resolveApplePay;
               return _regeneratorRuntime().wrap(function _callee$(_context) {
                 while (1) switch (_context.prev = _context.next) {
@@ -292,7 +292,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
             // We already do the payment in paymentFromComponent
           },
           onShippingMethodSelected: function () {
-            var _onShippingMethodSelected = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(resolve, reject, event) {
+            var _onShippingMethodSelected = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(resolve, reject, event) {
               var shippingMethod, matchingShippingMethod, calculationResponse, newCalculation, applePayShippingMethodUpdate;
               return _regeneratorRuntime().wrap(function _callee2$(_context2) {
                 while (1) switch (_context2.prev = _context2.next) {
@@ -341,7 +341,7 @@ initializeCheckout().then( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
             return onShippingMethodSelected;
           }(),
           onShippingContactSelected: function () {
-            var _onShippingContactSelected = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(resolve, reject, event) {
+            var _onShippingContactSelected = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(resolve, reject, event) {
               var shippingContact, shippingMethods, _shippingMethodsData$, selectedShippingMethod, calculationResponse, shippingMethodsStructured, newCalculation, applePayShippingContactUpdate;
               return _regeneratorRuntime().wrap(function _callee3$(_context3) {
                 while (1) switch (_context3.prev = _context3.next) {

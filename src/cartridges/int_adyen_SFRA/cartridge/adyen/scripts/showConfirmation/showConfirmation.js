@@ -124,12 +124,8 @@ function showConfirmation(req, res, next) {
       );
     }
     throw new Error(`Incorrect signature for order ${merchantReference}`);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `Could not verify /payment/details: ${e.toString()} in ${e.fileName}:${
-        e.lineNumber
-      }`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Could not verify /payment/details', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

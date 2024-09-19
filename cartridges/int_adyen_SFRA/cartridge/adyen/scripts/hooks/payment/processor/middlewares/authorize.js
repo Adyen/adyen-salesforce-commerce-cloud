@@ -15,7 +15,7 @@ function errorHandler() {
   };
 }
 function paymentErrorHandler(result) {
-  AdyenLogs.error_log("Payment failed, result: ".concat(JSON.stringify(result)));
+  AdyenLogs.error_log('Payment failed:', JSON.stringify(result));
   Transaction.rollback();
   return {
     error: true
@@ -37,8 +37,7 @@ function authorize(order, paymentInstrument, paymentProcessor) {
   });
   Transaction.begin();
   var result = adyenCheckout.createPaymentRequest({
-    Order: order,
-    PaymentInstrument: paymentInstrument
+    Order: order
   });
   if (result.error) {
     return errorHandler();

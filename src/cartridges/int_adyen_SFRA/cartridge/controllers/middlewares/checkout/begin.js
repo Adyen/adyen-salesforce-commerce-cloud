@@ -36,7 +36,7 @@ function restoreBasket(cachedOrderNumber, cachedOrderToken) {
       return true;
     }
   } catch (error) {
-    AdyenLogs.error_log(`Failed to restore cart. error: ${error}`);
+    AdyenLogs.error_log('Failed to restore cart', error);
   }
   return false;
 }

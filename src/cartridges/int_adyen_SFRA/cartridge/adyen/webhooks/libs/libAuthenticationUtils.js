@@ -72,12 +72,8 @@ function calculateHmacSignature(request) {
       macSHA256.digest(payload, hmacKey),
     );
     return merchantSignature;
-  } catch (e) {
-    AdyenLogs.fatal_log(
-      `Cannot calculate HMAC signature: ${e.toString()} in ${e.fileName}:${
-        e.lineNumber
-      }`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('Cannot calculate HMAC signature', error);
     return { error: true };
   }
 }

@@ -57,10 +57,8 @@ function deleteRecurringPayment(args) {
       constants.SERVICE.RECURRING_DISABLE,
       requestObject,
     );
-  } catch (e) {
-    AdyenLogs.fatal_log(
-      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('/disable call failed', error);
     return { error: true };
   }
 }

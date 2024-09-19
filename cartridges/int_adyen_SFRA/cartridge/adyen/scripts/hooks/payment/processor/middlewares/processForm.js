@@ -79,7 +79,7 @@ function getPaymentMethodFromForm(paymentForm) {
     var _paymentForm$adyenPay, _paymentForm$adyenPay2;
     return JSON.parse((_paymentForm$adyenPay = paymentForm.adyenPaymentFields) === null || _paymentForm$adyenPay === void 0 ? void 0 : (_paymentForm$adyenPay2 = _paymentForm$adyenPay.adyenStateData) === null || _paymentForm$adyenPay2 === void 0 ? void 0 : _paymentForm$adyenPay2.value).paymentMethod;
   } catch (error) {
-    AdyenLogs.error_log('Failed to parse payment form stateData');
+    AdyenLogs.error_log('Failed to parse payment form stateData:', error);
     return {};
   }
 }

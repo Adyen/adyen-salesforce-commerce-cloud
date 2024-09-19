@@ -11,22 +11,22 @@ describe('AdyenCheckout', () => {
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
                 getCustomerEmail: jest.fn(),
-            },
-            PaymentInstrument: {
-                custom: {
-                    adyenPaymentData: "{}",
-                    adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
-                        '"remainingAmount":{"currency":"EUR","value":20799},' +
-                        '"amount":{"currency":"EUR","value":1000}}'
+                paymentInstrument: {
+                    custom: {
+                        adyenPaymentData: "{}",
+                        adyenPartialPaymentsOrder:
+                          '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
+                          '"remainingAmount":{"currency":"EUR","value":20799},' +
+                          '"amount":{"currency":"EUR","value":1000}}'
 
-                },
-                paymentTransaction: {
-                    amount: {
-                        value: 1000,
-                        currencyCode: "EUR"
+                    },
+                    paymentTransaction: {
+                        amount: {
+                            value: 1000,
+                            currencyCode: "EUR"
+                        }
                     }
-                }
+                },
             },
         };
 
@@ -45,23 +45,23 @@ describe('AdyenCheckout', () => {
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
                 getCustomerEmail: jest.fn(),
-            },
-            PaymentInstrument: {
-                custom: {
-                    adyenPaymentData: "{}",
-                    adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
-                        '"remainingAmount":{"currency":"EUR","value":20799},' +
-                        '"amount":{"currency":"EUR","value":25799}}'
+                paymentInstrument: {
+                    custom: {
+                        adyenPaymentData: "{}",
+                        adyenPartialPaymentsOrder:
+                          '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
+                          '"remainingAmount":{"currency":"EUR","value":20799},' +
+                          '"amount":{"currency":"EUR","value":25799}}'
 
-                },
-                paymentTransaction: {
-                    amount: {
-                        value: 1000,
-                        currencyCode: "EUR"
+                    },
+                    paymentTransaction: {
+                        amount: {
+                            value: 1000,
+                            currencyCode: "EUR"
+                        }
                     }
                 }
-            },
+            }
         };
 
         const response =  adyenCheckout.createPaymentRequest(args);
@@ -79,23 +79,23 @@ describe('AdyenCheckout', () => {
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
                 getCustomerEmail: jest.fn(),
-            },
-            PaymentInstrument: {
-                custom: {
-                    adyenPaymentData: "{}",
-                    adyenPartialPaymentsOrder:
-                        '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
-                        '"remainingAmount":{"currency":"USD","value":20799},' +
-                        '"amount":{"currency":"USD","value":1000}}'
+                paymentInstrument: {
+                    custom: {
+                        adyenPaymentData: "{}",
+                        adyenPartialPaymentsOrder:
+                          '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
+                          '"remainingAmount":{"currency":"USD","value":20799},' +
+                          '"amount":{"currency":"USD","value":1000}}'
 
-                },
-                paymentTransaction: {
-                    amount: {
-                        value: 1000,
-                        currencyCode: "EUR"
+                    },
+                    paymentTransaction: {
+                        amount: {
+                            value: 1000,
+                            currencyCode: "EUR"
+                        }
                     }
                 }
-            },
+            }
         };
 
         const response =  adyenCheckout.createPaymentRequest(args);

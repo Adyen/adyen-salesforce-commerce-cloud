@@ -68,9 +68,8 @@ var adyenHelperObj = {
         }
       });
       AdyenLogs.info_log("Successfully retrieve service with name ".concat(service));
-    } catch (e) {
-      AdyenLogs.error_log("Can't get service instance with name ".concat(service));
-      // e.message
+    } catch (error) {
+      AdyenLogs.error_log("Can't get service instance with name ".concat(service), error);
     }
     return adyenService;
   },
@@ -89,6 +88,7 @@ var adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost: function getShippingCost(shippingMethod, shipment) {
+    var shippingAddress = shipment.shippingAddress;
     var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), function (lineItem) {
@@ -98,10 +98,22 @@ var adyenHelperObj = {
       var productShippingCost = productShippingModel.getShippingCost(shippingMethod) ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity) : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     });
+    shippingCost = TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_GROSS ? shippingCost.subtractRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode()
     };
+  },
+  /**
+   * Returns tax rate for specific Shipment / ShippingMethod pair.
+   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
+   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
+   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
+   */
+  getShippingTaxRate: function getShippingTaxRate(shippingMethod, shippingAddress) {
+    var taxClassID = shippingMethod.getTaxClassID();
+    var taxJurisdictionID = shippingAddress ? TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress)) : TaxMgr.getDefaultTaxJurisdictionID();
+    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
   /**
    * Returns applicable shipping methods for specific Shipment / ShippingAddress pair.
@@ -295,7 +307,7 @@ var adyenHelperObj = {
     return returnValue;
   },
   isOpenInvoiceMethod: function isOpenInvoiceMethod(paymentMethod) {
-    if (paymentMethod.indexOf('afterpay') > -1 || paymentMethod.indexOf('klarna') > -1 || paymentMethod.indexOf('ratepay') > -1 || paymentMethod.indexOf('facilypay') > -1 || paymentMethod === 'zip' || paymentMethod === 'affirm' || paymentMethod === 'clearpay') {
+    if (paymentMethod.indexOf('afterpay') > -1 || paymentMethod.indexOf('klarna') > -1 || paymentMethod.indexOf('ratepay') > -1 || paymentMethod.indexOf('facilypay') > -1 || paymentMethod.indexOf('riverty') > -1 || paymentMethod === 'zip' || paymentMethod === 'affirm' || paymentMethod === 'clearpay') {
       return true;
     }
     return false;

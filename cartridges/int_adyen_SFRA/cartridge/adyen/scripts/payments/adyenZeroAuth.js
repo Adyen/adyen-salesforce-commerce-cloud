@@ -44,8 +44,8 @@ function zeroAuthPayment(customer, paymentInstrument) {
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
     zeroAuthRequest.shopperIP = request.getHttpRemoteAddress();
     return adyenCheckout.doPaymentsCall(null, paymentInstrument, zeroAuthRequest);
-  } catch (e) {
-    AdyenLogs.error_log("error processing zero auth payment. Error message: ".concat(e.message, " more details: ").concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.error_log('error processing zero auth payment:', error);
     return {
       error: true
     };

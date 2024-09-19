@@ -84,4 +84,48 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal() || test.skip();
     });
   });
+
+  test.describe.parallel(`${environment.name} Riverty EUR DE`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+      checkoutPage = new environment.CheckoutPage(page);
+    });
+  
+    async function rivertyCheckoutFlow({ page, email, shopperDetails, expectSuccess = true }) {
+      await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DE, 1, email);
+      await checkoutPage.setShopperDetails(shopperDetails);
+
+      // SFRA 5 email setting flow is different
+      if (environment.name.indexOf('v5') !== -1) {
+        await checkoutPage.setEmail(email);
+      }
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doRivertyPayment(email);
+      await checkoutPage.completeCheckout();
+
+      if (expectSuccess) {
+        await checkoutPage.expectSuccess();
+      } else {
+        await checkoutPage.expectRefusal();
+      }
+    }
+
+    test('Riverty Success @quick', async ({ page }) => {
+      await rivertyCheckoutFlow({
+        page,
+        email: shopperData.DERiverty.successShopperEmail,
+        shopperDetails: shopperData.DERiverty,
+        expectSuccess: true,    
+      });
+    });
+
+    test('Riverty Failure @quick', async ({ page }) => {
+      await rivertyCheckoutFlow({
+        page,
+        email: shopperData.DERiverty.refusalShopperEmail,
+        shopperDetails: shopperData.DERiverty,
+        expectSuccess: false,    
+      });
+    });
+  }); 
 }

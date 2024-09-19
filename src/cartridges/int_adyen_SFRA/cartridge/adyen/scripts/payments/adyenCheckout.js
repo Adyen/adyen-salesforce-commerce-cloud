@@ -118,10 +118,8 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
       AdyenLogs.info_log('Payment result: Refused');
     }
     return paymentResponse;
-  } catch (e) {
-    AdyenLogs.fatal_log(
-      `Adyen: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.fatal_log('Payments call failed:', error);
     return {
       error: true,
       args: {
@@ -139,7 +137,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 function createPaymentRequest(args) {
   try {
     const order = args.Order;
-    const paymentInstrument = args.PaymentInstrument;
+    const { paymentInstrument } = order;
 
     // Create request object with payment details
     let paymentRequest = AdyenHelper.createAdyenRequestObject(
@@ -219,7 +217,10 @@ function createPaymentRequest(args) {
       paymentRequest,
     });
 
-    if (session.privacy.adyenFingerprint) {
+    if (
+      session.privacy.adyenFingerprint &&
+      paymentMethodType.indexOf('riverty') === -1
+    ) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
     }
     // Set open invoice data
@@ -246,7 +247,7 @@ function createPaymentRequest(args) {
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
-        paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&
+        paymentMethodType.indexOf('ratepay') > -1 &&
         session.privacy.ratePayFingerprint
       ) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
@@ -269,12 +270,8 @@ function createPaymentRequest(args) {
       paymentRequest.paymentMethod,
     );
     return doPaymentsCall(order, paymentInstrument, paymentRequest);
-  } catch (e) {
-    AdyenLogs.error_log(
-      `error processing payment. Error message: ${
-        e.message
-      } more details: ${e.toString()} in ${e.fileName}:${e.lineNumber}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Error processing payment:', error);
     return { error: true };
   }
 }
@@ -285,8 +282,8 @@ function doPaymentsDetailsCall(paymentDetailsRequest) {
       constants.SERVICE.PAYMENTDETAILS,
       paymentDetailsRequest,
     );
-  } catch (ex) {
-    AdyenLogs.error_log(`error parsing response object ${ex.message}`);
+  } catch (error) {
+    AdyenLogs.error_log('Error parsing response object:', error);
     return { error: true };
   }
 }

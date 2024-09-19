@@ -19,8 +19,8 @@ function showConfirmationPaymentFromComponent(req, res, next) {
     var stateData = JSON.parse(req.form.additionalDetailsHidden);
     var order = OrderMgr.getOrder(req.form.merchantReference, req.form.orderToken);
     return handlePayment(stateData, order, options);
-  } catch (e) {
-    AdyenLogs.error_log("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.error_log('Could not verify /payment/details', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

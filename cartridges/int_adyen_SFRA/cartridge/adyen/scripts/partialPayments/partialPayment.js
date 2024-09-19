@@ -98,7 +98,7 @@ function makePartialPayment(req, res, next) {
       message: Resource.msgf('infoMessage.giftCard', 'adyen', null, remainingAmountFormatted)
     }));
   } catch (error) {
-    AdyenLogs.error_log("Failed to create partial payment.. ".concat(error.toString()));
+    AdyenLogs.error_log('Failed to create partial payment:', error);
     res.json({
       error: true
     });

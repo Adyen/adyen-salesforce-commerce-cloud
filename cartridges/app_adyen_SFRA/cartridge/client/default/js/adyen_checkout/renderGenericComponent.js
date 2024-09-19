@@ -135,7 +135,7 @@ function renderPaymentMethods(_x, _x2, _x3) {
   return _renderPaymentMethods.apply(this, arguments);
 }
 function _renderPaymentMethods() {
-  _renderPaymentMethods = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethods, imagePath, adyenDescriptions) {
+  _renderPaymentMethods = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethods, imagePath, adyenDescriptions) {
     var i, pm;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
@@ -239,7 +239,7 @@ function initializeCheckout() {
   return _initializeCheckout.apply(this, arguments);
 }
 function _initializeCheckout() {
-  _initializeCheckout = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  _initializeCheckout = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
     var paymentMethodsResponse, giftCardsData, totalDiscountedAmount, giftCards, lastGiftCard, paymentMethodsWithoutGiftCards, storedPaymentMethodsWithoutGiftCards, firstPaymentMethod;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
@@ -313,7 +313,7 @@ function _initializeCheckout() {
 // used by renderGiftCardComponent.js
 document.addEventListener(INIT_CHECKOUT_EVENT, function () {
   var handleCheckoutEvent = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -346,7 +346,7 @@ function renderGenericComponent() {
   return _renderGenericComponent.apply(this, arguments);
 }
 function _renderGenericComponent() {
-  _renderGenericComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+  _renderGenericComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var _store$addedGiftCards2;
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {

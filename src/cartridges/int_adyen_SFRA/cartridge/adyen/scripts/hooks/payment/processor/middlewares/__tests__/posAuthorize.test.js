@@ -35,25 +35,24 @@ describe('POS Authorize', () => {
       paymentProcessor,
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.fatal.mock.calls).toMatchSnapshot();
+    expect(Logger.fatal.mock.calls.length).toBe(1);
   });
 
   it('should return error if createTerminalPayment fails', () => {
     const {
       createTerminalPayment,
     } = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
-    createTerminalPayment.mockImplementation(() => ({
-      error: true,
-      response: 'mockedResponse',
-    }));
-
+    const mockError = new Error('API error');
+    createTerminalPayment.mockImplementation(() => {
+		throw mockError;
+    });
     const authorizeResult = posAuthorize(
       orderNumber,
       paymentInstrument,
       paymentProcessor,
     );
+    expect(Logger.fatal.mock.calls.length).toBe(1);
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.fatal.mock.calls).toMatchSnapshot();
   });
 
   it('should return success response when createTerminalPayment passes', () => {

@@ -233,4 +233,21 @@ export class ShopperData {
       houseNumberOrName: '37',
     },
   };
+  DERiverty = {
+    shopperName: {
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    telephone: '0513744112',
+    successShopperEmail: 'test@example.com',
+    refusalShopperEmail: 'rejection@riverty.com',
+    address: {
+      city: 'Verl',
+      country: 'DE',
+      stateOrProvince: '',
+      postalCode: '33415',
+      street: 'Gütersloher Str.',
+      houseNumberOrName: '123',
+    },
+  };
 }
