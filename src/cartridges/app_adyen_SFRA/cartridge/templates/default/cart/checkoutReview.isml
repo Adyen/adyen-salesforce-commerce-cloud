@@ -1,4 +1,5 @@
 <isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
+<input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
 <isdecorate template="common/layout/checkout">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
