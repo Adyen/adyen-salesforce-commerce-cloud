@@ -2,13 +2,19 @@ const server = require('server');
 const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
+const csrf = require('*/cartridge/scripts/middleware/csrf');
 
 const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 
 /**
  * Show confirmation after return from Adyen
  */
-server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
+server.get(
+  'ShowConfirmation',
+  server.middleware.https,
+  csrf.generateToken,
+  adyen.showConfirmation,
+);
 
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
@@ -17,6 +23,7 @@ server.post(
   'PaymentsDetails',
   server.middleware.https,
   consentTracking.consent,
+  csrf.validateRequest,
   adyen.paymentsDetails,
 );
 
@@ -45,6 +52,7 @@ server.post(
 server.get(
   'Redirect3DS1Response',
   server.middleware.https,
+  csrf.generateToken,
   adyen.redirect3ds1Response,
 );
 
@@ -60,20 +68,25 @@ server.post(
 /**
  * Complete a donation through adyenGiving
  */
-server.post('Donate', server.middleware.https, (req /* , res, next */) => {
-  const { orderNo, orderToken } = req.form;
-  const donationAmount = {
-    value: req.form.amountValue,
-    currency: req.form.amountCurrency,
-  };
-  const donationResult = adyenGiving.donate(
-    orderNo,
-    donationAmount,
-    orderToken,
-  );
+server.post(
+  'Donate',
+  server.middleware.https,
+  csrf.validateRequest,
+  (req /* , res, next */) => {
+    const { orderNo, orderToken } = req.form;
+    const donationAmount = {
+      value: req.form.amountValue,
+      currency: req.form.amountCurrency,
+    };
+    const donationResult = adyenGiving.donate(
+      orderNo,
+      donationAmount,
+      orderToken,
+    );
 
-  return donationResult.response;
-});
+    return donationResult.response;
+  },
+);
 
 /**
  * Make a payment from inside a component (paypal)
@@ -81,6 +94,7 @@ server.post('Donate', server.middleware.https, (req /* , res, next */) => {
 server.post(
   'PaymentFromComponent',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.paymentFromComponent,
 );
 
@@ -90,12 +104,14 @@ server.post(
 server.post(
   'SaveExpressShopperDetails',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.saveExpressShopperDetails,
 );
 
 server.get(
   'GetPaymentMethods',
   server.middleware.https,
+  csrf.generateToken,
   adyen.getCheckoutPaymentMethods,
 );
 
@@ -105,6 +121,7 @@ server.get(
 server.post(
   'CheckoutReview',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.handleCheckoutReview,
 );
 
@@ -116,7 +133,12 @@ server.post('Notify', server.middleware.https, adyen.notify);
 /**
  * Called by Adyen to check balance of gift card.
  */
-server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
+server.post(
+  'CheckBalance',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.checkBalance,
+);
 
 /**
  * Called by Adyen to cancel a partial payment order.
@@ -124,6 +146,7 @@ server.post('CheckBalance', server.middleware.https, adyen.checkBalance);
 server.post(
   'CancelPartialPaymentOrder',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.cancelPartialPaymentOrder,
 );
 
@@ -133,13 +156,19 @@ server.post(
 server.post(
   'PartialPaymentsOrder',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.partialPaymentsOrder,
 );
 
 /**
  * Called by Adyen to apply a giftcard
  */
-server.post('partialPayment', server.middleware.https, adyen.partialPayment);
+server.post(
+  'partialPayment',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.partialPayment,
+);
 
 /**
  * Called by Adyen to make /payments call for PayPal Express flow
@@ -147,6 +176,7 @@ server.post('partialPayment', server.middleware.https, adyen.partialPayment);
 server.post(
   'MakeExpressPaymentsCall',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.makeExpressPaymentsCall,
 );
 
@@ -156,17 +186,28 @@ server.post(
 server.post(
   'MakeExpressPaymentDetailsCall',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.makeExpressPaymentDetailsCall,
 );
 
 /**
  * Called by Adyen to save the shopper data coming from PayPal Express
  */
-server.post('SaveShopperData', server.middleware.https, adyen.saveShopperData);
+server.post(
+  'SaveShopperData',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.saveShopperData,
+);
 /**
  * Called by Adyen to fetch applied giftcards
  */
-server.get('fetchGiftCards', server.middleware.https, adyen.fetchGiftCards);
+server.get(
+  'fetchGiftCards',
+  server.middleware.https,
+  csrf.generateToken,
+  adyen.fetchGiftCards,
+);
 
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;

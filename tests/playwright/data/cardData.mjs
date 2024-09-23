@@ -15,7 +15,7 @@ export class CardData {
     holderName: 'John Doe',
     cardNumber: '4871049999999910',
     expirationDate: '0330',
-    cvc: '737',
+    cvc: '',
   };
 
   giftCard = {

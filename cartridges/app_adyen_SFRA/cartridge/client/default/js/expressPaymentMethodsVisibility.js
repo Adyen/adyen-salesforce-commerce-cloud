@@ -16,7 +16,7 @@ function handleExpressPaymentsVisibility() {
   return _handleExpressPaymentsVisibility.apply(this, arguments);
 }
 function _handleExpressPaymentsVisibility() {
-  _handleExpressPaymentsVisibility = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  _handleExpressPaymentsVisibility = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var _window, expressMethodsOrder, sortOrder, container, toSort;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

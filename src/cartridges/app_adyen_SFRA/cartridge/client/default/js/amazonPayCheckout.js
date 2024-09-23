@@ -42,6 +42,7 @@ function paymentFromComponent(data, component) {
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
+      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestData),
       paymentMethod: 'amazonpay',
       merchantReference: document.querySelector('#merchantReference').value,
@@ -80,14 +81,17 @@ async function mountAmazonPayComponent() {
     },
     onAdditionalDetails: (state) => {
       state.data.paymentMethod = 'amazonpay';
+      const requestData = JSON.stringify({
+        data: state.data,
+        orderToken: window.orderToken,
+      });
       $.ajax({
         type: 'post',
         url: window.paymentsDetailsURL,
-        data: JSON.stringify({
-          data: state.data,
-          orderToken: window.orderToken,
-        }),
-        contentType: 'application/json; charset=utf-8',
+        data: {
+          csrf_token: $('#adyen-token').val(),
+          data: requestData,
+        },
         success(data) {
           if (data.isSuccessful) {
             handleAuthorised(data);

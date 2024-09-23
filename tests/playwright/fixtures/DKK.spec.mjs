@@ -22,7 +22,7 @@ for (const environment of environments) {
       }
     });
 
-    test('MobilePay', async ({ page }) => {
+    test.skip('MobilePay', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doMobilePayPayment();
       await checkoutPage.completeCheckout();

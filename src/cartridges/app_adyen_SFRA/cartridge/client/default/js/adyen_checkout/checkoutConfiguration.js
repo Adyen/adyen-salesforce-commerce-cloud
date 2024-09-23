@@ -181,16 +181,20 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
+      const payload = {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData),
+      };
       $.ajax({
         type: 'POST',
         url: window.checkBalanceUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
+        data: payload,
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector('button[value="submit-payment"]').disabled =
-            false;
+          document.querySelector(
+            'button[value="submit-payment"]',
+          ).disabled = false;
           if (data.resultCode === constants.SUCCESS) {
             const {
               giftCardsInfoMessageContainer,
@@ -216,8 +220,9 @@ function getGiftCardConfig() {
                 initialPartialObject.totalDiscountedAmount;
             });
 
-            document.querySelector('button[value="submit-payment"]').disabled =
-              true;
+            document.querySelector(
+              'button[value="submit-payment"]',
+            ).disabled = true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
@@ -248,8 +253,10 @@ function getGiftCardConfig() {
         $.ajax({
           type: 'POST',
           url: window.partialPaymentsOrderUrl,
-          data: JSON.stringify(requestData),
-          contentType: 'application/json; charset=utf-8',
+          data: {
+            csrf_token: $('#adyen-token').val(),
+            data: JSON.stringify(requestData),
+          },
           async: false,
           success: (data) => {
             if (data.resultCode === 'Success') {
@@ -297,14 +304,17 @@ const actionHandler = async (action) => {
 };
 
 function handleOnAdditionalDetails(state) {
+  const requestData = JSON.stringify({
+    data: state.data,
+    orderToken: window.orderToken,
+  });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
-    data: JSON.stringify({
-      data: state.data,
-      orderToken: window.orderToken,
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: requestData,
+    },
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {

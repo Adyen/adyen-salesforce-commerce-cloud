@@ -33,6 +33,7 @@ function paymentFromComponent(data, component = {}) {
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
+      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestData),
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },

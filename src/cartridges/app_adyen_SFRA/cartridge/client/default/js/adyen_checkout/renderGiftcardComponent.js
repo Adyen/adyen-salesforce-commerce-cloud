@@ -56,8 +56,10 @@ function removeGiftCards() {
     $.ajax({
       type: 'POST',
       url: window.cancelPartialPaymentOrderUrl,
-      data: JSON.stringify(card),
-      contentType: 'application/json; charset=utf-8',
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(card),
+      },
       async: false,
       success(res) {
         const adyenPartialPaymentsOrder = document.querySelector(
@@ -96,8 +98,9 @@ function removeGiftCards() {
         giftCardsInfoMessageContainer.classList.remove(
           'gift-cards-info-message-container',
         );
-        document.querySelector('button[value="submit-payment"]').disabled =
-          false;
+        document.querySelector(
+          'button[value="submit-payment"]',
+        ).disabled = false;
 
         if (res.resultCode === constants.RECEIVED) {
           document

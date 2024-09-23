@@ -59,7 +59,7 @@ function callCheckBalance(req, res, next) {
     });
     res.json(_objectSpread(_objectSpread({}, checkBalanceResponse), getFormattedProperties(checkBalanceResponse, orderAmount)));
   } catch (error) {
-    AdyenLogs.error_log("Failed to check gift card balance ".concat(error.toString()));
+    AdyenLogs.error_log('Failed to check gift card balance:', error);
     res.json({
       error: true
     });

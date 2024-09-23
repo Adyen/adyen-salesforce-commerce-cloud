@@ -50,10 +50,7 @@ function updateSavedCards(args) {
   try {
     var customer = args.CurrentCustomer;
     if (!(customer && customer.getProfile() && customer.getProfile().getWallet())) {
-      AdyenLogs.error_log('Error while updating saved cards, could not get customer data');
-      return {
-        error: true
-      };
+      throw new Error('Error while updating saved cards, could not get customer data');
     }
     if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
       var oneClickPaymentMethods = getOneClickPaymentMethods(customer);
@@ -100,8 +97,8 @@ function updateSavedCards(args) {
     return {
       error: false
     };
-  } catch (ex) {
-    AdyenLogs.error_log("".concat(ex.toString(), " in ").concat(ex.fileName, ":").concat(ex.lineNumber));
+  } catch (error) {
+    AdyenLogs.error_log('Error while updating saved cards:', error);
     return {
       error: true
     };

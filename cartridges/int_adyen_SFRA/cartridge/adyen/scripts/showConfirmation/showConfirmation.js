@@ -83,8 +83,8 @@ function showConfirmation(req, res, next) {
       return handlePaymentsDetailsResult(adyenPaymentInstrument, detailsResult, order, options);
     }
     throw new Error("Incorrect signature for order ".concat(merchantReference));
-  } catch (e) {
-    AdyenLogs.error_log("Could not verify /payment/details: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.error_log('Could not verify /payment/details', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }
