@@ -1,0 +1,44 @@
+name: Release upload
+
+on:
+  pull_request:
+
+jobs:
+  upload-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - node-version: '16'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g sfcc-ci
+      - name: Zip /cartridge folder
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          zip -r $GITHUB_WORKSPACE/cartridges.zip cartridges
+      - name: Zip site_import
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          zip -r $GITHUB_WORKSPACE/site_import.zip site_import
+      - name: Upload the release
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
+          sfcc-ci instance:upload $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
+      - name: Upload the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud
+        run: | 
+          sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
+      - name: Import the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s
