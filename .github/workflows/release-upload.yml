@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  upload-metadata:
+  upload-release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
@@ -15,6 +15,10 @@ jobs:
             sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
             code-version-secret: 'SFCC_CODE_VERSION_COMMON'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: adyen-salesforce-commerce-cloud
       - name: Install Adyen SFCC dependencies
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
