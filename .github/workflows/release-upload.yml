@@ -13,33 +13,43 @@ jobs:
         include:
           - node-version: '16'
             sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: adyen-salesforce-commerce-cloud
+      - name: Install Adyen SFCC dependencies
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm install
+      - name: Create dw.json file
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          echo '{
+            "username": "${{ secrets.SFCC_USERNAME }}",
+            "password": "${{ secrets.SFCC_PASSWORD }}",
+            "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
+            "code-version": "${{ secrets[matrix.code-version-secret] }}"
+          }' >> dw.json
+      - name: Transpile the code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run transpile
+      - name: Compile the code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run compile:js
+      - name: Build the cartridge
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run uploadCartridge > output-sfra.txt
+      - name: Check build result
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run check-build:sfra
       - name: Install Salesforce CLI
         run: |
           npm install -g sfcc-ci
-      - name: Zip /cartridge folder
-        working-directory: adyen-salesforce-commerce-cloud
-        run: |
-          zip -r $GITHUB_WORKSPACE/cartridges.zip cartridges
       - name: Zip site_import
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: |
           zip -r $GITHUB_WORKSPACE/site_import.zip site_import
-      - name: Authenticate
-        working-directory: adyen-salesforce-commerce-cloud
-        run: |
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-      - name: Upload the release
-        working-directory: adyen-salesforce-commerce-cloud
-        run: |
-          sfcc-ci code:deploy $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
       - name: Upload the metadata to the sandbox
-        working-directory: adyen-salesforce-commerce-cloud
+        working-directory: adyen-salesforce-commerce-cloud/metadata
         run: | 
+          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
           sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
       - name: Import the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
