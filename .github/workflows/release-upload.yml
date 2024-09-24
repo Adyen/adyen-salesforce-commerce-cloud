@@ -29,11 +29,14 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud/metadata
         run: |
           zip -r $GITHUB_WORKSPACE/site_import.zip site_import
-      - name: Upload the release
+      - name: Authenticate
         working-directory: adyen-salesforce-commerce-cloud
         run: |
           sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-          sfcc-ci instance:upload $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
+      - name: Upload the release
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          sfcc-ci instance:upload $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" --debug
       - name: Upload the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud
         run: | 
