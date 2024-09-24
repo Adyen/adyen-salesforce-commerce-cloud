@@ -36,7 +36,7 @@ jobs:
       - name: Upload the release
         working-directory: adyen-salesforce-commerce-cloud
         run: |
-          sfcc-ci instance:upload $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" --debug
+          sfcc-ci code:deploy $GITHUB_WORKSPACE/cartridges.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
       - name: Upload the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud
         run: | 
