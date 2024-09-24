@@ -26,7 +26,7 @@ module.exports.onBrand = function onBrand(brandObject) {
  * Makes an ajax call to the controller function FetchGiftCards
  */
 module.exports.fetchGiftCards = /*#__PURE__*/function () {
-  var _fetchGiftCards = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  var _fetchGiftCards = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -50,7 +50,7 @@ module.exports.fetchGiftCards = /*#__PURE__*/function () {
  * Makes an ajax call to the controller function GetPaymentMethods
  */
 module.exports.getPaymentMethods = /*#__PURE__*/function () {
-  var _getPaymentMethods = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  var _getPaymentMethods = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:

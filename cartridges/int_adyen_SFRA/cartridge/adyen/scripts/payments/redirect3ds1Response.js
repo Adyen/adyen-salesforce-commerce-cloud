@@ -23,8 +23,8 @@ function redirect(req, res, next) {
       res.redirect(URLUtils.url('PaymentInstruments-AddPayment', 'isAuthorised', 'false'));
     }
     return next();
-  } catch (e) {
-    AdyenLogs.error_log("Error during 3ds1 response verification: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.error_log('Error during 3ds1 response verification:', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

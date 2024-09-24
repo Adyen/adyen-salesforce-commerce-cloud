@@ -128,7 +128,7 @@ function handleInput(_ref6) {
   var paymentMethodID = _ref6.paymentMethodID;
   var input = document.querySelector("#rb_".concat(paymentMethodID));
   input.onchange = /*#__PURE__*/function () {
-    var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(event) {
+    var _ref7 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(event) {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -159,7 +159,7 @@ function checkIfNodeIsAvailable(_x2) {
   return _checkIfNodeIsAvailable.apply(this, arguments);
 }
 function _checkIfNodeIsAvailable() {
-  _checkIfNodeIsAvailable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(node) {
+  _checkIfNodeIsAvailable = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(node) {
     var isNodeAvailable;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
@@ -191,7 +191,7 @@ function appendNodeToContainerIfAvailable(_x3, _x4, _x5, _x6) {
   return _appendNodeToContainerIfAvailable.apply(this, arguments);
 }
 function _appendNodeToContainerIfAvailable() {
-  _appendNodeToContainerIfAvailable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(paymentMethodsUI, li, node, container) {
+  _appendNodeToContainerIfAvailable = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(paymentMethodsUI, li, node, container) {
     var canBeMounted;
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
@@ -217,7 +217,7 @@ function _appendNodeToContainerIfAvailable() {
   return _appendNodeToContainerIfAvailable.apply(this, arguments);
 }
 module.exports.renderPaymentMethod = /*#__PURE__*/function () {
-  var _renderPaymentMethod = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethod, isStored, path) {
+  var _renderPaymentMethod = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethod, isStored, path) {
     var description,
       rerender,
       canRender,

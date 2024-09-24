@@ -22,7 +22,7 @@ function makeExpressPaymentsCall(req, res, next) {
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
       paymentInstrument.custom.adyenPaymentData = req.body;
     });
-    // creates order number to be utilized for PayPal express
+    // Creates order number to be utilized for PayPal express
     var paypalExpressOrderNo = OrderMgr.createOrderNo();
     // Create request object with payment details
     var paymentRequest = AdyenHelper.createAdyenRequestObject(paypalExpressOrderNo, null, paymentInstrument);
@@ -32,7 +32,7 @@ function makeExpressPaymentsCall(req, res, next) {
     };
     paymentRequest.lineItems = paypalHelper.getLineItems({
       Basket: currentBasket
-    });
+    }, true);
     var result;
     Transaction.wrap(function () {
       result = adyenCheckout.doPaymentsCall(null, paymentInstrument, paymentRequest);

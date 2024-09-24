@@ -56,8 +56,8 @@ function saveExpressShopperDetails(req, res, next) {
       shippingMethods: shippingMethods
     });
     return next();
-  } catch (e) {
-    AdyenLogs.error_log('Could not save amazon express shopper details');
+  } catch (error) {
+    AdyenLogs.error_log('Could not save amazon express shopper details:', error);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
     return next();
   }

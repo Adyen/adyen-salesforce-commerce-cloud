@@ -23,9 +23,9 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentInstrument.paymentMethod,
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentData = req.body;
+      paymentInstrument.custom.adyenPaymentData = req.form.data;
     });
-    // creates order number to be utilized for PayPal express
+    // Creates order number to be utilized for PayPal express
     const paypalExpressOrderNo = OrderMgr.createOrderNo();
     // Create request object with payment details
     const paymentRequest = AdyenHelper.createAdyenRequestObject(
@@ -39,9 +39,12 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentInstrument.paymentTransaction.amount,
       ).getValueOrNull(),
     };
-    paymentRequest.lineItems = paypalHelper.getLineItems({
-      Basket: currentBasket,
-    });
+    paymentRequest.lineItems = paypalHelper.getLineItems(
+      {
+        Basket: currentBasket,
+      },
+      true,
+    );
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.doPaymentsCall(

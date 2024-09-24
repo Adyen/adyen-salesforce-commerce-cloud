@@ -62,7 +62,7 @@
     "js-tokens": "^4.0.0",
     "jsesc": "^2.5.2",
     "json5": "^2.2.1",
-    "micromatch": "^4.0.5",
+    "micromatch": "^4.0.8",
     "mime": "^3.0.0",
     "minimatch": "^3.0.4",
     "ms": "^2.1.3",

@@ -217,7 +217,10 @@ function createPaymentRequest(args) {
       paymentRequest,
     });
 
-    if (session.privacy.adyenFingerprint) {
+    if (
+      session.privacy.adyenFingerprint &&
+      paymentMethodType.indexOf('riverty') === -1
+    ) {
       paymentRequest.deviceFingerprint = session.privacy.adyenFingerprint;
     }
     // Set open invoice data
@@ -232,7 +235,8 @@ function createPaymentRequest(args) {
           shipping_type: shippingMethod?.description,
           first_name: address.firstName,
           last_name: address.lastName,
-          street_address: `${address.address1} ${address.address2}`,
+          street_address: address.address1,
+          street_number: address.address2,
           postal_code: address.postalCode,
           city: address.city,
           country: address.countryCode.value,
@@ -244,7 +248,7 @@ function createPaymentRequest(args) {
       }
       paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
       if (
-        paymentRequest.paymentMethod.type.indexOf('ratepay') > -1 &&
+        paymentMethodType.indexOf('ratepay') > -1 &&
         session.privacy.ratePayFingerprint
       ) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;

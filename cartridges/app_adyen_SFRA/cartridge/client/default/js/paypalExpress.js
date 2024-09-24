@@ -20,7 +20,7 @@ function callPaymentFromComponent(_x, _x2) {
   return _callPaymentFromComponent.apply(this, arguments);
 }
 function _callPaymentFromComponent() {
-  _callPaymentFromComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(data, component) {
+  _callPaymentFromComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(data, component) {
     var response, _yield$response$json, action, _yield$response$json$, errorMessage;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
@@ -72,7 +72,7 @@ function saveShopperDetails(_x3, _x4) {
   return _saveShopperDetails.apply(this, arguments);
 }
 function _saveShopperDetails() {
-  _saveShopperDetails = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(details, actions) {
+  _saveShopperDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(details, actions) {
     return _regeneratorRuntime().wrap(function _callee7$(_context7) {
       while (1) switch (_context7.prev = _context7.next) {
         case 0:
@@ -130,7 +130,7 @@ function updateComponent(_x5, _x6) {
   return _updateComponent.apply(this, arguments);
 }
 function _updateComponent() {
-  _updateComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(response, component) {
+  _updateComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(response, component) {
     var _yield$response$json2, paymentData, status, _yield$response$json3, errorMessage, _yield$response$json4, _yield$response$json5, _errorMessage;
     return _regeneratorRuntime().wrap(function _callee8$(_context8) {
       while (1) switch (_context8.prev = _context8.next) {
@@ -179,7 +179,7 @@ function handleShippingAddressChange(_x7, _x8, _x9) {
   return _handleShippingAddressChange.apply(this, arguments);
 }
 function _handleShippingAddressChange() {
-  _handleShippingAddressChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(data, actions, component) {
+  _handleShippingAddressChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(data, actions, component) {
     var shippingAddress, errors, currentPaymentData, request, response;
     return _regeneratorRuntime().wrap(function _callee9$(_context9) {
       while (1) switch (_context9.prev = _context9.next) {
@@ -237,7 +237,7 @@ function handleShippingOptionChange(_x10, _x11, _x12) {
   return _handleShippingOptionChange.apply(this, arguments);
 }
 function _handleShippingOptionChange() {
-  _handleShippingOptionChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(data, actions, component) {
+  _handleShippingOptionChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(data, actions, component) {
     var selectedShippingOption, errors, currentPaymentData, request, response;
     return _regeneratorRuntime().wrap(function _callee10$(_context10) {
       while (1) switch (_context10.prev = _context10.next) {
@@ -298,7 +298,7 @@ function getPaypalButtonConfig(paypalConfig) {
     userAction: 'continue'
   } : {}), {}, {
     onSubmit: function () {
-      var _onSubmit = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(state, component) {
+      var _onSubmit = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(state, component) {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -316,7 +316,7 @@ function getPaypalButtonConfig(paypalConfig) {
       return onSubmit;
     }(),
     onError: function () {
-      var _onError = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var _onError = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
@@ -333,7 +333,7 @@ function getPaypalButtonConfig(paypalConfig) {
       return onError;
     }(),
     onShopperDetails: function () {
-      var _onShopperDetails = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(shopperDetails, rawData, actions) {
+      var _onShopperDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(shopperDetails, rawData, actions) {
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -360,7 +360,7 @@ function getPaypalButtonConfig(paypalConfig) {
       }
     },
     onShippingAddressChange: function () {
-      var _onShippingAddressChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data, actions, component) {
+      var _onShippingAddressChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data, actions, component) {
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
@@ -378,7 +378,7 @@ function getPaypalButtonConfig(paypalConfig) {
       return onShippingAddressChange;
     }(),
     onShippingOptionsChange: function () {
-      var _onShippingOptionsChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(data, actions, component) {
+      var _onShippingOptionsChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(data, actions, component) {
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -401,7 +401,7 @@ function mountPaypalComponent() {
   return _mountPaypalComponent.apply(this, arguments);
 }
 function _mountPaypalComponent() {
-  _mountPaypalComponent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
+  _mountPaypalComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
     var _paymentMethodsRespon, paymentMethod, paymentMethodsResponse, applicationInfo, paypalConfig, checkout, paypalButtonConfig, paypalExpressButton;
     return _regeneratorRuntime().wrap(function _callee11$(_context11) {
       while (1) switch (_context11.prev = _context11.next) {

@@ -29,8 +29,8 @@ function remove(co) {
   AdyenLogs.info_log("Remove CO object with merchantReference ".concat(co.custom.merchantReference, " and pspReferenceNumber ").concat(co.custom.pspReference));
   try {
     CustomObjectMgr.remove(co);
-  } catch (e) {
-    AdyenLogs.error_log("Error occured during delete CO, ID: ".concat(co.custom.orderId, ", erorr message ").concat(e.message));
+  } catch (error) {
+    AdyenLogs.error_log('Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}', error);
   }
 }
 function handle(orderID) {

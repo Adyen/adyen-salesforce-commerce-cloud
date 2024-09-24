@@ -67,8 +67,8 @@ function calculateHmacSignature(request) {
     var macSHA256 = new Mac(Mac.HMAC_SHA_256);
     var merchantSignature = Encoding.toBase64(macSHA256.digest(payload, hmacKey));
     return merchantSignature;
-  } catch (e) {
-    AdyenLogs.fatal_log("Cannot calculate HMAC signature: ".concat(e.toString(), " in ").concat(e.fileName, ":").concat(e.lineNumber));
+  } catch (error) {
+    AdyenLogs.fatal_log('Cannot calculate HMAC signature', error);
     return {
       error: true
     };
