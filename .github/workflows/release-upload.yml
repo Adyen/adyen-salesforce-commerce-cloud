@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - node-version: '16'
+          - node-version: '14'
             sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
             code-version-secret: 'SFCC_CODE_VERSION_COMMON'
     steps:
