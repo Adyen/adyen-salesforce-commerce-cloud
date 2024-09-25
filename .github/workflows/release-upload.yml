@@ -5,6 +5,10 @@ on:
 
 jobs:
   upload-release:
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.head_ref, 'release') &&
+      github.event.pull_request.base.ref == 'main' 
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
