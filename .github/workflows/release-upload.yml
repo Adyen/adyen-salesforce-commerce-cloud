@@ -11,6 +11,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - sfra-version: 'v5.3.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_007'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
           - sfra-version: 'v6.1.0'
             node-version: '14'
             sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
