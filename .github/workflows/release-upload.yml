@@ -35,15 +35,9 @@ jobs:
             "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
             "code-version": "${{ secrets[matrix.code-version-secret] }}"
           }' >> dw.json
-      - name: Transpile the code
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run transpile
-      - name: Compile the code
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run compile:js
       - name: Build the cartridge
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run uploadCartridge > output-sfra.txt
+        run: npm run build > output-sfra.txt
       - name: Check build result
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
