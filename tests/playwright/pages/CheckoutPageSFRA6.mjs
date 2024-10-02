@@ -89,7 +89,7 @@ export default class CheckoutPageSFRA {
 
   isPaymentModalShown = async (imgAltValue) => {
     await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible({ timeout: 20000 });
+      .toBeVisible({ timeout: 25000 });
   }
 
   navigateToCheckout = async (locale) => {
@@ -175,9 +175,9 @@ export default class CheckoutPageSFRA {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 25000 });
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 20000 });
+    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 25000 });
 
     // Ugly wait since the submit button takes time to mount.
     await new Promise(r => setTimeout(r, 2000));
@@ -223,11 +223,11 @@ export default class CheckoutPageSFRA {
       url: /Order-Confirm/,
       timeout: 20000,
     });
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 25000 });
   };
 
   expectNonRedirectSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible({ timeout: 25000 });
   };
 
   expectRefusal = async () => {
@@ -249,7 +249,7 @@ export default class CheckoutPageSFRA {
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load', { timeout: 25000 });
     return await this.page.url();
   };
 

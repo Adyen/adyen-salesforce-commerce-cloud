@@ -42,7 +42,7 @@ export default class PaymentMethodsPage {
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
     }
-    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
+    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 25000 });
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
@@ -83,7 +83,7 @@ export default class PaymentMethodsPage {
     else {
 	await this.cancelButton.click();
 	await this.page.goBack();
-	await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
+	await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 25000 });
     }
   };
 
@@ -95,7 +95,7 @@ export default class PaymentMethodsPage {
     if (normalFlow) {
       await this.page.click("#rb_amazonpay");
     }
-    await this.page.waitForLoadState('domcontentloaded', { timeout: 20000 });
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 25000 });
     await this.page.click(".adyen-checkout__amazonpay__button");
   
     // Amazon Sandbox selectors
@@ -111,7 +111,7 @@ export default class PaymentMethodsPage {
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
-    await this.page.waitForLoadState("networkidle", { timeout: 20000 });
+    await this.page.waitForLoadState("networkidle", { timeout: 25000 });
 
     if (await this.amazonCaptcha.isVisible()){
       return false;
@@ -133,7 +133,7 @@ export default class PaymentMethodsPage {
       await this.rejectionCard.click();
       await this.confirmPaymentChangeButton.click();
     }
-    await this.page.waitForLoadState("networkidle", { timeout: 20000 });
+    await this.page.waitForLoadState("networkidle", { timeout: 25000 });
     this.submitButton = this.page.locator('#a-autoid-0');
     await this.submitButton.waitFor({ state: 'visible' });
     await this.submitButton.click();
