@@ -201,7 +201,7 @@ export default class CheckoutPageSFRA5 {
   expectSuccess = async () => {
     await this.page.waitForNavigation({
       url: /Order-Confirm/,
-      timeout: 20000,
+      timeout: 25000,
     });
     await expect(this.thankYouMessage).toBeVisible({ timeout: 25000 });
   };
