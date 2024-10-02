@@ -78,7 +78,7 @@ export default class CheckoutPageSFRA5 {
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');
 
-    this.paymentModal = page.locator("#action-modal #adyenModalDialog");
+    this.paymentModal = page.locator(".additionalFields");
 
     this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
     this.donationButton = page.locator('.adyen-checkout__button--donate');

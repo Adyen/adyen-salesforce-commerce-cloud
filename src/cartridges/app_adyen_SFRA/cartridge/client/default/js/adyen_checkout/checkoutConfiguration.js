@@ -192,9 +192,8 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector(
-            'button[value="submit-payment"]',
-          ).disabled = false;
+          document.querySelector('button[value="submit-payment"]').disabled =
+            false;
           if (data.resultCode === constants.SUCCESS) {
             const {
               giftCardsInfoMessageContainer,
@@ -220,9 +219,8 @@ function getGiftCardConfig() {
                 initialPartialObject.totalDiscountedAmount;
             });
 
-            document.querySelector(
-              'button[value="submit-payment"]',
-            ).disabled = true;
+            document.querySelector('button[value="submit-payment"]').disabled =
+              true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
@@ -279,11 +277,7 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  let { type } = state.data.paymentMethod;
-  const multipleTxVariantComponents = constants.MULTIPLE_TX_VARIANTS_COMPONENTS;
-  if (multipleTxVariantComponents.includes(store.selectedMethod)) {
-    type = store.selectedMethod;
-  }
+  const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
@@ -389,6 +383,29 @@ function getKlarnaConfig() {
   return null;
 }
 
+function getUpiConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+    },
+    onError: (component) => {
+      if (component) {
+        component.setStatus('ready');
+      }
+      document.querySelector('#showConfirmationForm').submit();
+    },
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -417,6 +434,7 @@ function setCheckoutConfiguration() {
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
     cashapp: getCashAppConfig(),
+    upi: getUpiConfig(),
   };
 }
 

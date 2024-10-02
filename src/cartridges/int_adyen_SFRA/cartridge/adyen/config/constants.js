@@ -35,7 +35,7 @@ module.exports = {
     PAYPAL: 'paypal',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',

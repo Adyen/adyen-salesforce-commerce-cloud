@@ -169,6 +169,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateUPIPayment = async (paymentMethod, success = true) => {
+    const continueButton = this.page.locator(".adyen-checkout__button--pay");
     await this.page.locator(`#rb_upi`).click();
     if (paymentMethod == "upi_collect") {
       await this.page.locator("#upi-button-vpa").click();
@@ -179,6 +180,7 @@ export default class PaymentMethodsPage {
     if (paymentMethod == "upi_qr") {
       await this.page.locator("#upi-button-qrCode").click();
     }
+    await continueButton.click();
   };
 
 
