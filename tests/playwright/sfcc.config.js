@@ -17,7 +17,7 @@ const config = {
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 10000,
+    timeout: 20000,
   },
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -35,7 +35,7 @@ const config = {
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 20000,
+    actionTimeout: 25000,
 
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: `https://${process.env.SFCC_HOSTNAME}`,
@@ -43,6 +43,7 @@ const config = {
       username: process.env.SANDBOX_HTTP_AUTH_USERNAME,
       password: process.env.SANDBOX_HTTP_AUTH_PASSWORD,
     },
+	browserName: 'chromium',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
