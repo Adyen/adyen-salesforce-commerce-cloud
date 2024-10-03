@@ -103,7 +103,7 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test.only('GiftCard & Card Success @quick', async () => {
+    test('GiftCard & Card Success @quick', async () => {
       await goToBillingWithFullCartGuestUser(3);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
