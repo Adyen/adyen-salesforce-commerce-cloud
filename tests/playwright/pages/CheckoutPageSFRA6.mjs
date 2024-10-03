@@ -185,7 +185,8 @@ export default class CheckoutPageSFRA {
 
   submitPayment = async () => {
     await this.page.waitForLoadState('load', { timeout: 30000 });
-    await expect(this.submitPaymentButton).toBeVisible({ timeout: 25000 });
+    const submitButton = this.page.locator('button[value="submit-payment"]');
+    await submitButton.waitFor({ state: 'visible', timeout: 30000 });
     await this.submitPaymentButton.click();
   };
 

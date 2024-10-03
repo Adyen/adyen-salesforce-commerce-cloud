@@ -235,6 +235,7 @@ export default class PaymentMethodsPage {
     const giftCardComponentWrapper = this.page.locator(".gift-card-selection");
     await this.page.locator('#giftCardAddButton').click();
     const giftCardSelect = this.page.locator("select[id='giftCardSelect']"); 
+	await giftCardSelect.waitFor({ state: 'visible', timeout: 30000 });
     await giftCardSelect.click();
     await giftCardSelect.selectOption({ index: 0 });
     const giftCardBrand = this.page.locator(`li[data-brand=${giftCardInput.brand}]`)
