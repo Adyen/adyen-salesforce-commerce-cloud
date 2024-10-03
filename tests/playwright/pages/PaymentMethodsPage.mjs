@@ -33,16 +33,15 @@ export default class PaymentMethodsPage {
   };
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success) => {
-    // Paypal button locator on payment methods page
-    const payPalButton = this.page
-      .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
-      .locator('.paypal-button');
-
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
     }
-    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 25000 });
+
+	// Paypal button locator on payment methods page
+    const payPalButton = this.page
+      .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
+      .locator('.paypal-button');
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
