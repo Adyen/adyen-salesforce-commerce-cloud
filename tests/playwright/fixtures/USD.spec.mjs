@@ -109,6 +109,7 @@ for (const environment of environments) {
         await checkoutPage.setEmail();
       }
       await cards.doGiftCardPayment(cardData.giftCard);
+	  await new Promise(r => setTimeout(r, 2000));
       await cards.doCardPayment(cardData.noThreeDs);
       await checkoutPage.completeCheckout();
       await checkoutPage.expectSuccess();
