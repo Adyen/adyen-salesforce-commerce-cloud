@@ -459,7 +459,9 @@ export default class PaymentMethodsPage {
     await this.page.waitForLoadState('networkidle', { timeout: 25000 });
     this.cancelButton = this.page.locator("button[title='Close']");
     await this.cancelButton.click();
-    await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
+	const redirectButton = this.page.locator("button[id='payment-cancel-dialog-express__confirm']");
+	await redirectButton.waitFor('visible', { timeout: 25000 });
+    await redirectButton.click();
   };
 
   cancelGiropayPayment = async () => {
