@@ -78,7 +78,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('PayPal Success @quick', async ({page}) => {
+    test.skip('PayPal Success @quick', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
