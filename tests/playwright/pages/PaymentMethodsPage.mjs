@@ -53,7 +53,7 @@ export default class PaymentMethodsPage {
     // Wait for the page load
     await popup.waitForNavigation({
       url: /.*sandbox.paypal.com*/,
-      timeout: 20000,
+      timeout: 25000,
     });
 
     // Paypal HPP selectors
