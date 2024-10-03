@@ -93,7 +93,7 @@ for (const environment of environments) {
       await page.goto(`${environment.urlExtension}`);
     });
 
-    test.skip('GiftCard Only Success @quick', async () => {
+    test('GiftCard Only Success @quick', async () => {
       await goToBillingWithFullCartGuestUser();
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
