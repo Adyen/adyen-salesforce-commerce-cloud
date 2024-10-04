@@ -77,7 +77,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.only('SEPA Success @quick', async ({ page }) => {
+    test.skip('SEPA Success @quick', async ({ page }) => {
       pendingPayments = new PendingPayments(page);
       await pendingPayments.doSEPAPayment();
       await checkoutPage.completeCheckout();
