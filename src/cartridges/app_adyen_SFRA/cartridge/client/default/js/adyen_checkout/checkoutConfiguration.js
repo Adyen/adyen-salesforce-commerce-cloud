@@ -23,23 +23,13 @@ function getCardConfig() {
       merchantDisplayName: window.merchantAccount,
     },
     exposeExpiryDate: false,
-    onChange(state, component) {
+    onChange(state) {
       store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
         : store.selectedMethod;
       store.updateSelectedPayment(method, 'isValid', store.isValid);
-      if (state.data?.paymentMethod?.storedPaymentMethodId) {
-        const { holderName } = component.props;
-        const { paymentMethod } = state.data;
-        paymentMethod.holderName = holderName;
-        store.updateSelectedPayment(method, 'stateData', {
-          ...state.data,
-          paymentMethod,
-        });
-      } else {
-        store.updateSelectedPayment(method, 'stateData', state.data);
-      }
+      store.updateSelectedPayment(method, 'stateData', state.data);
     },
     onSubmit: () => {
       helpers.assignPaymentMethodValue();
@@ -397,6 +387,29 @@ function getKlarnaConfig() {
   return null;
 }
 
+function getUpiConfig() {
+  return {
+    showPayButton: true,
+    onSubmit: (state, component) => {
+      $('#dwfrm_billing').trigger('submit');
+      helpers.assignPaymentMethodValue();
+      helpers.paymentFromComponent(state.data, component);
+    },
+    onAdditionalDetails: (state) => {
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        state.data,
+      );
+      document.querySelector('#showConfirmationForm').submit();
+    },
+    onError: (component) => {
+      if (component) {
+        component.setStatus('ready');
+      }
+      document.querySelector('#showConfirmationForm').submit();
+    },
+  };
+}
+
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
@@ -425,6 +438,7 @@ function setCheckoutConfiguration() {
     klarna_account: getKlarnaConfig(),
     klarna_paynow: getKlarnaConfig(),
     cashapp: getCashAppConfig(),
+    upi: getUpiConfig(),
   };
 }
 
