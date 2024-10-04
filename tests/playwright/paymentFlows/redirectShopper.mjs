@@ -98,7 +98,7 @@ export class RedirectShopper {
     await this.page.fill('input[name="dateOfBirth"]', '1980-01-11');
     await this.page.fill('input[name="shopperEmail"]', email);
     // There is no static locator to click the checkbox
-    await this.page.locator('label:has-text("Ich stimme den")').click();
+    await this.page.locator('label:has-text("Ich bin mit")').click();
 };
 
   completeGiropayRedirect = async (success) => {

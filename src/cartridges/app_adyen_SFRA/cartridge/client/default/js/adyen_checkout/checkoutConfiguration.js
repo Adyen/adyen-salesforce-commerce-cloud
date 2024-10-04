@@ -277,11 +277,7 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  let { type } = state.data.paymentMethod;
-  const multipleTxVariantComponents = constants.MULTIPLE_TX_VARIANTS_COMPONENTS;
-  if (multipleTxVariantComponents.includes(store.selectedMethod)) {
-    type = store.selectedMethod;
-  }
+  const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
