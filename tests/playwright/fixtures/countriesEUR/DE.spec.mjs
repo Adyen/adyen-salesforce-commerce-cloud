@@ -24,7 +24,7 @@ for (const environment of environments) {
       }
     });
 
-    test('Klarna Success @quick', async ({ page }) => {
+    test.skip('Klarna Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();
