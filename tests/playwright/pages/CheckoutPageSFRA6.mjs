@@ -57,7 +57,7 @@ export default class CheckoutPageSFRA {
 
     this.shippingSubmit = page.locator("button[value='submit-shipping']");
 
-    this.submitPaymentButton = page.locator("button[value='submit-payment']");
+    this.submitPaymentButton = page.locator('.submit-payment');
     this.placeOrderButton = page.locator("button[value='place-order']");
 
     this.errorMessage = page.locator('.error-message-text');
@@ -189,17 +189,8 @@ export default class CheckoutPageSFRA {
   };
 
   placeOrder = async () => {
-    let retries = 3;
-    while (retries > 0) {
-      try {
-        await this.page.waitForLoadState('load', { timeout: 30000 });
-        await this.placeOrderButton.click();
-        break; // Break out of the loop if successful
-      } catch (error) {
-        retries--;
-        await this.page.reload();
-      }
-    }
+    await this.page.waitForLoadState('load', { timeout: 30000 });
+    await this.placeOrderButton.click();
   };
   
   completeCheckoutLoggedInUser = async () => {
