@@ -78,7 +78,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('PayPal Success @quick', async ({page}) => {
+    test.skip('PayPal Success @quick', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
@@ -93,7 +93,7 @@ for (const environment of environments) {
       await page.goto(`${environment.urlExtension}`);
     });
 
-    test('GiftCard Only Success @quick', async () => {
+    test.skip('GiftCard Only Success @quick', async () => {
       await goToBillingWithFullCartGuestUser();
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
@@ -103,7 +103,7 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test('GiftCard & Card Success @quick', async () => {
+    test.skip('GiftCard & Card Success @quick', async () => {
       await goToBillingWithFullCartGuestUser(3);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();

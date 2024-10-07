@@ -35,7 +35,7 @@ module.exports = {
     PAYPAL: 'paypal',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
@@ -100,6 +100,6 @@ module.exports = {
   APPLE_DOMAIN_URL:
     '/.well-known/apple-developer-merchantid-domain-association',
 
-  CHECKOUT_COMPONENT_VERSION: '5.65.0',
+  CHECKOUT_COMPONENT_VERSION: '5.68.0',
   VERSION: '24.4.0',
 };
