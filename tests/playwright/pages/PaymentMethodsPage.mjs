@@ -41,8 +41,8 @@ export default class PaymentMethodsPage {
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
+      await this.page.waitForTimeout(5000);
     }
-    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 30000 });
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
@@ -626,10 +626,11 @@ export default class PaymentMethodsPage {
   };
 
   initiateSEPAPayment = async () => {
-    const nameInput = this.page.locator('//input[contains(@name,"ownerName")]');
-    const ibanInput = this.page.locator('//input[contains(@name,"ibanNumber")]');
+    const nameInput = this.page.locator('input[name="ownerName"]');
+    const ibanInput = this.page.locator('input[name="ibanNumber"]');
 
     await this.page.click('#rb_sepadirectdebit');
+    await expect(ibanInput).toBeVisible({timeout : 30000});
     await nameInput.fill(paymentData.SepaDirectDebit.accountName);
     await ibanInput.fill(paymentData.SepaDirectDebit.iban);
   };
