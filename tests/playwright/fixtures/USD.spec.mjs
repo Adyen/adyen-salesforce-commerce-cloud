@@ -78,7 +78,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('PayPal Success @quick', async ({page}) => {
+    test('PayPal Success @quick', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('CashApp Renders', async ({page}) => {
+    test('CashApp Renders', async ({page}) => {
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
