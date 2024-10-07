@@ -25,8 +25,31 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
 /**
  * Makes an ajax call to the controller function GetPaymentMethods
  */
-module.exports.getPaymentMethods = async function getPaymentMethods() {
-  return fetch(window.getPaymentMethodsURL);
+module.exports.getPaymentMethods = async function getPaymentMethods(
+  isExpressPdp,
+) {
+  const request = {
+    isExpressPdp,
+  };
+  return fetch(window.getPaymentMethodsURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(request),
+  });
+};
+
+/**
+ * Makes an ajax call to the controller function createTemporaryBasket
+ */
+module.exports.createTemporaryBasket = async function createTemporaryBasket() {
+  const productForm = document.getElementById('express-product-form');
+
+  return fetch(window.createTemporaryBasketUrl, {
+    method: 'POST',
+    body: new FormData(productForm),
+  });
 };
 
 module.exports.checkIfExpressMethodsAreReady =

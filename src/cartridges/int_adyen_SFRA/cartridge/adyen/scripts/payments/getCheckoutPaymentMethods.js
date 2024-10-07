@@ -28,19 +28,17 @@ function getConnectedTerminals() {
 
 const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
   if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
-    return JSON.parse(giftCardResponse).remainingAmount;
+    const { value = 1000 } = JSON.parse(giftCardResponse).remainingAmount;
+    return new dw.value.Money(value, currency);
   }
-  const paymentAmount = currentBasket
+  return currentBasket?.getTotalGrossPrice().isAvailable()
     ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
     : new dw.value.Money(1000, currency);
-  return {
-    currency,
-    value: paymentAmount.value,
-  };
 };
 
 function getCheckoutPaymentMethods(req, res, next) {
   try {
+    const { isExpressPdp } = JSON.parse(req.body);
     const currentBasket = BasketMgr.getCurrentBasket();
     const countryCode = getCountryCode(currentBasket, req.locale);
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
@@ -48,13 +46,18 @@ function getCheckoutPaymentMethods(req, res, next) {
     const currency = currentBasket
       ? currentBasket.getTotalGrossPrice().currencyCode
       : session.currency.currencyCode;
-    const paymentAmount = getRemainingAmount(
+    let paymentAmount = getRemainingAmount(
       session.privacy.giftCardResponse,
       currency,
       currentBasket,
     );
+
+    if (isExpressPdp) {
+      paymentAmount = new dw.value.Money(1000, currency);
+    }
+
     const paymentMethods = getPaymentMethods.getMethods(
-      currentBasket,
+      paymentAmount,
       AdyenHelper.getCustomer(req.currentCustomer),
       countryCode,
     );
