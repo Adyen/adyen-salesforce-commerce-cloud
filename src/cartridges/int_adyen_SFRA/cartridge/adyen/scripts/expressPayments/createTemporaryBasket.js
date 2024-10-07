@@ -5,6 +5,41 @@ const cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
 const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
+function addProductToBasket(
+  tempBasket,
+  productId,
+  selectedQuantity,
+  bundledProducts,
+  options,
+) {
+  let result;
+  Transaction.wrap(() => {
+    result = {
+      error: false,
+      message: Resource.msg(
+        'text.alert.createdTemporaryBasket',
+        'product',
+        null,
+      ),
+    };
+    const quantity = parseInt(selectedQuantity, 10);
+    result = cartHelper.addProductToCart(
+      tempBasket,
+      productId,
+      quantity,
+      bundledProducts,
+      options,
+    );
+
+    if (!result.error) {
+      cartHelper.ensureAllShipmentsHaveMethods(tempBasket);
+      basketCalculationHelpers.calculateTotals(tempBasket);
+    } else {
+      throw new Error(result.message);
+    }
+  });
+}
+
 function createTemporaryBasket(req, res, next) {
   try {
     // Delete any existing open temporary baskets
@@ -18,37 +53,21 @@ function createTemporaryBasket(req, res, next) {
 
     // Create a new temporary basket
     const tempBasket = BasketMgr.createTemporaryBasket();
-    const product = JSON.parse(req.form['selected-express-product']);
-    const productId = product.id;
-    const childProducts = product.bundledProducts || [];
-    const options = product.options || [];
-    const quantity = parseInt(product.selectedQuantity, 10);
-    let result;
-
-    if (tempBasket) {
-      Transaction.wrap(() => {
-        result = {
-          error: false,
-          message: Resource.msg(
-            'text.alert.createdTemporaryBasket',
-            'product',
-            null,
-          ),
-        };
-        result = cartHelper.addProductToCart(
-          tempBasket,
-          productId,
-          quantity,
-          childProducts,
-          options,
-        );
-
-        if (!result.error) {
-          cartHelper.ensureAllShipmentsHaveMethods(tempBasket);
-          basketCalculationHelpers.calculateTotals(tempBasket);
-        }
-      });
+    if (!tempBasket) {
+      throw new Error('Temporary basket not created');
     }
+    const { id, bundledProducts, options, selectedQuantity } = req.form[
+      'selected-express-product'
+    ]
+      ? JSON.parse(req.form['selected-express-product'])
+      : {};
+    addProductToBasket(
+      tempBasket,
+      id,
+      selectedQuantity,
+      bundledProducts,
+      options,
+    );
     const amount = {
       value: tempBasket.getTotalGrossPrice().value,
       currency: tempBasket.getTotalGrossPrice().currencyCode,
@@ -56,8 +75,6 @@ function createTemporaryBasket(req, res, next) {
     res.json({
       basketId: tempBasket.UUID,
       amount,
-      message: result.message,
-      error: result.error,
     });
   } catch (error) {
     AdyenLogs.error_log('Failed to create temporary basket', error);
