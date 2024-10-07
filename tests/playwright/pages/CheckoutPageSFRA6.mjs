@@ -184,7 +184,7 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
-    await this.page.waitForNavigation({ waitUntil: 'load' });
+    await new Promise(r => setTimeout(r, 3000));
     await this.submitPaymentButton.click();
   };
 
