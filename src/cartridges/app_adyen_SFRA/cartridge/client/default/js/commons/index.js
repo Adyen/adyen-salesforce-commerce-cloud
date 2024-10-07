@@ -25,18 +25,12 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
 /**
  * Makes an ajax call to the controller function GetPaymentMethods
  */
-module.exports.getPaymentMethods = async function getPaymentMethods(
-  isExpressPdp,
-) {
-  const request = {
-    isExpressPdp,
-  };
+module.exports.getPaymentMethods = async function getPaymentMethods() {
   return fetch(window.getPaymentMethodsURL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(request),
   });
 };
 

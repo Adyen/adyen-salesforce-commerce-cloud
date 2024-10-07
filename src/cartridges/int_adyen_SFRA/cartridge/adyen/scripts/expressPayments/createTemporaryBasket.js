@@ -18,7 +18,6 @@ function createTemporaryBasket(req, res, next) {
 
     // Create a new temporary basket
     const tempBasket = BasketMgr.createTemporaryBasket();
-    // AdyenLogs.debug_log(JSON.stringify(req.form['selected-express-product']));
     const product = JSON.parse(req.form['selected-express-product']);
     const productId = product.id;
     const childProducts = product.bundledProducts || [];

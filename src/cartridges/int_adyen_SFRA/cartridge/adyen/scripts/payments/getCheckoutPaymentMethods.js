@@ -38,7 +38,6 @@ const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
 
 function getCheckoutPaymentMethods(req, res, next) {
   try {
-    const { isExpressPdp } = JSON.parse(req.body);
     const currentBasket = BasketMgr.getCurrentBasket();
     const countryCode = getCountryCode(currentBasket, req.locale);
     const adyenURL = `${AdyenHelper.getLoadingContext()}images/logos/medium/`;
@@ -46,15 +45,11 @@ function getCheckoutPaymentMethods(req, res, next) {
     const currency = currentBasket
       ? currentBasket.getTotalGrossPrice().currencyCode
       : session.currency.currencyCode;
-    let paymentAmount = getRemainingAmount(
+    const paymentAmount = getRemainingAmount(
       session.privacy.giftCardResponse,
       currency,
       currentBasket,
     );
-
-    if (isExpressPdp) {
-      paymentAmount = new dw.value.Money(1000, currency);
-    }
 
     const paymentMethods = getPaymentMethods.getMethods(
       paymentAmount,

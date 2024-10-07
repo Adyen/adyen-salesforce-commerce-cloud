@@ -9,6 +9,11 @@
    window.locale = "${request.locale}";
    window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+   window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
+   window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+   window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+   window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+   window.returnUrl = "${URLUtils.https('Cart-Show')}";
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
    window.isExpressPdp = true;
    window.isApplePayExpressOnPdpEnabled = "${AdyenConfigs.isApplePayExpressOnPdpEnabled()}";

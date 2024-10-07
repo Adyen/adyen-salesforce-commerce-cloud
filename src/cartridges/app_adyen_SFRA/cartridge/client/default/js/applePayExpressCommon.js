@@ -126,7 +126,7 @@ function selectShippingMethod({ shipmentUUID, ID }, basketId) {
   });
 }
 
-function getShippingMethod(shippingContact, basketId, isExpressPdp) {
+function getShippingMethod(shippingContact, basketId) {
   const request = {
     paymentMethodType: APPLE_PAY,
     basketId,
@@ -140,11 +140,7 @@ function getShippingMethod(shippingContact, basketId, isExpressPdp) {
       postalCode: shippingContact.postalCode,
     };
   }
-  let url = window.shippingMethodsUrl;
-  if (isExpressPdp) {
-    url += '?expressPdp=true';
-  }
-  return fetch(url, {
+  return fetch(window.shippingMethodsUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -154,14 +150,8 @@ function getShippingMethod(shippingContact, basketId, isExpressPdp) {
 }
 
 async function initializeCheckout() {
-  const paymentMethods = await getPaymentMethods(window.isExpressPdp);
+  const paymentMethods = await getPaymentMethods();
   paymentMethodsResponse = await paymentMethods.json();
-  const shippingMethods = await getShippingMethod(
-    null,
-    null,
-    window.isExpressPdp,
-  );
-  shippingMethodsData = await shippingMethods.json();
   const applicationInfo = paymentMethodsResponse?.applicationInfo;
   checkout = await AdyenCheckout({
     environment: window.environment,
@@ -233,7 +223,7 @@ async function init() {
             };
 
             await callPaymentFromComponent(
-              { ...stateData, customer },
+              { ...stateData, customer, basketId: temporaryBasketId },
               resolveApplePay,
               reject,
             );
@@ -266,6 +256,8 @@ async function init() {
             } else {
               reject();
             }
+          } else {
+            resolve();
           }
         },
         onShippingMethodSelected: async (resolve, reject, event) => {
