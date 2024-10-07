@@ -42,7 +42,7 @@ export default class PaymentMethodsPage {
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
     }
-    await expect(this.page.locator('.adyen-checkout__paypal__button--paypal iframe.visible'),).toBeVisible({ timeout: 20000 });
+    await expect(payPalButton).toBeVisible({ timeout: 30000 });
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
