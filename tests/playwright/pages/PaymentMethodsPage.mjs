@@ -46,14 +46,14 @@ export default class PaymentMethodsPage {
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
-      this.page.waitForEvent('popup'),
+      this.page.waitForEvent('popup', { timeout: 30000 }),
       payPalButton.click(),
     ]);
 
     // Wait for the page load
     await popup.waitForNavigation({
       url: /.*sandbox.paypal.com*/,
-      timeout: 20000,
+      timeout: 30000,
     });
 
     // Paypal HPP selectors
