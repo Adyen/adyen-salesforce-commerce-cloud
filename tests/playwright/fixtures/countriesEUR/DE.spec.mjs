@@ -24,14 +24,14 @@ for (const environment of environments) {
       }
     });
 
-    test.skip('Klarna Success @quick', async ({ page }) => {
+    test('Klarna Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();
       await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
 
-    test.skip('Klarna Fail @quick', async ({ page }) => {
+    test('Klarna Fail @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();
