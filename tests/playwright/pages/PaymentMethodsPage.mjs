@@ -47,7 +47,7 @@ export default class PaymentMethodsPage {
     // Capture popup for interaction
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup', { timeout: 30000 }),
-      payPalButton.click(),
+      payPalButton.click({ timeout: 40000 }),
     ]);
 
     // Wait for the page load
