@@ -166,9 +166,9 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 20000 });
+    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
     // Ugly wait since the submit button takes time to mount.
     await new Promise(r => setTimeout(r, 2000));
@@ -229,14 +229,14 @@ export default class CheckoutPageSFRA5 {
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load');
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
   };
 
   loginUser = async (credentials) => {

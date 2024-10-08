@@ -175,9 +175,9 @@ export default class CheckoutPageSFRA {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 20000 });
+    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
     // Ugly wait since the submit button takes time to mount.
     await new Promise(r => setTimeout(r, 2000));
@@ -187,13 +187,13 @@ export default class CheckoutPageSFRA {
 	await this.page.waitForFunction(() => {
 		const button = document.querySelector('.submit-payment');
 		return button && !button.disabled;
-	  }, { timeout: 40000 }); // Wait up to 30 seconds for the button to become enabled
+	  });
 	  
 	await this.submitPaymentButton.click();	  
   };
 
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 30000 });
+    await this.page.waitForLoadState('load');
     await this.placeOrderButton.click();
   };
   
@@ -207,7 +207,7 @@ export default class CheckoutPageSFRA {
   };
 
   goBackAndSubmitShipping = async () => {
-    await this.page.waitForNavigation('load', { timeout: 20000 });
+    await this.page.waitForNavigation('load');
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -233,7 +233,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached', timeout: 20000 });
+    await this.qrLoader.waitFor({ state: 'attached' });
     await expect(this.qrLoaderAmount).toBeVisible();
     await expect(this.qrImg).toBeVisible();
   };
@@ -243,7 +243,7 @@ export default class CheckoutPageSFRA {
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load');
     return await this.page.url();
   };
 

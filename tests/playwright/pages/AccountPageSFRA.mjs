@@ -64,7 +64,6 @@ export default class AccountPageSFRA {
 
     await cardElement.waitFor({
       state: 'detached',
-      timeout: 20000,
     });
   };
 
