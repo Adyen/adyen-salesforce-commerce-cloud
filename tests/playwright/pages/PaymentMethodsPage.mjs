@@ -43,10 +43,10 @@ export default class PaymentMethodsPage {
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
+      await this.page.waitForTimeout(5000);
     }
 
     await payPalButton.click();
-    await this.page.waitForTimeout(5000);
     const popup = await popupPromise;	
 
     // Wait for the page load
