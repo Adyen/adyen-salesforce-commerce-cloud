@@ -89,7 +89,7 @@ export default class CheckoutPageSFRA {
 
   isPaymentModalShown = async (imgAltValue) => {
     await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible({ timeout: 20000 });
+      .toBeVisible();
   }
 
   navigateToCheckout = async (locale) => {
@@ -102,7 +102,7 @@ export default class CheckoutPageSFRA {
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1, email) => {
     await this.addProductToCart(locale, itemCount);
-    await this.successMessage.waitFor({ visible: true, timeout: 20000 });
+    await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
     await this.setEmail(email);
@@ -127,7 +127,7 @@ export default class CheckoutPageSFRA {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    await this.customerInfoSection.waitFor({ visible: true, timeout: 20000 });
+    await this.customerInfoSection.waitFor({ visible: true });
 
 
     await this.checkoutPageUserFirstNameInput.type(
@@ -216,27 +216,26 @@ export default class CheckoutPageSFRA {
   expectSuccess = async () => {
     await this.page.waitForNavigation({
       url: /Order-Confirm/,
-      timeout: 20000,
     });
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectNonRedirectSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectRefusal = async () => {
-    await expect(this.errorMessage).not.toBeEmpty({ timeout: 25000 });
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
-    await expect(this.voucherCode).toBeVisible({ timeout: 20000 });
+    await expect(this.voucherCode).toBeVisible();
   };
 
   expectQRcode = async () => {
     await this.qrLoader.waitFor({ state: 'attached', timeout: 20000 });
-    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 20000 });
-    await expect(this.qrImg).toBeVisible({ timeout: 20000 });
+    await expect(this.qrLoaderAmount).toBeVisible();
+    await expect(this.qrImg).toBeVisible();
   };
 
   expectGiftCardWarning = async () => {

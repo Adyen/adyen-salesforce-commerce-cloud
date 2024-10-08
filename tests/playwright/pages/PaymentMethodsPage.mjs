@@ -46,7 +46,7 @@ export default class PaymentMethodsPage {
 
     // Capture popup for interaction
     const [popup] = await Promise.all([
-      this.page.waitForEvent('popup', { timeout: 30000 }),
+      this.page.waitForEvent('popup'),
       payPalButton.click({ timeout: 40000 }),
     ]);
 
@@ -83,7 +83,7 @@ export default class PaymentMethodsPage {
     else {
 	await this.cancelButton.click();
 	await this.page.goBack();
-	await expect(this.page.locator('.add-to-cart'),).toBeVisible({ timeout: 20000 });
+	await expect(this.page.locator('.add-to-cart'),).toBeVisible();
     }
   };
 
@@ -95,7 +95,7 @@ export default class PaymentMethodsPage {
     if (normalFlow) {
       await this.page.click("#rb_amazonpay");
     }
-    await this.page.waitForLoadState('domcontentloaded', { timeout: 20000 });
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
     await this.page.click(".adyen-checkout__amazonpay__button");
   
     // Amazon Sandbox selectors
@@ -111,7 +111,7 @@ export default class PaymentMethodsPage {
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
-    await this.page.waitForLoadState("networkidle", { timeout: 20000 });
+    await this.page.waitForLoadState("networkidle", { timeout: 30000 });
 
     if (await this.amazonCaptcha.isVisible()){
       return false;
@@ -357,7 +357,7 @@ export default class PaymentMethodsPage {
   waitForKlarnaLoad = async () => {
     await this.page.waitForNavigation({
       url: /.*playground.klarna/,
-      timeout: 25000,
+      timeout: 30000,
       waitUntil: 'load',
     });
   };
@@ -365,14 +365,14 @@ export default class PaymentMethodsPage {
   // Generic function to be used for simulating the redirect
   waitForRedirect = async () => {
     await this.page.waitForNavigation({
-      timeout: 20000,
+      timeout: 30000,
       waitUntil: 'load',
     });
   };
 
   async continueOnKlarna(skipModal) {
     await this.waitForKlarnaLoad();
-    await this.page.waitForLoadState('networkidle', { timeout: 25000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
     this.klarnaIframe = this.page.frameLocator(
       '#klarna-apf-iframe',
     );
@@ -385,7 +385,7 @@ export default class PaymentMethodsPage {
     await this.klarnaContinueButton.click();
     await this.klarnaVerificationCodeInput.waitFor({
       state: 'visible',
-      timeout: 25000,
+      timeout: 30000,
     });
     await this.klarnaVerificationCodeInput.fill('123456');
     if (this.klarnaSelectPlanButton.isVisible() && !skipModal) {
@@ -394,7 +394,7 @@ export default class PaymentMethodsPage {
     }
     await this.klarnaBuyButton.waitFor({
       state: 'visible',
-      timeout: 25000,
+      timeout: 30000,
     });
     await this.klarnaBuyButton.click();
   }
@@ -444,10 +444,10 @@ export default class PaymentMethodsPage {
       '#invoice_kp-invoice-payment-method',
     );
 
-    await this.page.waitForNavigation('networkidle', { timeout: 20000 });
-    await this.klarnaPaymentMethodGroup.waitFor('visible', { timeout: 20000 });
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
-    await this.klarnaBuyButton.waitFor('visible', { timeout: 20000 });
+    await this.page.waitForNavigation('networkidle', { timeout: 30000 });
+    await this.klarnaPaymentMethodGroup.waitFor('visible', { timeout: 30000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
+    await this.klarnaBuyButton.waitFor('visible', { timeout: 30000 });
 
     await this.klarnaBuyButton.click();
     await this.klarnaIdNumberField.fill('811228-9874');
@@ -456,7 +456,7 @@ export default class PaymentMethodsPage {
 
   cancelKlarnaPayment = async () => {
     await this.waitForKlarnaLoad();
-    await this.page.waitForLoadState('networkidle', { timeout: 25000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
     this.cancelButton = this.page.locator("button[title='Close']");
     await this.cancelButton.click();
     await this.page.click("button[id='payment-cancel-dialog-express__confirm']");
@@ -468,8 +468,8 @@ export default class PaymentMethodsPage {
     const backButton = this.page.locator("button[name='backLink']");
 
     await rejectCookies.click();
-    await giroBankDropdown.waitFor({ state: 'visible', timeout: 20000 });
-    await backButton.waitFor({ state: 'visible', timeout: 20000 });
+    await giroBankDropdown.waitFor({ state: 'visible', timeout: 30000 });
+    await backButton.waitFor({ state: 'visible', timeout: 30000 });
     await backButton.click();
   };
 
