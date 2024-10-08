@@ -36,7 +36,7 @@ export default class PaymentMethodsPage {
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
-      .locator('.paypal-button');
+      .locator('.paypal-button-container');
 
     // Click PayPal radio button
     if (!expressFlow) {
