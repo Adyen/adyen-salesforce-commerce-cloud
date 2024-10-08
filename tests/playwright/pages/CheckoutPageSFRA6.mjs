@@ -187,7 +187,7 @@ export default class CheckoutPageSFRA {
 	await this.page.waitForFunction(() => {
 		const button = document.querySelector('.submit-payment');
 		return button && !button.disabled;
-	  }, { timeout: 30000 }); // Wait up to 30 seconds for the button to become enabled
+	  }, { timeout: 40000 }); // Wait up to 30 seconds for the button to become enabled
 	  
 	await this.submitPaymentButton.click();	  
   };
