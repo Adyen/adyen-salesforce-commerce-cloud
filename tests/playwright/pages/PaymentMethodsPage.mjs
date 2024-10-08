@@ -38,17 +38,16 @@ export default class PaymentMethodsPage {
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
       .locator('.paypal-button-container');
 
+    const popupPromise = this.page.waitForEvent('popup');
+
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
       await this.page.waitForTimeout(5000);
     }
 
-    // Capture popup for interaction
-    const [popup] = await Promise.all([
-      this.page.waitForEvent('popup'),
-      payPalButton.click({ timeout: 40000 }),
-    ]);
+	await payPalButton.click();
+	const popup = await popupPromise;
 
     // Wait for the page load
     await popup.waitForNavigation({
