@@ -97,7 +97,7 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     data: {
       data: JSON.stringify(data),
       paymentMethod: APPLE_PAY,
-	  csrf_token: $('#adyen-token').val(),
+      csrf_token: $('#adyen-token').val(),
     },
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
