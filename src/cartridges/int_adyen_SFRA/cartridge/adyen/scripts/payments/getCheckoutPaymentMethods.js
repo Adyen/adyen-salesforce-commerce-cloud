@@ -28,15 +28,12 @@ function getConnectedTerminals() {
 
 const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
   if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
-    return JSON.parse(giftCardResponse).remainingAmount;
+    const { value = 1000 } = JSON.parse(giftCardResponse).remainingAmount;
+    return new dw.value.Money(value, currency);
   }
-  const paymentAmount = currentBasket
+  return currentBasket?.getTotalGrossPrice().isAvailable()
     ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
     : new dw.value.Money(1000, currency);
-  return {
-    currency,
-    value: paymentAmount.value,
-  };
 };
 
 function getCheckoutPaymentMethods(req, res, next) {
@@ -53,8 +50,9 @@ function getCheckoutPaymentMethods(req, res, next) {
       currency,
       currentBasket,
     );
+
     const paymentMethods = getPaymentMethods.getMethods(
-      currentBasket,
+      paymentAmount,
       AdyenHelper.getCustomer(req.currentCustomer),
       countryCode,
     );

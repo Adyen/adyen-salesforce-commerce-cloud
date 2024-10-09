@@ -108,7 +108,7 @@ server.post(
   adyen.saveExpressShopperDetails,
 );
 
-server.get(
+server.post(
   'GetPaymentMethods',
   server.middleware.https,
   csrf.generateToken,
@@ -207,6 +207,15 @@ server.get(
   server.middleware.https,
   csrf.generateToken,
   adyen.fetchGiftCards,
+);
+
+/**
+ * Called by Adyen to create temporary basket for express payment on pdp.
+ */
+server.post(
+  'CreateTemporaryBasket',
+  server.middleware.https,
+  adyen.createTemporaryBasket,
 );
 
 function getExternalPlatformVersion() {
