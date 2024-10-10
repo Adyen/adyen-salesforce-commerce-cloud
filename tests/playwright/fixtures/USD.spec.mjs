@@ -78,7 +78,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('PayPal Success @quick', async ({page}) => {
+    test('PayPal Success @quick', async ({page}) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(false, false, true);
       await checkoutPage.expectSuccess();
@@ -93,7 +93,7 @@ for (const environment of environments) {
       await page.goto(`${environment.urlExtension}`);
     });
 
-    test.skip('GiftCard Only Success @quick', async () => {
+    test('GiftCard Only Success @quick', async () => {
       await goToBillingWithFullCartGuestUser();
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
@@ -103,7 +103,7 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
-    test.skip('GiftCard & Card Success @quick', async () => {
+    test('GiftCard & Card Success @quick', async () => {
       await goToBillingWithFullCartGuestUser(3);
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('CashApp Renders', async ({page}) => {
+    test('CashApp Renders', async ({page}) => {
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
@@ -265,7 +265,7 @@ for (const environment of environments) {
       await redirectShopper.doPayPalPayment(true, false, true);
       if (environment.name.indexOf('v5') !== -1) {
         await page.locator("button[value='place-order']").click();
-        await page.locator(".order-thank-you-msg").isVisible({timeout: 20000});
+        await page.locator(".order-thank-you-msg").isVisible();
       } else {
         await checkoutPage.expectSuccess();
       }
@@ -279,7 +279,7 @@ for (const environment of environments) {
       await redirectShopper.doPayPalPayment(true, true, true);
       if (environment.name.indexOf('v5') !== -1) {
         await page.locator("button[value='place-order']").click();
-        await page.locator(".order-thank-you-msg").isVisible({timeout: 20000});
+        await page.locator(".order-thank-you-msg").isVisible();
       } else {
         await checkoutPage.expectSuccess();
       }
