@@ -936,12 +936,12 @@ let adyenHelperObj = {
       service.setURL(serviceUrl);
     }
 
-	if (serviceType === constants.SERVICE.ADYEN_ANALYTICS) {
-		const clientKey = AdyenConfigs.getAdyenClientKey();
-		let serviceUrl = service.getURL();
-		serviceUrl += `/${checkoutAttemptID}?clientKey=${clientKey}`;
-		service.setURL(serviceUrl);
-	}
+    if (serviceType === constants.SERVICE.ADYEN_ANALYTICS) {
+      const clientKey = AdyenConfigs.getAdyenClientKey();
+      let serviceUrl = service.getURL();
+      serviceUrl += `/${checkoutAttemptID}?clientKey=${clientKey}`;
+      service.setURL(serviceUrl);
+    }
 
     const maxRetries = constants.MAX_API_RETRIES;
     const apiKey = AdyenConfigs.getAdyenApiKey();
