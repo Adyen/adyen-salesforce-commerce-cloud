@@ -188,12 +188,6 @@ async function init() {
         amount: JSON.parse(window.basketAmount),
         requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
         requiredBillingContactFields: ['postalAddress', 'phone'],
-        // shippingMethods: shippingMethodsData.shippingMethods.map((sm) => ({
-        //   label: sm.displayName,
-        //   detail: sm.description,
-        //   identifier: sm.ID,
-        //   amount: `${sm.shippingCost.value}`,
-        // })),
         onAuthorized: async (resolve, reject, event) => {
           try {
             const customerData = event.payment.shippingContact;
@@ -362,4 +356,9 @@ module.exports = {
   callPaymentFromComponent,
   formatCustomerObject,
   init,
+  selectShippingMethod,
+  getShippingMethod,
+  getPaymentMethods,
+  initializeCheckout,
+  createApplePayButton,
 };
