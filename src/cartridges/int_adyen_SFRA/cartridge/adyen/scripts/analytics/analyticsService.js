@@ -34,7 +34,6 @@ function submitData(attemptIdParam = null) {
 
     // If attemptId is not provided as a parameter, generate it
     if (!attemptId) {
-      AdyenLogs.fatal_log('not entering here');
       const initialAnalyticsCall = createCheckoutAttemptId();
       attemptId = initialAnalyticsCall.attemptId;
     }
