@@ -25,12 +25,9 @@ var Transaction = require('dw/system/Transaction');
 var LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var PAYPAL_ITEM_CATEGORY = ['PHYSICAL_GOODS', 'DIGITAL_GOODS', 'DONATION'];
-function getLineItems(_ref, isExpress) {
-  var order = _ref.Order,
-    basket = _ref.Basket;
-  if (!(order || basket)) return null;
-  var orderOrBasket = order || basket;
-  var allLineItems = LineItemHelper.getAllLineItems(orderOrBasket.getAllLineItems());
+function getLineItems(lineItemCntr, isExpress) {
+  if (!lineItemCntr) return null;
+  var allLineItems = LineItemHelper.getAllLineItems(lineItemCntr.getAllLineItems());
   return allLineItems.filter(
   // For paypal express the shipping method could be changed in the paypal
   // light box and so the shipping line items are excluded in the initial payments call

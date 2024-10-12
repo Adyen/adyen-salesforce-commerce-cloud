@@ -24,11 +24,10 @@ const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 const PAYPAL_ITEM_CATEGORY = ['PHYSICAL_GOODS', 'DIGITAL_GOODS', 'DONATION'];
-function getLineItems({ Order: order, Basket: basket }, isExpress) {
-  if (!(order || basket)) return null;
-  const orderOrBasket = order || basket;
+function getLineItems(lineItemCntr, isExpress) {
+  if (!lineItemCntr) return null;
   const allLineItems = LineItemHelper.getAllLineItems(
-    orderOrBasket.getAllLineItems(),
+    lineItemCntr.getAllLineItems(),
   );
   return allLineItems
     .filter(
@@ -47,7 +46,7 @@ function getLineItems({ Order: order, Basket: basket }, isExpress) {
         LineItemHelper.getItemAmount(lineItem).divide(quantity);
       const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
       // eslint-disable-next-line
-    if (lineItem.hasOwnProperty('category')) {
+      if (lineItem.hasOwnProperty('category')) {
         if (PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1) {
           lineItemObject.itemCategory = lineItem.category;
         }

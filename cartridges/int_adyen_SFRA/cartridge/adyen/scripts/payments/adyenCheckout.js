@@ -106,18 +106,15 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 }
 
 // eslint-disable-next-line complexity
-function createPaymentRequest(args) {
+function createPaymentRequest(lineItemCntr, paymentInstrument) {
   try {
-    var order = args.Order;
-    var paymentInstrument = order.paymentInstrument;
-
     // Create request object with payment details
-    var paymentRequest = AdyenHelper.createAdyenRequestObject(order.getOrderNo(), order.getOrderToken(), paymentInstrument, order.getCustomerEmail());
+    var paymentRequest = AdyenHelper.createAdyenRequestObject(lineItemCntr.getOrderNo(), lineItemCntr.getOrderToken(), paymentInstrument, lineItemCntr.getCustomerEmail());
     var paymentMethodType = paymentRequest.paymentMethod.type;
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);
     // Add Risk data
     if (AdyenConfigs.getAdyenBasketFieldsEnabled()) {
-      paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(order);
+      paymentRequest.additionalData = RiskDataHelper.createBasketContentFields(lineItemCntr);
     }
 
     // L2/3 Data
@@ -155,11 +152,11 @@ function createPaymentRequest(args) {
 
     // Create billing and delivery address objects for new orders,
     // no address fields for credit cards through My Account
-    paymentRequest = AdyenHelper.createAddressObjects(order, paymentMethodType, paymentRequest);
+    paymentRequest = AdyenHelper.createAddressObjects(lineItemCntr, paymentMethodType, paymentRequest);
 
     // Create shopper data fields
     paymentRequest = AdyenHelper.createShopperObject({
-      order: order,
+      order: lineItemCntr,
       paymentRequest: paymentRequest
     });
     if (session.privacy.adyenFingerprint && paymentMethodType.indexOf('riverty') === -1) {
@@ -167,12 +164,11 @@ function createPaymentRequest(args) {
     }
     // Set open invoice data
     if (AdyenHelper.isOpenInvoiceMethod(paymentRequest.paymentMethod.type)) {
-      args.addTaxPercentage = true;
+      var addTaxPercentage = true;
       if (paymentRequest.paymentMethod.type.indexOf('klarna') > -1) {
         var _order$getDefaultShip;
-        args.addTaxPercentage = false;
-        var address = order.getBillingAddress();
-        var shippingMethod = (_order$getDefaultShip = order.getDefaultShipment()) === null || _order$getDefaultShip === void 0 ? void 0 : _order$getDefaultShip.shippingMethod;
+        var address = lineItemCntr.getBillingAddress();
+        var shippingMethod = (_order$getDefaultShip = lineItemCntr.getDefaultShipment()) === null || _order$getDefaultShip === void 0 ? void 0 : _order$getDefaultShip.shippingMethod;
         var otherDeliveryAddress = {
           shipping_method: shippingMethod === null || shippingMethod === void 0 ? void 0 : shippingMethod.displayName,
           shipping_type: shippingMethod === null || shippingMethod === void 0 ? void 0 : shippingMethod.description,
@@ -183,11 +179,12 @@ function createPaymentRequest(args) {
           city: address.city,
           country: address.countryCode.value
         };
+        addTaxPercentage = false;
         // openinvoicedata.merchantData holds merchant data.
         // It takes data in a Base64 encoded string.
         paymentRequest.additionalData['openinvoicedata.merchantData'] = StringUtils.encodeBase64(JSON.stringify(otherDeliveryAddress));
       }
-      paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(args);
+      paymentRequest.lineItems = AdyenGetOpenInvoiceData.getLineItems(lineItemCntr, addTaxPercentage);
       if (paymentMethodType.indexOf('ratepay') > -1 && session.privacy.ratePayFingerprint) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
@@ -195,7 +192,7 @@ function createPaymentRequest(args) {
 
     // add line items for paypal
     if (paymentRequest.paymentMethod.type.indexOf('paypal') > -1) {
-      paymentRequest.lineItems = paypalHelper.getLineItems(args);
+      paymentRequest.lineItems = paypalHelper.getLineItems(lineItemCntr);
     }
 
     // Set tokenisation
@@ -204,7 +201,7 @@ function createPaymentRequest(args) {
       paymentRequest.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
     AdyenHelper.setPaymentTransactionType(paymentInstrument, paymentRequest.paymentMethod);
-    return doPaymentsCall(order, paymentInstrument, paymentRequest);
+    return doPaymentsCall(lineItemCntr, paymentInstrument, paymentRequest);
   } catch (error) {
     AdyenLogs.error_log('Error processing payment:', error);
     return {

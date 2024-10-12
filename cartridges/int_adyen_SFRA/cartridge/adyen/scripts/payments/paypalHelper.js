@@ -23,12 +23,9 @@
 
 var LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 var PAYPAL_ITEM_CATEGORY = ['PHYSICAL_GOODS', 'DIGITAL_GOODS', 'DONATION'];
-function getLineItems(_ref) {
-  var order = _ref.Order,
-    basket = _ref.Basket;
-  if (!(order || basket)) return null;
-  var orderOrBasket = order || basket;
-  var allLineItems = LineItemHelper.getAllLineItems(orderOrBasket.getAllLineItems());
+function getLineItems(lineItemCntr) {
+  if (!lineItemCntr) return null;
+  var allLineItems = LineItemHelper.getAllLineItems(lineItemCntr.getAllLineItems());
   return allLineItems.map(function (lineItem) {
     var lineItemObject = {};
     var description = LineItemHelper.getDescription(lineItem);

@@ -11,26 +11,26 @@ describe('AdyenCheckout', () => {
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
                 getCustomerEmail: jest.fn(),
-                paymentInstrument: {
-                    custom: {
-                        adyenPaymentData: "{}",
-                        adyenPartialPaymentsOrder:
-                          '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
-                          '"remainingAmount":{"currency":"EUR","value":20799},' +
-                          '"amount":{"currency":"EUR","value":1000}}'
-
-                    },
-                    paymentTransaction: {
-                        amount: {
-                            value: 1000,
-                            currencyCode: "EUR"
-                        }
-                    }
-                },
             },
+            paymentInstrument: {
+              custom: {
+                  adyenPaymentData: "{}",
+                  adyenPartialPaymentsOrder:
+                    '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
+                    '"remainingAmount":{"currency":"EUR","value":20799},' +
+                    '"amount":{"currency":"EUR","value":1000}}'
+
+              },
+              paymentTransaction: {
+                  amount: {
+                      value: 1000,
+                      currencyCode: "EUR"
+                  }
+              }
+          },
         };
 
-        const response =  adyenCheckout.createPaymentRequest(args);
+        const response =  adyenCheckout.createPaymentRequest(args.Order, args.paymentInstrument);
         expect(Logger.error.mock.calls.length).toBe(0);
         expect(response.resultCode).toEqual("Authorised");
 
@@ -45,26 +45,26 @@ describe('AdyenCheckout', () => {
                 getOrderNo: jest.fn(),
                 getOrderToken: jest.fn(),
                 getCustomerEmail: jest.fn(),
-                paymentInstrument: {
-                    custom: {
-                        adyenPaymentData: "{}",
-                        adyenPartialPaymentsOrder:
-                          '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
-                          '"remainingAmount":{"currency":"EUR","value":20799},' +
-                          '"amount":{"currency":"EUR","value":25799}}'
+            },
+            paymentInstrument: {
+              custom: {
+                  adyenPaymentData: "{}",
+                  adyenPartialPaymentsOrder:
+                    '{"orderData":"b4c0!BQABAgBzO7ZwfyxJ9ifN0NIgUsuwBdUWb==...",' +
+                    '"remainingAmount":{"currency":"EUR","value":20799},' +
+                    '"amount":{"currency":"EUR","value":25799}}'
 
-                    },
-                    paymentTransaction: {
-                        amount: {
-                            value: 1000,
-                            currencyCode: "EUR"
-                        }
-                    }
-                }
-            }
+              },
+              paymentTransaction: {
+                  amount: {
+                      value: 1000,
+                      currencyCode: "EUR"
+                  }
+              }
+          }
         };
 
-        const response =  adyenCheckout.createPaymentRequest(args);
+        const response =  adyenCheckout.createPaymentRequest(args.Order, args.paymentInstrument);
         expect(Logger.error.mock.calls[0][0]).toContain("Cart has been edited after applying a gift card");
         expect(response.error).toEqual(true);
 

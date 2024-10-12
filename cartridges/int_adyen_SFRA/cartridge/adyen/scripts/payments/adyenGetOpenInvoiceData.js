@@ -22,13 +22,9 @@
 
 // script include
 var LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
-function getLineItems(_ref) {
-  var order = _ref.Order,
-    basket = _ref.Basket,
-    addTaxPercentage = _ref.addTaxPercentage;
-  if (!(order || basket)) return null;
-  var orderOrBasket = order || basket;
-  var allLineItems = LineItemHelper.getAllLineItems(orderOrBasket.getAllLineItems());
+function getLineItems(lineItemCntr, addTaxPercentage) {
+  if (!lineItemCntr) return null;
+  var allLineItems = LineItemHelper.getAllLineItems(lineItemCntr.getAllLineItems());
 
   // Add all product and shipping line items to request
   return allLineItems.map(function (lineItem) {

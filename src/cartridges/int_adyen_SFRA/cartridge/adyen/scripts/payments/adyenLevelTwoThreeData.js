@@ -24,20 +24,19 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 
 // eslint-disable-next-line complexity
-function getShopperReference(orderOrBasket) {
-  const customer = orderOrBasket.getCustomer();
+function getShopperReference(lineItemCntr) {
+  const customer = lineItemCntr.getCustomer();
   const isRegistered = customer && customer.registered;
   const profile = isRegistered && customer.getProfile();
   const profileCustomerNo = profile && profile.getCustomerNo();
-  const orderNo = profileCustomerNo || orderOrBasket.getCustomerNo();
+  const orderNo = profileCustomerNo || lineItemCntr.getCustomerNo();
   return orderNo || customer.getID() || 'no-unique-ref';
 }
 
-function getLineItems({ Order: order, Basket: basket }) {
-  if (!(order || basket)) return null;
-  const orderOrBasket = order || basket;
-  const allLineItems = orderOrBasket.getProductLineItems();
-  const shopperReference = getShopperReference(orderOrBasket);
+function getLineItems(lineItemCntr) {
+  if (!lineItemCntr) return null;
+  const allLineItems = lineItemCntr.getProductLineItems();
+  const shopperReference = getShopperReference(lineItemCntr);
 
   return allLineItems.toArray().reduce(
     (acc, lineItem, index) => {

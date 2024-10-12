@@ -155,9 +155,7 @@ function paymentFromComponent(req, res, next) {
   session.privacy.orderNo = order.orderNo;
   var result;
   Transaction.wrap(function () {
-    result = adyenCheckout.createPaymentRequest({
-      Order: order
-    });
+    result = adyenCheckout.createPaymentRequest(order, paymentInstrument);
   });
   currentBasket.custom.amazonExpressShopperDetails = null;
   currentBasket.custom.adyenGiftCardsOrderNo = null;
