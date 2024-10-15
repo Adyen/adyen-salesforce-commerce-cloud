@@ -182,6 +182,10 @@ const adyenConfigsObj = {
   getAdyenGivingLogoUrl() {
     return getCustomPreference('AdyenGiving_logoUrl')?.getAbsURL();
   },
+
+  getAdyenAnalyticsEnabled() {
+    return getCustomPreference('AdyenAnalytics_Enabled');
+  },
 };
 
 module.exports = adyenConfigsObj;
