@@ -49,6 +49,7 @@ module.exports = {
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
     PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder',
+    ADYEN_ANALYTICS: 'AdyenAnalytics',
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK',

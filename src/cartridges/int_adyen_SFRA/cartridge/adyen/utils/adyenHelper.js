@@ -924,7 +924,7 @@ let adyenHelperObj = {
     }
   },
 
-  executeCall(serviceType, requestObject) {
+  executeCall(serviceType, requestObject, checkoutAttemptID = '') {
     const service = this.getService(serviceType);
     if (service === null) {
       throw new Error(`Could not create ${serviceType} service object`);
@@ -933,6 +933,13 @@ let adyenHelperObj = {
     if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
       const livePrefix = AdyenConfigs.getLivePrefix();
       const serviceUrl = service.getURL().replace(`[YOUR_LIVE_PREFIX]`, livePrefix);
+      service.setURL(serviceUrl);
+    }
+
+    if (serviceType === constants.SERVICE.ADYEN_ANALYTICS) {
+      const clientKey = AdyenConfigs.getAdyenClientKey();
+      let serviceUrl = service.getURL();
+      serviceUrl += `/${checkoutAttemptID}?clientKey=${clientKey}`;
       service.setURL(serviceUrl);
     }
 
