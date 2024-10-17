@@ -25,6 +25,13 @@ const expressPaymentMethods = [
       text: 'Show shopper order review page',
     },
   },
+  {
+    id: 'googlepay',
+    name: 'GooglePayExpress_Enabled',
+    text: 'Google Pay',
+    icon: window.googleIcon,
+    checked: window.isGooglePayExpressEnabled,
+  },
 ];
 
 const expressPaymentMethodsOnPdp = [
@@ -34,6 +41,13 @@ const expressPaymentMethodsOnPdp = [
     text: 'Apple Pay',
     icon: window.applePayIcon,
     checked: window.isApplePayExpressOnPdpEnabled,
+  },
+  {
+    id: 'googlepay',
+    name: 'GooglePayExpress_Pdp_Enabled',
+    text: 'Google Pay',
+    icon: window.googleIcon,
+    checked: window.isGooglePayExpressOnPdpEnabled,
   },
 ];
 

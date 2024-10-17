@@ -546,6 +546,20 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="GooglePayExpress_Enabled">
+                <display-name xml:lang="x-default">Enable Google Pay express checkout</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="GooglePayExpress_Pdp_Enabled">
+                <display-name xml:lang="x-default">Enable Google Pay express on product detail page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="PayPalExpress_Enabled">
                 <display-name xml:lang="x-default">Enable PayPal express checkout</display-name>
                 <type>boolean</type>
@@ -714,6 +728,8 @@
                 <attribute attribute-id="AmazonPayExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_ReviewPage_Enabled"/>
+                <attribute attribute-id="GooglePayExpress_Enabled"/>
+                <attribute attribute-id="GooglePayExpress_Pdp_Enabled"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

@@ -132,11 +132,11 @@ const adyenConfigsObj = {
   },
 
   areExpressPaymentsEnabled() {
-    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled();
+    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled() || this.isGooglePayExpressEnabled();
   },
 
   arePdpExpressPaymentsEnabled() {
-    return this.isApplePayExpressOnPdpEnabled();
+    return this.isApplePayExpressOnPdpEnabled() || this.isGooglePayExpressOnPdpEnabled();
   },
 
   isApplePayExpressEnabled() {
@@ -157,6 +157,14 @@ const adyenConfigsObj = {
 
   isPayPalExpressReviewPageEnabled() {
     return getCustomPreference('PayPalExpress_ReviewPage_Enabled');
+  },
+
+  isGooglePayExpressEnabled() {
+    return getCustomPreference('GooglePayExpress_Enabled');
+  },
+
+  isGooglePayExpressOnPdpEnabled() {
+    return getCustomPreference('GooglePayExpress_Pdp_Enabled');
   },
 
   getExpressPaymentsOrder() {

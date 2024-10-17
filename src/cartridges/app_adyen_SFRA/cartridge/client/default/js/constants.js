@@ -13,6 +13,7 @@ module.exports = {
   APPLE_PAY: 'applepay',
   PAYPAL: 'paypal',
   AMAZON_PAY: 'amazonpay',
+  GOOGLE_PAY: 'googlepay',
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },
