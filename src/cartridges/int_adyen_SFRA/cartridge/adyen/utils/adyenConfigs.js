@@ -132,7 +132,7 @@ const adyenConfigsObj = {
   },
 
   areExpressPaymentsEnabled() {
-    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled() || this.isGooglePayExpressOnPdpEnabled();
+    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled() || this.isGooglePayExpressEnabled();
   },
 
   arePdpExpressPaymentsEnabled() {

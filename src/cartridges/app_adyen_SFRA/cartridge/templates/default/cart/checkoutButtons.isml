@@ -57,6 +57,7 @@
             window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
             window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
             window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+			window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
             window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
             window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
                 pdict.AdyenHelper.getBasketAmount().currencyCode
@@ -85,6 +86,7 @@
                 <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
                 <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
                 <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
+				<div data-method="googlepay" class="expressComponent" id="googlepay-container" style="padding:0"></div>
             </div>
             <script src="${URLUtils.httpsStatic('/js/expressPaymentMethodsVisibility.js')}" type="text/javascript"></script>
         </isif>
@@ -98,9 +100,8 @@
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isPayPalExpressEnabled()}">
             <script src="${URLUtils.httpsStatic('/js/paypalExpress.js')}" type="text/javascript"></script>
         </isif>
-        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.GooglePayExpress_Enabled()}">
-            <!-- To be commented in once we have the googlePayExpress.js file -->
-            <!-- <script src="${URLUtils.httpsStatic('/js/googlePayExpress.js')}" type="text/javascript"></script> -->
+        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isGooglePayExpressEnabled()}">
+            <script src="${URLUtils.httpsStatic('/js/googlePayExpress.js')}" type="text/javascript"></script>
         </isif>
     </iselse>
 </isif>
