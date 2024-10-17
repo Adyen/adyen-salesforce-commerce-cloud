@@ -499,3 +499,10 @@ jest.mock(
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData'),
   { virtual: true },
 );
+
+jest.mock(
+  '*/cartridge/adyen/analytics/analyticsService',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/analytics/analyticsService'),
+  { virtual: true },
+);
