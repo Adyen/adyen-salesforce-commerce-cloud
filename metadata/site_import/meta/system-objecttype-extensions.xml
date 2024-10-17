@@ -676,6 +676,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenAnalytics_Enabled">
+                <display-name xml:lang="x-default">In order for Adyen to monitor the performance of my plugin, detect downtime and increase stability, make sure you have this feature enabled.</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Adyen">
@@ -714,6 +721,7 @@
                 <attribute attribute-id="AmazonPayExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_ReviewPage_Enabled"/>
+                <attribute attribute-id="AdyenAnalytics_Enabled"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
