@@ -39,12 +39,7 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentInstrument.paymentTransaction.amount,
       ).getValueOrNull(),
     };
-    paymentRequest.lineItems = paypalHelper.getLineItems(
-      {
-        Basket: currentBasket,
-      },
-      true,
-    );
+    paymentRequest.lineItems = paypalHelper.getLineItems(currentBasket, true);
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.doPaymentsCall(

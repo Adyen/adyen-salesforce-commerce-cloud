@@ -30,9 +30,7 @@ function makeExpressPaymentsCall(req, res, next) {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
       value: AdyenHelper.getCurrencyValueForApi(paymentInstrument.paymentTransaction.amount).getValueOrNull()
     };
-    paymentRequest.lineItems = paypalHelper.getLineItems({
-      Basket: currentBasket
-    }, true);
+    paymentRequest.lineItems = paypalHelper.getLineItems(currentBasket, true);
     var result;
     Transaction.wrap(function () {
       result = adyenCheckout.doPaymentsCall(null, paymentInstrument, paymentRequest);

@@ -16,13 +16,11 @@ const Money = require('dw/value/Money');
 const { createBillingAddress } = require("../../../../../../../jest/__mocks__/dw/order/BasketMgr");
 describe('paypalHelper', () => {
   describe('getLineItems', () => {
-    let args,lineItem, result
+    let lineItemCtnr,lineItem, result
     beforeEach(() => {
       jest.clearAllMocks();
-      args = (item) => ({
-        Order: {
-          getAllLineItems: jest.fn(() => ([item]))
-        }
+      lineItemCtnr = (item) => ({
+        getAllLineItems: jest.fn(() => ([item]))
       })
 
       lineItem = {
@@ -49,12 +47,12 @@ describe('paypalHelper', () => {
     });
 
     it('should return lineItems for paypal', () => {
-      const paypalLineItems = paypalHelper.getLineItems(args(lineItem))
+      const paypalLineItems = paypalHelper.getLineItems(lineItemCtnr(lineItem))
       expect(paypalLineItems[0]).toStrictEqual(result)
     })
 
     it('should return lineItems for paypal with default itemCategory when category is not as per paypal', () => {
-      const paypalLineItems = paypalHelper.getLineItems(args({...lineItem, category: 'TEST_GOODS'}))
+      const paypalLineItems = paypalHelper.getLineItems(lineItemCtnr({...lineItem, category: 'TEST_GOODS'}))
       expect(paypalLineItems[0]).toStrictEqual({
         quantity: '1',
         description: 'test',
@@ -65,8 +63,7 @@ describe('paypalHelper', () => {
     })
 
     it('should return no lineItems for paypal if order or basket is not defined', () => {
-
-      const paypalLineItems = paypalHelper.getLineItems({})
+      const paypalLineItems = paypalHelper.getLineItems()
       expect(paypalLineItems).toBeNull()
     })
   })
