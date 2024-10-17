@@ -513,3 +513,10 @@ jest.mock(
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/analytics/analyticsEvents'),
   { virtual: true },
 );
+
+jest.mock(
+  '*/cartridge/adyen/analytics/constants',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/analytics/constants'),
+  { virtual: true },
+);
