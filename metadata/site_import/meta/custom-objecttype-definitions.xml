@@ -310,5 +310,19 @@
                 <min-length>0</min-length>
             </attribute-definition>
         </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="analyticsEvent">
+                <display-name xml:lang="x-default">analyticsEvent</display-name>
+                <attribute attribute-id="eventCode"/>
+                <attribute attribute-id="eventStatus"/>
+                <attribute attribute-id="creationDate" system="true"/>
+                <attribute attribute-id="eventType"/>
+                <attribute attribute-id="referenceId"/>
+                <attribute attribute-id="message"/>
+                <attribute attribute-id="eventSource"/>
+                <attribute attribute-id="processingStatus"/>
+                <attribute attribute-id="lastModified" system="true"/>
+            </attribute-group>
+        </group-definitions>
     </custom-type>
 </metadata>

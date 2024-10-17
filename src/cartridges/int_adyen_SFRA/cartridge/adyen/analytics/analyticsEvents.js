@@ -3,7 +3,13 @@ const UUIDUtils = require('dw/util/UUIDUtils');
 const Transaction = require('dw/system/Transaction');
 const constants = require('./constants');
 
-function createAnalyticsEvent(referenceId, eventType, eventStatus, eventCode) {
+function createAnalyticsEvent(
+  referenceId,
+  eventSource,
+  eventType,
+  eventStatus,
+  eventCode,
+) {
   Transaction.wrap(() => {
     const uuid = UUIDUtils.createUUID();
     const customObj = CustomObjectMgr.createCustomObject(
@@ -11,6 +17,7 @@ function createAnalyticsEvent(referenceId, eventType, eventStatus, eventCode) {
       uuid,
     );
     customObj.custom.referenceId = referenceId;
+    customObj.custom.eventSource = eventSource;
     customObj.custom.eventType = eventType;
     customObj.custom.eventStatus = eventStatus;
     customObj.custom.eventCode = eventCode;
