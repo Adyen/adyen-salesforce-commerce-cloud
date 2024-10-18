@@ -198,4 +198,131 @@
             </attribute-group>
         </group-definitions>
     </custom-type>
+    <custom-type type-id="AdyenAnalyticsEvents">
+        <display-name xml:lang="x-default">Adyen Analytics Events</display-name>
+        <description xml:lang="x-default">Adyen Analytics Event Queue</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <retention-days>3</retention-days>
+        <key-definition attribute-id="eventId">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="referenceId">
+                <display-name xml:lang="x-default">ReferenceId</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventCode">
+                <display-name xml:lang="x-default">Event Code</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">ERROR</display>
+                        <value>error</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">INFO</display>
+                        <value>info</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">LOG</display>
+                        <value>log</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="processingStatus">
+                <display-name xml:lang="x-default">Event Processing Status</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">NOT PROCESSED</display>
+                        <value>NOT_PROCESSED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PROCESSED</display>
+                        <value>PROCESSED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SKIPPED</display>
+                        <value>SKIPPED</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventSource">
+                <display-name xml:lang="x-default">Event Source</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventType">
+                <display-name xml:lang="x-default">Event Type</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">START</display>
+                        <value>START</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">END</display>
+                        <value>END</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="eventStatus">
+                <display-name xml:lang="x-default">Event Status</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">EXPECTED</display>
+                        <value>EXPECTED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">UNEXPECTED</display>
+                        <value>UNEXPECTED</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="message">
+                <display-name xml:lang="x-default">Message</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="analyticsEvent">
+                <display-name xml:lang="x-default">analyticsEvent</display-name>
+                <attribute attribute-id="eventCode"/>
+                <attribute attribute-id="eventStatus"/>
+                <attribute attribute-id="creationDate" system="true"/>
+                <attribute attribute-id="eventType"/>
+                <attribute attribute-id="referenceId"/>
+                <attribute attribute-id="message"/>
+                <attribute attribute-id="eventSource"/>
+                <attribute attribute-id="processingStatus"/>
+                <attribute attribute-id="lastModified" system="true"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
 </metadata>
