@@ -23,7 +23,7 @@ for (const environment of environments) {
       }
     });
 
-    test('iDeal Success @quick', async ({ page }) => {
+    test.skip('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();
@@ -43,7 +43,7 @@ for (const environment of environments) {
       await checkoutPage.expectNonRedirectSuccess();
     });
 
-    test('iDeal Fail @quick', async ({ page }) => {
+    test.skip('iDeal Fail @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();

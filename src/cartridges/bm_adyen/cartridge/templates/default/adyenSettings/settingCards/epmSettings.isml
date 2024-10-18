@@ -5,12 +5,15 @@
     window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
     window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
     window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
+    window.googleIcon = "${URLUtils.staticURL('icons/googlepay.svg')}";
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isApplePayExpressOnPdpEnabled = ${AdyenConfigs.isApplePayExpressOnPdpEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
     window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
     window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};
+    window.isGooglePayExpressEnabled = ${AdyenConfigs.isGooglePayExpressEnabled() || false};
+    window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
     window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
 </script>
 <div id="epmSettings" class="card bg-white mt-4">
