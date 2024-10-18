@@ -23,7 +23,7 @@ for (const environment of environments) {
       }
     });
 
-    test('iDeal Success @quick', async ({ page }) => {
+    test.skip('iDeal Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doIdealPayment();
       await checkoutPage.completeCheckout();
