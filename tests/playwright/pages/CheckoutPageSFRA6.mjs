@@ -194,7 +194,7 @@ export default class CheckoutPageSFRA {
 
   placeOrder = async () => {
     await this.page.waitForLoadState('load');
-    await this.placeOrderButton.click({force: true});
+    await this.placeOrderButton.click();
   };
   
   completeCheckoutLoggedInUser = async () => {
