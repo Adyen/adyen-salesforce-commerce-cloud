@@ -5,9 +5,9 @@ const applePayExpressModule = require('../applePayExpressCommon');
 const {
   createApplePayButton,
   initializeCheckout,
-  getShippingMethod,
   onAuthorized,
   onShippingMethodSelected,
+  onShippingContactSelected,
   handleAuthorised,
   handleError
 } = require("../applePayExpressCommon");
@@ -19,6 +19,7 @@ let getPaymentMethods = applePayExpressModule.getPaymentMethods;
 let formatCustomerObject = applePayExpressModule.formatCustomerObject;
 let callPaymentFromComponent = applePayExpressModule.callPaymentFromComponent;
 let selectShippingMethod = applePayExpressModule.selectShippingMethod;
+let getShippingMethod = applePayExpressModule.getShippingMethod;
 let spy;
 
 global.checkout = { create: mockCreate };
@@ -798,6 +799,315 @@ describe('onShippingMethodSelected function', () => {
 
     setTimeout(() => {
       expect(selectShippingMethod).toHaveBeenCalledWith(matchingShippingMethod, temporaryBasketId);
+      expect(reject).toHaveBeenCalled();
+      expect(resolve).not.toHaveBeenCalled();
+    })
+  });
+});
+
+describe('Test shipping method selection and calculation flow', () => {
+  let resolve;
+  let reject;
+  let event;
+  let temporaryBasketId;
+  let merchantName;
+  let shippingMethodsData;
+
+  beforeEach(() => {
+    resolve = jest.fn();
+    reject = jest.fn();
+
+    temporaryBasketId = 'mocked-basket-id';
+    merchantName = 'Test Merchant';
+
+    event = {
+      shippingContact: { address: 'mocked-address' },
+      shippingMethod: {
+        identifier: 'shipping-method-1',
+      },
+    };
+    shippingMethodsData = {
+      shippingMethods: [
+        { ID: 'shipping-method-1', label: 'Standard Shipping' },
+        { ID: 'shipping-method-2', label: 'Express Shipping' },
+      ],
+    }
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with the correct applePayShippingContactUpdate when shipping method selection and calculation succeeds', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [
+          {
+            ID: 'shipping-method-1',
+            displayName: 'Standard Shipping',
+            description: 'Arrives in 5-7 days',
+            shippingCost: { value: '5.00' },
+          },
+        ],
+      }),
+    };
+
+    getShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockShippingMethodsResponse
+    });
+
+    const mockCalculationResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        grandTotalAmount: {
+          value: '105.00',
+        },
+      }),
+    };
+
+    selectShippingMethod.mockResolvedValue(mockCalculationResponse);
+
+    await onShippingMethodSelected(resolve, reject, event, { amount: {} }, merchantName, shippingMethodsData.shippingMethods);
+
+    setTimeout(() => {
+      expect(getShippingMethod).toHaveBeenCalledWith(event.shippingContact, temporaryBasketId);
+      expect(selectShippingMethod).toHaveBeenCalledWith(
+        {
+          ID: 'shipping-method-1',
+          displayName: 'Standard Shipping',
+          description: 'Arrives in 5-7 days',
+          shippingCost: { value: '5.00' },
+        },
+        temporaryBasketId
+      );
+      expect(resolve).toHaveBeenCalledWith({
+        newShippingMethods: [
+          {
+            label: 'Standard Shipping',
+            detail: 'Arrives in 5-7 days',
+            identifier: 'shipping-method-1',
+            amount: '5.00',
+          },
+        ],
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: '105.00',
+        },
+      });
+      expect(reject).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject when getShippingMethod fails', async () => {
+    const mockShippingMethodsResponse = {
+      ok: false,
+    };
+
+    getShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockShippingMethodsResponse
+    });
+
+    await onShippingMethodSelected(resolve, reject, event, { amount: {} }, merchantName, shippingMethodsData.shippingMethods);
+
+    setTimeout(() => {
+      expect(getShippingMethod).toHaveBeenCalledWith(event.shippingContact, temporaryBasketId);
+      expect(reject).toHaveBeenCalled();
+      expect(resolve).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject when there are no shipping methods available', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [],
+      }),
+    };
+
+    getShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockShippingMethodsResponse
+    });
+
+    await onShippingMethodSelected(resolve, reject, event, { amount: {} }, merchantName, shippingMethodsData.shippingMethods);
+
+    expect(reject).toHaveBeenCalled();
+    expect(resolve).not.toHaveBeenCalled();
+  });
+
+  it('should reject when selectShippingMethod fails', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [
+          {
+            ID: 'shipping-method-1',
+            displayName: 'Standard Shipping',
+            description: 'Arrives in 5-7 days',
+            shippingCost: { value: '5.00' },
+          },
+        ],
+      }),
+    };
+
+    getShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockShippingMethodsResponse
+    });
+
+    const mockCalculationResponse = {
+      ok: false,
+    };
+
+    selectShippingMethod.mockResolvedValue(mockCalculationResponse);
+
+    await onShippingMethodSelected(resolve, reject, event, { amount: {} }, merchantName, shippingMethodsData.shippingMethods);
+
+    expect(reject).toHaveBeenCalled();
+    expect(resolve).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('onShippingContactSelected', () => {
+  let resolve;
+  let reject;
+  let event;
+  let merchantName;
+  let temporaryBasketId;
+
+  beforeEach(() => {
+    resolve = jest.fn();
+    reject = jest.fn();
+
+    event = {
+      shippingContact: { address: '123 Test Street' },
+    };
+
+    merchantName = 'Test Merchant';
+    temporaryBasketId = 'mock-basket-id';
+
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with the correct applePayShippingContactUpdate when all operations succeed', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [
+          {
+            ID: 'shipping-method-1',
+            displayName: 'Standard Shipping',
+            description: 'Arrives in 3-5 days',
+            shippingCost: { value: '5.00' },
+          },
+        ],
+      }),
+    };
+    getShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockShippingMethodsResponse
+    });
+
+    const mockCalculationResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        grandTotalAmount: { value: '105.00' },
+      }),
+    };
+    selectShippingMethod.mockResolvedValue(mockCalculationResponse);
+
+    await onShippingContactSelected(resolve, reject, event, merchantName);
+
+    setTimeout(() => {
+      expect(getShippingMethod).toHaveBeenCalledWith(event.shippingContact, temporaryBasketId);
+      expect(selectShippingMethod).toHaveBeenCalledWith(
+        {
+          ID: 'shipping-method-1',
+          displayName: 'Standard Shipping',
+          description: 'Arrives in 3-5 days',
+          shippingCost: { value: '5.00' },
+        },
+        temporaryBasketId
+      );
+
+      expect(resolve).toHaveBeenCalledWith({
+        newShippingMethods: [
+          {
+            label: 'Standard Shipping',
+            detail: 'Arrives in 3-5 days',
+            identifier: 'shipping-method-1',
+            amount: '5.00',
+          },
+        ],
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: '105.00',
+        },
+      });
+
+      expect(reject).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject when getShippingMethod fails', async () => {
+    const mockShippingMethodsResponse = { ok: false };
+    getShippingMethod.mockResolvedValue(mockShippingMethodsResponse);
+
+    await onShippingContactSelected(resolve, reject, event, merchantName);
+
+    setTimeout(() => {
+      expect(getShippingMethod).toHaveBeenCalledWith(event.shippingContact, temporaryBasketId);
+      expect(reject).toHaveBeenCalled();
+      expect(resolve).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject when no shipping methods are available', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [],
+      }),
+    };
+    getShippingMethod.mockResolvedValue(mockShippingMethodsResponse);
+
+    await onShippingContactSelected(resolve, reject, event, merchantName);
+
+    setTimeout(() => {
+      expect(reject).toHaveBeenCalled();
+      expect(resolve).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject when selectShippingMethod fails', async () => {
+    const mockShippingMethodsResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        shippingMethods: [
+          {
+            ID: 'shipping-method-1',
+            displayName: 'Standard Shipping',
+            description: 'Arrives in 3-5 days',
+            shippingCost: { value: '5.00' },
+          },
+        ],
+      }),
+    };
+    getShippingMethod.mockResolvedValue(mockShippingMethodsResponse);
+
+    const mockCalculationResponse = { ok: false };
+    selectShippingMethod.mockResolvedValue(mockCalculationResponse);
+
+    await onShippingContactSelected(resolve, reject, event, merchantName);
+
+    setTimeout(() => {
+      expect(selectShippingMethod).toHaveBeenCalledWith(
+        {
+          ID: 'shipping-method-1',
+          displayName: 'Standard Shipping',
+          description: 'Arrives in 3-5 days',
+          shippingCost: { value: '5.00' },
+        },
+        temporaryBasketId
+      );
       expect(reject).toHaveBeenCalled();
       expect(resolve).not.toHaveBeenCalled();
     })
