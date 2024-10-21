@@ -203,6 +203,43 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
   }
 }
 
+async function onShippingMethodSelected(
+  resolve,
+  reject,
+  event,
+  applePayButtonConfig,
+  merchantName,
+  shippingMethodsArg,
+) {
+  const { shippingMethod } = event;
+  const shippingMethods =
+    shippingMethodsArg || shippingMethodsData?.shippingMethods;
+  const matchingShippingMethod = shippingMethods.find(
+    (sm) => sm.ID === shippingMethod.identifier,
+  );
+  const calculationResponse = await selectShippingMethod(
+    matchingShippingMethod,
+    temporaryBasketId,
+  );
+  if (calculationResponse?.ok) {
+    const newCalculation = await calculationResponse.json();
+    applePayButtonConfig.amount = {
+      value: newCalculation.grandTotalAmount.value,
+      currency: newCalculation.grandTotalAmount.currency,
+    };
+    const applePayShippingMethodUpdate = {
+      newTotal: {
+        type: 'final',
+        label: merchantName,
+        amount: newCalculation.grandTotalAmount.value,
+      },
+    };
+    resolve(applePayShippingMethodUpdate);
+  } else {
+    reject();
+  }
+}
+
 async function init() {
   initializeCheckout()
     .then(async () => {
@@ -263,32 +300,13 @@ async function init() {
           }
         },
         onShippingMethodSelected: async (resolve, reject, event) => {
-          const { shippingMethod } = event;
-          const matchingShippingMethod =
-            shippingMethodsData.shippingMethods.find(
-              (sm) => sm.ID === shippingMethod.identifier,
-            );
-          const calculationResponse = await selectShippingMethod(
-            matchingShippingMethod,
-            temporaryBasketId,
+          await onShippingMethodSelected(
+            resolve,
+            reject,
+            event,
+            applePayButtonConfig,
+            applePayConfig.merchantName,
           );
-          if (calculationResponse.ok) {
-            const newCalculation = await calculationResponse.json();
-            applePayButtonConfig.amount = {
-              value: newCalculation.grandTotalAmount.value,
-              currency: newCalculation.grandTotalAmount.currency,
-            };
-            const applePayShippingMethodUpdate = {
-              newTotal: {
-                type: 'final',
-                label: applePayConfig.merchantName,
-                amount: newCalculation.grandTotalAmount.value,
-              },
-            };
-            resolve(applePayShippingMethodUpdate);
-          } else {
-            reject();
-          }
         },
         onShippingContactSelected: async (resolve, reject, event) => {
           const { shippingContact } = event;
@@ -370,4 +388,5 @@ module.exports = {
   initializeCheckout,
   createApplePayButton,
   onAuthorized,
+  onShippingMethodSelected,
 };

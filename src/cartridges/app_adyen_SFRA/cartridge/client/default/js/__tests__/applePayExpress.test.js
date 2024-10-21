@@ -6,8 +6,8 @@ const {
   createApplePayButton,
   initializeCheckout,
   getShippingMethod,
-  selectShippingMethod,
   onAuthorized,
+  onShippingMethodSelected,
   handleAuthorised,
   handleError
 } = require("../applePayExpressCommon");
@@ -18,6 +18,7 @@ const mockCreate = jest.fn();
 let getPaymentMethods = applePayExpressModule.getPaymentMethods;
 let formatCustomerObject = applePayExpressModule.formatCustomerObject;
 let callPaymentFromComponent = applePayExpressModule.callPaymentFromComponent;
+let selectShippingMethod = applePayExpressModule.selectShippingMethod;
 let spy;
 
 global.checkout = { create: mockCreate };
@@ -27,7 +28,8 @@ jest.mock('../applePayExpressCommon', () => ({
   handleAuthorised: jest.fn(),
   handleError: jest.fn(),
   getPaymentMethods: jest.fn(),
-  formatCustomerObject: jest.fn()
+  formatCustomerObject: jest.fn(),
+  selectShippingMethod: jest.fn()
 }));
 
 beforeAll(() => {
@@ -710,6 +712,94 @@ describe('onAuthorized function', () => {
           amount: '100000',
         },
       });
+    })
+  });
+});
+
+describe('onShippingMethodSelected function', () => {
+  let resolve;
+  let reject;
+  let event;
+  let applePayButtonConfig;
+  let merchantName;
+  let temporaryBasketId;
+  let shippingMethodsData;
+
+  beforeEach(() => {
+    resolve = jest.fn();
+    reject = jest.fn();
+
+    applePayButtonConfig = {
+      amount: {},
+    };
+
+    merchantName = 'Test Merchant';
+    temporaryBasketId = 'mocked-basket-id';
+
+    shippingMethodsData = {
+      shippingMethods: [
+        { ID: 'shipping-method-1', label: 'Standard Shipping' },
+        { ID: 'shipping-method-2', label: 'Express Shipping' },
+      ],
+    };
+
+    event = {
+      shippingMethod: {
+        identifier: 'shipping-method-1',
+      },
+    };
+
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with the correct applePayShippingMethodUpdate when shipping method is selected successfully', async () => {
+    const mockCalculationResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        grandTotalAmount: {
+          value: '150.00',
+          currency: 'USD',
+        },
+      }),
+    };
+    selectShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
+      return mockCalculationResponse
+    });
+    await onShippingMethodSelected(resolve, reject, event, applePayButtonConfig, merchantName, shippingMethodsData.shippingMethods);
+
+    const matchingShippingMethod = { ID: 'shipping-method-1', label: 'Standard Shipping', shipmentUUID: '1234' }
+
+    setTimeout(() => {
+      expect(selectShippingMethod).toHaveBeenCalledWith(matchingShippingMethod, temporaryBasketId);
+      expect(applePayButtonConfig.amount).toEqual({
+        value: '150.00',
+        currency: 'USD',
+      });
+      expect(resolve).toHaveBeenCalledWith({
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: '150.00',
+        },
+      });
+      expect(reject).not.toHaveBeenCalled();
+    })
+  });
+
+  it('should reject if selectShippingMethod returns an error', async () => {
+    const mockCalculationResponse = {
+      ok: false,
+    };
+    selectShippingMethod.mockResolvedValue(mockCalculationResponse);
+
+    await onShippingMethodSelected(resolve, reject, event, applePayButtonConfig, merchantName, shippingMethodsData.shippingMethods);
+
+    const matchingShippingMethod = shippingMethodsData.shippingMethods[0];
+
+    setTimeout(() => {
+      expect(selectShippingMethod).toHaveBeenCalledWith(matchingShippingMethod, temporaryBasketId);
+      expect(reject).toHaveBeenCalled();
+      expect(resolve).not.toHaveBeenCalled();
     })
   });
 });
