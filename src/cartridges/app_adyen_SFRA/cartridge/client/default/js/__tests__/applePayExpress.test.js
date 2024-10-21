@@ -2,19 +2,22 @@
  * @jest-environment jsdom
  */
 const applePayExpressModule = require('../applePayExpressCommon');
-const formatCustomerObject = applePayExpressModule.formatCustomerObject;
-const handleAuthorised = applePayExpressModule.handleAuthorised;
-const handleError = applePayExpressModule.handleError;
-const callPaymentFromComponent = applePayExpressModule.callPaymentFromComponent;
-const selectShippingMethod = applePayExpressModule.selectShippingMethod;
-const getShippingMethod = applePayExpressModule.getShippingMethod;
-const initializeCheckout = applePayExpressModule.initializeCheckout;
-const createApplePayButton = applePayExpressModule.createApplePayButton;
+const {
+  createApplePayButton,
+  initializeCheckout,
+  getShippingMethod,
+  selectShippingMethod,
+  onAuthorized,
+  handleAuthorised,
+  handleError
+} = require("../applePayExpressCommon");
 
 const APPLE_PAY = 'applepay';
 const mockCreate = jest.fn();
 
 let getPaymentMethods = applePayExpressModule.getPaymentMethods;
+let formatCustomerObject = applePayExpressModule.formatCustomerObject;
+let callPaymentFromComponent = applePayExpressModule.callPaymentFromComponent;
 let spy;
 
 global.checkout = { create: mockCreate };
@@ -24,6 +27,7 @@ jest.mock('../applePayExpressCommon', () => ({
   handleAuthorised: jest.fn(),
   handleError: jest.fn(),
   getPaymentMethods: jest.fn(),
+  formatCustomerObject: jest.fn()
 }));
 
 beforeAll(() => {
@@ -609,5 +613,103 @@ describe('createApplePayButton', () => {
     } catch (error) {
       expect(error).toBe(mockError);
     }
+  });
+});
+
+describe('onAuthorized function', () => {
+  let resolve;
+  let reject;
+  let event;
+  let amountValue;
+  let merchantName;
+  let temporaryBasketId;
+
+  beforeEach(() => {
+    resolve = jest.fn();
+    reject = jest.fn();
+    amountValue = 100;
+    merchantName = 'Test Merchant';
+    temporaryBasketId = 'mocked-basket-id';
+    window.digitsNumber = '2';
+    event = {
+      payment: {
+        shippingContact: { mock: 'shipping' },
+        billingContact: { mock: 'billing' },
+        token: {
+          paymentData: 'mocked-payment-token',
+        },
+      },
+    };
+  });
+
+  it('should resolve with the correct final price update', async () => {
+    formatCustomerObject = jest.fn().mockImplementation(() => {
+      return {}
+    })
+    callPaymentFromComponent = jest.fn().mockImplementation((data, resolveApplePay) => {
+      resolveApplePay();
+    });
+
+    await onAuthorized(resolve, reject, event, amountValue, merchantName);
+
+    setTimeout(() => {
+      expect(formatCustomerObject).toHaveBeenCalled();
+
+      expect(callPaymentFromComponent).toHaveBeenCalledWith(
+        {
+          paymentMethod: {
+            type: 'APPLE_PAY',
+            applePayToken: event.payment.token.paymentData,
+          },
+          paymentType: 'express',
+          customer: { mock: 'formattedCustomer' },
+          basketId: 'mocked-basket-id',
+        },
+        expect.any(Function),
+        reject
+      );
+
+      expect(resolve).toHaveBeenCalledWith({
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: '10000'
+        },
+      });
+    })
+  });
+
+  it('should reject if an error occurs', async () => {
+    const error = new Error('mock error');
+
+    callPaymentFromComponent.mockImplementation(() => {
+      throw error;
+    });
+
+    await onAuthorized(resolve, reject, event, amountValue, merchantName);
+
+    setTimeout(() => {
+      expect(reject).toHaveBeenCalledWith(error);
+    })
+  });
+
+  it('should correctly calculate the amount with a different digitsNumber', async () => {
+    window.digitsNumber = '3';
+
+    callPaymentFromComponent.mockImplementation((data, resolveApplePay) => {
+      resolveApplePay();
+    });
+
+    await onAuthorized(resolve, reject, event, amountValue, merchantName);
+
+    setTimeout(() => {
+      expect(resolve).toHaveBeenCalledWith({
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: '100000',
+        },
+      });
+    })
   });
 });

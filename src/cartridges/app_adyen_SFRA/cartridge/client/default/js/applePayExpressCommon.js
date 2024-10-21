@@ -167,6 +167,42 @@ async function createApplePayButton(applePayButtonConfig) {
   return checkout.create(APPLE_PAY, applePayButtonConfig);
 }
 
+async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
+  try {
+    const customerData = event.payment.shippingContact;
+    const billingData = event.payment.billingContact;
+    const customer = formatCustomerObject(customerData, billingData);
+    const stateData = {
+      paymentMethod: {
+        type: APPLE_PAY,
+        applePayToken: event.payment.token.paymentData,
+      },
+      paymentType: 'express',
+    };
+
+    const resolveApplePay = () => {
+      // ** is used instead of Math.pow
+      const value = amountValue * 10 ** parseInt(window.digitsNumber, 10);
+      const finalPriceUpdate = {
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: `${Math.round(value)}`,
+        },
+      };
+      resolve(finalPriceUpdate);
+    };
+
+    await callPaymentFromComponent(
+      { ...stateData, customer, basketId: temporaryBasketId },
+      resolveApplePay,
+      reject,
+    );
+  } catch (error) {
+    reject(error);
+  }
+}
+
 async function init() {
   initializeCheckout()
     .then(async () => {
@@ -189,41 +225,13 @@ async function init() {
         requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
         requiredBillingContactFields: ['postalAddress', 'phone'],
         onAuthorized: async (resolve, reject, event) => {
-          try {
-            const customerData = event.payment.shippingContact;
-            const billingData = event.payment.billingContact;
-            const customer = formatCustomerObject(customerData, billingData);
-            const stateData = {
-              paymentMethod: {
-                type: APPLE_PAY,
-                applePayToken: event.payment.token.paymentData,
-              },
-              paymentType: 'express',
-            };
-
-            const resolveApplePay = () => {
-              // ** is used instead of Math.pow
-              const value =
-                applePayButtonConfig.amount.value *
-                10 ** parseInt(window.digitsNumber, 10);
-              const finalPriceUpdate = {
-                newTotal: {
-                  type: 'final',
-                  label: applePayConfig.merchantName,
-                  amount: `${Math.round(value)}`,
-                },
-              };
-              resolve(finalPriceUpdate);
-            };
-
-            await callPaymentFromComponent(
-              { ...stateData, customer, basketId: temporaryBasketId },
-              resolveApplePay,
-              reject,
-            );
-          } catch (error) {
-            reject(error);
-          }
+          await onAuthorized(
+            resolve,
+            reject,
+            event,
+            applePayButtonConfig.amount.value,
+            applePayConfig.merchantName,
+          );
         },
         onSubmit: () => {
           // This handler is empty to prevent sending a second payment request
@@ -361,4 +369,5 @@ module.exports = {
   getPaymentMethods,
   initializeCheckout,
   createApplePayButton,
+  onAuthorized,
 };
