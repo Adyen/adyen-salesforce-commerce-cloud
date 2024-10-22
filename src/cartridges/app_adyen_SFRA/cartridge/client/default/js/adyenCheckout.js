@@ -45,6 +45,14 @@ if (
   ] = window.googleMerchantID;
 }
 
+$('body').on('checkout:updateCheckoutView', (event, data) => {
+  if (data.order.orderEmail) {
+    const { clickToPayConfiguration } =
+      store.checkoutConfiguration.paymentMethodsConfiguration.card;
+    clickToPayConfiguration.shopperEmail = data.order.orderEmail;
+  }
+});
+
 // Submit the payment
 $('button[value="submit-payment"]').on('click', () => {
   if (store.paypalTerminatedEarly) {
