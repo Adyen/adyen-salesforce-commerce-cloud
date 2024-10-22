@@ -139,6 +139,10 @@ const adyenConfigsObj = {
     return this.isApplePayExpressOnPdpEnabled();
   },
 
+  arePdpExpressPaymentsEnabled() {
+    return getCustomPreference('ExpressPayments_Pdp_enabled');
+  },
+
   isApplePayExpressEnabled() {
     return getCustomPreference('ApplePayExpress_Enabled');
   },
