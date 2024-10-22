@@ -29,6 +29,8 @@ beforeEach(() => {
   querySelector = document.querySelector;
   window.Configuration = { environment: 'TEST' };
   window.klarnaWidgetEnabled = true;
+  window.merchantAccount = 'test_merchant';
+  window.customerEmail = 'test@email.com';
   store.checkoutConfiguration = {};
   setCheckoutConfiguration()
   card = getCardConfig();
@@ -49,6 +51,8 @@ describe('Checkout Configuration', () => {
       const data = { paymentMethod: { type: 'scheme' } };
       card.onChange({ isValid: true, data }, { props: { holderName: 'test' } });
       expect(store.selectedPayment.isValid).toBeTruthy();
+      expect(card.clickToPayConfiguration.shopperEmail).toBe(window.customerEmail);
+      expect(card.clickToPayConfiguration.merchantDisplayName).toBe(window.merchantAccount);
     });
 
     it('handles onFieldValid', () => {

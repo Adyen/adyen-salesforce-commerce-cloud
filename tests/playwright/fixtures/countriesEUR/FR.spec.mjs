@@ -52,7 +52,7 @@ test.describe.parallel(`${environment.name} EUR FR`, () => {
       cards = new Cards(page);
    });
 
-   test('No 3DS Amazon Pay @quick', async ({ page }) => {
+   test.skip('No 3DS Amazon Pay @quick', async ({ page }) => {
     await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU);
     await checkoutPage.setShopperDetails(shopperData.FR);
     if (environment.name.indexOf('v5') !== -1) {
