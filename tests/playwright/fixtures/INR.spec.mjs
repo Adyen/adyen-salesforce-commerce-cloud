@@ -25,21 +25,18 @@ for (const environment of environments) {
     test('UPI Success', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doUPIPayment('upi_collect');
-      await checkoutPage.completeCheckout();
       await checkoutPage.isPaymentModalShown("upi_collect");
     });
 
     test('UPI Failure', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doUPIPayment('upi_collect', false);
-      await checkoutPage.completeCheckout();
       await checkoutPage.expectRefusal();
     });
 
     test('UPI QR Success @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doUPIPayment('upi_qr');
-      await checkoutPage.completeCheckout();
       await checkoutPage.isPaymentModalShown("Scan QR code");
     });
   });

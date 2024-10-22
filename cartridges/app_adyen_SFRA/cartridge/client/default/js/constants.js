@@ -18,6 +18,5 @@ module.exports = {
   ACTIONTYPE: {
     QRCODE: 'qrCode'
   },
-  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp'],
-  MULTIPLE_TX_VARIANTS_COMPONENTS: ['upi']
+  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp', 'upi']
 };

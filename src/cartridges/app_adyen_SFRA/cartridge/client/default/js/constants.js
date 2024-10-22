@@ -23,6 +23,6 @@ module.exports = {
     'amazonpay',
     'applepay',
     'cashapp',
+    'upi',
   ],
-  MULTIPLE_TX_VARIANTS_COMPONENTS: ['upi'],
 };
