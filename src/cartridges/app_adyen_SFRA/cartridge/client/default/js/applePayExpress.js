@@ -90,7 +90,6 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     url: window.paymentFromComponentURL,
     type: 'post',
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(data),
       paymentMethod: APPLE_PAY,
     },

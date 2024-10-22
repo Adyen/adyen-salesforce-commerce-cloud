@@ -12,7 +12,7 @@ const clearForms = require('*/cartridge/adyen/utils/clearForms');
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const request = JSON.parse(req.form.data);
+    const request = JSON.parse(req.body);
     const { partialPaymentsOrder } = request;
 
     const cancelOrderRequest = {

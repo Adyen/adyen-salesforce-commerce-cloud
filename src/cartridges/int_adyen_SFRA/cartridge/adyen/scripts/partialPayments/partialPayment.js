@@ -16,7 +16,7 @@ function responseContainsErrors(response) {
 
 function makePartialPayment(req, res, next) {
   try {
-    const request = JSON.parse(req.form.data);
+    const request = JSON.parse(req.body);
     const currentBasket = BasketMgr.getCurrentBasket();
 
     const { paymentMethod, partialPaymentsOrder, amount, giftcardBrand } =
