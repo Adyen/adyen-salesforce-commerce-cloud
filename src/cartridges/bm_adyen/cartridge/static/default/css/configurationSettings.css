@@ -430,6 +430,11 @@ ul{
     padding-bottom: 95px;
 }
 
+.draggable .item {
+    margin: 0 10px;
+    font-weight: 600;
+}
+
 .draggable-list li {
     background-color: #fff;
     display: flex;
