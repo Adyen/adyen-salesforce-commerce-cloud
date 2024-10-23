@@ -975,10 +975,10 @@ let adyenHelperObj = {
     if (!resultObject || !resultObject.getText()) {
       throw new Error(`No correct response from ${serviceType} service call`);
     }
-	// Once analytics executeCall is separated in SFI-991, this if condition can be removed
-	if (serviceType !== constants.SERVICE.ADYEN_ANALYTICS){
+    // Once analytics executeCall is separated in SFI-991, this if condition can be removed
+    if (serviceType !== constants.SERVICE.ADYEN_ANALYTICS) {
 		analyticsEvent.createAnalyticsEvent(session.sessionID, serviceType, analyticsConstants.eventType.END, analyticsConstants.eventStatus.EXPECTED, analyticsConstants.eventCode.INFO);
-	}
+    }
     return JSON.parse(resultObject.getText());
   },
 };
