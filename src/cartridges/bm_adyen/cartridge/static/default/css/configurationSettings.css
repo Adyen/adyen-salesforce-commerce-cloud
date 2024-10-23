@@ -524,6 +524,7 @@ ul{
     left: 89%;
 }
 
-.additional-item{
-    margin-left: 48px;
+.additional-item {
+    margin-left: 32px;
+    margin-bottom: 0;
 }

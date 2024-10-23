@@ -1,39 +1,49 @@
 const expressPaymentMethods = [
   {
     id: 'applepay',
-    name: 'ApplePayExpress_Enabled',
-    text: 'Apple Pay',
+    text: 'Apple Pay Express',
     icon: window.applePayIcon,
-    checked: window.isApplePayEnabled,
+    toggles: [
+      {
+        name: 'ApplePayExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isApplePayEnabled,
+      },
+      {
+        name: 'ApplePayExpress_Pdp_Enabled',
+        text: 'Product details page',
+        checked: window.isApplePayExpressOnPdpEnabled,
+      },
+    ],
   },
   {
     id: 'amazonpay',
-    name: 'AmazonPayExpress_Enabled',
-    text: 'Amazon Pay',
+    text: 'Amazon Pay Express',
     icon: window.amazonPayIcon,
-    checked: window.isAmazonPayEnabled,
+    toggles: [
+      {
+        name: 'AmazonPayExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isAmazonPayEnabled,
+      },
+    ],
   },
   {
     id: 'paypal',
-    name: 'PayPalExpress_Enabled',
-    text: 'PayPal',
+    text: 'PayPal Express',
     icon: window.paypalIcon,
-    checked: window.isPayPalExpressEnabled,
-    reviewPage: window.isPayPalExpressReviewPageEnabled,
-    additionalField: {
-      name: 'PayPalExpress_ReviewPage_Enabled',
-      text: 'Show shopper order review page',
-    },
-  },
-];
-
-const expressPaymentMethodsOnPdp = [
-  {
-    id: 'applepay',
-    name: 'ApplePayExpress_Pdp_Enabled',
-    text: 'Apple Pay',
-    icon: window.applePayIcon,
-    checked: window.isApplePayExpressOnPdpEnabled,
+    toggles: [
+      {
+        name: 'PayPalExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isPayPalExpressEnabled,
+      },
+      {
+        name: 'PayPalExpress_ReviewPage_Enabled',
+        text: 'Order review page',
+        checked: window.isPayPalExpressReviewPageEnabled,
+      },
+    ],
   },
 ];
 
@@ -79,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   const draggableList = document.getElementById('draggable-list');
-  const draggableListPdp = document.getElementById('draggable-list-pdp');
 
   let ruleCounter = 0;
   const installmentsResult = {};
@@ -180,23 +189,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const listItem = document.createElement('li');
       listItem.setAttribute('data-index', index.toString());
 
-      let additionalFieldHtml = '';
-      if (item.additionalField) {
-        additionalFieldHtml = `
-        <div class="additional-item-container">
-          <p class="additional-item">${item.additionalField.text}</p>
-           <div class="additional-switch-button">
-              <div class="form-check form-switch">
-                 <input class="form-check-input" 
-                        type="checkbox" 
-                        name="${item.additionalField.name}" 
-                        id="${item.additionalField.name}"
-                        ${item.reviewPage ? 'checked' : 'unchecked'}
-                 >
-              </div>
-           </div>
-        </div>
-      `;
+      let togglesHtml = '';
+      if (item.toggles?.length) {
+        item.toggles.forEach((toggle) => {
+          togglesHtml += `
+            <div class="additional-item-container">
+              <p class="additional-item">${toggle.text}</p>
+               <div class="additional-switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" 
+                            type="checkbox" 
+                            name="${toggle.name}" 
+                            id="${toggle.name}"
+                            ${toggle.checked ? 'checked' : 'unchecked'}
+                     >
+                  </div>
+               </div>
+            </div>
+          `;
+        });
       }
 
       listItem.innerHTML = `
@@ -211,17 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             />
             <p class="item" data-id="${item.id}">${item.text}</p>
           </div>
-          <div class="switch-button">
-              <div class="form-check form-switch">
-                 <input class="form-check-input" 
-                        type="checkbox" 
-                        name="${item.name}" 
-                        id="${item.id}"
-                        ${item.checked ? 'checked' : 'unchecked'}
-                 >
-              </div>
-           </div>
-           ${additionalFieldHtml}
+          ${togglesHtml}
         </div>
       `;
 
@@ -647,5 +648,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   createExpressPaymentsComponent(expressPaymentMethods, draggableList);
-  createExpressPaymentsComponent(expressPaymentMethodsOnPdp, draggableListPdp);
 });
