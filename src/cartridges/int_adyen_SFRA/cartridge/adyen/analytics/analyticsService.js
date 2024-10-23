@@ -28,7 +28,7 @@ function createCheckoutAttemptId() {
   }
 }
 
-function submitData(attemptIdParam = null) {
+function submitData(requestObject, attemptIdParam = null) {
   try {
     let attemptId = attemptIdParam;
 
@@ -37,20 +37,6 @@ function submitData(attemptIdParam = null) {
       const initialAnalyticsCall = createCheckoutAttemptId();
       attemptId = initialAnalyticsCall.attemptId;
     }
-
-    const requestObject = {
-      channel: 'Web',
-      platform: 'Web',
-      info: [
-        {
-          timestamp: '1679314125207',
-          type: 'focus',
-          component: 'scheme',
-          target: 'security_code',
-          id: 'cfea6b0a-7f19-4c31-b065-8d44ea3fdf63',
-        },
-      ],
-    };
 
     const response = AdyenHelper.executeCall(
       constants.SERVICE.ADYEN_ANALYTICS,
