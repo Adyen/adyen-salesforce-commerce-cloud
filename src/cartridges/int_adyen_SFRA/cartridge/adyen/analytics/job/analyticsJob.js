@@ -79,6 +79,16 @@ function iterateCustomObjects(
   }
 }
 
+function updateProcessingStatus(customObject, status) {
+  try {
+    Transaction.wrap(() => {
+      customObject.custom.processingStatus = status;
+    });
+  } catch (e) {
+    AdyenLogs.error_log('Error updating processing status:', e);
+  }
+}
+
 function processData() {
   const query = 'custom.processingStatus = {0}';
   const queryArgs = [constants.processingStatus.NOT_PROCESSED];
@@ -109,6 +119,13 @@ function processData() {
       });
     } else {
       AdyenLogs.error_log('Failed to submit full payload for grouped objects.');
+      // This will be triggered upon completion of SFI-991
+      customObjectsToDelete.forEach((customObject) => {
+        updateProcessingStatus(
+          customObject,
+          constants.processingStatus.SKIPPED,
+        );
+      });
     }
   } catch (e) {
     AdyenLogs.error_log(`Error querying custom objects: ${e}`);
