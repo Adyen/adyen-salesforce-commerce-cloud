@@ -329,7 +329,7 @@ html {
 }
 
 #logos{
-    margin:0 auto;
+    margin: 10px 0;
     justify-content:flex-start;
     display:flex;
     width:100%;
@@ -430,6 +430,11 @@ ul{
     padding-bottom: 95px;
 }
 
+.draggable .item {
+    margin: 0 10px;
+    font-weight: 600;
+}
+
 .draggable-list li {
     background-color: #fff;
     display: flex;
@@ -524,6 +529,7 @@ ul{
     left: 89%;
 }
 
-.additional-item{
-    margin-left: 48px;
+.additional-item {
+    margin-left: 32px;
+    margin-bottom: 0;
 }
