@@ -329,7 +329,7 @@ html {
 }
 
 #logos{
-    margin:0 auto;
+    margin: 10px 0;
     justify-content:flex-start;
     display:flex;
     width:100%;
