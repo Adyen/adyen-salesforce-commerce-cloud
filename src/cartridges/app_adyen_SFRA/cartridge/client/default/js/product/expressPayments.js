@@ -1,5 +1,6 @@
 const applePayExpressModule = require('../applePayExpressCommon');
-const { APPLE_PAY } = require('../constants');
+const googlePayExpressModule = require('../googlePayExpressCommon');
+const { APPLE_PAY, GOOGLE_PAY } = require('../constants');
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -24,6 +25,7 @@ function getValueForCurrency(amount, currency) {
 function getExpressPaymentButtons(product) {
   const expressMethodsConfig = {
     [APPLE_PAY]: window.isApplePayExpressOnPdpEnabled === 'true',
+    [GOOGLE_PAY]: window.isGooglePayExpressOnPdpEnabled === 'true',
   };
   const enabledExpressPaymentButtons = [];
   Object.keys(expressMethodsConfig).forEach((key) => {
@@ -41,6 +43,10 @@ function getExpressPaymentButtons(product) {
 
 function renderApplePayButton() {
   applePayExpressModule.init();
+}
+
+function renderGooglePayButton() {
+  googlePayExpressModule.init();
 }
 
 function renderExpressPaymentButtons() {
@@ -61,6 +67,7 @@ function renderExpressPaymentButtons() {
         $productForm,
       );
       renderApplePayButton();
+      renderGooglePayButton();
     } else {
       $expressPaymentButtonsContainer.replaceChildren();
     }
