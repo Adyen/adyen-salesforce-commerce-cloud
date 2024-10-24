@@ -206,6 +206,10 @@ export default class CheckoutPageSFRA5 {
     await expect(this.thankYouMessage).toBeVisible();
   };
 
+  expectClickToPay = async () => {
+    await expect(this.clickToPayLocator).toBeVisible();
+  };
+
   expectNonRedirectSuccess = async () => {
     await expect(this.thankYouMessage).toBeVisible();
   };

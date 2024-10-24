@@ -4,10 +4,12 @@ import { environments } from '../../data/environments.mjs';
 import { ShopperData } from '../../data/shopperData.mjs';
 import { RedirectShopper } from '../../paymentFlows/redirectShopper.mjs';
 import { PendingPayments } from '../../paymentFlows/pending.mjs';
+import { PaymentData } from '../../data/paymentData.mjs';
 
 let checkoutPage;
 let redirectShopper;
 let pendingPayments;
+const paymentData = new PaymentData();
 const shopperData = new ShopperData();
 
 for (const environment of environments) {
@@ -101,4 +103,20 @@ for (const environment of environments) {
       await pendingPayments.doGooglePayPayment();
     });
   });
+
+  test.describe.parallel(`${environment.name} EUR NL`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${environment.urlExtension}`);
+      checkoutPage = new environment.CheckoutPage(page);
+    });
+    test('Click to Pay', async () => {
+        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1, paymentData.ClickToPay.email);
+        await checkoutPage.setShopperDetails(shopperData.NL);
+        if (environment.name.indexOf('v5') !== -1) {
+            await checkoutPage.setEmail(paymentData.ClickToPay.email);
+        };
+        await checkoutPage.expectClickToPay();
+    });
+  });
 }
+
