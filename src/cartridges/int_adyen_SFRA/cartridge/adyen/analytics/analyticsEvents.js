@@ -21,6 +21,8 @@ function createAnalyticsEvent(
     customObj.custom.eventType = eventType;
     customObj.custom.eventStatus = eventStatus;
     customObj.custom.eventCode = eventCode;
+    customObj.custom.processingStatus =
+      constants.processingStatus.NOT_PROCESSED;
   });
 }
 
