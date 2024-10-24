@@ -110,8 +110,8 @@ function processData() {
     );
 
     const payload = createRequestObjectForAllReferenceIds(groupedObjects);
-    const submission = AnalyticsService.submitData(payload); // {error: true}
-    if (submission.success) {
+    const submission = AnalyticsService.submitData(payload);
+    if (submission.data) {
       customObjectsToDelete.forEach((customObject) => {
         deleteCustomObject(customObject);
       });

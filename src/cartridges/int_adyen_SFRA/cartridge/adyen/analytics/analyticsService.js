@@ -10,6 +10,7 @@ function execute(serviceType, requestObject, checkoutAttemptID = '') {
   if (service === null) {
     throw new Error(`Could not create ${serviceType} service object`);
   }
+
   const clientKey = AdyenConfigs.getAdyenClientKey();
   let serviceUrl = service.getURL();
   serviceUrl += `/${checkoutAttemptID}?clientKey=${clientKey}`;
@@ -23,8 +24,6 @@ function execute(serviceType, requestObject, checkoutAttemptID = '') {
   service.addHeader('Idempotency-Key', uuid);
 
   const callResult = service.call(JSON.stringify(requestObject));
-  AdyenLogs.info_log(`is OK ${JSON.stringify(callResult.isOk())}`);
-
   if (!callResult.isOk()) {
     throw new Error(
       `${serviceType} service call error code${callResult
@@ -33,12 +32,12 @@ function execute(serviceType, requestObject, checkoutAttemptID = '') {
     );
   }
 
-  return { success: true };
+  const parsedResponse = JSON.parse(callResult.object?.getText());
+  return parsedResponse || callResult.status;
 }
 
 function createCheckoutAttemptId() {
   try {
-    const analyticsResponse = {};
     const requestObject = {
       applicationInfo: AdyenHelper.getApplicationInfo(),
       channel: 'Web',
@@ -47,9 +46,7 @@ function createCheckoutAttemptId() {
 
     const response = execute(constants.SERVICE.ADYEN_ANALYTICS, requestObject);
 
-    analyticsResponse.attemptId = response.checkoutAttemptId;
-
-    return analyticsResponse;
+    return { data: response.checkoutAttemptId };
   } catch (error) {
     AdyenLogs.error_log(
       'createCheckoutAttemptId for /analytics call failed:',
@@ -63,13 +60,18 @@ function submitData(requestObject, attemptIdParam = null) {
   try {
     let attemptId = attemptIdParam;
 
-    // If attemptId is not provided as a parameter, generate it
     if (!attemptId) {
       const initialAnalyticsCall = createCheckoutAttemptId();
-      attemptId = initialAnalyticsCall.attemptId;
+      attemptId = initialAnalyticsCall.data;
     }
 
-    return execute(constants.SERVICE.ADYEN_ANALYTICS, requestObject, attemptId);
+    const response = execute(
+      constants.SERVICE.ADYEN_ANALYTICS,
+      requestObject,
+      attemptId,
+    );
+
+    return { data: response };
   } catch (error) {
     AdyenLogs.error_log('submitData for /analytics call failed:', error);
     return { error: true };
