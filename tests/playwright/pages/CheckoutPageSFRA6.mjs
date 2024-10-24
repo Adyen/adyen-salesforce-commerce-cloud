@@ -63,6 +63,7 @@ export default class CheckoutPageSFRA {
     this.errorMessage = page.locator('.error-message-text');
     this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
+    this.clickToPayLocator = page.locator('.adyen-checkout-ctp__section');
 
     this.voucherCode = page.locator('#voucherResult');
 
@@ -184,12 +185,12 @@ export default class CheckoutPageSFRA {
   };
 
   submitPayment = async () => {
-	await this.page.waitForFunction(() => {
-		const button = document.querySelector('.submit-payment');
-		return button && !button.disabled;
-	  });
-	  
-	await this.submitPaymentButton.click();	  
+    await this.page.waitForFunction(() => {
+        const button = document.querySelector('.submit-payment');
+        return button && !button.disabled;
+      });
+      
+    await this.submitPaymentButton.click();   
   };
 
   placeOrder = async () => {
@@ -242,6 +243,10 @@ export default class CheckoutPageSFRA {
     await expect(this.giftCardWarning).not.toBeEmpty();
   };
 
+  expectClickToPay = async () => {
+    await expect(this.clickToPayLocator).toBeVisible();
+  }
+
   getLocation = async () => {
     await this.page.waitForLoadState('load');
     return await this.page.url();
@@ -267,3 +272,4 @@ export default class CheckoutPageSFRA {
     );
   };
 }
+
