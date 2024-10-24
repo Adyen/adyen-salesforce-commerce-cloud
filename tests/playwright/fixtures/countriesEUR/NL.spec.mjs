@@ -109,7 +109,7 @@ for (const environment of environments) {
       await page.goto(`${environment.urlExtension}`);
       checkoutPage = new environment.CheckoutPage(page);
     });
-    test('Click to Pay', async () => {
+    test('Click to Pay @quick', async () => {
         await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1, paymentData.ClickToPay.email);
         await checkoutPage.setShopperDetails(shopperData.NL);
         if (environment.name.indexOf('v5') !== -1) {
