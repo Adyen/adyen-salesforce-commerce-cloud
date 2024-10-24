@@ -8,9 +8,6 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
   const requestObject = {
     channel: 'Web',
     platform: 'Web',
-    info: [],
-    error: [],
-    log: [],
   };
 
   // Iterate over all referenceIds and group events into one requestObject
@@ -26,20 +23,21 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
         component: event.eventSource,
       };
 
-      if (event.eventCode.toLowerCase() === constants.eventCode.INFO) {
-        requestObject.info.push(eventObject);
-      } else if (event.eventCode.toLowerCase() === constants.eventCode.ERROR) {
-        requestObject.error.push(eventObject);
-      } else if (event.eventCode.toLowerCase() === constants.eventCode.LOG) {
-        requestObject.log.push(eventObject);
+      const eventCode = event.eventCode.toLowerCase();
+      const eventTypes = [
+        constants.eventCode.INFO,
+        constants.eventCode.ERROR,
+        constants.eventCode.LOG,
+      ];
+
+      if (eventTypes.includes(eventCode)) {
+        if (!requestObject[eventCode]) {
+          requestObject[eventCode] = [];
+        }
+        requestObject[eventCode].push(eventObject);
       }
     });
   });
-
-  // Remove empty arrays (API doesn't accept empty ones)
-  if (requestObject.info.length === 0) delete requestObject.info;
-  if (requestObject.error.length === 0) delete requestObject.error;
-  if (requestObject.log.length === 0) delete requestObject.log;
 
   return requestObject;
 }
