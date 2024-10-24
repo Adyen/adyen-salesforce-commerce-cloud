@@ -61,6 +61,7 @@ export default class CheckoutPageSFRA5 {
     this.errorMessage = page.locator('.error-message-text');
     this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
+    this.clickToPayLocator = page.locator('.adyen-checkout-ctp__section');
 
     this.voucherCode = page.locator('#voucherResult');
 
