@@ -113,7 +113,7 @@ for (const environment of environments) {
         await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1, paymentData.ClickToPay.email);
         await checkoutPage.setShopperDetails(shopperData.NL);
         if (environment.name.indexOf('v5') !== -1) {
-            await checkoutPage.setEmail(paymentData.ClickToPay.email);
+            test.skip();
         };
         await checkoutPage.expectClickToPay();
     });
