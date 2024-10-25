@@ -81,4 +81,5 @@ function submitData(requestObject, attemptIdParam = null) {
 module.exports = {
   createCheckoutAttemptId,
   submitData,
+  execute,
 };
