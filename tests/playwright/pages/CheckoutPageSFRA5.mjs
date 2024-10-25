@@ -61,7 +61,6 @@ export default class CheckoutPageSFRA5 {
     this.errorMessage = page.locator('.error-message-text');
     this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
-    this.clickToPayLocator = page.locator('.adyen-checkout-ctp__section');
 
     this.voucherCode = page.locator('#voucherResult');
 
@@ -163,7 +162,7 @@ export default class CheckoutPageSFRA5 {
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
     await this.page.keyboard.press('Tab');
-	await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2000)); 
   };
 
   submitShipping = async () => {
@@ -205,10 +204,6 @@ export default class CheckoutPageSFRA5 {
       timeout: 20000,
     });
     await expect(this.thankYouMessage).toBeVisible();
-  };
-
-  expectClickToPay = async () => {
-    await expect(this.clickToPayLocator).toBeVisible();
   };
 
   expectNonRedirectSuccess = async () => {
