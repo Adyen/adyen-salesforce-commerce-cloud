@@ -17,6 +17,7 @@
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
    window.isExpressPdp = true;
    window.isApplePayExpressOnPdpEnabled = "${AdyenConfigs.isApplePayExpressOnPdpEnabled()}";
+   window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";
    window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
 </script>
 
