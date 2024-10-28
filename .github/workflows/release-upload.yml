@@ -1,0 +1,104 @@
+name: Release upload
+
+on:
+  pull_request:
+
+jobs:
+  upload-release:
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.head_ref, 'release') &&
+      github.event.pull_request.base.ref == 'main' 
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: 'v6.1.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_004'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v6.1.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_006'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v5.3.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_007'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v5.3.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_018'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v6.1.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_019'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v6.1.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_020'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+          - sfra-version: 'v6.1.0'
+            node-version: '14'
+            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_022'
+            code-version-secret: 'SFCC_CODE_VERSION_COMMON'
+    steps:
+      - name: Checkout SFRA code
+        uses: actions/checkout@v4
+        with:
+          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          ref: ${{ matrix.sfra-version }}
+          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+          path: storefront-reference-architecture
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: Install SFRA dependencies
+        working-directory: storefront-reference-architecture
+        run: npm install
+      - name: Install Adyen SFCC dependencies
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm install
+      - name: Create dw.json file
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          echo '{
+            "username": "${{ secrets.SFCC_USERNAME }}",
+            "password": "${{ secrets.SFCC_PASSWORD }}",
+            "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
+            "code-version": "${{ secrets[matrix.code-version-secret] }}"
+          }' >> dw.json
+      - name: Transpile the code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run transpile
+      - name: Compile the code
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run compile:js
+      - name: Build the cartridge
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run uploadCartridge > output-sfra.txt
+      - name: Check build result
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm run check-build:sfra
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g sfcc-ci
+      - name: Zip site_import
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          zip -r $GITHUB_WORKSPACE/site_import.zip site_import
+      - name: Upload the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: | 
+          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
+          sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}"
+      - name: Import the metadata to the sandbox
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          sfcc-ci instance:import site_import.zip -i "${{ secrets[matrix.sfcc-hostname-secret] }}" -s

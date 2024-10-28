@@ -39,6 +39,7 @@ var StringUtils = require('dw/util/StringUtils');
 var Money = require('dw/value/Money');
 var TaxMgr = require('dw/order/TaxMgr');
 var ShippingLocation = require('dw/order/ShippingLocation');
+var BasketMgr = require('dw/order/BasketMgr');
 //script includes
 var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 var collections = require('*/cartridge/scripts/util/collections');
@@ -262,7 +263,6 @@ var adyenHelperObj = {
     return signature;
   },
   getBasketAmount: function getBasketAmount() {
-    var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
       return;
@@ -272,6 +272,10 @@ var adyenHelperObj = {
       value: this.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
     };
     return JSON.stringify(amount);
+  },
+  getCustomerEmail: function getCustomerEmail() {
+    var currentBasket = BasketMgr.getCurrentBasket();
+    return currentBasket ? currentBasket.customerEmail : '';
   },
   // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
   getDonationAmounts: function getDonationAmounts() {

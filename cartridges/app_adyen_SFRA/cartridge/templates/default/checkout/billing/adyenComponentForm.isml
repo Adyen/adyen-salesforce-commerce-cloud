@@ -59,7 +59,7 @@
          window.installments = '${pdict.adyen.installments}';
          window.googleMerchantID = '${pdict.adyen.googleMerchantID}';
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
-         window.customerEmail = '${customer && customer.profile && customer.profile.email ? customer.profile.email : ''}';
+         window.customerEmail = '${pdict.AdyenHelper.getCustomerEmail()}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
     </script>
 
