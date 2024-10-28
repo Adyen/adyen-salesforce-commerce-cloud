@@ -23,7 +23,7 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentInstrument.paymentMethod,
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentData = req.form.data;
+      paymentInstrument.custom.adyenPaymentData = req.body;
     });
     // Creates order number to be utilized for PayPal express
     const paypalExpressOrderNo = OrderMgr.createOrderNo();

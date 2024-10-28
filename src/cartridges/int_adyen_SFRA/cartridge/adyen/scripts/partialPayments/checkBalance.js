@@ -52,7 +52,7 @@ function callCheckBalance(req, res, next) {
       ? giftCardsAdded[giftCardsAdded.length - 1].remainingAmount
       : orderAmount;
 
-    const request = JSON.parse(req.form.data);
+    const request = JSON.parse(req.body);
     const paymentMethod = request.paymentMethod
       ? request.paymentMethod
       : constants.ACTIONTYPES.GIFTCARD;

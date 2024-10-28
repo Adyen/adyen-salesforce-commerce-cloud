@@ -181,14 +181,11 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
-      const payload = {
-        csrf_token: $('#adyen-token').val(),
-        data: JSON.stringify(requestData),
-      };
       $.ajax({
         type: 'POST',
         url: window.checkBalanceUrl,
-        data: payload,
+        data: JSON.stringify(requestData),
+        contentType: 'application/json; charset=utf-8',
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
@@ -253,10 +250,8 @@ function getGiftCardConfig() {
         $.ajax({
           type: 'POST',
           url: window.partialPaymentsOrderUrl,
-          data: {
-            csrf_token: $('#adyen-token').val(),
-            data: JSON.stringify(requestData),
-          },
+          data: JSON.stringify(requestData),
+          contentType: 'application/json; charset=utf-8',
           async: false,
           success: (data) => {
             if (data.resultCode === 'Success') {
@@ -300,17 +295,14 @@ const actionHandler = async (action) => {
 };
 
 function handleOnAdditionalDetails(state) {
-  const requestData = JSON.stringify({
-    data: state.data,
-    orderToken: window.orderToken,
-  });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
-    data: {
-      csrf_token: $('#adyen-token').val(),
-      data: requestData,
-    },
+    data: JSON.stringify({
+      data: state.data,
+      orderToken: window.orderToken,
+    }),
+    contentType: 'application/json; charset=utf-8',
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {

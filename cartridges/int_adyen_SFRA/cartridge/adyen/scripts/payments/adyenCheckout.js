@@ -178,7 +178,8 @@ function createPaymentRequest(args) {
           shipping_type: shippingMethod === null || shippingMethod === void 0 ? void 0 : shippingMethod.description,
           first_name: address.firstName,
           last_name: address.lastName,
-          street_address: "".concat(address.address1, " ").concat(address.address2),
+          street_address: address.address1,
+          street_number: address.address2,
           postal_code: address.postalCode,
           city: address.city,
           country: address.countryCode.value

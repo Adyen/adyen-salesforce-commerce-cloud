@@ -5,7 +5,6 @@ function saveShopperDetails(details) {
     url: window.saveShopperDetailsURL,
     type: 'post',
     data: {
-      csrf_token: $('#adyen-token').val(),
       shopperDetails: JSON.stringify(details),
       paymentMethod: 'amazonpay',
     },
