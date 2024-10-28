@@ -11,7 +11,7 @@ const makeExpressPaymentsCall = require('../makeExpressPaymentsCall');
 beforeEach(() => {
   jest.clearAllMocks();
   req = {
-  form: {data: JSON.stringify({})}
+  body: JSON.stringify({})
   };
 
   res = {

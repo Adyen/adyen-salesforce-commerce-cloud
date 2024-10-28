@@ -28,9 +28,10 @@ describe('paypal express', () => {
     global.$.spinner = jest.fn(() => {return {
       start: start
     }})
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-		success({ action : {}})
-    });
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn(() => {return {action: {}}})
+    })
     const component = {
       handleError: jest.fn(),
       handleAction: jest.fn()
@@ -45,9 +46,10 @@ describe('paypal express', () => {
     global.$.spinner = jest.fn(() => {return {
       start: start
     }})
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-		success({})
-    });
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn(() => {return {}})
+    })
     const component = {
       handleError: jest.fn(),
       handleAction: jest.fn()
