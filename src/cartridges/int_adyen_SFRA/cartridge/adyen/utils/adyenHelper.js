@@ -38,8 +38,6 @@ const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const analyticsEvent = require('*/cartridge/adyen/analytics/analyticsEvents');
-const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 
 /* eslint no-var: off */
 let adyenHelperObj = {
@@ -968,15 +966,6 @@ let adyenHelperObj = {
     if (!resultObject || !resultObject.getText()) {
       throw new Error(`No correct response from ${serviceType} service call`);
     }
-
-    analyticsEvent.createAnalyticsEvent(
-      session.sessionID,
-      serviceType,
-      analyticsConstants.eventType.END,
-      analyticsConstants.eventStatus.EXPECTED,
-      analyticsConstants.eventCode.INFO
-    );
-
     return JSON.parse(resultObject.getText());
   },
 };
