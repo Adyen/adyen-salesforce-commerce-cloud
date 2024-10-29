@@ -54,42 +54,46 @@ function isUsedByAdyen(req) {
   });
 }
 
-function registerRoute(route) {
-  route.on('route:Start', (req) => {
-    const path = getPath(req);
-    if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
+function onStartHandler(req) {
+  const path = getPath(req);
+  if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
+    analyticsEvent.createAnalyticsEvent(
+      session.sessionID,
+      path.join('-'),
+      analyticsConstants.eventType.START,
+      analyticsConstants.eventStatus.EXPECTED,
+      analyticsConstants.eventCode.INFO,
+    );
+  }
+}
+
+function onCompleteHandler(req, res) {
+  const path = getPath(req);
+  const hasError = !!res.viewData?.error;
+  if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
+    if (hasError) {
       analyticsEvent.createAnalyticsEvent(
         session.sessionID,
         path.join('-'),
-        analyticsConstants.eventType.START,
+        analyticsConstants.eventType.END,
+        analyticsConstants.eventStatus.UNEXPECTED,
+        analyticsConstants.eventCode.INFO,
+      );
+    } else {
+      analyticsEvent.createAnalyticsEvent(
+        session.sessionID,
+        path.join('-'),
+        analyticsConstants.eventType.END,
         analyticsConstants.eventStatus.EXPECTED,
         analyticsConstants.eventCode.INFO,
       );
     }
-  });
+  }
+}
 
-  route.on('route:Complete', (req, res) => {
-    const path = getPath(req);
-    if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
-      if (res.viewData.error) {
-        analyticsEvent.createAnalyticsEvent(
-          session.sessionID,
-          path.join('-'),
-          analyticsConstants.eventType.END,
-          analyticsConstants.eventStatus.UNEXPECTED,
-          analyticsConstants.eventCode.INFO,
-        );
-      } else {
-        analyticsEvent.createAnalyticsEvent(
-          session.sessionID,
-          path.join('-'),
-          analyticsConstants.eventType.END,
-          analyticsConstants.eventStatus.EXPECTED,
-          analyticsConstants.eventCode.INFO,
-        );
-      }
-    }
-  });
+function registerRoute(route) {
+  route.on('route:Start', onStartHandler);
+  route.on('route:Complete', onCompleteHandler);
 }
 
 /* Module Exports */
@@ -98,4 +102,6 @@ module.exports = {
   getPath,
   redirectUrlStartRule,
   isUsedByAdyen,
+  onStartHandler,
+  onCompleteHandler,
 };

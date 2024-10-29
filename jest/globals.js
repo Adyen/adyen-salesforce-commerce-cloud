@@ -13,6 +13,7 @@ global.session = {
   privacy: { orderNo: 'mocked_orderNo' },
   forms: { billing: { clearFormElement: jest.fn() } },
   currency: { currencyCode: 'EUR' },
+  sessionID: 'mocked_sessionID',
 };
 
 global.request = { getLocale: jest.fn(() => 'nl_NL') };
