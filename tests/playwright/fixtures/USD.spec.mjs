@@ -1,4 +1,4 @@
-import {test} from '@playwright/test';
+import {test, expect} from '@playwright/test';
 import {regionsEnum} from '../data/enums.mjs';
 import {environments} from '../data/environments.mjs';
 import {RedirectShopper} from '../paymentFlows/redirectShopper.mjs';
@@ -291,6 +291,21 @@ for (const environment of environments) {
       await checkoutPage.navigateToCart(regionsEnum.US);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doPayPalPayment(true, false, false);
+    });
+
+    test('PayPal Express taxation @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, false, true, true);
+      if (environment.name.indexOf('v5') !== -1) {
+        await page.locator("button[value='place-order']").click();
+        await page.locator(".order-thank-you-msg").isVisible();
+      } else {
+        await checkoutPage.expectSuccess();
+      }
+      await expect(page.locator('.tax-total')).toContainText('$5.98');
     });
   });
 }

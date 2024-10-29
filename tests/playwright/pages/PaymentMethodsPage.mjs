@@ -32,7 +32,7 @@ export default class PaymentMethodsPage {
     await iDealInput.click();
   };
 
-  initiatePayPalPayment = async (expressFlow, shippingChange, success) => {
+  initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
@@ -61,6 +61,8 @@ export default class PaymentMethodsPage {
     this.loginButton = popup.locator('#btnLogin');
     this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
     this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
+	this.changeAddress = popup.locator('button[data-testid="change-shipping"]');
+	this.selectAddress = popup.locator('#shippingDropdown');
     this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
@@ -73,6 +75,11 @@ export default class PaymentMethodsPage {
     if (shippingChange){
         await this.shippingMethodsDropdown.selectOption({ index: 2 }); // This selects the second option as first one is hidden by default in paypal modale
         await this.page.waitForTimeout(5000);
+    }
+
+    if (taxation){
+        await this.changeAddress.click();
+        await this.selectAddress.selectOption({ value : '7926545394260875927' });
     }
 
     if (success) {
