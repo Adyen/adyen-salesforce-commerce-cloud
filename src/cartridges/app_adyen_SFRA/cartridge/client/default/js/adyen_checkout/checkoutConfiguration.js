@@ -272,7 +272,8 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  const { type } = state.data.paymentMethod;
+  const { paymentMethod } = state.data;
+  const { type } = paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
