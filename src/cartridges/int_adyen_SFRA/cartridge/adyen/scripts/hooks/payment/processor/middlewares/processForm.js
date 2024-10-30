@@ -87,7 +87,7 @@ function getViewData(
 
 function getPaymentMethodFromForm(paymentForm) {
   try {
-    AdyenLogs.error_log(JSON.stringify(paymentForm));
+    AdyenLogs.info_log(JSON.stringify(paymentForm));
     return JSON.parse(paymentForm.adyenPaymentFields?.adyenStateData?.value)
       .paymentMethod;
   } catch (error) {
