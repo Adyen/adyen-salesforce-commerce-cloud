@@ -58,7 +58,7 @@ export default class CheckoutPageSFRA {
     this.shippingSubmit = page.locator("button[value='submit-shipping']");
 
     this.submitPaymentButton = page.locator('.submit-payment');
-    this.placeOrderButton = page.locator("button[value='place-order']");
+    this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
     this.giftCardWarning = page.locator('#giftCardWarningMessage')
