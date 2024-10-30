@@ -271,7 +271,8 @@ function getGiftCardConfig() {
   };
 }
 
-function handleOnChange(state) {
+async function handleOnChange(state) {
+  await new Promise(resolve => setTimeout(resolve, 200));
   const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
