@@ -12,4 +12,7 @@ export class PaymentData {
     username : process.env.AMAZONPAY_USERNAME,
     password: process.env.AMAZONPAY_PASSWORD,
   }
+  ClickToPay = {
+	email : process.env.SFCC_USERNAME,
+  }
 }
