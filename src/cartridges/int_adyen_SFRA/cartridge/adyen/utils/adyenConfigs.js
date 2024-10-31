@@ -1,4 +1,5 @@
 const dwsystem = require('dw/system');
+
 const adyenCurrentSite = dwsystem.Site.getCurrent();
 
 function getCustomPreference(field) {
@@ -61,7 +62,7 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_klarnaWidget');
   },
 
-  getAdyenInstallmentsEnabled(){
+  getAdyenInstallmentsEnabled() {
     return getCustomPreference('AdyenInstallments_enabled');
   },
 
@@ -105,7 +106,7 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
-  getAdyenTokenisationEnabled: function () {
+  getAdyenTokenisationEnabled() {
     return getCustomPreference('AdyenTokenisationEnabled');
   },
 
@@ -113,17 +114,20 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
-  getAdyenLevel23DataEnabled: function () {
+  getAdyenLevel23DataEnabled() {
     return getCustomPreference('AdyenLevel23DataEnabled');
   },
 
-  getAdyenLevel23CommodityCode: function () {
+  getAdyenLevel23CommodityCode() {
     return getCustomPreference('AdyenLevel23_CommodityCode');
   },
 
-  getAdyenSalePaymentMethods: function () {
-    return getCustomPreference('AdyenSalePaymentMethods')
-      ? getCustomPreference('AdyenSalePaymentMethods').replace(/\s/g, '').toString().split(',')
+  getAdyenSalePaymentMethods() {
+    const adyenSalePaymentMethods = getCustomPreference(
+      'AdyenSalePaymentMethods',
+    );
+    return adyenSalePaymentMethods
+      ? adyenSalePaymentMethods.replace(/\s/g, '').toString().split(',')
       : [];
   },
 
