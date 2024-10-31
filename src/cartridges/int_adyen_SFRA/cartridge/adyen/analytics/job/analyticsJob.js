@@ -110,14 +110,13 @@ function processData() {
     );
 
     const payload = createRequestObjectForAllReferenceIds(groupedObjects);
-    const submissionSuccess = AnalyticsService.submitData(payload);
-    if (submissionSuccess) {
+    const submission = AnalyticsService.submitData(payload);
+    if (submission.data) {
       customObjectsToDelete.forEach((customObject) => {
         deleteCustomObject(customObject);
       });
     } else {
       AdyenLogs.error_log('Failed to submit full payload for grouped objects.');
-      // This will be triggered upon completion of SFI-991
       customObjectsToDelete.forEach((customObject) => {
         updateProcessingStatus(
           customObject,
