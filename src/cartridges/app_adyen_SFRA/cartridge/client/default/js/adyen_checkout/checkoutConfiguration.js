@@ -189,9 +189,8 @@ function getGiftCardConfig() {
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
-          document.querySelector(
-            'button[value="submit-payment"]',
-          ).disabled = false;
+          document.querySelector('button[value="submit-payment"]').disabled =
+            false;
           if (data.resultCode === constants.SUCCESS) {
             const {
               giftCardsInfoMessageContainer,
@@ -217,9 +216,8 @@ function getGiftCardConfig() {
                 initialPartialObject.totalDiscountedAmount;
             });
 
-            document.querySelector(
-              'button[value="submit-payment"]',
-            ).disabled = true;
+            document.querySelector('button[value="submit-payment"]').disabled =
+              true;
             giftCardsInfoMessageContainer.innerHTML = '';
             giftCardsInfoMessageContainer.classList.remove(
               'gift-cards-info-message-container',
@@ -274,7 +272,8 @@ function getGiftCardConfig() {
 }
 
 function handleOnChange(state) {
-  const { type } = state.data.paymentMethod;
+  const { paymentMethod } = state.data;
+  const { type } = paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
     store.componentsObj[type] = {};
