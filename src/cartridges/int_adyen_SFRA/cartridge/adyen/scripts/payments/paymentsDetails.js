@@ -33,7 +33,7 @@ function getRedirectUrl(paymentsDetailsResponse, orderToken) {
  */
 function paymentsDetails(req, res, next) {
   try {
-    const request = JSON.parse(req.body);
+    const request = JSON.parse(req.form.data);
 
     const isAmazonpay = request?.data?.paymentMethod === 'amazonpay';
     if (request.data) {

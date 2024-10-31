@@ -9,19 +9,26 @@ const { PAYPAL } = require('./constants');
 async function callPaymentFromComponent(data, component) {
   try {
     $.spinner().start();
-    const response = await fetch(window.makeExpressPaymentsCall, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+
+    $.ajax({
+      type: 'POST',
+      url: window.makeExpressPaymentsCall,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(data),
+      }, // Send the data as a JSON string
+      success(response) {
+        const { action, errorMessage = '' } = response;
+        if (action) {
+          component.handleAction(action);
+        } else {
+          throw new Error(errorMessage);
+        }
       },
-      body: JSON.stringify(data),
+      error() {
+        component.handleError();
+      },
     });
-    const { action, errorMessage = '' } = await response.json();
-    if (response.ok && action) {
-      component.handleAction(action);
-    } else {
-      throw new Error(errorMessage);
-    }
   } catch (e) {
     component.handleError();
   }
@@ -33,6 +40,7 @@ async function saveShopperDetails(details, actions) {
     type: 'post',
     data: {
       shopperDetails: JSON.stringify(details),
+      csrf_token: $('#adyen-token').val(),
     },
     success() {
       actions.resolve();
@@ -55,6 +63,13 @@ function redirectToReviewPage(data) {
       value: JSON.stringify(data),
     });
 
+  $('<input>')
+    .appendTo(redirect)
+    .attr({
+      name: 'csrf_token',
+      value: $('#adyen-token').val(),
+    });
+
   redirect.submit();
 }
 
@@ -62,8 +77,10 @@ function makeExpressPaymentDetailsCall(data) {
   return $.ajax({
     type: 'POST',
     url: window.makeExpressPaymentDetailsCall,
-    data: JSON.stringify({ data }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({ data }),
+    },
     async: false,
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);

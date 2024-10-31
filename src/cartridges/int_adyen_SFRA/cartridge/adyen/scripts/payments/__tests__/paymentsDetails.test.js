@@ -15,7 +15,7 @@ beforeEach(() => {
   };
 
   req = {
-    body: JSON.stringify({}),
+    form: {data : JSON.stringify({})},
   };
 });
 
