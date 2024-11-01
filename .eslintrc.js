@@ -95,6 +95,6 @@ module.exports = {
     "import/extensions": "off",
     "camelcase": "off",
     "no-bitwise": "off",
-	  "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off"
   },
 };
