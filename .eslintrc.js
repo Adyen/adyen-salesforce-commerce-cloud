@@ -83,7 +83,6 @@ module.exports = {
         ],
       },
     ],
-    "import/extensions": ["error", { "js": "never" }],
     "import/no-extraneous-dependencies": "off",
     "operator-linebreak": "off",
     "object-curly-newline": ["error", {
@@ -96,6 +95,6 @@ module.exports = {
     "import/extensions": "off",
     "camelcase": "off",
     "no-bitwise": "off",
-	"no-underscore-dangle": "off"
+    "no-underscore-dangle": "off"
   },
 };
