@@ -29,8 +29,8 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiateOneyPayment(shopper);
   };
 
-  doPayPalPayment = async (expressFlow, shippingChange, success) => {
-    await this.paymentMethodsPage.initiatePayPalPayment(expressFlow, shippingChange, success);
+  doPayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
+    await this.paymentMethodsPage.initiatePayPalPayment(expressFlow, shippingChange, success, taxation);
   };
 
   doAmazonPayment = async (normalFlow, selectedCard, success) => {
@@ -114,7 +114,7 @@ export class RedirectShopper {
   };
 
   completeEPSRedirect = async (success) => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     if (success) {
       await this.paymentMethodsPage.confirmSimulator();
     } else {

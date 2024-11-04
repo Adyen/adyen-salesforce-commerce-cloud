@@ -32,6 +32,12 @@ if (window.googleMerchantID !== 'null' && window.Configuration.environment.inclu
   store.checkoutConfiguration.paymentMethodsConfiguration.paywithgoogle.configuration[id] = window.googleMerchantID;
   store.checkoutConfiguration.paymentMethodsConfiguration.googlepay.configuration[id] = window.googleMerchantID;
 }
+$('body').on('checkout:updateCheckoutView', function (event, data) {
+  if (data.order.orderEmail) {
+    var clickToPayConfiguration = store.checkoutConfiguration.paymentMethodsConfiguration.card.clickToPayConfiguration;
+    clickToPayConfiguration.shopperEmail = data.order.orderEmail;
+  }
+});
 
 // Submit the payment
 $('button[value="submit-payment"]').on('click', function () {

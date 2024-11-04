@@ -57,12 +57,13 @@ export default class CheckoutPageSFRA {
 
     this.shippingSubmit = page.locator("button[value='submit-shipping']");
 
-    this.submitPaymentButton = page.locator("button[value='submit-payment']");
-    this.placeOrderButton = page.locator("button[value='place-order']");
+    this.submitPaymentButton = page.locator('.submit-payment');
+    this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
     this.giftCardWarning = page.locator('#giftCardWarningMessage')
     this.thankYouMessage = page.locator('.order-thank-you-msg');
+    this.clickToPayLocator = page.locator('.adyen-checkout-ctp__section');
 
     this.voucherCode = page.locator('#voucherResult');
 
@@ -89,7 +90,7 @@ export default class CheckoutPageSFRA {
 
   isPaymentModalShown = async (imgAltValue) => {
     await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible({ timeout: 20000 });
+      .toBeVisible();
   }
 
   navigateToCheckout = async (locale) => {
@@ -102,7 +103,7 @@ export default class CheckoutPageSFRA {
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1, email) => {
     await this.addProductToCart(locale, itemCount);
-    await this.successMessage.waitFor({ visible: true, timeout: 20000 });
+    await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
     await this.setEmail(email);
@@ -127,7 +128,7 @@ export default class CheckoutPageSFRA {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    await this.customerInfoSection.waitFor({ visible: true, timeout: 20000 });
+    await this.customerInfoSection.waitFor({ visible: true });
 
 
     await this.checkoutPageUserFirstNameInput.type(
@@ -175,31 +176,26 @@ export default class CheckoutPageSFRA {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 20000 });
+    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
     // Ugly wait since the submit button takes time to mount.
     await new Promise(r => setTimeout(r, 2000));
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('load', { timeout: 30000 });
-    await this.submitPaymentButton.click();
+    await this.page.waitForFunction(() => {
+        const button = document.querySelector('.submit-payment');
+        return button && !button.disabled;
+      });
+      
+    await this.submitPaymentButton.click();   
   };
 
   placeOrder = async () => {
-    let retries = 3;
-    while (retries > 0) {
-      try {
-        await this.page.waitForLoadState('load', { timeout: 30000 });
-        await this.placeOrderButton.click();
-        break; // Break out of the loop if successful
-      } catch (error) {
-        retries--;
-        await this.page.reload();
-      }
-    }
+    await this.page.waitForLoadState('load');
+    await this.placeOrderButton.click();
   };
   
   completeCheckoutLoggedInUser = async () => {
@@ -212,7 +208,7 @@ export default class CheckoutPageSFRA {
   };
 
   goBackAndSubmitShipping = async () => {
-    await this.page.waitForNavigation('load', { timeout: 20000 });
+    await this.page.waitForNavigation('load');
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -221,35 +217,38 @@ export default class CheckoutPageSFRA {
   expectSuccess = async () => {
     await this.page.waitForNavigation({
       url: /Order-Confirm/,
-      timeout: 20000,
     });
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectNonRedirectSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectRefusal = async () => {
-    await expect(this.errorMessage).not.toBeEmpty({ timeout: 25000 });
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
-    await expect(this.voucherCode).toBeVisible({ timeout: 20000 });
+    await expect(this.voucherCode).toBeVisible();
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached', timeout: 20000 });
-    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 20000 });
-    await expect(this.qrImg).toBeVisible({ timeout: 20000 });
+    await this.qrLoader.waitFor({ state: 'attached' });
+    await expect(this.qrLoaderAmount).toBeVisible();
+    await expect(this.qrImg).toBeVisible();
   };
 
   expectGiftCardWarning = async () => {
     await expect(this.giftCardWarning).not.toBeEmpty();
   };
 
+  expectClickToPay = async () => {
+    await expect(this.clickToPayLocator).toBeVisible();
+  }
+
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load');
     return await this.page.url();
   };
 
@@ -273,3 +272,4 @@ export default class CheckoutPageSFRA {
     );
   };
 }
+

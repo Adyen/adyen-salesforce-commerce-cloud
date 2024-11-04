@@ -88,7 +88,7 @@ export default class CheckoutPageSFRA5 {
 
   isPaymentModalShown = async (imgAltValue) => {
     await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible({ timeout: 20000 });
+      .toBeVisible();
   }
 
   navigateToCheckout = async (locale) => {
@@ -101,7 +101,7 @@ export default class CheckoutPageSFRA5 {
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
     await this.addProductToCart(locale, itemCount);
-    await this.successMessage.waitFor({ visible: true, timeout: 20000 });
+    await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
     await this.checkoutGuest.click();
@@ -162,24 +162,24 @@ export default class CheckoutPageSFRA5 {
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
     await this.page.keyboard.press('Tab');
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2000)); 
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle", timeout: 20000 });
+    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
     // Ugly wait since the submit button takes time to mount.
     await new Promise(r => setTimeout(r, 2000));
   };
 
   submitPayment = async () => {
-    await this.page.waitForLoadState('load', { timeout: 30000 });
+    await this.page.waitForLoadState('load');
     await this.submitPaymentButton.click();
   };
   placeOrder = async () => {
-    await this.page.waitForLoadState('load', { timeout: 30000 });
+    await this.page.waitForLoadState('load');
     await this.placeOrderButton.click();
   };
 
@@ -193,7 +193,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   goBackAndSubmitShipping = async () => {
-    await this.page.waitForNavigation('load', { timeout: 20000 });
+    await this.page.waitForNavigation('load');
     await this.navigateBack();
     await this.submitShipping();
   };
@@ -203,25 +203,25 @@ export default class CheckoutPageSFRA5 {
       url: /Order-Confirm/,
       timeout: 20000,
     });
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectNonRedirectSuccess = async () => {
-    await expect(this.thankYouMessage).toBeVisible({ timeout: 20000 });
+    await expect(this.thankYouMessage).toBeVisible();
   };
 
   expectRefusal = async () => {
-    await expect(this.errorMessage).not.toBeEmpty({ timeout: 25000 });
+    await expect(this.errorMessage).not.toBeEmpty();
   };
 
   expectVoucher = async () => {
-    await expect(this.voucherCode).toBeVisible({ timeout: 20000 });
+    await expect(this.voucherCode).toBeVisible();
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached', timeout: 20000 });
-    await expect(this.qrLoaderAmount).toBeVisible({ timeout: 20000 });
-    await expect(this.qrImg).toBeVisible({ timeout: 20000 });
+    await this.qrLoader.waitFor({ state: 'attached'});
+    await expect(this.qrLoaderAmount).toBeVisible();
+    await expect(this.qrImg).toBeVisible();
   };
 
   expectGiftCardWarning = async () => {
@@ -229,14 +229,14 @@ export default class CheckoutPageSFRA5 {
   };
 
   getLocation = async () => {
-    await this.page.waitForLoadState('load', { timeout: 20000 });
+    await this.page.waitForLoadState('load');
     return await this.page.url();
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    await this.page.waitForLoadState('networkidle');
   };
 
   loginUser = async (credentials) => {
