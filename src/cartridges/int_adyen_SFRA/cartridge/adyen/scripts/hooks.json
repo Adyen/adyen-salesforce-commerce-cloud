@@ -15,6 +15,10 @@
 		{
 			"name": "app.payment.form.processor.adyen_component",
 			"script": "./hooks/payment/processor/adyen_component_form_processor"
+		},
+		{
+			"name": "app.server.registerRoute",
+			"script": "../analytics/analyticsHook"
 		}
 	]
 }

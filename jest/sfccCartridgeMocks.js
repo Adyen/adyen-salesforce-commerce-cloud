@@ -360,6 +360,7 @@ jest.mock(
     isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
     getExpressPaymentsOrder: jest.fn(),
     getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
+    isAdyenAnalyticsEnabled: jest.fn(() => true),
   }),
   { virtual: true },
 );
@@ -494,5 +495,15 @@ jest.mock(
 jest.mock(
   '*/cartridge/client/default/js/adyen_checkout/paymentMethodsConfiguration',
   () => jest.fn(),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/analytics/analyticsEvents',
+  () => ({
+    createAnalyticsEvent: jest.fn(),
+    deleteAnalyticsEvent: jest.fn(),
+    updateAnalyticsEvent: jest.fn(),
+  }),
   { virtual: true },
 );

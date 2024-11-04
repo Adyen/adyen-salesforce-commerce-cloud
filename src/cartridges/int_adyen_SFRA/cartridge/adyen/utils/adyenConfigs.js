@@ -219,7 +219,7 @@ const adyenConfigsObj = {
     return SFRAversion.split('.')[0] >= SFRA6;
   },
 
-  getAdyenAnalyticsEnabled() {
+  isAdyenAnalyticsEnabled() {
     return getCustomPreference('AdyenAnalytics_Enabled');
   },
 };
