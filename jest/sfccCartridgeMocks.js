@@ -338,6 +338,7 @@ jest.mock(
     getAdyen3DS2Enabled: jest.fn(() => false),
     getAdyenLevel23DataEnabled: jest.fn(() => false),
     getAdyenSalePaymentMethods: jest.fn(() => []),
+    isAdyenAnalyticsEnabled: jest.fn(() => true),
   }),
   { virtual: true },
 );
@@ -465,6 +466,16 @@ jest.mock(
     showValidation: jest.fn(),
     createShowConfirmationForm: jest.fn(),
     getInstallmentValues: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/analytics/analyticsEvents',
+  () => ({
+    createAnalyticsEvent: jest.fn(),
+    deleteAnalyticsEvent: jest.fn(),
+    updateAnalyticsEvent: jest.fn(),
   }),
   { virtual: true },
 );

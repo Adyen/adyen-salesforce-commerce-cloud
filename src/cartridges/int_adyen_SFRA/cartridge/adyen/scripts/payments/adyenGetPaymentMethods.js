@@ -25,21 +25,12 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const blockedPayments = require('*/cartridge/adyen/config/blockedPaymentMethods.json');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const analyticsEvent = require('*/cartridge/adyen/analytics/analyticsEvents');
-const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 
 // eslint-disable-next-line complexity
 function getMethods(basket, customer, countryCode) {
   try {
     let paymentAmount;
     let currencyCode;
-    analyticsEvent.createAnalyticsEvent(
-      session.sessionID,
-      constants.SERVICE.CHECKOUTPAYMENTMETHODS,
-      analyticsConstants.eventType.START,
-      analyticsConstants.eventStatus.EXPECTED,
-      analyticsConstants.eventCode.INFO,
-    );
     // paymentMethods call from checkout
     if (basket) {
       currencyCode = basket.currencyCode;
@@ -89,13 +80,6 @@ function getMethods(basket, customer, countryCode) {
       paymentMethodsRequest,
     );
   } catch (error) {
-    analyticsEvent.createAnalyticsEvent(
-      session.sessionID,
-      constants.SERVICE.CHECKOUTPAYMENTMETHODS,
-      analyticsConstants.eventType.END,
-      analyticsConstants.eventStatus.UNEXPECTED,
-      analyticsConstants.eventCode.INFO,
-    );
     AdyenLogs.fatal_log('/paymentMethods call failed', error);
     return { error: true };
   }

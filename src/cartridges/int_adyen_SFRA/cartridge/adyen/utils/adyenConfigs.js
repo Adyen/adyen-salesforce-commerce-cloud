@@ -183,7 +183,7 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenGiving_logoUrl')?.getAbsURL();
   },
 
-  getAdyenAnalyticsEnabled() {
+  isAdyenAnalyticsEnabled() {
     return getCustomPreference('AdyenAnalytics_Enabled');
   },
 };
