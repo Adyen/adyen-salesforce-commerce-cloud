@@ -136,7 +136,11 @@ const adyenConfigsObj = {
   },
 
   areExpressPaymentsEnabled() {
-    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled();
+    return (
+      this.isApplePayExpressEnabled() ||
+      this.isAmazonPayExpressEnabled() ||
+      this.isPayPalExpressEnabled()
+    );
   },
 
   arePdpExpressPaymentsEnabled() {
