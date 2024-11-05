@@ -21,6 +21,12 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket',
+  () => jest.fn(),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/scripts/expressPayments/selectShippingMethods',
   () => jest.fn(),
   { virtual: true },
