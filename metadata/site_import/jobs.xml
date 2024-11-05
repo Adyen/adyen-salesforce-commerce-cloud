@@ -59,21 +59,21 @@
             </flow-template>
         </split>
         <triggers>
-			<run-recurring enabled="true">
-				<recurrence>
-					<date-from>2024-11-04</date-from>
-					<start-time>00:00:00</start-time>
-					<interval>1h</interval>
-				</recurrence>
-				<rules>
-					<on-exit status="ERROR">
-						<retry>
-							<interval>10m</interval>
-							<max-retries>3</max-retries>
-						</retry>
-					</on-exit>
-				</rules>
-			</run-recurring>
-	    </triggers>
+	    <run-recurring enabled="true">
+		<recurrence>
+			<date-from>2024-11-04</date-from>
+			<start-time>00:00:00</start-time>
+			<interval>1h</interval>
+		</recurrence>
+		<rules>
+			<on-exit status="ERROR">
+				<retry>
+					<interval>10m</interval>
+					<max-retries>3</max-retries>
+				</retry>
+			</on-exit>
+		</rules>
+	    </run-recurring>
+	</triggers>
     </job>
 </jobs>
