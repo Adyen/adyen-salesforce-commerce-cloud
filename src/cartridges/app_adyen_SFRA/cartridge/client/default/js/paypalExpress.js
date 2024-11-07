@@ -1,5 +1,4 @@
 const {
-  getPaymentMethods,
   updateLoadedExpressMethods,
   checkIfExpressMethodsAreReady,
 } = require('./commons');
@@ -201,16 +200,18 @@ function getPaypalButtonConfig(paypalConfig) {
   };
 }
 
-async function mountPaypalComponent() {
+async function init(paymentMethodsResponse) {
   try {
-    const response = await getPaymentMethods();
-    const paymentMethod = await response.json();
-    const paymentMethodsResponse = paymentMethod?.AdyenPaymentMethods;
-    const applicationInfo = paymentMethod?.applicationInfo;
-    const paypalConfig = paymentMethodsResponse?.paymentMethods.find(
-      (pm) => pm.type === PAYPAL,
-    )?.configuration;
-    if (!paypalConfig) return;
+    const applicationInfo = paymentMethodsResponse?.applicationInfo;
+    const paypalConfig =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
+        (pm) => pm.type === PAYPAL,
+      )?.configuration;
+    if (!paypalConfig) {
+      updateLoadedExpressMethods(PAYPAL);
+      checkIfExpressMethodsAreReady();
+      return;
+    }
     const checkout = await AdyenCheckout({
       environment: window.environment,
       clientKey: window.clientKey,
@@ -229,16 +230,12 @@ async function mountPaypalComponent() {
   }
 }
 
-mountPaypalComponent();
-
 module.exports = {
   callPaymentFromComponent,
   saveShopperDetails,
-  redirectToReviewPage,
   makeExpressPaymentDetailsCall,
-  updateComponent,
   handleShippingAddressChange,
   handleShippingOptionChange,
   getPaypalButtonConfig,
-  mountPaypalComponent,
+  init,
 };

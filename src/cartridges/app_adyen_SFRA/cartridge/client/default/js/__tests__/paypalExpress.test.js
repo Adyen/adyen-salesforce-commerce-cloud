@@ -5,13 +5,10 @@
 const {
   callPaymentFromComponent,
   saveShopperDetails,
-  redirectToReviewPage,
   makeExpressPaymentDetailsCall,
-  updateComponent,
   handleShippingAddressChange,
   handleShippingOptionChange,
   getPaypalButtonConfig,
-  mountPaypalComponent,
 } = require('../paypalExpress.js')
 const helpers = require('../adyen_checkout/helpers');
 

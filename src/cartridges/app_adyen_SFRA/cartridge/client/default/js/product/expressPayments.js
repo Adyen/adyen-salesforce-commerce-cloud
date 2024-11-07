@@ -1,4 +1,4 @@
-const applePayExpressModule = require('../applePayExpressCommon');
+const applePayExpressModule = require('../applePayExpress');
 const { APPLE_PAY } = require('../constants');
 const { getPaymentMethods } = require('../commons');
 
