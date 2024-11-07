@@ -9,7 +9,6 @@ const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
-let paymentMethodsResponse;
 let temporaryBasketId;
 
 function formatCustomerObject(customerData, billingData) {
@@ -150,9 +149,7 @@ function getShippingMethod(shippingContact, basketId) {
   });
 }
 
-async function initializeCheckout() {
-  const paymentMethods = await getPaymentMethods();
-  paymentMethodsResponse = await paymentMethods.json();
+async function initializeCheckout(paymentMethodsResponse) {
   const applicationInfo = paymentMethodsResponse?.applicationInfo;
   checkout = await AdyenCheckout({
     environment: window.environment,
@@ -284,8 +281,8 @@ async function onShippingContactSelected(resolve, reject, event, merchantName) {
   }
 }
 
-async function init() {
-  initializeCheckout()
+async function init(paymentMethodsResponse) {
+  initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const applePayPaymentMethod =
         paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(

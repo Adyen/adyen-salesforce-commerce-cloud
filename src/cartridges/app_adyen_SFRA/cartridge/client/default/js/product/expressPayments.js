@@ -1,5 +1,8 @@
 const applePayExpressModule = require('../applePayExpressCommon');
 const { APPLE_PAY } = require('../constants');
+const { getPaymentMethods } = require('../commons');
+
+let paymentMethodsResponse;
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -39,13 +42,13 @@ function getExpressPaymentButtons(product) {
   return enabledExpressPaymentButtons;
 }
 
-function renderApplePayButton() {
-  applePayExpressModule.init();
+function renderApplePayButton(paymentMethods) {
+  applePayExpressModule.init(paymentMethods);
 }
 
 function renderExpressPaymentButtons() {
   $('body').on('product:renderExpressPaymentButtons', (e, response) => {
-    const { product = {} } = response;
+    const { product = {}, paymentMethods } = response;
     const $expressPaymentButtonsContainer = document.getElementById(
       'express-payment-buttons',
     );
@@ -60,17 +63,20 @@ function renderExpressPaymentButtons() {
         ...expressPaymentButtons,
         $productForm,
       );
-      renderApplePayButton();
+      renderApplePayButton(paymentMethods);
     } else {
       $expressPaymentButtonsContainer.replaceChildren();
     }
   });
 }
 
-function init() {
+async function init() {
+  const paymentMethods = await getPaymentMethods();
+  paymentMethodsResponse = await paymentMethods.json();
   $('body').on('product:updateAddToCart', (e, response) => {
     $('body').trigger('product:renderExpressPaymentButtons', {
       product: response.product,
+      paymentMethods: paymentMethodsResponse,
     });
   });
   $(document).ready(async () => {
@@ -81,6 +87,7 @@ function init() {
       const { product } = await productVariation.json();
       $('body').trigger('product:renderExpressPaymentButtons', {
         product,
+        paymentMethods: paymentMethodsResponse,
       });
     }
     $.spinner().stop();

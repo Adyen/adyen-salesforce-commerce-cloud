@@ -763,6 +763,7 @@ describe('onShippingMethodSelected function', () => {
         },
       }),
     };
+    global.fetch = jest.fn().mockResolvedValueOnce(mockCalculationResponse)
     selectShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
       return mockCalculationResponse
     });
