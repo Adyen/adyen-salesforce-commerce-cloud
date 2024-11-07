@@ -1,0 +1,87 @@
+<div>${payment.selectedAdyenPM}</div>
+<isif condition="${payment.selectedIssuerName != null}">
+    <div>${payment.selectedIssuerName}</div>
+</isif>
+<isif condition="${payment.maskedCreditCardNumber}">
+    <div class="credit-card-number">
+        ${payment.maskedCreditCardNumber}
+    </div>
+</isif>
+<isif condition="${payment.expirationMonth && payment.expirationYear}">
+    <div class="credit-card-expiration-date">
+        <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
+    </div>
+</isif>
+<br/>
+<isif condition="${payment.adyenAction}">
+    <isscript>
+        var adyenAction = JSON.parse(payment.adyenAction);
+    </isscript>
+    <!--- Payment details --->
+    <isif condition="${adyenAction.reference}">
+        <span class="summary-section-label">${Resource.msg('action.reference', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.reference}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.maskedTelephoneNumber}">
+        <span class="summary-section-label">${Resource.msg('action.maskedTelephoneNumber', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.maskedTelephoneNumber}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.expiresAt}">
+        <span class="summary-section-label">${Resource.msg('action.expiresAt', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.expiresAt}</span><br/>
+    </isif>
+    <isif condition="${adyenAction.downloadUrl}">
+        <span class="summary-section-label">${Resource.msg('action.downloadUrl', 'checkout', null)}:</span>
+        <a href="${adyenAction.downloadUrl}" target="_blank" class="summary-details">${Resource.msg('action.downloadLink', 'checkout', null)}</a><br/>
+    </isif>
+    <isif condition="${adyenAction.entity}">
+        <span class="summary-section-label">${Resource.msg('action.entity', 'checkout', null)}:</span>
+        <span class="summary-details">${adyenAction.entity}</span><br/>
+    </isif>
+</isif>
+<isif condition="${payment.adyenAdditionalPaymentData}">
+    <isloop items="${payment.adyenAdditionalPaymentData}" var="additionalItem">
+        <!--- Payment details for Banktransfer --->
+        <isif condition="${additionalItem.key == 'bankTransfer.description'}">
+            <span class="summary-section-label">${Resource.msg('bankTransfer.description', 'checkout', null)}:</span><br/>
+            <br/>
+            <span class="summary-section-label">${Resource.msg('bankTransfer.amount', 'checkout', null)}:</span>
+            <span class="summary-details">${pdict.order.totals.grandTotal}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'bankTransfer.reference'}">
+            <span class="summary-section-label">${Resource.msg('bankTransfer.reference', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'bankTransfer.owner'}">
+            <span class="summary-section-label">${Resource.msg('bankTransfer.owner', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'bankTransfer.iban'}">
+            <span class="summary-section-label">${Resource.msg('bankTransfer.iban', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+
+        <!--- Payment details for Multibanco --->
+        <isif condition="${additionalItem.key == 'comprafacil.description'}">
+            <span class="summary-section-label">${Resource.msg('comprafacil.description', 'checkout', null)}:</span><br/>
+            <br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'comprafacil.deadline'}">
+            <span class="summary-section-label">${Resource.msg('comprafacil.deadline', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'comprafacil.reference'}">
+            <span class="summary-section-label">${Resource.msg('comprafacil.reference', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'comprafacil.entity'}">
+            <span class="summary-section-label">${Resource.msg('comprafacil.entity', 'checkout', null)}:</span>
+            <span class="summary-details">${additionalItem.value}</span><br/>
+        </isif>
+        <isif condition="${additionalItem.key == 'comprafacil.amount'}">
+            <span class="summary-section-label">${Resource.msg('comprafacil.amount', 'checkout', null)}:</span>
+            <span class="summary-details">${pdict.order.totals.grandTotal}</span><br/>
+        </isif>
+    </isloop>
+</isif>
+
