@@ -23,6 +23,7 @@ function createAnalyticsEvent(
     customObj.custom.eventCode = eventCode;
     customObj.custom.processingStatus =
       constants.processingStatus.NOT_PROCESSED;
+    customObj.custom.retryCount = 0;
   });
 }
 
