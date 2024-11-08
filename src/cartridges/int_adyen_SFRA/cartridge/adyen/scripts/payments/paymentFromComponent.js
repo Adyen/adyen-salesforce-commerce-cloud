@@ -12,7 +12,11 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 
-const expressMethods = ['applepay', 'amazonpay'];
+const expressMethods = [
+  constants.PAYMENTMETHODS.APPLEPAY,
+  constants.PAYMENTMETHODS.AMAZONPAY,
+  constants.PAYMENTMETHODS.GOOGLEPAY,
+];
 
 function setBillingAndShippingAddress(reqDataObj, currentBasket) {
   let { billingAddress } = currentBasket;
