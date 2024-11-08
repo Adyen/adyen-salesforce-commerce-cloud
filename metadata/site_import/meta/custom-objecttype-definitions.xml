@@ -309,6 +309,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="retryCount">
+                <display-name xml:lang="x-default">Retry Count</display-name>
+                <type>int</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-value>0</min-value>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="analyticsEvent">
@@ -321,6 +329,7 @@
                 <attribute attribute-id="message"/>
                 <attribute attribute-id="eventSource"/>
                 <attribute attribute-id="processingStatus"/>
+                <attribute attribute-id="retryCount"/>
                 <attribute attribute-id="lastModified" system="true"/>
             </attribute-group>
         </group-definitions>

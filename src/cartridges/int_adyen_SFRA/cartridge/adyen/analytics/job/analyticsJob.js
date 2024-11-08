@@ -77,13 +77,13 @@ function iterateCustomObjects(
   }
 }
 
-function updateProcessingStatus(customObject, status) {
+function updateCounter(customObject) {
   try {
     Transaction.wrap(() => {
-      customObject.custom.processingStatus = status;
+      customObject.custom.retryCount += 1;
     });
   } catch (e) {
-    AdyenLogs.error_log('Error updating processing status:', e);
+    AdyenLogs.error_log('Error updating counter:', e);
   }
 }
 
@@ -116,16 +116,18 @@ function processData() {
         deleteCustomObject(customObject);
       });
     } else {
-      AdyenLogs.error_log('Failed to submit full payload for grouped objects.');
       customObjectsToDelete.forEach((customObject) => {
-        updateProcessingStatus(
-          customObject,
-          constants.processingStatus.SKIPPED,
-        );
+        if (customObject.custom.retryCount > 2) {
+          deleteCustomObject(customObject);
+        } else {
+          updateCounter(customObject);
+        }
       });
+      throw new Error('Failed to submit full payload for grouped objects.');
     }
   } catch (e) {
     AdyenLogs.error_log(`Error querying custom objects: ${e}`);
+    throw e;
   } finally {
     if (customObjectIterator) {
       customObjectIterator.close();
