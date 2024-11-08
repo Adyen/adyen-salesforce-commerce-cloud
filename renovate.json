@@ -3,5 +3,8 @@
   "extends": [
     "config:base"
   ],
-  "baseBranches": ["develop"]
+  "baseBranches": ["develop"],
+  "internalChecksFilter": "strict",
+  "minimumReleaseAge": "21 days",
+  "updateNotScheduled": false
 }
