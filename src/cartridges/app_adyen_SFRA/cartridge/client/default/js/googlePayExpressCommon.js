@@ -132,6 +132,7 @@ async function init() {
         onSubmit: async () => {},
         paymentDataCallbacks: {
           onPaymentDataChanged() {
+            // TODO : This callback will be replaced by actual implementation on SFI-1020
             return new Promise((resolve) => {
               const paymentDataRequestUpdate = {
                 newShippingOptionParameters: {
