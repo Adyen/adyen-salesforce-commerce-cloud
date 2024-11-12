@@ -16,7 +16,7 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
  */
 // eslint-disable-next-line complexity
 function callSelectShippingMethod(req, res, next) {
-  const { basketId } = JSON.parse(req.body);
+  const { basketId } = JSON.parse(req.form.data);
   const currentBasket = basketId
     ? BasketMgr.getTemporaryBasket(basketId)
     : BasketMgr.getCurrentBasket();

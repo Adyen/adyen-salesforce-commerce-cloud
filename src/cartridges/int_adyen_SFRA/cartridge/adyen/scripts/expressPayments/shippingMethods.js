@@ -37,7 +37,7 @@ function getBasket(basketId) {
 function callGetShippingMethods(req, res, next) {
   try {
     const { address, currentPaymentData, paymentMethodType, basketId } =
-      JSON.parse(req.body);
+      JSON.parse(req.form.data);
     const currentBasket = getBasket(basketId);
     if (!currentBasket) {
       res.json({
