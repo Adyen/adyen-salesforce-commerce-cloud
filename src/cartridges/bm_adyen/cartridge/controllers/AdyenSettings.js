@@ -1,12 +1,17 @@
 const server = require('server');
 const Transaction = require('dw/system/Transaction');
-const csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const csrfProtection = require('dw/web/CSRFProtection');
+const URLUtils = require('dw/web/URLUtils');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-server.get('Start', csrfProtection.generateToken, (_req, res, next) => {
+server.get('Start', (_req, res, next) => {
+  if (!csrfProtection.validateRequest()) {
+    res.redirect(URLUtils.url('CSRF-Fail'));
+    return next();
+  }
   res.render('adyenSettings/settings');
   return next();
 });
