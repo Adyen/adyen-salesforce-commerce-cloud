@@ -8,8 +8,7 @@ const {
   handleApplePayResponse,
   callPaymentFromComponent,
   formatCustomerObject,
-} = require('../../applePayExpressCommon');
-
+} = require('../../applePayExpress');
 
 beforeEach(() => {
   jest.clearAllMocks();

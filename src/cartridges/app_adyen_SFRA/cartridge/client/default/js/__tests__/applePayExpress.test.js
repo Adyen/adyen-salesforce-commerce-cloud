@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-const applePayExpressModule = require('../applePayExpressCommon');
+const applePayExpressModule = require('../applePayExpress');
 const {
   createApplePayButton,
   initializeCheckout,
@@ -10,7 +10,7 @@ const {
   onShippingContactSelected,
   handleAuthorised,
   handleError
-} = require("../applePayExpressCommon");
+} = require("../applePayExpress");
 
 const APPLE_PAY = 'applepay';
 const mockCreate = jest.fn();
@@ -25,7 +25,7 @@ let spy;
 global.checkout = { create: mockCreate };
 global.fetch = jest.fn();
 
-jest.mock('../applePayExpressCommon', () => ({
+jest.mock('../applePayExpress', () => ({
   handleAuthorised: jest.fn(),
   handleError: jest.fn(),
   getPaymentMethods: jest.fn(),
@@ -763,6 +763,7 @@ describe('onShippingMethodSelected function', () => {
         },
       }),
     };
+    global.fetch = jest.fn().mockResolvedValueOnce(mockCalculationResponse)
     selectShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
       return mockCalculationResponse
     });

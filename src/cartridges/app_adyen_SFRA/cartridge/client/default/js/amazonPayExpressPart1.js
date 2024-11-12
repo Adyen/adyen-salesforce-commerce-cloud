@@ -1,16 +1,12 @@
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
-  getPaymentMethods,
 } = require('./commons');
 const { AMAZON_PAY } = require('./constants');
 
-async function mountAmazonPayComponent() {
+async function init(paymentMethodsResponse) {
   try {
-    const paymentMethods = await getPaymentMethods();
-    const data = await paymentMethods.json();
-    const paymentMethodsResponse = data?.AdyenPaymentMethods;
-    const applicationInfo = data?.applicationInfo;
+    const applicationInfo = paymentMethodsResponse?.applicationInfo;
     const checkout = await AdyenCheckout({
       environment: window.environment,
       clientKey: window.clientKey,
@@ -20,10 +16,15 @@ async function mountAmazonPayComponent() {
       },
     });
 
-    const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
-      (pm) => pm.type === AMAZON_PAY,
-    )?.configuration;
-    if (!amazonPayConfig) return;
+    const amazonPayConfig =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
+        (pm) => pm.type === AMAZON_PAY,
+      )?.configuration;
+    if (!amazonPayConfig) {
+      updateLoadedExpressMethods(AMAZON_PAY);
+      checkIfExpressMethodsAreReady();
+      return;
+    }
 
     const amazonPayButtonConfig = {
       showPayButton: true,
@@ -42,4 +43,6 @@ async function mountAmazonPayComponent() {
   }
 }
 
-mountAmazonPayComponent();
+module.exports = {
+  init,
+};
