@@ -110,29 +110,33 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
-function selectShippingMethod({ shipmentUUID, ID }, basketId) {
-  const request = {
+async function selectShippingMethod({ shipmentUUID, ID }, basketId, reject) {
+  const requestBody = {
     paymentMethodType: APPLE_PAY,
     shipmentUUID,
     methodID: ID,
     basketId,
   };
-  return fetch(window.selectShippingMethodUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+  return $.ajax({
+    type: 'POST',
+    url: window.selectShippingMethodUrl,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify(requestBody),
     },
-    body: JSON.stringify(request),
-  });
+    success(response) {
+      return response;
+    },
+  }).fail(() => reject());
 }
 
-function getShippingMethod(shippingContact, basketId) {
-  const request = {
+function getShippingMethod(shippingContact, basketId, reject) {
+  const requestBody = {
     paymentMethodType: APPLE_PAY,
     basketId,
   };
   if (shippingContact) {
-    request.address = {
+    requestBody.address = {
       city: shippingContact.locality,
       country: shippingContact.country,
       countryCode: shippingContact.countryCode,
@@ -140,13 +144,17 @@ function getShippingMethod(shippingContact, basketId) {
       postalCode: shippingContact.postalCode,
     };
   }
-  return fetch(window.shippingMethodsUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+  return $.ajax({
+    type: 'POST',
+    url: window.shippingMethodsUrl,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify(requestBody),
     },
-    body: JSON.stringify(request),
-  });
+    success(response) {
+      return response;
+    },
+  }).fail(() => reject());
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
@@ -218,18 +226,18 @@ async function onShippingMethodSelected(
   const calculationResponse = await selectShippingMethod(
     matchingShippingMethod,
     temporaryBasketId,
+    reject,
   );
-  if (calculationResponse?.ok) {
-    const newCalculation = await calculationResponse.json();
+  if (calculationResponse?.grandTotalAmount) {
     applePayButtonConfig.amount = {
-      value: newCalculation.grandTotalAmount.value,
-      currency: newCalculation.grandTotalAmount.currency,
+      value: calculationResponse.grandTotalAmount.value,
+      currency: calculationResponse.grandTotalAmount.currency,
     };
     const applePayShippingMethodUpdate = {
       newTotal: {
         type: 'final',
         label: merchantName,
-        amount: newCalculation.grandTotalAmount.value,
+        amount: calculationResponse.grandTotalAmount.value,
       },
     };
     resolve(applePayShippingMethodUpdate);
@@ -240,39 +248,36 @@ async function onShippingMethodSelected(
 
 async function onShippingContactSelected(resolve, reject, event, merchantName) {
   const { shippingContact } = event;
-  const shippingMethods = await getShippingMethod(
+  shippingMethodsData = await getShippingMethod(
     shippingContact,
     temporaryBasketId,
+    reject,
   );
-  if (shippingMethods?.ok) {
-    shippingMethodsData = await shippingMethods.json();
-    if (shippingMethodsData.shippingMethods?.length) {
-      const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
-      const calculationResponse = await selectShippingMethod(
-        selectedShippingMethod,
-        temporaryBasketId,
+  if (shippingMethodsData?.shippingMethods?.length) {
+    const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
+    const newCalculation = await selectShippingMethod(
+      selectedShippingMethod,
+      temporaryBasketId,
+      reject,
+    );
+    if (newCalculation?.grandTotalAmount) {
+      const shippingMethodsStructured = shippingMethodsData.shippingMethods.map(
+        (sm) => ({
+          label: sm.displayName,
+          detail: sm.description,
+          identifier: sm.ID,
+          amount: `${sm.shippingCost.value}`,
+        }),
       );
-      if (calculationResponse.ok) {
-        const shippingMethodsStructured =
-          shippingMethodsData.shippingMethods.map((sm) => ({
-            label: sm.displayName,
-            detail: sm.description,
-            identifier: sm.ID,
-            amount: `${sm.shippingCost.value}`,
-          }));
-        const newCalculation = await calculationResponse.json();
-        const applePayShippingContactUpdate = {
-          newShippingMethods: shippingMethodsStructured,
-          newTotal: {
-            type: 'final',
-            label: merchantName,
-            amount: newCalculation.grandTotalAmount.value,
-          },
-        };
-        resolve(applePayShippingContactUpdate);
-      } else {
-        reject();
-      }
+      const applePayShippingContactUpdate = {
+        newShippingMethods: shippingMethodsStructured,
+        newTotal: {
+          type: 'final',
+          label: merchantName,
+          amount: newCalculation.grandTotalAmount.value,
+        },
+      };
+      resolve(applePayShippingContactUpdate);
     } else {
       reject();
     }
