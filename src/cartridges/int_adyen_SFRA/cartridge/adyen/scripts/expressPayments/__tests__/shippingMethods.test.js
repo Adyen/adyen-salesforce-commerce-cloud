@@ -13,13 +13,15 @@ beforeEach(() => {
   jest.clearAllMocks();
 
   req = {
-    body: JSON.stringify({address:{
-      city: 'Amsterdam',
-      countryCode: 'NL',
-      stateCode: 'AMS',
-      postalCode: '1001',
-      shipmentUUID: 'mocked_uuid',
-    }}),
+    form: {
+      data: JSON.stringify({address:{
+        city: 'Amsterdam',
+        countryCode: 'NL',
+        stateCode: 'AMS',
+        postalCode: '1001',
+        shipmentUUID: 'mocked_uuid',
+      }})
+    },
   };
 
   res = {

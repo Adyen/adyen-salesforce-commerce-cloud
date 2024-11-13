@@ -192,7 +192,7 @@ describe('paypal express', () => {
       }
 
       await handleShippingAddressChange(data, actions, component);
-      expect(global.fetch).toHaveBeenCalledWith('test_url', request);
+      expect(global.$.ajax).toHaveBeenCalledWith('test_url', request);
       expect(component.updatePaymentData).toHaveBeenCalledTimes(1);
       expect(actions.reject).not.toHaveBeenCalled();
     })
@@ -363,15 +363,23 @@ describe('paypal express', () => {
       })
 
       const request = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
+        url: 'test_url',
+        async: false,
+        type: 'POST',
+        success: expect.any(Function),
+        error: expect.any(Function),
+        data: {
+          csrf_token: undefined,
+          data: {
+            paymentMethodType: 'paypal',
+            currentPaymentData: 'test_paymentData',
+            methodID: 'test'
+          }
         },
-        body: JSON.stringify({ paymentMethodType: 'paypal', currentPaymentData: 'test_paymentData', methodID: 'test' }),
       }
 
       await handleShippingOptionChange(data, actions, component);
-      expect(global.fetch).toHaveBeenCalledWith('test_url', request);
+      expect(global.$.ajax).toHaveBeenCalledWith(request);
       expect(component.updatePaymentData).toHaveBeenCalledTimes(1);
       expect(actions.reject).not.toHaveBeenCalled();
     })
