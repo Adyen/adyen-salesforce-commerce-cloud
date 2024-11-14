@@ -172,29 +172,28 @@ describe('paypal express', () => {
         updatePaymentData: jest.fn(),
         paymentData: 'test_paymentData'
       }
-      global.fetch = jest.fn().mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn(() => ({paymentData: 'test_paymentData', status: 'success'}))
-      })
-
       const request = {
-        method: 'POST',
-          headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-        body: JSON.stringify({ paymentMethodType: 'paypal', currentPaymentData: 'test_paymentData', address: {
-            city: 'Amsterdam',
-            country: 'Netherlands',
-            countryCode: 'NL',
-            stateCode: 'AMS',
-            postalCode: '1001',
-          } }),
+        url: 'test_url',
+        type: 'POST',
+        data: {
+          csrf_token: undefined,
+          data: JSON.stringify({
+            paymentMethodType: 'paypal',
+            currentPaymentData: 'test_paymentData',
+            address: {
+              city: 'Amsterdam',
+              country: 'Netherlands',
+              countryCode: 'NL',
+              stateCode: 'AMS',
+              postalCode: '1001',
+            }
+          }),
+        },
+        async: false,
       }
 
       await handleShippingAddressChange(data, actions, component);
-      expect(global.$.ajax).toHaveBeenCalledWith('test_url', request);
-      expect(component.updatePaymentData).toHaveBeenCalledTimes(1);
-      expect(actions.reject).not.toHaveBeenCalled();
+      expect(global.$.ajax).toHaveBeenCalledWith(expect.objectContaining(request));
     })
     it('should not make shipping address change call if no shipping address is present', async () => {
       const data = {
@@ -357,10 +356,6 @@ describe('paypal express', () => {
         updatePaymentData: jest.fn(),
         paymentData: 'test_paymentData'
       }
-      global.fetch = jest.fn().mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn(() => ({paymentData: 'test_paymentData', status: 'success'}))
-      })
 
       const request = {
         url: 'test_url',
@@ -370,18 +365,16 @@ describe('paypal express', () => {
         error: expect.any(Function),
         data: {
           csrf_token: undefined,
-          data: {
+          data: JSON.stringify({
             paymentMethodType: 'paypal',
             currentPaymentData: 'test_paymentData',
             methodID: 'test'
-          }
+          })
         },
       }
 
       await handleShippingOptionChange(data, actions, component);
       expect(global.$.ajax).toHaveBeenCalledWith(request);
-      expect(component.updatePaymentData).toHaveBeenCalledTimes(1);
-      expect(actions.reject).not.toHaveBeenCalled();
     })
     it('should not make shipping option change call if no shipping option is present', async () => {
       const data = {

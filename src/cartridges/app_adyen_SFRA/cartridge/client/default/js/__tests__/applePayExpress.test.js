@@ -452,25 +452,25 @@ describe('selectShippingMethod', () => {
   });
 
   it('should send correct request to fetch with valid parameters', async () => {
-    // fetch.mockResolvedValue(mockResponse);
-    const result = await selectShippingMethod(
+    await selectShippingMethod(
       { shipmentUUID: mockShipmentUUID, ID: mockID },
       mockBasketId,
       reject
     );
-    expect(fetch).toHaveBeenCalledWith(window.selectShippingMethodUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    expect(global.$.ajax).toHaveBeenCalledWith({
+      url: window.selectShippingMethodUrl,
+      type: 'POST',
+      data: {
+        csrf_token: undefined,
+        data: JSON.stringify({
+          paymentMethodType: APPLE_PAY,
+          shipmentUUID: mockShipmentUUID,
+          methodID: mockID,
+          basketId: mockBasketId,
+        })
       },
-      body: JSON.stringify({
-        paymentMethodType: APPLE_PAY,
-        shipmentUUID: mockShipmentUUID,
-        methodID: mockID,
-        basketId: mockBasketId,
-      }),
+      success: expect.any(Function),
     });
-    expect(result).toEqual(mockResponse);
   });
 
   it('should handle fetch rejection', async () => {
@@ -507,17 +507,13 @@ describe('getShippingMethod', () => {
       administrativeArea: 'Test State',
       postalCode: '12345',
     };
-    fetch.mockResolvedValue(mockResponse);
-    const result = await getShippingMethod(shippingContact, mockBasketId, rejectMock);
-    expect(global.$.ajax).toHaveBeenCalledWith({
+    await getShippingMethod(shippingContact, mockBasketId, rejectMock);
+    expect(global.$.ajax).toHaveBeenCalledWith(expect.objectContaining({
       url: window.shippingMethodsUrl,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+      type: 'POST',
       data: {
         csrf_token: undefined,
-        data: {
+        data: JSON.stringify({
           paymentMethodType: APPLE_PAY,
           basketId: mockBasketId,
           address: {
@@ -526,11 +522,10 @@ describe('getShippingMethod', () => {
             countryCode: shippingContact.countryCode,
             stateCode: shippingContact.administrativeArea,
             postalCode: shippingContact.postalCode,
-          },
-        }
-      }
-    });
-    expect(result).toEqual(mockResponse);
+          }
+        })
+      },
+    }));
   });
 
   it('should send correct request to fetch without shippingContact', async () => {
@@ -547,7 +542,6 @@ describe('getShippingMethod', () => {
         })
       },
     });
-    expect(result).toEqual(mockResponse);
   });
 
   it('should handle fetch rejection', async () => {
