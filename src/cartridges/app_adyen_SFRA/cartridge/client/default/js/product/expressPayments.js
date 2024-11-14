@@ -71,8 +71,7 @@ function renderExpressPaymentButtons() {
 }
 
 async function init() {
-  const paymentMethods = await getPaymentMethods();
-  paymentMethodsResponse = await paymentMethods.json();
+  paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
     $('body').trigger('product:renderExpressPaymentButtons', {
       product: response.product,

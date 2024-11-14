@@ -79,10 +79,9 @@ function showAddressDetails(shopperDetails) {
 async function mountAmazonPayComponent() {
   try {
     const amazonPayNode = document.getElementById('amazon-container');
-    const paymentMethods = await getPaymentMethods();
-    const data = await paymentMethods.json();
-    const paymentMethodsResponse = data?.AdyenPaymentMethods;
-    const applicationInfo = data?.applicationInfo;
+    const paymentMethodsData = await getPaymentMethods();
+    const paymentMethodsResponse = paymentMethodsData?.AdyenPaymentMethods;
+    const applicationInfo = paymentMethodsData?.applicationInfo;
     const checkout = await AdyenCheckout({
       environment: window.Configuration.environment,
       clientKey: window.Configuration.clientKey,

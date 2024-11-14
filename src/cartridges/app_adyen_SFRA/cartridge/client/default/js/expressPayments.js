@@ -6,8 +6,7 @@ const amazonPayExpressModule = require('./amazonPayExpressPart1');
 let paymentMethodsResponse = null;
 
 async function init() {
-  const paymentMethods = await getPaymentMethods();
-  paymentMethodsResponse = await paymentMethods.json();
+  paymentMethodsResponse = await getPaymentMethods();
   $(document).ready(async () => {
     if (window.isApplePayExpressEnabled === 'true') {
       await applePayExpressModule.init(paymentMethodsResponse);

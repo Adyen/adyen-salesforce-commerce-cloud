@@ -26,11 +26,9 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
  * Makes an ajax call to the controller function GetPaymentMethods
  */
 module.exports.getPaymentMethods = async function getPaymentMethods() {
-  return fetch(window.getPaymentMethodsURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
+  return $.ajax({
+    url: window.getPaymentMethodsURL,
+    type: 'post',
   });
 };
 
