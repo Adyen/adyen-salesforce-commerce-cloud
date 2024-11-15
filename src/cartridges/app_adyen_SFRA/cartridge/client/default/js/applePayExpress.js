@@ -322,9 +322,8 @@ async function init(paymentMethodsResponse) {
         },
         onClick: async (resolve, reject) => {
           if (window.isExpressPdp) {
-            const tempBasket = await createTemporaryBasket();
-            if (tempBasket.ok) {
-              const tempBasketResponse = await tempBasket.json();
+            const tempBasketResponse = await createTemporaryBasket();
+            if (tempBasketResponse?.basketId) {
               temporaryBasketId = tempBasketResponse.basketId;
               applePayButtonConfig.amount = {
                 value: tempBasketResponse.amount.value,

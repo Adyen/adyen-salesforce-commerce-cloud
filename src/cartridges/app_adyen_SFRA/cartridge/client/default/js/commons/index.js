@@ -37,10 +37,21 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
  */
 module.exports.createTemporaryBasket = async function createTemporaryBasket() {
   const productForm = document.getElementById('express-product-form');
-
-  return fetch(window.createTemporaryBasketUrl, {
-    method: 'POST',
-    body: new FormData(productForm),
+  const data = new FormData(productForm);
+  const dataFromEntries = Object.fromEntries(data.entries());
+  const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
+  return $.ajax({
+    url: window.createTemporaryBasketUrl,
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({
+        id: parsedData.id,
+        bundledProducts: parsedData.bundledProducts,
+        options: parsedData.options,
+        selectedQuantity: parsedData.selectedQuantity,
+      }),
+    },
   });
 };
 
