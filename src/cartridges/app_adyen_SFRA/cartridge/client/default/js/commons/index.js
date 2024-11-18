@@ -18,7 +18,10 @@ module.exports.onBrand = function onBrand(brandObject) {
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
     url: window.fetchGiftCardsUrl,
-    type: 'get',
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 
