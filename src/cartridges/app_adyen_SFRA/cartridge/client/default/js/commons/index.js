@@ -1,3 +1,4 @@
+const $ = require('jquery');
 const store = require('../../../../store');
 const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
 
