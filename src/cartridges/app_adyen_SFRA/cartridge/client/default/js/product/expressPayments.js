@@ -71,8 +71,7 @@ function renderExpressPaymentButtons() {
 }
 
 async function init() {
-  const paymentMethods = await getPaymentMethods();
-  paymentMethodsResponse = await paymentMethods.json();
+  paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
     $('body').trigger('product:renderExpressPaymentButtons', {
       product: response.product,
@@ -82,11 +81,13 @@ async function init() {
   $(document).ready(async () => {
     $.spinner().start();
     const dataUrl = $('.quantity-select').find('option:selected').data('url');
-    const productVariation = await fetch(dataUrl);
-    if (productVariation.ok) {
-      const { product } = await productVariation.json();
+    const productVariation = await $.ajax({
+      url: dataUrl,
+      method: 'get',
+    });
+    if (productVariation?.product) {
       $('body').trigger('product:renderExpressPaymentButtons', {
-        product,
+        product: productVariation?.product,
         paymentMethods: paymentMethodsResponse,
       });
     }

@@ -56,11 +56,11 @@ function createTemporaryBasket(req, res, next) {
     if (!tempBasket) {
       throw new Error('Temporary basket not created');
     }
-    const { id, bundledProducts, options, selectedQuantity } = req.form[
-      'selected-express-product'
-    ]
-      ? JSON.parse(req.form['selected-express-product'])
-      : {};
+
+    const { id, bundledProducts, options, selectedQuantity } = JSON.parse(
+      req.form.data,
+    );
+
     addProductToBasket(
       tempBasket,
       id,

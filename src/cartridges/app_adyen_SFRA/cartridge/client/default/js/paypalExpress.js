@@ -91,20 +91,21 @@ function makeExpressPaymentDetailsCall(data) {
   });
 }
 
-async function updateComponent(response, component) {
-  if (response.ok) {
-    const { paymentData, status, errorMessage = '' } = await response.json();
+function updateComponent(response, component) {
+  if (response) {
+    const { paymentData, status, errorMessage = '' } = response;
     if (!paymentData || status !== 'success') {
       throw new Error(errorMessage);
     }
     // Update the Component paymentData value with the new one.
     component.updatePaymentData(paymentData);
   } else {
-    const { errorMessage = '' } = await response.json();
+    const { errorMessage = '' } = response;
     throw new Error(errorMessage);
   }
   return false;
 }
+
 async function handleShippingAddressChange(data, actions, component) {
   try {
     const { shippingAddress, errors } = data;
@@ -112,7 +113,7 @@ async function handleShippingAddressChange(data, actions, component) {
     if (!shippingAddress) {
       throw new Error(errors?.ADDRESS_ERROR);
     }
-    const request = {
+    const requestBody = {
       paymentMethodType: PAYPAL,
       currentPaymentData,
       address: {
@@ -123,14 +124,21 @@ async function handleShippingAddressChange(data, actions, component) {
         postalCode: shippingAddress.postalCode,
       },
     };
-    const response = await fetch(window.shippingMethodsUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    $.ajax({
+      type: 'POST',
+      url: window.shippingMethodsUrl,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestBody),
       },
-      body: JSON.stringify(request),
+      async: false,
+      success(response) {
+        updateComponent(response, component);
+      },
+      error() {
+        actions.reject();
+      },
     });
-    await updateComponent(response, component);
   } catch (e) {
     actions.reject();
   }
@@ -144,19 +152,26 @@ async function handleShippingOptionChange(data, actions, component) {
     if (!selectedShippingOption) {
       throw new Error(errors?.METHOD_UNAVAILABLE);
     }
-    const request = {
+    const requestBody = {
       paymentMethodType: PAYPAL,
       currentPaymentData,
       methodID: selectedShippingOption?.id,
     };
-    const response = await fetch(window.selectShippingMethodUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    $.ajax({
+      type: 'POST',
+      url: window.selectShippingMethodUrl,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestBody),
       },
-      body: JSON.stringify(request),
+      async: false,
+      success(response) {
+        updateComponent(response, component);
+      },
+      error() {
+        actions.reject();
+      },
     });
-    await updateComponent(response, component);
   } catch (e) {
     actions.reject();
   }

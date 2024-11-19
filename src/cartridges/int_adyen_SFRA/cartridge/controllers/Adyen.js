@@ -209,6 +209,7 @@ server.post(
 server.post(
   'CreateTemporaryBasket',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.createTemporaryBasket,
 );
 
