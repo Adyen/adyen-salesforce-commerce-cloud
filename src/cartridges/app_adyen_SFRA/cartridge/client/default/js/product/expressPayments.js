@@ -1,6 +1,8 @@
-const applePayExpressModule = require('../applePayExpressCommon');
-const googlePayExpressModule = require('../googlePayExpressCommon');
-const { APPLE_PAY, GOOGLE_PAY } = require('../constants');
+const applePayExpressModule = require('../applePayExpress');
+const { APPLE_PAY } = require('../constants');
+const { getPaymentMethods } = require('../commons');
+
+let paymentMethodsResponse;
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -25,7 +27,6 @@ function getValueForCurrency(amount, currency) {
 function getExpressPaymentButtons(product) {
   const expressMethodsConfig = {
     [APPLE_PAY]: window.isApplePayExpressOnPdpEnabled === 'true',
-    [GOOGLE_PAY]: window.isGooglePayExpressOnPdpEnabled === 'true',
   };
   const enabledExpressPaymentButtons = [];
   Object.keys(expressMethodsConfig).forEach((key) => {
@@ -41,17 +42,13 @@ function getExpressPaymentButtons(product) {
   return enabledExpressPaymentButtons;
 }
 
-function renderApplePayButton() {
-  applePayExpressModule.init();
-}
-
-function renderGooglePayButton() {
-  googlePayExpressModule.init();
+function renderApplePayButton(paymentMethods) {
+  applePayExpressModule.init(paymentMethods);
 }
 
 function renderExpressPaymentButtons() {
   $('body').on('product:renderExpressPaymentButtons', (e, response) => {
-    const { product = {} } = response;
+    const { product = {}, paymentMethods } = response;
     const $expressPaymentButtonsContainer = document.getElementById(
       'express-payment-buttons',
     );
@@ -66,28 +63,32 @@ function renderExpressPaymentButtons() {
         ...expressPaymentButtons,
         $productForm,
       );
-      renderApplePayButton();
-      renderGooglePayButton();
+      renderApplePayButton(paymentMethods);
     } else {
       $expressPaymentButtonsContainer.replaceChildren();
     }
   });
 }
 
-function init() {
+async function init() {
+  paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
     $('body').trigger('product:renderExpressPaymentButtons', {
       product: response.product,
+      paymentMethods: paymentMethodsResponse,
     });
   });
   $(document).ready(async () => {
     $.spinner().start();
     const dataUrl = $('.quantity-select').find('option:selected').data('url');
-    const productVariation = await fetch(dataUrl);
-    if (productVariation.ok) {
-      const { product } = await productVariation.json();
+    const productVariation = await $.ajax({
+      url: dataUrl,
+      method: 'get',
+    });
+    if (productVariation?.product) {
       $('body').trigger('product:renderExpressPaymentButtons', {
-        product,
+        product: productVariation?.product,
+        paymentMethods: paymentMethodsResponse,
       });
     }
     $.spinner().stop();

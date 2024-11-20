@@ -1,5 +1,6 @@
+const $ = require('jquery');
 const store = require('../../../../store');
-const { PAYPAL, APPLE_PAY, AMAZON_PAY, GOOGLE_PAY } = require('../constants');
+const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
 
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
@@ -18,7 +19,10 @@ module.exports.onBrand = function onBrand(brandObject) {
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
     url: window.fetchGiftCardsUrl,
-    type: 'get',
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 
@@ -26,11 +30,9 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
  * Makes an ajax call to the controller function GetPaymentMethods
  */
 module.exports.getPaymentMethods = async function getPaymentMethods() {
-  return fetch(window.getPaymentMethodsURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
+  return $.ajax({
+    url: window.getPaymentMethodsURL,
+    type: 'post',
   });
 };
 
@@ -39,10 +41,21 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
  */
 module.exports.createTemporaryBasket = async function createTemporaryBasket() {
   const productForm = document.getElementById('express-product-form');
-
-  return fetch(window.createTemporaryBasketUrl, {
-    method: 'POST',
-    body: new FormData(productForm),
+  const data = new FormData(productForm);
+  const dataFromEntries = Object.fromEntries(data.entries());
+  const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
+  return $.ajax({
+    url: window.createTemporaryBasketUrl,
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({
+        id: parsedData.id,
+        bundledProducts: parsedData.bundledProducts,
+        options: parsedData.options,
+        selectedQuantity: parsedData.selectedQuantity,
+      }),
+    },
   });
 };
 
@@ -52,7 +65,6 @@ module.exports.checkIfExpressMethodsAreReady =
       [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
       [AMAZON_PAY]: window.isAmazonPayExpressEnabled === 'true',
       [PAYPAL]: window.isPayPalExpressEnabled === 'true',
-      [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
     };
     let enabledExpressMethods = [];
     Object.keys(expressMethodsConfig).forEach((key) => {

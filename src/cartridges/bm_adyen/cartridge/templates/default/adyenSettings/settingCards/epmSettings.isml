@@ -5,44 +5,26 @@
     window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
     window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
     window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
-    window.googleIcon = "${URLUtils.staticURL('icons/googlepay.svg')}";
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isApplePayExpressOnPdpEnabled = ${AdyenConfigs.isApplePayExpressOnPdpEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
     window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
     window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};
-    window.isGooglePayExpressEnabled = ${AdyenConfigs.isGooglePayExpressEnabled() || false};
-    window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
     window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
 </script>
 <div id="epmSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
-         Express checkout <small class="text-secondary">(optional)</small>
+         Express checkout
       </h5>
       <h7 class="card-subtitle">
-         <div class="first-subtitle">Allow your shoppers to pay instantly with the payment methods they trust across multiple stores.</div>
+         <div class="first-subtitle">Surface payment methods that handle billing and shipping in various locations of your checkout.</div>
       </h7>
       <div class="mt-2">
-         <div class="form-group">
-            <label class="form-title mb-0" for="expressPaymentsButton">Express Checkout</label>
-            <small id="expressPaymentsButtonHelp" class="form-text mb-1">Make sure the payment methods are also enabled in the Customer Area.</small>
-            <label class="form-title mb-0" for="expressCheckoutHelp">Buttons display on cart and mini-cart page</label>
-            <small class="form-text mb-1">Customize the order that you would like to place the express buttons in the cart and mini-cart.</small>
-         </div>
          <div class="express-settings collapse show">
             <div class="form-group">
                 <ul class="draggable-list" id="draggable-list"></ul>
-            </div>
-         </div>
-         <div class="form-group">
-            <label class="form-title mb-0" for="expressCheckoutHelp">Buttons display on product detail page</label>
-            <small class="form-text mb-1">Customize the order that you would like to place the express buttons in the product detail page.</small>
-         </div>
-         <div class="express-settings-pdp collapse show">
-            <div class="form-group">
-                <ul class="draggable-list" id="draggable-list-pdp"></ul>
             </div>
          </div>
       </div>

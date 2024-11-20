@@ -81,7 +81,16 @@ describe('Render Generic Component', () => {
     fetchGiftCards.mockReturnValue(availableGiftCards);
     document.body.innerHTML = giftCardHtml;
     store.componentsObj = { foo: 'bar', bar: 'baz' };
-    store.checkoutConfiguration.paymentMethodsConfiguration = { amazonpay: {} };
+    store.checkoutConfiguration = {
+      amount: {
+        currency: 'mocked_currency',
+        value: 'mocked_amount'
+      },
+      countryCode: 'mocked_countrycode',
+      paymentMethodsConfiguration: {
+        amazonpay: {}
+      }
+    }
     await renderGenericComponent();
     expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
@@ -94,7 +103,16 @@ describe('Render Generic Component', () => {
     fetchGiftCards.mockReturnValue({ giftCards: [] });
     document.body.innerHTML = giftCardHtml;
     store.componentsObj = { foo: 'bar', bar: 'baz' };
-    store.checkoutConfiguration.paymentMethodsConfiguration = { amazonpay: {} };
+    store.checkoutConfiguration = {
+      amount: {
+        currency: 'mocked_currency',
+        value: 'mocked_amount'
+      },
+      countryCode: 'mocked_countrycode',
+      paymentMethodsConfiguration: {
+        amazonpay: {}
+      }
+    }
     await renderGenericComponent();
     expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();

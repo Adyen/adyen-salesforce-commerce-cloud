@@ -33,7 +33,7 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal'
   },
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp'],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
@@ -85,6 +85,6 @@ module.exports = {
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION: 'SFRA',
   APPLE_DOMAIN_URL: '/.well-known/apple-developer-merchantid-domain-association',
-  CHECKOUT_COMPONENT_VERSION: '5.65.0',
-  VERSION: '24.4.0'
+  CHECKOUT_COMPONENT_VERSION: '5.68.0',
+  VERSION: '24.4.1'
 };

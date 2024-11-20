@@ -10,7 +10,6 @@ const {
   formatCustomerObject,
 } = require('../../applePayExpressCommon');
 
-
 beforeEach(() => {
   jest.clearAllMocks();
 

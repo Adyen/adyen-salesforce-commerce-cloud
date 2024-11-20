@@ -162,7 +162,7 @@ export default class CheckoutPageSFRA5 {
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
     await this.page.keyboard.press('Tab');
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2000)); 
   };
 
   submitShipping = async () => {

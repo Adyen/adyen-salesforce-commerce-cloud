@@ -13,7 +13,9 @@ describe('callSelectShippingMethod', () => {
     jest.clearAllMocks();
 
     req = {
-      body: JSON.stringify({})
+      form: {
+        data: JSON.stringify({})
+      }
     };
 
     res = {
