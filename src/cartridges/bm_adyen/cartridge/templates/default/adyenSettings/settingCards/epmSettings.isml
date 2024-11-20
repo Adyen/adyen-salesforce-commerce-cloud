@@ -5,9 +5,12 @@
     window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
     window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
     window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
+    window.googlePayIcon = "${URLUtils.staticURL('icons/googlepay.svg')}";
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isApplePayExpressOnPdpEnabled = ${AdyenConfigs.isApplePayExpressOnPdpEnabled() || false};
+    window.isGooglePayEnabled = ${AdyenConfigs.isGooglePayExpressEnabled() || false};
+    window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
     window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
     window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};

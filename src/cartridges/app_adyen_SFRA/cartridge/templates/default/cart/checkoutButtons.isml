@@ -90,9 +90,6 @@
             </div>
             <script src="${URLUtils.httpsStatic('/js/expressPayments.js')}" type="text/javascript"></script>
         </isif>
-        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled() && AdyenConfigs.isGooglePayExpressEnabled()}">
-            <script src="${URLUtils.httpsStatic('/js/googlePayExpress.js')}" type="text/javascript"></script>
-        </isif>
     </iselse>
 </isif>
 <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>

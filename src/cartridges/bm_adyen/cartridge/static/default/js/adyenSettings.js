@@ -17,6 +17,23 @@ const expressPaymentMethods = [
     ],
   },
   {
+    id: 'googlepay',
+    text: 'Google Pay Express',
+    icon: window.googlePayIcon,
+    toggles: [
+      {
+        name: 'GooglePayExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isGooglePayEnabled,
+      },
+      {
+        name: 'GooglePayExpress_Pdp_Enabled',
+        text: 'Product details page',
+        checked: window.isGooglePayExpressOnPdpEnabled,
+      },
+    ],
+  },
+  {
     id: 'amazonpay',
     text: 'Amazon Pay Express',
     icon: window.amazonPayIcon,
