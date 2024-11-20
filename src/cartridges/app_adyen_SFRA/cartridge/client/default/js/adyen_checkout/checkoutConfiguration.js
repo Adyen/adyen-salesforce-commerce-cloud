@@ -230,6 +230,11 @@ function getGiftCardConfig() {
             store.partialPaymentsOrderObj.totalDiscountedAmount =
               data.totalAmountFormatted;
             resolve(data);
+          } else if (
+            data.resultCode === constants.NOTENOUGHBALANCE &&
+            data.balance.value > 0
+          ) {
+            resolve(data);
           } else {
             reject();
           }
