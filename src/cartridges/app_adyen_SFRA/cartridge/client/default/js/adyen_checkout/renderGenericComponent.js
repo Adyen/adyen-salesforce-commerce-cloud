@@ -263,8 +263,6 @@ export async function initializeCheckout() {
     paymentMethodsResponse.adyenDescriptions,
   );
 
-  renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
-
   renderGiftCardLogo(paymentMethodsResponse.imagePath);
 
   const firstPaymentMethod = document.querySelector(
@@ -273,6 +271,10 @@ export async function initializeCheckout() {
   if (firstPaymentMethod) {
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
+  }
+
+  if (paymentMethodsResponse.adyenConnectedTerminals) {
+    renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
   }
 
   helpers.createShowConfirmationForm(
