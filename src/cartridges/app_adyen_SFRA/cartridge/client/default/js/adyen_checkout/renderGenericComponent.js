@@ -275,6 +275,7 @@ export async function initializeCheckout() {
 
   if (paymentMethodsResponse.adyenConnectedTerminals) {
     renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
+    document.querySelector('button[value="submit-payment"]').disabled = false;
   }
 
   helpers.createShowConfirmationForm(
