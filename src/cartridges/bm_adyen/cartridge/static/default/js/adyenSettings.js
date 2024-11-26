@@ -1,29 +1,49 @@
 const expressPaymentMethods = [
   {
     id: 'applepay',
-    name: 'ApplePayExpress_Enabled',
-    text: 'Apple Pay',
+    text: 'Apple Pay Express',
     icon: window.applePayIcon,
-    checked: window.isApplePayEnabled,
+    toggles: [
+      {
+        name: 'ApplePayExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isApplePayEnabled,
+      },
+      {
+        name: 'ApplePayExpress_Pdp_Enabled',
+        text: 'Product details page',
+        checked: window.isApplePayExpressOnPdpEnabled,
+      },
+    ],
   },
   {
     id: 'amazonpay',
-    name: 'AmazonPayExpress_Enabled',
-    text: 'Amazon Pay',
+    text: 'Amazon Pay Express',
     icon: window.amazonPayIcon,
-    checked: window.isAmazonPayEnabled,
+    toggles: [
+      {
+        name: 'AmazonPayExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isAmazonPayEnabled,
+      },
+    ],
   },
   {
     id: 'paypal',
-    name: 'PayPalExpress_Enabled',
-    text: 'PayPal',
+    text: 'PayPal Express',
     icon: window.paypalIcon,
-    checked: window.isPayPalExpressEnabled,
-    reviewPage: window.isPayPalExpressReviewPageEnabled,
-    additionalField: {
-      name: 'PayPalExpress_ReviewPage_Enabled',
-      text: 'Show shopper order review page',
-    },
+    toggles: [
+      {
+        name: 'PayPalExpress_Enabled',
+        text: 'Cart / mini cart',
+        checked: window.isPayPalExpressEnabled,
+      },
+      {
+        name: 'PayPalExpress_ReviewPage_Enabled',
+        text: 'Order review page',
+        checked: window.isPayPalExpressReviewPageEnabled,
+      },
+    ],
   },
 ];
 
@@ -137,8 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addExpressEventListeners() {
-    const draggables = document.querySelectorAll('.draggable');
-    const dragListItems = document.querySelectorAll('.draggable-list li');
+    // Targeting only cart/mini-cart list as PDP doesn't need a swapping logic for the moment
+    const draggables = draggableList.querySelectorAll('.draggable');
+    const dragListItems = draggableList.querySelectorAll('.draggable-list li');
 
     draggables.forEach((draggable) => {
       draggable.addEventListener('dragstart', dragStart);
@@ -152,35 +173,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function createExpressPaymentsComponent() {
+  function createExpressPaymentsComponent(
+    paymentMethodsArray,
+    draggableListContainer,
+  ) {
     const { expressMethodsOrder } = window;
     if (expressMethodsOrder) {
       const sortOrder = expressMethodsOrder.split(',');
-      expressPaymentMethods.sort(
+      paymentMethodsArray.sort(
         (a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id),
       );
     }
-    expressPaymentMethods.forEach((item, index) => {
+
+    paymentMethodsArray.forEach((item, index) => {
       const listItem = document.createElement('li');
       listItem.setAttribute('data-index', index.toString());
 
-      let additionalFieldHtml = '';
-      if (item.additionalField) {
-        additionalFieldHtml = `
-        <div class="additional-item-container">
-          <p class="additional-item">${item.additionalField.text}</p>
-           <div class="additional-switch-button">
-              <div class="form-check form-switch">
-                 <input class="form-check-input" 
-                        type="checkbox" 
-                        name="${item.additionalField.name}" 
-                        id="${item.additionalField.name}"
-                        ${item.reviewPage ? 'checked' : 'unchecked'}
-                 >
-              </div>
-           </div>
-        </div>
-      `;
+      let togglesHtml = '';
+      if (item.toggles?.length) {
+        item.toggles.forEach((toggle) => {
+          togglesHtml += `
+            <div class="additional-item-container">
+              <p class="additional-item">${toggle.text}</p>
+               <div class="additional-switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" 
+                            type="checkbox" 
+                            name="${toggle.name}" 
+                            id="${toggle.name}"
+                            ${toggle.checked ? 'checked' : 'unchecked'}
+                     >
+                  </div>
+               </div>
+            </div>
+          `;
+        });
       }
 
       listItem.innerHTML = `
@@ -195,23 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
             />
             <p class="item" data-id="${item.id}">${item.text}</p>
           </div>
-          <div class="switch-button">
-              <div class="form-check form-switch">
-                 <input class="form-check-input" 
-                        type="checkbox" 
-                        name="${item.name}" 
-                        id="${item.id}"
-                        ${item.checked ? 'checked' : 'unchecked'}
-                 >
-              </div>
-           </div>
-           ${additionalFieldHtml}
+          ${togglesHtml}
         </div>
       `;
 
       listItems.push(listItem);
-
-      draggableList.appendChild(listItem);
+      draggableListContainer.appendChild(listItem);
     });
 
     addExpressEventListeners();
@@ -351,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <option class="dropdown-option" value="hipercard" id="hipercardCard">Hipercard</option>
                 <option class="dropdown-option" value="mc" id="mcCard">Master Card</option>
                 <option class="dropdown-option" value="visa" id="visaCard">Visa</option>
+                <option class="dropdown-option" value="jcb" id="jcbCard">Jcb</option>
               </select>
             </div>
           </td>
@@ -631,5 +648,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.reload();
   });
 
-  createExpressPaymentsComponent();
+  createExpressPaymentsComponent(expressPaymentMethods, draggableList);
 });

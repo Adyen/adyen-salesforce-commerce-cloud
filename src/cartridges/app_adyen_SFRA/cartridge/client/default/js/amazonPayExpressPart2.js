@@ -5,6 +5,7 @@ function saveShopperDetails(details) {
     url: window.saveShopperDetailsURL,
     type: 'post',
     data: {
+      csrf_token: $('#adyen-token').val(),
       shopperDetails: JSON.stringify(details),
       paymentMethod: 'amazonpay',
     },
@@ -78,9 +79,9 @@ function showAddressDetails(shopperDetails) {
 async function mountAmazonPayComponent() {
   try {
     const amazonPayNode = document.getElementById('amazon-container');
-    const data = await getPaymentMethods();
-    const paymentMethodsResponse = data?.AdyenPaymentMethods;
-    const applicationInfo = data?.applicationInfo;
+    const paymentMethodsData = await getPaymentMethods();
+    const paymentMethodsResponse = paymentMethodsData?.AdyenPaymentMethods;
+    const applicationInfo = paymentMethodsData?.applicationInfo;
     const checkout = await AdyenCheckout({
       environment: window.Configuration.environment,
       clientKey: window.Configuration.clientKey,

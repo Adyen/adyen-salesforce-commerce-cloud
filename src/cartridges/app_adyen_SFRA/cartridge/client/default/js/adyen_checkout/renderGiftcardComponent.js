@@ -56,6 +56,9 @@ function removeGiftCards() {
     $.ajax({
         type: 'POST',
         url: window.cancelPartialPaymentOrderUrl,
+        data: {
+          csrf_token: $('#adyen-token').val(),
+        },
         contentType: 'application/json; charset=utf-8',
         async: false,
         success(res) {
