@@ -12,12 +12,17 @@ const clearForms = require('*/cartridge/adyen/utils/clearForms');
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const request = JSON.parse(req.body);
-    const { partialPaymentsOrder } = request;
+
+    const partialPaymentData = JSON.parse(session.privacy.partialPaymentData);
+    if (!partialPaymentData) {
+        throw new Error(
+            `No partial payment data stored in session, possible bad actor attempt to refund card`
+        );
+    }
 
     const cancelOrderRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      order: partialPaymentsOrder,
+      order: partialPaymentData.order,
     };
 
     const response =
