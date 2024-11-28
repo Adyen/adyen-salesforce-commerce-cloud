@@ -18,8 +18,8 @@
          </div>
       </div>
          <div class="form-group">
-            <label class="form-title mb-0" for="frontendRegion">Front-end resources region</label>
-            <small id="frontendRegionHelp" class="form-text mb-1">
+            <label class="form-title mb-0" for="posRegion">Terminal API Region</label>
+            <small id="posRegionHelp" class="form-text mb-1">
             When you are ready to go live, enter the closest regions to your shoppers. This setup ensures that the communication between your payment terminal and our back-end is optimal.
             <a class="text-primary" href="https://docs.adyen.com/point-of-sale/design-your-integration/terminal-api/#live-endpoints" target="_blank">Check the list of regions</a></small>
             <div class='input-fields' id="dropdown-options">
