@@ -106,6 +106,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_Frontend_Region').value;
   },
 
+  getAdyenPosRegion() {
+    return getCustomPreference('Adyen_Pos_Region').value;
+  },
+
   getAdyenTokenisationEnabled() {
     return getCustomPreference('AdyenTokenisationEnabled');
   },
