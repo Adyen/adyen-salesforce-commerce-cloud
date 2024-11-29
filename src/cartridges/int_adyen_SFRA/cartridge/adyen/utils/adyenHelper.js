@@ -290,16 +290,16 @@ let adyenHelperObj = {
         returnValue = constants.POS_ENVIRONMENT_TEST;
         break;
       case constants.MODE.LIVE:
-        const frontEndRegion = AdyenConfigs.getAdyenPosRegion();
-        if (frontEndRegion === constants.POS_REGIONS.US) {
+        const terminalRegion = AdyenConfigs.getAdyenPosRegion();
+        if (terminalRegion === constants.POS_REGIONS.US) {
           returnValue = constants.POS_ENVIRONMENT_LIVE_US;
           break;
         }
-        if (frontEndRegion === constants.POS_REGIONS.AU) {
+        if (terminalRegion === constants.POS_REGIONS.AU) {
           returnValue = constants.POS_ENVIRONMENT_LIVE_AU;
           break;
         }
-        if (frontEndRegion === constants.POS_REGIONS.APSE) {
+        if (terminalRegion === constants.POS_REGIONS.APSE) {
           returnValue = constants.POS_ENVIRONMENT_LIVE_APSE;
           break;
         }
