@@ -143,11 +143,11 @@ function placeOrder(req, res, next) {
     // Handles payment authorization
     var handlePaymentResult = adyenHelpers.handlePayments(order);
 
-    const mainPaymentInstrument = order.getPaymentInstruments(
-      AdyenHelper.getOrderMainPaymentInstrumentType(order)
-    )[0];
-
+    let mainPaymentInstrument;
     if (giftCardsAdded) {
+	mainPaymentInstrument = order.getPaymentInstruments(
+	    AdyenHelper.getOrderMainPaymentInstrumentType(order)
+	)[0];
         giftCardsAdded.forEach((giftCard) => {
             const divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
             const amount = {
