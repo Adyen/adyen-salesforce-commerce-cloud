@@ -344,7 +344,7 @@ jest.mock(
     getAdyen3DS2Enabled: jest.fn(() => false),
     getAdyenLevel23DataEnabled: jest.fn(() => false),
     getAdyenSalePaymentMethods: jest.fn(() => []),
-	getAdyenPosRegion: jest.fn(),
+    getAdyenPosRegion: jest.fn(),
   }),
   { virtual: true },
 );
