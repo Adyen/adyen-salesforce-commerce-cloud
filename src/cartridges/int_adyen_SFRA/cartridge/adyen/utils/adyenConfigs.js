@@ -1,6 +1,6 @@
-const dwsystem = require('dw/system');
+const Site = require('dw/system/Site');
 
-const adyenCurrentSite = dwsystem.Site.getCurrent();
+const adyenCurrentSite = Site.getCurrent();
 
 function getCustomPreference(field) {
   let customPreference = null;

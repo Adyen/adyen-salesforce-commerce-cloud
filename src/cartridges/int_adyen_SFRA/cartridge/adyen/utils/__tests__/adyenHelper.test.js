@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 const Money = require('../../../../../../../jest/__mocks__/dw/value/Money');
-const { getApplicableShippingMethods } = require('../adyenHelper');
+const { getApplicableShippingMethods, getTerminalApiEnvironment } = require('../adyenHelper');
 const savePaymentDetails = require('../adyenHelper').savePaymentDetails;
 describe('savePaymentDetails', () => {
   let paymentInstrument;
@@ -116,3 +116,31 @@ describe('getApplicableShippingMethods', () => {
     expect(shippingMethods).toBeNull();
   })
 })
+
+describe('getTerminalApiEnvironment', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+	it('should return TEST endpoint for TEST environment', () => {
+		const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+		adyenConfigs.getAdyenEnvironment.mockReturnValue('TEST');
+		const result = getTerminalApiEnvironment();
+		expect(result).toBe('test');
+	  });
+
+	it('should return LIVE US endpoint for LIVE environment', () => {
+		const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+		adyenConfigs.getAdyenEnvironment.mockReturnValue('LIVE');
+		adyenConfigs.getAdyenPosRegion.mockReturnValue('US');
+		const result = getTerminalApiEnvironment();
+		expect(result).toBe('live-us');
+	  });
+
+	  it('should return default LIVE endpoint for LIVE environment', () => {
+		const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+		adyenConfigs.getAdyenEnvironment.mockReturnValue('LIVE');
+		adyenConfigs.getAdyenPosRegion.mockReturnValue('EU');
+		const result = getTerminalApiEnvironment();
+		expect(result).toBe('live');
+	  });
+  })

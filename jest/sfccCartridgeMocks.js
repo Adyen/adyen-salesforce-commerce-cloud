@@ -321,7 +321,7 @@ jest.mock(
 jest.mock(
   '*/cartridge/adyen/utils/adyenConfigs',
   () => ({
-    getAdyenEnvironment: jest.fn(() => 'TEST'),
+    getAdyenEnvironment: jest.fn(),
     getAdyenInstallmentsEnabled: jest.fn(() => true),
     getCreditCardInstallments: jest.fn(() => true),
     getAdyenTokenisationEnabled: jest.fn(() => true),
@@ -344,6 +344,7 @@ jest.mock(
     getAdyen3DS2Enabled: jest.fn(() => false),
     getAdyenLevel23DataEnabled: jest.fn(() => false),
     getAdyenSalePaymentMethods: jest.fn(() => []),
+	getAdyenPosRegion: jest.fn(),
   }),
   { virtual: true },
 );
