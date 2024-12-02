@@ -152,7 +152,6 @@ function getShippingOptionsParameters(selectedShippingMethod) {
 }
 
 function handleAuthorised(response) {
-  console.log('handleAuthorised');
   document.querySelector('#result').value = JSON.stringify({
     pspReference: response.fullResponse?.pspReference,
     resultCode: response.fullResponse?.resultCode,
