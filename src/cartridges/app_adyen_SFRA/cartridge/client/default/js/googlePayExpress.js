@@ -151,6 +151,35 @@ function getShippingOptionsParameters(selectedShippingMethod) {
   };
 }
 
+function handleAuthorised(response) {
+  console.log('handleAuthorised');
+  document.querySelector('#result').value = JSON.stringify({
+    pspReference: response.fullResponse?.pspReference,
+    resultCode: response.fullResponse?.resultCode,
+    paymentMethod: response.fullResponse?.paymentMethod
+      ? response.fullResponse.paymentMethod
+      : response.fullResponse?.additionalData?.paymentMethod,
+    donationToken: response.fullResponse?.donationToken,
+    amount: response.fullResponse?.amount,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleError() {
+  document.querySelector('#result').value = JSON.stringify({
+    error: true,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleGooglePayResponse(response) {
+  if (response.resultCode === 'Authorised') {
+    handleAuthorised(response);
+  } else {
+    handleError();
+  }
+}
+
 function paymentFromComponent(data) {
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -163,6 +192,13 @@ function paymentFromComponent(data) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        {
+          ...data,
+          ...response,
+        },
+      );
+      handleGooglePayResponse(response);
     },
   });
 }
@@ -177,6 +213,59 @@ async function initializeCheckout(paymentMethodsResponse) {
       analyticsData: { applicationInfo },
     },
   });
+}
+
+async function onShippingAddressChange(
+  resolve,
+  reject,
+  shippingAddress,
+  paymentDataRequestUpdate,
+) {
+  shippingMethodsData = await getShippingMethods(
+    shippingAddress,
+    temporaryBasketId,
+    reject,
+  );
+  if (shippingMethodsData?.shippingMethods?.length) {
+    const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
+    const newCalculation = await selectShippingMethod(
+      selectedShippingMethod,
+      temporaryBasketId,
+      reject,
+    );
+    if (newCalculation?.grandTotalAmount) {
+      paymentDataRequestUpdate.newShippingOptionParameters =
+        getShippingOptionsParameters(selectedShippingMethod);
+      paymentDataRequestUpdate.newTransactionInfo =
+        getTransactionInfo(newCalculation);
+    } else {
+      reject();
+    }
+  } else {
+    reject();
+  }
+}
+
+async function onShippingOptionChange(
+  reject,
+  shippingOptionData,
+  paymentDataRequestUpdate,
+) {
+  const shippingMethods = shippingMethodsData?.shippingMethods;
+  const matchingShippingMethod = shippingMethods.find(
+    (sm) => sm.ID === shippingOptionData.id,
+  );
+  const newCalculation = await selectShippingMethod(
+    matchingShippingMethod,
+    temporaryBasketId,
+    reject,
+  );
+  if (newCalculation?.grandTotalAmount) {
+    paymentDataRequestUpdate.newTransactionInfo =
+      getTransactionInfo(newCalculation);
+  } else {
+    reject();
+  }
 }
 
 async function init(paymentMethodsResponse) {
@@ -212,9 +301,7 @@ async function init(paymentMethodsResponse) {
         configuration: googlePayConfig,
         callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
         amount: JSON.parse(window.basketAmount),
-        onError: (err) => console.log(err),
         onAuthorized: async (data) => {
-          console.log(data);
           const componentData = googlePayButton.data;
           const stateData = {
             paymentMethod: componentData.paymentMethod,
@@ -223,9 +310,7 @@ async function init(paymentMethodsResponse) {
           const customer = formatCustomerObject(data);
           paymentFromComponent({ ...stateData, customer });
         },
-        onSubmit: async () => {
-          console.log('onsubmit');
-        },
+        onSubmit: async () => {},
         paymentDataCallbacks: {
           onPaymentDataChanged(intermediatePaymentData) {
             // eslint-disable-next-line no-async-promise-executor
@@ -237,48 +322,20 @@ async function init(paymentMethodsResponse) {
                 callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
                 callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
               ) {
-                shippingMethodsData = await getShippingMethods(
-                  shippingAddress,
-                  temporaryBasketId,
+                await onShippingAddressChange(
+                  resolve,
                   reject,
+                  shippingAddress,
+                  paymentDataRequestUpdate,
                 );
-                if (shippingMethodsData?.shippingMethods?.length) {
-                  const selectedShippingMethod =
-                    shippingMethodsData.shippingMethods[0];
-                  const newCalculation = await selectShippingMethod(
-                    selectedShippingMethod,
-                    temporaryBasketId,
-                    reject,
-                  );
-                  if (newCalculation?.grandTotalAmount) {
-                    paymentDataRequestUpdate.newShippingOptionParameters =
-                      getShippingOptionsParameters(selectedShippingMethod);
-                    paymentDataRequestUpdate.newTransactionInfo =
-                      getTransactionInfo(newCalculation);
-                  } else {
-                    reject();
-                  }
-                } else {
-                  reject();
-                }
               }
 
               if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
-                const shippingMethods = shippingMethodsData?.shippingMethods;
-                const matchingShippingMethod = shippingMethods.find(
-                  (sm) => sm.ID === shippingOptionData.id,
-                );
-                const newCalculation = await selectShippingMethod(
-                  matchingShippingMethod,
-                  temporaryBasketId,
+                await onShippingOptionChange(
                   reject,
+                  shippingOptionData,
+                  paymentDataRequestUpdate,
                 );
-                if (newCalculation?.grandTotalAmount) {
-                  paymentDataRequestUpdate.newTransactionInfo =
-                    getTransactionInfo(newCalculation);
-                } else {
-                  reject();
-                }
               }
 
               resolve(paymentDataRequestUpdate);
