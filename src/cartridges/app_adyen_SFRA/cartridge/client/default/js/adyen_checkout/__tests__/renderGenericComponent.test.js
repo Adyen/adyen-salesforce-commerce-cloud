@@ -58,6 +58,9 @@ beforeEach(() => {
     paymentMethodsResponse: {
       storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
       paymentMethods: [{ type: 'amazonpay' }],
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
     },
   }));
   window.installments = '[[0,2,["amex","hipercard"]]]';
@@ -69,11 +72,9 @@ beforeEach(() => {
     countryCode: 'mocked_countrycode',
   };
   getPaymentMethods.mockReturnValue({
-    json: jest.fn().mockReturnValue({
-      adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
-      imagePath: 'example.com',
-      adyenDescriptions: {},
-    }),
+    adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
+    imagePath: 'example.com',
+    adyenDescriptions: {},
   });
 });
 describe('Render Generic Component', () => {
