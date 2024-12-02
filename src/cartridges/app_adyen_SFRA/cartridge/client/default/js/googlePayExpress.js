@@ -2,6 +2,7 @@ const helpers = require('./adyen_checkout/helpers');
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
+  createTemporaryBasket,
 } = require('./commons');
 const { GOOGLE_PAY } = require('./constants');
 
@@ -260,6 +261,15 @@ async function onShippingOptionChange(
   return false;
 }
 
+async function onInitTrigger() {
+  if (window.isExpressPdp) {
+    const tempBasketResponse = await createTemporaryBasket();
+    if (tempBasketResponse?.basketId) {
+      temporaryBasketId = tempBasketResponse.basketId;
+    }
+  }
+}
+
 async function init(paymentMethodsResponse) {
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
@@ -300,7 +310,11 @@ async function init(paymentMethodsResponse) {
             paymentType: 'express',
           };
           const customer = formatCustomerObject(data);
-          paymentFromComponent({ ...stateData, customer });
+          paymentFromComponent({
+            ...stateData,
+            customer,
+            basketId: temporaryBasketId,
+          });
         },
         onSubmit: async () => {},
         paymentDataCallbacks: {
@@ -312,10 +326,15 @@ async function init(paymentMethodsResponse) {
             let onShippingAddressChangeStatus = true;
             let onShippingOptionChangeStatus = true;
 
-            if (
-              callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
-              callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
-            ) {
+            if (callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE) {
+              await onInitTrigger();
+              onShippingAddressChangeStatus = await onShippingAddressChange(
+                shippingAddress,
+                paymentDataRequestUpdate,
+              );
+            }
+
+            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS) {
               onShippingAddressChangeStatus = await onShippingAddressChange(
                 shippingAddress,
                 paymentDataRequestUpdate,
