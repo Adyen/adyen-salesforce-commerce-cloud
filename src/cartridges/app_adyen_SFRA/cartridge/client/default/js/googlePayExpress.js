@@ -63,7 +63,7 @@ function formatCustomerObject(customerData) {
   };
 }
 
-async function getShippingMethods(shippingAddress, basketId, reject) {
+async function getShippingMethods(shippingAddress, basketId) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
     basketId,
@@ -87,10 +87,10 @@ async function getShippingMethods(shippingAddress, basketId, reject) {
     success(response) {
       return response;
     },
-  }).fail(() => reject());
+  });
 }
 
-async function selectShippingMethod({ shipmentUUID, ID }, basketId, reject) {
+async function selectShippingMethod({ shipmentUUID, ID }, basketId) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
     shipmentUUID,
@@ -107,7 +107,7 @@ async function selectShippingMethod({ shipmentUUID, ID }, basketId, reject) {
     success(response) {
       return response;
     },
-  }).fail(() => reject());
+  });
 }
 
 function getTransactionInfo(newCalculation) {
@@ -215,38 +215,32 @@ async function initializeCheckout(paymentMethodsResponse) {
 }
 
 async function onShippingAddressChange(
-  resolve,
-  reject,
   shippingAddress,
   paymentDataRequestUpdate,
 ) {
   shippingMethodsData = await getShippingMethods(
     shippingAddress,
     temporaryBasketId,
-    reject,
   );
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
     const newCalculation = await selectShippingMethod(
       selectedShippingMethod,
       temporaryBasketId,
-      reject,
     );
     if (newCalculation?.grandTotalAmount) {
       paymentDataRequestUpdate.newShippingOptionParameters =
         getShippingOptionsParameters(selectedShippingMethod);
       paymentDataRequestUpdate.newTransactionInfo =
         getTransactionInfo(newCalculation);
-    } else {
-      reject();
+      return true;
     }
-  } else {
-    reject();
+    return false;
   }
+  return false;
 }
 
 async function onShippingOptionChange(
-  reject,
   shippingOptionData,
   paymentDataRequestUpdate,
 ) {
@@ -257,14 +251,13 @@ async function onShippingOptionChange(
   const newCalculation = await selectShippingMethod(
     matchingShippingMethod,
     temporaryBasketId,
-    reject,
   );
   if (newCalculation?.grandTotalAmount) {
     paymentDataRequestUpdate.newTransactionInfo =
       getTransactionInfo(newCalculation);
-  } else {
-    reject();
+    return true;
   }
+  return false;
 }
 
 async function init(paymentMethodsResponse) {
@@ -311,33 +304,40 @@ async function init(paymentMethodsResponse) {
         },
         onSubmit: async () => {},
         paymentDataCallbacks: {
-          onPaymentDataChanged(intermediatePaymentData) {
-            // eslint-disable-next-line no-async-promise-executor
-            return new Promise(async (resolve, reject) => {
-              const paymentDataRequestUpdate = {};
-              const { callbackTrigger, shippingAddress, shippingOptionData } =
-                intermediatePaymentData;
+          async onPaymentDataChanged(intermediatePaymentData) {
+            const { callbackTrigger, shippingAddress, shippingOptionData } =
+              intermediatePaymentData;
+
+            const paymentDataRequestUpdate = {};
+            let onShippingAddressChangeStatus = true;
+            let onShippingOptionChangeStatus = true;
+
+            if (
+              callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
+              callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+            ) {
+              onShippingAddressChangeStatus = await onShippingAddressChange(
+                shippingAddress,
+                paymentDataRequestUpdate,
+              );
+            }
+
+            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+              onShippingOptionChangeStatus = await onShippingOptionChange(
+                shippingOptionData,
+                paymentDataRequestUpdate,
+              );
+            }
+
+            return new Promise((resolve, reject) => {
               if (
-                callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
-                callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+                onShippingAddressChangeStatus &&
+                onShippingOptionChangeStatus
               ) {
-                await onShippingAddressChange(
-                  resolve,
-                  reject,
-                  shippingAddress,
-                  paymentDataRequestUpdate,
-                );
+                resolve(paymentDataRequestUpdate);
+              } else {
+                reject();
               }
-
-              if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
-                await onShippingOptionChange(
-                  reject,
-                  shippingOptionData,
-                  paymentDataRequestUpdate,
-                );
-              }
-
-              resolve(paymentDataRequestUpdate);
             });
           },
         },
