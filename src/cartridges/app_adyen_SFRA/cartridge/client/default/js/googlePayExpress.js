@@ -157,6 +157,7 @@ function handleAuthorised(response) {
     amount: response.fullResponse?.amount,
   });
   document.querySelector('#showConfirmationForm').submit();
+  $.spinner().stop();
 }
 
 function handleError() {
@@ -164,6 +165,7 @@ function handleError() {
     error: true,
   });
   document.querySelector('#showConfirmationForm').submit();
+  $.spinner().stop();
 }
 
 function handleGooglePayResponse(response) {
@@ -175,6 +177,7 @@ function handleGooglePayResponse(response) {
 }
 
 function paymentFromComponent(data) {
+  $.spinner().start();
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
