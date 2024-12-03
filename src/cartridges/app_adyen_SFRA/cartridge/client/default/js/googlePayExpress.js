@@ -197,7 +197,7 @@ function paymentFromComponent(data) {
       );
       handleGooglePayResponse(response);
     },
-  });
+  }).fail(() => $.spinner().start());
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
