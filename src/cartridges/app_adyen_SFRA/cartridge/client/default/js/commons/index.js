@@ -1,6 +1,6 @@
 const $ = require('jquery');
 const store = require('../../../../store');
-const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
+const { PAYPAL, APPLE_PAY, AMAZON_PAY, GOOGLE_PAY } = require('../constants');
 
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
@@ -65,6 +65,7 @@ module.exports.checkIfExpressMethodsAreReady =
       [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
       [AMAZON_PAY]: window.isAmazonPayExpressEnabled === 'true',
       [PAYPAL]: window.isPayPalExpressEnabled === 'true',
+      [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
     };
     let enabledExpressMethods = [];
     Object.keys(expressMethodsConfig).forEach((key) => {
