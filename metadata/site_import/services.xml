@@ -46,7 +46,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPosPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-live.adyenpayments.com/sync</url>
+        <url>https://terminal-api-[ADYEN-REGION].adyen.com/sync</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -56,7 +56,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenConnectedTerminalsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-terminal-api-live.adyenpayments.com/connectedTerminals</url>
+        <url>https://terminal-api-live.adyen.com/connectedTerminals</url>
         <user-id></user-id>
         <password/>
     </service-credential>

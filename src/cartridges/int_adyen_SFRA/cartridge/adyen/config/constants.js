@@ -68,6 +68,13 @@ module.exports = {
     IN: 'IN',
   },
 
+  POS_REGIONS: {
+    US: 'US',
+    AU: 'AU',
+    EU: 'EU',
+    APSE: 'APSE',
+  },
+
   SHOPPER_INTERACTIONS: {
     CONT_AUTH: 'ContAuth',
     ECOMMERCE: 'Ecommerce',
@@ -92,6 +99,12 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
+
+  POS_ENVIRONMENT_TEST: 'test',
+  POS_ENVIRONMENT_LIVE_EU: 'live',
+  POS_ENVIRONMENT_LIVE_US: 'live-us',
+  POS_ENVIRONMENT_LIVE_AU: 'live-au',
+  POS_ENVIRONMENT_LIVE_APSE: 'live-apse',
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',

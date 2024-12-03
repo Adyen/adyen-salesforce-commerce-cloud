@@ -463,6 +463,27 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_Pos_Region">
+                <display-name xml:lang="x-default">Region</display-name>
+                <description xml:lang="x-default">This should be set to the region closest to where your shoppers are located. It influences the speed of the communication between your payment terminal and our back-end.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>APSE</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_notification_password">
                 <display-name xml:lang="x-default">Adyen Notifications Password</display-name>
                 <description xml:lang="x-default">Adyen Notifications Password for basic Authentication</description>

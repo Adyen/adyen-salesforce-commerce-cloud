@@ -17,5 +17,19 @@
             </div>
          </div>
       </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="posRegion">Terminal API Region</label>
+            <small id="posRegionHelp" class="form-text mb-1">
+            When you are ready to go live, enter the closest regions to your shoppers. This setup ensures that the communication between your payment terminal and our back-end is optimal.
+            <a class="text-primary" href="https://docs.adyen.com/point-of-sale/design-your-integration/terminal-api/#live-endpoints" target="_blank">Check the list of regions</a></small>
+            <div class='input-fields' id="dropdown-options">
+               <select name="Adyen_Pos_Region" class="form-select" required>
+                  <option class="dropdown-option" value="US" id="regionUS" ${AdyenConfigs.getAdyenPosRegion() === 'US' ? 'selected': ''}>US - United States</option>
+                  <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenPosRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
+                  <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenPosRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
+                  <option class="dropdown-option" value="APSE" id="regionAPSE" ${AdyenConfigs.getAdyenPosRegion() === 'APSE' ? 'selected': ''}>APSE - East Asia</option>
+               </select>
+            </div>
+         </div>
    </div>
 </div>

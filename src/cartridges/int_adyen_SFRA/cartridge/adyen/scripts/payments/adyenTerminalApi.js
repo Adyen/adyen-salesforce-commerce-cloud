@@ -203,6 +203,11 @@ function executeCall(serviceType, requestObject) {
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);
+  if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE && serviceType === constants.SERVICE.POSPAYMENT) {
+	const regionEndpoint = AdyenHelper.getTerminalApiEnvironment();
+	const serviceUrl = service.getURL().replace(`[ADYEN-REGION]`, regionEndpoint);
+	service.setURL(serviceUrl);
+  }
   const callResult = service.call(JSON.stringify(requestObject.request));
 
   if (callResult.isOk() === false) {

@@ -1,6 +1,6 @@
-const dwsystem = require('dw/system');
+const Site = require('dw/system/Site');
 
-const adyenCurrentSite = dwsystem.Site.getCurrent();
+const adyenCurrentSite = Site.getCurrent();
 
 function getCustomPreference(field) {
   let customPreference = null;
@@ -104,6 +104,10 @@ const adyenConfigsObj = {
 
   getAdyenFrontendRegion() {
     return getCustomPreference('Adyen_Frontend_Region').value;
+  },
+
+  getAdyenPosRegion() {
+    return getCustomPreference('Adyen_Pos_Region').value;
   },
 
   getAdyenTokenisationEnabled() {
